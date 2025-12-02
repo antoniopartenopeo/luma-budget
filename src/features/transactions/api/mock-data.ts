@@ -1,7 +1,7 @@
 import { Transaction, CreateTransactionDTO } from "./types"
 
 // Initial mock data
-let transactions: Transaction[] = [
+const transactions: Transaction[] = [
     {
         id: "1",
         amount: "-€85.00",
@@ -80,6 +80,8 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
         timestamp: Date.now(),
     }
 
-    transactions = [newTransaction, ...transactions]
+    transactions.unshift(newTransaction)
     return newTransaction
 }
+
+export const getTransactions = () => transactions

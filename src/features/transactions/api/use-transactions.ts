@@ -16,6 +16,8 @@ export const useCreateTransaction = () => {
         mutationFn: (data: CreateTransactionDTO) => createTransaction(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["recent-transactions"] })
+            queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] })
         },
     })
 }
+

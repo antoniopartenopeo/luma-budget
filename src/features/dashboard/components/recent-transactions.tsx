@@ -5,12 +5,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { cn } from "@/lib/utils"
 import { useRecentTransactions } from "@/features/transactions/api/use-transactions"
 import { LoadingState } from "@/components/ui/loading-state"
-import { ErrorState } from "@/components/ui/error-state"
-import { EmptyState } from "@/components/ui/empty-state"
+import { StateMessage } from "@/components/ui/state-message"
 import { Skeleton } from "@/components/ui/skeleton"
 
 export function RecentTransactions() {
     const { data: transactions, isLoading, isError, refetch } = useRecentTransactions()
+
+    const handleAddExpenseClick = () => {
+        // Focus on the description input of QuickExpenseInput
+        // Assuming the input has a specific ID or we can find it by placeholder/label
+        // For now, let's try to find it by attribute as we don't have a ref passed down
+        const input = document.querySelector('input[placeholder="Descrizione spesa"]') as HTMLInputElement
+        if (input) {
+            input.focus()
+        }
+    }
 
     if (isLoading) {
         return (
@@ -43,7 +52,13 @@ export function RecentTransactions() {
         return (
             <Card className="col-span-3 rounded-xl shadow-sm">
                 <CardContent className="pt-6">
-                    <ErrorState onRetry={() => refetch()} />
+                    <StateMessage
+                        variant="error"
+                        title="Errore caricamento transazioni"
+                        description="Non è stato possibile caricare le transazioni recenti."
+                        actionLabel="Riprova"
+                        onActionClick={() => refetch()}
+                    />
                 </CardContent>
             </Card>
         )
@@ -57,9 +72,12 @@ export function RecentTransactions() {
                     <CardDescription>I tuoi ultimi movimenti finanziari</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <EmptyState
+                    <StateMessage
+                        variant="empty"
                         title="Nessuna transazione"
-                        description="Non hai ancora effettuato nessuna transazione. Aggiungi la tua prima spesa dalla barra in alto."
+                        description="Non hai ancora effettuato nessuna transazione."
+                        actionLabel="Aggiungi la tua prima spesa"
+                        onActionClick={handleAddExpenseClick}
                     />
                 </CardContent>
             </Card>

@@ -9,6 +9,13 @@ export const useRecentTransactions = () => {
     })
 }
 
+export const useTransactions = () => {
+    return useQuery({
+        queryKey: ["transactions"],
+        queryFn: fetchRecentTransactions, // Using the same fetcher for now as it returns all
+    })
+}
+
 export const useCreateTransaction = () => {
     const queryClient = useQueryClient()
 

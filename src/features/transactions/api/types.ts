@@ -15,4 +15,5 @@ export interface CreateTransactionDTO {
     description: string
     amount: number
     category: string
+    type: TransactionType
 }

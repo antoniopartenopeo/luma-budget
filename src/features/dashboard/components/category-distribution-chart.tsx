@@ -5,13 +5,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CategorySummary } from "@/features/dashboard/api/types"
 import { Skeleton } from "@/components/ui/skeleton"
 import { motion } from "framer-motion"
+import { StateMessage } from "@/components/ui/state-message"
+
+// Shared palette
+const CHART_COLORS = [
+    "#10b981", // Emerald (ok/useful)
+    "#f43f5e", // Rose (warning/useless)
+    "#0ea5e9", // Sky
+    "#f59e0b", // Amber
+    "#8b5cf6", // Violet
+    "#64748b", // Slate (Altro)
+]
 
 interface CategoryDistributionChartProps {
     data?: CategorySummary[]
     isLoading?: boolean
 }
-
-import { StateMessage } from "@/components/ui/state-message"
 
 export function CategoryDistributionChart({ data, isLoading }: CategoryDistributionChartProps) {
     if (isLoading) {
@@ -32,6 +41,12 @@ export function CategoryDistributionChart({ data, isLoading }: CategoryDistribut
 
     const hasData = data && data.length > 0 && data.some(item => item.value > 0)
 
+    // Assign colors from palette if not already present or override
+    const coloredData = data?.map((item, index) => ({
+        ...item,
+        color: CHART_COLORS[index % CHART_COLORS.length]
+    }))
+
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -51,7 +66,7 @@ export function CategoryDistributionChart({ data, isLoading }: CategoryDistribut
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
                                         <Pie
-                                            data={data as any}
+                                            data={coloredData}
                                             cx="50%"
                                             cy="50%"
                                             innerRadius={60}
@@ -61,22 +76,27 @@ export function CategoryDistributionChart({ data, isLoading }: CategoryDistribut
                                             animationDuration={1500}
                                             animationEasing="ease-out"
                                         >
-                                            {data?.map((entry, index) => (
+                                            {coloredData?.map((entry, index) => (
                                                 <Cell key={`cell-${index}`} fill={entry.color} strokeWidth={0} />
                                             ))}
                                         </Pie>
                                         <Tooltip
                                             contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                                            formatter={(value: number) => `€${value}`}
+                                            formatter={(value: number, name: string, props: any) => {
+                                                const total = coloredData?.reduce((acc, item) => acc + item.value, 0) || 0
+                                                const percent = total > 0 ? ((value / total) * 100).toFixed(1) : 0
+                                                return [`€${value} (${percent}%)`, name]
+                                            }}
                                         />
                                     </PieChart>
                                 </ResponsiveContainer>
                             </div>
-                            <div className="mt-4 flex flex-wrap justify-center gap-2">
-                                {data?.map((item, index) => (
-                                    <div key={index} className="flex items-center gap-1 text-xs text-muted-foreground">
-                                        <div className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
-                                        {item.name}
+                            <div className="mt-4 flex flex-wrap justify-center gap-3">
+                                {coloredData?.map((item, index) => (
+                                    <div key={index} className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                                        <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />
+                                        <span>{item.name}</span>
+                                        <span className="text-foreground">€{item.value}</span>
                                     </div>
                                 ))}
                             </div>

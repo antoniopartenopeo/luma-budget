@@ -6,6 +6,8 @@ export interface CategorySummary {
 
 export interface DashboardSummary {
     totalSpent: number
+    totalIncome: number
+    totalExpenses: number
     budgetRemaining: number
     uselessSpendPercent: number
     categoriesSummary: CategorySummary[]

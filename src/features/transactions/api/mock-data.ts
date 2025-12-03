@@ -61,6 +61,11 @@ export const fetchRecentTransactions = async (): Promise<Transaction[]> => {
     return [...transactions].sort((a, b) => b.timestamp - a.timestamp)
 }
 
+export const fetchTransactions = async (): Promise<Transaction[]> => {
+    await new Promise((resolve) => setTimeout(resolve, 800))
+    return [...transactions].sort((a, b) => b.timestamp - a.timestamp)
+}
+
 export const createTransaction = async (data: CreateTransactionDTO): Promise<Transaction> => {
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
@@ -69,14 +74,20 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
         throw new Error("Failed to create transaction")
     }
 
+    const isIncome = data.type === "income"
+    const amount = isIncome ? Math.abs(data.amount) : -Math.abs(data.amount)
+    const formattedAmount = isIncome
+        ? `+€${amount.toFixed(2)}`
+        : `-€${Math.abs(amount).toFixed(2)}`
+
     const newTransaction: Transaction = {
         id: Math.random().toString(36).substr(2, 9),
-        amount: `-€${data.amount.toFixed(2)}`,
+        amount: formattedAmount,
         date: "Adesso",
         description: data.description,
         category: data.category,
-        icon: "🆕", // Simplified icon logic
-        type: "expense",
+        icon: isIncome ? "💰" : "🆕", // Simplified icon logic
+        type: data.type,
         timestamp: Date.now(),
     }
 

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Plus, Loader2, CheckCircle2, AlertCircle } from "lucide-react"
+import { Plus, Loader2, CheckCircle2, AlertCircle, TrendingUp, TrendingDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -14,6 +14,11 @@ const CATEGORIES = [
     { id: "trasporti", label: "Trasporti" },
     { id: "casa", label: "Casa" },
     { id: "svago", label: "Svago" },
+    { id: "salute", label: "Salute" },
+    { id: "shopping", label: "Shopping" },
+    { id: "viaggi", label: "Viaggi" },
+    { id: "istruzione", label: "Istruzione" },
+    { id: "investimenti", label: "Investimenti" },
     { id: "altro", label: "Altro" },
 ]
 
@@ -25,24 +30,44 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
     const [description, setDescription] = useState("")
     const [amount, setAmount] = useState("")
     const [category, setCategory] = useState("")
+    const [type, setType] = useState<"expense" | "income">("expense")
+    const [isFocused, setIsFocused] = useState(false)
+    const [validationError, setValidationError] = useState<string | null>(null)
 
     const { mutate: create, isPending, isSuccess, isError } = useCreateTransaction()
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        if (!description || !amount || !category) return
+        setValidationError(null)
+
+        // Validation
+        if (!description.trim()) {
+            setValidationError("Inserisci una descrizione")
+            return
+        }
+        const parsedAmount = parseFloat(amount)
+        if (!amount || isNaN(parsedAmount) || parsedAmount <= 0) {
+            setValidationError("Inserisci un importo valido")
+            return
+        }
+        if (!category) {
+            setValidationError("Seleziona una categoria")
+            return
+        }
 
         create(
             {
                 description,
-                amount: parseFloat(amount),
+                amount: parsedAmount,
                 category,
+                type,
             },
             {
                 onSuccess: (data) => {
                     setDescription("")
                     setAmount("")
                     setCategory("")
+                    // Keep type as is for convenience
                     if (onExpenseCreated) {
                         onExpenseCreated(data)
                     }
@@ -51,40 +76,103 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
         )
     }
 
+    const hasError = !!validationError || isError
+
     return (
         <div className="relative w-full max-w-2xl">
             <form
                 onSubmit={handleSubmit}
                 className={cn(
-                    "flex items-center gap-2 rounded-full bg-background p-1.5 shadow-sm transition-all border border-transparent focus-within:border-primary/20 focus-within:shadow-md",
-                    isError && "border-destructive/50 shadow-destructive/10"
+                    "flex items-center gap-1 rounded-full bg-white p-1.5 shadow-sm transition-all border border-transparent",
+                    isFocused && "shadow-md ring-2 ring-primary/10",
+                    hasError && "border-destructive/50 shadow-destructive/10"
                 )}
+                onFocus={() => setIsFocused(true)}
+                onBlur={(e) => {
+                    if (!e.currentTarget.contains(e.relatedTarget)) {
+                        setIsFocused(false)
+                    }
+                }}
             >
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary ml-1">
-                    <Plus className="h-4 w-4" />
+                {/* Type Toggle */}
+                <div className="flex bg-muted/50 rounded-full p-0.5 shrink-0 ml-1">
+                    <button
+                        type="button"
+                        onClick={() => setType("expense")}
+                        className={cn(
+                            "p-1.5 rounded-full transition-all",
+                            type === "expense" ? "bg-white text-red-500 shadow-sm" : "text-muted-foreground hover:text-foreground"
+                        )}
+                        title="Uscita"
+                    >
+                        <TrendingDown className="h-4 w-4" />
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setType("income")}
+                        className={cn(
+                            "p-1.5 rounded-full transition-all",
+                            type === "income" ? "bg-white text-green-500 shadow-sm" : "text-muted-foreground hover:text-foreground"
+                        )}
+                        title="Entrata"
+                    >
+                        <TrendingUp className="h-4 w-4" />
+                    </button>
                 </div>
 
+                <div className="h-6 w-px bg-border/50 mx-1" />
+
+                {/* Description */}
                 <Input
                     placeholder="Descrizione (es. Pranzo)"
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="h-9 border-0 bg-transparent px-2 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70"
+                    onChange={(e) => {
+                        setDescription(e.target.value)
+                        if (validationError) setValidationError(null)
+                    }}
+                    disabled={isPending}
+                    className={cn(
+                        "h-9 border-0 bg-transparent px-2 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70 flex-1 min-w-[120px]",
+                        validationError && !description.trim() && "placeholder:text-destructive/50"
+                    )}
                 />
 
                 <div className="h-6 w-px bg-border/50" />
 
-                <Input
-                    type="number"
-                    placeholder="€ 0.00"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    className="h-9 w-24 border-0 bg-transparent px-2 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70"
-                />
+                {/* Amount */}
+                <div className="relative flex items-center">
+                    <span className="absolute left-2 text-muted-foreground text-sm font-medium">€</span>
+                    <Input
+                        type="number"
+                        placeholder="0.00"
+                        value={amount}
+                        onChange={(e) => {
+                            setAmount(e.target.value)
+                            if (validationError) setValidationError(null)
+                        }}
+                        disabled={isPending}
+                        className={cn(
+                            "h-9 w-24 border-0 bg-transparent pl-6 pr-2 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70 text-right font-medium",
+                            validationError && (!amount || parseFloat(amount) <= 0) && "placeholder:text-destructive/50 text-destructive"
+                        )}
+                    />
+                </div>
 
                 <div className="h-6 w-px bg-border/50" />
 
-                <Select value={category} onValueChange={setCategory}>
-                    <SelectTrigger className="h-9 w-[130px] border-0 bg-transparent shadow-none focus:ring-0 text-muted-foreground data-[state=checked]:text-foreground">
+                {/* Category */}
+                <Select
+                    value={category}
+                    onValueChange={(val) => {
+                        setCategory(val)
+                        if (validationError) setValidationError(null)
+                    }}
+                    disabled={isPending}
+                >
+                    <SelectTrigger className={cn(
+                        "h-9 w-[130px] border-0 bg-transparent shadow-none focus:ring-0 text-muted-foreground data-[state=checked]:text-foreground",
+                        validationError && !category && "text-destructive/70"
+                    )}>
                         <SelectValue placeholder="Categoria" />
                     </SelectTrigger>
                     <SelectContent>
@@ -96,28 +184,33 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                     </SelectContent>
                 </Select>
 
+                {/* Submit Button */}
                 <Button
                     type="submit"
-                    disabled={isPending || !description || !amount || !category}
+                    disabled={isPending}
                     className={cn(
-                        "h-9 rounded-full px-4 transition-all",
+                        "h-9 rounded-full px-4 transition-all ml-1",
                         isSuccess && "bg-emerald-600 hover:bg-emerald-700 text-white"
                     )}
                 >
                     {isPending ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                     ) : isSuccess ? (
-                        <CheckCircle2 className="h-4 w-4" />
+                        <div className="flex items-center gap-1">
+                            <CheckCircle2 className="h-4 w-4" />
+                            <span className="sr-only">Salvato</span>
+                        </div>
                     ) : (
                         "Aggiungi"
                     )}
                 </Button>
             </form>
 
-            {isError && (
+            {/* Error Message */}
+            {hasError && (
                 <div className="absolute -bottom-8 left-4 flex items-center gap-2 text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1">
                     <AlertCircle className="h-3 w-3" />
-                    Errore durante il salvataggio. Riprova.
+                    {validationError || "Errore durante il salvataggio. Riprova."}
                 </div>
             )}
         </div>

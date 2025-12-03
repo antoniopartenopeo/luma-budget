@@ -13,18 +13,28 @@ export const fetchDashboardSummary = async (): Promise<DashboardSummary> => {
 
     const transactions = getTransactions()
 
-    // Calculate Total Spent (only expenses)
-    const totalSpent = transactions
+    // Calculate Total Expenses
+    const totalExpenses = transactions
         .filter(t => t.type === 'expense')
         .reduce((acc, t) => {
-            // Parse amount string "-€85.00" -> 85.00
             const amount = parseFloat(t.amount.replace(/[^0-9.-]+/g, ""))
             return acc + Math.abs(amount)
         }, 0)
 
-    // Calculate Budget Remaining (Fixed Budget 2000 for now)
-    const budgetLimit = 2000
-    const budgetRemaining = budgetLimit - totalSpent
+    // Calculate Total Income
+    const totalIncome = transactions
+        .filter(t => t.type === 'income')
+        .reduce((acc, t) => {
+            const amount = parseFloat(t.amount.replace(/[^0-9.-]+/g, ""))
+            return acc + Math.abs(amount)
+        }, 0)
+
+    const totalSpent = totalExpenses
+
+    // Calculate Budget Remaining (Fixed Budget 2000 + Income - Expenses)
+    const monthlyBudget = 2000
+    const netBalance = monthlyBudget + totalIncome - totalExpenses
+    const budgetRemaining = Math.max(netBalance, 0)
 
     // Calculate Category Distribution
     const categoryMap = new Map<string, number>()
@@ -74,6 +84,8 @@ export const fetchDashboardSummary = async (): Promise<DashboardSummary> => {
 
     return {
         totalSpent,
+        totalIncome,
+        totalExpenses,
         budgetRemaining,
         uselessSpendPercent,
         categoriesSummary,

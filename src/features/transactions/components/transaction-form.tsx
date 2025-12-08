@@ -159,20 +159,35 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
 
             {/* Superfluous Expense Toggle */}
             {type === "expense" && (
-                <div className="flex items-center space-x-2 p-1">
+                <div
+                    className={cn(
+                        "flex items-center gap-2.5 p-2.5 rounded-lg border border-border/50 bg-muted/20 transition-colors",
+                        "hover:bg-muted/40 focus-within:ring-2 focus-within:ring-primary/20",
+                        isLoading && "opacity-50 pointer-events-none"
+                    )}
+                >
                     <input
                         type="checkbox"
                         id="isSuperfluous"
-                        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                         checked={isSuperfluous}
                         onChange={(e) => {
                             setIsSuperfluous(e.target.checked)
                             setIsManualOverride(true)
                         }}
+                        disabled={isLoading}
+                        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary cursor-pointer disabled:cursor-not-allowed"
                     />
-                    <Label htmlFor="isSuperfluous" className="font-normal cursor-pointer">
-                        Segna come spesa superflua
-                    </Label>
+                    <div className="flex flex-col gap-0.5">
+                        <Label
+                            htmlFor="isSuperfluous"
+                            className="font-normal cursor-pointer text-sm"
+                        >
+                            Segna come spesa superflua
+                        </Label>
+                        <span className="text-xs text-muted-foreground">
+                            Spese non essenziali da monitorare per ridurle nel tempo
+                        </span>
+                    </div>
                 </div>
             )}
 

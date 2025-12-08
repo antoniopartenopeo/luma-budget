@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Plus, Loader2, CheckCircle2, AlertCircle, TrendingUp, TrendingDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -24,7 +24,30 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
     const [isFocused, setIsFocused] = useState(false)
     const [validationError, setValidationError] = useState<string | null>(null)
 
+    // Superfluous expense logic
+    const [isSuperfluous, setIsSuperfluous] = useState(false)
+    const [isManualOverride, setIsManualOverride] = useState(false)
+
     const { mutate: create, isPending, isSuccess, isError } = useCreateTransaction()
+
+    // Auto-update isSuperfluous based on category (rule-based), unless manually overridden
+    useEffect(() => {
+        if (isManualOverride || type !== "expense") return
+
+        const cat = CATEGORIES.find(c => c.id === category)
+        if (cat) {
+            setIsSuperfluous(cat.spendingNature === "superfluous")
+        } else {
+            setIsSuperfluous(false)
+        }
+    }, [category, isManualOverride, type])
+
+    // Reset superfluous when switching to income
+    useEffect(() => {
+        if (type === "income") {
+            setIsSuperfluous(false)
+        }
+    }, [type])
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -52,12 +75,16 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                 category: CATEGORIES.find(c => c.id === category)?.label || category,
                 categoryId: category,
                 type,
+                isSuperfluous: type === "expense" ? isSuperfluous : false,
+                classificationSource: isManualOverride ? "manual" : "ruleBased",
             },
             {
                 onSuccess: (data) => {
                     setDescription("")
                     setAmount("")
                     setCategory("")
+                    setIsSuperfluous(false)
+                    setIsManualOverride(false)
                     // Keep type as is for convenience
                     if (onExpenseCreated) {
                         onExpenseCreated(data)
@@ -177,6 +204,36 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                         ))}
                     </SelectContent>
                 </Select>
+
+                {/* Superfluous Toggle - Only for expenses */}
+                {type === "expense" && (
+                    <>
+                        <div className="h-6 w-px bg-border/50" />
+                        <label
+                            htmlFor="quick-superfluous"
+                            title="Le spese superflue sono quelle non essenziali che vuoi tenere d'occhio per ridurle nel tempo."
+                            className={cn(
+                                "flex items-center gap-1.5 text-xs cursor-pointer px-2 whitespace-nowrap transition-colors rounded-md",
+                                "hover:bg-muted/50 focus-within:ring-2 focus-within:ring-primary/20",
+                                isSuperfluous ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+                                isPending && "opacity-50 cursor-not-allowed pointer-events-none"
+                            )}
+                        >
+                            <input
+                                id="quick-superfluous"
+                                type="checkbox"
+                                checked={isSuperfluous}
+                                onChange={(e) => {
+                                    setIsSuperfluous(e.target.checked)
+                                    setIsManualOverride(true)
+                                }}
+                                disabled={isPending}
+                                className="h-3.5 w-3.5 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary/50 focus:ring-offset-0 cursor-pointer disabled:cursor-not-allowed"
+                            />
+                            <span>Segna come superflua</span>
+                        </label>
+                    </>
+                )}
 
                 {/* Submit Button */}
                 <Button

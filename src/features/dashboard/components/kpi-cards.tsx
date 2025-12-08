@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowDownIcon, ArrowUpIcon, DollarSign, Wallet, CreditCard, AlertTriangle } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -6,14 +7,16 @@ import { motion } from "framer-motion"
 
 interface KpiCardProps {
     title: string
+    subtitle?: string
     value: string | number
     change?: string
     trend?: "up" | "down" | "neutral"
     icon: React.ElementType
     isLoading?: boolean
+    onClick?: () => void
 }
 
-export function KpiCard({ title, value, change, trend, icon: Icon, isLoading }: KpiCardProps) {
+export function KpiCard({ title, subtitle, value, change, trend, icon: Icon, isLoading, onClick }: KpiCardProps) {
     if (isLoading) {
         return (
             <Card className="rounded-xl shadow-sm">
@@ -34,12 +37,22 @@ export function KpiCard({ title, value, change, trend, icon: Icon, isLoading }: 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
+            className="h-full"
         >
-            <Card className="rounded-xl shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-300 h-full">
+            <Card
+                className={cn(
+                    "rounded-xl shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-300 h-full",
+                    onClick && "cursor-pointer active:scale-[0.98] ring-primary/5 hover:ring-2"
+                )}
+                onClick={onClick}
+            >
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-muted-foreground">
-                        {title}
-                    </CardTitle>
+                    <div>
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                            {title}
+                        </CardTitle>
+                        {subtitle && <p className="text-xs text-muted-foreground/70 mt-0.5">{subtitle}</p>}
+                    </div>
                     <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                         <Icon className="h-4 w-4 text-primary" />
                     </div>
@@ -74,6 +87,8 @@ interface DashboardKpiGridProps {
 }
 
 export function DashboardKpiGrid({ totalSpent, budgetRemaining, uselessSpendPercent, isLoading }: DashboardKpiGridProps) {
+    const router = useRouter()
+
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(value)
     }
@@ -82,14 +97,17 @@ export function DashboardKpiGrid({ totalSpent, budgetRemaining, uselessSpendPerc
         <div className="grid gap-4 md:grid-cols-3">
             <KpiCard
                 title="Spesa Totale"
-                value={isLoading ? 0 : formatCurrency(totalSpent || 0)} // Mock static balance for now or derive
+                subtitle="Nel periodo selezionato"
+                value={isLoading ? 0 : formatCurrency(totalSpent || 0)}
                 change="+2.5%"
                 trend="up"
                 icon={Wallet}
                 isLoading={isLoading}
+                onClick={() => router.push("/transactions")}
             />
             <KpiCard
                 title="Budget Rimanente"
+                subtitle="Rispetto al budget mensile"
                 value={isLoading ? 0 : formatCurrency(budgetRemaining || 0)}
                 change={isLoading ? "" : `${Math.round(((budgetRemaining || 0) / 2000) * 100)}% del budget`}
                 trend="neutral"
@@ -98,11 +116,17 @@ export function DashboardKpiGrid({ totalSpent, budgetRemaining, uselessSpendPerc
             />
             <KpiCard
                 title="Spese Superflue"
+                subtitle="Target < 10% nel periodo"
                 value={isLoading ? 0 : `${uselessSpendPercent}%`}
-                change="Target < 10%"
+                // change="Target < 10%" // Removed as requested to move to subtitle or just redundant
+                // Keeping original change prop logic or replacing? User said "Mantieni o migliora l’indicazione del confronto".
+                // I'll keep the trend indicator but maybe simplify the text if subtitle covers it.
+                // Actually the subtitle is static, the change text was relative to target. Best to keep change text as trend context.
+                change="Rispetto al target"
                 trend={uselessSpendPercent && uselessSpendPercent > 10 ? "down" : "up"}
                 icon={AlertTriangle}
                 isLoading={isLoading}
+                onClick={() => router.push("/transactions?filter=wants")}
             />
         </div>
     )

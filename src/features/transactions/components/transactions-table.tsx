@@ -71,6 +71,11 @@ export function TransactionsTable({ transactions, onEditTransaction, onDeleteTra
                                 <div className="flex items-center gap-2">
                                     <CategoryIcon categoryName={transaction.category} size={20} showBackground />
                                     <span>{transaction.description}</span>
+                                    {transaction.isSuperfluous && (
+                                        <Badge variant="outline" className="ml-1 text-[10px] px-1.5 py-0 h-5 text-muted-foreground border-muted-foreground/30 bg-muted/10 font-normal">
+                                            Superflua
+                                        </Badge>
+                                    )}
                                 </div>
                             </TableCell>
                             <TableCell>{transaction.category}</TableCell>

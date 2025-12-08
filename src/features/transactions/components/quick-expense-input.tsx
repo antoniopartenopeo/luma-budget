@@ -115,7 +115,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
 
                 {/* Description */}
                 <Input
-                    placeholder="Descrizione"
+                    placeholder="Es. Caffè bar, Abbonamento Spotify..."
                     value={description}
                     onChange={(e) => {
                         setDescription(e.target.value)

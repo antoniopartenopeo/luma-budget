@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Loader2, TrendingUp, TrendingDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -26,6 +26,20 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
     const [type, setType] = useState<"expense" | "income">(defaultValues?.type || "expense")
 
     const [errors, setErrors] = useState<{ [key: string]: string }>({})
+
+    // Superfluous logic
+    const [isSuperfluous, setIsSuperfluous] = useState(defaultValues?.isSuperfluous || false)
+    const [isManualOverride, setIsManualOverride] = useState(defaultValues?.classificationSource === "manual")
+
+    // Auto-classify when category changes, unless manually overridden
+    useEffect(() => {
+        if (isManualOverride || type !== "expense") return
+
+        const cat = CATEGORIES.find(c => c.id === categoryId)
+        if (cat) {
+            setIsSuperfluous(cat.spendingNature === "superfluous")
+        }
+    }, [categoryId, isManualOverride, type])
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -55,6 +69,8 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
             categoryId,
             category: selectedCategory?.label || categoryId, // Fallback
             type,
+            isSuperfluous,
+            classificationSource: isManualOverride ? "manual" : "ruleBased"
         })
     }
 
@@ -140,6 +156,25 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
                 </Select>
                 {errors.category && <p className="text-xs text-destructive">{errors.category}</p>}
             </div>
+
+            {/* Superfluous Expense Toggle */}
+            {type === "expense" && (
+                <div className="flex items-center space-x-2 p-1">
+                    <input
+                        type="checkbox"
+                        id="isSuperfluous"
+                        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                        checked={isSuperfluous}
+                        onChange={(e) => {
+                            setIsSuperfluous(e.target.checked)
+                            setIsManualOverride(true)
+                        }}
+                    />
+                    <Label htmlFor="isSuperfluous" className="font-normal cursor-pointer">
+                        Segna come spesa superflua
+                    </Label>
+                </div>
+            )}
 
             <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

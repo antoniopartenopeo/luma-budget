@@ -9,6 +9,8 @@ export interface Transaction {
     categoryId: string // ID for filtering and logic
     icon: string
     type: TransactionType
+    isSuperfluous?: boolean
+    classificationSource?: "ruleBased" | "manual" | "ai"
     timestamp: number // For sorting
 }
 
@@ -18,4 +20,6 @@ export interface CreateTransactionDTO {
     category: string // Label
     categoryId: string // ID
     type: TransactionType
+    isSuperfluous?: boolean
+    classificationSource?: "ruleBased" | "manual" | "ai"
 }

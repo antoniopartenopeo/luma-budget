@@ -1,8 +1,10 @@
 "use client"
 
-import { useState, useMemo } from "react"
-import { Download } from "lucide-react"
+import { useState, useMemo, useEffect } from "react"
+import { Download, X } from "lucide-react"
+import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { TransactionsTable } from "@/features/transactions/components/transactions-table"
 import { TransactionsFilterBar } from "@/features/transactions/components/transactions-filter-bar"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
@@ -15,10 +17,27 @@ import { StateMessage } from "@/components/ui/state-message"
 import { Skeleton } from "@/components/ui/skeleton"
 
 export default function TransactionsPage() {
+    const router = useRouter()
+    const searchParams = useSearchParams()
+
     const { data: transactions, isLoading, isError, refetch } = useTransactions()
+
+    // Initialize from URL or default
     const [searchQuery, setSearchQuery] = useState("")
-    const [selectedType, setSelectedType] = useState("all")
-    const [selectedCategory, setSelectedCategory] = useState("all")
+    const [selectedType, setSelectedType] = useState(searchParams.get("type") || "all")
+    const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "all")
+
+    // Sync state with URL params when they change
+    useEffect(() => {
+        const categoryParam = searchParams.get("category")
+        if (categoryParam) setSelectedCategory(categoryParam)
+
+        const typeParam = searchParams.get("type")
+        if (typeParam) setSelectedType(typeParam)
+    }, [searchParams])
+
+    // Derived from URL
+    const isWantsFilter = searchParams.get("filter") === "wants"
 
     const {
         editingTransaction,
@@ -33,21 +52,33 @@ export default function TransactionsPage() {
         alert("Esportazione CSV sarà disponibile a breve.\nFunzione in sviluppo.")
     }
 
+    const clearWantsFilter = () => {
+        router.push("/transactions")
+    }
+
     const filteredTransactions = useMemo(() => {
         if (!transactions) return []
 
         return transactions.filter((transaction) => {
             const matchesSearch = transaction.description
                 .toLowerCase()
-                .includes(searchQuery.toLowerCase())
+                .includes(searchQuery.toLowerCase()) ||
+                transaction.amount.includes(searchQuery)
+
             const matchesType =
                 selectedType === "all" || transaction.type === selectedType
+
             const matchesCategory =
                 selectedCategory === "all" || transaction.categoryId === selectedCategory
 
+            // Dashboard logic for "Useless" (Wants)
+            const matchesWants = !isWantsFilter || !!transaction.isSuperfluous
+
+            if (!matchesWants) return false
+
             return matchesSearch && matchesType && matchesCategory
         })
-    }, [transactions, searchQuery, selectedType, selectedCategory])
+    }, [transactions, searchQuery, selectedType, selectedCategory, isWantsFilter])
 
     if (isError) {
         return (
@@ -99,8 +130,26 @@ export default function TransactionsPage() {
                     setSearchQuery("")
                     setSelectedType("all")
                     setSelectedCategory("all")
+                    if (isWantsFilter) clearWantsFilter()
                 }}
             />
+
+            {/* Active Filter Indicator for Wants */}
+            {isWantsFilter && (
+                <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className="pl-2 pr-1 py-1 gap-1 text-sm font-normal bg-orange-100 text-orange-700 hover:bg-orange-200">
+                        Filtro attivo: Spese Superflue
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-4 w-4 rounded-full ml-1 hover:bg-orange-300/50"
+                            onClick={clearWantsFilter}
+                        >
+                            <X className="h-3 w-3" />
+                        </Button>
+                    </Badge>
+                </div>
+            )}
 
             {isLoading ? (
                 <div className="space-y-4">
@@ -126,6 +175,7 @@ export default function TransactionsPage() {
                                 setSearchQuery("")
                                 setSelectedType("all")
                                 setSelectedCategory("all")
+                                if (isWantsFilter) clearWantsFilter()
                             }}
                         />
                     ) : (
@@ -134,11 +184,8 @@ export default function TransactionsPage() {
                             title="Nessuna transazione"
                             description="Non hai ancora effettuato nessuna transazione."
                             actionLabel="Aggiungi transazione"
-                            // QuickExpenseInput is in TopBar, so maybe just scroll top or show a dialog. 
-                            // For now, simple textual nudge is fine or trigger focus.
-                            // But actionLabel requires onActionClick.
                             onActionClick={() => {
-                                const input = document.querySelector('input[placeholder="Descrizione"]') as HTMLInputElement
+                                const input = document.querySelector('input[placeholder="Es. Caffè bar, Abbonamento Spotify..."]') as HTMLInputElement
                                 if (input) input.focus()
                             }}
                         />

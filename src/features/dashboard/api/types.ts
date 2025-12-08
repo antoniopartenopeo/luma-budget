@@ -1,5 +1,6 @@
 export interface CategorySummary {
     name: string
+    id: string
     value: number
     color: string
 }

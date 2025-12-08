@@ -37,32 +37,33 @@ export const fetchDashboardSummary = async (): Promise<DashboardSummary> => {
     const budgetRemaining = Math.max(netBalance, 0)
 
     // Calculate Category Distribution
-    const categoryMap = new Map<string, number>()
+    const categoryMap = new Map<string, { label: string, amount: number }>()
     transactions.filter(t => t.type === 'expense').forEach(t => {
         const amount = Math.abs(parseFloat(t.amount.replace(/[^0-9.-]+/g, "")))
-        categoryMap.set(t.category, (categoryMap.get(t.category) || 0) + amount)
+        const current = categoryMap.get(t.categoryId) || { label: t.category, amount: 0 }
+        categoryMap.set(t.categoryId, { label: t.category, amount: current.amount + amount })
     })
 
-    const categoriesSummary = Array.from(categoryMap.entries()).map(([name, value], index) => ({
-        name,
-        value,
+    const categoriesSummary = Array.from(categoryMap.entries()).map(([id, data], index) => ({
+        id,
+        name: data.label,
+        value: data.amount,
         color: `hsl(var(--chart-${(index % 5) + 1}))`
     }))
 
-    // Calculate Useless Spending (Mock logic: "Svago" and "Altro" are useless)
-    const uselessCategories = ["Svago", "Altro"]
+    // Calculate Useless Spending (Using isSuperfluous flag)
     const uselessSpent = transactions
-        .filter(t => t.type === 'expense' && uselessCategories.includes(t.category))
+        .filter(t => t.type === 'expense' && t.isSuperfluous)
         .reduce((acc, t) => acc + Math.abs(parseFloat(t.amount.replace(/[^0-9.-]+/g, ""))), 0)
 
     const uselessSpendPercent = totalSpent > 0 ? Math.round((uselessSpent / totalSpent) * 100) : 0
 
-    // Calculate Monthly Expenses (Last 6 months)
+    // Calculate Monthly Expenses (Last 12 months)
     const monthlyExpenses = []
     const today = new Date()
     const monthNames = ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"]
 
-    for (let i = 5; i >= 0; i--) {
+    for (let i = 11; i >= 0; i--) {
         const d = new Date(today.getFullYear(), today.getMonth() - i, 1)
         const monthIndex = d.getMonth()
         const year = d.getFullYear()

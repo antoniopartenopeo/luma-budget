@@ -169,7 +169,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                         {CATEGORIES.map((cat) => (
                             <SelectItem key={cat.id} value={cat.label}>
                                 <div className="flex items-center gap-2">
-                                    <CategoryIcon categoryName={cat.label} size={14} className="text-muted-foreground" />
+                                    <CategoryIcon categoryName={cat.label} size={14} />
                                     <span>{cat.label}</span>
                                 </div>
                             </SelectItem>

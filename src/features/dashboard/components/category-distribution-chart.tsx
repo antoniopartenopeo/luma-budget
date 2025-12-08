@@ -37,7 +37,7 @@ export function CategoryDistributionChart({ data, isLoading }: CategoryDistribut
     // Assign colors from palette if not already present or override
     const coloredData = data?.map((item) => {
         // Find category in config to get the correct hex color
-        const categoryConfig = CATEGORIES.find(c => c.label === item.name)
+        const categoryConfig = CATEGORIES.find(c => c.id === item.name || c.label === item.name)
         return {
             ...item,
             // Use config hex color or fallback to slate
@@ -92,7 +92,7 @@ export function CategoryDistributionChart({ data, isLoading }: CategoryDistribut
                             <div className="mt-4 flex flex-wrap justify-center gap-3">
                                 {coloredData?.map((item, index) => (
                                     <div key={index} className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                                        <CategoryIcon categoryName={item.name} size={14} className="text-muted-foreground mr-1" />
+                                        <CategoryIcon categoryName={item.name} size={14} className="mr-1" />
                                         <span>{item.name}</span>
                                         <span className="text-foreground">€{item.value}</span>
                                     </div>

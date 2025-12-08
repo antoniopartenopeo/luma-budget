@@ -54,7 +54,7 @@ export function TransactionsFilterBar({
                         {CATEGORIES.map((category) => (
                             <SelectItem key={category.id} value={category.id}>
                                 <div className="flex items-center gap-2">
-                                    <CategoryIcon categoryName={category.label} size={14} className="text-muted-foreground" />
+                                    <CategoryIcon categoryName={category.label} size={14} />
                                     <span>{category.label}</span>
                                 </div>
                             </SelectItem>

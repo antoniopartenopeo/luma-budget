@@ -10,19 +10,18 @@ interface CategoryIconProps {
 }
 
 export function CategoryIcon({ categoryName, size = 16, className, showBackground = false }: CategoryIconProps) {
-    // Find category by label (name) since that's what we store in transactions
-    const category = CATEGORIES.find(c => c.label === categoryName)
+    // Try to find by ID first, then by Label
+    const category = CATEGORIES.find(c => c.id === categoryName || c.label === categoryName)
 
     if (!category) {
-        return <HelpCircle size={size} className={cn("text-muted-foreground", className)} />
+        return <HelpCircle size={size} className={cn("text-gray-500", className)} />
     }
 
     const Icon = category.icon
 
     // Extract text color class from the combined color string "text-X bg-X"
-    // This is a bit brittle if config changes structure, but works for current "text-orange-600 bg-orange-100" format
-    const colorClass = category.color.split(" ").find(c => c.startsWith("text-")) || ""
-    const bgClass = category.color.split(" ").find(c => c.startsWith("bg-")) || ""
+    const colorClass = category.color.split(" ").find(c => c.startsWith("text-")) || "text-gray-600"
+    const bgClass = category.color.split(" ").find(c => c.startsWith("bg-")) || "bg-gray-100"
 
     if (showBackground) {
         return (

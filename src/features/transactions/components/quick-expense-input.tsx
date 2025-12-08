@@ -9,18 +9,8 @@ import { cn } from "@/lib/utils"
 import { useCreateTransaction } from "@/features/transactions/api/use-transactions"
 import { Transaction } from "@/features/transactions/api/types"
 
-const CATEGORIES = [
-    { id: "cibo", label: "Cibo" },
-    { id: "trasporti", label: "Trasporti" },
-    { id: "casa", label: "Casa" },
-    { id: "svago", label: "Svago" },
-    { id: "salute", label: "Salute" },
-    { id: "shopping", label: "Shopping" },
-    { id: "viaggi", label: "Viaggi" },
-    { id: "istruzione", label: "Istruzione" },
-    { id: "investimenti", label: "Investimenti" },
-    { id: "altro", label: "Altro" },
-]
+import { CATEGORIES } from "@/features/categories/config"
+import { CategoryIcon } from "@/features/categories/components/category-icon"
 
 interface QuickExpenseInputProps {
     onExpenseCreated?: (transaction: Transaction) => void
@@ -178,7 +168,10 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                     <SelectContent>
                         {CATEGORIES.map((cat) => (
                             <SelectItem key={cat.id} value={cat.label}>
-                                {cat.label}
+                                <div className="flex items-center gap-2">
+                                    <CategoryIcon categoryName={cat.label} size={14} className="text-muted-foreground" />
+                                    <span>{cat.label}</span>
+                                </div>
                             </SelectItem>
                         ))}
                     </SelectContent>

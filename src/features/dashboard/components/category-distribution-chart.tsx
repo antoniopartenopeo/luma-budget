@@ -6,16 +6,9 @@ import { CategorySummary } from "@/features/dashboard/api/types"
 import { Skeleton } from "@/components/ui/skeleton"
 import { motion } from "framer-motion"
 import { StateMessage } from "@/components/ui/state-message"
+import { CategoryIcon } from "@/features/categories/components/category-icon"
 
-// Shared palette
-const CHART_COLORS = [
-    "#10b981", // Emerald (ok/useful)
-    "#f43f5e", // Rose (warning/useless)
-    "#0ea5e9", // Sky
-    "#f59e0b", // Amber
-    "#8b5cf6", // Violet
-    "#64748b", // Slate (Altro)
-]
+import { CATEGORIES } from "@/features/categories/config"
 
 interface CategoryDistributionChartProps {
     data?: CategorySummary[]
@@ -42,10 +35,15 @@ export function CategoryDistributionChart({ data, isLoading }: CategoryDistribut
     const hasData = data && data.length > 0 && data.some(item => item.value > 0)
 
     // Assign colors from palette if not already present or override
-    const coloredData = data?.map((item, index) => ({
-        ...item,
-        color: CHART_COLORS[index % CHART_COLORS.length]
-    }))
+    const coloredData = data?.map((item) => {
+        // Find category in config to get the correct hex color
+        const categoryConfig = CATEGORIES.find(c => c.label === item.name)
+        return {
+            ...item,
+            // Use config hex color or fallback to slate
+            color: categoryConfig?.hexColor || "#64748b"
+        }
+    })
 
     return (
         <motion.div
@@ -94,7 +92,7 @@ export function CategoryDistributionChart({ data, isLoading }: CategoryDistribut
                             <div className="mt-4 flex flex-wrap justify-center gap-3">
                                 {coloredData?.map((item, index) => (
                                     <div key={index} className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                                        <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />
+                                        <CategoryIcon categoryName={item.name} size={14} className="text-muted-foreground mr-1" />
                                         <span>{item.name}</span>
                                         <span className="text-foreground">€{item.value}</span>
                                     </div>

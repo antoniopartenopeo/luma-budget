@@ -1,6 +1,9 @@
 "use client"
 
+
 import { Search } from "lucide-react"
+import { CATEGORIES } from "@/features/categories/config"
+import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { Input } from "@/components/ui/input"
 import {
     Select,
@@ -14,14 +17,12 @@ interface TransactionsFilterBarProps {
     onSearchChange: (value: string) => void
     onTypeChange: (value: string) => void
     onCategoryChange: (value: string) => void
-    categories: string[]
 }
 
 export function TransactionsFilterBar({
     onSearchChange,
     onTypeChange,
     onCategoryChange,
-    categories,
 }: TransactionsFilterBarProps) {
     return (
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -50,9 +51,12 @@ export function TransactionsFilterBar({
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">Tutte le categorie</SelectItem>
-                        {categories.map((category) => (
-                            <SelectItem key={category} value={category}>
-                                {category}
+                        {CATEGORIES.map((category) => (
+                            <SelectItem key={category.id} value={category.id}>
+                                <div className="flex items-center gap-2">
+                                    <CategoryIcon categoryName={category.label} size={14} className="text-muted-foreground" />
+                                    <span>{category.label}</span>
+                                </div>
                             </SelectItem>
                         ))}
                     </SelectContent>

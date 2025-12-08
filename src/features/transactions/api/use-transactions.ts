@@ -24,6 +24,35 @@ export const useCreateTransaction = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["recent-transactions"] })
             queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] })
+            queryClient.invalidateQueries({ queryKey: ["transactions"] })
+        },
+    })
+}
+
+export const useUpdateTransaction = () => {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: ({ id, data }: { id: string; data: Partial<CreateTransactionDTO> }) =>
+            import("./mock-data").then(mod => mod.updateTransaction(id, data)),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["recent-transactions"] })
+            queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] })
+            queryClient.invalidateQueries({ queryKey: ["transactions"] })
+        },
+    })
+}
+
+export const useDeleteTransaction = () => {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: (id: string) =>
+            import("./mock-data").then(mod => mod.deleteTransaction(id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["recent-transactions"] })
+            queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] })
+            queryClient.invalidateQueries({ queryKey: ["transactions"] })
         },
     })
 }

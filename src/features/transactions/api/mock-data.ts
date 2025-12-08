@@ -96,3 +96,47 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
 }
 
 export const getTransactions = () => transactions
+
+export const updateTransaction = async (id: string, data: Partial<CreateTransactionDTO>): Promise<Transaction> => {
+    await new Promise((resolve) => setTimeout(resolve, 800))
+
+    const index = transactions.findIndex((t) => t.id === id)
+    if (index === -1) {
+        throw new Error("Transaction not found")
+    }
+
+    const currentTransaction = transactions[index]
+    const isIncome = data.type ? data.type === "income" : currentTransaction.type === "income"
+
+    // Recalculate formatted amount if amount or type changed
+    let formattedAmount = currentTransaction.amount
+    if (data.amount !== undefined || data.type !== undefined) {
+        const amountValue = data.amount !== undefined ? data.amount :
+            parseFloat(currentTransaction.amount.replace(/[^0-9.]/g, ''))
+
+        const finalAmount = isIncome ? Math.abs(amountValue) : -Math.abs(amountValue)
+        formattedAmount = isIncome
+            ? `+€${finalAmount.toFixed(2)}`
+            : `-€${Math.abs(finalAmount).toFixed(2)}`
+    }
+
+    const updatedTransaction: Transaction = {
+        ...currentTransaction,
+        ...data,
+        amount: formattedAmount,
+        icon: isIncome ? "💰" : "🆕", // Simplified icon logic update
+        // Keep date and timestamp unless passed (which we usually don't for edit in this simple app)
+    }
+
+    transactions[index] = updatedTransaction
+    return updatedTransaction
+}
+
+export const deleteTransaction = async (id: string): Promise<void> => {
+    await new Promise((resolve) => setTimeout(resolve, 800))
+
+    const index = transactions.findIndex((t) => t.id === id)
+    if (index !== -1) {
+        transactions.splice(index, 1)
+    }
+}

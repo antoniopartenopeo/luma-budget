@@ -21,12 +21,16 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { getCategoryColor, getCategoryIcon } from "@/features/categories/config"
+import { CategoryIcon } from "@/features/categories/components/category-icon"
 
 interface TransactionsTableProps {
     transactions: Transaction[]
+    onEditTransaction: (transaction: Transaction) => void
+    onDeleteTransaction: (id: string) => void
 }
 
-export function TransactionsTable({ transactions }: TransactionsTableProps) {
+export function TransactionsTable({ transactions, onEditTransaction, onDeleteTransaction }: TransactionsTableProps) {
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc")
 
     const sortedTransactions = [...transactions].sort((a, b) => {
@@ -65,7 +69,7 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
                             </TableCell>
                             <TableCell>
                                 <div className="flex items-center gap-2">
-                                    <span className="text-lg">{transaction.icon}</span>
+                                    <CategoryIcon categoryName={transaction.category} size={20} showBackground />
                                     <span>{transaction.description}</span>
                                 </div>
                             </TableCell>
@@ -104,8 +108,13 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
                                         <DropdownMenuLabel>Azioni</DropdownMenuLabel>
-                                        <DropdownMenuItem>Modifica</DropdownMenuItem>
-                                        <DropdownMenuItem className="text-red-600">
+                                        <DropdownMenuItem onClick={() => onEditTransaction(transaction)}>
+                                            Modifica
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                                            onClick={() => onDeleteTransaction(transaction.id)}
+                                        >
                                             Elimina
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>

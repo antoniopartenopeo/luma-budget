@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button"
 import { TransactionsTable } from "@/features/transactions/components/transactions-table"
 import { TransactionsFilterBar } from "@/features/transactions/components/transactions-filter-bar"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
+import { useTransactionsActions } from "@/features/transactions/hooks/use-transactions-actions"
+import { EditTransactionDialog } from "@/features/transactions/components/edit-transaction-dialog"
+import { DeleteTransactionDialog } from "@/features/transactions/components/delete-transaction-dialog"
 
 
 import { StateMessage } from "@/components/ui/state-message"
@@ -17,12 +20,18 @@ export default function TransactionsPage() {
     const [selectedType, setSelectedType] = useState("all")
     const [selectedCategory, setSelectedCategory] = useState("all")
 
+    const {
+        editingTransaction,
+        deletingTransactionId,
+        handleEdit,
+        handleDelete,
+        closeEdit,
+        closeDelete
+    } = useTransactionsActions()
 
-    const categories = useMemo(() => {
-        if (!transactions) return []
-        const uniqueCategories = new Set(transactions.map((t) => t.category))
-        return Array.from(uniqueCategories).sort()
-    }, [transactions])
+    const handleExport = () => {
+        alert("Esportazione CSV sarà disponibile a breve.\nFunzione in sviluppo.")
+    }
 
     const filteredTransactions = useMemo(() => {
         if (!transactions) return []
@@ -72,7 +81,7 @@ export default function TransactionsPage() {
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" className="gap-2">
+                    <Button variant="outline" className="gap-2" onClick={handleExport}>
                         <Download className="h-4 w-4" />
                         Esporta
                     </Button>
@@ -83,7 +92,6 @@ export default function TransactionsPage() {
                 onSearchChange={setSearchQuery}
                 onTypeChange={setSelectedType}
                 onCategoryChange={setSelectedCategory}
-                categories={categories}
             />
 
             {isLoading ? (
@@ -93,8 +101,24 @@ export default function TransactionsPage() {
                     <Skeleton className="h-20 w-full" />
                 </div>
             ) : (
-                <TransactionsTable transactions={filteredTransactions} />
+                <TransactionsTable
+                    transactions={filteredTransactions}
+                    onEditTransaction={handleEdit}
+                    onDeleteTransaction={handleDelete}
+                />
             )}
+
+            <EditTransactionDialog
+                open={!!editingTransaction}
+                onOpenChange={(open) => !open && closeEdit()}
+                transaction={editingTransaction}
+            />
+
+            <DeleteTransactionDialog
+                open={!!deletingTransactionId}
+                onOpenChange={(open) => !open && closeDelete()}
+                transactionId={deletingTransactionId}
+            />
         </div>
     )
 }

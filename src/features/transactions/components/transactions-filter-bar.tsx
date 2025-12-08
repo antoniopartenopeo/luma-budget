@@ -5,6 +5,8 @@ import { Search } from "lucide-react"
 import { CATEGORIES } from "@/features/categories/config"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 import {
     Select,
     SelectContent,
@@ -14,29 +16,40 @@ import {
 } from "@/components/ui/select"
 
 interface TransactionsFilterBarProps {
+    searchValue: string
     onSearchChange: (value: string) => void
+    typeValue: string
     onTypeChange: (value: string) => void
+    categoryValue: string
     onCategoryChange: (value: string) => void
+    onResetFilters?: () => void
 }
 
 export function TransactionsFilterBar({
+    searchValue,
     onSearchChange,
+    typeValue,
     onTypeChange,
+    categoryValue,
     onCategoryChange,
+    onResetFilters
 }: TransactionsFilterBarProps) {
+    const hasActiveFilters = typeValue !== "all" || categoryValue !== "all" || searchValue !== ""
+
     return (
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="flex flex-1 items-center gap-4">
                 <div className="relative flex-1 md:max-w-sm">
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
-                        placeholder="Cerca transazioni..."
+                        placeholder="Cerca per descrizione o importo..."
                         className="pl-9"
+                        value={searchValue}
                         onChange={(e) => onSearchChange(e.target.value)}
                     />
                 </div>
-                <Select onValueChange={onTypeChange} defaultValue="all">
-                    <SelectTrigger className="w-[140px]">
+                <Select value={typeValue} onValueChange={onTypeChange}>
+                    <SelectTrigger className={cn("w-[140px]", typeValue !== "all" && "bg-primary/5 border-primary/20 text-primary font-medium")}>
                         <SelectValue placeholder="Tipo" />
                     </SelectTrigger>
                     <SelectContent>
@@ -45,8 +58,8 @@ export function TransactionsFilterBar({
                         <SelectItem value="expense">Uscite</SelectItem>
                     </SelectContent>
                 </Select>
-                <Select onValueChange={onCategoryChange} defaultValue="all">
-                    <SelectTrigger className="w-[160px]">
+                <Select value={categoryValue} onValueChange={onCategoryChange}>
+                    <SelectTrigger className={cn("w-[160px]", categoryValue !== "all" && "bg-primary/5 border-primary/20 text-primary font-medium")}>
                         <SelectValue placeholder="Categoria" />
                     </SelectTrigger>
                     <SelectContent>
@@ -61,6 +74,16 @@ export function TransactionsFilterBar({
                         ))}
                     </SelectContent>
                 </Select>
+                {hasActiveFilters && onResetFilters && (
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={onResetFilters}
+                        className="text-muted-foreground hover:text-foreground hidden md:flex"
+                    >
+                        Azzera
+                    </Button>
+                )}
             </div>
             <div className="flex items-center gap-2">
                 {/* Period selector placeholder - could be added later */}

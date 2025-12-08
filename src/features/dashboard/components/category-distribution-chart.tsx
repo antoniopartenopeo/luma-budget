@@ -89,7 +89,7 @@ export function CategoryDistributionChart({ data, isLoading }: CategoryDistribut
                                     </PieChart>
                                 </ResponsiveContainer>
                             </div>
-                            <div className="mt-4 flex flex-wrap justify-center gap-3">
+                            <div className="mt-8 flex flex-wrap justify-center gap-4">
                                 {coloredData?.map((item, index) => (
                                     <div key={index} className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
                                         <CategoryIcon categoryName={item.name} size={14} className="mr-1" />

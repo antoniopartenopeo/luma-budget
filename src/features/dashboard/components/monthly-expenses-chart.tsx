@@ -78,7 +78,7 @@ export function MonthlyExpensesChart({ data, isLoading, isError, onRetry }: Mont
                                 <Tooltip
                                     cursor={{ fill: 'transparent' }}
                                     contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                                    formatter={(value: number) => [`€${value}`, "Spesa"]}
+                                    formatter={(value: number) => [`€${value}`, "Totale"]}
                                     labelFormatter={(label) => `${label} ${new Date().getFullYear()}`} // Simple year addition
                                 />
                                 <Bar

@@ -35,7 +35,7 @@ export function KpiCard({ title, value, change, trend, icon: Icon, isLoading }: 
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
         >
-            <Card className="rounded-xl shadow-sm hover:shadow-md transition-shadow">
+            <Card className="rounded-xl shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-300 h-full">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium text-muted-foreground">
                         {title}

@@ -21,7 +21,8 @@ interface TransactionFormProps {
 export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabel = "Salva" }: TransactionFormProps) {
     const [description, setDescription] = useState(defaultValues?.description || "")
     const [amount, setAmount] = useState(defaultValues?.amount ? defaultValues.amount.toString() : "")
-    const [category, setCategory] = useState(defaultValues?.category || "")
+    // Prefer categoryId, fallback to finding id by label, or empty
+    const [categoryId, setCategoryId] = useState(defaultValues?.categoryId || "")
     const [type, setType] = useState<"expense" | "income">(defaultValues?.type || "expense")
 
     const [errors, setErrors] = useState<{ [key: string]: string }>({})
@@ -39,17 +40,20 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
             newErrors.amount = "Inserisci un importo valido"
         }
 
-        if (!category) newErrors.category = "Seleziona una categoria"
+        if (!categoryId) newErrors.category = "Seleziona una categoria"
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors)
             return
         }
 
+        const selectedCategory = CATEGORIES.find(c => c.id === categoryId)
+
         onSubmit({
             description,
             amount: parsedAmount,
-            category,
+            categoryId,
+            category: selectedCategory?.label || categoryId, // Fallback
             type,
         })
     }
@@ -119,15 +123,15 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
 
             <div className="space-y-2">
                 <Label htmlFor="category">Categoria</Label>
-                <Select value={category} onValueChange={setCategory}>
+                <Select value={categoryId} onValueChange={setCategoryId}>
                     <SelectTrigger className={errors.category ? "border-destructive ring-destructive" : ""}>
                         <SelectValue placeholder="Seleziona categoria" />
                     </SelectTrigger>
                     <SelectContent>
                         {CATEGORIES.map((cat) => (
-                            <SelectItem key={cat.id} value={cat.label}>
+                            <SelectItem key={cat.id} value={cat.id}>
                                 <div className="flex items-center gap-2">
-                                    <CategoryIcon categoryName={cat.label} size={16} className="text-muted-foreground" />
+                                    <CategoryIcon categoryName={cat.label} size={16} />
                                     <span>{cat.label}</span>
                                 </div>
                             </SelectItem>

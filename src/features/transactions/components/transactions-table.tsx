@@ -56,14 +56,14 @@ export function TransactionsTable({ transactions, onEditTransaction, onDeleteTra
                         </TableHead>
                         <TableHead>Descrizione</TableHead>
                         <TableHead>Categoria</TableHead>
-                        <TableHead>Tipo</TableHead>
+                        <TableHead className="text-center">Tipo</TableHead>
                         <TableHead className="text-right">Importo</TableHead>
                         <TableHead className="w-[50px]"></TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {sortedTransactions.map((transaction) => (
-                        <TableRow key={transaction.id}>
+                        <TableRow key={transaction.id} className="hover:bg-muted/30 cursor-default">
                             <TableCell className="font-medium">
                                 {transaction.date}
                             </TableCell>
@@ -74,7 +74,7 @@ export function TransactionsTable({ transactions, onEditTransaction, onDeleteTra
                                 </div>
                             </TableCell>
                             <TableCell>{transaction.category}</TableCell>
-                            <TableCell>
+                            <TableCell className="text-center">
                                 <Badge
                                     variant={
                                         transaction.type === "income" ? "default" : "secondary"

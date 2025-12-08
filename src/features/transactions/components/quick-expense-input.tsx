@@ -49,7 +49,8 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
             {
                 description,
                 amount: parsedAmount,
-                category,
+                category: CATEGORIES.find(c => c.id === category)?.label || category,
+                categoryId: category,
                 type,
             },
             {
@@ -73,7 +74,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
             <form
                 onSubmit={handleSubmit}
                 className={cn(
-                    "flex items-center gap-1 rounded-full bg-white p-1.5 shadow-sm transition-all border border-transparent",
+                    "flex items-center gap-1 rounded-full bg-white p-1 shadow-sm transition-all border border-transparent",
                     isFocused && "shadow-md ring-2 ring-primary/10",
                     hasError && "border-destructive/50 shadow-destructive/10"
                 )}
@@ -114,7 +115,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
 
                 {/* Description */}
                 <Input
-                    placeholder="Descrizione (es. Pranzo)"
+                    placeholder="Descrizione"
                     value={description}
                     onChange={(e) => {
                         setDescription(e.target.value)
@@ -134,7 +135,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                     <span className="absolute left-2 text-muted-foreground text-sm font-medium">€</span>
                     <Input
                         type="number"
-                        placeholder="0.00"
+                        placeholder="0,00"
                         value={amount}
                         onChange={(e) => {
                             setAmount(e.target.value)
@@ -167,7 +168,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                     </SelectTrigger>
                     <SelectContent>
                         {CATEGORIES.map((cat) => (
-                            <SelectItem key={cat.id} value={cat.label}>
+                            <SelectItem key={cat.id} value={cat.id}>
                                 <div className="flex items-center gap-2">
                                     <CategoryIcon categoryName={cat.label} size={14} />
                                     <span>{cat.label}</span>

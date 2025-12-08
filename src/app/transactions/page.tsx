@@ -43,7 +43,7 @@ export default function TransactionsPage() {
             const matchesType =
                 selectedType === "all" || transaction.type === selectedType
             const matchesCategory =
-                selectedCategory === "all" || transaction.category === selectedCategory
+                selectedCategory === "all" || transaction.categoryId === selectedCategory
 
             return matchesSearch && matchesType && matchesCategory
         })
@@ -89,9 +89,17 @@ export default function TransactionsPage() {
             </div>
 
             <TransactionsFilterBar
+                searchValue={searchQuery}
                 onSearchChange={setSearchQuery}
+                typeValue={selectedType}
                 onTypeChange={setSelectedType}
+                categoryValue={selectedCategory}
                 onCategoryChange={setSelectedCategory}
+                onResetFilters={() => {
+                    setSearchQuery("")
+                    setSelectedType("all")
+                    setSelectedCategory("all")
+                }}
             />
 
             {isLoading ? (
@@ -100,12 +108,42 @@ export default function TransactionsPage() {
                     <Skeleton className="h-20 w-full" />
                     <Skeleton className="h-20 w-full" />
                 </div>
-            ) : (
+            ) : filteredTransactions.length > 0 ? (
                 <TransactionsTable
                     transactions={filteredTransactions}
                     onEditTransaction={handleEdit}
                     onDeleteTransaction={handleDelete}
                 />
+            ) : (
+                <div className="py-12 flex justify-center">
+                    {transactions && transactions.length > 0 ? (
+                        <StateMessage
+                            variant="empty"
+                            title="Nessuna transazione trovata"
+                            description="Nessuna transazione corrisponde ai filtri selezionati."
+                            actionLabel="Azzera filtri"
+                            onActionClick={() => {
+                                setSearchQuery("")
+                                setSelectedType("all")
+                                setSelectedCategory("all")
+                            }}
+                        />
+                    ) : (
+                        <StateMessage
+                            variant="empty"
+                            title="Nessuna transazione"
+                            description="Non hai ancora effettuato nessuna transazione."
+                            actionLabel="Aggiungi transazione"
+                            // QuickExpenseInput is in TopBar, so maybe just scroll top or show a dialog. 
+                            // For now, simple textual nudge is fine or trigger focus.
+                            // But actionLabel requires onActionClick.
+                            onActionClick={() => {
+                                const input = document.querySelector('input[placeholder="Descrizione"]') as HTMLInputElement
+                                if (input) input.focus()
+                            }}
+                        />
+                    )}
+                </div>
             )}
 
             <EditTransactionDialog

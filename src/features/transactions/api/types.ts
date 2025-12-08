@@ -5,7 +5,8 @@ export interface Transaction {
     amount: string
     date: string
     description: string
-    category: string
+    category: string // Label, kept for display compatibility
+    categoryId: string // ID for filtering and logic
     icon: string
     type: TransactionType
     timestamp: number // For sorting
@@ -14,6 +15,7 @@ export interface Transaction {
 export interface CreateTransactionDTO {
     description: string
     amount: number
-    category: string
+    category: string // Label
+    categoryId: string // ID
     type: TransactionType
 }

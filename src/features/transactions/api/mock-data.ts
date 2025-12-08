@@ -8,6 +8,7 @@ const transactions: Transaction[] = [
         date: "Oggi, 14:30",
         description: "Spesa Supermercato",
         category: "Cibo",
+        categoryId: "cibo",
         icon: "🛒",
         type: "expense",
         timestamp: Date.now(),
@@ -18,6 +19,7 @@ const transactions: Transaction[] = [
         date: "Ieri, 19:15",
         description: "Netflix Subscription",
         category: "Svago",
+        categoryId: "svago",
         icon: "🎬",
         type: "expense",
         timestamp: Date.now() - 86400000,
@@ -28,6 +30,7 @@ const transactions: Transaction[] = [
         date: "28 Nov, 09:00",
         description: "Stipendio Mensile",
         category: "Entrate",
+        categoryId: "altro", // Fallback for income usually
         icon: "💰",
         type: "income",
         timestamp: Date.now() - 86400000 * 3,
@@ -38,6 +41,7 @@ const transactions: Transaction[] = [
         date: "27 Nov, 18:30",
         description: "Benzina",
         category: "Trasporti",
+        categoryId: "trasporti",
         icon: "⛽",
         type: "expense",
         timestamp: Date.now() - 86400000 * 4,
@@ -48,6 +52,7 @@ const transactions: Transaction[] = [
         date: "25 Nov, 20:00",
         description: "Cena Ristorante",
         category: "Cibo",
+        categoryId: "cibo",
         icon: "🍽️",
         type: "expense",
         timestamp: Date.now() - 86400000 * 6,
@@ -86,7 +91,8 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
         date: "Adesso",
         description: data.description,
         category: data.category,
-        icon: isIncome ? "💰" : "🆕", // Simplified icon logic
+        categoryId: data.categoryId, // Save ID
+        icon: isIncome ? "💰" : "🆕",
         type: data.type,
         timestamp: Date.now(),
     }
@@ -124,7 +130,7 @@ export const updateTransaction = async (id: string, data: Partial<CreateTransact
         ...currentTransaction,
         ...data,
         amount: formattedAmount,
-        icon: isIncome ? "💰" : "🆕", // Simplified icon logic update
+        icon: isIncome ? "💰" : "🆕",
         // Keep date and timestamp unless passed (which we usually don't for edit in this simple app)
     }
 

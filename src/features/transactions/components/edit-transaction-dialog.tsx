@@ -32,6 +32,7 @@ export function EditTransactionDialog({ open, onOpenChange, transaction }: EditT
         description: transaction.description,
         amount: parseAmount(transaction.amount),
         category: transaction.category,
+        categoryId: transaction.categoryId,
         type: transaction.type,
     }
 

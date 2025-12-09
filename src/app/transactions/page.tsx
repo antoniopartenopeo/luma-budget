@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
-import { Download, X } from "lucide-react"
+import { Download, X, Loader2 } from "lucide-react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -11,7 +11,7 @@ import { useTransactions } from "@/features/transactions/api/use-transactions"
 import { useTransactionsActions } from "@/features/transactions/hooks/use-transactions-actions"
 import { EditTransactionDialog } from "@/features/transactions/components/edit-transaction-dialog"
 import { DeleteTransactionDialog } from "@/features/transactions/components/delete-transaction-dialog"
-
+import { exportTransactionsToCSV } from "@/features/transactions/utils/export-transactions"
 
 import { StateMessage } from "@/components/ui/state-message"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -21,6 +21,9 @@ export default function TransactionsPage() {
     const searchParams = useSearchParams()
 
     const { data: transactions, isLoading, isError, refetch } = useTransactions()
+
+    // Export state
+    const [isExporting, setIsExporting] = useState(false)
 
     // Initialize from URL or default
     const [searchQuery, setSearchQuery] = useState("")
@@ -48,8 +51,23 @@ export default function TransactionsPage() {
         closeDelete
     } = useTransactionsActions()
 
-    const handleExport = () => {
-        alert("Esportazione CSV sarà disponibile a breve.\nFunzione in sviluppo.")
+    const handleExport = async () => {
+        if (isExporting || isLoading) return
+
+        setIsExporting(true)
+
+        // Small delay for UX feedback
+        await new Promise(resolve => setTimeout(resolve, 300))
+
+        const result = exportTransactionsToCSV({
+            transactions: filteredTransactions
+        })
+
+        setIsExporting(false)
+
+        if (!result.success) {
+            alert(result.error || "Si è verificato un errore durante l'esportazione. Riprova.")
+        }
     }
 
     const clearWantsFilter = () => {
@@ -112,9 +130,23 @@ export default function TransactionsPage() {
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" className="gap-2" onClick={handleExport}>
-                        <Download className="h-4 w-4" />
-                        Esporta
+                    <Button
+                        variant="outline"
+                        className="gap-2"
+                        onClick={handleExport}
+                        disabled={isExporting || isLoading}
+                    >
+                        {isExporting ? (
+                            <>
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                Preparazione file…
+                            </>
+                        ) : (
+                            <>
+                                <Download className="h-4 w-4" />
+                                Esporta
+                            </>
+                        )}
                     </Button>
                 </div>
             </div>

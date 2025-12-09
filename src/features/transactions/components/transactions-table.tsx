@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { getCategoryColor, getCategoryIcon } from "@/features/categories/config"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
+import { formatTransactionDate } from "@/features/transactions/utils/format-date"
 
 interface TransactionsTableProps {
     transactions: Transaction[]
@@ -65,7 +66,7 @@ export function TransactionsTable({ transactions, onEditTransaction, onDeleteTra
                     {sortedTransactions.map((transaction) => (
                         <TableRow key={transaction.id} className="hover:bg-muted/30 cursor-default">
                             <TableCell className="font-medium">
-                                {transaction.date}
+                                {formatTransactionDate(transaction)}
                             </TableCell>
                             <TableCell>
                                 <div className="flex items-center gap-2">

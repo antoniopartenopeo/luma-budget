@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
-import { CATEGORIES } from "@/features/categories/config"
+import { CATEGORIES, getExpenseCategories, getIncomeCategories } from "@/features/categories/config"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { CreateTransactionDTO } from "@/features/transactions/api/types"
 
@@ -30,6 +30,18 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
     // Superfluous logic
     const [isSuperfluous, setIsSuperfluous] = useState(defaultValues?.isSuperfluous || false)
     const [isManualOverride, setIsManualOverride] = useState(defaultValues?.classificationSource === "manual")
+
+    // Get categories based on current transaction type
+    const availableCategories = type === "expense" ? getExpenseCategories() : getIncomeCategories()
+
+    // Reset category when type changes (since categories are different for each type)
+    useEffect(() => {
+        // Only reset if the current category doesn't belong to the new type
+        const currentCatInList = availableCategories.find(c => c.id === categoryId)
+        if (!currentCatInList) {
+            setCategoryId("")
+        }
+    }, [type])
 
     // Auto-classify when category changes, unless manually overridden
     useEffect(() => {
@@ -144,7 +156,7 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
                         <SelectValue placeholder="Seleziona categoria" />
                     </SelectTrigger>
                     <SelectContent>
-                        {CATEGORIES.map((cat) => (
+                        {availableCategories.map((cat) => (
                             <SelectItem key={cat.id} value={cat.id}>
                                 <div className="flex items-center gap-2">
                                     <CategoryIcon categoryName={cat.label} size={16} />

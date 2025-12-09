@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
 import { useCreateTransaction } from "@/features/transactions/api/use-transactions"
 import { Transaction } from "@/features/transactions/api/types"
 
-import { CATEGORIES } from "@/features/categories/config"
+import { CATEGORIES, getExpenseCategories, getIncomeCategories } from "@/features/categories/config"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 
 interface QuickExpenseInputProps {
@@ -29,6 +29,14 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
     const [isManualOverride, setIsManualOverride] = useState(false)
 
     const { mutate: create, isPending, isSuccess, isError } = useCreateTransaction()
+
+    // Get categories based on current transaction type
+    const availableCategories = type === "expense" ? getExpenseCategories() : getIncomeCategories()
+
+    // Reset category when type changes (since categories are different)
+    useEffect(() => {
+        setCategory("")
+    }, [type])
 
     // Auto-update isSuperfluous based on category (rule-based), unless manually overridden
     useEffect(() => {
@@ -97,7 +105,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
     const hasError = !!validationError || isError
 
     return (
-        <div className="relative w-full max-w-2xl">
+        <div className="relative w-full">
             <form
                 onSubmit={handleSubmit}
                 className={cn(
@@ -170,7 +178,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                         }}
                         disabled={isPending}
                         className={cn(
-                            "h-9 w-24 border-0 bg-transparent pl-6 pr-2 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70 text-right font-medium",
+                            "h-9 w-24 border-0 bg-transparent pl-6 pr-2 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70 text-right font-medium [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
                             validationError && (!amount || parseFloat(amount) <= 0) && "placeholder:text-destructive/50 text-destructive"
                         )}
                     />
@@ -194,7 +202,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                         <SelectValue placeholder="Categoria" />
                     </SelectTrigger>
                     <SelectContent>
-                        {CATEGORIES.map((cat) => (
+                        {availableCategories.map((cat) => (
                             <SelectItem key={cat.id} value={cat.id}>
                                 <div className="flex items-center gap-2">
                                     <CategoryIcon categoryName={cat.label} size={14} />

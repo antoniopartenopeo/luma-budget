@@ -2,7 +2,7 @@
 
 
 import { Search } from "lucide-react"
-import { CATEGORIES } from "@/features/categories/config"
+import { CATEGORIES, getExpenseCategories, getIncomeCategories } from "@/features/categories/config"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -62,9 +62,21 @@ export function TransactionsFilterBar({
                     <SelectTrigger className={cn("w-[160px]", categoryValue !== "all" && "bg-primary/5 border-primary/20 text-primary font-medium")}>
                         <SelectValue placeholder="Categoria" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="max-h-[300px]">
                         <SelectItem value="all">Tutte le categorie</SelectItem>
-                        {CATEGORIES.map((category) => (
+                        {/* Expense categories group */}
+                        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50 -mx-1 mt-1">Spese</div>
+                        {getExpenseCategories().map((category) => (
+                            <SelectItem key={category.id} value={category.id}>
+                                <div className="flex items-center gap-2">
+                                    <CategoryIcon categoryName={category.label} size={14} />
+                                    <span>{category.label}</span>
+                                </div>
+                            </SelectItem>
+                        ))}
+                        {/* Income categories group */}
+                        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50 -mx-1 mt-1">Entrate</div>
+                        {getIncomeCategories().map((category) => (
                             <SelectItem key={category.id} value={category.id}>
                                 <div className="flex items-center gap-2">
                                     <CategoryIcon categoryName={category.label} size={14} />

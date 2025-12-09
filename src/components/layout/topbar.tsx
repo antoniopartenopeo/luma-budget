@@ -5,15 +5,13 @@ import { QuickExpenseInput } from "@/features/transactions/components/quick-expe
 export function TopBar() {
     return (
         <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur-md">
-            <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-6 md:px-8">
-                <div className="flex flex-1 items-center max-w-3xl">
+            <div className="flex h-16 items-center gap-4 px-6">
+                <div className="flex flex-1 items-center">
                     <QuickExpenseInput />
                 </div>
-                <div className="flex items-center gap-2 ml-auto">
-                    <Button variant="ghost" size="icon" className="rounded-full">
-                        <Bell className="h-5 w-5 text-muted-foreground" />
-                    </Button>
-                </div>
+                <Button variant="ghost" size="icon" className="rounded-full shrink-0">
+                    <Bell className="h-5 w-5 text-muted-foreground" />
+                </Button>
             </div>
         </header>
     )

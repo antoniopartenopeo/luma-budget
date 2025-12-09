@@ -135,30 +135,82 @@ describe('Superfluous Expense Classification Logic', () => {
 
     describe('Category spendingNature Configuration', () => {
 
-        it('should have correct spendingNature for essential categories', () => {
-            const essentialCategories = ['cibo', 'trasporti', 'casa', 'salute', 'istruzione']
+        it('should have correct spendingNature for essential expense categories', () => {
+            const essentialExpenseCategories = [
+                // Original essential categories
+                'cibo', 'trasporti', 'casa', 'salute', 'istruzione',
+                // New essential expense categories
+                'utenze', 'auto', 'assicurazioni', 'tasse', 'famiglia',
+                'servizi-domestici', 'lavoro-essenziale'
+            ]
 
-            essentialCategories.forEach(catId => {
+            essentialExpenseCategories.forEach(catId => {
                 const cat = CATEGORIES.find(c => c.id === catId)
-                expect(cat?.spendingNature).toBe('essential')
+                expect(cat?.spendingNature, `Category ${catId} should be essential`).toBe('essential')
             })
         })
 
         it('should have correct spendingNature for comfort categories', () => {
-            const comfortCategories = ['shopping', 'viaggi', 'investimenti']
+            const comfortCategories = [
+                // Original comfort categories
+                'shopping', 'viaggi', 'investimenti',
+                // New comfort categories
+                'ristoranti', 'benessere', 'hobby-sport', 'abbonamenti',
+                'animali', 'tecnologia', 'regali', 'arredo', 'formazione-extra'
+            ]
 
             comfortCategories.forEach(catId => {
                 const cat = CATEGORIES.find(c => c.id === catId)
-                expect(cat?.spendingNature).toBe('comfort')
+                expect(cat?.spendingNature, `Category ${catId} should be comfort`).toBe('comfort')
             })
         })
 
         it('should have correct spendingNature for superfluous categories', () => {
-            const superfluousCategories = ['svago', 'altro']
+            const superfluousCategories = [
+                // Original superfluous categories
+                'svago', 'altro',
+                // New superfluous categories
+                'micro-digitali', 'lusso', 'giochi-scommesse', 'extra-impulsivi'
+            ]
 
             superfluousCategories.forEach(catId => {
                 const cat = CATEGORIES.find(c => c.id === catId)
-                expect(cat?.spendingNature).toBe('superfluous')
+                expect(cat?.spendingNature, `Category ${catId} should be superfluous`).toBe('superfluous')
+            })
+        })
+
+        it('should have all income categories with spendingNature essential', () => {
+            const incomeCategories = [
+                'stipendio', 'pensione', 'freelance', 'bonus', 'affitti',
+                'rendite', 'vendite', 'rimborsi', 'regali-ricevuti',
+                'cashback', 'entrate-occasionali'
+            ]
+
+            incomeCategories.forEach(catId => {
+                const cat = CATEGORIES.find(c => c.id === catId)
+                expect(cat?.spendingNature, `Income category ${catId} should be essential`).toBe('essential')
+                expect(cat?.kind, `Category ${catId} should be income`).toBe('income')
+            })
+        })
+
+        it('should have all expense categories with kind expense', () => {
+            const expenseCategories = [
+                // Original
+                'cibo', 'trasporti', 'casa', 'svago', 'salute', 'shopping',
+                'viaggi', 'istruzione', 'investimenti', 'altro',
+                // New essential
+                'utenze', 'auto', 'assicurazioni', 'tasse', 'famiglia',
+                'servizi-domestici', 'lavoro-essenziale',
+                // New comfort
+                'ristoranti', 'benessere', 'hobby-sport', 'abbonamenti',
+                'animali', 'tecnologia', 'regali', 'arredo', 'formazione-extra',
+                // New superfluous
+                'micro-digitali', 'lusso', 'giochi-scommesse', 'extra-impulsivi'
+            ]
+
+            expenseCategories.forEach(catId => {
+                const cat = CATEGORIES.find(c => c.id === catId)
+                expect(cat?.kind, `Category ${catId} should be expense`).toBe('expense')
             })
         })
     })

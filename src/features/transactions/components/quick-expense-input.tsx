@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
 import { useCreateTransaction } from "@/features/transactions/api/use-transactions"
 import { Transaction } from "@/features/transactions/api/types"
 
-import { CATEGORIES, getExpenseCategories, getIncomeCategories } from "@/features/categories/config"
+import { CATEGORIES, getGroupedCategories } from "@/features/categories/config"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 
 interface QuickExpenseInputProps {
@@ -30,8 +30,8 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
 
     const { mutate: create, isPending, isSuccess, isError } = useCreateTransaction()
 
-    // Get categories based on current transaction type
-    const availableCategories = type === "expense" ? getExpenseCategories() : getIncomeCategories()
+    // Get grouped categories based on current transaction type
+    const groupedCategories = getGroupedCategories(type)
 
     // Reset category when type changes (since categories are different)
     useEffect(() => {
@@ -201,14 +201,21 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                     )}>
                         <SelectValue placeholder="Categoria" />
                     </SelectTrigger>
-                    <SelectContent>
-                        {availableCategories.map((cat) => (
-                            <SelectItem key={cat.id} value={cat.id}>
-                                <div className="flex items-center gap-2">
-                                    <CategoryIcon categoryName={cat.label} size={14} />
-                                    <span>{cat.label}</span>
+                    <SelectContent className="max-h-[300px]">
+                        {groupedCategories.map((group) => (
+                            <div key={group.key}>
+                                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                    {group.label}
                                 </div>
-                            </SelectItem>
+                                {group.categories.map((cat) => (
+                                    <SelectItem key={cat.id} value={cat.id}>
+                                        <div className="flex items-center gap-2">
+                                            <CategoryIcon categoryName={cat.label} size={14} />
+                                            <span>{cat.label}</span>
+                                        </div>
+                                    </SelectItem>
+                                ))}
+                            </div>
                         ))}
                     </SelectContent>
                 </Select>

@@ -545,3 +545,89 @@ export function getIncomeCategories(): Category[] {
 export function getCategoriesByKind(kind: CategoryKind): Category[] {
     return CATEGORIES.filter(c => c.kind === kind)
 }
+
+// =====================
+// CATEGORY GROUPING (UI)
+// =====================
+
+export type CategoryGroupKey =
+    | "essential"
+    | "comfort"
+    | "superfluous"
+    | "income"
+
+export interface CategoryGroup {
+    key: CategoryGroupKey
+    label: string
+    categories: Category[]
+}
+
+// Group labels in Italian (UI only)
+export const CATEGORY_GROUP_LABELS: Record<CategoryGroupKey, string> = {
+    essential: "Spese essenziali",
+    comfort: "Spese per il benessere",
+    superfluous: "Spese superflue",
+    income: "Entrate"
+}
+
+// Order of groups in UI
+export const CATEGORY_GROUP_ORDER: CategoryGroupKey[] = [
+    "essential",
+    "comfort",
+    "superfluous",
+    "income"
+]
+
+// Expense-only group order
+export const EXPENSE_GROUP_ORDER: CategoryGroupKey[] = [
+    "essential",
+    "comfort",
+    "superfluous"
+]
+
+/**
+ * Get categories organized by group for UI display
+ * Returns only non-empty groups
+ */
+export function getGroupedCategories(kind?: CategoryKind): CategoryGroup[] {
+    const groupOrder = kind === "income"
+        ? ["income" as CategoryGroupKey]
+        : kind === "expense"
+            ? EXPENSE_GROUP_ORDER
+            : CATEGORY_GROUP_ORDER
+
+    return groupOrder
+        .map(groupKey => {
+            let categories: Category[]
+
+            if (groupKey === "income") {
+                categories = CATEGORIES.filter(c => c.kind === "income")
+            } else {
+                categories = CATEGORIES.filter(
+                    c => c.kind === "expense" && c.spendingNature === groupKey
+                )
+            }
+
+            return {
+                key: groupKey,
+                label: CATEGORY_GROUP_LABELS[groupKey],
+                categories
+            }
+        })
+        .filter(group => group.categories.length > 0) // Hide empty groups
+}
+
+/**
+ * Get expense categories organized by spending nature
+ */
+export function getGroupedExpenseCategories(): CategoryGroup[] {
+    return getGroupedCategories("expense")
+}
+
+/**
+ * Get income categories as a single group
+ */
+export function getGroupedIncomeCategories(): CategoryGroup[] {
+    return getGroupedCategories("income")
+}
+

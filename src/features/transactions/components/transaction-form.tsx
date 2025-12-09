@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
-import { CATEGORIES, getExpenseCategories, getIncomeCategories } from "@/features/categories/config"
+import { CATEGORIES, getGroupedCategories } from "@/features/categories/config"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { CreateTransactionDTO } from "@/features/transactions/api/types"
 
@@ -31,13 +31,14 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
     const [isSuperfluous, setIsSuperfluous] = useState(defaultValues?.isSuperfluous || false)
     const [isManualOverride, setIsManualOverride] = useState(defaultValues?.classificationSource === "manual")
 
-    // Get categories based on current transaction type
-    const availableCategories = type === "expense" ? getExpenseCategories() : getIncomeCategories()
+    // Get grouped categories based on current transaction type
+    const groupedCategories = getGroupedCategories(type)
 
     // Reset category when type changes (since categories are different for each type)
     useEffect(() => {
         // Only reset if the current category doesn't belong to the new type
-        const currentCatInList = availableCategories.find(c => c.id === categoryId)
+        const allCategoriesInGroups = groupedCategories.flatMap(g => g.categories)
+        const currentCatInList = allCategoriesInGroups.find(c => c.id === categoryId)
         if (!currentCatInList) {
             setCategoryId("")
         }
@@ -155,14 +156,21 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
                     <SelectTrigger className={errors.category ? "border-destructive ring-destructive" : ""}>
                         <SelectValue placeholder="Seleziona categoria" />
                     </SelectTrigger>
-                    <SelectContent>
-                        {availableCategories.map((cat) => (
-                            <SelectItem key={cat.id} value={cat.id}>
-                                <div className="flex items-center gap-2">
-                                    <CategoryIcon categoryName={cat.label} size={16} />
-                                    <span>{cat.label}</span>
+                    <SelectContent className="max-h-[300px]">
+                        {groupedCategories.map((group) => (
+                            <div key={group.key}>
+                                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                    {group.label}
                                 </div>
-                            </SelectItem>
+                                {group.categories.map((cat) => (
+                                    <SelectItem key={cat.id} value={cat.id}>
+                                        <div className="flex items-center gap-2">
+                                            <CategoryIcon categoryName={cat.label} size={16} />
+                                            <span>{cat.label}</span>
+                                        </div>
+                                    </SelectItem>
+                                ))}
+                            </div>
                         ))}
                     </SelectContent>
                 </Select>

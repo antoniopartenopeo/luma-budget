@@ -2,7 +2,7 @@
 
 
 import { Search } from "lucide-react"
-import { CATEGORIES, getExpenseCategories, getIncomeCategories } from "@/features/categories/config"
+import { getGroupedCategories, CATEGORY_GROUP_ORDER } from "@/features/categories/config"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -36,6 +36,9 @@ export function TransactionsFilterBar({
 }: TransactionsFilterBarProps) {
     const hasActiveFilters = typeValue !== "all" || categoryValue !== "all" || searchValue !== ""
 
+    // Get all grouped categories for filter (no kind filter = show all)
+    const allGroupedCategories = getGroupedCategories()
+
     return (
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="flex flex-1 items-center gap-4">
@@ -59,30 +62,25 @@ export function TransactionsFilterBar({
                     </SelectContent>
                 </Select>
                 <Select value={categoryValue} onValueChange={onCategoryChange}>
-                    <SelectTrigger className={cn("w-[160px]", categoryValue !== "all" && "bg-primary/5 border-primary/20 text-primary font-medium")}>
+                    <SelectTrigger className={cn("w-[180px]", categoryValue !== "all" && "bg-primary/5 border-primary/20 text-primary font-medium")}>
                         <SelectValue placeholder="Categoria" />
                     </SelectTrigger>
                     <SelectContent className="max-h-[300px]">
                         <SelectItem value="all">Tutte le categorie</SelectItem>
-                        {/* Expense categories group */}
-                        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50 -mx-1 mt-1">Spese</div>
-                        {getExpenseCategories().map((category) => (
-                            <SelectItem key={category.id} value={category.id}>
-                                <div className="flex items-center gap-2">
-                                    <CategoryIcon categoryName={category.label} size={14} />
-                                    <span>{category.label}</span>
+                        {allGroupedCategories.map((group) => (
+                            <div key={group.key}>
+                                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide mt-1">
+                                    {group.label}
                                 </div>
-                            </SelectItem>
-                        ))}
-                        {/* Income categories group */}
-                        <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50 -mx-1 mt-1">Entrate</div>
-                        {getIncomeCategories().map((category) => (
-                            <SelectItem key={category.id} value={category.id}>
-                                <div className="flex items-center gap-2">
-                                    <CategoryIcon categoryName={category.label} size={14} />
-                                    <span>{category.label}</span>
-                                </div>
-                            </SelectItem>
+                                {group.categories.map((category) => (
+                                    <SelectItem key={category.id} value={category.id}>
+                                        <div className="flex items-center gap-2">
+                                            <CategoryIcon categoryName={category.label} size={14} />
+                                            <span>{category.label}</span>
+                                        </div>
+                                    </SelectItem>
+                                ))}
+                            </div>
                         ))}
                     </SelectContent>
                 </Select>

@@ -1,4 +1,5 @@
 import { BudgetPlan, CreateBudgetDTO, UpdateBudgetDTO, BUDGET_GROUP_LABELS, BudgetGroupId } from "./types"
+import { storage } from "@/lib/storage-utils"
 
 // =====================
 // STORAGE HELPERS
@@ -11,28 +12,12 @@ function getBudgetKey(userId: string, period: string): string {
     return `${userId}:${period}`
 }
 
-function isStorageAvailable(): boolean {
-    return typeof window !== "undefined" && !!window.localStorage
-}
-
 function loadFromStorage(): Record<string, BudgetPlan> {
-    if (!isStorageAvailable()) return {}
-    try {
-        const stored = localStorage.getItem(STORAGE_KEY)
-        return stored ? JSON.parse(stored) : {}
-    } catch (e) {
-        console.error("Failed to load budgets from storage", e)
-        return {}
-    }
+    return storage.get(STORAGE_KEY, {})
 }
 
 function saveToStorage(data: Record<string, BudgetPlan>): void {
-    if (!isStorageAvailable()) return
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
-    } catch (e) {
-        console.error("Failed to save budgets to storage", e)
-    }
+    storage.set(STORAGE_KEY, data)
 }
 
 // =====================

@@ -1,4 +1,5 @@
 import { Transaction, CreateTransactionDTO } from "./types"
+import { storage } from "@/lib/storage-utils"
 
 // Initial mock data
 import { CATEGORIES } from "../../categories/config"
@@ -13,28 +14,12 @@ const DEFAULT_USER_ID = "user-1"
 // Private cache to avoid frequent localStorage reads
 let _transactionsCache: Transaction[] | null = null
 
-function isStorageAvailable(): boolean {
-    return typeof window !== "undefined" && !!window.localStorage
-}
-
 function loadAllFromStorage(): Record<string, Transaction[]> {
-    if (!isStorageAvailable()) return {}
-    try {
-        const stored = localStorage.getItem(STORAGE_KEY)
-        return stored ? JSON.parse(stored) : {}
-    } catch (e) {
-        console.error("Failed to load transactions from storage", e)
-        return {}
-    }
+    return storage.get(STORAGE_KEY, {})
 }
 
 function saveToStorage(allData: Record<string, Transaction[]>): void {
-    if (!isStorageAvailable()) return
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(allData))
-    } catch (e) {
-        console.error("Failed to save transactions to storage", e)
-    }
+    storage.set(STORAGE_KEY, allData)
 }
 
 /**

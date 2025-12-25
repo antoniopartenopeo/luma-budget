@@ -9,6 +9,8 @@ export interface DashboardSummary {
     totalSpent: number
     totalIncome: number
     totalExpenses: number
+    netBalance: number
+    budgetTotal: number
     budgetRemaining: number
     uselessSpendPercent: number
     categoriesSummary: CategorySummary[]

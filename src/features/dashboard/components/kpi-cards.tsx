@@ -81,42 +81,58 @@ export function KpiCard({ title, subtitle, value, change, trend, icon: Icon, isL
 
 interface DashboardKpiGridProps {
     totalSpent?: number
+    netBalance?: number
+    budgetTotal?: number
     budgetRemaining?: number
     uselessSpendPercent?: number
     isLoading?: boolean
 }
 
-export function DashboardKpiGrid({ totalSpent, budgetRemaining, uselessSpendPercent, isLoading }: DashboardKpiGridProps) {
+export function DashboardKpiGrid({ totalSpent, netBalance, budgetTotal, budgetRemaining, uselessSpendPercent, isLoading }: DashboardKpiGridProps) {
     const router = useRouter()
 
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(value)
     }
 
+    const budgetPercent = budgetTotal && budgetTotal > 0
+        ? Math.round(((budgetRemaining || 0) / budgetTotal) * 100)
+        : 0
+
     return (
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <KpiCard
-                title="Spesa Totale"
-                subtitle="Nel periodo selezionato"
+                title="Saldo Mensile"
+                subtitle="Entrate - Uscite (mese)"
+                value={isLoading ? 0 : formatCurrency(netBalance || 0)}
+                change={netBalance && netBalance >= 0 ? "In positivo" : "In negativo"}
+                trend={netBalance && netBalance >= 0 ? "up" : "down"}
+                icon={CreditCard}
+                isLoading={isLoading}
+            />
+            <KpiCard
+                title="Spesa Mensile"
+                subtitle="Totale uscite del mese"
                 value={isLoading ? 0 : formatCurrency(totalSpent || 0)}
                 change="+2.5%"
-                trend="up"
+                trend="down" // Higher spending is usually "bad" in a budget context, but trend can be neutral
                 icon={Wallet}
                 isLoading={isLoading}
                 onClick={() => router.push("/transactions")}
             />
             <KpiCard
                 title="Budget Rimanente"
-                subtitle="Rispetto al budget mensile"
+                subtitle={budgetTotal && budgetTotal > 0 ? "Rispetto al piano spese" : "Piano non impostato"}
                 value={isLoading ? 0 : formatCurrency(budgetRemaining || 0)}
-                change={isLoading ? "" : `${Math.round(((budgetRemaining || 0) / 2000) * 100)}% del budget`}
+                change={isLoading ? "" : (budgetTotal && budgetTotal > 0 ? `${budgetPercent}% rimanente` : "Pianifica ora")}
                 trend="neutral"
                 icon={DollarSign}
                 isLoading={isLoading}
+                onClick={budgetTotal && budgetTotal > 0 ? undefined : () => router.push("/budget")}
             />
             <KpiCard
                 title="Spese Superflue"
-                subtitle="Target < 10% nel periodo"
+                subtitle="Target < 10% del totale"
                 value={isLoading ? 0 : `${uselessSpendPercent}%`}
                 // change="Target < 10%" // Removed as requested to move to subtitle or just redundant
                 // Keeping original change prop logic or replacing? User said "Mantieni o migliora l’indicazione del confronto".

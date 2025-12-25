@@ -195,11 +195,6 @@ export const fetchTransactions = async (): Promise<Transaction[]> => {
 export const createTransaction = async (data: CreateTransactionDTO): Promise<Transaction> => {
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    // Simulate random error
-    if (Math.random() < 0.1) {
-        throw new Error("Failed to create transaction")
-    }
-
     const isIncome = data.type === "income"
     const amount = isIncome ? Math.abs(data.amount) : -Math.abs(data.amount)
     const formattedAmount = isIncome

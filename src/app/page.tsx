@@ -32,6 +32,8 @@ export default function DashboardPage() {
     <div className="space-y-8 animate-in fade-in duration-500">
       <DashboardKpiGrid
         totalSpent={data?.totalSpent}
+        netBalance={data?.netBalance}
+        budgetTotal={data?.budgetTotal}
         budgetRemaining={data?.budgetRemaining}
         uselessSpendPercent={data?.uselessSpendPercent}
         isLoading={isLoading}

@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { fetchBudget, upsertBudget, deleteBudget } from '../mock-data'
+import { fetchBudget, upsertBudget, deleteBudget } from '../repository'
+import { storage } from '@/lib/storage-utils'
 
 const STORAGE_KEY = 'luma_budget_plans_v1'
 const USER_ID = 'test-user'

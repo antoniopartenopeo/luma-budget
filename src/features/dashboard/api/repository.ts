@@ -1,6 +1,6 @@
 import { DashboardSummary } from "./types"
-import { fetchTransactions } from "../../transactions/api/mock-data"
-import { fetchBudget } from "../../budget/api/mock-data"
+import { fetchTransactions } from "../../transactions/api/repository"
+import { fetchBudget } from "../../budget/api/repository"
 import { getCurrentPeriod } from "../../budget/utils/calculate-budget"
 import { parseCurrencyToCents } from "@/lib/currency-utils"
 

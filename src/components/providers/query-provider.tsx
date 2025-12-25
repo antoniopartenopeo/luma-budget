@@ -2,7 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useState, useEffect } from "react"
-import { __resetTransactionsCache } from "@/features/transactions/api/mock-data"
+import { __resetTransactionsCache } from "@/features/transactions/api/repository"
 
 export function QueryProvider({ children }: { children: React.ReactNode }) {
     const [queryClient] = useState(() => new QueryClient({

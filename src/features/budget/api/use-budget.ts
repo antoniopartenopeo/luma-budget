@@ -1,7 +1,7 @@
 "use client"
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { fetchBudget, upsertBudget } from "./mock-data"
+import { fetchBudget, upsertBudget } from "./repository"
 import { BudgetPlan, CreateBudgetDTO } from "./types"
 
 // Default user ID for mock

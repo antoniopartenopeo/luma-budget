@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
-import { fetchDashboardSummary } from "./mock-data"
+import { DashboardSummary } from "./types"
+import { fetchDashboardSummary } from "./repository"
 
 export const useDashboardSummary = () => {
     return useQuery({

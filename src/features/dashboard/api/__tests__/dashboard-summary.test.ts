@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { fetchDashboardSummary } from '../mock-data'
-import { __resetTransactionsCache } from '../../../transactions/api/mock-data'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { fetchDashboardSummary } from '../repository'
+import { __resetTransactionsCache, seedTransactions } from '../../../transactions/api/repository'
 import { getCurrentPeriod } from '../../../budget/utils/calculate-budget'
 
 const TX_STORAGE_KEY = 'luma_transactions_v1'

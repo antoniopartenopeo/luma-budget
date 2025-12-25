@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { fetchRecentTransactions, createTransaction } from "./mock-data"
+import { fetchRecentTransactions, createTransaction, updateTransaction, deleteTransaction } from "./repository"
 import { CreateTransactionDTO } from "./types"
 
 export const useRecentTransactions = () => {
@@ -34,7 +34,7 @@ export const useUpdateTransaction = () => {
 
     return useMutation({
         mutationFn: ({ id, data }: { id: string; data: Partial<CreateTransactionDTO> }) =>
-            import("./mock-data").then(mod => mod.updateTransaction(id, data)),
+            import("./repository").then(mod => mod.updateTransaction(id, data)),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["recent-transactions"] })
             queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] })
@@ -48,7 +48,7 @@ export const useDeleteTransaction = () => {
 
     return useMutation({
         mutationFn: (id: string) =>
-            import("./mock-data").then(mod => mod.deleteTransaction(id)),
+            import("./repository").then(mod => mod.deleteTransaction(id)),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["recent-transactions"] })
             queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] })

@@ -8,7 +8,7 @@
 import { describe, it, expect } from 'vitest'
 import { Transaction } from '@/features/transactions/api/types'
 
-// Mock the KPI calculation logic extracted from dashboard mock-data
+// Mock the KPI calculation logic extracted from dashboard repository
 const calculateSuperfluousKPI = (transactions: Transaction[]): {
     uselessSpent: number
     totalSpent: number

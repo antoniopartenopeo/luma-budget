@@ -4,12 +4,11 @@ import {
     createTransaction,
     updateTransaction,
     deleteTransaction,
-    getTransactions,
+    seedTransactions,
     __resetTransactionsCache
-} from '../mock-data'
+} from '../repository'
 
 const STORAGE_KEY = 'luma_transactions_v1'
-const DEFAULT_USER_ID = 'user-1'
 
 describe('Transactions Persistence (localStorage)', () => {
     beforeEach(() => {
@@ -20,19 +19,21 @@ describe('Transactions Persistence (localStorage)', () => {
             removeItem: vi.fn(),
             clear: vi.fn(),
         })
-
-        // Reset cache in mock-data.ts if it was implemented as a global variable.
-        // Since we are mocking localStorage, the first call to any API will trigger ensureCache.
-        // We'll need to be careful if provide a way to clear the cache for testing.
     })
 
-    it('should seed logic: return mock data when storage is empty for the first time', async () => {
+    it('should return empty by default and accept manual seeding', async () => {
         vi.mocked(localStorage.getItem).mockReturnValue(null)
 
-        const txs = await fetchTransactions()
+        // First fetch should be empty (no auto-seed)
+        const initial = await fetchTransactions()
+        expect(initial).toEqual([])
 
-        // Should have some default mock data (based on what's in mock-data.ts)
-        expect(txs.length).toBeGreaterThan(0)
+        // Manual seed
+        seedTransactions()
+
+        // Second fetch should have data
+        const seeded = await fetchTransactions()
+        expect(seeded.length).toBeGreaterThan(0)
         expect(localStorage.setItem).toHaveBeenCalledWith(STORAGE_KEY, expect.any(String))
     })
 
@@ -60,10 +61,9 @@ describe('Transactions Persistence (localStorage)', () => {
         const created = await createTransaction(newTxData)
         expect(created.description).toBe('Test Persistence')
 
-        // Hydrate from storage again (simulated by the fact that fetchTransactions uses the same implementation)
         const currentTxs = await fetchTransactions()
         expect(currentTxs.length).toBe(initialCount + 1)
-        expect(currentTxs[0].id).toBe(created.id)
+        expect(currentTxs.find(t => t.id === created.id)).toBeDefined()
     })
 
     it('should update a transaction and persist changes', async () => {
@@ -75,6 +75,9 @@ describe('Transactions Persistence (localStorage)', () => {
             if (key === STORAGE_KEY) return storedData
             return null
         })
+
+        // Ensure we have data
+        seedTransactions()
 
         const txs = await fetchTransactions()
         const targetId = txs[0].id
@@ -96,6 +99,9 @@ describe('Transactions Persistence (localStorage)', () => {
             return null
         })
 
+        // Ensure we have data
+        seedTransactions()
+
         const txs = await fetchTransactions()
         const initialCount = txs.length
         const targetId = txs[0].id
@@ -107,11 +113,10 @@ describe('Transactions Persistence (localStorage)', () => {
         expect(currentTxs.find(t => t.id === targetId)).toBeUndefined()
     })
 
-    it('should handle corrupted JSON by falling back to seed', async () => {
+    it('should handle corrupted JSON by returning empty array', async () => {
         vi.mocked(localStorage.getItem).mockReturnValue('invalid-json')
 
         const txs = await fetchTransactions()
-        expect(txs.length).toBeGreaterThan(0) // Should have seeded
-        expect(localStorage.setItem).toHaveBeenCalled()
+        expect(txs).toEqual([])
     })
 })

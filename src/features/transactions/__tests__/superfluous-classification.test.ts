@@ -8,7 +8,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { CATEGORIES } from '@/features/categories/config'
 
-// Helper function extracted from mock-data.ts for testing
+// Helper function extracted for testing
 const isSuperfluousRule = (categoryId: string, type: "income" | "expense"): boolean => {
     if (type === "income") return false
     const cat = CATEGORIES.find(c => c.id === categoryId)

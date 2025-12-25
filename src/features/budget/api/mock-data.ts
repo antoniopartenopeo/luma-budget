@@ -1,14 +1,38 @@
 import { BudgetPlan, CreateBudgetDTO, UpdateBudgetDTO, BUDGET_GROUP_LABELS, BudgetGroupId } from "./types"
 
 // =====================
-// IN-MEMORY STORAGE
+// STORAGE HELPERS
 // =====================
 
-const budgetPlans: Map<string, BudgetPlan> = new Map()
+const STORAGE_KEY = "luma_budget_plans_v1"
 
 // Helper to create budget key from userId and period
 function getBudgetKey(userId: string, period: string): string {
     return `${userId}:${period}`
+}
+
+function isStorageAvailable(): boolean {
+    return typeof window !== "undefined" && !!window.localStorage
+}
+
+function loadFromStorage(): Record<string, BudgetPlan> {
+    if (!isStorageAvailable()) return {}
+    try {
+        const stored = localStorage.getItem(STORAGE_KEY)
+        return stored ? JSON.parse(stored) : {}
+    } catch (e) {
+        console.error("Failed to load budgets from storage", e)
+        return {}
+    }
+}
+
+function saveToStorage(data: Record<string, BudgetPlan>): void {
+    if (!isStorageAvailable()) return
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+    } catch (e) {
+        console.error("Failed to save budgets to storage", e)
+    }
 }
 
 // =====================
@@ -19,17 +43,19 @@ export async function fetchBudget(userId: string, period: string): Promise<Budge
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 200))
 
+    const plans = loadFromStorage()
     const key = getBudgetKey(userId, period)
-    return budgetPlans.get(key) || null
+    return plans[key] || null
 }
 
 export async function createBudget(userId: string, data: CreateBudgetDTO): Promise<BudgetPlan> {
     await new Promise(resolve => setTimeout(resolve, 300))
 
+    const plans = loadFromStorage()
     const key = getBudgetKey(userId, data.period)
 
     // Check if already exists
-    if (budgetPlans.has(key)) {
+    if (plans[key]) {
         throw new Error("Budget for this period already exists")
     }
 
@@ -47,15 +73,17 @@ export async function createBudget(userId: string, data: CreateBudgetDTO): Promi
         updatedAt: now
     }
 
-    budgetPlans.set(key, budget)
+    plans[key] = budget
+    saveToStorage(plans)
     return budget
 }
 
 export async function updateBudget(userId: string, period: string, data: UpdateBudgetDTO): Promise<BudgetPlan> {
     await new Promise(resolve => setTimeout(resolve, 300))
 
+    const plans = loadFromStorage()
     const key = getBudgetKey(userId, period)
-    const existing = budgetPlans.get(key)
+    const existing = plans[key]
 
     if (!existing) {
         throw new Error("Budget not found")
@@ -68,15 +96,18 @@ export async function updateBudget(userId: string, period: string, data: UpdateB
         updatedAt: new Date().toISOString()
     }
 
-    budgetPlans.set(key, updated)
+    plans[key] = updated
+    saveToStorage(plans)
     return updated
 }
 
 export async function deleteBudget(userId: string, period: string): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, 200))
 
+    const plans = loadFromStorage()
     const key = getBudgetKey(userId, period)
-    budgetPlans.delete(key)
+    delete plans[key]
+    saveToStorage(plans)
 }
 
 // =====================

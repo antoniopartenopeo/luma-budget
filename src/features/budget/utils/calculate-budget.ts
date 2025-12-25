@@ -28,7 +28,8 @@ export function calculateGroupSpending(transactions: Transaction[], period: stri
         const spent = filtered
             .filter(t => {
                 const category = getCategoryById(t.categoryId)
-                return category?.spendingNature === groupId
+                const resolvedGroup = resolveBudgetGroupForTransaction(t, category?.spendingNature as BudgetGroupId)
+                return resolvedGroup === groupId
             })
             .reduce((sum, t) => sum + parseAmount(t.amount), 0)
 
@@ -43,6 +44,29 @@ export function calculateGroupSpending(transactions: Transaction[], period: stri
         globalSpent,
         groupSpending
     }
+}
+
+/**
+ * Resolve the budget group for a transaction, taking into account manual overrides.
+ * Aligns budget actuals with the "isSuperfluous" logic used in Dashboard/KPIs.
+ */
+export function resolveBudgetGroupForTransaction(
+    transaction: Transaction,
+    categoryNature?: BudgetGroupId
+): BudgetGroupId {
+    // 1. Manual override: if marked as superfluous, it ALWAYS goes to 'superfluous'
+    if (transaction.isSuperfluous === true) {
+        return "superfluous"
+    }
+
+    // 2. Manual override: if marked as NOT superfluous BUT category is superfluous,
+    // we de-escalate it to 'comfort' (standard behavior for non-useless svago/altro).
+    if (transaction.isSuperfluous === false && categoryNature === "superfluous") {
+        return "comfort"
+    }
+
+    // 3. Fallback to category nature, with 'essential' as default for safety/unknowns
+    return categoryNature || "essential"
 }
 
 // =====================

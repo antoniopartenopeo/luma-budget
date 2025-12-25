@@ -3,6 +3,77 @@ import { Transaction, CreateTransactionDTO } from "./types"
 // Initial mock data
 import { CATEGORIES } from "../../categories/config"
 
+// =====================
+// STORAGE SYSTEM
+// =====================
+
+const STORAGE_KEY = "luma_transactions_v1"
+const DEFAULT_USER_ID = "user-1"
+
+// Private cache to avoid frequent localStorage reads
+let _transactionsCache: Transaction[] | null = null
+
+function isStorageAvailable(): boolean {
+    return typeof window !== "undefined" && !!window.localStorage
+}
+
+function loadAllFromStorage(): Record<string, Transaction[]> {
+    if (!isStorageAvailable()) return {}
+    try {
+        const stored = localStorage.getItem(STORAGE_KEY)
+        return stored ? JSON.parse(stored) : {}
+    } catch (e) {
+        console.error("Failed to load transactions from storage", e)
+        return {}
+    }
+}
+
+function saveToStorage(allData: Record<string, Transaction[]>): void {
+    if (!isStorageAvailable()) return
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(allData))
+    } catch (e) {
+        console.error("Failed to save transactions to storage", e)
+    }
+}
+
+/**
+ * Ensures the cache is populated from storage, or seeded if empty.
+ */
+function ensureCache(): Transaction[] {
+    if (_transactionsCache !== null) return _transactionsCache
+
+    const allData = loadAllFromStorage()
+    const userTransactions = allData[DEFAULT_USER_ID]
+
+    if (userTransactions && Array.isArray(userTransactions)) {
+        _transactionsCache = userTransactions
+    } else {
+        // SEED: Initialize with mock data if not found
+        _transactionsCache = [...INITIAL_MOCK_TRANSACTIONS]
+        allData[DEFAULT_USER_ID] = _transactionsCache
+        saveToStorage(allData)
+    }
+
+    return _transactionsCache
+}
+
+function syncStorage() {
+    if (_transactionsCache === null) return
+    const allData = loadAllFromStorage()
+    allData[DEFAULT_USER_ID] = _transactionsCache
+    saveToStorage(allData)
+}
+
+/** @internal - For testing only */
+export const __resetTransactionsCache = () => {
+    _transactionsCache = null
+}
+
+// =====================
+// UTILS
+// =====================
+
 // Helper to check rule-based superfluous status
 const isSuperfluousRule = (categoryId: string, type: "income" | "expense"): boolean => {
     if (type === "income") return false
@@ -10,8 +81,8 @@ const isSuperfluousRule = (categoryId: string, type: "income" | "expense"): bool
     return cat?.spendingNature === "superfluous"
 }
 
-// Initial mock data with migration applied
-const transactions: Transaction[] = [
+// Initial mock data
+const INITIAL_MOCK_TRANSACTIONS: Transaction[] = [
     {
         id: "1",
         amount: "-€85.00",
@@ -83,11 +154,11 @@ const transactions: Transaction[] = [
         date: "15 Ago, 10:00",
         description: "Hotel Vacanze",
         category: "Viaggi",
-        categoryId: "viaggi", // Assuming category exists
+        categoryId: "viaggi",
         icon: "🏨",
         type: "expense",
-        timestamp: Date.now() - 86400000 * 115, // ~3-4 months ago
-        isSuperfluous: false, // RuleBased: Viaggi is Comfort, not Superfluous by default
+        timestamp: Date.now() - 86400000 * 115,
+        isSuperfluous: false,
         classificationSource: "ruleBased"
     },
     {
@@ -99,8 +170,8 @@ const transactions: Transaction[] = [
         categoryId: "shopping",
         icon: "🎁",
         type: "expense",
-        timestamp: Date.now() - 86400000 * 240, // ~8 months ago
-        isSuperfluous: false, // RuleBased: Shopping is Comfort
+        timestamp: Date.now() - 86400000 * 240,
+        isSuperfluous: false,
         classificationSource: "ruleBased"
     },
     {
@@ -112,22 +183,28 @@ const transactions: Transaction[] = [
         categoryId: "salute",
         icon: "💪",
         type: "expense",
-        timestamp: Date.now() - 86400000 * 330, // ~11 months ago
+        timestamp: Date.now() - 86400000 * 330,
         isSuperfluous: false,
         classificationSource: "ruleBased"
     },
 ]
 
+// =====================
+// API FUNCTIONS
+// =====================
+
 export const fetchRecentTransactions = async (): Promise<Transaction[]> => {
     // Simulate network delay
     await new Promise((resolve) => setTimeout(resolve, 800))
+    const txs = ensureCache()
     // Return sorted by timestamp desc
-    return [...transactions].sort((a, b) => b.timestamp - a.timestamp)
+    return [...txs].sort((a, b) => b.timestamp - a.timestamp)
 }
 
 export const fetchTransactions = async (): Promise<Transaction[]> => {
     await new Promise((resolve) => setTimeout(resolve, 800))
-    return [...transactions].sort((a, b) => b.timestamp - a.timestamp)
+    const txs = ensureCache()
+    return [...txs].sort((a, b) => b.timestamp - a.timestamp)
 }
 
 export const createTransaction = async (data: CreateTransactionDTO): Promise<Transaction> => {
@@ -145,8 +222,6 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
         : `-€${Math.abs(amount).toFixed(2)}`
 
     // Determine superfluous status
-    // If manually passed (e.g. from form override), respect it.
-    // Else apply rule.
     let isSuperfluous = false
     let classificationSource: "ruleBased" | "manual" = "ruleBased"
 
@@ -164,7 +239,7 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
         date: "Adesso",
         description: data.description,
         category: data.category,
-        categoryId: data.categoryId, // Save ID
+        categoryId: data.categoryId,
         icon: isIncome ? "💰" : "🆕",
         type: data.type,
         timestamp: Date.now(),
@@ -172,21 +247,25 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
         classificationSource
     }
 
-    transactions.unshift(newTransaction)
+    const txs = ensureCache()
+    txs.unshift(newTransaction)
+    syncStorage()
+
     return newTransaction
 }
 
-export const getTransactions = () => transactions
+export const getTransactions = () => ensureCache()
 
 export const updateTransaction = async (id: string, data: Partial<CreateTransactionDTO>): Promise<Transaction> => {
     await new Promise((resolve) => setTimeout(resolve, 800))
 
-    const index = transactions.findIndex((t) => t.id === id)
+    const txs = ensureCache()
+    const index = txs.findIndex((t) => t.id === id)
     if (index === -1) {
         throw new Error("Transaction not found")
     }
 
-    const currentTransaction = transactions[index]
+    const currentTransaction = txs[index]
     const isIncome = data.type ? data.type === "income" : currentTransaction.type === "income"
 
     // Recalculate formatted amount if amount or type changed
@@ -205,19 +284,11 @@ export const updateTransaction = async (id: string, data: Partial<CreateTransact
     let isSuperfluous = currentTransaction.isSuperfluous
     let classificationSource = currentTransaction.classificationSource
 
-    // If manual override passed
     if (data.classificationSource === "manual" && data.isSuperfluous !== undefined) {
         isSuperfluous = data.isSuperfluous
         classificationSource = "manual"
     }
-    // Else if category or type changed, re-evaluate rule IF source was ruleBased
     else if ((data.categoryId && data.categoryId !== currentTransaction.categoryId) || (data.type && data.type !== currentTransaction.type)) {
-        // Only re-apply rule if it was rule-based previously, or if we want to reset it?
-        // Requirement says "manual override" persists. 
-        // But if I change category from "Svago" (Superfluous) to "Cibo" (Essential), keeping it Superfluous might be wrong unless user explicitly set it.
-        // Let's adopt a "smart reset": if sensitive fields change, we might revert to rule unless we truly track "user locked".
-        // For MVP: if source was "manual", KEEP IT as is unless user changed the flag manually too.
-        // If source was "ruleBased", re-run rule.
         if (classificationSource === "ruleBased") {
             const newCatId = data.categoryId || currentTransaction.categoryId
             const newType = (data.type || currentTransaction.type) as "income" | "expense"
@@ -232,18 +303,21 @@ export const updateTransaction = async (id: string, data: Partial<CreateTransact
         icon: isIncome ? "💰" : "🆕",
         isSuperfluous,
         classificationSource
-        // Keep date and timestamp unless passed (which we usually don't for edit in this simple app)
     }
 
-    transactions[index] = updatedTransaction
+    txs[index] = updatedTransaction
+    syncStorage()
+
     return updatedTransaction
 }
 
 export const deleteTransaction = async (id: string): Promise<void> => {
     await new Promise((resolve) => setTimeout(resolve, 800))
 
-    const index = transactions.findIndex((t) => t.id === id)
+    const txs = ensureCache()
+    const index = txs.findIndex((t) => t.id === id)
     if (index !== -1) {
-        transactions.splice(index, 1)
+        txs.splice(index, 1)
+        syncStorage()
     }
 }

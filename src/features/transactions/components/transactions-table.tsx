@@ -21,7 +21,6 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { getCategoryColor, getCategoryIcon } from "@/features/categories/config"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { formatTransactionDate } from "@/features/transactions/utils/format-date"
 

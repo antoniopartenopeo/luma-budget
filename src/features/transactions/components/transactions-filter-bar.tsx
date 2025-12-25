@@ -2,7 +2,7 @@
 
 
 import { Search } from "lucide-react"
-import { getGroupedCategories, CATEGORY_GROUP_ORDER } from "@/features/categories/config"
+import { getGroupedCategories } from "@/features/categories/config"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"

@@ -11,6 +11,7 @@ import { BudgetProgressBar } from "./budget-progress-bar"
 import { formatCurrency } from "../utils/calculate-budget"
 import { BudgetGroupId, BUDGET_GROUP_LABELS } from "../api/types"
 import { cn } from "@/lib/utils"
+import { parseCurrencyToCents } from "@/lib/currency-utils"
 
 interface GroupBudgetCardProps {
     groupId: BudgetGroupId
@@ -47,9 +48,9 @@ export function GroupBudgetCard({ groupId, budget, spent, isLoading, onSave, isS
     }
 
     const handleSave = () => {
-        const amount = parseFloat(editValue) || 0
-        if (amount >= 0) {
-            onSave(groupId, amount)
+        const amountCents = parseCurrencyToCents(editValue)
+        if (amountCents >= 0) {
+            onSave(groupId, amountCents / 100)
             setIsEditing(false)
         }
     }

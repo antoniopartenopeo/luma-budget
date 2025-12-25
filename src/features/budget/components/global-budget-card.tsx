@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { BudgetProgressBar } from "./budget-progress-bar"
 import { formatCurrency } from "../utils/calculate-budget"
+import { parseCurrencyToCents } from "@/lib/currency-utils"
 
 interface GlobalBudgetCardProps {
     budget: number
@@ -30,9 +31,9 @@ export function GlobalBudgetCard({ budget, spent, isLoading, onSave, isSaving }:
     }
 
     const handleSave = () => {
-        const amount = parseFloat(editValue) || 0
-        if (amount >= 0) {
-            onSave(amount)
+        const amountCents = parseCurrencyToCents(editValue)
+        if (amountCents >= 0) {
+            onSave(amountCents / 100)
             setIsEditing(false)
         }
     }

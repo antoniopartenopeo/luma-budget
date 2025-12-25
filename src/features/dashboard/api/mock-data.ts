@@ -2,6 +2,7 @@ import { DashboardSummary } from "./types"
 import { fetchTransactions } from "../../transactions/api/mock-data"
 import { fetchBudget } from "../../budget/api/mock-data"
 import { getCurrentPeriod } from "../../budget/utils/calculate-budget"
+import { parseCurrencyToCents } from "@/lib/currency-utils"
 
 const DEFAULT_USER_ID = "user-1"
 
@@ -24,36 +25,32 @@ export const fetchDashboardSummary = async (): Promise<DashboardSummary> => {
         return tDate.getFullYear() === y && tDate.getMonth() + 1 === m
     })
 
-    const totalExpenses = currentMonthTxs
+    const totalExpensesCents = currentMonthTxs
         .filter(t => t.type === 'expense')
-        .reduce((acc, t) => {
-            const amount = parseFloat(t.amount.replace(/[^0-9.-]+/g, ""))
-            return acc + Math.abs(amount)
-        }, 0)
+        .reduce((acc, t) => acc + Math.abs(parseCurrencyToCents(t.amount)), 0)
 
     // Calculate Total Income
-    const totalIncome = currentMonthTxs
+    const totalIncomeCents = currentMonthTxs
         .filter(t => t.type === 'income')
-        .reduce((acc, t) => {
-            const amount = parseFloat(t.amount.replace(/[^0-9.-]+/g, ""))
-            return acc + Math.abs(amount)
-        }, 0)
+        .reduce((acc, t) => acc + Math.abs(parseCurrencyToCents(t.amount)), 0)
 
-    const totalSpent = totalExpenses
+    const totalSpent = totalExpensesCents / 100
+    const totalIncome = totalIncomeCents / 100
 
-    // Calculate Net Balance (Income - Expenses)
-    const netBalance = totalIncome - totalExpenses
+    // Calculate Net Balance (Income - Expenses) - keeping original sign logic
+    const netBalance = (totalIncomeCents - totalExpensesCents) / 100
 
     // Calculate Budget Remaining using real budget plan (Budget - Expenses)
     const budgetTotal = budgetPlan?.globalBudgetAmount || 0
-    const budgetRemaining = Math.max(budgetTotal - totalExpenses, 0)
+    const budgetTotalCents = Math.round(budgetTotal * 100)
+    const budgetRemaining = Math.max((budgetTotalCents - totalExpensesCents) / 100, 0)
 
     // Calculate Category Distribution (Current month only for consistency with totalSpent)
     const categoryMap = new Map<string, { label: string, amount: number }>()
     currentMonthTxs.filter(t => t.type === 'expense').forEach(t => {
-        const amount = Math.abs(parseFloat(t.amount.replace(/[^0-9.-]+/g, "")))
+        const amountCents = Math.abs(parseCurrencyToCents(t.amount))
         const current = categoryMap.get(t.categoryId) || { label: t.category, amount: 0 }
-        categoryMap.set(t.categoryId, { label: t.category, amount: current.amount + amount })
+        categoryMap.set(t.categoryId, { label: t.category, amount: current.amount + (amountCents / 100) })
     })
 
     const categoriesSummary = Array.from(categoryMap.entries()).map(([id, data], index) => ({
@@ -64,10 +61,11 @@ export const fetchDashboardSummary = async (): Promise<DashboardSummary> => {
     }))
 
     // Calculate Useless Spending (Using isSuperfluous flag, current month)
-    const uselessSpent = currentMonthTxs
+    const uselessSpentCents = currentMonthTxs
         .filter(t => t.type === 'expense' && t.isSuperfluous)
-        .reduce((acc, t) => acc + Math.abs(parseFloat(t.amount.replace(/[^0-9.-]+/g, ""))), 0)
+        .reduce((acc, t) => acc + Math.abs(parseCurrencyToCents(t.amount)), 0)
 
+    const uselessSpent = uselessSpentCents / 100
     const uselessSpendPercent = totalSpent > 0 ? Math.round((uselessSpent / totalSpent) * 100) : 0
 
     // Calculate Monthly Expenses (Last 12 months)
@@ -81,16 +79,15 @@ export const fetchDashboardSummary = async (): Promise<DashboardSummary> => {
         const year = d.getFullYear()
         const monthName = monthNames[monthIndex]
 
-        const total = transactions
+        const totalCents = transactions
             .filter(t => {
                 if (t.type !== 'expense') return false
                 const tDate = new Date(t.timestamp)
                 return tDate.getMonth() === monthIndex && tDate.getFullYear() === year
             })
-            .reduce((acc, t) => {
-                const amount = parseFloat(t.amount.replace(/[^0-9.-]+/g, ""))
-                return acc + Math.abs(amount)
-            }, 0)
+            .reduce((acc, t) => acc + Math.abs(parseCurrencyToCents(t.amount)), 0)
+
+        const total = totalCents / 100
 
         monthlyExpenses.push({ name: monthName, total })
     }
@@ -98,7 +95,7 @@ export const fetchDashboardSummary = async (): Promise<DashboardSummary> => {
     return {
         totalSpent,
         totalIncome,
-        totalExpenses,
+        totalExpenses: totalSpent,
         netBalance,
         budgetTotal,
         budgetRemaining,

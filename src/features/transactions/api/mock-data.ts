@@ -3,6 +3,7 @@ import { storage } from "@/lib/storage-utils"
 
 // Initial mock data
 import { CATEGORIES } from "../../categories/config"
+import { parseCurrencyToCents } from "@/lib/currency-utils"
 
 // =====================
 // STORAGE SYSTEM
@@ -252,7 +253,7 @@ export const updateTransaction = async (id: string, data: Partial<CreateTransact
     let formattedAmount = currentTransaction.amount
     if (data.amount !== undefined || data.type !== undefined) {
         const amountValue = data.amount !== undefined ? data.amount :
-            parseFloat(currentTransaction.amount.replace(/[^0-9.]/g, ''))
+            Math.abs(parseCurrencyToCents(currentTransaction.amount)) / 100
 
         const finalAmount = isIncome ? Math.abs(amountValue) : -Math.abs(amountValue)
         formattedAmount = isIncome

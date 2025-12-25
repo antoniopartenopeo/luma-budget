@@ -3,6 +3,7 @@
 import { Transaction } from "@/features/transactions/api/types"
 import { getCategoryById, CATEGORY_GROUP_LABELS, CategoryGroupKey } from "@/features/categories/config"
 import { formatTransactionDate } from "@/features/transactions/utils/format-date"
+import { parseCurrencyToCents } from "@/lib/currency-utils"
 
 // =====================
 // EXPORT CONFIGURATION
@@ -52,9 +53,12 @@ const EXPORT_COLUMNS: ExportColumn[] = [
         key: "amount",
         header: "Importo (€)",
         getValue: (t) => {
-            // Parse amount and format with comma as decimal separator
-            const numericAmount = parseFloat(t.amount.replace(/[^0-9.-]/g, ""))
-            return numericAmount.toFixed(2).replace(".", ",")
+            // Parse amount using the helper and format with comma as decimal separator
+            // parseCurrencyToCents returns value in cents, so divide by 100 for Euro
+            // It also handles the sign correctly based on the input string (e.g., "-€30.00")
+            const numericAmountInCents = parseCurrencyToCents(t.amount)
+            const numericAmountInEuros = numericAmountInCents / 100
+            return numericAmountInEuros.toFixed(2).replace(".", ",")
         }
     },
     {

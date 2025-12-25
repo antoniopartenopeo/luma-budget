@@ -10,6 +10,7 @@ import {
 import { Transaction, CreateTransactionDTO } from "@/features/transactions/api/types"
 import { TransactionForm } from "./transaction-form"
 import { useUpdateTransaction } from "@/features/transactions/api/use-transactions"
+import { parseCurrencyToCents } from "@/lib/currency-utils"
 
 interface EditTransactionDialogProps {
     open: boolean
@@ -23,14 +24,15 @@ export function EditTransactionDialog({ open, onOpenChange, transaction }: EditT
     if (!transaction) return null
 
     // Parse amount string to number (remove currency symbol and handle sign)
-    const parseAmount = (amountStr: string) => {
-        const value = parseFloat(amountStr.replace(/[^0-9.]/g, ''))
+    const handleSave = (amountStr: string) => {
+        const amountCents = Math.abs(parseCurrencyToCents(amountStr))
+        const value = amountCents / 100
         return isNaN(value) ? 0 : value
     }
 
     const defaultValues: Partial<CreateTransactionDTO> = {
         description: transaction.description,
-        amount: parseAmount(transaction.amount),
+        amount: handleSave(transaction.amount),
         category: transaction.category,
         categoryId: transaction.categoryId,
         type: transaction.type,

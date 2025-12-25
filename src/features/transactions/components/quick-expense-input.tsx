@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Plus, Loader2, CheckCircle2, AlertCircle, TrendingUp, TrendingDown } from "lucide-react"
+import { parseCurrencyToCents } from "@/lib/currency-utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -66,15 +67,19 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
             setValidationError("Inserisci una descrizione")
             return
         }
-        const parsedAmount = parseFloat(amount)
-        if (!amount || isNaN(parsedAmount) || parsedAmount <= 0) {
+
+        const amountCents = Math.abs(parseCurrencyToCents(amount))
+        if (amountCents <= 0) {
             setValidationError("Inserisci un importo valido")
             return
         }
+
         if (!category) {
             setValidationError("Seleziona una categoria")
             return
         }
+
+        const parsedAmount = amountCents / 100
 
         create(
             {
@@ -179,7 +184,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                         disabled={isPending}
                         className={cn(
                             "h-9 w-24 border-0 bg-transparent pl-6 pr-2 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70 text-right font-medium [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-                            validationError && (!amount || parseFloat(amount) <= 0) && "placeholder:text-destructive/50 text-destructive"
+                            validationError && (!amount || Math.abs(parseCurrencyToCents(amount)) <= 0) && "placeholder:text-destructive/50 text-destructive"
                         )}
                     />
                 </div>

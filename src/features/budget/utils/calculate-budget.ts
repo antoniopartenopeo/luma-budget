@@ -1,6 +1,7 @@
 import { Transaction } from "@/features/transactions/api/types"
 import { getCategoryById } from "@/features/categories/config"
 import { BudgetSpending, BudgetGroupId, BUDGET_GROUP_LABELS } from "../api/types"
+import { parseCurrencyToCents } from "@/lib/currency-utils"
 
 // =====================
 // SPENDING CALCULATIONS
@@ -10,9 +11,11 @@ import { BudgetSpending, BudgetGroupId, BUDGET_GROUP_LABELS } from "../api/types
  * Calculate total spending for a given period
  */
 export function calculateTotalSpent(transactions: Transaction[], period: string): number {
-    return filterTransactionsByPeriod(transactions, period)
+    const totalCents = filterTransactionsByPeriod(transactions, period)
         .filter(t => t.type === "expense")
-        .reduce((sum, t) => sum + parseAmount(t.amount), 0)
+        .reduce((sum, t) => sum + Math.abs(parseCurrencyToCents(t.amount)), 0)
+
+    return totalCents / 100
 }
 
 /**
@@ -22,26 +25,26 @@ export function calculateGroupSpending(transactions: Transaction[], period: stri
     const filtered = filterTransactionsByPeriod(transactions, period)
         .filter(t => t.type === "expense")
 
-    const globalSpent = filtered.reduce((sum, t) => sum + parseAmount(t.amount), 0)
+    const globalSpentCents = filtered.reduce((sum, t) => sum + Math.abs(parseCurrencyToCents(t.amount)), 0)
 
     const groupSpending = (["essential", "comfort", "superfluous"] as BudgetGroupId[]).map(groupId => {
-        const spent = filtered
+        const spentCents = filtered
             .filter(t => {
                 const category = getCategoryById(t.categoryId)
                 const resolvedGroup = resolveBudgetGroupForTransaction(t, category?.spendingNature as BudgetGroupId)
                 return resolvedGroup === groupId
             })
-            .reduce((sum, t) => sum + parseAmount(t.amount), 0)
+            .reduce((sum, t) => sum + Math.abs(parseCurrencyToCents(t.amount)), 0)
 
         return {
             groupId,
             label: BUDGET_GROUP_LABELS[groupId],
-            spent
+            spent: spentCents / 100
         }
     })
 
     return {
-        globalSpent,
+        globalSpent: globalSpentCents / 100,
         groupSpending
     }
 }
@@ -85,19 +88,6 @@ function filterTransactionsByPeriod(transactions: Transaction[], period: string)
     })
 }
 
-/**
- * Parse amount string to number (handles currency symbols and formatting)
- */
-function parseAmount(amount: string): number {
-    // Remove currency symbols, spaces, and handle European number format
-    const cleaned = amount
-        .replace(/[€$£+\s]/g, "")
-        .replace(/\./g, "") // Remove thousands separator
-        .replace(",", ".") // Convert decimal separator
-
-    const value = Math.abs(parseFloat(cleaned) || 0)
-    return value
-}
 
 /**
  * Get current period in YYYY-MM format

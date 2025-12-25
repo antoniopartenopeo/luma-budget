@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 import { CATEGORIES, getGroupedCategories } from "@/features/categories/config"
+import { parseCurrencyToCents } from "@/lib/currency-utils"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { CreateTransactionDTO } from "@/features/transactions/api/types"
 
@@ -62,8 +63,8 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
         const newErrors: { [key: string]: string } = {}
         if (!description.trim()) newErrors.description = "Inserisci una descrizione"
 
-        const parsedAmount = parseFloat(amount)
-        if (!amount || isNaN(parsedAmount) || parsedAmount <= 0) {
+        const amountCents = Math.abs(parseCurrencyToCents(amount))
+        if (!amount || amountCents <= 0) {
             newErrors.amount = "Inserisci un importo valido"
         }
 
@@ -73,6 +74,8 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
             setErrors(newErrors)
             return
         }
+
+        const parsedAmount = amountCents / 100
 
         const selectedCategory = CATEGORIES.find(c => c.id === categoryId)
 

@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Plus, Loader2, CheckCircle2, AlertCircle, TrendingUp, TrendingDown } from "lucide-react"
+import { useState, useMemo } from "react"
+import { Loader2, CheckCircle2, AlertCircle, TrendingUp, TrendingDown } from "lucide-react"
 import { parseCurrencyToCents } from "@/lib/currency-utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -26,37 +26,28 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
     const [validationError, setValidationError] = useState<string | null>(null)
 
     // Superfluous expense logic
-    const [isSuperfluous, setIsSuperfluous] = useState(false)
-    const [isManualOverride, setIsManualOverride] = useState(false)
+    const [isSuperfluousManual, setIsSuperfluousManual] = useState<boolean | null>(null)
+    const isManualOverride = isSuperfluousManual !== null
 
     const { mutate: create, isPending, isSuccess, isError } = useCreateTransaction()
 
     // Get grouped categories based on current transaction type
     const groupedCategories = getGroupedCategories(type)
 
-    // Reset category when type changes (since categories are different)
-    useEffect(() => {
-        setCategory("")
-    }, [type])
-
-    // Auto-update isSuperfluous based on category (rule-based), unless manually overridden
-    useEffect(() => {
-        if (isManualOverride || type !== "expense") return
+    // Derive isSuperfluous based on category (rule-based), unless manually overridden
+    const isSuperfluous = useMemo(() => {
+        if (type !== "expense") return false
+        if (isManualOverride) return isSuperfluousManual
 
         const cat = CATEGORIES.find(c => c.id === category)
-        if (cat) {
-            setIsSuperfluous(cat.spendingNature === "superfluous")
-        } else {
-            setIsSuperfluous(false)
-        }
-    }, [category, isManualOverride, type])
+        return cat?.spendingNature === "superfluous"
+    }, [category, isManualOverride, isSuperfluousManual, type])
 
-    // Reset superfluous when switching to income
-    useEffect(() => {
-        if (type === "income") {
-            setIsSuperfluous(false)
-        }
-    }, [type])
+    const handleTypeChange = (newType: "expense" | "income") => {
+        setType(newType)
+        setCategory("") // Reset category when type changes
+        setIsSuperfluousManual(null) // Reset manual override
+    }
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -96,8 +87,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                     setDescription("")
                     setAmount("")
                     setCategory("")
-                    setIsSuperfluous(false)
-                    setIsManualOverride(false)
+                    setIsSuperfluousManual(null)
                     // Keep type as is for convenience
                     if (onExpenseCreated) {
                         onExpenseCreated(data)
@@ -105,6 +95,11 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                 },
             }
         )
+    }
+
+    // Toggle manual override
+    const toggleSuperfluous = () => {
+        setIsSuperfluousManual(!isSuperfluous)
     }
 
     const hasError = !!validationError || isError
@@ -129,7 +124,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                 <div className="flex bg-muted/50 rounded-full p-0.5 shrink-0 ml-1">
                     <button
                         type="button"
-                        onClick={() => setType("expense")}
+                        onClick={() => handleTypeChange("expense")}
                         className={cn(
                             "p-1.5 rounded-full transition-all",
                             type === "expense" ? "bg-white text-red-500 shadow-sm" : "text-muted-foreground hover:text-foreground"
@@ -140,7 +135,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                     </button>
                     <button
                         type="button"
-                        onClick={() => setType("income")}
+                        onClick={() => handleTypeChange("income")}
                         className={cn(
                             "p-1.5 rounded-full transition-all",
                             type === "income" ? "bg-white text-green-500 shadow-sm" : "text-muted-foreground hover:text-foreground"
@@ -229,29 +224,20 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                 {type === "expense" && (
                     <>
                         <div className="h-6 w-px bg-border/50" />
-                        <label
-                            htmlFor="quick-superfluous"
-                            title="Le spese superflue sono quelle non essenziali che vuoi tenere d'occhio per ridurle nel tempo."
+                        <button
+                            type="button"
+                            onClick={toggleSuperfluous}
+                            disabled={isPending}
                             className={cn(
-                                "flex items-center gap-1.5 text-xs cursor-pointer px-2 whitespace-nowrap transition-colors rounded-md",
-                                "hover:bg-muted/50 focus-within:ring-2 focus-within:ring-primary/20",
-                                isSuperfluous ? "text-foreground" : "text-muted-foreground hover:text-foreground",
-                                isPending && "opacity-50 cursor-not-allowed pointer-events-none"
+                                "flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs transition-colors whitespace-nowrap",
+                                isSuperfluous
+                                    ? "bg-destructive/10 text-destructive font-semibold border border-destructive/20"
+                                    : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
                             )}
+                            title={isManualOverride ? "Classificazione manuale (Clicca per reimpostare)" : "Classificazione automatica (Clicca per forzare)"}
                         >
-                            <input
-                                id="quick-superfluous"
-                                type="checkbox"
-                                checked={isSuperfluous}
-                                onChange={(e) => {
-                                    setIsSuperfluous(e.target.checked)
-                                    setIsManualOverride(true)
-                                }}
-                                disabled={isPending}
-                                className="h-3.5 w-3.5 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary/50 focus:ring-offset-0 cursor-pointer disabled:cursor-not-allowed"
-                            />
-                            <span>Segna come superflua</span>
-                        </label>
+                            {isSuperfluous ? "Spesa Superflua" : "Spesa Necessaria"}
+                        </button>
                     </>
                 )}
 

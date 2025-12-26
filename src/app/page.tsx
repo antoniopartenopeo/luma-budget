@@ -5,7 +5,6 @@ import { MonthlyExpensesChart } from "@/features/dashboard/components/monthly-ex
 import { CategoryDistributionChart } from "@/features/dashboard/components/category-distribution-chart"
 import { RecentTransactions } from "@/features/dashboard/components/recent-transactions"
 import { useDashboardSummary } from "@/features/dashboard/api/use-dashboard"
-import { ErrorState } from "@/components/ui/error-state"
 import { StateMessage } from "@/components/ui/state-message"
 
 export default function DashboardPage() {
@@ -46,7 +45,7 @@ export default function DashboardPage() {
           isError={isError}
           onRetry={refetch}
         />
-        <CategoryDistributionChart data={data?.categoriesSummary} isLoading={isLoading} />
+        <CategoryDistributionChart data={data?.categoriesSummary || []} isLoading={isLoading} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

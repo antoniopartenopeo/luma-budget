@@ -8,12 +8,25 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { motion } from "framer-motion"
 import { CategorySummary } from "@/features/dashboard/api/types"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
-import { CATEGORIES, getCategoryColor, getCategoryById } from "@/features/categories/config"
-
+import { getCategoryById } from "@/features/categories/config"
 import { StateMessage } from "@/components/ui/state-message"
 
+// Recharts specific types - simplified to match what Recharts passes
+interface LegendPayloadEntry {
+    value: string;
+    id?: string;
+    type?: string;
+    color?: string;
+    payload?: {
+        name: string;
+        value: number;
+        id: string;
+        color: string;
+    };
+}
+
 interface CategoryDistributionChartProps {
-    data?: CategorySummary[]
+    data: CategorySummary[]
     isLoading?: boolean
 }
 
@@ -27,14 +40,11 @@ export function CategoryDistributionChart({ data, isLoading }: CategoryDistribut
         const sorted = [...data].sort((a, b) => b.value - a.value)
 
         // 2. Group after top 4
-        if (sorted.length <= 5) return sorted
+        if (sorted.length > 5) {
+            const top4 = sorted.slice(0, 4)
+            const others = sorted.slice(4)
+            const otherValue = others.reduce((acc, curr) => acc + curr.value, 0)
 
-        const top4 = sorted.slice(0, 4)
-        const others = sorted.slice(4)
-        const otherValue = others.reduce((acc, curr) => acc + curr.value, 0)
-
-        // Only add "Altro" if there is value
-        if (otherValue > 0) {
             return [
                 ...top4,
                 {
@@ -45,21 +55,26 @@ export function CategoryDistributionChart({ data, isLoading }: CategoryDistribut
                 }
             ]
         }
-        return top4
+        return sorted
 
     }, [data])
 
     // Enhanced Custom Legend
-    const renderLegend = (props: any) => {
-        const { payload } = props
+    const renderLegend = (props: unknown) => {
+        const { payload } = props as { payload?: LegendPayloadEntry[] }
+        if (!payload) return null
+
         return (
             <div className="grid grid-cols-1 gap-2 mt-4 text-sm">
-                {payload.map((entry: any, index: number) => {
-                    const cat = getCategoryById(entry.payload.id || "")
+                {payload.map((entry, index) => {
+                    const payloadData = entry.payload
+                    if (!payloadData) return null
+
+                    const cat = getCategoryById(payloadData.id || "")
                     // Use the category config for consistent colors, or fallback to chart color
                     const hexColor = cat ? cat.hexColor : entry.color
                     // Fallback check if it's "Altro" manual group or a real category
-                    const isOther = entry.payload.id === "altro"
+                    const isOther = payloadData.id === "altro"
 
                     return (
                         <div
@@ -67,8 +82,8 @@ export function CategoryDistributionChart({ data, isLoading }: CategoryDistribut
                             className="flex items-center justify-between group cursor-pointer p-1 rounded-md hover:bg-muted/50 transition-colors"
                             onClick={() => {
                                 // Navigate filter
-                                if (entry.payload.id) {
-                                    router.push(`/transactions?category=${entry.payload.id}`)
+                                if (payloadData.id) {
+                                    router.push(`/transactions?category=${payloadData.id}`)
                                 }
                             }}
                         >
@@ -84,7 +99,7 @@ export function CategoryDistributionChart({ data, isLoading }: CategoryDistribut
                                 )}
                             </div>
                             <span className="font-semibold">
-                                {new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(entry.payload.value)}
+                                {new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(payloadData.value)}
                             </span>
                         </div>
                     )
@@ -125,7 +140,7 @@ export function CategoryDistributionChart({ data, isLoading }: CategoryDistribut
                         <ResponsiveContainer width="100%" height={400}>
                             <PieChart margin={{ top: 0, right: 0, bottom: 20, left: 0 }}>
                                 <Pie
-                                    data={preparedData}
+                                    data={preparedData as unknown as Record<string, string | number>[]} // Recharts typing workaround
                                     cx="50%"
                                     cy="40%"
                                     innerRadius={70}
@@ -140,7 +155,6 @@ export function CategoryDistributionChart({ data, isLoading }: CategoryDistribut
                                     cursor="pointer"
                                 >
                                     {preparedData.map((entry, index) => {
-                                        // Resolve color again to match Legend logic for consistency
                                         const cat = getCategoryById(entry.id || "")
                                         const color = cat ? cat.hexColor : entry.color
                                         return <Cell key={`cell-${index}`} fill={color} strokeWidth={0} />

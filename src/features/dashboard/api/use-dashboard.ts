@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { DashboardSummary } from "./types"
+import { CategorySummary } from "./types"
 import { fetchDashboardSummary } from "./repository"
 
 export const useDashboardSummary = () => {

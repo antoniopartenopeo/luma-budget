@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useMemo } from "react"
 import { Loader2, TrendingUp, TrendingDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -29,31 +29,34 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
     const [errors, setErrors] = useState<{ [key: string]: string }>({})
 
     // Superfluous logic
-    const [isSuperfluous, setIsSuperfluous] = useState(defaultValues?.isSuperfluous || false)
-    const [isManualOverride, setIsManualOverride] = useState(defaultValues?.classificationSource === "manual")
+    const [isSuperfluousManual, setIsSuperfluousManual] = useState<boolean | null>(
+        defaultValues?.classificationSource === "manual" ? (defaultValues?.isSuperfluous ?? false) : null
+    )
+    const isManualOverride = isSuperfluousManual !== null
 
     // Get grouped categories based on current transaction type
     const groupedCategories = getGroupedCategories(type)
 
-    // Reset category when type changes (since categories are different for each type)
-    useEffect(() => {
+    // Derive isSuperfluous based on category (rule-based), unless manually overridden
+    const isSuperfluous = useMemo(() => {
+        if (type !== "expense") return false
+        if (isManualOverride) return isSuperfluousManual
+
+        const cat = CATEGORIES.find(c => c.id === categoryId)
+        return cat?.spendingNature === "superfluous"
+    }, [categoryId, isManualOverride, isSuperfluousManual, type])
+
+    const handleTypeChange = (newType: "expense" | "income") => {
+        setType(newType)
         // Only reset if the current category doesn't belong to the new type
-        const allCategoriesInGroups = groupedCategories.flatMap(g => g.categories)
+        const newGrouped = getGroupedCategories(newType)
+        const allCategoriesInGroups = newGrouped.flatMap(g => g.categories)
         const currentCatInList = allCategoriesInGroups.find(c => c.id === categoryId)
         if (!currentCatInList) {
             setCategoryId("")
         }
-    }, [type])
-
-    // Auto-classify when category changes, unless manually overridden
-    useEffect(() => {
-        if (isManualOverride || type !== "expense") return
-
-        const cat = CATEGORIES.find(c => c.id === categoryId)
-        if (cat) {
-            setIsSuperfluous(cat.spendingNature === "superfluous")
-        }
-    }, [categoryId, isManualOverride, type])
+        setIsSuperfluousManual(null) // Reset manual override when type changes manually
+    }
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -96,12 +99,12 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
             <div className="grid grid-cols-2 p-1 bg-muted/40 rounded-lg gap-1">
                 <button
                     type="button"
-                    onClick={() => setType("expense")}
+                    onClick={() => handleTypeChange("expense")}
                     className={cn(
-                        "flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-md transition-all duration-200",
+                        "flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-md transition-all",
                         type === "expense"
-                            ? "bg-white text-red-600 shadow-sm ring-1 ring-black/5"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                            ? "bg-white text-destructive shadow-sm"
+                            : "text-muted-foreground hover:bg-muted/50"
                     )}
                 >
                     <TrendingDown className="h-4 w-4" />
@@ -109,12 +112,12 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
                 </button>
                 <button
                     type="button"
-                    onClick={() => setType("income")}
+                    onClick={() => handleTypeChange("income")}
                     className={cn(
-                        "flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-md transition-all duration-200",
+                        "flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-md transition-all",
                         type === "income"
-                            ? "bg-white text-green-600 shadow-sm ring-1 ring-black/5"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                            ? "bg-white text-emerald-600 shadow-sm"
+                            : "text-muted-foreground hover:bg-muted/50"
                     )}
                 >
                     <TrendingUp className="h-4 w-4" />
@@ -194,8 +197,7 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
                         id="isSuperfluous"
                         checked={isSuperfluous}
                         onChange={(e) => {
-                            setIsSuperfluous(e.target.checked)
-                            setIsManualOverride(true)
+                            setIsSuperfluousManual(e.target.checked)
                         }}
                         disabled={isLoading}
                         className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary cursor-pointer disabled:cursor-not-allowed"

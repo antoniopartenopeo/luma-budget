@@ -1,4 +1,4 @@
-import { CATEGORIES, getCategoryIcon, getCategoryColor, getCategoryById } from "../config"
+import { CATEGORIES } from "../config"
 import { HelpCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 

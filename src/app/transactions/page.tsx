@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, Suspense } from "react"
 import { Download, X, Loader2 } from "lucide-react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -16,7 +16,7 @@ import { exportTransactionsToCSV } from "@/features/transactions/utils/export-tr
 import { StateMessage } from "@/components/ui/state-message"
 import { Skeleton } from "@/components/ui/skeleton"
 
-export default function TransactionsPage() {
+function TransactionsPageContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
 
@@ -25,22 +25,28 @@ export default function TransactionsPage() {
     // Export state
     const [isExporting, setIsExporting] = useState(false)
 
-    // Initialize from URL or default
-    const [searchQuery, setSearchQuery] = useState("")
-    const [selectedType, setSelectedType] = useState(searchParams.get("type") || "all")
-    const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "all")
-
-    // Sync state with URL params when they change
-    useEffect(() => {
-        const categoryParam = searchParams.get("category")
-        if (categoryParam) setSelectedCategory(categoryParam)
-
-        const typeParam = searchParams.get("type")
-        if (typeParam) setSelectedType(typeParam)
-    }, [searchParams])
-
-    // Derived from URL
+    // URL params (derived)
+    const selectedType = searchParams.get("type") || "all"
+    const selectedCategory = searchParams.get("category") || "all"
     const isWantsFilter = searchParams.get("filter") === "wants"
+
+    // Local UI state (for input fields)
+    const [searchQuery, setSearchQuery] = useState("")
+
+    // Handlers for filter changes (updating URL)
+    const handleTypeChange = (value: string) => {
+        const params = new URLSearchParams(searchParams.toString())
+        if (value === "all") params.delete("type")
+        else params.set("type", value)
+        router.push(`/transactions?${params.toString()}`)
+    }
+
+    const handleCategoryChange = (value: string) => {
+        const params = new URLSearchParams(searchParams.toString())
+        if (value === "all") params.delete("category")
+        else params.set("category", value)
+        router.push(`/transactions?${params.toString()}`)
+    }
 
     const {
         editingTransaction,
@@ -74,29 +80,25 @@ export default function TransactionsPage() {
         router.push("/transactions")
     }
 
-    const filteredTransactions = useMemo(() => {
-        if (!transactions) return []
+    const filteredTransactions = transactions?.filter((transaction) => {
+        const matchesSearch = transaction.description
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+            transaction.amount.includes(searchQuery)
 
-        return transactions.filter((transaction) => {
-            const matchesSearch = transaction.description
-                .toLowerCase()
-                .includes(searchQuery.toLowerCase()) ||
-                transaction.amount.includes(searchQuery)
+        const matchesType =
+            selectedType === "all" || transaction.type === selectedType
 
-            const matchesType =
-                selectedType === "all" || transaction.type === selectedType
+        const matchesCategory =
+            selectedCategory === "all" || transaction.categoryId === selectedCategory
 
-            const matchesCategory =
-                selectedCategory === "all" || transaction.categoryId === selectedCategory
+        // Dashboard logic for "Useless" (Wants)
+        const matchesWants = !isWantsFilter || !!transaction.isSuperfluous
 
-            // Dashboard logic for "Useless" (Wants)
-            const matchesWants = !isWantsFilter || !!transaction.isSuperfluous
+        if (!matchesWants) return false
 
-            if (!matchesWants) return false
-
-            return matchesSearch && matchesType && matchesCategory
-        })
-    }, [transactions, searchQuery, selectedType, selectedCategory, isWantsFilter])
+        return matchesSearch && matchesType && matchesCategory
+    }) || []
 
     if (isError) {
         return (
@@ -155,14 +157,12 @@ export default function TransactionsPage() {
                 searchValue={searchQuery}
                 onSearchChange={setSearchQuery}
                 typeValue={selectedType}
-                onTypeChange={setSelectedType}
+                onTypeChange={handleTypeChange}
                 categoryValue={selectedCategory}
-                onCategoryChange={setSelectedCategory}
+                onCategoryChange={handleCategoryChange}
                 onResetFilters={() => {
                     setSearchQuery("")
-                    setSelectedType("all")
-                    setSelectedCategory("all")
-                    if (isWantsFilter) clearWantsFilter()
+                    router.push("/transactions")
                 }}
             />
 
@@ -205,9 +205,7 @@ export default function TransactionsPage() {
                             actionLabel="Azzera filtri"
                             onActionClick={() => {
                                 setSearchQuery("")
-                                setSelectedType("all")
-                                setSelectedCategory("all")
-                                if (isWantsFilter) clearWantsFilter()
+                                router.push("/transactions")
                             }}
                         />
                     ) : (
@@ -237,5 +235,27 @@ export default function TransactionsPage() {
                 transactionId={deletingTransactionId}
             />
         </div>
+    )
+}
+
+export default function TransactionsPage() {
+    return (
+        <Suspense fallback={
+            <div className="space-y-6">
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight">Transazioni</h1>
+                        <p className="text-muted-foreground">Caricamento in corso...</p>
+                    </div>
+                </div>
+                <div className="space-y-4">
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-20 w-full" />
+                    <Skeleton className="h-20 w-full" />
+                </div>
+            </div>
+        }>
+            <TransactionsPageContent />
+        </Suspense>
     )
 }

@@ -12,7 +12,7 @@ const sidebarItems = [
   { icon: Receipt, label: "Transazioni", href: "/transactions" },
   { icon: PiggyBank, label: "Budget", href: "/budget" },
   { icon: LineChart, label: "Insights", href: "/insights", disabled: true },
-  { icon: Settings, label: "Impostazioni", href: "/settings", disabled: true },
+  { icon: Settings, label: "Impostazioni", href: "/settings" },
 ]
 
 export function Sidebar() {

@@ -4,6 +4,7 @@ import {
     serializeBackup,
     parseAndValidateBackup,
     applyBackupOverwrite,
+    getBackupSummary,
     resetAllData,
     STORAGE_KEYS,
     BACKUP_VERSION
@@ -111,6 +112,60 @@ describe("Backup Utils", () => {
             resetAllData();
             expect(storage.remove).toHaveBeenCalledWith(STORAGE_KEYS.TRANSACTIONS);
             expect(storage.remove).toHaveBeenCalledWith(STORAGE_KEYS.BUDGETS);
+        });
+    });
+
+    describe("getBackupSummary", () => {
+        it("should compute summary for Array transactions and budgets", () => {
+            const backup = buildBackupV1();
+            backup.payload.transactions = [
+                { id: "1", timestamp: new Date("2025-12-01").getTime() },
+                { id: "2", timestamp: new Date("2025-11-20").getTime() }
+            ];
+            backup.payload.budgets = [
+                { period: "2025-12" },
+                { period: "2025-11" }
+            ];
+
+            const summary = getBackupSummary(backup);
+            expect(summary.txCount).toBe(2);
+            expect(summary.budgetCount).toBe(2);
+            expect(summary.periods).toEqual(["2025-12", "2025-11"]);
+        });
+
+        it("should compute summary for Record transactions and budgets", () => {
+            const backup = buildBackupV1();
+            backup.payload.transactions = {
+                "user-1": [
+                    { id: "1", timestamp: new Date("2025-12-01").getTime() },
+                    { id: "2", timestamp: new Date("2025-10-15").getTime() }
+                ]
+            };
+            backup.payload.budgets = {
+                "user-1:2025-12": { id: "b1" },
+                "user-1:2025-11": { id: "b2", period: "2025-11" }
+            };
+
+            const summary = getBackupSummary(backup);
+            expect(summary.txCount).toBe(2);
+            expect(summary.budgetCount).toBe(2);
+            // Sorted and unique
+            expect(summary.periods).toEqual(["2025-12", "2025-11", "2025-10"]);
+        });
+
+        it("should limit periods to 12 and handle missing periods", () => {
+            const backup = buildBackupV1();
+            const txs = [];
+            for (let i = 1; i <= 15; i++) {
+                const month = i.toString().padStart(2, '0');
+                txs.push({ id: `${i}`, timestamp: new Date(`2025-${month}-01`).getTime() });
+            }
+            backup.payload.transactions = txs;
+            backup.payload.budgets = {};
+
+            const summary = getBackupSummary(backup);
+            expect(summary.periods.length).toBe(12);
+            expect(summary.periods[0]).toBe("2025-12");
         });
     });
 });

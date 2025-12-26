@@ -12,13 +12,17 @@ import {
     serializeBackup,
     parseAndValidateBackup,
     applyBackupOverwrite,
-    resetAllData
+    resetAllData,
+    getBackupSummary,
+    BackupSummary
 } from "@/features/settings/backup/backup-utils"
 
 export default function SettingsPage() {
     const queryClient = useQueryClient()
-    const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null)
+    const [status, setStatus] = useState<{ type: "success" | "error" | "info"; message: string; summary?: BackupSummary } | null>(null)
     const [isLoading, setIsLoading] = useState(false)
+
+    const pad2 = (n: number) => n.toString().padStart(2, "0")
 
     const invalidateAll = async () => {
         __resetTransactionsCache()
@@ -73,12 +77,13 @@ export default function SettingsPage() {
             const blob = new Blob([json], { type: "application/json" })
             const url = URL.createObjectURL(blob)
 
-            const link = document.createElement("a")
-            const date = new Date().toISOString().split("T")[0].replace(/-/g, "")
-            const time = new Date().getHours().toString().padStart(2, "0") + new Date().getMinutes().toString().padStart(2, "0")
+            const now = new Date()
+            const dateStr = `${now.getFullYear()}${pad2(now.getMonth() + 1)}${pad2(now.getDate())}`
+            const timeStr = `${pad2(now.getHours())}${pad2(now.getMinutes())}`
 
+            const link = document.createElement("a")
             link.href = url
-            link.download = `luma-backup-v1-${date}-${time}.json`
+            link.download = `luma-backup-v1-${dateStr}-${timeStr}.json`
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
@@ -107,13 +112,30 @@ export default function SettingsPage() {
                 return
             }
 
-            if (!window.confirm("Importare questo backup sovrascriverà tutti i dati locali attuali. Vuoi continuare?")) {
+            const summary = getBackupSummary(result.backup)
+
+            // Show summary first as visual feedback
+            setStatus({
+                type: "info",
+                message: "Backup caricato e pronto per il ripristino.",
+                summary
+            })
+
+            const confirmMsg = `ATTENZIONE: Importare questo backup sovrascriverà TUTTI i dati locali attuali.\n\n` +
+                `Dati trovati:\n` +
+                `- Transazioni: ${summary.txCount}\n` +
+                `- Piano Budget: ${summary.budgetCount}\n` +
+                `- Periodi: ${summary.periods.join(", ")}\n\n` +
+                `Vuoi continuare?`;
+
+            if (!window.confirm(confirmMsg)) {
+                setStatus(null)
                 return
             }
 
             applyBackupOverwrite(result.backup)
             await invalidateAll()
-            setStatus({ type: "success", message: "Backup importato con successo." })
+            setStatus({ type: "success", message: "Backup ripristinato con successo." })
         } catch (error) {
             console.error("Import error:", error)
             setStatus({ type: "error", message: "Errore durante l'importazione del backup." })

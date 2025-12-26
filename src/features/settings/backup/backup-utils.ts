@@ -70,7 +70,7 @@ export const parseAndValidateBackup = (json: string): { ok: true; backup: Backup
         }
 
         return { ok: true, backup: data as BackupV1 };
-    } catch (_e) {
+    } catch {
         return { ok: false, error: "Errore durante il parsing del JSON: il file potrebbe essere corrotto." };
     }
 };
@@ -98,4 +98,92 @@ export const applyBackupOverwrite = (backup: BackupV1): void => {
 export const resetAllData = (): void => {
     storage.remove(STORAGE_KEYS.TRANSACTIONS);
     storage.remove(STORAGE_KEYS.BUDGETS);
+};
+
+export type BackupSummary = {
+    txCount: number;
+    budgetCount: number;
+    periods: string[];
+};
+
+/**
+ * Computes a summary from a BackupV1 object for user information before import.
+ */
+export const getBackupSummary = (backup: BackupV1): BackupSummary => {
+    let txCount = 0;
+    let budgetCount = 0;
+    const periodsSet = new Set<string>();
+
+    const transactions = backup.payload.transactions;
+    const budgets = backup.payload.budgets;
+
+    // Helper to extract period YYYY-MM
+    const extractPeriod = (item: Record<string, unknown>): string | null => {
+        if (!item || typeof item !== "object") return null;
+
+        if (item.period && typeof item.period === "string" && /^\d{4}-\d{2}$/.test(item.period)) {
+            return item.period;
+        }
+
+        if (typeof item.timestamp === "number") {
+            try {
+                return new Date(item.timestamp).toISOString().slice(0, 7);
+            } catch { return null; }
+        }
+
+        if (typeof item.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(item.date)) {
+            return item.date.slice(0, 7);
+        }
+
+        return null;
+    };
+
+    // Calculate Transaction Count & Periods
+    if (Array.isArray(transactions)) {
+        txCount = transactions.length;
+        transactions.forEach(t => {
+            const p = extractPeriod(t);
+            if (p) periodsSet.add(p);
+        });
+    } else if (transactions && typeof transactions === "object") {
+        Object.values(transactions).forEach(val => {
+            if (Array.isArray(val)) {
+                txCount += val.length;
+                val.forEach(t => {
+                    const p = extractPeriod(t);
+                    if (p) periodsSet.add(p);
+                });
+            }
+        });
+    }
+
+    // Calculate Budget Count & Periods
+    if (Array.isArray(budgets)) {
+        budgetCount = budgets.length;
+        budgets.forEach(b => {
+            const p = extractPeriod(b);
+            if (p) periodsSet.add(p);
+        });
+    } else if (budgets && typeof budgets === "object") {
+        const entries = Object.entries(budgets);
+        budgetCount = entries.length;
+        entries.forEach(([key, val]) => {
+            const p = extractPeriod(val);
+            if (p) {
+                periodsSet.add(p);
+            } else {
+                // Try to extract from key if it looks like userId:YYYY-MM
+                const match = key.match(/\d{4}-\d{2}$/);
+                if (match) periodsSet.add(match[0]);
+            }
+        });
+    }
+
+    const periods = Array.from(periodsSet).sort().reverse().slice(0, 12);
+
+    return {
+        txCount,
+        budgetCount,
+        periods
+    };
 };

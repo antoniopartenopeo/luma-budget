@@ -15,7 +15,7 @@ React Query is used for caching, invalidation, and UI reactivity.
 - **Transactions**: CRUD, filtering (search/type/category/period), CSV export.
 - **Budget**: Monthly planning (YYYY-MM) + spending by groups (Essential / Comfort / Superfluous).
 - **Insights** (Soon): analytics & trends.
-- **Settings** (Soon): preferences + data management (reset / load demo / backup-restore).
+- **Settings** (Soon): preferences + data management (reset / load demo / **Backup/Restore JSON v1** (overwrite, versioned)).
 
 ## Data Flow & Persistence
 ### Source of truth

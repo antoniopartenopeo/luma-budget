@@ -14,13 +14,25 @@ import {
     applyBackupOverwrite,
     resetAllData,
     getBackupSummary,
-    BackupSummary
+    BackupSummary,
+    BackupV1
 } from "@/features/settings/backup/backup-utils"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 
 export default function SettingsPage() {
     const queryClient = useQueryClient()
     const [status, setStatus] = useState<{ type: "success" | "error" | "info"; message: string; summary?: BackupSummary } | null>(null)
     const [isLoading, setIsLoading] = useState(false)
+    const [showResetDialog, setShowResetDialog] = useState(false)
+    const [showImportDialog, setShowImportDialog] = useState(false)
+    const [pendingBackup, setPendingBackup] = useState<{ backup: BackupV1; summary: BackupSummary } | null>(null)
 
     const pad2 = (n: number) => n.toString().padStart(2, "0")
 
@@ -34,10 +46,12 @@ export default function SettingsPage() {
         ])
     }
 
-    const handleReset = async () => {
-        if (!window.confirm("Vuoi davvero eliminare tutti i dati? Questa azione è irreversibile.")) {
-            return
-        }
+    const handleReset = () => {
+        setShowResetDialog(true)
+    }
+
+    const confirmReset = async () => {
+        setShowResetDialog(false)
 
         setIsLoading(true)
         setStatus(null)
@@ -109,31 +123,31 @@ export default function SettingsPage() {
 
             if (!result.ok) {
                 setStatus({ type: "error", message: result.error })
+                setIsLoading(false)
                 return
             }
 
             const summary = getBackupSummary(result.backup)
+            setPendingBackup({ backup: result.backup, summary })
+            setShowImportDialog(true)
+        } catch (error) {
+            console.error("Import error:", error)
+            setStatus({ type: "error", message: "Errore durante l'importazione del backup." })
+        } finally {
+            setIsLoading(false)
+            event.target.value = ""
+        }
+    }
 
-            // Show summary first as visual feedback
-            setStatus({
-                type: "info",
-                message: "Backup caricato e pronto per il ripristino.",
-                summary
-            })
+    const confirmImport = async () => {
+        if (!pendingBackup) return
 
-            const confirmMsg = `ATTENZIONE: Importare questo backup sovrascriverà TUTTI i dati locali attuali.\n\n` +
-                `Dati trovati:\n` +
-                `- Transazioni: ${summary.txCount}\n` +
-                `- Piano Budget: ${summary.budgetCount}\n` +
-                `- Periodi: ${summary.periods.join(", ")}\n\n` +
-                `Vuoi continuare?`;
+        setShowImportDialog(false)
+        setIsLoading(true)
+        setStatus(null)
 
-            if (!window.confirm(confirmMsg)) {
-                setStatus(null)
-                return
-            }
-
-            applyBackupOverwrite(result.backup)
+        try {
+            applyBackupOverwrite(pendingBackup.backup)
             await invalidateAll()
             setStatus({ type: "success", message: "Backup ripristinato con successo." })
         } catch (error) {
@@ -141,8 +155,7 @@ export default function SettingsPage() {
             setStatus({ type: "error", message: "Errore durante l'importazione del backup." })
         } finally {
             setIsLoading(false)
-            // Reset input
-            event.target.value = ""
+            setPendingBackup(null)
         }
     }
 
@@ -281,6 +294,71 @@ export default function SettingsPage() {
                     LumaBudget è un&apos;applicazione &quot;local-first&quot;. I tuoi dati non lasciano mai questo dispositivo e non vengono inviati a nessun server esterno.
                 </AlertDescription>
             </Alert>
+
+            {/* Confirmation Dialogs */}
+            <Dialog open={showResetDialog} onOpenChange={setShowResetDialog}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Reset Totale dei Dati</DialogTitle>
+                        <DialogDescription>
+                            Vuoi davvero eliminare tutti i dati? Questa azione cancellerà permanentemente tutte le transazioni e i piani di budget salvati localmente. Questa azione è irreversibile.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="gap-2 sm:gap-0">
+                        <Button variant="ghost" onClick={() => setShowResetDialog(false)}>
+                            Annulla
+                        </Button>
+                        <Button variant="destructive" onClick={confirmReset}>
+                            Reset dati
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={showImportDialog} onOpenChange={setShowImportDialog}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Conferma Importazione Backup</DialogTitle>
+                        <DialogDescription>
+                            ATTENZIONE: Importare questo backup sovrascriverà TUTTI i dati locali attuali.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    {pendingBackup && (
+                        <div className="py-4 space-y-3">
+                            <div className="rounded-md bg-muted p-4 space-y-2 text-sm">
+                                <p className="font-semibold border-b pb-1 mb-2">Pillola dei dati trovati:</p>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <span className="text-muted-foreground">Transazioni:</span>
+                                    <span className="font-medium">{pendingBackup.summary.txCount}</span>
+
+                                    <span className="text-muted-foreground">Piani Budget:</span>
+                                    <span className="font-medium">{pendingBackup.summary.budgetCount}</span>
+                                </div>
+                                <div className="pt-1">
+                                    <span className="text-muted-foreground block mb-1">Periodi inclusi:</span>
+                                    <div className="flex flex-wrap gap-1">
+                                        {pendingBackup.summary.periods.map(period => (
+                                            <span key={period} className="px-1.5 py-0.5 bg-background border rounded text-[10px] font-mono">
+                                                {period}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <DialogFooter className="gap-2 sm:gap-0">
+                        <Button variant="ghost" onClick={() => setShowImportDialog(false)}>
+                            Annulla
+                        </Button>
+                        <Button onClick={confirmImport}>
+                            Importa e Sovrascrivi
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

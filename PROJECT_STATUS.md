@@ -12,9 +12,10 @@ src/
 │   ├── layout.tsx              # [REAL] AppShell, QueryProvider, Toaster
 │   ├── page.tsx                # [REAL] Dashboard (KPIs + Charts)
 │   ├── transactions/page.tsx   # [REAL] CRUD Table + Filters + Export
-│   └── budget/page.tsx         # [REAL] Budget Mgmt (Global vs Groups)
+│   ├── budget/page.tsx         # [REAL] Budget Mgmt (Global vs Groups)
+│   └── settings/page.tsx       # [REAL] Prefs (Data/UI) + Reset/Backup
 ├── components/
-│   ├── layout/sidebar.tsx      # [REAL] Navigation (Insights/Settings links exist but point to 404)
+│   ├── layout/sidebar.tsx      # [REAL] Navigation (Insights link exists but points to 404)
 │   └── ui/                     # [REAL] Shadcn-like components (Button, Input, Dialog...)
 ├── features/
 │   ├── budget/
@@ -22,6 +23,9 @@ src/
 │   │   └── utils/calculate-budget.ts # [REAL] Spending logic (uses currency-utils)
 │   ├── dashboard/
 │   │   └── api/mock-data.ts    # [REAL] Aggregates Transactions + Budget for KPIs
+│   ├── settings/
+│   │   ├── api/repository.ts   # [REAL] Settings V1 Persistance (luma_settings_v1)
+│   │   └── backup/backup-utils.ts # [REAL] Import/Export/Reset Logic
 │   └── transactions/
 │       ├── api/mock-data.ts    # [DEMO] LocalStorage CRUD (luma_transactions_v1) + Cache
 │       └── components/         # [REAL] QuickExpenseInput, TransactionForm, Edit/Delete Dialogs
@@ -40,12 +44,12 @@ src/
 | **Export CSV** | Transazioni | ✅ Definitivo | 100% | `export-transactions.ts`. Supporta encoding UTF-8 BOM per Excel. |
 | **Budget Plan** | Budget | ✅ Definitivo | 100% | `budget-calculations.test.ts`. Gestione mensile globale e per gruppi. |
 | **Logic Superflue** | Core | 🟡 Migliorabile | 90% | Regole basate su categoria funzionanti. Override manuale supportato ma basico. |
-| **Cross-tab Sync** | Core | ✅ Definitivo | 100% | `storage-utils.ts`. Aggiorna la UI se cambi dati in un altro tab. |
+| **Cross-tab Sync** | Core | ✅ Definitivo | 100% | `storage-utils.ts` + `QueryProvider`. Settings, Budget e TXs sync. |
 | **Currency Parsing**| Lib | ✅ Definitivo | 100% | `currency-utils.test.ts`. Euristica 3 cifre, integer math. Bug 30.00 fixato. |
+| **Impostazioni** | Settings | ✅ Definitivo | 100% | `settings-persistence.test.ts`. Reset granulare, Theme/Currency, Backup/restore. |
 | **Insights** | Insights | 🔴 Da avviare | 0% | Link in sidebar presente, route non esistente. |
-| **Impostazioni** | Settings | 🔴 Da avviare | 0% | Link in sidebar presente. Nessuna gestione profilo/reset dati da UI. |
 
-**Stima Avanzamento Totale App: ~75%** (Core features complete, mancano views secondarie e polish).
+**Stima Avanzamento Totale App: ~85%** (Core features complete, Settings complete, manca solo Insights).
 
 ## D) Timeline Cronologica (Ricostruita)
 1.  **Project Setup & UI Core** (0% → 15%)
@@ -53,7 +57,7 @@ src/
     *   Struttura layout (Sidebar, Topbar).
 2.  **Transactions Feature** (15% → 40%)
     *   Lista transazioni mockup.
-    *   Implementazione Mock API + LocalStorage (`luma_transactions_v1`).
+    *   Creato Mock API + LocalStorage (`luma_transactions_v1`).
     *   QuickExpenseInput component.
 3.  **Cross-Tab Sync & Fixes** (40% → 50%)
     *   `storage-utils.ts` refactor.
@@ -65,11 +69,17 @@ src/
 5.  **Dashboard Refinement** (65% → 70%)
     *   Calcolo corretto "Budget Rimanente" (slegato da Income).
     *   Introduzione KPI "Saldo Mensile".
-6.  **Robust Currency Parsing** (70% → 75% - **OGGI**)
+6.  **Robust Currency Parsing** (70% → 75%)
     *   Identificato bug precisione ("30.00" -> 3000).
     *   Creazione `src/lib/currency-utils.ts` con euristica 3 cifre.
     *   Refactor a tappeto su API, Form, Export e Card per usare centesimi interi.
     *   Copertura test 100% sulla logica finanziaria (62 tests passing).
+7.  **Settings V1 Complete** (75% → 85% - **OGGI**)
+    *   Implementato Data Layer Settings (`luma_settings_v1`).
+    *   Route `/settings` completa con UI Preferenze (Tema/Valuta).
+    *   Reset Granulare (Transazioni/Budget/All) con feedback e controlli sicurezza.
+    *   Backup/Restore JSON funzionante.
+    *   Icone Lucide unificate nel budget.
 
 ## E) Backlog
 ### In sospeso
@@ -78,15 +88,12 @@ src/
 
 ### Da avviare
 *   **Pagina Insights**: Grafici avanzati (trend annuale, breakdown categorie).
-*   **Pagina Impostazioni**:
-    *   Pulsante "Reset Dati" (Hard Reset).
-    *   Import/Backup dati (JSON).
 *   **Onboarding**: Wizard iniziale per settare il primo budget se vuoto.
 
 ## F) Raccomandazioni (Prossimi 3 Step)
-1.  **Implementare "Impostazioni" con Reset Dati**: Essenziale per il testing utente e per "pulire" i dati di prova (attualmente serve cancellare localStorage manualmente).
-    *   *Motivazione*: Basso sforzo, alto valore per DX e testabilità.
-2.  **Pagina Insights**: Sfruttare i dati già robusti per visualizzare trend di spesa.
+1.  **Pagina Insights**: Sfruttare i dati già robusti per visualizzare trend di spesa.
     *   *Motivazione*: Completa il valore "analitico" dell'app oltre la semplice registrazione.
-3.  **Category Management**: Spostare le categorie da `config.ts` allo storage o permettere customizzazione semplice.
+2.  **Category Management**: Spostare le categorie da `config.ts` allo storage o permettere customizzazione semplice.
     *   *Motivazione*: Rende l'app utilizzabile da utenti con esigenze diverse (es. chi non ha "Auto" ma "Moto").
+3.  **Refactor Provider Tema**: Applicare effettivamente il tema (Dark/Light) usando il valore salvato nei Settings.
+    *   *Motivazione*: Attualmente il settings viene salvato ma non applica la classe CSS al body.

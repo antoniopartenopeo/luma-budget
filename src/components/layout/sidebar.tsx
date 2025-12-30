@@ -1,8 +1,9 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Receipt, PiggyBank, LineChart, Settings, Wallet } from "lucide-react"
+import { LayoutDashboard, Receipt, PiggyBank, LineChart, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -22,11 +23,18 @@ export function Sidebar() {
     <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r bg-sidebar text-sidebar-foreground">
       <div className="flex h-full flex-col">
         {/* Logo Area */}
-        <div className="flex h-16 items-center border-b px-6">
-          <div className="flex items-center gap-2 font-bold text-xl text-primary">
-            <Wallet className="h-6 w-6" />
-            <span>LumaBudget</span>
-          </div>
+        <div className="flex h-20 items-center border-b px-4">
+          <Link href="/" className="flex items-center">
+            <div className="relative h-12 w-52 overflow-hidden">
+              <Image
+                src="/app-logo.png"
+                alt="LumaBudget"
+                fill
+                className="object-contain object-left"
+                priority
+              />
+            </div>
+          </Link>
         </div>
 
         {/* Navigation */}

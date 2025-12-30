@@ -5,7 +5,7 @@ import { QuickExpenseInput } from "@/features/transactions/components/quick-expe
 export function TopBar() {
     return (
         <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur-md">
-            <div className="flex h-16 items-center gap-4 px-6">
+            <div className="flex h-20 items-center gap-4 px-6">
                 <div className="flex flex-1 items-center">
                     <QuickExpenseInput />
                 </div>

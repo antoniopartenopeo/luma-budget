@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Pencil, Check, X, AlertTriangle } from "lucide-react"
+import { Pencil, Check, X, AlertTriangle, Home, Sparkles, Target, LucideIcon } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -22,10 +22,10 @@ interface GroupBudgetCardProps {
     isSaving?: boolean
 }
 
-const GROUP_ICONS: Record<BudgetGroupId, string> = {
-    essential: "🏠",
-    comfort: "✨",
-    superfluous: "🎯"
+const GROUP_ICONS: Record<BudgetGroupId, LucideIcon> = {
+    essential: Home,
+    comfort: Sparkles,
+    superfluous: Target
 }
 
 const GROUP_COLORS: Record<BudgetGroupId, string> = {
@@ -41,6 +41,7 @@ export function GroupBudgetCard({ groupId, budget, spent, isLoading, onSave, isS
     const remaining = budget - spent
     const isOverBudget = budget > 0 && spent > budget
     const label = BUDGET_GROUP_LABELS[groupId]
+    const Icon = GROUP_ICONS[groupId]
 
     const handleStartEdit = () => {
         setEditValue(budget > 0 ? budget.toString() : "")
@@ -78,9 +79,9 @@ export function GroupBudgetCard({ groupId, budget, spent, isLoading, onSave, isS
         <Card className="rounded-xl shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div className="flex items-center gap-2">
-                    <span className={cn("text-lg rounded-full w-8 h-8 flex items-center justify-center", GROUP_COLORS[groupId])}>
-                        {GROUP_ICONS[groupId]}
-                    </span>
+                    <div className={cn("rounded-full w-8 h-8 flex items-center justify-center", GROUP_COLORS[groupId])}>
+                        <Icon className="h-4 w-4" />
+                    </div>
                     <CardTitle className="text-base font-medium">{label}</CardTitle>
                 </div>
                 <div className="flex items-center gap-1">

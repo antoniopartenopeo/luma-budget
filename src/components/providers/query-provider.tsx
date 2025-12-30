@@ -32,6 +32,10 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
                 // The dashboard might depend on budget vs actuals
                 queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] })
             }
+
+            if (e.key === "luma_settings_v1") {
+                queryClient.invalidateQueries({ queryKey: ["settings"] })
+            }
         }
 
         window.addEventListener("storage", handleStorageChange)

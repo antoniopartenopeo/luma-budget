@@ -2,11 +2,14 @@
 
 import { useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
-import { Trash2, Database, Download, Upload, CheckCircle2, AlertCircle, Loader2 } from "lucide-react"
+import { Trash2, Database, Download, Upload, CheckCircle2, AlertCircle, Loader2, Settings2 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { seedTransactions, __resetTransactionsCache } from "@/features/transactions/api/repository"
+import { resetSettings } from "@/features/settings/api/repository"
 import {
     buildBackupV1,
     serializeBackup,
@@ -25,6 +28,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
+import { useSettings, useUpsertSettings } from "@/features/settings/api/use-settings"
+import { ThemePreference, CurrencyCode } from "@/features/settings/api/types"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function SettingsPage() {
     const queryClient = useQueryClient()
@@ -33,6 +39,38 @@ export default function SettingsPage() {
     const [showResetDialog, setShowResetDialog] = useState(false)
     const [showImportDialog, setShowImportDialog] = useState(false)
     const [pendingBackup, setPendingBackup] = useState<{ backup: BackupV1; summary: BackupSummary } | null>(null)
+
+    const { data: settings, isLoading: isSettingsLoading, isError: isSettingsError } = useSettings()
+    const upsertSettings = useUpsertSettings()
+    const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle")
+
+    const handleThemeChange = (theme: string) => {
+        setSaveStatus("saving")
+        upsertSettings.mutate({ theme: theme as ThemePreference }, {
+            onSuccess: () => {
+                setSaveStatus("success")
+                setTimeout(() => setSaveStatus("idle"), 2000)
+            },
+            onError: () => {
+                setSaveStatus("error")
+                setTimeout(() => setSaveStatus("idle"), 3000)
+            }
+        })
+    }
+
+    const handleCurrencyChange = (currency: string) => {
+        setSaveStatus("saving")
+        upsertSettings.mutate({ currency: currency as CurrencyCode }, {
+            onSuccess: () => {
+                setSaveStatus("success")
+                setTimeout(() => setSaveStatus("idle"), 2000)
+            },
+            onError: () => {
+                setSaveStatus("error")
+                setTimeout(() => setSaveStatus("idle"), 3000)
+            }
+        })
+    }
 
     const pad2 = (n: number) => n.toString().padStart(2, "0")
 
@@ -51,18 +89,100 @@ export default function SettingsPage() {
     }
 
     const confirmReset = async () => {
-        setShowResetDialog(false)
+        // Keeps the existing logic for the "Reset Totale" dialog if invoked, but we'll try to steer towards granular buttons.
+        // The user request asks for window.confirm for the granular ones.
+        // For "Reset Tutto", let's update it to clear EVERYTHING including settings.
 
+        setShowResetDialog(false)
         setIsLoading(true)
         setStatus(null)
 
         try {
+            // New complete reset logic
             resetAllData()
+            resetSettings() // Clear settings too using the imported repo/hook logic function if available, 
+            // or better, use the one from repository directly in the handler.
+            // Since we didn't export it from backup-utils (to avoid deps), we do it here.
+
+            // Invalidate everything
             await invalidateAll()
+            await queryClient.invalidateQueries({ queryKey: ["settings"] })
+
             setStatus({ type: "success", message: "Tutti i dati sono stati eliminati con successo." })
         } catch (error) {
             console.error("Reset error:", error)
             setStatus({ type: "error", message: "Si è verificato un errore durante il reset dei dati." })
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const handleResetTransactions = async () => {
+        if (!window.confirm("Sei sicuro di voler eliminare TUTTE le transazioni? Questa azione è irreversibile.")) {
+            return
+        }
+
+        setIsLoading(true)
+        setStatus(null)
+        try {
+            const { resetTransactions: resetTx } = await import("@/features/settings/backup/backup-utils")
+            resetTx()
+            __resetTransactionsCache()
+
+            await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+                queryClient.invalidateQueries({ queryKey: ["recent-transactions"] }),
+                queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] })
+            ])
+
+            setStatus({ type: "success", message: "Tutte le transazioni sono state eliminate." })
+        } catch (error) {
+            console.error("Reset transactions error:", error)
+            setStatus({ type: "error", message: "Errore durante l'eliminazione delle transazioni." })
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const handleResetBudgets = async () => {
+        if (!window.confirm("Sei sicuro di voler eliminare TUTTI i piani di budget? Questa azione è irreversibile.")) {
+            return
+        }
+
+        setIsLoading(true)
+        setStatus(null)
+        try {
+            const { resetBudgets: resetBudgetsFn } = await import("@/features/settings/backup/backup-utils")
+            resetBudgetsFn()
+
+            await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ["budgets"] }),
+                queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] })
+            ])
+
+            setStatus({ type: "success", message: "Tutti i budget sono stati eliminati." })
+        } catch (error) {
+            console.error("Reset budgets error:", error)
+            setStatus({ type: "error", message: "Errore durante l'eliminazione dei budget." })
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const handleResetSettings = async () => {
+        if (!window.confirm("Sei sicuro di voler ripristinare le impostazioni predefinite?")) {
+            return
+        }
+
+        setIsLoading(true)
+        setStatus(null)
+        try {
+            resetSettings()
+            await queryClient.invalidateQueries({ queryKey: ["settings"] })
+            setStatus({ type: "success", message: "Le impostazioni sono state ripristinate." })
+        } catch (error) {
+            console.error("Reset settings error:", error)
+            setStatus({ type: "error", message: "Errore durante il ripristino delle impostazioni." })
         } finally {
             setIsLoading(false)
         }
@@ -169,6 +289,96 @@ export default function SettingsPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-6">
+                {/* Preferences */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Settings2 className="h-5 w-5" />
+                            Preferenze
+                            <div className="ml-auto text-sm font-normal">
+                                {saveStatus === "saving" && (
+                                    <span className="text-muted-foreground flex items-center">
+                                        <Loader2 className="h-3 w-3 mr-2 animate-spin" /> Salvataggio...
+                                    </span>
+                                )}
+                                {saveStatus === "success" && (
+                                    <span className="text-green-600 flex items-center">
+                                        <CheckCircle2 className="h-3 w-3 mr-2" /> Salvato
+                                    </span>
+                                )}
+                                {saveStatus === "error" && (
+                                    <span className="text-destructive flex items-center">
+                                        <AlertCircle className="h-3 w-3 mr-2" /> Errore
+                                    </span>
+                                )}
+                            </div>
+                        </CardTitle>
+                        <CardDescription>
+                            Personalizza aspetto e comportamento dell&apos;applicazione.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {isSettingsLoading ? (
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <Skeleton className="h-4 w-20" />
+                                    <Skeleton className="h-10 w-full md:w-[280px]" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Skeleton className="h-4 w-20" />
+                                    <Skeleton className="h-10 w-full md:w-[280px]" />
+                                </div>
+                            </div>
+                        ) : isSettingsError ? (
+                            <Alert variant="destructive">
+                                <AlertCircle className="h-4 w-4" />
+                                <AlertTitle>Errore</AlertTitle>
+                                <AlertDescription>
+                                    Impossibile caricare le preferenze. Verranno usati i valori predefiniti.
+                                </AlertDescription>
+                            </Alert>
+                        ) : (
+                            <div className="grid gap-6 md:grid-cols-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="theme-select">Tema</Label>
+                                    <Select
+                                        value={settings?.theme || "system"}
+                                        onValueChange={handleThemeChange}
+                                        disabled={upsertSettings.isPending}
+                                    >
+                                        <SelectTrigger id="theme-select">
+                                            <SelectValue placeholder="Seleziona tema" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="system">Sistema (Auto)</SelectItem>
+                                            <SelectItem value="light">Chiaro</SelectItem>
+                                            <SelectItem value="dark">Scuro</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="currency-select">Valuta principale</Label>
+                                    <Select
+                                        value={settings?.currency || "EUR"}
+                                        onValueChange={handleCurrencyChange}
+                                        disabled={upsertSettings.isPending}
+                                    >
+                                        <SelectTrigger id="currency-select">
+                                            <SelectValue placeholder="Seleziona valuta" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="EUR">Euro (€)</SelectItem>
+                                            <SelectItem value="USD">Dollaro ($)</SelectItem>
+                                            <SelectItem value="GBP">Sterlina (£)</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+
                 {/* Backup & Restore */}
                 <Card>
                     <CardHeader>
@@ -243,44 +453,81 @@ export default function SettingsPage() {
                     <CardHeader>
                         <CardTitle className="text-destructive flex items-center gap-2">
                             <Trash2 className="h-5 w-5" />
-                            Azioni Pericolose
+                            Gestione Dati e Ripristino
                         </CardTitle>
                         <CardDescription>
-                            Queste azioni modificano radicalmente i tuoi dati in modo permanente.
+                            Azioni distruttive per rimuovere i dati dall&apos;applicazione.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex flex-col sm:flex-row gap-8">
-                            <div className="flex-1 space-y-2">
-                                <h3 className="text-sm font-medium">Reset Totale</h3>
-                                <p className="text-xs text-muted-foreground">
-                                    Elimina permanentemente tutte le transazioni e i piani di budget.
-                                </p>
-                                <Button
-                                    variant="destructive"
-                                    onClick={handleReset}
-                                    disabled={isLoading}
-                                    className="w-full sm:w-auto"
-                                >
-                                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
-                                    Reset dati
-                                </Button>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                            {/* Granular Resets */}
+                            <div className="space-y-4">
+                                <h3 className="text-sm font-medium">Reset Granulare</h3>
+
+                                <div className="flex flex-col gap-2">
+                                    <Button
+                                        variant="outline"
+                                        onClick={handleResetTransactions}
+                                        disabled={isLoading}
+                                        className="justify-start text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/20"
+                                    >
+                                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                                        Elimina solo transazioni
+                                    </Button>
+
+                                    <Button
+                                        variant="outline"
+                                        onClick={handleResetBudgets}
+                                        disabled={isLoading}
+                                        className="justify-start text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/20"
+                                    >
+                                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                                        Elimina solo budget
+                                    </Button>
+
+                                    <Button
+                                        variant="outline"
+                                        onClick={handleResetSettings}
+                                        disabled={isLoading}
+                                        className="justify-start text-muted-foreground hover:bg-muted"
+                                    >
+                                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Settings2 className="mr-2 h-4 w-4" />}
+                                        Ripristina impostazioni default
+                                    </Button>
+                                </div>
                             </div>
 
-                            <div className="flex-1 space-y-2">
-                                <h3 className="text-sm font-medium">Ripristina Demo</h3>
-                                <p className="text-xs text-muted-foreground">
-                                    Sostituisce i dati attuali con il set di transazioni demo di LumaBudget.
-                                </p>
-                                <Button
-                                    variant="outline"
-                                    onClick={handleSeed}
-                                    disabled={isLoading}
-                                    className="w-full sm:w-auto"
-                                >
-                                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Database className="mr-2 h-4 w-4" />}
-                                    Carica dati demo
-                                </Button>
+                            {/* Full Reset / Seed */}
+                            <div className="space-y-4 border-t sm:border-t-0 sm:border-l pt-4 sm:pt-0 sm:pl-8">
+                                <h3 className="text-sm font-medium">Azioni Globali</h3>
+
+                                <div className="flex flex-col gap-2">
+                                    <Button
+                                        variant="destructive"
+                                        onClick={handleReset}
+                                        disabled={isLoading}
+                                        className="w-full"
+                                    >
+                                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                                        Reset totale (Tutto)
+                                    </Button>
+
+                                    <div className="h-2"></div>
+
+                                    <Button
+                                        variant="outline"
+                                        onClick={handleSeed}
+                                        disabled={isLoading}
+                                        className="w-full"
+                                    >
+                                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Database className="mr-2 h-4 w-4" />}
+                                        Carica dati demo
+                                    </Button>
+                                    <p className="text-[10px] text-muted-foreground mt-1 text-center">
+                                        Rimuove tutto e carica dati di esempio
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </CardContent>
@@ -301,7 +548,7 @@ export default function SettingsPage() {
                     <DialogHeader>
                         <DialogTitle>Reset Totale dei Dati</DialogTitle>
                         <DialogDescription>
-                            Vuoi davvero eliminare tutti i dati? Questa azione cancellerà permanentemente tutte le transazioni e i piani di budget salvati localmente. Questa azione è irreversibile.
+                            Vuoi davvero eliminare tutti i dati? Questa azione cancellerà permanentemente tutte le transazioni, i piani di budget e le impostazioni. Questa azione è irreversibile.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="gap-2 sm:gap-0">
@@ -309,7 +556,7 @@ export default function SettingsPage() {
                             Annulla
                         </Button>
                         <Button variant="destructive" onClick={confirmReset}>
-                            Reset dati
+                            Reset totale
                         </Button>
                     </DialogFooter>
                 </DialogContent>

@@ -93,11 +93,30 @@ export const applyBackupOverwrite = (backup: BackupV1): void => {
 };
 
 /**
+ * Clears only transaction data.
+ */
+export const resetTransactions = (): void => {
+    storage.remove(STORAGE_KEYS.TRANSACTIONS);
+};
+
+/**
+ * Clears only budget data.
+ */
+export const resetBudgets = (): void => {
+    storage.remove(STORAGE_KEYS.BUDGETS);
+};
+
+/**
  * Completely clears all application data from localStorage.
  */
 export const resetAllData = (): void => {
     storage.remove(STORAGE_KEYS.TRANSACTIONS);
     storage.remove(STORAGE_KEYS.BUDGETS);
+    // Note: We don't import resetSettings from repository here to avoid circular depends,
+    // but the consumer (SettingsPage) should handle calling resetSettings provided by the hooks
+    // or we can add the key cancellation here if we make the key public.
+    // For now we add the key explicitly if needed or let the consumer handle it.
+    // Let's stick to the pattern: the consumer orchestrates the "reset all".
 };
 
 export type BackupSummary = {

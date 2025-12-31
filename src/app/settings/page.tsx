@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import { Trash2, Database, Download, Upload, CheckCircle2, AlertCircle, Loader2, Settings2 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,6 +8,14 @@ import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
 import { seedTransactions, __resetTransactionsCache } from "@/features/transactions/api/repository"
 import { resetSettings } from "@/features/settings/api/repository"
 import {
@@ -20,6 +28,11 @@ import {
     BackupSummary,
     BackupV1
 } from "@/features/settings/backup/backup-utils"
+import {
+    buildDiagnosticsSnapshot,
+    DiagnosticsSnapshot,
+} from "@/features/settings/diagnostics/diagnostics-utils"
+import { Copy, Info } from "lucide-react"
 import {
     Dialog,
     DialogContent,
@@ -43,6 +56,27 @@ export default function SettingsPage() {
     const { data: settings, isLoading: isSettingsLoading, isError: isSettingsError } = useSettings()
     const upsertSettings = useUpsertSettings()
     const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle")
+
+    // Diagnostics State
+    const [diagnostics, setDiagnostics] = useState<DiagnosticsSnapshot | null>(null)
+    const [copyFeedback, setCopyFeedback] = useState<"idle" | "success" | "error">("idle")
+
+    useEffect(() => {
+        setDiagnostics(buildDiagnosticsSnapshot())
+    }, [])
+
+    const handleCopyDiagnostics = async () => {
+        if (!diagnostics) return
+        try {
+            await navigator.clipboard.writeText(JSON.stringify(diagnostics, null, 2))
+            setCopyFeedback("success")
+            setTimeout(() => setCopyFeedback("idle"), 2000)
+        } catch (e) {
+            console.error("Copy failed", e)
+            setCopyFeedback("error")
+            setTimeout(() => setCopyFeedback("idle"), 2000)
+        }
+    }
 
     const handleThemeChange = (theme: string) => {
         setSaveStatus("saving")
@@ -374,6 +408,104 @@ export default function SettingsPage() {
                                         </SelectContent>
                                     </Select>
                                 </div>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+
+                {/* About & Diagnostics */}
+                {/* Visualizza informazioni su versione e storage locale con utility di copia */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Info className="h-5 w-5" />
+                            About & Diagnostics
+                        </CardTitle>
+                        <CardDescription>
+                            Informazioni tecniche sulla versione e sullo stato dei dati locali.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        {diagnostics ? (
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between text-sm">
+                                    <div>
+                                        <span className="font-medium">Versione App:</span>{" "}
+                                        {diagnostics.app.version}
+                                    </div>
+                                    <div>
+                                        <span className="font-medium">Ambiente:</span>{" "}
+                                        {diagnostics.app.env}
+                                    </div>
+                                </div>
+
+                                <div className="rounded-md border">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Storage Key</TableHead>
+                                                <TableHead className="w-[100px]">Stato</TableHead>
+                                                <TableHead className="w-[100px]">Size</TableHead>
+                                                <TableHead>Dettagli</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {diagnostics.storage.map((item) => (
+                                                <TableRow key={item.key}>
+                                                    <TableCell className="font-mono text-xs text-muted-foreground">{item.key}</TableCell>
+                                                    <TableCell>
+                                                        {item.present ? (
+                                                            <span className="text-green-600 font-medium text-xs">Presente</span>
+                                                        ) : (
+                                                            <span className="text-muted-foreground text-xs">Mancante</span>
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell className="text-xs">
+                                                        {Math.round(item.approxBytes / 1024 * 10) / 10} KB
+                                                    </TableCell>
+                                                    <TableCell className="text-xs text-muted-foreground">
+                                                        {item.summary}
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+
+                                <div className="flex justify-end">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={handleCopyDiagnostics}
+                                        className="gap-2"
+                                        disabled={copyFeedback !== "idle"}
+                                    >
+                                        {copyFeedback === "success" ? (
+                                            <>
+                                                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                                Copiato
+                                            </>
+                                        ) : copyFeedback === "error" ? (
+                                            <>
+                                                <AlertCircle className="h-4 w-4 text-destructive" />
+                                                Errore
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Copy className="h-4 w-4" />
+                                                Copia diagnostica
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
+
+                                <div className="text-[10px] text-muted-foreground">
+                                    Generated at: {diagnostics.generatedAt}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="text-sm text-muted-foreground">
+                                Caricamento diagnostica in corso... (disponibile solo nel browser)
                             </div>
                         )}
                     </CardContent>

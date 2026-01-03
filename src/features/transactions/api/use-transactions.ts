@@ -53,9 +53,9 @@ export const useDeleteTransaction = () => {
         mutationFn: (id: string) =>
             import("./repository").then(mod => mod.deleteTransaction(id)),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["recent-transactions"] })
-            queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] })
-            queryClient.invalidateQueries({ queryKey: ["transactions"] })
+            queryClient.invalidateQueries({ queryKey: queryKeys.transactions.recent })
+            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
+            queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all })
         },
     })
 }

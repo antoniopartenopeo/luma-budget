@@ -1,53 +1,85 @@
-import { DashboardSummary } from "./types"
+import { DashboardSummary, DashboardTimeFilter } from "./types"
 import { fetchTransactions } from "../../transactions/api/repository"
 import { fetchBudget } from "../../budget/api/repository"
-import { getCurrentPeriod } from "../../budget/utils/calculate-budget"
 import { parseCurrencyToCents } from "@/lib/currency-utils"
 
 const DEFAULT_USER_ID = "user-1"
 
-export const fetchDashboardSummary = async (): Promise<DashboardSummary> => {
+export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promise<DashboardSummary> => {
     // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    await new Promise((resolve) => setTimeout(resolve, 600))
 
-    const currentPeriod = getCurrentPeriod()
+    // 1. Determine date range for filtered metrics
+    const endDate = new Date(filter.period + "-01")
+    // Set to end of month
+    endDate.setMonth(endDate.getMonth() + 1)
+    endDate.setDate(0)
+
+    const startDate = new Date(filter.period + "-01")
+    if (filter.mode === "range" && filter.months) {
+        startDate.setMonth(startDate.getMonth() - (filter.months - 1))
+    }
+    // Set to start of month
+    startDate.setDate(1)
+
+    // 2. Fetch all data
+    // In a real app, we would filter in the query, but here we fetch all and filter in memory
     const [transactions, budgetPlan] = await Promise.all([
         fetchTransactions(),
-        fetchBudget(DEFAULT_USER_ID, currentPeriod)
+        // Budget logic: always fetch for the "pivot" period (filter.period)
+        fetchBudget(DEFAULT_USER_ID, filter.period)
     ])
 
-    // Calculate Total Expenses (all time or just current month? Current dashboard seems to show a mix, 
-    // but totalSpent/budgetRemaining usually refer to current period in a budget context)
-    // However, keeping previous behavior of "all transactions" for charts but period-specific for KPIs
-    const currentMonthTxs = transactions.filter(t => {
-        const tDate = new Date(t.timestamp)
-        const [y, m] = currentPeriod.split("-").map(Number)
-        return tDate.getFullYear() === y && tDate.getMonth() + 1 === m
-    })
+    // 3. Calculate All-Time Net Balance (Global, unfiltered)
+    const allTimeIncomeCents = transactions
+        .filter(t => t.type === 'income')
+        .reduce((acc, t) => acc + Math.abs(parseCurrencyToCents(t.amount)), 0)
 
-    const totalExpensesCents = currentMonthTxs
+    const allTimeExpensesCents = transactions
         .filter(t => t.type === 'expense')
         .reduce((acc, t) => acc + Math.abs(parseCurrencyToCents(t.amount)), 0)
 
-    // Calculate Total Income
-    const totalIncomeCents = currentMonthTxs
+    const netBalance = (allTimeIncomeCents - allTimeExpensesCents) / 100
+
+    // 4. Filter transactions for the selected range
+    const rangeTransactions = transactions.filter(t => {
+        const tDate = new Date(t.timestamp)
+        return tDate >= startDate && tDate <= endDate
+    })
+
+    // 5. Calculate Metrics based on Range
+    const totalExpensesCents = rangeTransactions
+        .filter(t => t.type === 'expense')
+        .reduce((acc, t) => acc + Math.abs(parseCurrencyToCents(t.amount)), 0)
+
+    const totalIncomeCents = rangeTransactions
         .filter(t => t.type === 'income')
         .reduce((acc, t) => acc + Math.abs(parseCurrencyToCents(t.amount)), 0)
 
     const totalSpent = totalExpensesCents / 100
     const totalIncome = totalIncomeCents / 100
 
-    // Calculate Net Balance (Income - Expenses) - keeping original sign logic
-    const netBalance = (totalIncomeCents - totalExpensesCents) / 100
+    // 6. Calculate Budget Remaining
+    // Rule: mode="month" -> use period; mode="range" -> use end period (filter.period)
+    // Budget comparison is always against the "current/selected" month's expenses, even if showing a range chart.
+    // So we need expenses specifically for filter.period (the target month)
+    const [tYear, tMonth] = filter.period.split('-').map(Number)
+    const targetMonthExpensesCents = transactions
+        .filter(t => {
+            const tDate = new Date(t.timestamp)
+            return t.type === 'expense' &&
+                tDate.getFullYear() === tYear &&
+                tDate.getMonth() + 1 === tMonth
+        })
+        .reduce((acc, t) => acc + Math.abs(parseCurrencyToCents(t.amount)), 0)
 
-    // Calculate Budget Remaining using real budget plan (Budget - Expenses)
     const budgetTotal = budgetPlan?.globalBudgetAmount || 0
     const budgetTotalCents = Math.round(budgetTotal * 100)
-    const budgetRemaining = Math.max((budgetTotalCents - totalExpensesCents) / 100, 0)
+    const budgetRemaining = Math.max((budgetTotalCents - targetMonthExpensesCents) / 100, 0)
 
-    // Calculate Category Distribution (Current month only for consistency with totalSpent)
+    // 7. Calculate Category Distribution (Range-based)
     const categoryMap = new Map<string, { label: string, amount: number }>()
-    currentMonthTxs.filter(t => t.type === 'expense').forEach(t => {
+    rangeTransactions.filter(t => t.type === 'expense').forEach(t => {
         const amountCents = Math.abs(parseCurrencyToCents(t.amount))
         const current = categoryMap.get(t.categoryId) || { label: t.category, amount: 0 }
         categoryMap.set(t.categoryId, { label: t.category, amount: current.amount + (amountCents / 100) })
@@ -60,36 +92,54 @@ export const fetchDashboardSummary = async (): Promise<DashboardSummary> => {
         color: `hsl(var(--chart-${(index % 5) + 1}))`
     }))
 
-    // Calculate Useless Spending (Using isSuperfluous flag, current month)
-    const uselessSpentCents = currentMonthTxs
+    // 8. Calculate Useless Spending (Range-based)
+    const uselessSpentCents = rangeTransactions
         .filter(t => t.type === 'expense' && t.isSuperfluous)
         .reduce((acc, t) => acc + Math.abs(parseCurrencyToCents(t.amount)), 0)
 
     const uselessSpent = uselessSpentCents / 100
     const uselessSpendPercent = totalSpent > 0 ? Math.round((uselessSpent / totalSpent) * 100) : 0
 
-    // Calculate Monthly Expenses (Last 12 months)
+    // 9. Calculate Monthly Expenses (Last N months based on filter)
+    // If mode=month, show last 12 months context? Or just the month? 
+    // Requirement says: "monthly series periodo". If I selected Month, a chart with 1 bar is weird.
+    // But usually Dashboard charts show context.
+    // "monthly-expenses-chart... non devono mantenere stato locale del periodo ... devono ricevere il filtro ... dalla dashboard metric"
+    // Let's assume for Charts we ALWAYS want a reasonable history ending at filter.period.
+    // If filter is Range 6M, we return those 6 months.
+    // If filter is Month, maybe we return last 6 months ending there?
+    // Let's stick to returning data strictly matched to filter if possible, OR if mode=month, maybe last 6 months is better UX so chart isn't empty.
+    // Prompt: "monthly series periodo". This implies the data for the requested period.
+    // If I ask for JAN 2024, range [JAN, JAN]. One bar.
+    // If I ask for 3M ending JAN 2024, range [NOV, DEC, JAN].
+    // Let's implement strictly what is requested: filtered data.
+
     const monthlyExpenses = []
-    const today = new Date()
-    const monthNames = ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"]
+    const startM = startDate.getMonth()
+    const startY = startDate.getFullYear()
 
-    for (let i = 11; i >= 0; i--) {
-        const d = new Date(today.getFullYear(), today.getMonth() - i, 1)
-        const monthIndex = d.getMonth()
-        const year = d.getFullYear()
-        const monthName = monthNames[monthIndex]
+    // Iterate month by month from start to end
+    const iterDate = new Date(startY, startM, 1)
+    while (iterDate <= endDate) {
+        const iMonth = iterDate.getMonth()
+        const iYear = iterDate.getFullYear()
+        // Italian short month name
+        const monthName = new Intl.DateTimeFormat("it-IT", { month: "short" }).format(iterDate)
+        // Capitalize
+        const Label = monthName.charAt(0).toUpperCase() + monthName.slice(1)
 
-        const totalCents = transactions
+        const mTotalCents = rangeTransactions
             .filter(t => {
                 if (t.type !== 'expense') return false
-                const tDate = new Date(t.timestamp)
-                return tDate.getMonth() === monthIndex && tDate.getFullYear() === year
+                const d = new Date(t.timestamp)
+                return d.getMonth() === iMonth && d.getFullYear() === iYear
             })
             .reduce((acc, t) => acc + Math.abs(parseCurrencyToCents(t.amount)), 0)
 
-        const total = totalCents / 100
+        monthlyExpenses.push({ name: Label, total: mTotalCents / 100 })
 
-        monthlyExpenses.push({ name: monthName, total })
+        // Next month
+        iterDate.setMonth(iterDate.getMonth() + 1)
     }
 
     return {

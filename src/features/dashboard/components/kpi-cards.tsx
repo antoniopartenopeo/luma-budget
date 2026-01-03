@@ -4,6 +4,8 @@ import { ArrowDownIcon, ArrowUpIcon, DollarSign, Wallet, CreditCard, AlertTriang
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 import { motion } from "framer-motion"
+import { useCurrency } from "@/features/settings/api/use-currency"
+import { formatEuroNumber } from "@/lib/currency-utils"
 
 interface KpiCardProps {
     title: string
@@ -90,9 +92,10 @@ interface DashboardKpiGridProps {
 
 export function DashboardKpiGrid({ totalSpent, netBalance, budgetTotal, budgetRemaining, uselessSpendPercent, isLoading }: DashboardKpiGridProps) {
     const router = useRouter()
+    const { currency, locale } = useCurrency()
 
-    const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(value)
+    const formatValue = (value: number) => {
+        return formatEuroNumber(value, currency, locale)
     }
 
     const budgetPercent = budgetTotal && budgetTotal > 0
@@ -102,28 +105,28 @@ export function DashboardKpiGrid({ totalSpent, netBalance, budgetTotal, budgetRe
     return (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <KpiCard
-                title="Saldo Mensile"
-                subtitle="Entrate - Uscite (mese)"
-                value={isLoading ? 0 : formatCurrency(netBalance || 0)}
+                title="Saldo"
+                subtitle="Totale (lifetime)"
+                value={isLoading ? 0 : formatValue(netBalance || 0)}
                 change={netBalance && netBalance >= 0 ? "In positivo" : "In negativo"}
                 trend={netBalance && netBalance >= 0 ? "up" : "down"}
                 icon={CreditCard}
                 isLoading={isLoading}
             />
             <KpiCard
-                title="Spesa Mensile"
-                subtitle="Totale uscite del mese"
-                value={isLoading ? 0 : formatCurrency(totalSpent || 0)}
-                change="+2.5%"
-                trend="down" // Higher spending is usually "bad" in a budget context, but trend can be neutral
+                title="Spesa"
+                subtitle="Nel periodo selezionato"
+                value={isLoading ? 0 : formatValue(totalSpent || 0)}
+                change="Uscite"
+                trend="down"
                 icon={Wallet}
                 isLoading={isLoading}
                 onClick={() => router.push("/transactions")}
             />
             <KpiCard
                 title="Budget Rimanente"
-                subtitle={budgetTotal && budgetTotal > 0 ? "Rispetto al piano spese" : "Piano non impostato"}
-                value={isLoading ? 0 : formatCurrency(budgetRemaining || 0)}
+                subtitle={budgetTotal && budgetTotal > 0 ? "Fine periodo" : "Piano non impostato"}
+                value={isLoading ? 0 : formatValue(budgetRemaining || 0)}
                 change={isLoading ? "" : (budgetTotal && budgetTotal > 0 ? `${budgetPercent}% rimanente` : "Pianifica ora")}
                 trend="neutral"
                 icon={DollarSign}

@@ -5,6 +5,12 @@ export interface CategorySummary {
     color: string
 }
 
+export type DashboardTimeFilter = {
+    mode: "month" | "range"
+    period: string // YYYY-MM
+    months?: 3 | 6 | 12
+}
+
 export interface DashboardSummary {
     totalSpent: number
     totalIncome: number

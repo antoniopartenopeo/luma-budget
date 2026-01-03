@@ -61,3 +61,54 @@ export function parseCurrencyToCents(input: string): number {
     const totalCents = (wholeUnits * 100) + cents
     return totalCents * (isNegative ? -1 : 1)
 }
+
+/**
+ * Converts a Euro number (e.g. 10.50) to cents (1050).
+ */
+export function euroToCents(amount: number): number {
+    return Math.round(amount * 100)
+}
+
+/**
+ * Formats cents into a currency string.
+ * @param cents Integer value in cents (e.g. 1050)
+ * @param currency Currency code (e.g. "EUR", "USD")
+ * @param locale Locale string (default "it-IT")
+ */
+export function formatCents(cents: number, currency: string = "EUR", locale: string = "it-IT"): string {
+    return new Intl.NumberFormat(locale, {
+        style: "currency",
+        currency: currency,
+    }).format(cents / 100)
+}
+
+/**
+ * Formats cents into a currency string, forcing a + sign for positive numbers.
+ */
+export function formatSignedCents(cents: number, currency: string = "EUR", locale: string = "it-IT"): string {
+    return new Intl.NumberFormat(locale, {
+        style: "currency",
+        currency: currency,
+        signDisplay: "exceptZero"
+    }).format(cents / 100)
+}
+
+/**
+ * Formats a number (in units/Euros) to a currency string.
+ * Wrapper around formatCents for convenience.
+ */
+export function formatEuroNumber(value: number, currency: string = "EUR", locale: string = "it-IT"): string {
+    const cents = euroToCents(value)
+    return formatCents(cents, currency, locale)
+}
+
+import { Transaction } from "@/features/transactions/api/types"
+
+/**
+ * Gets the signed cents value for a transaction based on its type and amount string.
+ * Income is positive, Expense is negative.
+ */
+export function getTransactionSignedCents(transaction: Transaction): number {
+    const absCents = Math.abs(parseCurrencyToCents(transaction.amount))
+    return transaction.type === "income" ? absCents : -absCents
+}

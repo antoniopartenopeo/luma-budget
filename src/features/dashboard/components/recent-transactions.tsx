@@ -4,22 +4,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { cn } from "@/lib/utils"
 import { useRecentTransactions } from "@/features/transactions/api/use-transactions"
-import { LoadingState } from "@/components/ui/loading-state"
 import { StateMessage } from "@/components/ui/state-message"
 import { Skeleton } from "@/components/ui/skeleton"
+import { DashboardTimeFilter } from "../api/types"
+import { useCurrency } from "@/features/settings/api/use-currency"
+import { formatSignedCents, getTransactionSignedCents } from "@/lib/currency-utils"
+import { Button } from "@/components/ui/button"
+import { ChevronRight } from "lucide-react"
+import { useRouter } from "next/navigation"
 
-export function RecentTransactions() {
+interface RecentTransactionsProps {
+    filter?: DashboardTimeFilter
+}
+
+export function RecentTransactions({ filter }: RecentTransactionsProps) {
     const { data: transactions, isLoading, isError, refetch } = useRecentTransactions()
-
-    const handleAddExpenseClick = () => {
-        // Focus on the description input of QuickExpenseInput
-        // Assuming the input has a specific ID or we can find it by placeholder/label
-        // For now, let's try to find it by attribute as we don't have a ref passed down
-        const input = document.querySelector('input[placeholder="Descrizione spesa"]') as HTMLInputElement
-        if (input) {
-            input.focus()
-        }
-    }
+    const { currency, locale } = useCurrency()
+    const router = useRouter()
 
     if (isLoading) {
         return (
@@ -64,20 +65,43 @@ export function RecentTransactions() {
         )
     }
 
-    if (!transactions || transactions.length === 0) {
+    // Client-side Filtering
+    let filteredTransactions = transactions || []
+
+    if (filter) {
+        const endDate = new Date(filter.period + "-01")
+        endDate.setMonth(endDate.getMonth() + 1)
+        endDate.setDate(0) // End of month
+
+        const startDate = new Date(filter.period + "-01")
+        if (filter.mode === "range" && filter.months) {
+            startDate.setMonth(startDate.getMonth() - (filter.months - 1))
+        }
+        startDate.setDate(1) // Start of month
+
+        filteredTransactions = filteredTransactions.filter(t => {
+            const d = new Date(t.timestamp)
+            return d >= startDate && d <= endDate
+        })
+    }
+
+    // Sort by date desc (assuming API does, but good to ensure) and take top 5
+    const displayedTransactions = filteredTransactions
+        .sort((a, b) => b.timestamp - a.timestamp)
+        .slice(0, 5)
+
+    if (displayedTransactions.length === 0) {
         return (
             <Card className="col-span-3 rounded-xl shadow-sm">
                 <CardHeader>
                     <CardTitle>Transazioni Recenti</CardTitle>
-                    <CardDescription>I tuoi ultimi movimenti finanziari</CardDescription>
+                    <CardDescription>Nel periodo selezionato</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <StateMessage
                         variant="empty"
                         title="Nessuna transazione"
-                        description="Non hai ancora effettuato nessuna transazione."
-                        actionLabel="Aggiungi la tua prima spesa"
-                        onActionClick={handleAddExpenseClick}
+                        description="Nessuna transazione trovata in questo periodo."
                     />
                 </CardContent>
             </Card>
@@ -86,13 +110,19 @@ export function RecentTransactions() {
 
     return (
         <Card className="col-span-3 rounded-xl shadow-sm">
-            <CardHeader>
-                <CardTitle>Transazioni Recenti</CardTitle>
-                <CardDescription>I tuoi ultimi movimenti finanziari</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                    <CardTitle>Transazioni Recenti</CardTitle>
+                    <CardDescription>Ultime 5 transazioni del periodo</CardDescription>
+                </div>
+                <Button variant="ghost" size="sm" className="gap-1 text-primary" onClick={() => router.push("/transactions")}>
+                    Vedi tutte
+                    <ChevronRight className="h-4 w-4" />
+                </Button>
             </CardHeader>
             <CardContent>
                 <div className="space-y-6">
-                    {transactions.map((transaction) => (
+                    {displayedTransactions.map((transaction) => (
                         <div key={transaction.id} className="flex items-center justify-between animate-in fade-in slide-in-from-bottom-2 duration-300">
                             <div className="flex items-center gap-4">
                                 <CategoryIcon
@@ -107,7 +137,7 @@ export function RecentTransactions() {
                                 </div>
                             </div>
                             <div className={cn("font-medium", transaction.type === "income" ? "text-emerald-600" : "text-foreground")}>
-                                {transaction.amount}
+                                {formatSignedCents(getTransactionSignedCents(transaction), currency, locale)}
                             </div>
                         </div>
                     ))}

@@ -1,44 +1,47 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { fetchRecentTransactions, createTransaction, updateTransaction, deleteTransaction } from "./repository"
+import { fetchTransactions, createTransaction, updateTransaction, deleteTransaction } from "./repository"
+import { queryKeys } from "@/lib/query-keys"
 import { CreateTransactionDTO } from "./types"
 
-export const useRecentTransactions = () => {
+export function useRecentTransactions() {
     return useQuery({
-        queryKey: ["recent-transactions"],
-        queryFn: fetchRecentTransactions,
-    })
-}
-
-export const useTransactions = () => {
-    return useQuery({
-        queryKey: ["transactions"],
-        queryFn: fetchRecentTransactions, // Using the same fetcher for now as it returns all
-    })
-}
-
-export const useCreateTransaction = () => {
-    const queryClient = useQueryClient()
-
-    return useMutation({
-        mutationFn: (data: CreateTransactionDTO) => createTransaction(data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["recent-transactions"] })
-            queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] })
-            queryClient.invalidateQueries({ queryKey: ["transactions"] })
+        queryKey: queryKeys.transactions.recent,
+        queryFn: async () => {
+            const all = await fetchTransactions()
+            return all.slice(0, 5)
         },
     })
 }
 
-export const useUpdateTransaction = () => {
+export function useTransactions() {
+    return useQuery({
+        queryKey: queryKeys.transactions.all,
+        queryFn: fetchTransactions,
+    })
+}
+
+export function useCreateTransaction() {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: ({ id, data }: { id: string; data: Partial<CreateTransactionDTO> }) =>
-            import("./repository").then(mod => mod.updateTransaction(id, data)),
+        mutationFn: createTransaction,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["recent-transactions"] })
-            queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] })
-            queryClient.invalidateQueries({ queryKey: ["transactions"] })
+            queryClient.invalidateQueries({ queryKey: queryKeys.transactions.recent })
+            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
+            queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all })
+        },
+    })
+}
+
+export function useUpdateTransaction() {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: ({ id, data }: { id: string; data: Partial<CreateTransactionDTO> }) => updateTransaction(id, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.transactions.recent })
+            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
+            queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all })
         },
     })
 }

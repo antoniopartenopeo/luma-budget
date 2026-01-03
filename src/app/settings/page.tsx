@@ -18,6 +18,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { seedTransactions, __resetTransactionsCache } from "@/features/transactions/api/repository"
+import { queryKeys } from "@/lib/query-keys"
 import { resetSettings } from "@/features/settings/api/repository"
 import {
     buildBackupV1,
@@ -129,10 +130,10 @@ export default function SettingsPage() {
     const invalidateAll = async () => {
         __resetTransactionsCache()
         await Promise.all([
-            queryClient.invalidateQueries({ queryKey: ["transactions"] }),
-            queryClient.invalidateQueries({ queryKey: ["recent-transactions"] }),
-            queryClient.invalidateQueries({ queryKey: ["budgets"] }),
-            queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] })
+            queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.transactions.recent }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.budget.all }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
         ])
     }
 
@@ -182,9 +183,9 @@ export default function SettingsPage() {
             __resetTransactionsCache()
 
             await Promise.all([
-                queryClient.invalidateQueries({ queryKey: ["transactions"] }),
-                queryClient.invalidateQueries({ queryKey: ["recent-transactions"] }),
-                queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] })
+                queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all }),
+                queryClient.invalidateQueries({ queryKey: queryKeys.transactions.recent }),
+                queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
             ])
 
             setStatus({ type: "success", message: "Tutte le transazioni sono state eliminate." })
@@ -208,8 +209,8 @@ export default function SettingsPage() {
             resetBudgetsFn()
 
             await Promise.all([
-                queryClient.invalidateQueries({ queryKey: ["budgets"] }),
-                queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] })
+                queryClient.invalidateQueries({ queryKey: queryKeys.budget.all }),
+                queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
             ])
 
             setStatus({ type: "success", message: "Tutti i budget sono stati eliminati." })

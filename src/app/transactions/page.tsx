@@ -1,120 +1,170 @@
 "use client"
 
-import { useState, Suspense } from "react"
-import { Download, X, Loader2 } from "lucide-react"
+import { useState, useMemo, Suspense } from "react"
+import { ArrowUpRight } from "lucide-react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { TransactionsTable } from "@/features/transactions/components/transactions-table"
-import { TransactionsFilterBar } from "@/features/transactions/components/transactions-filter-bar"
+import { TransactionsFilterBar, PeriodPreset } from "@/features/transactions/components/transactions-filter-bar"
+import { TransactionsSummaryBar } from "@/features/transactions/components/transactions-summary-bar"
+import { TransactionDetailSheet } from "@/features/transactions/components/transaction-detail-sheet"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
-import { useTransactionsActions } from "@/features/transactions/hooks/use-transactions-actions"
-import { EditTransactionDialog } from "@/features/transactions/components/edit-transaction-dialog"
-import { DeleteTransactionDialog } from "@/features/transactions/components/delete-transaction-dialog"
 import { exportTransactionsToCSV } from "@/features/transactions/utils/export-transactions"
+import {
+    applyFilters,
+    applySorting,
+    computeSummary,
+    paginateData,
+    SortField,
+    SortOrder,
+    TransactionFilters
+} from "@/features/transactions/utils/transactions-logic"
+import { Transaction } from "@/features/transactions/api/types"
 
 import { StateMessage } from "@/components/ui/state-message"
 import { Skeleton } from "@/components/ui/skeleton"
+
+const PAGE_SIZE = 15
 
 function TransactionsPageContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
 
-    const { data: transactions, isLoading, isError, refetch } = useTransactions()
+    const { data: transactions = [], isLoading, isError, refetch } = useTransactions()
 
-    // Export state
+    // --- Filter / Sorting / Pagination State (from URL) ---
+    const search = searchParams.get("q") || ""
+    const type = (searchParams.get("type") || "all") as "all" | "income" | "expense"
+    const categoryId = searchParams.get("cat") || "all"
+    const isSuperfluous = searchParams.get("waste") === "true"
+    const period = (searchParams.get("period") || "all") as PeriodPreset
+    const fromDate = searchParams.get("from") || ""
+    const toDate = searchParams.get("to") || ""
+
+    const sort = (searchParams.get("sort") || "date") as SortField
+    const order = (searchParams.get("order") || "desc") as SortOrder
+    const page = parseInt(searchParams.get("p") || "1", 10)
+
+    // --- Local UI State for Detail Sheet ---
+    const [selectedDetail, setSelectedDetail] = useState<Transaction | null>(null)
+    const [detailMode, setDetailMode] = useState<"view" | "edit">("view")
     const [isExporting, setIsExporting] = useState(false)
 
-    // URL params (derived)
-    const selectedType = searchParams.get("type") || "all"
-    const selectedCategory = searchParams.get("category") || "all"
-    const isWantsFilter = searchParams.get("filter") === "wants"
+    // --- Derived Filters Object ---
+    const filters = useMemo((): TransactionFilters => {
+        const dateRange: { from?: Date; to?: Date } = {}
 
-    // Local UI state (for input fields)
-    const [searchQuery, setSearchQuery] = useState("")
+        if (period === "custom") {
+            if (fromDate) dateRange.from = new Date(fromDate)
+            if (toDate) dateRange.to = new Date(toDate)
+        } else if (period !== "all") {
+            const now = new Date()
+            dateRange.to = now
+            const from = new Date()
+            if (period === "1m") from.setMonth(now.getMonth() - 1)
+            else if (period === "3m") from.setMonth(now.getMonth() - 3)
+            else if (period === "6m") from.setMonth(now.getMonth() - 6)
+            else if (period === "1y") from.setFullYear(now.getFullYear() - 1)
+            dateRange.from = from
+        }
 
-    // Handlers for filter changes (updating URL)
-    const handleTypeChange = (value: string) => {
+        return {
+            search,
+            type,
+            categoryId,
+            isSuperfluous,
+            dateRange
+        }
+    }, [search, type, categoryId, isSuperfluous, period, fromDate, toDate])
+
+    // --- Computed Data ---
+    const { filteredList, sortedList, paginatedList, summary, totalPages } = useMemo(() => {
+        const filtered = applyFilters(transactions, filters)
+        const sorted = applySorting(filtered, sort, order)
+        const paginated = paginateData(sorted, page, PAGE_SIZE)
+        const summ = computeSummary(filtered)
+        const totalP = Math.ceil(filtered.length / PAGE_SIZE)
+
+        return {
+            filteredList: filtered,
+            sortedList: sorted,
+            paginatedList: paginated,
+            summary: summ,
+            totalPages: totalP
+        }
+    }, [transactions, filters, sort, order, page])
+
+    // --- URL Update Helpers ---
+    const updateParams = (updates: Record<string, string | null>) => {
         const params = new URLSearchParams(searchParams.toString())
-        if (value === "all") params.delete("type")
-        else params.set("type", value)
+        Object.entries(updates).forEach(([key, value]) => {
+            if (value === null || value === "" || value === "all" || (key === "p" && value === "1")) {
+                params.delete(key)
+            } else {
+                params.set(key, value)
+            }
+        })
         router.push(`/transactions?${params.toString()}`)
     }
 
-    const handleCategoryChange = (value: string) => {
-        const params = new URLSearchParams(searchParams.toString())
-        if (value === "all") params.delete("category")
-        else params.set("category", value)
-        router.push(`/transactions?${params.toString()}`)
+    const resetFilters = () => {
+        router.push("/transactions")
     }
 
-    const {
-        editingTransaction,
-        deletingTransactionId,
-        handleEdit,
-        handleDelete,
-        closeEdit,
-        closeDelete
-    } = useTransactionsActions()
+    // --- Actions ---
+    const handleEdit = (transaction: Transaction) => {
+        setSelectedDetail(transaction)
+        setDetailMode("edit")
+    }
 
-    const handleExport = async () => {
+    const handleDelete = (id: string) => {
+        const transaction = transactions.find(t => t.id === id)
+        if (transaction) {
+            setSelectedDetail(transaction)
+            setDetailMode("view")
+            // The sheet will be opened, and the user can click 'Delete' there.
+            // Or we could have a 'delete' mode that shows the confirm immediately.
+            // Given the requirement "Delete confirms...", opening the sheet is correct.
+        }
+    }
+
+    const handleExport = async (all: boolean = false) => {
         if (isExporting || isLoading) return
-
         setIsExporting(true)
 
         // Small delay for UX feedback
         await new Promise(resolve => setTimeout(resolve, 300))
 
+        const exportList = all ? transactions : sortedList
         const result = exportTransactionsToCSV({
-            transactions: filteredTransactions
+            transactions: exportList,
+            dateRange: filters.dateRange.from && filters.dateRange.to
+                ? { start: filters.dateRange.from.toISOString(), end: filters.dateRange.to.toISOString() }
+                : undefined
         })
 
         setIsExporting(false)
-
         if (!result.success) {
-            alert(result.error || "Si è verificato un errore durante l'esportazione. Riprova.")
+            alert(result.error || "Si è verificato un errore durante l'esportazione.")
         }
     }
 
-    const clearWantsFilter = () => {
-        router.push("/transactions")
+    const handleSortChange = (field: SortField) => {
+        const newOrder = sort === field && order === "desc" ? "asc" : "desc"
+        updateParams({ sort: field, order: newOrder, p: "1" })
     }
-
-    const filteredTransactions = transactions?.filter((transaction) => {
-        const matchesSearch = transaction.description
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-            transaction.amount.includes(searchQuery)
-
-        const matchesType =
-            selectedType === "all" || transaction.type === selectedType
-
-        const matchesCategory =
-            selectedCategory === "all" || transaction.categoryId === selectedCategory
-
-        // Dashboard logic for "Useless" (Wants)
-        const matchesWants = !isWantsFilter || !!transaction.isSuperfluous
-
-        if (!matchesWants) return false
-
-        return matchesSearch && matchesType && matchesCategory
-    }) || []
 
     if (isError) {
         return (
             <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Transazioni</h1>
-                        <p className="text-muted-foreground">
-                            Gestisci e monitora le tue entrate e uscite.
-                        </p>
-                    </div>
+                <div>
+                    <h1 className="text-3xl font-black tracking-tighter">Transazioni</h1>
+                    <p className="text-muted-foreground font-medium">Gestisci e monitora le tue entrate e uscite.</p>
                 </div>
                 <StateMessage
                     variant="error"
                     title="Impossibile caricare le transazioni"
-                    description="Si è verificato un problema durante il recupero dei dati. Riprova tra poco."
+                    description="Si è verificato un problema durante il recupero dei dati."
                     actionLabel="Riprova"
                     onActionClick={() => refetch()}
                 />
@@ -123,116 +173,90 @@ function TransactionsPageContent() {
     }
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="space-y-8 animate-in fade-in duration-700">
+            {/* Header */}
+            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Transazioni</h1>
-                    <p className="text-muted-foreground">
-                        Gestisci e monitora le tue entrate e uscite.
+                    <h1 className="text-4xl font-black tracking-tighter">Transazioni</h1>
+                    <p className="text-muted-foreground font-medium mt-1">
+                        Analisi dettagliata del tuo flusso di cassa.
                     </p>
-                </div>
-                <div className="flex items-center gap-2">
-                    <Button
-                        variant="outline"
-                        className="gap-2"
-                        onClick={handleExport}
-                        disabled={isExporting || isLoading}
-                    >
-                        {isExporting ? (
-                            <>
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                                Preparazione file…
-                            </>
-                        ) : (
-                            <>
-                                <Download className="h-4 w-4" />
-                                Esporta
-                            </>
-                        )}
-                    </Button>
                 </div>
             </div>
 
-            <TransactionsFilterBar
-                searchValue={searchQuery}
-                onSearchChange={setSearchQuery}
-                typeValue={selectedType}
-                onTypeChange={handleTypeChange}
-                categoryValue={selectedCategory}
-                onCategoryChange={handleCategoryChange}
-                onResetFilters={() => {
-                    setSearchQuery("")
-                    router.push("/transactions")
-                }}
-            />
+            {/* Summary KPI Bar */}
+            <TransactionsSummaryBar summary={summary} isLoading={isLoading} />
 
-            {/* Active Filter Indicator for Wants */}
-            {isWantsFilter && (
-                <div className="flex items-center gap-2">
-                    <Badge variant="secondary" className="pl-2 pr-1 py-1 gap-1 text-sm font-normal bg-orange-100 text-orange-700 hover:bg-orange-200">
-                        Filtro attivo: Spese Superflue
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-4 w-4 rounded-full ml-1 hover:bg-orange-300/50"
-                            onClick={clearWantsFilter}
-                        >
-                            <X className="h-3 w-3" />
-                        </Button>
-                    </Badge>
-                </div>
-            )}
+            {/* Filters Section */}
+            <div className="p-4 bg-card/30 border border-muted-foreground/10 rounded-2xl shadow-sm backdrop-blur-md">
+                <TransactionsFilterBar
+                    searchValue={search}
+                    onSearchChange={(v) => updateParams({ q: v, p: "1" })}
+                    typeValue={type}
+                    onTypeChange={(v) => updateParams({ type: v, p: "1" })}
+                    categoryValue={categoryId}
+                    onCategoryChange={(v) => updateParams({ cat: v, p: "1" })}
+                    periodValue={period}
+                    onPeriodChange={(v) => updateParams({ period: v, p: "1", from: null, to: null })}
+                    dateRange={{ from: fromDate, to: toDate }}
+                    onDateRangeChange={(range) => updateParams({ from: range.from || null, to: range.to || null, p: "1" })}
+                    isSuperfluousOnly={isSuperfluous}
+                    onSuperfluousChange={(v) => updateParams({ waste: v ? "true" : null, p: "1" })}
+                    onResetFilters={resetFilters}
+                    onExportView={() => handleExport(false)}
+                    onExportAll={() => handleExport(true)}
+                    isExporting={isExporting}
+                    hasResults={filteredList.length > 0}
+                />
+            </div>
 
+            {/* Main Content: Table or Empty State */}
             {isLoading ? (
                 <div className="space-y-4">
-                    <Skeleton className="h-10 w-full" />
-                    <Skeleton className="h-20 w-full" />
-                    <Skeleton className="h-20 w-full" />
+                    <Skeleton className="h-20 w-full rounded-2xl" />
+                    <Skeleton className="h-64 w-full rounded-3xl" />
                 </div>
-            ) : filteredTransactions.length > 0 ? (
+            ) : filteredList.length > 0 ? (
                 <TransactionsTable
-                    transactions={filteredTransactions}
+                    transactions={paginatedList}
                     onEditTransaction={handleEdit}
                     onDeleteTransaction={handleDelete}
+                    onRowClick={(t) => {
+                        setSelectedDetail(t)
+                        setDetailMode("view")
+                    }}
+                    sortField={sort}
+                    sortOrder={order}
+                    onSortChange={handleSortChange}
+                    currentPage={page}
+                    totalPages={totalPages}
+                    onPageChange={(p) => updateParams({ p: p.toString() })}
                 />
             ) : (
-                <div className="py-12 flex justify-center">
-                    {transactions && transactions.length > 0 ? (
-                        <StateMessage
-                            variant="empty"
-                            title="Nessuna transazione trovata"
-                            description="Nessuna transazione corrisponde ai filtri selezionati."
-                            actionLabel="Azzera filtri"
-                            onActionClick={() => {
-                                setSearchQuery("")
-                                router.push("/transactions")
-                            }}
-                        />
-                    ) : (
-                        <StateMessage
-                            variant="empty"
-                            title="Nessuna transazione"
-                            description="Non hai ancora effettuato nessuna transazione."
-                            actionLabel="Aggiungi transazione"
-                            onActionClick={() => {
-                                const input = document.querySelector('input[placeholder="Es. Caffè bar, Abbonamento Spotify..."]') as HTMLInputElement
-                                if (input) input.focus()
-                            }}
-                        />
-                    )}
+                <div className="py-20 flex flex-col items-center justify-center text-center max-w-md mx-auto">
+                    <div className="w-20 h-20 rounded-full bg-muted/50 flex items-center justify-center mb-6">
+                        <ArrowUpRight className="h-10 w-10 text-muted-foreground/50" />
+                    </div>
+                    <h3 className="text-xl font-bold tracking-tight mb-2">Nessun risultato</h3>
+                    <p className="text-muted-foreground font-medium mb-8">
+                        Non abbiamo trovato transazioni che corrispondano ai criteri selezionati.
+                    </p>
+                    <Button
+                        onClick={resetFilters}
+                        variant="secondary"
+                        className="rounded-xl font-bold px-8"
+                    >
+                        Azzera tutti i filtri
+                    </Button>
                 </div>
             )}
 
-            <EditTransactionDialog
-                open={!!editingTransaction}
-                onOpenChange={(open) => !open && closeEdit()}
-                transaction={editingTransaction}
-            />
-
-            <DeleteTransactionDialog
-                open={!!deletingTransactionId}
-                onOpenChange={(open) => !open && closeDelete()}
-                transactionId={deletingTransactionId}
+            {/* Detail Sidebar */}
+            <TransactionDetailSheet
+                transaction={selectedDetail}
+                open={!!selectedDetail}
+                onOpenChange={(open) => !open && setSelectedDetail(null)}
+                mode={detailMode}
             />
         </div>
     )
@@ -241,18 +265,15 @@ function TransactionsPageContent() {
 export default function TransactionsPage() {
     return (
         <Suspense fallback={
-            <div className="space-y-6">
-                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Transazioni</h1>
-                        <p className="text-muted-foreground">Caricamento in corso...</p>
-                    </div>
+            <div className="space-y-8 p-6">
+                <Skeleton className="h-12 w-64 rounded-xl" />
+                <div className="grid grid-cols-4 gap-4">
+                    <Skeleton className="h-24 rounded-2xl" />
+                    <Skeleton className="h-24 rounded-2xl" />
+                    <Skeleton className="h-24 rounded-2xl" />
+                    <Skeleton className="h-24 rounded-2xl" />
                 </div>
-                <div className="space-y-4">
-                    <Skeleton className="h-10 w-full" />
-                    <Skeleton className="h-20 w-full" />
-                    <Skeleton className="h-20 w-full" />
-                </div>
+                <Skeleton className="h-64 w-full rounded-3xl" />
             </div>
         }>
             <TransactionsPageContent />

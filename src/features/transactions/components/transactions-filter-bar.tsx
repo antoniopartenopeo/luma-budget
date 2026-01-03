@@ -1,7 +1,4 @@
-"use client"
-
-
-import { Search } from "lucide-react"
+import { Search, Calendar, Filter, X, Download, Loader2 } from "lucide-react"
 import { getGroupedCategories } from "@/features/categories/config"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { Input } from "@/components/ui/input"
@@ -14,6 +11,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
+
+export type PeriodPreset = "1m" | "3m" | "6m" | "1y" | "all" | "custom"
 
 interface TransactionsFilterBarProps {
     searchValue: string
@@ -22,7 +22,18 @@ interface TransactionsFilterBarProps {
     onTypeChange: (value: string) => void
     categoryValue: string
     onCategoryChange: (value: string) => void
+    periodValue: PeriodPreset
+    onPeriodChange: (value: PeriodPreset) => void
+    dateRange: { from?: string; to?: string }
+    onDateRangeChange: (range: { from?: string; to?: string }) => void
+    isSuperfluousOnly: boolean
+    onSuperfluousChange: (value: boolean) => void
     onResetFilters?: () => void
+    // Export Props
+    onExportView: () => void
+    onExportAll: () => void
+    isExporting?: boolean
+    hasResults: boolean
 }
 
 export function TransactionsFilterBar({
@@ -32,72 +43,200 @@ export function TransactionsFilterBar({
     onTypeChange,
     categoryValue,
     onCategoryChange,
-    onResetFilters
+    periodValue,
+    onPeriodChange,
+    dateRange,
+    onDateRangeChange,
+    isSuperfluousOnly,
+    onSuperfluousChange,
+    onResetFilters,
+    onExportView,
+    onExportAll,
+    isExporting,
+    hasResults
 }: TransactionsFilterBarProps) {
-    const hasActiveFilters = typeValue !== "all" || categoryValue !== "all" || searchValue !== ""
+    const hasActiveFilters =
+        typeValue !== "all" ||
+        categoryValue !== "all" ||
+        searchValue !== "" ||
+        periodValue !== "all" ||
+        isSuperfluousOnly
 
-    // Get all grouped categories for filter (no kind filter = show all)
     const allGroupedCategories = getGroupedCategories()
 
     return (
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-1 items-center gap-4">
-                <div className="relative flex-1 md:max-w-sm">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+        <div className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr_auto] gap-4 items-center">
+                {/* Zone 1: Search */}
+                <div className="relative w-full">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
                     <Input
-                        placeholder="Cerca per descrizione o importo..."
-                        className="pl-9"
+                        placeholder="Cerca..."
+                        className="pl-10 h-10 rounded-xl bg-muted/5 border-muted-foreground/10 focus-visible:ring-primary/20"
                         value={searchValue}
                         onChange={(e) => onSearchChange(e.target.value)}
                     />
                 </div>
-                <Select value={typeValue} onValueChange={onTypeChange}>
-                    <SelectTrigger className={cn("w-[140px]", typeValue !== "all" && "bg-primary/5 border-primary/20 text-primary font-medium")}>
-                        <SelectValue placeholder="Tipo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">Tutti</SelectItem>
-                        <SelectItem value="income">Entrate</SelectItem>
-                        <SelectItem value="expense">Uscite</SelectItem>
-                    </SelectContent>
-                </Select>
-                <Select value={categoryValue} onValueChange={onCategoryChange}>
-                    <SelectTrigger className={cn("w-[180px]", categoryValue !== "all" && "bg-primary/5 border-primary/20 text-primary font-medium")}>
-                        <SelectValue placeholder="Categoria" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-[300px]">
-                        <SelectItem value="all">Tutte le categorie</SelectItem>
-                        {allGroupedCategories.map((group) => (
-                            <div key={group.key}>
-                                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide mt-1">
-                                    {group.label}
+
+                {/* Zone 2: Filters */}
+                <div className="flex flex-wrap lg:flex-nowrap items-center gap-2 overflow-visible">
+                    {/* Period */}
+                    <Select value={periodValue} onValueChange={(v) => onPeriodChange(v as PeriodPreset)}>
+                        <SelectTrigger className={cn(
+                            "w-[164px] flex-shrink-0 h-10 px-4 rounded-xl border-muted-foreground/10 transition-colors outline-none",
+                            periodValue !== "all" ? "bg-primary/10 border-primary/30 text-primary font-bold" : "bg-muted/5 hover:bg-muted/10"
+                        )}>
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                                <Calendar className="h-4 w-4 opacity-70 shrink-0" />
+                                <div className="truncate text-left">
+                                    <SelectValue placeholder="Periodo" />
                                 </div>
-                                {group.categories.map((category) => (
-                                    <SelectItem key={category.id} value={category.id}>
-                                        <div className="flex items-center gap-2">
-                                            <CategoryIcon categoryName={category.label} size={14} />
-                                            <span>{category.label}</span>
-                                        </div>
-                                    </SelectItem>
-                                ))}
                             </div>
-                        ))}
-                    </SelectContent>
-                </Select>
-                {hasActiveFilters && onResetFilters && (
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl border-muted-foreground/10">
+                            <SelectItem value="all">Tutto il tempo</SelectItem>
+                            <SelectItem value="1m">Ultimo mese</SelectItem>
+                            <SelectItem value="3m">Ultimi 3 mesi</SelectItem>
+                            <SelectItem value="6m">Ultimi 6 mesi</SelectItem>
+                            <SelectItem value="1y">Ultimo anno</SelectItem>
+                            <Separator className="my-1 opacity-50" />
+                            <SelectItem value="custom">Periodo personalizzato</SelectItem>
+                        </SelectContent>
+                    </Select>
+
+                    {/* Type */}
+                    <Select value={typeValue} onValueChange={onTypeChange}>
+                        <SelectTrigger className={cn(
+                            "w-[164px] flex-shrink-0 h-10 px-4 rounded-xl border-muted-foreground/10 transition-colors outline-none",
+                            typeValue !== "all" ? "bg-primary/10 border-primary/30 text-primary font-bold" : "bg-muted/5 hover:bg-muted/10"
+                        )}>
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                                <Filter className="h-4 w-4 opacity-70 shrink-0" />
+                                <div className="truncate text-left">
+                                    <SelectValue placeholder="Tipo" />
+                                </div>
+                            </div>
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl border-muted-foreground/10">
+                            <SelectItem value="all">Tutti i tipi</SelectItem>
+                            <SelectItem value="income">Entrate</SelectItem>
+                            <SelectItem value="expense">Uscite</SelectItem>
+                        </SelectContent>
+                    </Select>
+
+                    {/* Category */}
+                    <Select value={categoryValue} onValueChange={onCategoryChange}>
+                        <SelectTrigger className={cn(
+                            "w-[164px] flex-shrink-0 h-10 px-4 rounded-xl border-muted-foreground/10 transition-colors outline-none",
+                            categoryValue !== "all" ? "bg-primary/10 border-primary/30 text-primary font-bold" : "bg-muted/5 hover:bg-muted/10"
+                        )}>
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                                <div className="truncate text-left">
+                                    <SelectValue placeholder="Categoria" />
+                                </div>
+                            </div>
+                        </SelectTrigger>
+                        <SelectContent className="max-h-[300px] rounded-xl border-muted-foreground/10">
+                            <SelectItem value="all">Tutte le categorie</SelectItem>
+                            {allGroupedCategories.map((group) => (
+                                <div key={group.key}>
+                                    <div className="px-2 py-1.5 text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest mt-2">
+                                        {group.label}
+                                    </div>
+                                    {group.categories.map((category) => (
+                                        <SelectItem key={category.id} value={category.id} className="rounded-lg">
+                                            <div className="flex items-center gap-2">
+                                                <CategoryIcon categoryName={category.label} size={14} />
+                                                <span>{category.label}</span>
+                                            </div>
+                                        </SelectItem>
+                                    ))}
+                                </div>
+                            ))}
+                        </SelectContent>
+                    </Select>
+
+                    {/* Superfluous Toggle */}
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className={cn(
+                            "h-10 w-[164px] px-4 rounded-xl gap-2 border-muted-foreground/10 transition-all justify-start shrink-0 outline-none",
+                            isSuperfluousOnly
+                                ? "bg-amber-500/10 text-amber-600 border-amber-500/30 font-bold hover:bg-amber-500/20"
+                                : "bg-muted/5 text-muted-foreground hover:bg-muted/10 hover:text-foreground"
+                        )}
+                        onClick={() => onSuperfluousChange(!isSuperfluousOnly)}
+                    >
+                        <Filter className="h-4 w-4 opacity-70 shrink-0" />
+                        <span>Superflue</span>
+                    </Button>
+
+                    {hasActiveFilters && onResetFilters && (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={onResetFilters}
+                            className="h-10 w-10 text-muted-foreground/60 hover:text-destructive hover:bg-destructive/5 rounded-xl"
+                            title="Azzera filtri"
+                        >
+                            <X className="h-4 w-4" />
+                        </Button>
+                    )}
+                </div>
+
+                {/* Zone 3: Export */}
+                <div className="flex items-center gap-2 lg:ml-auto w-full lg:w-auto">
                     <Button
                         variant="ghost"
                         size="sm"
-                        onClick={onResetFilters}
-                        className="text-muted-foreground hover:text-foreground hidden md:flex"
+                        className="h-10 flex-1 lg:flex-none rounded-xl font-bold text-muted-foreground hover:text-foreground hover:bg-muted/10 px-4 gap-2 border border-transparent hover:border-muted-foreground/10 transition-all"
+                        onClick={onExportAll}
+                        disabled={isExporting}
                     >
-                        Azzera
+                        <Download className="h-4 w-4 opacity-70" />
+                        Tutto
                     </Button>
-                )}
+                    <Button
+                        variant="default"
+                        size="sm"
+                        className="h-10 flex-1 lg:flex-none rounded-xl font-bold gap-2 shadow-sm px-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-all active:scale-[0.98]"
+                        onClick={onExportView}
+                        disabled={isExporting || !hasResults}
+                    >
+                        {isExporting ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                            <Download className="h-4 w-4" />
+                        )}
+                        Vista
+                    </Button>
+                </div>
             </div>
-            <div className="flex items-center gap-2">
-                {/* Period selector placeholder - could be added later */}
-            </div>
+
+            {/* Custom Date Range Inputs */}
+            {periodValue === "custom" && (
+                <div className="flex items-center gap-3 p-3 bg-muted/5 border border-muted-foreground/10 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div className="flex flex-col gap-1.5 flex-1">
+                        <label className="text-[10px] uppercase font-bold text-muted-foreground/60 px-1">Dal</label>
+                        <Input
+                            type="date"
+                            value={dateRange.from || ""}
+                            onChange={(e) => onDateRangeChange({ ...dateRange, from: e.target.value })}
+                            className="h-9 rounded-lg bg-background/50 border-muted-foreground/10"
+                        />
+                    </div>
+                    <div className="flex flex-col gap-1.5 flex-1">
+                        <label className="text-[10px] uppercase font-bold text-muted-foreground/60 px-1">Al</label>
+                        <Input
+                            type="date"
+                            value={dateRange.to || ""}
+                            onChange={(e) => onDateRangeChange({ ...dateRange, to: e.target.value })}
+                            className="h-9 rounded-lg bg-background/50 border-muted-foreground/10"
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

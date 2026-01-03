@@ -15,16 +15,30 @@ import { CreateTransactionDTO } from "@/features/transactions/api/types"
 interface TransactionFormProps {
     defaultValues?: Partial<CreateTransactionDTO>
     onSubmit: (data: CreateTransactionDTO) => void
+    onCancel?: () => void
+    onChange?: () => void
     isLoading?: boolean
     submitLabel?: string
 }
 
-export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabel = "Salva" }: TransactionFormProps) {
+export function TransactionForm({
+    defaultValues,
+    onSubmit,
+    onCancel,
+    onChange,
+    isLoading,
+    submitLabel = "Salva"
+}: TransactionFormProps) {
     const [description, setDescription] = useState(defaultValues?.description || "")
     const [amount, setAmount] = useState(defaultValues?.amount ? defaultValues.amount.toString() : "")
     // Prefer categoryId, fallback to finding id by label, or empty
     const [categoryId, setCategoryId] = useState(defaultValues?.categoryId || "")
     const [type, setType] = useState<"expense" | "income">(defaultValues?.type || "expense")
+
+    const handleFieldChange = <T,>(setter: (val: T) => void, value: T) => {
+        setter(value)
+        onChange?.()
+    }
 
     const [errors, setErrors] = useState<{ [key: string]: string }>({})
 
@@ -47,12 +61,12 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
     }, [categoryId, isManualOverride, isSuperfluousManual, type])
 
     const handleCategoryChange = (val: string) => {
-        setCategoryId(val)
+        handleFieldChange(setCategoryId, val)
         setIsSuperfluousManual(null) // Reset manual override (UX requirement)
     }
 
     const handleTypeChange = (newType: "expense" | "income") => {
-        setType(newType)
+        handleFieldChange(setType, newType)
         // Only reset if the current category doesn't belong to the new type
         const newGrouped = getGroupedCategories(newType)
         const allCategoriesInGroups = newGrouped.flatMap(g => g.categories)
@@ -134,7 +148,7 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
                     id="description"
                     placeholder="es. Spesa settimanale"
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    onChange={(e) => handleFieldChange(setDescription, e.target.value)}
                     className={errors.description ? "border-destructive focus-visible:ring-destructive" : ""}
                 />
                 {errors.description && <p className="text-xs text-destructive">{errors.description}</p>}
@@ -153,7 +167,7 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
                             errors.amount ? "border-destructive focus-visible:ring-destructive" : ""
                         )}
                         value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
+                        onChange={(e) => handleFieldChange(setAmount, e.target.value)}
                     />
                 </div>
                 {errors.amount && <p className="text-xs text-destructive">{errors.amount}</p>}
@@ -200,7 +214,7 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
                         id="isSuperfluous"
                         checked={isSuperfluous}
                         onChange={(e) => {
-                            setIsSuperfluousManual(e.target.checked)
+                            handleFieldChange(setIsSuperfluousManual, e.target.checked)
                         }}
                         disabled={isLoading}
                         className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary cursor-pointer disabled:cursor-not-allowed"
@@ -219,10 +233,23 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
                 </div>
             )}
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {submitLabel}
-            </Button>
+            <div className="flex flex-col gap-3 pt-4">
+                <Button type="submit" className="w-full h-12 rounded-2xl font-bold" disabled={isLoading}>
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {submitLabel}
+                </Button>
+                {onCancel && (
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        className="w-full h-12 rounded-2xl font-bold text-muted-foreground"
+                        onClick={onCancel}
+                        disabled={isLoading}
+                    >
+                        Annulla
+                    </Button>
+                )}
+            </div>
         </form>
     )
 }

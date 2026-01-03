@@ -221,6 +221,18 @@ export const fetchTransactions = async (): Promise<Transaction[]> => {
     return [...txs].sort((a, b) => b.timestamp - a.timestamp)
 }
 
+/**
+ * Generates a unique ID for a transaction.
+ * Uses crypto.randomUUID() if available, with a robust fallback.
+ */
+function generateTransactionId(): string {
+    if (typeof globalThis !== "undefined" && globalThis.crypto?.randomUUID) {
+        return globalThis.crypto.randomUUID()
+    }
+    // Fallback logic compatible with previous format (9 chars alfanum)
+    return Math.random().toString(36).substring(2, 11)
+}
+
 export const createTransaction = async (data: CreateTransactionDTO): Promise<Transaction> => {
     await delay(1000)
 
@@ -250,7 +262,7 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
     }
 
     const newTransaction: Transaction = {
-        id: Math.random().toString(36).substr(2, 9),
+        id: generateTransactionId(),
         amount: formattedAmount,
         amountCents: amountCents, // Persist integer cents
         date: "Adesso",

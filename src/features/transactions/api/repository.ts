@@ -18,6 +18,7 @@ export const INITIAL_SEED_TRANSACTIONS: Transaction[] = [
     {
         id: "1",
         amount: "-€85.00",
+        amountCents: 8500,
         date: "Oggi, 14:30",
         description: "Spesa Supermercato",
         category: "Cibo",
@@ -31,6 +32,7 @@ export const INITIAL_SEED_TRANSACTIONS: Transaction[] = [
     {
         id: "2",
         amount: "-€24.90",
+        amountCents: 2490,
         date: "Ieri, 19:15",
         description: "Netflix Subscription",
         category: "Svago",
@@ -44,6 +46,7 @@ export const INITIAL_SEED_TRANSACTIONS: Transaction[] = [
     {
         id: "3",
         amount: "+€1,250.00",
+        amountCents: 125000,
         date: "28 Nov, 09:00",
         description: "Stipendio Mensile",
         category: "Entrate",
@@ -57,6 +60,7 @@ export const INITIAL_SEED_TRANSACTIONS: Transaction[] = [
     {
         id: "4",
         amount: "-€45.00",
+        amountCents: 4500,
         date: "27 Nov, 18:30",
         description: "Benzina",
         category: "Trasporti",
@@ -70,6 +74,7 @@ export const INITIAL_SEED_TRANSACTIONS: Transaction[] = [
     {
         id: "5",
         amount: "-€120.00",
+        amountCents: 12000,
         date: "25 Nov, 20:00",
         description: "Cena Ristorante",
         category: "Cibo",
@@ -83,6 +88,7 @@ export const INITIAL_SEED_TRANSACTIONS: Transaction[] = [
     {
         id: "6",
         amount: "-€300.00",
+        amountCents: 30000,
         date: "15 Ago, 10:00",
         description: "Hotel Vacanze",
         category: "Viaggi",
@@ -96,6 +102,7 @@ export const INITIAL_SEED_TRANSACTIONS: Transaction[] = [
     {
         id: "7",
         amount: "-€50.00",
+        amountCents: 5000,
         date: "10 Apr, 12:00",
         description: "Regalo",
         category: "Shopping",
@@ -109,6 +116,7 @@ export const INITIAL_SEED_TRANSACTIONS: Transaction[] = [
     {
         id: "8",
         amount: "-€150.00",
+        amountCents: 15000,
         date: "5 Gen, 09:00",
         description: "Abbonamento Palestra Annuale",
         category: "Salute",
@@ -146,13 +154,43 @@ function ensureCache(): Transaction[] {
     if (userTransactions && Array.isArray(userTransactions)) {
         let didChange = false
         // BACKFILL: Normalize on read and detect if persistence is needed
+        // Robust handling of legacy formats (number, string, missing cents)
         const normalized = userTransactions.map(t => {
-            const n = normalizeTransactionAmount(t)
-            // Detect if values actually changed to avoid unnecessary writes
-            if (t.amountCents !== n.amountCents || t.amount !== n.amount) {
-                didChange = true
+            const raw = t as Transaction & { amount?: number | string }
+
+            // 1. Check if already migrated
+            if (raw.amountCents !== undefined && typeof raw.amountCents === 'number') {
+                return raw as Transaction
             }
-            return n
+
+            // 2. Resolve amountCents from any legacy source
+            let absCents: number
+            if (raw.amount !== undefined) {
+                if (typeof raw.amount === 'number') {
+                    // Legacy float: format 12.34
+                    absCents = Math.abs(Math.round(raw.amount * 100))
+                } else if (typeof raw.amount === 'string') {
+                    // Legacy string: format "€ 10.50"
+                    absCents = Math.abs(parseCurrencyToCents(raw.amount))
+                } else {
+                    absCents = 0
+                }
+            } else {
+                absCents = 0
+            }
+
+            didChange = true
+
+            // Normalize to full Transaction structure
+            const normalizedT: Transaction = {
+                ...raw,
+                amountCents: absCents,
+                // Regenerate amount string only if it was a number before or missing
+                amount: (typeof raw.amount === 'string' && raw.amount.includes('€'))
+                    ? raw.amount
+                    : formatCentsSignedFromType(absCents, raw.type)
+            }
+            return normalizedT
         })
 
         _transactionsCache = normalized
@@ -237,16 +275,11 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
     await delay(1000)
 
     const isIncome = data.type === "income"
-    // Source of truth: Cents. Prioritize amountCents from DTO, fallback to legacy amount (float)
-    let amountCents: number
-    if (data.amountCents !== undefined) {
-        amountCents = Math.abs(Math.round(data.amountCents))
-    } else {
-        const amountVal = Math.abs(data.amount || 0)
-        amountCents = euroToCents(amountVal)
-    }
+    // Source of truth: Cents. Prioritize amountCents from DTO.
+    // For new records, we strictly use amountCents.
+    const amountCents = Math.abs(Math.round(data.amountCents || 0))
 
-    // Derived string for display
+    // Derived string for display only - we won't strictly depend on it for logic
     const formattedAmount = formatCentsSignedFromType(amountCents, data.type)
 
     // Determine superfluous status
@@ -297,26 +330,16 @@ export const updateTransaction = async (id: string, data: Partial<CreateTransact
     const isIncome = nextType === "income"
 
     // Recalculate amounts if needed
-    let formattedAmount = currentTransaction.amount
     let amountCents = currentTransaction.amountCents
 
-    // Use fallback normalization if current is missing cents
-    if (amountCents === undefined) {
-        amountCents = Math.abs(parseCurrencyToCents(currentTransaction.amount))
+    if (data.amountCents !== undefined) {
+        amountCents = Math.abs(Math.round(data.amountCents))
+    } else if (data.amount !== undefined && typeof data.amount === 'number') {
+        // Fallback for partial updates if legacy code still sends float 'amount'
+        amountCents = euroToCents(Math.abs(data.amount))
     }
 
-    if (data.amountCents !== undefined) {
-        // New integer cents provided
-        amountCents = Math.abs(Math.round(data.amountCents))
-        formattedAmount = formatCentsSignedFromType(amountCents, nextType)
-    } else if (data.amount !== undefined) {
-        // New float amount provided
-        amountCents = euroToCents(Math.abs(data.amount))
-        formattedAmount = formatCentsSignedFromType(amountCents, nextType)
-    } else if (data.type !== undefined && data.type !== currentTransaction.type) {
-        // Only type changed, reformat string signature
-        formattedAmount = formatCentsSignedFromType(amountCents, nextType)
-    }
+    const formattedAmount = formatCentsSignedFromType(amountCents, nextType)
 
     // Determine superflous logic update
     let isSuperfluous = currentTransaction.isSuperfluous

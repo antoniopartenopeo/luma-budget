@@ -159,7 +159,7 @@ export default function SettingsPage() {
 
             // Invalidate everything
             await invalidateAll()
-            await queryClient.invalidateQueries({ queryKey: ["settings"] })
+            await queryClient.invalidateQueries({ queryKey: queryKeys.settings.all })
 
             setStatus({ type: "success", message: "Tutti i dati sono stati eliminati con successo." })
         } catch (error) {
@@ -231,7 +231,7 @@ export default function SettingsPage() {
         setStatus(null)
         try {
             resetSettings()
-            await queryClient.invalidateQueries({ queryKey: ["settings"] })
+            await queryClient.invalidateQueries({ queryKey: queryKeys.settings.all })
             setStatus({ type: "success", message: "Le impostazioni sono state ripristinate." })
         } catch (error) {
             console.error("Reset settings error:", error)

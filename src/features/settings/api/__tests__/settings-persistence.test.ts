@@ -72,6 +72,25 @@ describe("Settings V1 Persistence", () => {
         expect(settings.theme).toBe("system")
         // Valid currency should remain
         expect(settings.currency).toBe("USD")
+        // Missing superfluous target should fallback to default (10)
+        expect(settings.superfluousTargetPercent).toBe(10)
+    })
+
+    it("fetchSettings should clamp superfluousTargetPercent between 0 and 100", async () => {
+        // Test too low
+        await upsertSettings({ superfluousTargetPercent: -50 })
+        let settings = await fetchSettings()
+        expect(settings.superfluousTargetPercent).toBe(0)
+
+        // Test too high
+        await upsertSettings({ superfluousTargetPercent: 150 })
+        settings = await fetchSettings()
+        expect(settings.superfluousTargetPercent).toBe(100)
+
+        // Test valid
+        await upsertSettings({ superfluousTargetPercent: 25 })
+        settings = await fetchSettings()
+        expect(settings.superfluousTargetPercent).toBe(25)
     })
 
     it("fetchSettings should return defaults if version mismatch", async () => {

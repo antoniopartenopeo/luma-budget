@@ -18,7 +18,7 @@ export interface DashboardSummary {
     netBalance: number
     budgetTotal: number
     budgetRemaining: number
-    uselessSpendPercent: number
+    uselessSpendPercent: number | null
     categoriesSummary: CategorySummary[]
     usefulVsUseless: {
         useful: number

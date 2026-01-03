@@ -35,10 +35,18 @@ function validateSettings(data: unknown): AppSettingsV1 {
         currency = candidate.currency
     }
 
+    // Validate superfluous target (0-100)
+    let superfluousTargetPercent = DEFAULT_SETTINGS_V1.superfluousTargetPercent
+    if (typeof candidate.superfluousTargetPercent === "number") {
+        // Clamp between 0 and 100
+        superfluousTargetPercent = Math.max(0, Math.min(100, candidate.superfluousTargetPercent))
+    }
+
     return {
         version: 1,
         theme,
         currency,
+        superfluousTargetPercent,
     }
 }
 

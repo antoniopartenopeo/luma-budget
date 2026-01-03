@@ -99,7 +99,7 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
         .reduce((acc, t) => acc + Math.abs(getSignedCents(t)), 0)
 
     const uselessSpent = uselessSpentCents / 100
-    const uselessSpendPercent = totalSpent > 0 ? Math.round((uselessSpent / totalSpent) * 100) : 0
+    const uselessSpendPercent = totalSpent > 0 ? Math.round((uselessSpent / totalSpent) * 100) : null
 
     // 9. Calculate Monthly Expenses (Last N months based on filter)
     // If mode=month, show last 12 months context? Or just the month? 
@@ -153,8 +153,8 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
         uselessSpendPercent,
         categoriesSummary,
         usefulVsUseless: {
-            useful: 100 - uselessSpendPercent,
-            useless: uselessSpendPercent
+            useful: uselessSpendPercent !== null ? 100 - uselessSpendPercent : 100,
+            useless: uselessSpendPercent !== null ? uselessSpendPercent : 0
         },
         monthlyExpenses
     }

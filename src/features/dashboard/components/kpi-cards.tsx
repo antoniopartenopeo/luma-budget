@@ -7,6 +7,7 @@ import { motion } from "framer-motion"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { formatEuroNumber } from "@/lib/currency-utils"
 import { DashboardTimeFilter } from "../api/types"
+import { useSettings } from "@/features/settings/api/use-settings"
 
 export type KpiTone = "positive" | "negative" | "neutral" | "warning"
 
@@ -99,7 +100,7 @@ interface DashboardKpiGridProps {
     netBalance?: number
     budgetTotal?: number
     budgetRemaining?: number
-    uselessSpendPercent?: number
+    uselessSpendPercent?: number | null
     isLoading?: boolean
     filter?: DashboardTimeFilter
 }
@@ -107,6 +108,9 @@ interface DashboardKpiGridProps {
 export function DashboardKpiGrid({ totalSpent, netBalance, budgetTotal, budgetRemaining, uselessSpendPercent, isLoading, filter }: DashboardKpiGridProps) {
     const router = useRouter()
     const { currency, locale } = useCurrency()
+    const { data: settings } = useSettings()
+
+    const superfluousTarget = settings?.superfluousTargetPercent ?? 10
 
     const formatValue = (value: number) => {
         return formatEuroNumber(value, currency, locale)
@@ -139,10 +143,13 @@ export function DashboardKpiGrid({ totalSpent, netBalance, budgetTotal, budgetRe
 
     // Budget: piano non configurato -> neutro, >=0 positivo, <0 negativo
     const hasBudget = budgetTotal && budgetTotal > 0
-    const budgetTone: KpiTone = !hasBudget ? "neutral" : ((budgetRemaining || 0) >= 0 ? "positive" : "negative")
+    const isMonthlyView = filter?.mode === "month"
+    const budgetTone: KpiTone = (!hasBudget || !isMonthlyView) ? "neutral" : ((budgetRemaining || 0) >= 0 ? "positive" : "negative")
 
-    // Superflue: <=10% positivo, >10% negativo
-    const superflueTone: KpiTone = uselessSpendPercent !== undefined ? (uselessSpendPercent <= 10 ? "positive" : "negative") : "neutral"
+    // Superflue: <=target positivo, >target negativo
+    const superflueTone: KpiTone = (uselessSpendPercent !== undefined && uselessSpendPercent !== null)
+        ? (uselessSpendPercent <= superfluousTarget ? "positive" : "negative")
+        : "neutral"
 
     return (
         <div className="space-y-4">
@@ -173,20 +180,20 @@ export function DashboardKpiGrid({ totalSpent, netBalance, budgetTotal, budgetRe
                 />
                 <KpiCard
                     title="Budget Rimanente"
-                    value={isLoading ? 0 : formatValue(budgetRemaining || 0)}
-                    change={isLoading ? "" : (hasBudget ? `${budgetPercent}%` : "")}
-                    trend={!hasBudget ? "neutral" : (budgetTone === "positive" ? "up" : "down")}
-                    comparisonLabel={hasBudget ? "Rimanenti nel periodo" : "Imposta un budget"}
+                    value={isLoading ? 0 : (isMonthlyView ? formatValue(budgetRemaining || 0) : "—")}
+                    change={isLoading ? "" : (isMonthlyView && hasBudget ? `${budgetPercent}%` : "")}
+                    trend={!isMonthlyView || !hasBudget ? "neutral" : (budgetTone === "positive" ? "up" : "down")}
+                    comparisonLabel={!isMonthlyView ? "Solo in vista Mensile" : (hasBudget ? "Rimanenti nel periodo" : "Imposta un budget")}
                     tone={budgetTone}
                     icon={DollarSign}
                     isLoading={isLoading}
-                    onClick={hasBudget ? undefined : () => router.push("/budget")}
+                    onClick={isMonthlyView && !hasBudget ? () => router.push("/budget") : undefined}
                 />
                 <KpiCard
                     title="Spese Superflue"
-                    value={isLoading ? 0 : `${uselessSpendPercent}%`}
-                    change="Target 10%"
-                    trend={superflueTone === "positive" ? "up" : "down"}
+                    value={isLoading ? 0 : (uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—")}
+                    change={`Target ${superfluousTarget}%`}
+                    trend={superflueTone === "positive" ? "up" : superflueTone === "negative" ? "down" : "neutral"}
                     tone={superflueTone}
                     icon={AlertTriangle}
                     isLoading={isLoading}

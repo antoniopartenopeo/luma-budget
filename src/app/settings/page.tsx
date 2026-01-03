@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
     Table,
@@ -95,6 +96,23 @@ export default function SettingsPage() {
     const handleCurrencyChange = (currency: string) => {
         setSaveStatus("saving")
         upsertSettings.mutate({ currency: currency as CurrencyCode }, {
+            onSuccess: () => {
+                setSaveStatus("success")
+                setTimeout(() => setSaveStatus("idle"), 2000)
+            },
+            onError: () => {
+                setSaveStatus("error")
+                setTimeout(() => setSaveStatus("idle"), 3000)
+            }
+        })
+    }
+
+    const handleSuperfluousTargetChange = (value: string) => {
+        const num = parseInt(value, 10)
+        if (isNaN(num)) return
+
+        setSaveStatus("saving")
+        upsertSettings.mutate({ superfluousTargetPercent: num }, {
             onSuccess: () => {
                 setSaveStatus("success")
                 setTimeout(() => setSaveStatus("idle"), 2000)
@@ -407,6 +425,26 @@ export default function SettingsPage() {
                                             <SelectItem value="GBP">Sterlina (£)</SelectItem>
                                         </SelectContent>
                                     </Select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="superfluous-target">Target spese superflue (%)</Label>
+                                    <div className="flex items-center gap-3">
+                                        <Input
+                                            id="superfluous-target"
+                                            type="number"
+                                            min={0}
+                                            max={100}
+                                            value={settings?.superfluousTargetPercent ?? 10}
+                                            onChange={(e) => handleSuperfluousTargetChange(e.target.value)}
+                                            disabled={upsertSettings.isPending}
+                                            className="w-full md:w-[120px]"
+                                        />
+                                        <span className="text-sm text-muted-foreground font-medium">%</span>
+                                    </div>
+                                    <p className="text-[10px] text-muted-foreground">
+                                        Soglia massima consigliata per gli acquisti non essenziali.
+                                    </p>
                                 </div>
                             </div>
                         )}

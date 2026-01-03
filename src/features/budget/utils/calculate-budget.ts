@@ -1,7 +1,7 @@
 import { Transaction } from "@/features/transactions/api/types"
 import { getCategoryById } from "@/features/categories/config"
 import { BudgetSpending, BudgetGroupId, BUDGET_GROUP_LABELS } from "../api/types"
-import { parseCurrencyToCents } from "@/lib/currency-utils"
+import { getSignedCents } from "@/lib/currency-utils"
 
 // =====================
 // SPENDING CALCULATIONS
@@ -13,7 +13,7 @@ import { parseCurrencyToCents } from "@/lib/currency-utils"
 export function calculateTotalSpent(transactions: Transaction[], period: string): number {
     const totalCents = filterTransactionsByPeriod(transactions, period)
         .filter(t => t.type === "expense")
-        .reduce((sum, t) => sum + Math.abs(parseCurrencyToCents(t.amount)), 0)
+        .reduce((sum, t) => sum + Math.abs(getSignedCents(t)), 0)
 
     return totalCents / 100
 }
@@ -25,7 +25,7 @@ export function calculateGroupSpending(transactions: Transaction[], period: stri
     const filtered = filterTransactionsByPeriod(transactions, period)
         .filter(t => t.type === "expense")
 
-    const globalSpentCents = filtered.reduce((sum, t) => sum + Math.abs(parseCurrencyToCents(t.amount)), 0)
+    const globalSpentCents = filtered.reduce((sum, t) => sum + Math.abs(getSignedCents(t)), 0)
 
     const groupSpending = (["essential", "comfort", "superfluous"] as BudgetGroupId[]).map(groupId => {
         const spentCents = filtered
@@ -34,7 +34,7 @@ export function calculateGroupSpending(transactions: Transaction[], period: stri
                 const resolvedGroup = resolveBudgetGroupForTransaction(t, category?.spendingNature as BudgetGroupId)
                 return resolvedGroup === groupId
             })
-            .reduce((sum, t) => sum + Math.abs(parseCurrencyToCents(t.amount)), 0)
+            .reduce((sum, t) => sum + Math.abs(getSignedCents(t)), 0)
 
         return {
             groupId,

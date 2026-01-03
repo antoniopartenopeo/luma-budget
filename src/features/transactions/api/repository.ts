@@ -1,7 +1,7 @@
 import { Transaction, CreateTransactionDTO } from "./types"
 import { storage } from "@/lib/storage-utils"
 import { CATEGORIES } from "../../categories/config"
-import { parseCurrencyToCents } from "@/lib/currency-utils"
+import { parseCurrencyToCents, normalizeTransactionAmount, euroToCents, formatCentsSignedFromType } from "@/lib/currency-utils"
 
 // =====================
 // STORAGE SYSTEM
@@ -134,6 +134,7 @@ function saveToStorage(allData: Record<string, Transaction[]>): void {
 /**
  * Ensures the cache is populated from storage.
  * Does NOT auto-seed dummy data anymore.
+ * Normalizes transactions on load (backfill amountCents).
  */
 function ensureCache(): Transaction[] {
     if (_transactionsCache !== null) return _transactionsCache
@@ -142,11 +143,15 @@ function ensureCache(): Transaction[] {
     const userTransactions = allData[DEFAULT_USER_ID]
 
     if (userTransactions && Array.isArray(userTransactions)) {
-        _transactionsCache = userTransactions
+        // BACKFILL: Normalize on read to populate amountCents if missing
+        _transactionsCache = userTransactions.map(t => normalizeTransactionAmount(t))
     } else {
         _transactionsCache = []
     }
 
+    // Optional: save back normalized data immediately? 
+    // Maybe better not to trigger writes on read, let them happen on next update.
+    // However, for consistency, let's keep it in memory normalized.
     return _transactionsCache
 }
 
@@ -167,7 +172,7 @@ export const __resetTransactionsCache = () => {
  * Can be called from Settings or DevTools.
  */
 export function seedTransactions() {
-    _transactionsCache = [...INITIAL_SEED_TRANSACTIONS]
+    _transactionsCache = [...INITIAL_SEED_TRANSACTIONS].map(t => normalizeTransactionAmount(t))
     const allData = loadAllFromStorage()
     allData[DEFAULT_USER_ID] = _transactionsCache
     saveToStorage(allData)
@@ -207,10 +212,12 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
     const isIncome = data.type === "income"
-    const amount = isIncome ? Math.abs(data.amount) : -Math.abs(data.amount)
-    const formattedAmount = isIncome
-        ? `+€${amount.toFixed(2)}`
-        : `-€${Math.abs(amount).toFixed(2)}`
+    // Source of truth: Cents
+    const amountVal = Math.abs(data.amount)
+    const amountCents = euroToCents(amountVal)
+
+    // Derived string for display
+    const formattedAmount = formatCentsSignedFromType(amountCents, data.type)
 
     // Determine superfluous status
     let isSuperfluous = false
@@ -227,6 +234,7 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
     const newTransaction: Transaction = {
         id: Math.random().toString(36).substr(2, 9),
         amount: formattedAmount,
+        amountCents: amountCents, // Persist integer cents
         date: "Adesso",
         description: data.description,
         category: data.category,
@@ -255,18 +263,25 @@ export const updateTransaction = async (id: string, data: Partial<CreateTransact
     }
 
     const currentTransaction = txs[index]
-    const isIncome = data.type ? data.type === "income" : currentTransaction.type === "income"
+    const nextType = data.type !== undefined ? data.type : currentTransaction.type
+    const isIncome = nextType === "income"
 
-    // Recalculate formatted amount if amount or type changed
+    // Recalculate amounts if needed
     let formattedAmount = currentTransaction.amount
-    if (data.amount !== undefined || data.type !== undefined) {
-        const amountValue = data.amount !== undefined ? data.amount :
-            Math.abs(parseCurrencyToCents(currentTransaction.amount)) / 100
+    let amountCents = currentTransaction.amountCents
 
-        const finalAmount = isIncome ? Math.abs(amountValue) : -Math.abs(amountValue)
-        formattedAmount = isIncome
-            ? `+€${finalAmount.toFixed(2)}`
-            : `-€${Math.abs(finalAmount).toFixed(2)}`
+    // Use fallback normalization if current is missing cents
+    if (amountCents === undefined) {
+        amountCents = Math.abs(parseCurrencyToCents(currentTransaction.amount))
+    }
+
+    if (data.amount !== undefined) {
+        // New amount provided
+        amountCents = euroToCents(Math.abs(data.amount))
+        formattedAmount = formatCentsSignedFromType(amountCents, nextType)
+    } else if (data.type !== undefined && data.type !== currentTransaction.type) {
+        // Only type changed, reformat string signature
+        formattedAmount = formatCentsSignedFromType(amountCents, nextType)
     }
 
     // Determine superflous logic update
@@ -289,6 +304,7 @@ export const updateTransaction = async (id: string, data: Partial<CreateTransact
         ...currentTransaction,
         ...data,
         amount: formattedAmount,
+        amountCents: amountCents, // Persist updated cents
         icon: isIncome ? "💰" : "🆕",
         isSuperfluous,
         classificationSource

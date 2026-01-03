@@ -1,7 +1,7 @@
 import { DashboardSummary, DashboardTimeFilter } from "./types"
 import { fetchTransactions } from "../../transactions/api/repository"
 import { fetchBudget } from "../../budget/api/repository"
-import { parseCurrencyToCents } from "@/lib/currency-utils"
+import { getSignedCents } from "@/lib/currency-utils"
 
 const DEFAULT_USER_ID = "user-1"
 
@@ -33,11 +33,11 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
     // 3. Calculate All-Time Net Balance (Global, unfiltered)
     const allTimeIncomeCents = transactions
         .filter(t => t.type === 'income')
-        .reduce((acc, t) => acc + Math.abs(parseCurrencyToCents(t.amount)), 0)
+        .reduce((acc, t) => acc + Math.abs(getSignedCents(t)), 0)
 
     const allTimeExpensesCents = transactions
         .filter(t => t.type === 'expense')
-        .reduce((acc, t) => acc + Math.abs(parseCurrencyToCents(t.amount)), 0)
+        .reduce((acc, t) => acc + Math.abs(getSignedCents(t)), 0)
 
     const netBalance = (allTimeIncomeCents - allTimeExpensesCents) / 100
 
@@ -50,11 +50,11 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
     // 5. Calculate Metrics based on Range
     const totalExpensesCents = rangeTransactions
         .filter(t => t.type === 'expense')
-        .reduce((acc, t) => acc + Math.abs(parseCurrencyToCents(t.amount)), 0)
+        .reduce((acc, t) => acc + Math.abs(getSignedCents(t)), 0)
 
     const totalIncomeCents = rangeTransactions
         .filter(t => t.type === 'income')
-        .reduce((acc, t) => acc + Math.abs(parseCurrencyToCents(t.amount)), 0)
+        .reduce((acc, t) => acc + Math.abs(getSignedCents(t)), 0)
 
     const totalSpent = totalExpensesCents / 100
     const totalIncome = totalIncomeCents / 100
@@ -71,7 +71,7 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
                 tDate.getFullYear() === tYear &&
                 tDate.getMonth() + 1 === tMonth
         })
-        .reduce((acc, t) => acc + Math.abs(parseCurrencyToCents(t.amount)), 0)
+        .reduce((acc, t) => acc + Math.abs(getSignedCents(t)), 0)
 
     const budgetTotal = budgetPlan?.globalBudgetAmount || 0
     const budgetTotalCents = Math.round(budgetTotal * 100)
@@ -80,7 +80,7 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
     // 7. Calculate Category Distribution (Range-based)
     const categoryMap = new Map<string, { label: string, amount: number }>()
     rangeTransactions.filter(t => t.type === 'expense').forEach(t => {
-        const amountCents = Math.abs(parseCurrencyToCents(t.amount))
+        const amountCents = Math.abs(getSignedCents(t))
         const current = categoryMap.get(t.categoryId) || { label: t.category, amount: 0 }
         categoryMap.set(t.categoryId, { label: t.category, amount: current.amount + (amountCents / 100) })
     })
@@ -95,7 +95,7 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
     // 8. Calculate Useless Spending (Range-based)
     const uselessSpentCents = rangeTransactions
         .filter(t => t.type === 'expense' && t.isSuperfluous)
-        .reduce((acc, t) => acc + Math.abs(parseCurrencyToCents(t.amount)), 0)
+        .reduce((acc, t) => acc + Math.abs(getSignedCents(t)), 0)
 
     const uselessSpent = uselessSpentCents / 100
     const uselessSpendPercent = totalSpent > 0 ? Math.round((uselessSpent / totalSpent) * 100) : 0
@@ -134,7 +134,7 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
                 const d = new Date(t.timestamp)
                 return d.getMonth() === iMonth && d.getFullYear() === iYear
             })
-            .reduce((acc, t) => acc + Math.abs(parseCurrencyToCents(t.amount)), 0)
+            .reduce((acc, t) => acc + Math.abs(getSignedCents(t)), 0)
 
         monthlyExpenses.push({ name: Label, total: mTotalCents / 100 })
 

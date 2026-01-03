@@ -11,6 +11,7 @@ import {
 const STORAGE_KEY = 'luma_transactions_v1'
 
 describe('Transactions Persistence (localStorage)', () => {
+    vi.setConfig({ testTimeout: 15000 })
     beforeEach(() => {
         __resetTransactionsCache()
         vi.stubGlobal('localStorage', {

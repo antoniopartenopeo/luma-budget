@@ -3,6 +3,7 @@ export type TransactionType = "income" | "expense"
 export interface Transaction {
     id: string
     amount: string
+    amountCents?: number // Integer, absolute value
     date: string
     description: string
     category: string // Label, kept for display compatibility

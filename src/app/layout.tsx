@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/layout/app-shell";
 import { QueryProvider } from "@/components/providers/query-provider";
+import { ThemeApplier } from "@/components/providers/theme-applier";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <QueryProvider>
+          <ThemeApplier />
           <AppShell>{children}</AppShell>
         </QueryProvider>
       </body>

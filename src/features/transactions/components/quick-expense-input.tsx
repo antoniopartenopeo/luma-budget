@@ -109,7 +109,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
             <form
                 onSubmit={handleSubmit}
                 className={cn(
-                    "flex items-center gap-1 rounded-full bg-white p-1 shadow-sm transition-all border border-transparent",
+                    "flex items-center gap-1 rounded-full bg-background p-1 shadow-sm transition-all border border-input",
                     isFocused && "shadow-md ring-2 ring-primary/10",
                     hasError && "border-destructive/50 shadow-destructive/10"
                 )}
@@ -127,7 +127,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                         onClick={() => handleTypeChange("expense")}
                         className={cn(
                             "p-1.5 rounded-full transition-all",
-                            type === "expense" ? "bg-white text-red-500 shadow-sm" : "text-muted-foreground hover:text-foreground"
+                            type === "expense" ? "bg-background text-red-500 shadow-sm" : "text-muted-foreground hover:text-foreground"
                         )}
                         title="Uscita"
                     >
@@ -138,7 +138,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                         onClick={() => handleTypeChange("income")}
                         className={cn(
                             "p-1.5 rounded-full transition-all",
-                            type === "income" ? "bg-white text-green-500 shadow-sm" : "text-muted-foreground hover:text-foreground"
+                            type === "income" ? "bg-background text-green-500 shadow-sm" : "text-muted-foreground hover:text-foreground"
                         )}
                         title="Entrata"
                     >

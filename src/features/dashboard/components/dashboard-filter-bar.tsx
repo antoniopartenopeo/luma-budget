@@ -60,7 +60,7 @@ export function DashboardFilterBar({ filter, onFilterChange }: DashboardFilterBa
                     variant={filter.mode === "month" ? "secondary" : "ghost"}
                     size="sm"
                     onClick={() => handleModeChange("month")}
-                    className={cn("text-xs h-8", filter.mode === "month" && "bg-white shadow-sm")}
+                    className={cn("text-xs h-8", filter.mode === "month" && "bg-background shadow-sm")}
                 >
                     Mese
                 </Button>
@@ -69,7 +69,7 @@ export function DashboardFilterBar({ filter, onFilterChange }: DashboardFilterBa
                     variant={filter.mode === "range" && filter.months === 3 ? "secondary" : "ghost"}
                     size="sm"
                     onClick={() => handleModeChange("range", 3)}
-                    className={cn("text-xs h-8", filter.mode === "range" && filter.months === 3 && "bg-white shadow-sm")}
+                    className={cn("text-xs h-8", filter.mode === "range" && filter.months === 3 && "bg-background shadow-sm")}
                 >
                     3M
                 </Button>
@@ -77,7 +77,7 @@ export function DashboardFilterBar({ filter, onFilterChange }: DashboardFilterBa
                     variant={filter.mode === "range" && filter.months === 6 ? "secondary" : "ghost"}
                     size="sm"
                     onClick={() => handleModeChange("range", 6)}
-                    className={cn("text-xs h-8", filter.mode === "range" && filter.months === 6 && "bg-white shadow-sm")}
+                    className={cn("text-xs h-8", filter.mode === "range" && filter.months === 6 && "bg-background shadow-sm")}
                 >
                     6M
                 </Button>
@@ -85,7 +85,7 @@ export function DashboardFilterBar({ filter, onFilterChange }: DashboardFilterBa
                     variant={filter.mode === "range" && filter.months === 12 ? "secondary" : "ghost"}
                     size="sm"
                     onClick={() => handleModeChange("range", 12)}
-                    className={cn("text-xs h-8", filter.mode === "range" && filter.months === 12 && "bg-white shadow-sm")}
+                    className={cn("text-xs h-8", filter.mode === "range" && filter.months === 12 && "bg-background shadow-sm")}
                 >
                     12M
                 </Button>

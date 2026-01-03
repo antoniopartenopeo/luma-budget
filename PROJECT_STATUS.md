@@ -1,99 +1,99 @@
 # LumaBudget - Project Status Report
 
 ## A) Executive Summary
-LumaBudget è una web app di gestione delle finanze personali (PWA-ready) costruita su **Next.js 16 (App Router)** e **React 19**. Utilizza **React Query v5** per lo state management asincrono e **localStorage** come layer di persistenza client-side, simulando un backend REST tramite mock API sofisticate con supporto sync cross-tab. 
+LumaBudget è una web app di gestione delle finanze personali (PWA-ready) costruita su **Next.js 16 (App Router)** e **React 19**. Utilizza **React Query v5** per lo state management asincrono e **localStorage** come layer di persistenza client-side, simulando un backend REST tramite mock API sofisticate con supporto sync cross-tab.
 
-Il focus recente è stato sulla robustezza dei dati finanziari: è stato implementato un **parser centralizzato** (`currency-utils`) che gestisce valute miste e un'euristica intelligente per disambiguare separator decimali/migliaia ("30.00" vs "1.234"). Le sezioni Core (Dashboard, Transazioni, Budget) sono funzionalmente complete e testate, mentre le aree di analisi avanzata (Insights) e configurazione (Settings) sono attualmente segnaposto.
+Il focus recente è stato sul **refactor della Dashboard** (Filtri Globali Mese/Periodo, KPI "Saldo" Lifetime) e sul completamento del modulo **Impostazioni** (Reset granulare, Diagnostica, Backup). Le sezioni Core sono funzionalmente complete e testate con **104 test unitari/integrazione**. Insights è attualmente disabilitata ("Soon").
 
 ## B) Tree Schema (Core Dependencies)
 ```ascii
 src/
 ├── app/
 │   ├── layout.tsx              # [REAL] AppShell, QueryProvider, Toaster
-│   ├── page.tsx                # [REAL] Dashboard (KPIs + Charts)
+│   ├── page.tsx                # [REAL] Dashboard (Global Filters, KPI Grid, Charts)
 │   ├── transactions/page.tsx   # [REAL] CRUD Table + Filters + Export
 │   ├── budget/page.tsx         # [REAL] Budget Mgmt (Global vs Groups)
-│   └── settings/page.tsx       # [REAL] Prefs (Data/UI) + Reset/Backup
+│   └── settings/page.tsx       # [REAL] Prefs, Diagnostics, Backup & Reset Granulare
 ├── components/
-│   ├── layout/sidebar.tsx      # [REAL] Navigation (Insights link exists but points to 404)
+│   ├── layout/sidebar.tsx      # [REAL] Navigation (Insights disabled with "Soon" badge)
 │   └── ui/                     # [REAL] Shadcn-like components (Button, Input, Dialog...)
 ├── features/
 │   ├── budget/
-│   │   ├── api/mock-data.ts    # [DEMO] LocalStorage persistence (luma_budget_plans_v1)
+│   │   ├── api/mock-data.ts    # [REAL] Persisted in LocalStorage (luma_budget_plans_v1)
 │   │   └── utils/calculate-budget.ts # [REAL] Spending logic (uses currency-utils)
 │   ├── dashboard/
-│   │   └── api/mock-data.ts    # [REAL] Aggregates Transactions + Budget for KPIs
+│   │   └── api/mock-data.ts    # [REAL] Aggregates Transactions + Budget for KPIs (Filtered)
 │   ├── settings/
 │   │   ├── api/repository.ts   # [REAL] Settings V1 Persistance (luma_settings_v1)
-│   │   └── backup/backup-utils.ts # [REAL] Import/Export/Reset Logic
+│   │   ├── backup/backup-utils.ts # [REAL] Import/Export/Reset Logic
+│   │   └── diagnostics/        # [REAL] System Diagnostics & Clipboard Copy
 │   └── transactions/
-│       ├── api/mock-data.ts    # [DEMO] LocalStorage CRUD (luma_transactions_v1) + Cache
+│       ├── api/mock-data.ts    # [REAL] CRUD LocalStorage (luma_transactions_v1) + Cache
 │       └── components/         # [REAL] QuickExpenseInput, TransactionForm, Edit/Delete Dialogs
 └── lib/
-    ├── currency-utils.ts       # [REAL] ROBUST PARSER (Cents based, 3-digit heuristic)
+    ├── currency-utils.ts       # [REAL] Parser centralizzato per input valuta
     └── storage-utils.ts        # [REAL] SSR-safe storage wrapper (get/set/events)
 ```
 
 ## C) Feature Inventory
 | Feature | Sezione | Stato | % | Evidence / Note |
 | :--- | :--- | :--- | :--- | :--- |
-| **Dashboard KPIs** | Dashboard | ✅ Definitivo | 100% | `dashboard-summary.test.ts`. Net Balance separato da Budget Remaining. |
-| **Monthly Chart** | Dashboard | ✅ Definitivo | 100% | Recharts + mock-data aggregation coerente con cents parser. |
-| **Transazioni CRUD** | Transazioni | ✅ Definitivo | 100% | `transactions-persistence.test.ts`. Create/Edit/Delete persistenti. |
-| **Filtri & Search** | Transazioni | ✅ Definitivo | 100% | Filtro per testo, tipo, categoria e "superfluo" (Dashboard link). |
-| **Export CSV** | Transazioni | ✅ Definitivo | 100% | `export-transactions.ts`. Supporta encoding UTF-8 BOM per Excel. |
-| **Budget Plan** | Budget | ✅ Definitivo | 100% | `budget-calculations.test.ts`. Gestione mensile globale e per gruppi. |
-| **Logic Superflue** | Core | 🟡 Migliorabile | 90% | Regole basate su categoria funzionanti. Override manuale supportato ma basico. |
-| **Cross-tab Sync** | Core | ✅ Definitivo | 100% | `storage-utils.ts` + `QueryProvider`. Settings, Budget e TXs sync. |
-| **Currency Parsing**| Lib | ✅ Definitivo | 100% | `currency-utils.test.ts`. Euristica 3 cifre, integer math. Bug 30.00 fixato. |
-| **Impostazioni** | Settings | ✅ Definitivo | 100% | `settings-persistence.test.ts`. Reset granulare, Theme/Currency, Backup/restore. |
-| **Insights** | Insights | 🔴 Da avviare | 0% | Link in sidebar presente, route non esistente. |
+| **Dashboard Filters** | Dashboard | ✅ Definitivo | 100% | Filtri Globali (Mese, 3M, 6M, 12M). |
+| **KPI "Saldo" Lifetime**| Dashboard | ✅ Definitivo | 100% | Net Balance calcolato su tutto lo storico. |
+| **Budget KPI** | Dashboard | ✅ Definitivo | 100% | Budget Rimanente (mese corrente o fine range). |
+| **Recent Limit** | Dashboard | ✅ Definitivo | 100% | Ultime 5 transazioni in Dashboard. |
+| **Transazioni CRUD** | Transazioni | ✅ Definitivo | 100% | `transactions-persistence.test.ts`. Create/Edit/Delete. |
+| **Filtri & Search** | Transazioni | ✅ Definitivo | 100% | Filtro per testo, tipo, categoria e "superfluo". |
+| **Export CSV** | Transazioni | ✅ Definitivo | 100% | `export-transactions.ts`. Supporta UTF-8 BOM. |
+| **Budget Plan** | Budget | ✅ Definitivo | 100% | Gestione mensile globale e per gruppi. |
+| **Logic Superflue** | Core | 🟡 Migliorabile | 90% | Regole categoriali. Override manuale supportato ma basico. |
+| **Cross-tab Sync** | Core | ✅ Definitivo | 100% | `storage-utils.ts` + `QueryProvider`. |
+| **Currency Parsing**| Lib | ✅ Definitivo | 100% | `currency-utils.test.ts`. Gestione input e calcoli interi. |
+| **Impostazioni V1** | Settings | ✅ Definitivo | 100% | Tema/Valuta, Reset Granulare, Diagnostica, Backup. |
+| **Insights** | Insights | 🔴 Da avviare | 0% | Link in sidebar disabilitato ("Soon"). |
 
-**Stima Avanzamento Totale App: ~85%** (Core features complete, Settings complete, manca solo Insights).
+**Stima Avanzamento Totale App: ~90%** (Core features complete, Dashboard Refactored, manca solo Insights).
 
 ## D) Timeline Cronologica (Ricostruita)
 1.  **Project Setup & UI Core** (0% → 15%)
-    *   Setup Next.js, Tailwind, Shadcn components.
-    *   Struttura layout (Sidebar, Topbar).
+    *   Setup Next.js, Tailwind, Shadcn components. Layout base.
 2.  **Transactions Feature** (15% → 40%)
-    *   Lista transazioni mockup.
-    *   Creato Mock API + LocalStorage (`luma_transactions_v1`).
+    *   CRUD Transazioni, LocalStorage API (`luma_transactions_v1`).
     *   QuickExpenseInput component.
 3.  **Cross-Tab Sync & Fixes** (40% → 50%)
-    *   `storage-utils.ts` refactor.
-    *   Gestione eventi `storage` per sync real-time tra tab.
+    *   Gestione eventi `storage` per sync real-time.
 4.  **Budget Feature** (50% → 65%)
-    *   Route `/budget`.
-    *   Logica calcolo spesa (spending vs budget).
+    *   Route `/budget`, calcolo spesa vs budget.
     *   Separazione gruppi (Essenziali/Comfort/Superflue).
 5.  **Dashboard Refinement** (65% → 70%)
-    *   Calcolo corretto "Budget Rimanente" (slegato da Income).
-    *   Introduzione KPI "Saldo Mensile".
+    *   Introduzione KPI basilari.
 6.  **Robust Currency Parsing** (70% → 75%)
-    *   Identificato bug precisione ("30.00" -> 3000).
-    *   Creazione `src/lib/currency-utils.ts` con euristica 3 cifre.
-    *   Refactor a tappeto su API, Form, Export e Card per usare centesimi interi.
-    *   Copertura test 100% sulla logica finanziaria (62 tests passing).
-7.  **Settings V1 Complete** (75% → 85% - **OGGI**)
-    *   Implementato Data Layer Settings (`luma_settings_v1`).
-    *   Route `/settings` completa con UI Preferenze (Tema/Valuta).
-    *   Reset Granulare (Transazioni/Budget/All) con feedback e controlli sicurezza.
-    *   Backup/Restore JSON funzionante.
-    *   Icone Lucide unificate nel budget.
+    *   `src/lib/currency-utils.ts` per normalizzazione input.
+    *   Refactor API/Form per centesimi interi.
+    *   Copertura test finanziari (104 test totali).
+7.  **Settings V1 Complete** (75% → 85%)
+    *   UI Preferenze (Tema/Valuta) + Persistenza.
+    *   Reset Granulare (Tx/Budget) e Diagnostica tecnica.
+    *   Backup/Restore JSON.
+8.  **Dashboard 2.0 Reskin** (85% → 90% - **OGGI**)
+    *   Filtri Globali (Mese corrente o Range 3/6/12 mesi).
+    *   KPI "Saldo" (Lifetime) vs Budget (Mese corrente/finale).
+    *   Charts sincronizzati col filtro (Spese mensili / Categorie).
+    *   UI Polish (Recent Transactions limitata a 5).
 
 ## E) Backlog
 ### In sospeso
-*   **Gestione Categorie**: Attualmente hardcoded in `config.ts`. Manca UI per crearle/modificarle.
-*   **Mobile Responsiveness**: UI è responsive ma `TransactionsTable` su mobile potrebbe richiedere una view a card.
+*   **Gestione Categorie**: Attualmente hardcoded in `config.ts`.
+*   **Mobile Responsiveness**: UI usabile ma `TransactionsTable` migliorabile su mobile (card view).
 
 ### Da avviare
-*   **Pagina Insights**: Grafici avanzati (trend annuale, breakdown categorie).
-*   **Onboarding**: Wizard iniziale per settare il primo budget se vuoto.
+*   **Pagina Insights**: Grafici avanzati (trend annuale, breakdown profondo).
+*   **Onboarding**: Wizard iniziale per primo avvio (Budget/Valuta).
 
 ## F) Raccomandazioni (Prossimi 3 Step)
-1.  **Pagina Insights**: Sfruttare i dati già robusti per visualizzare trend di spesa.
-    *   *Motivazione*: Completa il valore "analitico" dell'app oltre la semplice registrazione.
-2.  **Category Management**: Spostare le categorie da `config.ts` allo storage o permettere customizzazione semplice.
-    *   *Motivazione*: Rende l'app utilizzabile da utenti con esigenze diverse (es. chi non ha "Auto" ma "Moto").
-3.  **Refactor Provider Tema**: Applicare effettivamente il tema (Dark/Light) usando il valore salvato nei Settings.
-    *   *Motivazione*: Attualmente il settings viene salvato ma non applica la classe CSS al body.
+1.  **Insights MVP**: Attivare la rotta `/insights` con grafici annuali.
+    *   *Motivazione*: Sfruttare i dati storici ora ben strutturati.
+2.  **Category Management**: Spostare config categorie in LocalStorage.
+    *   *Motivazione*: Permettere personalizzazione categorie utente.
+3.  **Mobile UX**: Ottimizzare tabella transazioni per schermi piccoli (Card layout).
+    *   *Motivazione*: Migliorare l'uso "on the go" da smartphone.

@@ -1,5 +1,6 @@
 import { BudgetPlan, CreateBudgetDTO, UpdateBudgetDTO, BUDGET_GROUP_LABELS, BudgetGroupId } from "./types"
 import { storage } from "@/lib/storage-utils"
+import { delay } from "@/lib/delay"
 
 // =====================
 // STORAGE HELPERS
@@ -26,7 +27,7 @@ function saveToStorage(data: Record<string, BudgetPlan>): void {
 
 export async function fetchBudget(userId: string, period: string): Promise<BudgetPlan | null> {
     // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 200))
+    await delay(200)
 
     const plans = loadFromStorage()
     const key = getBudgetKey(userId, period)
@@ -34,7 +35,7 @@ export async function fetchBudget(userId: string, period: string): Promise<Budge
 }
 
 export async function createBudget(userId: string, data: CreateBudgetDTO): Promise<BudgetPlan> {
-    await new Promise(resolve => setTimeout(resolve, 300))
+    await delay(300)
 
     const plans = loadFromStorage()
     const key = getBudgetKey(userId, data.period)
@@ -64,7 +65,7 @@ export async function createBudget(userId: string, data: CreateBudgetDTO): Promi
 }
 
 export async function updateBudget(userId: string, period: string, data: UpdateBudgetDTO): Promise<BudgetPlan> {
-    await new Promise(resolve => setTimeout(resolve, 300))
+    await delay(300)
 
     const plans = loadFromStorage()
     const key = getBudgetKey(userId, period)
@@ -87,7 +88,7 @@ export async function updateBudget(userId: string, period: string, data: UpdateB
 }
 
 export async function deleteBudget(userId: string, period: string): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, 200))
+    await delay(200)
 
     const plans = loadFromStorage()
     const key = getBudgetKey(userId, period)

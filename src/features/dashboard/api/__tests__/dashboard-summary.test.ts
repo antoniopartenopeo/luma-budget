@@ -9,11 +9,6 @@ const DEFAULT_USER_ID = 'user-1'
 // Mock storage just in case, though we will rely on repository methods which use storage utils
 // We want to ensure clean state.
 describe('Dashboard Summary (Real Wiring)', () => {
-    // Increase timeout because we use real Date delays (toFake: ['Date'])
-    // and Repository has artificial delays of ~800ms each.
-    // 4 txs + fetches can exceed default 5s.
-    vi.setConfig({ testTimeout: 20000 })
-
     // Fixed date: 2025-05-15
     // so "current month" is May 2025 (2025-05)
     // "previous month" is April 2025 (2025-04)

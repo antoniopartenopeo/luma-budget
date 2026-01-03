@@ -17,7 +17,8 @@ export interface Transaction {
 
 export interface CreateTransactionDTO {
     description: string
-    amount: number
+    amount?: number // Legacy float amount
+    amountCents?: number // New integer cents (absolute value)
     category: string // Label
     categoryId: string // ID
     type: TransactionType

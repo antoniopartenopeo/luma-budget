@@ -46,6 +46,11 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
         return cat?.spendingNature === "superfluous"
     }, [categoryId, isManualOverride, isSuperfluousManual, type])
 
+    const handleCategoryChange = (val: string) => {
+        setCategoryId(val)
+        setIsSuperfluousManual(null) // Reset manual override (UX requirement)
+    }
+
     const handleTypeChange = (newType: "expense" | "income") => {
         setType(newType)
         // Only reset if the current category doesn't belong to the new type
@@ -78,13 +83,11 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
             return
         }
 
-        const parsedAmount = amountCents / 100
-
         const selectedCategory = CATEGORIES.find(c => c.id === categoryId)
 
         onSubmit({
             description,
-            amount: parsedAmount,
+            amountCents, // Send absolute integer cents
             categoryId,
             category: selectedCategory?.label || categoryId, // Fallback
             type,
@@ -158,7 +161,7 @@ export function TransactionForm({ defaultValues, onSubmit, isLoading, submitLabe
 
             <div className="space-y-2">
                 <Label htmlFor="category">Categoria</Label>
-                <Select value={categoryId} onValueChange={setCategoryId}>
+                <Select value={categoryId} onValueChange={handleCategoryChange}>
                     <SelectTrigger className={errors.category ? "border-destructive ring-destructive" : ""}>
                         <SelectValue placeholder="Seleziona categoria" />
                     </SelectTrigger>

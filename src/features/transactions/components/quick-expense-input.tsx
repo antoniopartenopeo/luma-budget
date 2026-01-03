@@ -70,12 +70,10 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
             return
         }
 
-        const parsedAmount = amountCents / 100
-
         create(
             {
                 description,
-                amount: parsedAmount,
+                amountCents, // Send absolute integer cents
                 category: CATEGORIES.find(c => c.id === category)?.label || category,
                 categoryId: category,
                 type,
@@ -191,6 +189,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                     value={category}
                     onValueChange={(val) => {
                         setCategory(val)
+                        setIsSuperfluousManual(null) // Reset manual override on category change
                         if (validationError) setValidationError(null)
                     }}
                     disabled={isPending}

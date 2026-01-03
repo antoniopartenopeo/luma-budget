@@ -30,11 +30,12 @@ export default function DashboardPage() {
 
       <DashboardKpiGrid
         totalSpent={data?.totalSpent}
-        netBalance={data?.netBalance} // This is now ALL-TIME
+        netBalance={data?.netBalance}
         budgetTotal={data?.budgetTotal}
         budgetRemaining={data?.budgetRemaining}
         uselessSpendPercent={data?.uselessSpendPercent}
         isLoading={isLoading}
+        filter={filter}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

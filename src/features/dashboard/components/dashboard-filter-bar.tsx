@@ -37,7 +37,7 @@ export function DashboardFilterBar({ filter, onFilterChange }: DashboardFilterBa
     }
 
     return (
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-card p-4 rounded-xl border shadow-sm">
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-card px-3 py-2 md:px-4 md:py-3 rounded-xl border shadow-sm">
             {/* Period Selector (Left) */}
             <div className="flex items-center gap-2">
                 <Button variant="outline" size="icon" onClick={handlePrevMonth} className="h-8 w-8">

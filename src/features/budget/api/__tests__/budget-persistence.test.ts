@@ -7,7 +7,6 @@ const USER_ID = 'test-user'
 const PERIOD = '2025-12'
 
 describe('Budget Persistence (localStorage)', () => {
-    vi.setConfig({ testTimeout: 15000 })
     beforeEach(() => {
         vi.stubGlobal('localStorage', {
             getItem: vi.fn(),

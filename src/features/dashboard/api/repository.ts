@@ -2,12 +2,13 @@ import { DashboardSummary, DashboardTimeFilter } from "./types"
 import { fetchTransactions } from "../../transactions/api/repository"
 import { fetchBudget } from "../../budget/api/repository"
 import { getSignedCents } from "@/lib/currency-utils"
+import { delay } from "@/lib/delay"
 
 const DEFAULT_USER_ID = "user-1"
 
 export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promise<DashboardSummary> => {
     // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 600))
+    await delay(600)
 
     // 1. Determine date range for filtered metrics
     const endDate = new Date(filter.period + "-01")

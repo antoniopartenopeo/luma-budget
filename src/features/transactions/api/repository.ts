@@ -2,6 +2,7 @@ import { Transaction, CreateTransactionDTO } from "./types"
 import { storage } from "@/lib/storage-utils"
 import { CATEGORIES } from "../../categories/config"
 import { parseCurrencyToCents, normalizeTransactionAmount, euroToCents, formatCentsSignedFromType } from "@/lib/currency-utils"
+import { delay } from "@/lib/delay"
 
 // =====================
 // STORAGE SYSTEM
@@ -143,15 +144,27 @@ function ensureCache(): Transaction[] {
     const userTransactions = allData[DEFAULT_USER_ID]
 
     if (userTransactions && Array.isArray(userTransactions)) {
-        // BACKFILL: Normalize on read to populate amountCents if missing
-        _transactionsCache = userTransactions.map(t => normalizeTransactionAmount(t))
+        let didChange = false
+        // BACKFILL: Normalize on read and detect if persistence is needed
+        const normalized = userTransactions.map(t => {
+            const n = normalizeTransactionAmount(t)
+            // Detect if values actually changed to avoid unnecessary writes
+            if (t.amountCents !== n.amountCents || t.amount !== n.amount) {
+                didChange = true
+            }
+            return n
+        })
+
+        _transactionsCache = normalized
+
+        // If changes were detected (e.g. legacy data without amountCents), persist back immediately
+        if (didChange) {
+            syncStorage()
+        }
     } else {
         _transactionsCache = []
     }
 
-    // Optional: save back normalized data immediately? 
-    // Maybe better not to trigger writes on read, let them happen on next update.
-    // However, for consistency, let's keep it in memory normalized.
     return _transactionsCache
 }
 
@@ -196,25 +209,30 @@ const isSuperfluousRule = (categoryId: string, type: "income" | "expense"): bool
 
 export const fetchRecentTransactions = async (): Promise<Transaction[]> => {
     // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 800))
+    await delay(800)
     const txs = ensureCache()
     // Return sorted by timestamp desc
     return [...txs].sort((a, b) => b.timestamp - a.timestamp)
 }
 
 export const fetchTransactions = async (): Promise<Transaction[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 800))
+    await delay(800)
     const txs = ensureCache()
     return [...txs].sort((a, b) => b.timestamp - a.timestamp)
 }
 
 export const createTransaction = async (data: CreateTransactionDTO): Promise<Transaction> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    await delay(1000)
 
     const isIncome = data.type === "income"
-    // Source of truth: Cents
-    const amountVal = Math.abs(data.amount)
-    const amountCents = euroToCents(amountVal)
+    // Source of truth: Cents. Prioritize amountCents from DTO, fallback to legacy amount (float)
+    let amountCents: number
+    if (data.amountCents !== undefined) {
+        amountCents = Math.abs(Math.round(data.amountCents))
+    } else {
+        const amountVal = Math.abs(data.amount || 0)
+        amountCents = euroToCents(amountVal)
+    }
 
     // Derived string for display
     const formattedAmount = formatCentsSignedFromType(amountCents, data.type)
@@ -254,7 +272,7 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
 }
 
 export const updateTransaction = async (id: string, data: Partial<CreateTransactionDTO>): Promise<Transaction> => {
-    await new Promise((resolve) => setTimeout(resolve, 800))
+    await delay(800)
 
     const txs = ensureCache()
     const index = txs.findIndex((t) => t.id === id)
@@ -275,8 +293,12 @@ export const updateTransaction = async (id: string, data: Partial<CreateTransact
         amountCents = Math.abs(parseCurrencyToCents(currentTransaction.amount))
     }
 
-    if (data.amount !== undefined) {
-        // New amount provided
+    if (data.amountCents !== undefined) {
+        // New integer cents provided
+        amountCents = Math.abs(Math.round(data.amountCents))
+        formattedAmount = formatCentsSignedFromType(amountCents, nextType)
+    } else if (data.amount !== undefined) {
+        // New float amount provided
         amountCents = euroToCents(Math.abs(data.amount))
         formattedAmount = formatCentsSignedFromType(amountCents, nextType)
     } else if (data.type !== undefined && data.type !== currentTransaction.type) {
@@ -317,7 +339,7 @@ export const updateTransaction = async (id: string, data: Partial<CreateTransact
 }
 
 export const deleteTransaction = async (id: string): Promise<void> => {
-    await new Promise((resolve) => setTimeout(resolve, 800))
+    await delay(800)
 
     const txs = ensureCache()
     const index = txs.findIndex((t) => t.id === id)

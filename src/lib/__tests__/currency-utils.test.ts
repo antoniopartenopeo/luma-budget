@@ -4,7 +4,7 @@ import {
     formatCents,
     euroToCents,
     formatEuroNumber,
-    getTransactionSignedCents
+    getSignedCents
 } from '../currency-utils'
 import { Transaction } from '@/features/transactions/api/types'
 
@@ -88,13 +88,13 @@ describe('currency-utils', () => {
         })
     })
 
-    describe('getTransactionSignedCents', () => {
+    describe('getSignedCents', () => {
         it('should return positive cents for income', () => {
             const t = {
                 amount: "€50,00",
                 type: "income"
             } as Transaction
-            expect(getTransactionSignedCents(t)).toBe(5000)
+            expect(getSignedCents(t)).toBe(5000)
         })
 
         it('should return negative cents for expense', () => {
@@ -102,7 +102,7 @@ describe('currency-utils', () => {
                 amount: "€50,00",
                 type: "expense"
             } as Transaction
-            expect(getTransactionSignedCents(t)).toBe(-5000)
+            expect(getSignedCents(t)).toBe(-5000)
         })
 
         it('should handle negative input string correctly for expense', () => {
@@ -110,7 +110,7 @@ describe('currency-utils', () => {
                 amount: "€-50,00",
                 type: "expense"
             } as Transaction
-            expect(getTransactionSignedCents(t)).toBe(-5000)
+            expect(getSignedCents(t)).toBe(-5000)
         })
 
         it('should handle negative input string correctly for income (fix sign)', () => {
@@ -119,7 +119,7 @@ describe('currency-utils', () => {
                 amount: "€-50,00",
                 type: "income"
             } as Transaction
-            expect(getTransactionSignedCents(t)).toBe(5000)
+            expect(getSignedCents(t)).toBe(5000)
         })
     })
 })

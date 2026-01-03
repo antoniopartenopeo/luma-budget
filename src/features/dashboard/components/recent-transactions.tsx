@@ -8,7 +8,7 @@ import { StateMessage } from "@/components/ui/state-message"
 import { Skeleton } from "@/components/ui/skeleton"
 import { DashboardTimeFilter } from "../api/types"
 import { useCurrency } from "@/features/settings/api/use-currency"
-import { formatSignedCents, getTransactionSignedCents } from "@/lib/currency-utils"
+import { formatSignedCents, getSignedCents } from "@/lib/currency-utils"
 import { Button } from "@/components/ui/button"
 import { ChevronRight } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -137,7 +137,7 @@ export function RecentTransactions({ filter }: RecentTransactionsProps) {
                                 </div>
                             </div>
                             <div className={cn("font-medium", transaction.type === "income" ? "text-emerald-600" : "text-foreground")}>
-                                {formatSignedCents(getTransactionSignedCents(transaction), currency, locale)}
+                                {formatSignedCents(getSignedCents(transaction), currency, locale)}
                             </div>
                         </div>
                     ))}

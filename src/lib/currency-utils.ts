@@ -155,10 +155,3 @@ export function normalizeTransactionAmount(t: Transaction): Transaction {
     }
 }
 
-/**
- * Legacy helper for backward compatibility/during refactor if needed.
- * @deprecated Use getSignedCents where possible.
- */
-export function getTransactionSignedCents(transaction: Transaction): number {
-    return getSignedCents(transaction)
-}

@@ -1,4 +1,6 @@
 
+import { STORAGE_KEYS_REGISTRY } from "@/lib/storage-keys"
+
 export type DiagnosticsSnapshot = {
     generatedAt: string
     app: {
@@ -7,6 +9,7 @@ export type DiagnosticsSnapshot = {
     }
     storage: Array<{
         key: string
+        label: string
         present: boolean
         approxBytes: number
         summary: string
@@ -39,41 +42,9 @@ export function estimateBytes(str: string | null): number {
     return str.length
 }
 
-export function countTransactionsFromRaw(raw: unknown): number {
-    if (Array.isArray(raw)) {
-        return raw.length
-    }
-    if (raw && typeof raw === "object") {
-        let count = 0
-        for (const value of Object.values(raw)) {
-            if (Array.isArray(value)) {
-                count += value.length
-            }
-        }
-        return count
-    }
-    return 0
-}
-
-export function countBudgetPlansFromRaw(raw: unknown): number {
-    if (Array.isArray(raw)) {
-        return raw.length
-    }
-    if (raw && typeof raw === "object") {
-        return Object.keys(raw).length
-    }
-    return 0
-}
-
 export function buildDiagnosticsSnapshot(): DiagnosticsSnapshot {
-    const keys = [
-        "luma_transactions_v1",
-        "luma_budget_plans_v1",
-        "luma_settings_v1",
-    ]
-
-    const storageReport = keys.map((key) => {
-        const rawString = safeGetItem(key)
+    const storageReport = STORAGE_KEYS_REGISTRY.map((config) => {
+        const rawString = safeGetItem(config.key)
         const present = rawString !== null
         const approxBytes = estimateBytes(rawString)
         let summary = present ? "present" : "missing"
@@ -81,12 +52,11 @@ export function buildDiagnosticsSnapshot(): DiagnosticsSnapshot {
         if (present && rawString) {
             try {
                 const raw = JSON.parse(rawString)
-                if (key === "luma_transactions_v1") {
-                    summary = `transactions: ${countTransactionsFromRaw(raw)}`
-                } else if (key === "luma_budget_plans_v1") {
-                    summary = `budgetPlans: ${countBudgetPlansFromRaw(raw)}`
-                } else if (key === "luma_settings_v1") {
-                    summary = "settings: ok"
+                if (config.countFn) {
+                    const count = config.countFn(raw)
+                    summary = `${config.label}: ${count}`
+                } else {
+                    summary = `${config.label}: ok`
                 }
             } catch {
                 summary = "corrupted JSON"
@@ -94,7 +64,8 @@ export function buildDiagnosticsSnapshot(): DiagnosticsSnapshot {
         }
 
         return {
-            key,
+            key: config.key,
+            label: config.label,
             present,
             approxBytes,
             summary,

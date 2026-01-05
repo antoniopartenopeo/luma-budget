@@ -1,52 +1,10 @@
-import {
-    LucideIcon,
-    Utensils,
-    Bus,
-    Home,
-    Gamepad2,
-    HeartPulse,
-    ShoppingBag,
-    Plane,
-    GraduationCap,
-    TrendingUp,
-    HelpCircle,
-    // New expense icons
-    Zap,
-    Car,
-    Shield,
-    FileText,
-    Users,
-    Sparkles,
-    Wrench,
-    UtensilsCrossed,
-    Sparkle,
-    Dumbbell,
-    Tv,
-    PawPrint,
-    Laptop,
-    Gift,
-    Armchair,
-    BookOpen,
-    Smartphone,
-    Gem,
-    Dice5,
-    // Income icons
-    Briefcase,
-    User,
-    UserCheck,
-    BadgeDollarSign,
-    Building2,
-    Recycle,
-    CreditCard,
-    Coins,
-    Trophy
-} from "lucide-react"
+import { LucideIcon } from "lucide-react"
+import { getIconByName } from "./icon-registry"
 
 // =====================
 // CATEGORY ID TYPES
 // =====================
 
-// Existing expense category IDs (unchanged)
 export type ExpenseCategoryId =
     | "cibo"
     | "trasporti"
@@ -58,7 +16,6 @@ export type ExpenseCategoryId =
     | "istruzione"
     | "investimenti"
     | "altro"
-    // New essential expense categories
     | "utenze"
     | "auto"
     | "assicurazioni"
@@ -66,7 +23,6 @@ export type ExpenseCategoryId =
     | "famiglia"
     | "servizi-domestici"
     | "lavoro-essenziale"
-    // New comfort expense categories
     | "ristoranti"
     | "benessere"
     | "hobby-sport"
@@ -76,13 +32,11 @@ export type ExpenseCategoryId =
     | "regali"
     | "arredo"
     | "formazione-extra"
-    // New superfluous expense categories
     | "micro-digitali"
     | "lusso"
     | "giochi-scommesse"
     | "extra-impulsivi"
 
-// Income category IDs
 export type IncomeCategoryId =
     | "stipendio"
     | "pensione"
@@ -96,7 +50,7 @@ export type IncomeCategoryId =
     | "cashback"
     | "entrate-occasionali"
 
-export type CategoryId = ExpenseCategoryId | IncomeCategoryId
+export type CategoryId = string
 
 // =====================
 // CATEGORY TYPES
@@ -111,26 +65,26 @@ export interface Category {
     kind: CategoryKind
     color: string
     hexColor: string
-    icon: LucideIcon
+    iconName: string
     spendingNature: SpendingNature
+    archived?: boolean
+    updatedAt?: string
 }
 
 // =====================
-// CATEGORIES DATA
+// CATEGORIES DATA (DEFAULTS)
 // =====================
 
 export const CATEGORIES: Category[] = [
-    // ===================================
-    // EXISTING EXPENSE CATEGORIES (unchanged except for kind field)
-    // ===================================
     {
         id: "cibo",
         label: "Cibo",
         kind: "expense",
         color: "text-orange-600 bg-orange-100",
         hexColor: "#ea580c",
-        icon: Utensils,
-        spendingNature: "essential"
+        iconName: "utensils",
+        spendingNature: "essential",
+        archived: false
     },
     {
         id: "trasporti",
@@ -138,8 +92,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-blue-600 bg-blue-100",
         hexColor: "#2563eb",
-        icon: Bus,
-        spendingNature: "essential"
+        iconName: "bus",
+        spendingNature: "essential",
+        archived: false
     },
     {
         id: "casa",
@@ -147,8 +102,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-indigo-600 bg-indigo-100",
         hexColor: "#4f46e5",
-        icon: Home,
-        spendingNature: "essential"
+        iconName: "home",
+        spendingNature: "essential",
+        archived: false
     },
     {
         id: "svago",
@@ -156,8 +112,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-pink-600 bg-pink-100",
         hexColor: "#db2777",
-        icon: Gamepad2,
-        spendingNature: "superfluous"
+        iconName: "gamepad2",
+        spendingNature: "superfluous",
+        archived: false
     },
     {
         id: "salute",
@@ -165,8 +122,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-teal-600 bg-teal-100",
         hexColor: "#0d9488",
-        icon: HeartPulse,
-        spendingNature: "essential"
+        iconName: "heartPulse",
+        spendingNature: "essential",
+        archived: false
     },
     {
         id: "shopping",
@@ -174,8 +132,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-purple-600 bg-purple-100",
         hexColor: "#9333ea",
-        icon: ShoppingBag,
-        spendingNature: "comfort"
+        iconName: "shoppingBag",
+        spendingNature: "comfort",
+        archived: false
     },
     {
         id: "viaggi",
@@ -183,8 +142,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-sky-600 bg-sky-100",
         hexColor: "#0284c7",
-        icon: Plane,
-        spendingNature: "comfort"
+        iconName: "plane",
+        spendingNature: "comfort",
+        archived: false
     },
     {
         id: "istruzione",
@@ -192,8 +152,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-yellow-600 bg-yellow-100",
         hexColor: "#ca8a04",
-        icon: GraduationCap,
-        spendingNature: "essential"
+        iconName: "graduationCap",
+        spendingNature: "essential",
+        archived: false
     },
     {
         id: "investimenti",
@@ -201,8 +162,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-emerald-600 bg-emerald-100",
         hexColor: "#059669",
-        icon: TrendingUp,
-        spendingNature: "comfort"
+        iconName: "trendingUp",
+        spendingNature: "comfort",
+        archived: false
     },
     {
         id: "altro",
@@ -210,21 +172,19 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-gray-600 bg-gray-100",
         hexColor: "#4b5563",
-        icon: HelpCircle,
-        spendingNature: "superfluous"
+        iconName: "helpCircle",
+        spendingNature: "superfluous",
+        archived: false
     },
-
-    // ===================================
-    // NEW EXPENSE CATEGORIES - ESSENTIAL
-    // ===================================
     {
         id: "utenze",
         label: "Utenze & Bollette",
         kind: "expense",
         color: "text-amber-600 bg-amber-100",
         hexColor: "#d97706",
-        icon: Zap,
-        spendingNature: "essential"
+        iconName: "zap",
+        spendingNature: "essential",
+        archived: false
     },
     {
         id: "auto",
@@ -232,8 +192,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-slate-600 bg-slate-100",
         hexColor: "#475569",
-        icon: Car,
-        spendingNature: "essential"
+        iconName: "car",
+        spendingNature: "essential",
+        archived: false
     },
     {
         id: "assicurazioni",
@@ -241,8 +202,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-cyan-600 bg-cyan-100",
         hexColor: "#0891b2",
-        icon: Shield,
-        spendingNature: "essential"
+        iconName: "shield",
+        spendingNature: "essential",
+        archived: false
     },
     {
         id: "tasse",
@@ -250,8 +212,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-red-600 bg-red-100",
         hexColor: "#dc2626",
-        icon: FileText,
-        spendingNature: "essential"
+        iconName: "fileText",
+        spendingNature: "essential",
+        archived: false
     },
     {
         id: "famiglia",
@@ -259,8 +222,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-rose-600 bg-rose-100",
         hexColor: "#e11d48",
-        icon: Users,
-        spendingNature: "essential"
+        iconName: "users",
+        spendingNature: "essential",
+        archived: false
     },
     {
         id: "servizi-domestici",
@@ -268,8 +232,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-violet-600 bg-violet-100",
         hexColor: "#7c3aed",
-        icon: Sparkles,
-        spendingNature: "essential"
+        iconName: "sparkles",
+        spendingNature: "essential",
+        archived: false
     },
     {
         id: "lavoro-essenziale",
@@ -277,21 +242,19 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-stone-600 bg-stone-100",
         hexColor: "#57534e",
-        icon: Wrench,
-        spendingNature: "essential"
+        iconName: "wrench",
+        spendingNature: "essential",
+        archived: false
     },
-
-    // ===================================
-    // NEW EXPENSE CATEGORIES - COMFORT
-    // ===================================
     {
         id: "ristoranti",
         label: "Ristoranti & Bar",
         kind: "expense",
         color: "text-orange-500 bg-orange-50",
         hexColor: "#f97316",
-        icon: UtensilsCrossed,
-        spendingNature: "comfort"
+        iconName: "utensilsCrossed",
+        spendingNature: "comfort",
+        archived: false
     },
     {
         id: "benessere",
@@ -299,8 +262,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-fuchsia-600 bg-fuchsia-100",
         hexColor: "#c026d3",
-        icon: Sparkle,
-        spendingNature: "comfort"
+        iconName: "sparkle",
+        spendingNature: "comfort",
+        archived: false
     },
     {
         id: "hobby-sport",
@@ -308,8 +272,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-lime-600 bg-lime-100",
         hexColor: "#65a30d",
-        icon: Dumbbell,
-        spendingNature: "comfort"
+        iconName: "dumbbell",
+        spendingNature: "comfort",
+        archived: false
     },
     {
         id: "abbonamenti",
@@ -317,8 +282,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-blue-500 bg-blue-50",
         hexColor: "#3b82f6",
-        icon: Tv,
-        spendingNature: "comfort"
+        iconName: "tv",
+        spendingNature: "comfort",
+        archived: false
     },
     {
         id: "animali",
@@ -326,8 +292,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-amber-500 bg-amber-50",
         hexColor: "#f59e0b",
-        icon: PawPrint,
-        spendingNature: "comfort"
+        iconName: "pawPrint",
+        spendingNature: "comfort",
+        archived: false
     },
     {
         id: "tecnologia",
@@ -335,8 +302,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-indigo-500 bg-indigo-50",
         hexColor: "#6366f1",
-        icon: Laptop,
-        spendingNature: "comfort"
+        iconName: "laptop",
+        spendingNature: "comfort",
+        archived: false
     },
     {
         id: "regali",
@@ -344,8 +312,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-pink-500 bg-pink-50",
         hexColor: "#ec4899",
-        icon: Gift,
-        spendingNature: "comfort"
+        iconName: "gift",
+        spendingNature: "comfort",
+        archived: false
     },
     {
         id: "arredo",
@@ -353,8 +322,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-teal-500 bg-teal-50",
         hexColor: "#14b8a6",
-        icon: Armchair,
-        spendingNature: "comfort"
+        iconName: "armchair",
+        spendingNature: "comfort",
+        archived: false
     },
     {
         id: "formazione-extra",
@@ -362,21 +332,19 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-yellow-500 bg-yellow-50",
         hexColor: "#eab308",
-        icon: BookOpen,
-        spendingNature: "comfort"
+        iconName: "bookOpen",
+        spendingNature: "comfort",
+        archived: false
     },
-
-    // ===================================
-    // NEW EXPENSE CATEGORIES - SUPERFLUOUS
-    // ===================================
     {
         id: "micro-digitali",
         label: "Micro-acquisti Digitali",
         kind: "expense",
         color: "text-sky-500 bg-sky-50",
         hexColor: "#0ea5e9",
-        icon: Smartphone,
-        spendingNature: "superfluous"
+        iconName: "smartphone",
+        spendingNature: "superfluous",
+        archived: false
     },
     {
         id: "lusso",
@@ -384,8 +352,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-purple-500 bg-purple-50",
         hexColor: "#a855f7",
-        icon: Gem,
-        spendingNature: "superfluous"
+        iconName: "gem",
+        spendingNature: "superfluous",
+        archived: false
     },
     {
         id: "giochi-scommesse",
@@ -393,8 +362,9 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-red-500 bg-red-50",
         hexColor: "#ef4444",
-        icon: Dice5,
-        spendingNature: "superfluous"
+        iconName: "dice5",
+        spendingNature: "superfluous",
+        archived: false
     },
     {
         id: "extra-impulsivi",
@@ -402,21 +372,19 @@ export const CATEGORIES: Category[] = [
         kind: "expense",
         color: "text-orange-600 bg-orange-50",
         hexColor: "#ea580c",
-        icon: Zap,
-        spendingNature: "superfluous"
+        iconName: "zap",
+        spendingNature: "superfluous",
+        archived: false
     },
-
-    // ===================================
-    // INCOME CATEGORIES
-    // ===================================
     {
         id: "stipendio",
         label: "Stipendio",
         kind: "income",
         color: "text-emerald-600 bg-emerald-100",
         hexColor: "#059669",
-        icon: Briefcase,
-        spendingNature: "essential"
+        iconName: "briefcase",
+        spendingNature: "essential",
+        archived: false
     },
     {
         id: "pensione",
@@ -424,8 +392,9 @@ export const CATEGORIES: Category[] = [
         kind: "income",
         color: "text-teal-600 bg-teal-100",
         hexColor: "#0d9488",
-        icon: User,
-        spendingNature: "essential"
+        iconName: "user",
+        spendingNature: "essential",
+        archived: false
     },
     {
         id: "freelance",
@@ -433,8 +402,9 @@ export const CATEGORIES: Category[] = [
         kind: "income",
         color: "text-blue-600 bg-blue-100",
         hexColor: "#2563eb",
-        icon: UserCheck,
-        spendingNature: "essential"
+        iconName: "userCheck",
+        spendingNature: "essential",
+        archived: false
     },
     {
         id: "bonus",
@@ -442,8 +412,9 @@ export const CATEGORIES: Category[] = [
         kind: "income",
         color: "text-yellow-600 bg-yellow-100",
         hexColor: "#ca8a04",
-        icon: BadgeDollarSign,
-        spendingNature: "essential"
+        iconName: "badgeDollarSign",
+        spendingNature: "essential",
+        archived: false
     },
     {
         id: "affitti",
@@ -451,8 +422,9 @@ export const CATEGORIES: Category[] = [
         kind: "income",
         color: "text-indigo-600 bg-indigo-100",
         hexColor: "#4f46e5",
-        icon: Building2,
-        spendingNature: "essential"
+        iconName: "building2",
+        spendingNature: "essential",
+        archived: false
     },
     {
         id: "rendite",
@@ -460,8 +432,9 @@ export const CATEGORIES: Category[] = [
         kind: "income",
         color: "text-green-600 bg-green-100",
         hexColor: "#16a34a",
-        icon: TrendingUp,
-        spendingNature: "essential"
+        iconName: "trendingUp",
+        spendingNature: "essential",
+        archived: false
     },
     {
         id: "vendite",
@@ -469,8 +442,9 @@ export const CATEGORIES: Category[] = [
         kind: "income",
         color: "text-lime-600 bg-lime-100",
         hexColor: "#65a30d",
-        icon: Recycle,
-        spendingNature: "essential"
+        iconName: "recycle",
+        spendingNature: "essential",
+        archived: false
     },
     {
         id: "rimborsi",
@@ -478,8 +452,9 @@ export const CATEGORIES: Category[] = [
         kind: "income",
         color: "text-cyan-600 bg-cyan-100",
         hexColor: "#0891b2",
-        icon: CreditCard,
-        spendingNature: "essential"
+        iconName: "creditCard",
+        spendingNature: "essential",
+        archived: false
     },
     {
         id: "regali-ricevuti",
@@ -487,8 +462,9 @@ export const CATEGORIES: Category[] = [
         kind: "income",
         color: "text-pink-600 bg-pink-100",
         hexColor: "#db2777",
-        icon: Gift,
-        spendingNature: "essential"
+        iconName: "gift",
+        spendingNature: "essential",
+        archived: false
     },
     {
         id: "cashback",
@@ -496,8 +472,9 @@ export const CATEGORIES: Category[] = [
         kind: "income",
         color: "text-amber-600 bg-amber-100",
         hexColor: "#d97706",
-        icon: Coins,
-        spendingNature: "essential"
+        iconName: "coins",
+        spendingNature: "essential",
+        archived: false
     },
     {
         id: "entrate-occasionali",
@@ -505,45 +482,33 @@ export const CATEGORIES: Category[] = [
         kind: "income",
         color: "text-purple-600 bg-purple-100",
         hexColor: "#9333ea",
-        icon: Trophy,
-        spendingNature: "essential"
+        iconName: "trophy",
+        spendingNature: "essential",
+        archived: false
     },
 ]
 
 // =====================
-// HELPER FUNCTIONS
+// HELPER FUNCTIONS (Pure / Dynamic)
 // =====================
 
-export function getCategoryById(id: string): Category | undefined {
-    return CATEGORIES.find(c => c.id === id)
+export function getCategoryById(id: string, categories: Category[] = CATEGORIES): Category | undefined {
+    return categories.find(c => c.id === id)
 }
 
-export function getCategoryLabel(id: string): string {
-    const category = getCategoryById(id)
+export function getCategoryLabel(id: string, categories: Category[] = CATEGORIES): string {
+    const category = getCategoryById(id, categories)
     return category ? category.label : id
 }
 
-export function getCategoryColor(id: string): string {
-    const category = getCategoryById(id)
+export function getCategoryColor(id: string, categories: Category[] = CATEGORIES): string {
+    const category = getCategoryById(id, categories)
     return category ? category.color : "text-gray-600 bg-gray-100"
 }
 
-export function getCategoryIcon(id: string): LucideIcon {
-    const category = getCategoryById(id)
-    return category ? category.icon : HelpCircle
-}
-
-// New helper functions for filtering by kind
-export function getExpenseCategories(): Category[] {
-    return CATEGORIES.filter(c => c.kind === "expense")
-}
-
-export function getIncomeCategories(): Category[] {
-    return CATEGORIES.filter(c => c.kind === "income")
-}
-
-export function getCategoriesByKind(kind: CategoryKind): Category[] {
-    return CATEGORIES.filter(c => c.kind === kind)
+export function getCategoryIcon(id: string, categories: Category[] = CATEGORIES): LucideIcon {
+    const category = getCategoryById(id, categories)
+    return getIconByName(category?.iconName || "helpCircle")
 }
 
 // =====================
@@ -589,21 +554,29 @@ export const EXPENSE_GROUP_ORDER: CategoryGroupKey[] = [
  * Get categories organized by group for UI display
  * Returns only non-empty groups
  */
-export function getGroupedCategories(kind?: CategoryKind): CategoryGroup[] {
+export function getGroupedCategories(
+    kind?: CategoryKind,
+    categories: Category[] = CATEGORIES,
+    options: { includeArchived?: boolean } = { includeArchived: false }
+): CategoryGroup[] {
     const groupOrder = kind === "income"
         ? ["income" as CategoryGroupKey]
         : kind === "expense"
             ? EXPENSE_GROUP_ORDER
             : CATEGORY_GROUP_ORDER
 
+    const filteredCategories = options.includeArchived
+        ? categories
+        : categories.filter(c => !c.archived)
+
     return groupOrder
         .map(groupKey => {
-            let categories: Category[]
+            let groupCategories: Category[]
 
             if (groupKey === "income") {
-                categories = CATEGORIES.filter(c => c.kind === "income")
+                groupCategories = filteredCategories.filter(c => c.kind === "income")
             } else {
-                categories = CATEGORIES.filter(
+                groupCategories = filteredCategories.filter(
                     c => c.kind === "expense" && c.spendingNature === groupKey
                 )
             }
@@ -611,23 +584,8 @@ export function getGroupedCategories(kind?: CategoryKind): CategoryGroup[] {
             return {
                 key: groupKey,
                 label: CATEGORY_GROUP_LABELS[groupKey],
-                categories
+                categories: groupCategories
             }
         })
-        .filter(group => group.categories.length > 0) // Hide empty groups
+        .filter(group => group.categories.length > 0)
 }
-
-/**
- * Get expense categories organized by spending nature
- */
-export function getGroupedExpenseCategories(): CategoryGroup[] {
-    return getGroupedCategories("expense")
-}
-
-/**
- * Get income categories as a single group
- */
-export function getGroupedIncomeCategories(): CategoryGroup[] {
-    return getGroupedCategories("income")
-}
-

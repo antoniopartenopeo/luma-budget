@@ -5,7 +5,7 @@ import { queryKeys } from "@/lib/query-keys"
 
 export function useSettings() {
     return useQuery({
-        queryKey: queryKeys.settings.all,
+        queryKey: queryKeys.settings(),
         queryFn: fetchSettings,
     })
 }
@@ -17,9 +17,9 @@ export function useUpsertSettings() {
         mutationFn: upsertSettings,
         onSuccess: (newSettings) => {
             // Invalidate queries to update UI
-            queryClient.invalidateQueries({ queryKey: queryKeys.settings.all })
+            queryClient.invalidateQueries({ queryKey: queryKeys.settings() })
             // Optionally update cache directly for instant feedback
-            queryClient.setQueryData(queryKeys.settings.all, newSettings)
+            queryClient.setQueryData(queryKeys.settings(), newSettings)
         },
     })
 }
@@ -34,8 +34,8 @@ export function useResetSettings() {
             return fetchSettings()
         },
         onSuccess: (defaultSettings) => {
-            queryClient.setQueryData(queryKeys.settings.all, defaultSettings)
-            queryClient.invalidateQueries({ queryKey: queryKeys.settings.all })
+            queryClient.setQueryData(queryKeys.settings(), defaultSettings)
+            queryClient.invalidateQueries({ queryKey: queryKeys.settings() })
         }
     })
 }

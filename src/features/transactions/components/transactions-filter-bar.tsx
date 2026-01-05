@@ -1,5 +1,6 @@
 import { Search, Calendar, Filter, X, Download, Loader2 } from "lucide-react"
 import { getGroupedCategories } from "@/features/categories/config"
+import { useCategories } from "@/features/categories/api/use-categories"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -55,6 +56,7 @@ export function TransactionsFilterBar({
     isExporting,
     hasResults
 }: TransactionsFilterBarProps) {
+    const { data: categories = [] } = useCategories()
     const hasActiveFilters =
         typeValue !== "all" ||
         categoryValue !== "all" ||
@@ -62,7 +64,7 @@ export function TransactionsFilterBar({
         periodValue !== "all" ||
         isSuperfluousOnly
 
-    const allGroupedCategories = getGroupedCategories()
+    const allGroupedCategories = getGroupedCategories(undefined, categories)
 
     return (
         <div className="space-y-4">

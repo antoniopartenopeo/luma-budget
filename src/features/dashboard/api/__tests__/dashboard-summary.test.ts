@@ -2,7 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { fetchDashboardSummary } from '../repository'
 import { __resetTransactionsCache, createTransaction } from '../../../transactions/api/repository'
 import { getCurrentPeriod } from '../../../budget/utils/calculate-budget'
-import { upsertBudget } from '../../../budget/api/repository'
+import { upsertBudget, __resetBudgetsCache } from '../../../budget/api/repository'
+import { __resetCategoriesCache } from '../../../categories/api/repository'
 
 const DEFAULT_USER_ID = 'user-1'
 
@@ -18,6 +19,8 @@ describe('Dashboard Summary (Real Wiring)', () => {
         vi.useFakeTimers({ toFake: ['Date'] })
         vi.setSystemTime(FIXED_DATE)
         __resetTransactionsCache()
+        __resetBudgetsCache()
+        __resetCategoriesCache()
 
         // Mock localStorage to be an in-memory map for speed and isolation
         let store: Record<string, string> = {}

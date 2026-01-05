@@ -46,6 +46,9 @@ import {
 import { useSettings, useUpsertSettings } from "@/features/settings/api/use-settings"
 import { ThemePreference, CurrencyCode } from "@/features/settings/api/types"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useCategories, useArchiveCategory, useUnarchiveCategory, useResetCategories } from "@/features/categories/api/use-categories"
+import { CategoryIcon } from "@/features/categories/components/category-icon"
+import { RotateCcw } from "lucide-react"
 
 export default function SettingsPage() {
     const queryClient = useQueryClient()
@@ -62,6 +65,12 @@ export default function SettingsPage() {
     // Diagnostics State
     const [diagnostics, setDiagnostics] = useState<DiagnosticsSnapshot | null>(null)
     const [copyFeedback, setCopyFeedback] = useState<"idle" | "success" | "error">("idle")
+
+    // Category Hooks
+    const { data: allCategories = [], isLoading: isCategoriesLoading } = useCategories({ includeArchived: true })
+    const archiveCategory = useArchiveCategory()
+    const unarchiveCategory = useUnarchiveCategory()
+    const resetCategories = useResetCategories()
 
     useEffect(() => {
         setDiagnostics(buildDiagnosticsSnapshot())
@@ -133,7 +142,9 @@ export default function SettingsPage() {
             queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all }),
             queryClient.invalidateQueries({ queryKey: queryKeys.transactions.recent }),
             queryClient.invalidateQueries({ queryKey: queryKeys.budget.all }),
-            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
+            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.categories.all() }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.categories.active() }),
         ])
     }
 
@@ -159,7 +170,7 @@ export default function SettingsPage() {
 
             // Invalidate everything
             await invalidateAll()
-            await queryClient.invalidateQueries({ queryKey: queryKeys.settings.all })
+            await queryClient.invalidateQueries({ queryKey: queryKeys.settings() })
 
             setStatus({ type: "success", message: "Tutti i dati sono stati eliminati con successo." })
         } catch (error) {
@@ -231,7 +242,7 @@ export default function SettingsPage() {
         setStatus(null)
         try {
             resetSettings()
-            await queryClient.invalidateQueries({ queryKey: queryKeys.settings.all })
+            await queryClient.invalidateQueries({ queryKey: queryKeys.settings() })
             setStatus({ type: "success", message: "Le impostazioni sono state ripristinate." })
         } catch (error) {
             console.error("Reset settings error:", error)
@@ -239,6 +250,20 @@ export default function SettingsPage() {
         } finally {
             setIsLoading(false)
         }
+    }
+
+    const handleArchiveCategory = async (id: string) => {
+        if (!window.confirm("Sei sicuro di voler archiviare questa categoria? Le transazioni esistenti rimarranno intatte.")) return
+        archiveCategory.mutate(id)
+    }
+
+    const handleUnarchiveCategory = async (id: string) => {
+        unarchiveCategory.mutate(id)
+    }
+
+    const handleResetCategories = async () => {
+        if (!window.confirm("Sei sicuro di voler ripristinare le categorie predefinite? Questo non eliminerà le transazioni ma resetterà i nomi, le icone e i colori alle versioni impostate dal sistema.")) return
+        resetCategories.mutate()
     }
 
     const handleSeed = async () => {
@@ -545,6 +570,98 @@ export default function SettingsPage() {
                         ) : (
                             <div className="text-sm text-muted-foreground">
                                 Caricamento diagnostica in corso... (disponibile solo nel browser)
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+
+                {/* Categories Management */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Database className="h-5 w-5" />
+                            Gestione Categorie
+                        </CardTitle>
+                        <CardDescription>
+                            Visualizza e gestisci le categorie di spesa e introito.
+                            L&apos;archiviazione nasconde la categoria dai menu senza cancellare i dati storici.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {isCategoriesLoading ? (
+                            <div className="space-y-4">
+                                <Skeleton className="h-8 w-full" />
+                                <Skeleton className="h-[200px] w-full" />
+                            </div>
+                        ) : (
+                            <div className="space-y-6">
+                                <div className="rounded-md border overflow-hidden">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead className="w-[40px]"></TableHead>
+                                                <TableHead>Nome</TableHead>
+                                                <TableHead>Tipo</TableHead>
+                                                <TableHead>Id</TableHead>
+                                                <TableHead className="text-right">Azioni</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {allCategories.map((cat) => (
+                                                <TableRow key={cat.id} className={cat.archived ? "opacity-40 grayscale" : ""}>
+                                                    <TableCell>
+                                                        <CategoryIcon categoryName={cat.label} size={18} />
+                                                    </TableCell>
+                                                    <TableCell className="font-medium">
+                                                        {cat.label}
+                                                        {cat.archived && (
+                                                            <span className="ml-2 text-[10px] bg-muted px-1.5 py-0.5 rounded uppercase tracking-wider font-bold">Archiviata</span>
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell className="capitalize text-xs">
+                                                        {cat.kind === "expense" ? "Uscita" : "Entrata"}
+                                                    </TableCell>
+                                                    <TableCell className="font-mono text-[10px] text-muted-foreground">
+                                                        {cat.id}
+                                                    </TableCell>
+                                                    <TableCell className="text-right">
+                                                        {cat.archived ? (
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                className="h-8 text-[11px] font-bold"
+                                                                onClick={() => handleUnarchiveCategory(cat.id)}
+                                                            >
+                                                                Ripristina
+                                                            </Button>
+                                                        ) : (
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                className="h-8 text-[11px] font-bold text-destructive hover:text-destructive hover:bg-destructive/5"
+                                                                onClick={() => handleArchiveCategory(cat.id)}
+                                                            >
+                                                                Archivia
+                                                            </Button>
+                                                        )}
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+
+                                <div className="flex justify-end">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="gap-2"
+                                        onClick={handleResetCategories}
+                                    >
+                                        <RotateCcw className="h-4 w-4" />
+                                        Ripristina Categorie Default
+                                    </Button>
+                                </div>
                             </div>
                         )}
                     </CardContent>

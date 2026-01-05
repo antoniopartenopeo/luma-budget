@@ -10,7 +10,8 @@ import { cn } from "@/lib/utils"
 import { useCreateTransaction } from "@/features/transactions/api/use-transactions"
 import { Transaction } from "@/features/transactions/api/types"
 
-import { CATEGORIES, getGroupedCategories } from "@/features/categories/config"
+import { getGroupedCategories } from "@/features/categories/config"
+import { useCategories } from "@/features/categories/api/use-categories"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 
 interface QuickExpenseInputProps {
@@ -22,6 +23,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
     const [amount, setAmount] = useState("")
     const [category, setCategory] = useState("")
     const [type, setType] = useState<"expense" | "income">("expense")
+    const { data: categories = [] } = useCategories()
     const [isFocused, setIsFocused] = useState(false)
     const [validationError, setValidationError] = useState<string | null>(null)
 
@@ -32,16 +34,17 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
     const { mutate: create, isPending, isSuccess, isError } = useCreateTransaction()
 
     // Get grouped categories based on current transaction type
-    const groupedCategories = getGroupedCategories(type)
+    const groupedCategories = getGroupedCategories(type, categories)
 
     // Derive isSuperfluous based on category (rule-based), unless manually overridden
     const isSuperfluous = useMemo(() => {
         if (type !== "expense") return false
         if (isManualOverride) return isSuperfluousManual
 
-        const cat = CATEGORIES.find(c => c.id === category)
+        const cat = categories.find(c => c.id === category)
         return cat?.spendingNature === "superfluous"
-    }, [category, isManualOverride, isSuperfluousManual, type])
+        // eslint-disable-next-line react-hooks/preserve-manual-memoization
+    }, [category, isManualOverride, isSuperfluousManual, type, categories])
 
     const handleTypeChange = (newType: "expense" | "income") => {
         setType(newType)
@@ -74,7 +77,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
             {
                 description,
                 amountCents, // Send absolute integer cents
-                category: CATEGORIES.find(c => c.id === category)?.label || category,
+                category: categories.find(c => c.id === category)?.label || category,
                 categoryId: category,
                 type,
                 isSuperfluous: type === "expense" ? isSuperfluous : false,

@@ -5,6 +5,7 @@ export const BACKUP_VERSION = 1 as const;
 export const STORAGE_KEYS = {
     TRANSACTIONS: "luma_transactions_v1" as const,
     BUDGETS: "luma_budget_plans_v1" as const,
+    CATEGORIES: "luma_categories_v1" as const,
 };
 
 export type BackupV1 = {
@@ -13,10 +14,12 @@ export type BackupV1 = {
     keys: {
         transactionsKey: typeof STORAGE_KEYS.TRANSACTIONS;
         budgetsKey: typeof STORAGE_KEYS.BUDGETS;
+        categoriesKey: typeof STORAGE_KEYS.CATEGORIES;
     };
     payload: {
         transactions: unknown | null; // raw storage payload
         budgets: unknown | null;      // raw storage payload
+        categories: unknown | null;   // raw storage payload
     };
 };
 
@@ -30,10 +33,12 @@ export const buildBackupV1 = (): BackupV1 => {
         keys: {
             transactionsKey: STORAGE_KEYS.TRANSACTIONS,
             budgetsKey: STORAGE_KEYS.BUDGETS,
+            categoriesKey: STORAGE_KEYS.CATEGORIES,
         },
         payload: {
             transactions: storage.get(STORAGE_KEYS.TRANSACTIONS, null),
             budgets: storage.get(STORAGE_KEYS.BUDGETS, null),
+            categories: storage.get(STORAGE_KEYS.CATEGORIES, null),
         },
     };
 };
@@ -89,6 +94,12 @@ export const applyBackupOverwrite = (backup: BackupV1): void => {
         storage.remove(STORAGE_KEYS.BUDGETS);
     } else {
         storage.set(STORAGE_KEYS.BUDGETS, backup.payload.budgets);
+    }
+
+    if (backup.payload.categories === null) {
+        storage.remove(STORAGE_KEYS.CATEGORIES);
+    } else if (backup.payload.categories) {
+        storage.set(STORAGE_KEYS.CATEGORIES, backup.payload.categories);
     }
 };
 

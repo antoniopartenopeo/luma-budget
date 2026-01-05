@@ -12,7 +12,9 @@ export const queryKeys = {
         all: ["budgets"] as const,
         detail: (period: string) => ["budgets", period] as const,
     },
-    settings: {
-        all: ["settings"] as const,
+    settings: () => ['settings'] as const,
+    categories: {
+        all: () => ['categories'] as const,
+        active: () => ['categories', 'active'] as const,
     },
 } as const

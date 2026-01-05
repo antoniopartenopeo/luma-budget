@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
-import { CATEGORIES, getGroupedCategories } from "@/features/categories/config"
+import { getGroupedCategories } from "@/features/categories/config"
+import { useCategories } from "@/features/categories/api/use-categories"
 import { parseCurrencyToCents } from "@/lib/currency-utils"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { CreateTransactionDTO } from "@/features/transactions/api/types"
@@ -29,6 +30,7 @@ export function TransactionForm({
     isLoading,
     submitLabel = "Salva"
 }: TransactionFormProps) {
+    const { data: categories = [] } = useCategories()
     const [description, setDescription] = useState(defaultValues?.description || "")
     const [amount, setAmount] = useState(defaultValues?.amount ? defaultValues.amount.toString() : "")
     // Prefer categoryId, fallback to finding id by label, or empty
@@ -49,16 +51,17 @@ export function TransactionForm({
     const isManualOverride = isSuperfluousManual !== null
 
     // Get grouped categories based on current transaction type
-    const groupedCategories = getGroupedCategories(type)
+    const groupedCategories = getGroupedCategories(type, categories)
 
     // Derive isSuperfluous based on category (rule-based), unless manually overridden
     const isSuperfluous = useMemo(() => {
         if (type !== "expense") return false
         if (isManualOverride) return isSuperfluousManual
 
-        const cat = CATEGORIES.find(c => c.id === categoryId)
+        const cat = categories.find(c => c.id === categoryId)
         return cat?.spendingNature === "superfluous"
-    }, [categoryId, isManualOverride, isSuperfluousManual, type])
+        // eslint-disable-next-line react-hooks/preserve-manual-memoization
+    }, [categoryId, isManualOverride, isSuperfluousManual, type, categories])
 
     const handleCategoryChange = (val: string) => {
         handleFieldChange(setCategoryId, val)
@@ -68,7 +71,7 @@ export function TransactionForm({
     const handleTypeChange = (newType: "expense" | "income") => {
         handleFieldChange(setType, newType)
         // Only reset if the current category doesn't belong to the new type
-        const newGrouped = getGroupedCategories(newType)
+        const newGrouped = getGroupedCategories(newType, categories)
         const allCategoriesInGroups = newGrouped.flatMap(g => g.categories)
         const currentCatInList = allCategoriesInGroups.find(c => c.id === categoryId)
         if (!currentCatInList) {
@@ -97,7 +100,7 @@ export function TransactionForm({
             return
         }
 
-        const selectedCategory = CATEGORIES.find(c => c.id === categoryId)
+        const selectedCategory = categories.find(c => c.id === categoryId)
 
         onSubmit({
             description,

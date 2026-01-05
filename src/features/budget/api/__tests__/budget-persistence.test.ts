@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { fetchBudget, upsertBudget, deleteBudget } from '../repository'
+import { fetchBudget, upsertBudget, deleteBudget, __resetBudgetsCache } from '../repository'
 import { storage } from '@/lib/storage-utils'
 
 const STORAGE_KEY = 'luma_budget_plans_v1'
@@ -15,6 +15,7 @@ describe('Budget Persistence (localStorage)', () => {
             clear: vi.fn(),
         })
         // Clear in-memory Map implicitly by ensuring we test the persistence layer
+        __resetBudgetsCache()
     })
 
     it('should return null when storage is empty', async () => {

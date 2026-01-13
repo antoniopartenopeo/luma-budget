@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useSettings, useUpsertSettings } from "@/features/settings/api/use-settings"
-import { ThemePreference, CurrencyCode } from "@/features/settings/api/types"
+import { ThemePreference, CurrencyCode, InsightsSensitivity } from "@/features/settings/api/types"
 
 export function PreferencesSection() {
     const { data: settings, isLoading: isSettingsLoading, isError: isSettingsError } = useSettings()
@@ -50,6 +50,20 @@ export function PreferencesSection() {
 
         setSaveStatus("saving")
         upsertSettings.mutate({ superfluousTargetPercent: num }, {
+            onSuccess: () => {
+                setSaveStatus("success")
+                setTimeout(() => setSaveStatus("idle"), 2000)
+            },
+            onError: () => {
+                setSaveStatus("error")
+                setTimeout(() => setSaveStatus("idle"), 3000)
+            }
+        })
+    }
+
+    const handleInsightsSensitivityChange = (value: string) => {
+        setSaveStatus("saving")
+        upsertSettings.mutate({ insightsSensitivity: value as InsightsSensitivity }, {
             onSuccess: () => {
                 setSaveStatus("success")
                 setTimeout(() => setSaveStatus("idle"), 2000)
@@ -164,6 +178,31 @@ export function PreferencesSection() {
                             </div>
                             <p className="text-[10px] text-muted-foreground">
                                 Soglia massima consigliata per gli acquisti non essenziali.
+                            </p>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="sensitivity-select">Sensibilità Insights</Label>
+                            <Select
+                                value={settings?.insightsSensitivity || "medium"}
+                                onValueChange={handleInsightsSensitivityChange}
+                                disabled={upsertSettings.isPending}
+                            >
+                                <SelectTrigger id="sensitivity-select">
+                                    <SelectValue placeholder="Seleziona sensibilità" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="low">Bassa (Meno avvisi)</SelectItem>
+                                    <SelectItem value="medium">Media (Bilanciata)</SelectItem>
+                                    <SelectItem value="high">Alta (Più avvisi)</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <p className="text-[10px] text-muted-foreground">
+                                {settings?.insightsSensitivity === "low"
+                                    ? "Mostra solo cambiamenti grandi."
+                                    : settings?.insightsSensitivity === "high"
+                                        ? "Più avvisi, anche per cambiamenti piccoli."
+                                        : "Livello bilanciato consigliato."}
                             </p>
                         </div>
                     </div>

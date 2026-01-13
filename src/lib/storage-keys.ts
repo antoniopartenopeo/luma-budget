@@ -9,6 +9,8 @@ export interface StorageKeyConfig {
     label: string
     /** Optional function to extract a count from the parsed data */
     countFn?: (raw: unknown) => number
+    /** Query keys to invalidate when this storage key changes (for cross-tab sync) */
+    invalidatesQueries?: string[]
 }
 
 function countTransactions(raw: unknown): number {
@@ -49,20 +51,24 @@ export const STORAGE_KEYS_REGISTRY: StorageKeyConfig[] = [
         key: "luma_transactions_v1",
         label: "Transazioni",
         countFn: countTransactions,
+        invalidatesQueries: ["transactions", "dashboard-summary", "recent-transactions"],
     },
     {
         key: "luma_budget_plans_v1",
         label: "Piani Budget",
         countFn: countBudgetPlans,
+        invalidatesQueries: ["budgets", "dashboard-summary"],
     },
     {
         key: "luma_categories_v1",
         label: "Categorie",
         countFn: countCategories,
+        invalidatesQueries: ["categories", "dashboard-summary"],
     },
     {
         key: "luma_settings_v1",
         label: "Impostazioni",
+        invalidatesQueries: ["settings", "dashboard-summary"],
     },
 ]
 

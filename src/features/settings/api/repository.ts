@@ -1,5 +1,5 @@
 import { storage } from "@/lib/storage-utils"
-import { AppSettingsV1, DEFAULT_SETTINGS_V1, ThemePreference, CurrencyCode } from "./types"
+import { AppSettingsV1, DEFAULT_SETTINGS_V1, ThemePreference, CurrencyCode, InsightsSensitivity } from "./types"
 
 const SETTINGS_KEY = "luma_settings_v1"
 
@@ -42,11 +42,22 @@ function validateSettings(data: unknown): AppSettingsV1 {
         superfluousTargetPercent = Math.max(0, Math.min(100, candidate.superfluousTargetPercent))
     }
 
+    // Validate insights sensitivity
+    let insightsSensitivity: InsightsSensitivity = DEFAULT_SETTINGS_V1.insightsSensitivity
+    if (
+        candidate.insightsSensitivity === "low" ||
+        candidate.insightsSensitivity === "medium" ||
+        candidate.insightsSensitivity === "high"
+    ) {
+        insightsSensitivity = candidate.insightsSensitivity
+    }
+
     return {
         version: 1,
         theme,
         currency,
         superfluousTargetPercent,
+        insightsSensitivity,
     }
 }
 

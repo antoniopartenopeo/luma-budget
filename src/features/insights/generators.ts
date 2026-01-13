@@ -3,7 +3,7 @@
 // Pure functions that generate Insight objects based on transaction data
 
 import { formatCents } from "@/lib/currency-utils"
-import { INSIGHT_THRESHOLDS } from "./constants"
+import { INSIGHT_CONFIG } from "./constants"
 import {
     Insight,
     InsightSeverity,
@@ -11,6 +11,7 @@ import {
     CategorySpikeInput,
     TopDriversInput,
     InsightDriver,
+    InsightThresholds,
 } from "./types"
 import {
     filterTransactionsByMonth,
@@ -29,7 +30,10 @@ import {
  * Calculates projected month-end spending based on burn rate.
  * Returns insight if projected spending exceeds budget.
  */
-export function buildBudgetRiskInsight(input: BudgetRiskInput): Insight | null {
+export function buildBudgetRiskInsight(
+    input: BudgetRiskInput,
+    thresholds: InsightThresholds
+): Insight | null {
     const { transactions, budgetCents, period, currentDate } = input
 
     // No insight if no budget set
@@ -48,17 +52,17 @@ export function buildBudgetRiskInsight(input: BudgetRiskInput): Insight | null {
     const burnRatePerDay = spentCents / daysElapsed
     const projectedCents = Math.round(burnRatePerDay * daysInMonth)
 
-    // No insight if within budget
-    if (projectedCents <= budgetCents) return null
-
     const deltaCents = projectedCents - budgetCents
     const deltaPct = Math.round((deltaCents / budgetCents) * 100)
 
+    // No insight if below medium threshold for triggering
+    if (deltaPct < thresholds.budgetMediumPct) return null
+
     // Determine severity
     let severity: InsightSeverity = "low"
-    if (deltaPct > INSIGHT_THRESHOLDS.BUDGET_RISK_SEVERITY.HIGH) {
+    if (deltaPct > thresholds.budgetHighPct) {
         severity = "high"
-    } else if (deltaPct > INSIGHT_THRESHOLDS.BUDGET_RISK_SEVERITY.MEDIUM) {
+    } else if (deltaPct > thresholds.budgetMediumPct) {
         severity = "medium"
     }
 
@@ -92,7 +96,10 @@ export function buildBudgetRiskInsight(input: BudgetRiskInput): Insight | null {
  * Compares current month spending per category vs 3-month average.
  * Returns insights for categories exceeding thresholds.
  */
-export function buildCategorySpikeInsights(input: CategorySpikeInput): Insight[] {
+export function buildCategorySpikeInsights(
+    input: CategorySpikeInput,
+    thresholds: InsightThresholds
+): Insight[] {
     const { transactions, categoriesMap, currentPeriod } = input
 
     // Get current month totals
@@ -135,11 +142,11 @@ export function buildCategorySpikeInsights(input: CategorySpikeInput): Insight[]
         const deltaCents = currentCents - baselineCents
 
         // Skip if below absolute threshold
-        if (deltaCents < INSIGHT_THRESHOLDS.SPIKE_MIN_DELTA_CENTS) continue
+        if (deltaCents < thresholds.spikeMinDeltaCents) continue
 
         // Skip if below percentage threshold (avoid division by zero)
         const deltaPct = baselineCents > 0 ? Math.round((deltaCents / baselineCents) * 100) : 100
-        if (deltaPct < INSIGHT_THRESHOLDS.SPIKE_MIN_DELTA_PCT) continue
+        if (deltaPct < thresholds.spikeMinDeltaPct) continue
 
         const category = categoriesMap.get(categoryId)
         const label = category?.label || categoryId
@@ -156,7 +163,7 @@ export function buildCategorySpikeInsights(input: CategorySpikeInput): Insight[]
 
     // Sort by delta (highest first) and take top N
     spikes.sort((a, b) => b.deltaCents - a.deltaCents)
-    const topSpikes = spikes.slice(0, INSIGHT_THRESHOLDS.SPIKE_TOP_CATEGORIES)
+    const topSpikes = spikes.slice(0, INSIGHT_CONFIG.SPIKE_TOP_CATEGORIES)
 
     // Generate insights
     return topSpikes.map((spike) => {
@@ -199,8 +206,11 @@ export function buildCategorySpikeInsights(input: CategorySpikeInput): Insight[]
  * Identifies the top transactions by amount in the current month
  * that contribute most to spending.
  */
-export function buildTopDriversInsight(input: TopDriversInput): Insight | null {
-    const { transactions, categoriesMap, currentPeriod } = input
+export function buildTopDriversInsight(
+    input: TopDriversInput,
+    thresholds: InsightThresholds
+): Insight | null {
+    const { transactions, currentPeriod } = input
 
     // Get current month transactions
     const currentTransactions = filterTransactionsByMonth(transactions, currentPeriod)
@@ -219,10 +229,15 @@ export function buildTopDriversInsight(input: TopDriversInput): Insight | null {
     // Calculate month-over-month delta
     const deltaCents = currentTotalCents - prevTotalCents
 
+    // Noise gate check based on thresholds
+    if (deltaCents < thresholds.topDriversMinDeltaCents) {
+        return null
+    }
+
     // Sort by amount and take top N
     const sortedTransactions = [...currentTransactions]
         .sort((a, b) => Math.abs(b.amountCents) - Math.abs(a.amountCents))
-        .slice(0, INSIGHT_THRESHOLDS.TOP_DRIVERS_COUNT)
+        .slice(0, INSIGHT_CONFIG.TOP_DRIVERS_COUNT)
 
     const drivers: InsightDriver[] = sortedTransactions.map(t => {
         return {

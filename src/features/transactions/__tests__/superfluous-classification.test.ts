@@ -5,7 +5,7 @@
  * when creating or updating transactions.
  */
 
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect } from "vitest"
 import { CATEGORIES } from '@/features/categories/config'
 
 // Helper function extracted for testing

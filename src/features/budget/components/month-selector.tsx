@@ -24,8 +24,8 @@ export function MonthSelector({ period, onPeriodChange }: MonthSelectorProps) {
                 <ChevronLeft className="h-4 w-4" />
             </Button>
 
-            <div className="min-w-[160px] text-center">
-                <span className="font-medium">{formatPeriodDisplay(period)}</span>
+            <div className="min-w-[140px] md:min-w-[160px] text-center">
+                <span className="font-medium text-sm md:text-base">{formatPeriodDisplay(period)}</span>
             </div>
 
             <Button

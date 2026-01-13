@@ -2,6 +2,42 @@
 // ==========================
 // Pure functions for date manipulation and transaction aggregation
 
+import { InsightsSensitivity } from "@/features/settings/api/types"
+import { InsightThresholds } from "./types"
+
+/**
+ * Maps sensitivity level to concrete insight thresholds
+ */
+export function getInsightThresholds(sensitivity: InsightsSensitivity): InsightThresholds {
+    switch (sensitivity) {
+        case "low":
+            return {
+                spikeMinDeltaCents: 10000, // €100
+                spikeMinDeltaPct: 50,
+                budgetMediumPct: 30,
+                budgetHighPct: 60,
+                topDriversMinDeltaCents: 10000, // €100 noise gate
+            }
+        case "high":
+            return {
+                spikeMinDeltaCents: 2000, // €20
+                spikeMinDeltaPct: 20,
+                budgetMediumPct: 10,
+                budgetHighPct: 25,
+                topDriversMinDeltaCents: 0,
+            }
+        case "medium":
+        default:
+            return {
+                spikeMinDeltaCents: 5000, // €50
+                spikeMinDeltaPct: 30,
+                budgetMediumPct: 20,
+                budgetHighPct: 50,
+                topDriversMinDeltaCents: 0,
+            }
+    }
+}
+
 /**
  * Get the start and end dates for a given month period
  */

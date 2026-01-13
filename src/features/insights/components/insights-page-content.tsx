@@ -35,7 +35,7 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
             {/* Header */}
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                 <div>
-                    <h1 className="text-4xl font-black tracking-tighter">Insights</h1>
+                    <h1 className="text-3xl font-bold tracking-tight">Insights</h1>
                     <p className="text-muted-foreground font-medium mt-1">
                         Analisi intelligente delle tue spese e suggerimenti personalizzati.
                     </p>
@@ -43,19 +43,19 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
             </div>
 
             {/* Period Selector */}
-            <div className="flex items-center justify-center gap-3 py-2">
+            <div className="flex items-center justify-center gap-2 md:gap-3 py-2">
                 <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => navigatePeriod("prev")}
-                    className="h-9 w-9 rounded-xl"
+                    className="h-8 w-8 md:h-9 md:w-9 rounded-xl"
                 >
-                    <ChevronLeft className="h-5 w-5" />
+                    <ChevronLeft className="h-4 w-4 md:h-5 md:w-5" />
                 </Button>
 
-                <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted/50 min-w-[180px] justify-center">
-                    <CalendarDays className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-semibold">{periodLabel}</span>
+                <div className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-xl bg-muted/50 min-w-[150px] md:min-w-[180px] justify-center">
+                    <CalendarDays className="h-3.5 w-3.5 md:h-4 md:w-4 text-muted-foreground hidden xs:block" />
+                    <span className="font-semibold text-sm md:text-base">{periodLabel}</span>
                 </div>
 
                 <Button
@@ -63,9 +63,9 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
                     size="icon"
                     onClick={() => navigatePeriod("next")}
                     disabled={isCurrentMonth}
-                    className="h-9 w-9 rounded-xl"
+                    className="h-8 w-8 md:h-9 md:w-9 rounded-xl"
                 >
-                    <ChevronRight className="h-5 w-5" />
+                    <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
                 </Button>
             </div>
 

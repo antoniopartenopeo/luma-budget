@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { fetchTransactions, createTransaction, updateTransaction, deleteTransaction } from "./repository"
+import { fetchTransactions, createTransaction, updateTransaction } from "./repository"
 import { queryKeys } from "@/lib/query-keys"
 import { CreateTransactionDTO } from "./types"
 

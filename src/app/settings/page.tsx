@@ -39,21 +39,21 @@ function SettingsContent() {
 
     return (
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-8 overflow-x-auto">
-                <TabsTrigger value="preferences" className="gap-2" aria-label="Preferenze">
-                    <Settings2 className="h-4 w-4 hidden sm:block" aria-hidden="true" />
+            <TabsList className="flex w-full overflow-x-auto overflow-y-hidden mb-8 bg-muted/20 p-1 rounded-xl scrollbar-hide">
+                <TabsTrigger value="preferences" className="flex-1 gap-2 min-w-[100px] sm:min-w-0" aria-label="Preferenze">
+                    <Settings2 className="h-4 w-4 hidden xs:block" aria-hidden="true" />
                     <span>Preferenze</span>
                 </TabsTrigger>
-                <TabsTrigger value="categories" className="gap-2" aria-label="Categorie">
-                    <Database className="h-4 w-4 hidden sm:block" aria-hidden="true" />
+                <TabsTrigger value="categories" className="flex-1 gap-2 min-w-[100px] sm:min-w-0" aria-label="Categorie">
+                    <Database className="h-4 w-4 hidden xs:block" aria-hidden="true" />
                     <span>Categorie</span>
                 </TabsTrigger>
-                <TabsTrigger value="backup" className="gap-2" aria-label="Backup">
-                    <Download className="h-4 w-4 hidden sm:block" aria-hidden="true" />
+                <TabsTrigger value="backup" className="flex-1 gap-2 min-w-[100px] sm:min-w-0" aria-label="Backup">
+                    <Download className="h-4 w-4 hidden xs:block" aria-hidden="true" />
                     <span>Backup</span>
                 </TabsTrigger>
-                <TabsTrigger value="advanced" className="gap-2" aria-label="Avanzate">
-                    <Wrench className="h-4 w-4 hidden sm:block" aria-hidden="true" />
+                <TabsTrigger value="advanced" className="flex-1 gap-2 min-w-[100px] sm:min-w-0" aria-label="Avanzate">
+                    <Wrench className="h-4 w-4 hidden xs:block" aria-hidden="true" />
                     <span>Avanzate</span>
                 </TabsTrigger>
             </TabsList>

@@ -14,6 +14,8 @@ import {
     buildCategorySpikeInsights,
     buildTopDriversInsight,
 } from "./generators"
+import { useSettings } from "@/features/settings/api/use-settings"
+import { getInsightThresholds } from "./utils"
 
 interface UseInsightsOptions {
     period: string // YYYY-MM format
@@ -30,13 +32,17 @@ export function useInsights({ period }: UseInsightsOptions): UseInsightsResult {
     const { data: transactions = [], isLoading: transactionsLoading } = useTransactions()
     const { data: categories = [], isLoading: categoriesLoading } = useCategories({ includeArchived: true })
     const { data: budgetPlan, isLoading: budgetLoading } = useBudget(period)
+    const { data: settings, isLoading: settingsLoading } = useSettings()
 
-    const isLoading = transactionsLoading || categoriesLoading || budgetLoading
+    const isLoading = transactionsLoading || categoriesLoading || budgetLoading || settingsLoading
 
     const result = useMemo(() => {
         if (isLoading) {
             return { insights: [], isEmpty: true, hasTransactions: false }
         }
+
+        const sensitivity = settings?.insightsSensitivity || "medium"
+        const thresholds = getInsightThresholds(sensitivity)
 
         // Build categories map for lookup
         const categoriesMap = new Map(
@@ -56,7 +62,7 @@ export function useInsights({ period }: UseInsightsOptions): UseInsightsResult {
             budgetCents,
             period,
             currentDate,
-        })
+        }, thresholds)
         if (budgetRisk) {
             insights.push(budgetRisk)
         }
@@ -66,7 +72,7 @@ export function useInsights({ period }: UseInsightsOptions): UseInsightsResult {
             transactions,
             categoriesMap,
             currentPeriod: period,
-        })
+        }, thresholds)
         insights.push(...categorySpikes)
 
         // Generate Top Drivers Insight
@@ -74,7 +80,7 @@ export function useInsights({ period }: UseInsightsOptions): UseInsightsResult {
             transactions,
             categoriesMap,
             currentPeriod: period,
-        })
+        }, thresholds)
         if (topDrivers) {
             insights.push(topDrivers)
         }
@@ -91,7 +97,7 @@ export function useInsights({ period }: UseInsightsOptions): UseInsightsResult {
             isEmpty: insights.length === 0,
             hasTransactions,
         }
-    }, [transactions, categories, budgetPlan, period, isLoading])
+    }, [transactions, categories, budgetPlan, period, isLoading, settings?.insightsSensitivity])
 
     return {
         ...result,

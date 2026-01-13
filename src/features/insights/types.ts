@@ -4,6 +4,15 @@
 export type InsightKind = "budget-risk" | "category-spike" | "top-drivers"
 export type InsightSeverity = "low" | "medium" | "high"
 
+export interface InsightThresholds {
+    spikeMinDeltaCents: number
+    spikeMinDeltaPct: number
+    budgetMediumPct: number
+    budgetHighPct: number
+    topDriversMinDeltaCents: number
+}
+
+
 export interface InsightMetrics {
     currentCents?: number
     baselineCents?: number

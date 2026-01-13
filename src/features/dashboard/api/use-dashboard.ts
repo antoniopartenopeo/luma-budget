@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { CategorySummary, DashboardTimeFilter } from "./types"
+import { DashboardTimeFilter } from "./types"
 import { fetchDashboardSummary } from "./repository"
 import { queryKeys } from "@/lib/query-keys"
 

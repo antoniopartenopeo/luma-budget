@@ -19,7 +19,7 @@ export default function DashboardPage() {
   const { data: transactions, isLoading: isLoadingTransactions } = useTransactions()
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>

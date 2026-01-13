@@ -5,14 +5,13 @@ import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { LayoutDashboard, Receipt, PiggyBank, LineChart, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
   { icon: Receipt, label: "Transazioni", href: "/transactions" },
   { icon: PiggyBank, label: "Budget", href: "/budget" },
-  { icon: LineChart, label: "Insights", href: "/insights", disabled: true },
+  { icon: LineChart, label: "Insights", href: "/insights" },
   { icon: Settings, label: "Impostazioni", href: "/settings" },
 ]
 
@@ -42,38 +41,18 @@ export function Sidebar() {
           <nav className="space-y-1">
             {sidebarItems.map((item) => {
               const isActive = pathname === item.href
-              const content = (
-                <Button
-                  variant="ghost"
-                  disabled={item.disabled}
-                  className={cn(
-                    "w-full justify-start gap-3 px-3 py-6 text-base font-medium transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground relative",
-                    isActive && "bg-sidebar-accent text-sidebar-accent-foreground shadow-sm",
-                    item.disabled && "opacity-60 cursor-not-allowed hover:bg-transparent"
-                  )}
-                  title={item.disabled ? "In arrivo" : undefined}
-                >
-                  <item.icon className={cn("h-5 w-5", isActive ? "text-primary" : "text-muted-foreground")} />
-                  <span className="flex-1 text-left">{item.label}</span>
-                  {item.disabled && (
-                    <Badge variant="secondary" className="text-[10px] px-1 py-0 h-5 bg-primary/10 text-primary border-none font-semibold">
-                      Soon
-                    </Badge>
-                  )}
-                </Button>
-              )
-
-              if (item.disabled) {
-                return (
-                  <div key={item.label} className="cursor-not-allowed">
-                    {content}
-                  </div>
-                )
-              }
-
               return (
                 <Link key={item.href} href={item.href} passHref>
-                  {content}
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      "w-full justify-start gap-3 px-3 py-6 text-base font-medium transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground relative",
+                      isActive && "bg-sidebar-accent text-sidebar-accent-foreground shadow-sm"
+                    )}
+                  >
+                    <item.icon className={cn("h-5 w-5", isActive ? "text-primary" : "text-muted-foreground")} />
+                    <span className="flex-1 text-left">{item.label}</span>
+                  </Button>
                 </Link>
               )
             })}

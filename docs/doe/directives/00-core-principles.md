@@ -22,3 +22,13 @@ Non tolleriamo regressioni "minori".
 - **Execution**: Implementa con precisione chirurgica.
 
 Ogni modifica significativa deve essere accompagnata da un aggiornamento del **Registry** o del **Regression Map** se tocca flussi critici.
+
+## 4. Branch Creation Policy
+Per prevenire contaminazione della history:
+- **Base**: I feature branch DEVONO partire da `origin/main` aggiornato.
+  ```bash
+  git checkout main
+  git pull origin main
+  git checkout -b feat/my-feature
+  ```
+- **Pre-PR Check**: Verificare sempre `git log main..HEAD` per assicurarsi che contenga SOLO i commit pertinenti.

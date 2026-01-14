@@ -2,7 +2,6 @@
 
 import { useMemo } from "react"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
-import { Transaction } from "@/features/transactions/api/types"
 
 export interface TrendDataItem {
     month: string
@@ -29,7 +28,6 @@ export function useTrendData() {
 
             const label = new Intl.DateTimeFormat("it-IT", { month: "short" }).format(d)
             const capitalizedLabel = label.charAt(0).toUpperCase() + label.slice(1)
-            const periodKey = `${year}-${(month + 1).toString().padStart(2, "0")}`
 
             // Filter transactions for this month
             const monthTransactions = transactions.filter(t => {

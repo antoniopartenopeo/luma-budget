@@ -33,7 +33,6 @@ export function useAIAdvisor() {
         }
 
         const expenses = transactions.filter(t => t.type === "expense")
-        const income = transactions.filter(t => t.type === "income")
 
         // 1. Subscription Detection Logic
         // group by description and amount (cents)

@@ -1,6 +1,6 @@
 "use client"
 
-import { Sparkles, TrendingUp, Calendar, AlertCircle, ArrowUpRight } from "lucide-react"
+import { Sparkles, TrendingUp, Calendar, AlertCircle } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAIAdvisor } from "../use-ai-advisor"
 import { useCurrency } from "@/features/settings/api/use-currency"

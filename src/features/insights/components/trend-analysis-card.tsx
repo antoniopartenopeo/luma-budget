@@ -27,7 +27,7 @@ export function TrendAnalysisCard() {
                 textStyle: { color: "#1e293b", fontSize: 13 },
                 extraCssText: "box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border-radius: 12px;",
                 formatter: (params: unknown) => {
-                    const p = params as any[]
+                    const p = params as { name: string, value: number, dataIndex: number, color: string }[]
                     const [income, expenses] = p
                     const index = income.dataIndex
                     const sRate = data[index].savingsRateLabel

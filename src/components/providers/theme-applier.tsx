@@ -33,15 +33,19 @@ export function ThemeApplier() {
 
             // Support both old and new API
             if (mediaQuery.addEventListener) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 mediaQuery.addEventListener("change", handler as any)
             } else {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 mediaQuery.addListener(handler as any)
             }
 
             return () => {
                 if (mediaQuery.removeEventListener) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     mediaQuery.removeEventListener("change", handler as any)
                 } else {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     mediaQuery.removeListener(handler as any)
                 }
             }

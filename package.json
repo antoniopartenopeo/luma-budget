@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "doe:verify": "./scripts/doe-verify.sh"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.11",

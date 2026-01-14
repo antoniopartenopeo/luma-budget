@@ -11,6 +11,8 @@ Nessuna interazione deve mai rompere il build o lasciare l'applicazione in uno s
 ## 2. The Broken Window Theory
 Non tolleriamo regressioni "minori".
 - **No Float**: La valuta si gestisce SOLO in centesimi (integer). Vietato `parseFloat` su importi monetari.
+    - **Policy**: Il controllo `doe:verify` fallisce se `parseFloat` viene individuato in *nuovi file* o *file modificati* non presenti nella whitelist (Legacy Registry).
+    - **Legacy**: Codice esistente è tollerato (warning) solo se documentato in `legacy-registry.md`.
 - **No Inline Styles**: Usare solo classi Tailwind o design tokens.
 - **No Console Logs**: Il codice di produzione deve essere pulito.
 

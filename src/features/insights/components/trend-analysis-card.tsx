@@ -7,6 +7,7 @@ import { useTrendData } from "../use-trend-data"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { formatEuroNumber } from "@/lib/currency-utils"
 import { Skeleton } from "@/components/ui/skeleton"
+import { BarChart3 } from "lucide-react"
 import type { EChartsOption } from "echarts"
 
 export function TrendAnalysisCard() {
@@ -134,6 +135,28 @@ export function TrendAnalysisCard() {
                 </CardHeader>
                 <CardContent className="h-[350px]">
                     <Skeleton className="h-full w-full rounded-xl" />
+                </CardContent>
+            </Card>
+        )
+    }
+
+    if (!data.length) {
+        return (
+            <Card className="rounded-2xl border-none bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden">
+                <CardHeader>
+                    <CardTitle className="text-xl font-bold tracking-tight">Velocità Finanziaria (12 Mesi)</CardTitle>
+                    <CardDescription>Confronto tra entrate e uscite storiche</CardDescription>
+                </CardHeader>
+                <CardContent className="h-[350px] flex items-center justify-center text-center p-8">
+                    <div className="max-w-[280px] space-y-2">
+                        <div className="bg-muted/30 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <BarChart3 className="h-6 w-6 text-muted-foreground" />
+                        </div>
+                        <h3 className="font-semibold">Dati insufficienti</h3>
+                        <p className="text-sm text-muted-foreground">
+                            Non ci sono abbastanza transazioni negli ultimi 12 mesi per generare il grafico.
+                        </p>
+                    </div>
                 </CardContent>
             </Card>
         )

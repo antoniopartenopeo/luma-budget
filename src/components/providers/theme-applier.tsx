@@ -25,31 +25,33 @@ export function ThemeApplier() {
         if (theme === "system") {
             const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
 
-            // Initial application
+            // Apply current system state
             applyTheme(mediaQuery.matches)
 
-            // Listener for system changes
-            const handler = (e: MediaQueryListEvent) => applyTheme(e.matches)
+            // Dynamic listener for theme switches while app is open
+            const handler = (e: MediaQueryListEvent | MediaQueryList) => applyTheme(e.matches)
 
-            // Safely add listener
+            // Support both old and new API
             if (mediaQuery.addEventListener) {
-                mediaQuery.addEventListener("change", handler)
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                mediaQuery.addEventListener("change", handler as any)
             } else {
-                // Backward compatibility just in case
-                mediaQuery.addListener(handler)
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                mediaQuery.addListener(handler as any)
             }
 
             return () => {
                 if (mediaQuery.removeEventListener) {
-                    mediaQuery.removeEventListener("change", handler)
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    mediaQuery.removeEventListener("change", handler as any)
                 } else {
-                    mediaQuery.removeListener(handler)
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    mediaQuery.removeListener(handler as any)
                 }
             }
         } else {
             // Manual overrides
             applyTheme(theme === "dark")
-            // No cleanup needed for manual mode logic itself, but we return undefined
         }
     }, [theme])
 

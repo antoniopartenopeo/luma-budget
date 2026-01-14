@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LumaBudget
 
-## Getting Started
+Personal Finance Management built with Next.js 16, React 19, and Tailwind CSS.
+Focuses on simplicity, local-only persistence (for now), and rich insights.
+
+## Project Structure
+- `src/features`: Domain logic (Transactions, Budget, Insights).
+- `src/components`: Shared UI (Shadcn/Primitive).
+- `src/lib`: Utilities (Currency, Storage, dates).
+- `docs/doe`: **Directive, Orchestration, Execution** system.
+
+## getting Started
 
 First, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## DOE System (Development & Operations)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This project uses a strict governance system for code quality and consistency.
 
-## Learn More
+### 📚 Directives
+Read the rules before contributing:
+- [Core Principles](docs/doe/directives/00-core-principles.md)
+- [UX Standards](docs/doe/directives/ux-standards.md)
+- [Legacy Registry](docs/doe/legacy-registry.md) (Known issues)
 
-To learn more about Next.js, take a look at the following resources:
+### 🛠 Verification
+Before committing, you **MUST** run the verification protocol:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run doe:verify
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This script performs:
+1. Linting (`eslint`)
+2. Unit Testing (`vitest`)
+3. Static Analysis for prohibited patterns (e.g. `parseFloat` for currency).
+
+### 🧪 Regression Testing
+Check [Regression Map](docs/doe/regression-map.md) for critical manual test scenarios.
 
 ## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Standard Next.js deployment.

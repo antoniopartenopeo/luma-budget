@@ -10,7 +10,8 @@ import { cn } from "@/lib/utils"
 import { useCreateTransaction } from "@/features/transactions/api/use-transactions"
 import { Transaction } from "@/features/transactions/api/types"
 
-import { CATEGORIES, getGroupedCategories } from "@/features/categories/config"
+import { getGroupedCategories } from "@/features/categories/config"
+import { useCategories } from "@/features/categories/api/use-categories"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 
 interface QuickExpenseInputProps {
@@ -22,6 +23,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
     const [amount, setAmount] = useState("")
     const [category, setCategory] = useState("")
     const [type, setType] = useState<"expense" | "income">("expense")
+    const { data: categories = [] } = useCategories()
     const [isFocused, setIsFocused] = useState(false)
     const [validationError, setValidationError] = useState<string | null>(null)
 
@@ -32,16 +34,17 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
     const { mutate: create, isPending, isSuccess, isError } = useCreateTransaction()
 
     // Get grouped categories based on current transaction type
-    const groupedCategories = getGroupedCategories(type)
+    const groupedCategories = getGroupedCategories(type, categories)
 
     // Derive isSuperfluous based on category (rule-based), unless manually overridden
     const isSuperfluous = useMemo(() => {
         if (type !== "expense") return false
         if (isManualOverride) return isSuperfluousManual
 
-        const cat = CATEGORIES.find(c => c.id === category)
+        const cat = categories.find(c => c.id === category)
         return cat?.spendingNature === "superfluous"
-    }, [category, isManualOverride, isSuperfluousManual, type])
+        // eslint-disable-next-line react-hooks/preserve-manual-memoization
+    }, [category, isManualOverride, isSuperfluousManual, type, categories])
 
     const handleTypeChange = (newType: "expense" | "income") => {
         setType(newType)
@@ -74,7 +77,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
             {
                 description,
                 amountCents, // Send absolute integer cents
-                category: CATEGORIES.find(c => c.id === category)?.label || category,
+                category: categories.find(c => c.id === category)?.label || category,
                 categoryId: category,
                 type,
                 isSuperfluous: type === "expense" ? isSuperfluous : false,
@@ -107,7 +110,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
             <form
                 onSubmit={handleSubmit}
                 className={cn(
-                    "flex items-center gap-1 rounded-full bg-background p-1 shadow-sm transition-all border border-input",
+                    "flex flex-col sm:flex-row items-stretch sm:items-center gap-2 rounded-2xl sm:rounded-full bg-background p-2 sm:p-1 shadow-sm transition-all border border-input",
                     isFocused && "shadow-md ring-2 ring-primary/10",
                     hasError && "border-destructive/50 shadow-destructive/10"
                 )}
@@ -118,111 +121,139 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                     }
                 }}
             >
-                {/* Type Toggle */}
-                <div className="flex bg-muted/50 rounded-full p-0.5 shrink-0 ml-1">
-                    <button
-                        type="button"
-                        onClick={() => handleTypeChange("expense")}
-                        className={cn(
-                            "p-1.5 rounded-full transition-all",
-                            type === "expense" ? "bg-background text-red-500 shadow-sm" : "text-muted-foreground hover:text-foreground"
-                        )}
-                        title="Uscita"
-                    >
-                        <TrendingDown className="h-4 w-4" />
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => handleTypeChange("income")}
-                        className={cn(
-                            "p-1.5 rounded-full transition-all",
-                            type === "income" ? "bg-background text-green-500 shadow-sm" : "text-muted-foreground hover:text-foreground"
-                        )}
-                        title="Entrata"
-                    >
-                        <TrendingUp className="h-4 w-4" />
-                    </button>
-                </div>
+                {/* Mobile: Row 1 (Type + Description) | Desktop: Horizontal flow */}
+                <div className="flex items-center gap-1 flex-1">
+                    {/* Type Toggle */}
+                    <div className="flex bg-muted/50 rounded-full p-0.5 shrink-0">
+                        <button
+                            type="button"
+                            onClick={() => handleTypeChange("expense")}
+                            className={cn(
+                                "p-1.5 rounded-full transition-all",
+                                type === "expense" ? "bg-background text-red-500 shadow-sm" : "text-muted-foreground hover:text-foreground"
+                            )}
+                            title="Uscita"
+                        >
+                            <TrendingDown className="h-4 w-4" />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => handleTypeChange("income")}
+                            className={cn(
+                                "p-1.5 rounded-full transition-all",
+                                type === "income" ? "bg-background text-green-500 shadow-sm" : "text-muted-foreground hover:text-foreground"
+                            )}
+                            title="Entrata"
+                        >
+                            <TrendingUp className="h-4 w-4" />
+                        </button>
+                    </div>
 
-                <div className="h-6 w-px bg-border/50 mx-1" />
+                    <div className="h-6 w-px bg-border/50 mx-1 hidden sm:block" />
 
-                {/* Description */}
-                <Input
-                    placeholder="Es. Caffè bar, Abbonamento Spotify..."
-                    value={description}
-                    onChange={(e) => {
-                        setDescription(e.target.value)
-                        if (validationError) setValidationError(null)
-                    }}
-                    disabled={isPending}
-                    className={cn(
-                        "h-9 border-0 bg-transparent px-2 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70 flex-1 min-w-[120px]",
-                        validationError && !description.trim() && "placeholder:text-destructive/50"
-                    )}
-                />
-
-                <div className="h-6 w-px bg-border/50" />
-
-                {/* Amount */}
-                <div className="relative flex items-center">
-                    <span className="absolute left-2 text-muted-foreground text-sm font-medium">€</span>
                     <Input
-                        type="number"
-                        placeholder="0,00"
-                        value={amount}
+                        placeholder={isFocused ? "Es. Caffè bar..." : "Cosa hai comprato?"}
+                        value={description}
                         onChange={(e) => {
-                            setAmount(e.target.value)
+                            setDescription(e.target.value)
                             if (validationError) setValidationError(null)
                         }}
                         disabled={isPending}
                         className={cn(
-                            "h-9 w-24 border-0 bg-transparent pl-6 pr-2 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70 text-right font-medium [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-                            validationError && (!amount || Math.abs(parseCurrencyToCents(amount)) <= 0) && "placeholder:text-destructive/50 text-destructive"
+                            "h-9 border-0 bg-transparent px-2 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70 flex-1 min-w-0 text-sm md:text-base",
+                            validationError && !description.trim() && "placeholder:text-destructive/50"
                         )}
                     />
                 </div>
 
-                <div className="h-6 w-px bg-border/50" />
+                <div className="h-px w-full bg-border/50 sm:hidden" />
+                <div className="h-6 w-px bg-border/50 hidden sm:block" />
 
-                {/* Category */}
-                <Select
-                    value={category}
-                    onValueChange={(val) => {
-                        setCategory(val)
-                        setIsSuperfluousManual(null) // Reset manual override on category change
-                        if (validationError) setValidationError(null)
-                    }}
-                    disabled={isPending}
-                >
-                    <SelectTrigger className={cn(
-                        "h-9 w-[130px] border-0 bg-transparent shadow-none focus:ring-0 text-muted-foreground data-[state=checked]:text-foreground",
-                        validationError && !category && "text-destructive/70"
-                    )}>
-                        <SelectValue placeholder="Categoria" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-[300px]">
-                        {groupedCategories.map((group) => (
-                            <div key={group.key}>
-                                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                                    {group.label}
-                                </div>
-                                {group.categories.map((cat) => (
-                                    <SelectItem key={cat.id} value={cat.id}>
-                                        <div className="flex items-center gap-2">
-                                            <CategoryIcon categoryName={cat.label} size={14} />
-                                            <span>{cat.label}</span>
-                                        </div>
-                                    </SelectItem>
-                                ))}
+                {/* Mobile: Row 2 (Amount + Category + Action) | Desktop: Horizontal flow */}
+                <div className="flex items-center gap-1">
+                    {/* Amount */}
+                    <div className="relative flex items-center shrink-0 w-24 sm:w-auto">
+                        <span className="absolute left-1.5 md:left-2 text-muted-foreground text-xs md:text-sm font-medium">€</span>
+                        <Input
+                            type="number"
+                            placeholder="0,00"
+                            value={amount}
+                            onChange={(e) => {
+                                setAmount(e.target.value)
+                                if (validationError) setValidationError(null)
+                            }}
+                            disabled={isPending}
+                            className={cn(
+                                "h-9 w-full sm:w-24 border-0 bg-transparent pl-4 md:pl-6 pr-1 md:pr-2 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70 text-right font-medium text-sm md:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+                                validationError && (!amount || Math.abs(parseCurrencyToCents(amount)) <= 0) && "placeholder:text-destructive/50 text-destructive"
+                            )}
+                        />
+                    </div>
+
+                    <div className="h-6 w-px bg-border/50 hidden md:block" />
+
+                    {/* Category */}
+                    <Select
+                        value={category}
+                        onValueChange={(val) => {
+                            setCategory(val)
+                            setIsSuperfluousManual(null) // Reset manual override on category change
+                            if (validationError) setValidationError(null)
+                        }}
+                        disabled={isPending}
+                    >
+                        <SelectTrigger className={cn(
+                            "h-9 flex-1 sm:w-[130px] border-0 bg-transparent shadow-none focus:ring-0 text-muted-foreground data-[state=checked]:text-foreground text-xs md:text-sm",
+                            validationError && !category && "text-destructive/70"
+                        )}>
+                            <div className="truncate text-left">
+                                <SelectValue placeholder="Categoria" />
                             </div>
-                        ))}
-                    </SelectContent>
-                </Select>
+                        </SelectTrigger>
+                        <SelectContent className="max-h-[300px]">
+                            {groupedCategories.map((group) => (
+                                <div key={group.key}>
+                                    <div className="px-2 py-1.5 text-[10px] md:text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                        {group.label}
+                                    </div>
+                                    {group.categories.map((cat) => (
+                                        <SelectItem key={cat.id} value={cat.id}>
+                                            <div className="flex items-center gap-2">
+                                                <CategoryIcon categoryName={cat.label} size={14} />
+                                                <span>{cat.label}</span>
+                                            </div>
+                                        </SelectItem>
+                                    ))}
+                                </div>
+                            ))}
+                        </SelectContent>
+                    </Select>
 
-                {/* Superfluous Toggle - Only for expenses */}
+                    {/* Submit Button */}
+                    <Button
+                        type="submit"
+                        disabled={isPending}
+                        className={cn(
+                            "h-8 md:h-9 rounded-full px-3 md:px-4 transition-all ml-auto sm:ml-1 shrink-0 bg-primary text-primary-foreground",
+                            isSuccess && "bg-emerald-600 hover:bg-emerald-700 text-white"
+                        )}
+                    >
+                        {isPending ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : isSuccess ? (
+                            <div className="flex items-center gap-1">
+                                <CheckCircle2 className="h-4 w-4" />
+                            </div>
+                        ) : (
+                            <span className="text-xs font-bold sm:font-normal">Aggiungi</span>
+                        )}
+                    </Button>
+                </div>
+
+                {/* Superfluous Toggle - Only for expenses and on larger mobiles/desktop */}
                 {type === "expense" && (
-                    <>
-                        <div className="h-6 w-px bg-border/50" />
+                    <div className="hidden lg:flex items-center gap-1 shrink-0">
+                        <div className="h-6 w-px bg-border/50 mx-1" />
                         <button
                             type="button"
                             onClick={toggleSuperfluous}
@@ -233,33 +264,11 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                                     ? "bg-destructive/10 text-destructive font-semibold border border-destructive/20"
                                     : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
                             )}
-                            title={isManualOverride ? "Classificazione manuale (Clicca per reimpostare)" : "Classificazione automatica (Clicca per forzare)"}
                         >
-                            {isSuperfluous ? "Spesa Superflua" : "Spesa Necessaria"}
+                            {isSuperfluous ? "Superflua" : "Necessaria"}
                         </button>
-                    </>
+                    </div>
                 )}
-
-                {/* Submit Button */}
-                <Button
-                    type="submit"
-                    disabled={isPending}
-                    className={cn(
-                        "h-9 rounded-full px-4 transition-all ml-1",
-                        isSuccess && "bg-emerald-600 hover:bg-emerald-700 text-white"
-                    )}
-                >
-                    {isPending ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : isSuccess ? (
-                        <div className="flex items-center gap-1">
-                            <CheckCircle2 className="h-4 w-4" />
-                            <span className="sr-only">Salvato</span>
-                        </div>
-                    ) : (
-                        "Aggiungi"
-                    )}
-                </Button>
             </form>
 
             {/* Error Message */}

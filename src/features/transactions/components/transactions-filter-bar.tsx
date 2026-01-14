@@ -1,5 +1,6 @@
 import { Search, Calendar, Filter, X, Download, Loader2 } from "lucide-react"
 import { getGroupedCategories } from "@/features/categories/config"
+import { useCategories } from "@/features/categories/api/use-categories"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -55,6 +56,7 @@ export function TransactionsFilterBar({
     isExporting,
     hasResults
 }: TransactionsFilterBarProps) {
+    const { data: categories = [] } = useCategories()
     const hasActiveFilters =
         typeValue !== "all" ||
         categoryValue !== "all" ||
@@ -62,7 +64,7 @@ export function TransactionsFilterBar({
         periodValue !== "all" ||
         isSuperfluousOnly
 
-    const allGroupedCategories = getGroupedCategories()
+    const allGroupedCategories = getGroupedCategories(undefined, categories)
 
     return (
         <div className="space-y-4">
@@ -79,16 +81,16 @@ export function TransactionsFilterBar({
                 </div>
 
                 {/* Zone 2: Filters */}
-                <div className="flex flex-wrap lg:flex-nowrap items-center gap-2 overflow-visible">
+                <div className="grid grid-cols-2 sm:flex sm:flex-wrap lg:flex-nowrap items-center gap-2 overflow-visible">
                     {/* Period */}
                     <Select value={periodValue} onValueChange={(v) => onPeriodChange(v as PeriodPreset)}>
                         <SelectTrigger className={cn(
-                            "w-[164px] flex-shrink-0 h-10 px-4 rounded-xl border-muted-foreground/10 transition-colors outline-none",
+                            "w-full sm:w-[150px] lg:w-[164px] flex-shrink-0 h-10 px-3 md:px-4 rounded-xl border-muted-foreground/10 transition-colors outline-none",
                             periodValue !== "all" ? "bg-primary/10 border-primary/30 text-primary font-bold" : "bg-muted/5 hover:bg-muted/10"
                         )}>
                             <div className="flex items-center gap-2 flex-1 min-w-0">
-                                <Calendar className="h-4 w-4 opacity-70 shrink-0" />
-                                <div className="truncate text-left">
+                                <Calendar className="h-3.5 w-3.5 opacity-70 shrink-0 hidden xs:block" />
+                                <div className="truncate text-left text-xs md:text-sm">
                                     <SelectValue placeholder="Periodo" />
                                 </div>
                             </div>
@@ -107,12 +109,12 @@ export function TransactionsFilterBar({
                     {/* Type */}
                     <Select value={typeValue} onValueChange={onTypeChange}>
                         <SelectTrigger className={cn(
-                            "w-[164px] flex-shrink-0 h-10 px-4 rounded-xl border-muted-foreground/10 transition-colors outline-none",
+                            "w-full sm:w-[150px] lg:w-[164px] flex-shrink-0 h-10 px-3 md:px-4 rounded-xl border-muted-foreground/10 transition-colors outline-none",
                             typeValue !== "all" ? "bg-primary/10 border-primary/30 text-primary font-bold" : "bg-muted/5 hover:bg-muted/10"
                         )}>
                             <div className="flex items-center gap-2 flex-1 min-w-0">
-                                <Filter className="h-4 w-4 opacity-70 shrink-0" />
-                                <div className="truncate text-left">
+                                <Filter className="h-3.5 w-3.5 opacity-70 shrink-0 hidden xs:block" />
+                                <div className="truncate text-left text-xs md:text-sm">
                                     <SelectValue placeholder="Tipo" />
                                 </div>
                             </div>
@@ -127,11 +129,11 @@ export function TransactionsFilterBar({
                     {/* Category */}
                     <Select value={categoryValue} onValueChange={onCategoryChange}>
                         <SelectTrigger className={cn(
-                            "w-[164px] flex-shrink-0 h-10 px-4 rounded-xl border-muted-foreground/10 transition-colors outline-none",
+                            "w-full sm:w-[150px] lg:w-[164px] flex-shrink-0 h-10 px-3 md:px-4 rounded-xl border-muted-foreground/10 transition-colors outline-none",
                             categoryValue !== "all" ? "bg-primary/10 border-primary/30 text-primary font-bold" : "bg-muted/5 hover:bg-muted/10"
                         )}>
                             <div className="flex items-center gap-2 flex-1 min-w-0">
-                                <div className="truncate text-left">
+                                <div className="truncate text-left text-xs md:text-sm">
                                     <SelectValue placeholder="Categoria" />
                                 </div>
                             </div>
@@ -161,15 +163,15 @@ export function TransactionsFilterBar({
                         variant="outline"
                         size="sm"
                         className={cn(
-                            "h-10 w-[164px] px-4 rounded-xl gap-2 border-muted-foreground/10 transition-all justify-start shrink-0 outline-none",
+                            "h-10 w-full sm:w-[150px] lg:w-[164px] px-3 md:px-4 rounded-xl gap-2 border-muted-foreground/10 transition-all justify-start shrink-0 outline-none",
                             isSuperfluousOnly
                                 ? "bg-amber-500/10 text-amber-600 border-amber-500/30 font-bold hover:bg-amber-500/20"
                                 : "bg-muted/5 text-muted-foreground hover:bg-muted/10 hover:text-foreground"
                         )}
                         onClick={() => onSuperfluousChange(!isSuperfluousOnly)}
                     >
-                        <Filter className="h-4 w-4 opacity-70 shrink-0" />
-                        <span>Superflue</span>
+                        <Filter className="h-3.5 w-3.5 opacity-70 shrink-0 hidden xs:block" />
+                        <span className="text-xs md:text-sm">Superflue</span>
                     </Button>
 
                     {hasActiveFilters && onResetFilters && (
@@ -177,7 +179,7 @@ export function TransactionsFilterBar({
                             variant="ghost"
                             size="icon"
                             onClick={onResetFilters}
-                            className="h-10 w-10 text-muted-foreground/60 hover:text-destructive hover:bg-destructive/5 rounded-xl"
+                            className="hidden sm:flex h-10 w-10 text-muted-foreground/60 hover:text-destructive hover:bg-destructive/5 rounded-xl"
                             title="Azzera filtri"
                         >
                             <X className="h-4 w-4" />

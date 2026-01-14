@@ -5,6 +5,8 @@ export const BACKUP_VERSION = 1 as const;
 export const STORAGE_KEYS = {
     TRANSACTIONS: "luma_transactions_v1" as const,
     BUDGETS: "luma_budget_plans_v1" as const,
+    CATEGORIES: "luma_categories_v1" as const,
+    SETTINGS: "luma_settings_v1" as const,
 };
 
 export type BackupV1 = {
@@ -13,10 +15,14 @@ export type BackupV1 = {
     keys: {
         transactionsKey: typeof STORAGE_KEYS.TRANSACTIONS;
         budgetsKey: typeof STORAGE_KEYS.BUDGETS;
+        categoriesKey: typeof STORAGE_KEYS.CATEGORIES;
+        settingsKey: typeof STORAGE_KEYS.SETTINGS;
     };
     payload: {
         transactions: unknown | null; // raw storage payload
         budgets: unknown | null;      // raw storage payload
+        categories: unknown | null;   // raw storage payload
+        settings: unknown | null;     // raw storage payload
     };
 };
 
@@ -30,10 +36,14 @@ export const buildBackupV1 = (): BackupV1 => {
         keys: {
             transactionsKey: STORAGE_KEYS.TRANSACTIONS,
             budgetsKey: STORAGE_KEYS.BUDGETS,
+            categoriesKey: STORAGE_KEYS.CATEGORIES,
+            settingsKey: STORAGE_KEYS.SETTINGS,
         },
         payload: {
             transactions: storage.get(STORAGE_KEYS.TRANSACTIONS, null),
             budgets: storage.get(STORAGE_KEYS.BUDGETS, null),
+            categories: storage.get(STORAGE_KEYS.CATEGORIES, null),
+            settings: storage.get(STORAGE_KEYS.SETTINGS, null),
         },
     };
 };
@@ -89,6 +99,18 @@ export const applyBackupOverwrite = (backup: BackupV1): void => {
         storage.remove(STORAGE_KEYS.BUDGETS);
     } else {
         storage.set(STORAGE_KEYS.BUDGETS, backup.payload.budgets);
+    }
+
+    if (backup.payload.categories === null) {
+        storage.remove(STORAGE_KEYS.CATEGORIES);
+    } else if (backup.payload.categories) {
+        storage.set(STORAGE_KEYS.CATEGORIES, backup.payload.categories);
+    }
+
+    if (backup.payload.settings === null) {
+        storage.remove(STORAGE_KEYS.SETTINGS);
+    } else if (backup.payload.settings) {
+        storage.set(STORAGE_KEYS.SETTINGS, backup.payload.settings);
     }
 };
 

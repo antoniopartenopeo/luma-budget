@@ -2,8 +2,9 @@ export type TransactionType = "income" | "expense"
 
 export interface Transaction {
     id: string
+    /** @deprecated Use amountCents for logic/formatting. Kept for display shim only. */
     amount: string
-    amountCents?: number // Integer, absolute value
+    amountCents: number // Integer, absolute value, mandatory
     date: string
     description: string
     category: string // Label, kept for display compatibility
@@ -17,8 +18,9 @@ export interface Transaction {
 
 export interface CreateTransactionDTO {
     description: string
-    amount?: number // Legacy float amount
-    amountCents?: number // New integer cents (absolute value)
+    /** @deprecated Use amountCents. Fallback to this will follow rounding rules. */
+    amount?: number
+    amountCents: number // Mandatory in DTO for new records
     category: string // Label
     categoryId: string // ID
     type: TransactionType

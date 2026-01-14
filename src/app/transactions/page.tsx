@@ -158,8 +158,8 @@ function TransactionsPageContent() {
         return (
             <div className="space-y-6">
                 <div>
-                    <h1 className="text-3xl font-black tracking-tighter">Transazioni</h1>
-                    <p className="text-muted-foreground font-medium">Gestisci e monitora le tue entrate e uscite.</p>
+                    <h1 className="text-3xl font-bold tracking-tight">Transazioni</h1>
+                    <p className="text-muted-foreground">Gestisci e monitora le tue entrate e uscite.</p>
                 </div>
                 <StateMessage
                     variant="error"
@@ -177,8 +177,8 @@ function TransactionsPageContent() {
             {/* Header */}
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                 <div>
-                    <h1 className="text-4xl font-black tracking-tighter">Transazioni</h1>
-                    <p className="text-muted-foreground font-medium mt-1">
+                    <h1 className="text-3xl font-bold tracking-tight">Transazioni</h1>
+                    <p className="text-muted-foreground mt-1">
                         Analisi dettagliata del tuo flusso di cassa.
                     </p>
                 </div>
@@ -265,15 +265,18 @@ function TransactionsPageContent() {
 export default function TransactionsPage() {
     return (
         <Suspense fallback={
-            <div className="space-y-8 p-6">
-                <Skeleton className="h-12 w-64 rounded-xl" />
-                <div className="grid grid-cols-4 gap-4">
+            <div className="space-y-8 animate-in fade-in duration-500">
+                <div>
+                    <Skeleton className="h-10 w-64 rounded-xl" />
+                    <Skeleton className="h-4 w-48 mt-2 rounded-lg" />
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <Skeleton className="h-24 rounded-2xl" />
                     <Skeleton className="h-24 rounded-2xl" />
                     <Skeleton className="h-24 rounded-2xl" />
                     <Skeleton className="h-24 rounded-2xl" />
                 </div>
-                <Skeleton className="h-64 w-full rounded-3xl" />
+                <Skeleton className="h-96 w-full rounded-2xl" />
             </div>
         }>
             <TransactionsPageContent />

@@ -50,6 +50,7 @@ describe('Transaction Repository Logic (amountCents)', () => {
             const data = {
                 description: 'Legacy Float',
                 amount: 10.50,
+                amountCents: 1050, // Added to satisfy mandatory field in type, though repository still handles fallback
                 categoryId: 'cibo',
                 category: 'Cibo',
                 type: 'expense' as const
@@ -150,6 +151,35 @@ describe('Transaction Repository Logic (amountCents)', () => {
             const savedData = JSON.parse(writeCalls[0][1] as string)
             expect(savedData[USER_ID][0].amountCents).toBe(1050)
             expect(savedData[USER_ID][0].amount).toContain('10,50')
+        })
+
+        it('should backfill legacy float NUMBER from storage.get', async () => {
+            const legacyData = {
+                [USER_ID]: [
+                    {
+                        id: 'legacy-float',
+                        description: 'Legacy Float',
+                        amount: 12.34, // Legacy as number
+                        type: 'expense',
+                        categoryId: 'cibo',
+                        category: 'Cibo',
+                        timestamp: Date.now()
+                    }
+                ]
+            }
+
+            vi.mocked(localStorage.getItem).mockReturnValue(JSON.stringify(legacyData))
+            const setItemSpy = vi.mocked(localStorage.setItem)
+
+            const { fetchTransactions } = await import('../repository')
+            const txs = await fetchTransactions()
+
+            expect(txs[0].amountCents).toBe(1234)
+            // String should be generated
+            expect(txs[0].amount).toContain('12,34')
+
+            const writeCalls = setItemSpy.mock.calls.filter(call => call[0] === STORAGE_KEY)
+            expect(writeCalls.length).toBe(1)
         })
 
         it('should be idempotent and NOT write to storage if already normalized', async () => {

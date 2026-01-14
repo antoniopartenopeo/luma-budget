@@ -2,8 +2,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 import {
     buildDiagnosticsSnapshot,
-    countBudgetPlansFromRaw,
-    countTransactionsFromRaw,
     estimateBytes,
     getAppVersion,
     safeGetItem,
@@ -86,47 +84,12 @@ describe("diagnostics-utils", () => {
         })
     })
 
-    describe("countTransactionsFromRaw", () => {
-        it("should count from array", () => {
-            expect(countTransactionsFromRaw([1, 2, 3])).toBe(3)
-        })
-
-        it("should count from record of arrays", () => {
-            const data = {
-                a: [1, 2],
-                b: [3, 4, 5],
-                c: "not array", // should be ignored
-            }
-            expect(countTransactionsFromRaw(data)).toBe(5)
-        })
-
-        it("should return 0 for other types", () => {
-            expect(countTransactionsFromRaw(null)).toBe(0)
-            expect(countTransactionsFromRaw("string")).toBe(0)
-            expect(countTransactionsFromRaw({ a: 1 })).toBe(0)
-        })
-    })
-
-    describe("countBudgetPlansFromRaw", () => {
-        it("should count keys from record", () => {
-            expect(countBudgetPlansFromRaw({ a: 1, b: 2 })).toBe(2)
-        })
-
-        it("should count length from array", () => {
-            expect(countBudgetPlansFromRaw([1, 2, 3])).toBe(3)
-        })
-
-        it("should return 0 for other types", () => {
-            expect(countBudgetPlansFromRaw(null)).toBe(0)
-            expect(countBudgetPlansFromRaw("string")).toBe(0)
-        })
-    })
-
     describe("buildDiagnosticsSnapshot", () => {
         it("should build snapshot with storage info", () => {
             localStorage.setItem("luma_transactions_v1", JSON.stringify([1, 2]))
             localStorage.setItem("luma_budget_plans_v1", JSON.stringify({ jan: {}, feb: {} }))
             localStorage.setItem("luma_settings_v1", JSON.stringify({ version: 1 }))
+            localStorage.setItem("luma_categories_v1", JSON.stringify({ categories: [1, 2, 3] }))
 
             const snapshot = buildDiagnosticsSnapshot()
 
@@ -135,15 +98,19 @@ describe("diagnostics-utils", () => {
 
             const transactions = snapshot.storage.find(s => s.key === "luma_transactions_v1")
             expect(transactions?.present).toBe(true)
-            expect(transactions?.summary).toContain("transactions: 2")
+            expect(transactions?.summary).toContain("Transazioni: 2")
 
             const budgets = snapshot.storage.find(s => s.key === "luma_budget_plans_v1")
             expect(budgets?.present).toBe(true)
-            expect(budgets?.summary).toContain("budgetPlans: 2")
+            expect(budgets?.summary).toContain("Piani Budget: 2")
 
             const settings = snapshot.storage.find(s => s.key === "luma_settings_v1")
             expect(settings?.present).toBe(true)
-            expect(settings?.summary).toBe("settings: ok")
+            expect(settings?.summary).toBe("Impostazioni: ok")
+
+            const categories = snapshot.storage.find(s => s.key === "luma_categories_v1")
+            expect(categories?.present).toBe(true)
+            expect(categories?.summary).toContain("Categorie: 3")
         })
 
         it("should handle missing keys", () => {

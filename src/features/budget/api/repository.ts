@@ -13,12 +13,22 @@ function getBudgetKey(userId: string, period: string): string {
     return `${userId}:${period}`
 }
 
+let budgetPlansCache: Record<string, BudgetPlan> | null = null
+
 function loadFromStorage(): Record<string, BudgetPlan> {
-    return storage.get(STORAGE_KEY, {})
+    if (budgetPlansCache) return budgetPlansCache
+    budgetPlansCache = storage.get(STORAGE_KEY, {})
+    return budgetPlansCache
 }
 
 function saveToStorage(data: Record<string, BudgetPlan>): void {
+    budgetPlansCache = data
     storage.set(STORAGE_KEY, data)
+}
+
+// For cross-tab sync
+export function __resetBudgetsCache() {
+    budgetPlansCache = null
 }
 
 // =====================

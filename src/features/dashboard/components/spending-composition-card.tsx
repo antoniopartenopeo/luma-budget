@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StateMessage } from "@/components/ui/state-message"
 import { getCategoryById } from "@/features/categories/config"
+import { useCategories } from "@/features/categories/api/use-categories"
 import { Button } from "@/components/ui/button"
 import { RotateCcw } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -31,8 +32,12 @@ type PeriodBreakdownItem = {
 
 const TOP_N_CATEGORIES = 4
 
-export function SpendingCompositionCard({ transactions, filter, isLoading }: SpendingCompositionCardProps) {
+export function SpendingCompositionCard({ transactions, filter, isLoading: isExternalLoading }: SpendingCompositionCardProps) {
     const { currency, locale } = useCurrency()
+    const { data: categories = [], isLoading: isCategoriesLoading } = useCategories()
+
+    const isLoading = isExternalLoading || isCategoriesLoading
+
     const [selectedMonth, setSelectedMonth] = useState<string | null>(null)
     const [highlightedCategory, setHighlightedCategory] = useState<string | null>(null)
 
@@ -103,8 +108,8 @@ export function SpendingCompositionCard({ transactions, filter, isLoading }: Spe
         const othersCatIds = sortedCategories.slice(TOP_N_CATEGORIES).map(c => c.id)
 
         // Build Final Series structure for ECharts
-        const categories = topCatIds.map(id => {
-            const config = getCategoryById(id)
+        const seriesCategories = topCatIds.map(id => {
+            const config = getCategoryById(id, categories)
             return {
                 id,
                 name: config?.label || "Sconosciuta",
@@ -113,7 +118,7 @@ export function SpendingCompositionCard({ transactions, filter, isLoading }: Spe
         })
 
         if (othersCatIds.length > 0) {
-            categories.push({
+            seriesCategories.push({
                 id: "altro",
                 name: "Altro",
                 color: "#94a3b8" // Muted gray
@@ -140,7 +145,7 @@ export function SpendingCompositionCard({ transactions, filter, isLoading }: Spe
         })
 
         // Build Period-wide breakdown
-        const pb: PeriodBreakdownItem[] = categories.map(cat => {
+        const pb: PeriodBreakdownItem[] = seriesCategories.map(cat => {
             let total = 0
             if (cat.id === "altro") {
                 total = othersCatIds.reduce((acc, id) => acc + (periodCategoryTotals[id] || 0), 0)
@@ -158,10 +163,10 @@ export function SpendingCompositionCard({ transactions, filter, isLoading }: Spe
 
         return {
             chartData,
-            allCategories: categories,
+            allCategories: seriesCategories,
             periodBreakdown: pbSorted
         }
-    }, [transactions, filter])
+    }, [transactions, filter, categories])
 
     // Contextual breakdown based on selection
     const currentBreakdown = useMemo<PeriodBreakdownItem[]>(() => {

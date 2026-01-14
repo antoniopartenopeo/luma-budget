@@ -2,7 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { fetchDashboardSummary } from '../repository'
 import { __resetTransactionsCache, createTransaction } from '../../../transactions/api/repository'
 import { getCurrentPeriod } from '../../../budget/utils/calculate-budget'
-import { upsertBudget } from '../../../budget/api/repository'
+import { upsertBudget, __resetBudgetsCache } from '../../../budget/api/repository'
+import { __resetCategoriesCache } from '../../../categories/api/repository'
 
 const DEFAULT_USER_ID = 'user-1'
 
@@ -18,6 +19,8 @@ describe('Dashboard Summary (Real Wiring)', () => {
         vi.useFakeTimers({ toFake: ['Date'] })
         vi.setSystemTime(FIXED_DATE)
         __resetTransactionsCache()
+        __resetBudgetsCache()
+        __resetCategoriesCache()
 
         // Mock localStorage to be an in-memory map for speed and isolation
         let store: Record<string, string> = {}
@@ -48,6 +51,7 @@ describe('Dashboard Summary (Real Wiring)', () => {
         await createTransaction({
             description: 'Expense current month',
             amount: 250.00,
+            amountCents: 25000,
             type: 'expense',
             categoryId: 'cibo',
             category: 'Cibo',
@@ -58,6 +62,7 @@ describe('Dashboard Summary (Real Wiring)', () => {
         await createTransaction({
             description: 'Income current month',
             amount: 100.00,
+            amountCents: 10000,
             type: 'income',
             categoryId: 'altro',
             category: 'Altro',
@@ -73,6 +78,7 @@ describe('Dashboard Summary (Real Wiring)', () => {
         await createTransaction({
             description: 'Expense prev month',
             amount: 500.00,
+            amountCents: 50000,
             type: 'expense',
             categoryId: 'cibo',
             category: 'Cibo',
@@ -117,6 +123,7 @@ describe('Dashboard Summary (Real Wiring)', () => {
         await createTransaction({
             description: 'Useful',
             amount: 100.00,
+            amountCents: 10000,
             type: 'expense',
             categoryId: 'cibo',
             category: 'Cibo',
@@ -126,6 +133,7 @@ describe('Dashboard Summary (Real Wiring)', () => {
         await createTransaction({
             description: 'Useless',
             amount: 100.00,
+            amountCents: 10000,
             type: 'expense',
             categoryId: 'svago',
             category: 'Svago',
@@ -143,19 +151,19 @@ describe('Dashboard Summary (Real Wiring)', () => {
         const currentPeriod = getCurrentPeriod() // 2025-05
 
         // T1: May (Current) = 100
-        await createTransaction({ amount: 100.00, type: 'expense', description: 'May', categoryId: 'c1', category: 'C1' })
+        await createTransaction({ amount: 100.00, amountCents: 10000, type: 'expense', description: 'May', categoryId: 'c1', category: 'C1' })
 
         // T2: April (Prev) = 200
         vi.setSystemTime(new Date(2025, 3, 15))
-        await createTransaction({ amount: 200.00, type: 'expense', description: 'Apr', categoryId: 'c1', category: 'C1' })
+        await createTransaction({ amount: 200.00, amountCents: 20000, type: 'expense', description: 'Apr', categoryId: 'c1', category: 'C1' })
 
         // T3: March (Prev-Prev) = 300
         vi.setSystemTime(new Date(2025, 2, 15))
-        await createTransaction({ amount: 300.00, type: 'expense', description: 'Mar', categoryId: 'c1', category: 'C1' })
+        await createTransaction({ amount: 300.00, amountCents: 30000, type: 'expense', description: 'Mar', categoryId: 'c1', category: 'C1' })
 
         // T4: January (Exclude from 3M range [Mar, Apr, May]) = 500
         vi.setSystemTime(new Date(2025, 0, 15))
-        await createTransaction({ amount: 500.00, type: 'expense', description: 'Jan', categoryId: 'c1', category: 'C1' })
+        await createTransaction({ amount: 500.00, amountCents: 50000, type: 'expense', description: 'Jan', categoryId: 'c1', category: 'C1' })
 
         // Reset to Current
         vi.setSystemTime(FIXED_DATE)

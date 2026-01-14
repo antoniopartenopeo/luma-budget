@@ -1,4 +1,5 @@
-import { CATEGORIES } from "../config"
+import { ICON_REGISTRY } from "../icon-registry"
+import { useCategories } from "../api/use-categories"
 import { HelpCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -10,26 +11,28 @@ interface CategoryIconProps {
 }
 
 export function CategoryIcon({ categoryName, size = 16, className, showBackground = false }: CategoryIconProps) {
-    // Try to find by ID first, then by Label
-    const category = CATEGORIES.find(c => c.id === categoryName || c.label === categoryName)
+    const { data: categories = [] } = useCategories()
+
+    const category = categories.find(c => c.id === categoryName || c.label === categoryName)
 
     if (!category) {
         return <HelpCircle size={size} className={cn("text-gray-500", className)} />
     }
 
-    const Icon = category.icon
+    const LucideIcon = ICON_REGISTRY[category.iconName] || HelpCircle
 
     // Extract text color class from the combined color string "text-X bg-X"
     const colorClass = category.color.split(" ").find(c => c.startsWith("text-")) || "text-gray-600"
-    const bgClass = category.color.split(" ").find(c => c.startsWith("bg-")) || "bg-gray-100"
 
     if (showBackground) {
+        // Extract bg color class
+        const bgClass = category.color.split(" ").find(c => c.startsWith("bg-")) || "bg-gray-100"
         return (
             <div className={cn("rounded-full p-2", bgClass, className)}>
-                <Icon size={size} className={colorClass} />
+                <LucideIcon size={size} className={colorClass} />
             </div>
         )
     }
 
-    return <Icon size={size} className={cn(colorClass, className)} />
+    return <LucideIcon size={size} className={cn(colorClass, className)} />
 }

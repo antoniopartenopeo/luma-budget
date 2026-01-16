@@ -18,7 +18,7 @@ export type DiagnosticsSnapshot = {
 }
 
 export function getAppVersion(): string {
-    return process.env.NEXT_PUBLIC_APP_VERSION ?? "dev"
+    return process.env.NEXT_PUBLIC_APP_VERSION ?? "v1.1.0"
 }
 
 export function safeGetItem(key: string): string | null {

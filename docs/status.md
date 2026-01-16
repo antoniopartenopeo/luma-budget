@@ -15,11 +15,12 @@ Il progetto è governato dal sistema **Directive, Orchestration, Execution (DOE)
 ## Stato del Progetto (alto livello)
 - Core (Dashboard / Transazioni / Budget): **Stabile**
 - Insights: **Stable (v1.1.x)** — Analisi Trend & AI Advisor (Algoritmo raffinato).
-- Settings: **Stable (v1.1.0)** — UI Tab, Gestione Dati, Backup/Ripristino.
+- Settings: **Stable (v1.1.0)** — UI Tab, Gestione Dati, Backup/Ripristino, Gestione Categorie (CRUD + Redesign).
 
 ## Sezioni App
 - **Dashboard**: Panoramica alto livello (entrate, uscite, saldo mensile, budget residuo) + grafici distribuzione categorie.
 - **Transazioni**: CRUD, filtri (ricerca/tipo/categoria/periodo), export CSV.
+- **Categorie**: Gestione completa (CRUD), separazione Entrate/Uscite, icone personalizzate, Virtual Join per renames.
 - **Budget**: Pianificazione mensile (YYYY-MM) + spesa per gruppi (Essenziali / Comfort / Superfluo).
 - **Insights**: Visualizzazione trend su 12 mesi, analisi sensibilità, osservazioni guidate dall'IA.
 - **Impostazioni**: Preferenze, Gestione Dati (Backup/Restore JSON), Tema.

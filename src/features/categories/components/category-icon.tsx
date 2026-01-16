@@ -4,18 +4,26 @@ import { HelpCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface CategoryIconProps {
-    categoryName: string
+    categoryName?: string
+    categoryId?: string
     size?: number
     className?: string
     showBackground?: boolean
 }
 
-export function CategoryIcon({ categoryName, size = 16, className, showBackground = false }: CategoryIconProps) {
-    const { data: categories = [] } = useCategories()
+export function CategoryIcon({ categoryName, categoryId, size = 16, className, showBackground = false }: CategoryIconProps) {
+    const { data: categories = [] } = useCategories({ includeArchived: true })
 
-    const category = categories.find(c => c.id === categoryName || c.label === categoryName)
+    // "Virtual Join" Strategy:
+    // 1. Try to find by ID first (Robust against renames)
+    // 2. Fallback to matching Label or ID string (Legacy/Loose support)
+    const category = categoryId
+        ? categories.find(c => c.id === categoryId)
+        : categories.find(c => c.id === categoryName || c.label === categoryName)
 
     if (!category) {
+        // If not found (e.g. hard deleted), use the passed name as fallback title or just show generic
+        // Could technically assume the icon is default if we can't find config
         return <HelpCircle size={size} className={cn("text-gray-500", className)} />
     }
 
@@ -28,11 +36,15 @@ export function CategoryIcon({ categoryName, size = 16, className, showBackgroun
         // Extract bg color class
         const bgClass = category.color.split(" ").find(c => c.startsWith("bg-")) || "bg-gray-100"
         return (
-            <div className={cn("rounded-full p-2", bgClass, className)}>
+            <div className={cn("rounded-full p-2", bgClass, className)} title={category.label}>
                 <LucideIcon size={size} className={colorClass} />
             </div>
         )
     }
 
-    return <LucideIcon size={size} className={cn(colorClass, className)} />
+    return (
+        <span title={category.label} className={className}>
+            <LucideIcon size={size} className={colorClass} />
+        </span>
+    )
 }

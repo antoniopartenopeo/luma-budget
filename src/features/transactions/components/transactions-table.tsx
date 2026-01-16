@@ -74,7 +74,7 @@ export function TransactionsTable({
     return (
         <div className="space-y-4">
             {/* Desktop View: Table */}
-            <div className="hidden md:block rounded-3xl border bg-card overflow-hidden shadow-sm">
+            <div className="hidden md:block rounded-xl border bg-card overflow-hidden shadow-sm">
                 <Table>
                     <TableHeader className="bg-muted/30">
                         <TableRow className="hover:bg-transparent border-b">
@@ -208,7 +208,7 @@ export function TransactionsTable({
                 {transactions.map((transaction) => (
                     <div
                         key={transaction.id}
-                        className="p-4 rounded-3xl border bg-card/50 backdrop-blur-sm shadow-sm space-y-4 active:scale-[0.98] transition-transform cursor-pointer"
+                        className="p-4 rounded-xl border bg-card/50 backdrop-blur-sm shadow-sm space-y-4 active:scale-[0.98] transition-transform cursor-pointer"
                         onClick={() => onRowClick(transaction)}
                     >
                         <div className="flex items-start justify-between">

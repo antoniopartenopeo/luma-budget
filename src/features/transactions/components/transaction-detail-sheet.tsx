@@ -129,7 +129,7 @@ function TransactionDetailSheetContent({
                         setShowCloseConfirm(true);
                     }
                 }}
-                className="sm:max-w-md rounded-l-3xl p-0 overflow-hidden border-l border-muted flex flex-col"
+                className="sm:max-w-md p-0 overflow-hidden flex flex-col"
             >
                 <SheetHeader className="p-6 pb-4 bg-muted/30 border-b shrink-0">
                     <div className="flex items-center gap-4">

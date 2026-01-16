@@ -45,7 +45,15 @@ export function AdvancedSection() {
     const [resetDialog, setResetDialog] = useState<ResetType>(null)
 
     useEffect(() => {
+        // Initial load
         setDiagnostics(buildDiagnosticsSnapshot())
+
+        // Poll for changes every 2s
+        const intervalId = setInterval(() => {
+            setDiagnostics(buildDiagnosticsSnapshot())
+        }, 2000)
+
+        return () => clearInterval(intervalId)
     }, [])
 
     const handleCopyDiagnostics = async () => {

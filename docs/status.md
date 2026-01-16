@@ -1,46 +1,46 @@
-# Project Status & Architecture — LumaBudget
+# Stato del Progetto & Architettura — LumaBudget
 
-## Overview
-LumaBudget is a personal finance web app built with Next.js (App Router).  
-Core data is persisted locally via `localStorage` and accessed through a repository pattern.  
-React Query is used for caching, invalidation, and UI reactivity.
+## Panoramica
+LumaBudget è un'applicazione web di finanza personale costruita con Next.js (App Router).
+I dati principali sono persistiti localmente via `localStorage` e accessibili tramite pattern repository.
+React Query è utilizzato per caching, invalidazione e reattività della UI.
 
-## Governance (DOE System)
-**Status**: Active (v1.0.0-doe)
-The project is governed by the **Directive, Orchestration, Execution (DOE)** system.
-- **Verification**: `npm run doe:verify` is the mandatory gate for all commits.
-- **Rules**: Documented in `docs/doe/directives/`.
-- **Legacy**: Documented debt in `docs/doe/legacy-registry.md`.
+## Governance (Sistema DOE)
+**Stato**: Attivo (v1.0.0-doe)
+Il progetto è governato dal sistema **Directive, Orchestration, Execution (DOE)**.
+- **Verifica**: `npm run doe:verify` è il gate obbligatorio per tutti i commit.
+- **Regole**: Documentate in `docs/doe/directives/`.
+- **Legacy**: Debito tecnico documentato in `docs/doe/legacy-registry.md`.
 
-## Project Status (high level)
-- Core (Dashboard / Transactions / Budget): **Stable**
-- Insights: **Live (v1.0.0-doe)** — Trend Analysis & AI Advisor.
-- Settings: **Stable (v1.1.0)** — Tabs UI, Data Management, Backup/Restore.
+## Stato del Progetto (alto livello)
+- Core (Dashboard / Transazioni / Budget): **Stabile**
+- Insights: **Stable (v1.1.x)** — Analisi Trend & AI Advisor (Algoritmo raffinato).
+- Settings: **Stable (v1.1.0)** — UI Tab, Gestione Dati, Backup/Ripristino.
 
-## App Sections
-- **Dashboard**: High-level overview (income, expenses, monthly balance, budget remaining) + category distribution charts.
-- **Transactions**: CRUD, filtering (search/type/category/period), CSV export.
-- **Budget**: Monthly planning (YYYY-MM) + spending by groups (Essential / Comfort / Superfluous).
-- **Insights**: Trend visualization over 12 months, sensitivity analysis, AI-driven observations.
-- **Settings**: Preferences, Data Management (JSON Backup/Restore), Theme.
+## Sezioni App
+- **Dashboard**: Panoramica alto livello (entrate, uscite, saldo mensile, budget residuo) + grafici distribuzione categorie.
+- **Transazioni**: CRUD, filtri (ricerca/tipo/categoria/periodo), export CSV.
+- **Budget**: Pianificazione mensile (YYYY-MM) + spesa per gruppi (Essenziali / Comfort / Superfluo).
+- **Insights**: Visualizzazione trend su 12 mesi, analisi sensibilità, osservazioni guidate dall'IA.
+- **Impostazioni**: Preferenze, Gestione Dati (Backup/Restore JSON), Tema.
 
-## Data Flow & Persistence
-### Source of truth
-- **Repositories** read/write `localStorage` and expose async CRUD functions.
-- **React Query hooks** call repositories and provide cached, reactive UI state.
-- **Cross-tab sync**: A global `storage` event listener resets in-memory caches and invalidates React Query keys.
+## Flusso Dati & Persistenza
+### Fonte di Verità (Source of truth)
+- **Repositories** leggono/scrivono su `localStorage` ed espongono funzioni CRUD asincrone.
+- **React Query hooks** chiamano i repository e forniscono stato UI reattivo e cachato.
+- **Cross-tab sync**: Un event listener globale su `storage` resetta le cache in memoria e invalida le chiavi React Query.
 
-### Persistence Keys (v1)
-Registry defined in `src/lib/storage-keys.ts`:
-- `luma_transactions_v1`: Transaction records.
-- `luma_budget_plans_v1`: Budget plans (period-keyed).
-- `luma_categories_v1`: Custom categories configuration.
-- `luma_settings_v1`: App preferences.
+### Chiavi di Persistenza (v1)
+Registro definito in `src/lib/storage-keys.ts`:
+- `luma_transactions_v1`: Record transazioni.
+- `luma_budget_plans_v1`: Piani budget (per periodo).
+- `luma_categories_v1`: Configurazione categorie personalizzate.
+- `luma_settings_v1`: Preferenze app.
 
-### Money handling
-- Amount parsing is centralized and robust (EU/US formats supported) and internally computed using **integer cents**.
-- **Governance**: `parseFloat` is banned in new code (enforced by DOE verify).
-- **Legacy**: Existing float usage acts as whitelisted technical debt.
+### Gestione Denaro
+- Il parsing degli importi è centralizzato e robusto (supporto formati EU/US) e calcolato internamente usando **centesimi interi**.
+- **Governance**: `parseFloat` è vietato nel nuovo codice (imposto da DOE verify).
+- **Legacy**: L'uso esistente di float agisce come debito tecnico whitelistato.
 
 ## Main Query Keys
 - `["transactions"]`
@@ -48,6 +48,6 @@ Registry defined in `src/lib/storage-keys.ts`:
 - `["settings"]`
 - `["dashboard-summary"]`
 
-## Notes
-- **Branching Policy**: Feature branches MUST start from `origin/main` (see Governance). Use `docs/doe/active-context.md` to track scope.
-- **Seed Data**: seeded manually (no auto-seed).
+## Note
+- **Branching Policy**: I feature branch DEVONO partire da `origin/main` (vedi Governance). Usa `docs/doe/active-context.md` per tracciare lo scope.
+- **Seed Data**: seed manuale (nessun auto-seed).

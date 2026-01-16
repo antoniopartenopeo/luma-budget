@@ -92,20 +92,45 @@ export function useAIAdvisor() {
             }
         })
 
-        const monthsWithData = monthlyStats.filter(m => m.hasData).length || 1
-        const avgIncome = monthlyStats.reduce((s, m) => s + m.income, 0) / monthsWithData / 100
-        const avgExpenses = monthlyStats.reduce((s, m) => s + m.expenses, 0) / monthsWithData / 100
-        const avgExpensesCents = monthlyStats.reduce((s, m) => s + m.expenses, 0) / monthsWithData
-        const avgIncomeCents = monthlyStats.reduce((s, m) => s + m.income, 0) / monthsWithData
+        const historicalMonthsWithData = monthlyStats.filter(m => m.hasData).length
+        let forecast: AIForecast | null = null
 
-        const predictedSavings = avgIncome - avgExpenses
+        if (historicalMonthsWithData > 0) {
+            // Standard Case: We have historical data
+            const avgIncome = monthlyStats.reduce((s, m) => s + m.income, 0) / historicalMonthsWithData / 100
+            const avgExpenses = monthlyStats.reduce((s, m) => s + m.expenses, 0) / historicalMonthsWithData / 100
+            const predictedSavings = avgIncome - avgExpenses
 
-        const forecast: AIForecast = {
-            predictedIncome: avgIncome,
-            predictedExpenses: avgExpenses,
-            predictedSavings,
-            confidence: monthsWithData >= 3 ? "high" : "medium"
+            forecast = {
+                predictedIncome: avgIncome,
+                predictedExpenses: avgExpenses,
+                predictedSavings,
+                confidence: historicalMonthsWithData >= 3 ? "high" : "medium"
+            }
+        } else {
+            // Cold Start Case: No historical data (Oct/Nov/Dec empty), check Current Month (Jan)
+            const currentMonthTransactions = transactions.filter(t => {
+                const td = new Date(t.timestamp)
+                return td.getFullYear() === now.getFullYear() && td.getMonth() === now.getMonth()
+            })
+
+            if (currentMonthTransactions.length > 0) {
+                // Use current month actuals as best guess forecast
+                const currentIncome = currentMonthTransactions.filter(t => t.type === "income").reduce((s, t) => s + t.amountCents, 0) / 100
+                const currentExpenses = currentMonthTransactions.filter(t => t.type === "expense").reduce((s, t) => s + Math.abs(t.amountCents), 0) / 100
+
+                forecast = {
+                    predictedIncome: currentIncome,
+                    predictedExpenses: currentExpenses,
+                    predictedSavings: currentIncome - currentExpenses,
+                    confidence: "low" // It's just a snapshot of now, not a trend
+                }
+            } else {
+                // Absolute Zero: No history, no current data -> Calm Mode
+                forecast = null
+            }
         }
+
 
         // 3. Smart Tips
         const tips = []
@@ -113,11 +138,15 @@ export function useAIAdvisor() {
             return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(amount)
         }
 
-        if (forecast.predictedSavings < 0) {
-            tips.push(`Attenzione: le proiezioni indicano un deficit di ${formatMoney(Math.abs(predictedSavings))}. Considera di tagliare le spese non essenziali.`)
-        } else if (forecast.predictedSavings > 100) {
-            const savingsRate = avgIncome > 0 ? (forecast.predictedSavings / avgIncome) * 100 : 0
-            tips.push(`Ottimo lavoro! Surplus stimato di ${formatMoney(forecast.predictedSavings)} (${savingsRate.toFixed(0)}% delle entrate). Potresti investirlo nel fondo emergenza.`)
+        if (forecast) {
+            const { predictedSavings, predictedIncome } = forecast
+
+            if (predictedSavings < 0) {
+                tips.push(`Attenzione: le proiezioni indicano un deficit di ${formatMoney(Math.abs(predictedSavings))}. Considera di tagliare le spese non essenziali.`)
+            } else if (predictedSavings > 100) {
+                const savingsRate = predictedIncome > 0 ? (predictedSavings / predictedIncome) * 100 : 0
+                tips.push(`Ottimo lavoro! Surplus stimato di ${formatMoney(predictedSavings)} (${savingsRate.toFixed(0)}% delle entrate). Potresti investirlo nel fondo emergenza.`)
+            }
         }
 
         if (detectedSubscriptions.length > 0) {

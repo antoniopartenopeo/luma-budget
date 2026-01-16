@@ -57,12 +57,17 @@ export function useAIAdvisor() {
 
                 if (isMonthly) {
                     const [desc, amountCents] = key.split("_")
-                    detectedSubscriptions.push({
-                        id: key,
-                        description: desc.charAt(0).toUpperCase() + desc.slice(1),
-                        amount: parseInt(amountCents) / 100,
-                        frequency: "monthly"
-                    })
+                    const amount = parseInt(amountCents) / 100
+
+                    // Noise Gate: Ignore subscriptions under €5 to avoid coffee/snacks
+                    if (Math.abs(amount) >= 5) {
+                        detectedSubscriptions.push({
+                            id: key,
+                            description: desc.charAt(0).toUpperCase() + desc.slice(1),
+                            amount: amount,
+                            frequency: "monthly"
+                        })
+                    }
                 }
             }
         })
@@ -90,24 +95,36 @@ export function useAIAdvisor() {
         const monthsWithData = monthlyStats.filter(m => m.hasData).length || 1
         const avgIncome = monthlyStats.reduce((s, m) => s + m.income, 0) / monthsWithData / 100
         const avgExpenses = monthlyStats.reduce((s, m) => s + m.expenses, 0) / monthsWithData / 100
+        const avgExpensesCents = monthlyStats.reduce((s, m) => s + m.expenses, 0) / monthsWithData
+        const avgIncomeCents = monthlyStats.reduce((s, m) => s + m.income, 0) / monthsWithData
+
+        const predictedSavings = avgIncome - avgExpenses
 
         const forecast: AIForecast = {
             predictedIncome: avgIncome,
             predictedExpenses: avgExpenses,
-            predictedSavings: avgIncome - avgExpenses,
+            predictedSavings,
             confidence: monthsWithData >= 3 ? "high" : "medium"
         }
 
         // 3. Smart Tips
         const tips = []
-        if (forecast.predictedSavings < 0) {
-            tips.push("Attenzione: le tue proiezioni indicano uscite superiori alle entrate. Considera di tagliare le spese non essenziali.")
-        } else if (forecast.predictedSavings > 500) {
-            tips.push("Ottimo lavoro! Avrai un surplus stimato di oltre €500. Potresti considerare di investire una parte nel tuo fondo di emergenza.")
+        const formatMoney = (amount: number) => {
+            return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(amount)
         }
 
-        if (detectedSubscriptions.length > 5) {
-            tips.push(`Hai ${detectedSubscriptions.length} abbonamenti attivi. Una revisione potrebbe farti risparmiare oltre €${(detectedSubscriptions.reduce((s, sub) => s + sub.amount, 0) * 12).toFixed(0)} all'anno.`)
+        if (forecast.predictedSavings < 0) {
+            tips.push(`Attenzione: le proiezioni indicano un deficit di ${formatMoney(Math.abs(predictedSavings))}. Considera di tagliare le spese non essenziali.`)
+        } else if (forecast.predictedSavings > 100) {
+            const savingsRate = avgIncome > 0 ? (forecast.predictedSavings / avgIncome) * 100 : 0
+            tips.push(`Ottimo lavoro! Surplus stimato di ${formatMoney(forecast.predictedSavings)} (${savingsRate.toFixed(0)}% delle entrate). Potresti investirlo nel fondo emergenza.`)
+        }
+
+        if (detectedSubscriptions.length > 0) {
+            const totalYearly = detectedSubscriptions.reduce((s, sub) => s + sub.amount, 0) * 12
+            if (totalYearly > 500) {
+                tips.push(`Hai ${detectedSubscriptions.length} abbonamenti attivi (>€5) che pesano circa ${formatMoney(totalYearly)}/anno. Una revisione potrebbe farti risparmiare.`)
+            }
         }
 
         return {

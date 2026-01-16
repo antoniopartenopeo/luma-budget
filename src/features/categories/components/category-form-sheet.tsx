@@ -168,7 +168,7 @@ export function CategoryFormSheet({ open, onOpenChange, categoryToEdit, onSave, 
                                     <SelectContent>
                                         <SelectItem value="essential">Essenziali (Necessità)</SelectItem>
                                         <SelectItem value="comfort">Benessere (Qualità della vita)</SelectItem>
-                                        <SelectItem value="superfluous">Superflue (Spreco/Evitabile)</SelectItem>
+                                        <SelectItem value="superfluous">Superflue (Non essenziali)</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>

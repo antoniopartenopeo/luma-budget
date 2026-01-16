@@ -165,7 +165,7 @@ function TransactionDetailSheetContent({
                             onSubmit={handleSave}
                             isLoading={isUpdating}
                             onChange={() => setIsDirty(true)}
-                            submitLabel="Salva modifiche"
+                            submitLabel="Salva"
                             onCancel={() => isDirty ? setShowCloseConfirm(true) : setIsEditing(false)}
                         />
                     ) : (
@@ -302,7 +302,7 @@ function TransactionDetailSheetContent({
                             onClick={handleDelete}
                             disabled={isDeleting}
                         >
-                            {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sì, elimina"}
+                            {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Elimina"}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

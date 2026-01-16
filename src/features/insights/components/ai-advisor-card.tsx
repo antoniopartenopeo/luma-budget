@@ -16,7 +16,21 @@ export function AIAdvisorCard() {
         return <Skeleton className="h-[200px] w-full rounded-2xl" />
     }
 
-    if (!forecast && tips.length === 0) return null
+    if (!forecast && tips.length === 0) {
+        return (
+            <Card className="rounded-2xl border-none bg-gradient-to-br from-green-500/5 via-background to-background shadow-sm overflow-hidden">
+                <CardContent className="flex items-center gap-4 p-6">
+                    <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded-full">
+                        <Sparkles className="h-5 w-5 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div>
+                        <h3 className="font-semibold text-sm">Luma AI Advisor: Tutto sotto controllo</h3>
+                        <p className="text-xs text-muted-foreground">L&apos;analisi non ha rilevato anomalie o suggerimenti urgenti al momento.</p>
+                    </div>
+                </CardContent>
+            </Card>
+        )
+    }
 
     return (
         <Card className="rounded-2xl border-none bg-gradient-to-br from-primary/10 via-background to-background shadow-lg overflow-hidden relative group">

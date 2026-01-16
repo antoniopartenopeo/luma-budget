@@ -32,6 +32,7 @@ const COLOR_PALETTE = [
     { bg: "bg-stone-100", text: "text-stone-600", hex: "#57534e" },
     { bg: "bg-fuchsia-100", text: "text-fuchsia-600", hex: "#c026d3" },
     { bg: "bg-lime-100", text: "text-lime-600", hex: "#65a30d" },
+    { bg: "bg-zinc-900", text: "text-zinc-100", hex: "#18181b" }, // Dark Mode / Black
 ]
 
 interface CategoryFormSheetProps {

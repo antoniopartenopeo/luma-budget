@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Database, RotateCcw, Search, ChevronLeft, ChevronRight, MoreHorizontal, Archive, RefreshCw } from "lucide-react"
+import { Database, RotateCcw, Search, MoreHorizontal, Archive, RefreshCw } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -34,7 +34,7 @@ import { useCategories, useArchiveCategory, useUnarchiveCategory, useResetCatego
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { CategoryFormSheet } from "@/features/categories/components/category-form-sheet"
 import { Plus, Pencil } from "lucide-react"
-import { Category, CategoryKind } from "@/features/categories/config"
+import { Category } from "@/features/categories/config"
 import { cn } from "@/lib/utils"
 
 export function CategoriesSection() {

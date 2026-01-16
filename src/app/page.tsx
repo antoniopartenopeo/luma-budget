@@ -9,6 +9,8 @@ import { useTransactions } from "@/features/transactions/api/use-transactions"
 import { DashboardFilterBar } from "@/features/dashboard/components/dashboard-filter-bar"
 import { DashboardTimeFilter } from "@/features/dashboard/api/types"
 
+import { PageHeader } from "@/components/ui/page-header"
+
 export default function DashboardPage() {
   const [filter, setFilter] = useState<DashboardTimeFilter>({
     mode: "month",
@@ -20,12 +22,10 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">Panoramica delle tue finanze</p>
-        </div>
-      </div>
+      <PageHeader
+        title="Dashboard"
+        description="Panoramica delle tue finanze"
+      />
 
       <DashboardFilterBar filter={filter} onFilterChange={setFilter} />
 

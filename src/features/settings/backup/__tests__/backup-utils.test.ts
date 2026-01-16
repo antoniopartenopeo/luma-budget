@@ -156,9 +156,11 @@ describe("Backup Utils", () => {
         it("should limit periods to 12 and handle missing periods", () => {
             const backup = buildBackupV1();
             const txs = [];
-            for (let i = 1; i <= 15; i++) {
-                const month = i.toString().padStart(2, '0');
-                txs.push({ id: `${i}`, timestamp: new Date(`2025-${month}-01`).getTime() });
+            for (let i = 0; i < 15; i++) {
+                // Generates dates strictly in UTC to avoid timezone shifts 
+                // when toISOString() is called in the SUT.
+                const timestamp = Date.UTC(2025, 11 - i, 1);
+                txs.push({ id: `${i}`, timestamp });
             }
             backup.payload.transactions = txs;
             backup.payload.budgets = {};

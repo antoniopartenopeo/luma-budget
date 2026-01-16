@@ -15,7 +15,7 @@ The project is governed by the **Directive, Orchestration, Execution (DOE)** sys
 ## Project Status (high level)
 - Core (Dashboard / Transactions / Budget): **Stable**
 - Insights: **Live (v1.0.0-doe)** — Trend Analysis & AI Advisor.
-- Settings: **Beta** — Tabs UI, Data Management, Backup/Restore.
+- Settings: **Stable (v1.1.0)** — Tabs UI, Data Management, Backup/Restore.
 
 ## App Sections
 - **Dashboard**: High-level overview (income, expenses, monthly balance, budget remaining) + category distribution charts.

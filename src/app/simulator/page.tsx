@@ -178,11 +178,13 @@ export default function SimulatorPage() {
                                 {isExpanded ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
                             </div>
                             <div>
-                                <div className="flex items-center gap-3 mb-1">
-                                    <h3 className="font-bold text-lg text-slate-900 tracking-tight">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-1">
+                                    <h3 className="font-bold text-lg text-slate-900 tracking-tight leading-tight">
                                         {groupLabel}
                                     </h3>
-                                    {statusBadge}
+                                    <div className="self-start sm:self-auto">
+                                        {statusBadge}
+                                    </div>
                                 </div>
                                 <p className="text-sm text-muted-foreground font-medium">
                                     Media: <span className="text-slate-700">{formatCents(group.totalBaseline, currency, locale)}</span>

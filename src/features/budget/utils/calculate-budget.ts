@@ -2,6 +2,7 @@ import { Transaction } from "@/features/transactions/api/types"
 import { getCategoryById } from "@/features/categories/config"
 import { BudgetSpending, BudgetGroupId, BUDGET_GROUP_LABELS } from "../api/types"
 import { getSignedCents } from "@/lib/currency-utils"
+import { calculateUtilizationPct } from "@/lib/financial-math"
 
 // =====================
 // SPENDING CALCULATIONS
@@ -142,6 +143,7 @@ export function formatCurrency(amount: number): string {
  * Calculate percentage spent
  */
 export function calculatePercentage(spent: number, budget: number): number {
-    if (budget <= 0) return 0
-    return Math.round((spent / budget) * 100)
+    // Note: inputs are Units (EUR), but ratio is same as Cents.
+    // We treat them as "units" here.
+    return calculateUtilizationPct(spent, budget)
 }

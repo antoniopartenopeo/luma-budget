@@ -4,6 +4,7 @@ import { fetchBudget } from "../../budget/api/repository"
 import { getSignedCents } from "@/lib/currency-utils"
 import { calculateDateRange } from "@/lib/date-ranges"
 import { delay } from "@/lib/delay"
+import { sumExpensesInCents, sumIncomeInCents, calculateSharePct } from "@/lib/financial-math"
 
 const DEFAULT_USER_ID = "user-1"
 
@@ -26,13 +27,8 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
     ])
 
     // 3. Calculate All-Time Net Balance (Global, unfiltered)
-    const allTimeIncomeCents = transactions
-        .filter(t => t.type === 'income')
-        .reduce((acc, t) => acc + Math.abs(getSignedCents(t)), 0)
-
-    const allTimeExpensesCents = transactions
-        .filter(t => t.type === 'expense')
-        .reduce((acc, t) => acc + Math.abs(getSignedCents(t)), 0)
+    const allTimeIncomeCents = sumIncomeInCents(transactions)
+    const allTimeExpensesCents = sumExpensesInCents(transactions)
 
     const netBalance = (allTimeIncomeCents - allTimeExpensesCents) / 100
 
@@ -42,31 +38,22 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
         return tDate >= startDate && tDate <= endDate
     })
 
-    // 5. Calculate Metrics based on Range
-    const totalExpensesCents = rangeTransactions
-        .filter(t => t.type === 'expense')
-        .reduce((acc, t) => acc + Math.abs(getSignedCents(t)), 0)
-
-    const totalIncomeCents = rangeTransactions
-        .filter(t => t.type === 'income')
-        .reduce((acc, t) => acc + Math.abs(getSignedCents(t)), 0)
+    // 5. Calculate Metrics based on range
+    const totalExpensesCents = sumExpensesInCents(rangeTransactions)
+    const totalIncomeCents = sumIncomeInCents(rangeTransactions)
 
     const totalSpent = totalExpensesCents / 100
     const totalIncome = totalIncomeCents / 100
 
     // 6. Calculate Budget Remaining
     // Rule: mode="month" -> use period; mode="range" -> use end period (filter.period)
-    // Budget comparison is always against the "current/selected" month's expenses, even if showing a range chart.
-    // So we need expenses specifically for filter.period (the target month)
     const [tYear, tMonth] = filter.period.split('-').map(Number)
-    const targetMonthExpensesCents = transactions
-        .filter(t => {
-            const tDate = new Date(t.timestamp)
-            return t.type === 'expense' &&
-                tDate.getFullYear() === tYear &&
-                tDate.getMonth() + 1 === tMonth
-        })
-        .reduce((acc, t) => acc + Math.abs(getSignedCents(t)), 0)
+    const targetMonthTransactions = transactions.filter(t => {
+        const tDate = new Date(t.timestamp)
+        return tDate.getFullYear() === tYear &&
+            tDate.getMonth() + 1 === tMonth
+    })
+    const targetMonthExpensesCents = sumExpensesInCents(targetMonthTransactions)
 
     const budgetTotal = budgetPlan?.globalBudgetAmount || 0
     const budgetTotalCents = Math.round(budgetTotal * 100)
@@ -88,27 +75,14 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
     }))
 
     // 8. Calculate Useless Spending (Range-based)
-    const uselessSpentCents = rangeTransactions
-        .filter(t => t.type === 'expense' && t.isSuperfluous)
-        .reduce((acc, t) => acc + Math.abs(getSignedCents(t)), 0)
+    const uselessTransactions = rangeTransactions.filter(t => t.type === 'expense' && t.isSuperfluous)
+    const uselessSpentCents = sumExpensesInCents(uselessTransactions)
 
     const uselessSpent = uselessSpentCents / 100
-    const uselessSpendPercent = totalSpent > 0 ? Math.round((uselessSpent / totalSpent) * 100) : null
+    // Use shared percent calculation (input is Cents)
+    const uselessSpendPercent = calculateSharePct(uselessSpentCents, totalExpensesCents)
 
-    // 9. Calculate Monthly Expenses (Last N months based on filter)
-    // If mode=month, show last 12 months context? Or just the month? 
-    // Requirement says: "monthly series periodo". If I selected Month, a chart with 1 bar is weird.
-    // But usually Dashboard charts show context.
-    // "monthly-expenses-chart... non devono mantenere stato locale del periodo ... devono ricevere il filtro ... dalla dashboard metric"
-    // Let's assume for Charts we ALWAYS want a reasonable history ending at filter.period.
-    // If filter is Range 6M, we return those 6 months.
-    // If filter is Month, maybe we return last 6 months ending there?
-    // Let's stick to returning data strictly matched to filter if possible, OR if mode=month, maybe last 6 months is better UX so chart isn't empty.
-    // Prompt: "monthly series periodo". This implies the data for the requested period.
-    // If I ask for JAN 2024, range [JAN, JAN]. One bar.
-    // If I ask for 3M ending JAN 2024, range [NOV, DEC, JAN].
-    // Let's implement strictly what is requested: filtered data.
-
+    // 9. Monthly Data for Charts
     const monthlyExpenses = []
     const startM = startDate.getMonth()
     const startY = startDate.getFullYear()
@@ -123,19 +97,22 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
         // Capitalize
         const Label = monthName.charAt(0).toUpperCase() + monthName.slice(1)
 
-        const mTotalCents = rangeTransactions
-            .filter(t => {
-                if (t.type !== 'expense') return false
-                const d = new Date(t.timestamp)
-                return d.getMonth() === iMonth && d.getFullYear() === iYear
-            })
-            .reduce((acc, t) => acc + Math.abs(getSignedCents(t)), 0)
+        const monthTxs = rangeTransactions.filter(t => {
+            const d = new Date(t.timestamp)
+            return d.getMonth() === iMonth && d.getFullYear() === iYear
+        })
+        const mTotalCents = sumExpensesInCents(monthTxs)
 
         monthlyExpenses.push({ name: Label, total: mTotalCents / 100 })
 
         // Next month
         iterDate.setMonth(iterDate.getMonth() + 1)
     }
+
+    // Since calculateSharePct returns 0 if total is 0, we need to handle "uselessSpendPercent" nullability if we want to preserve distinct "No Data" semantics vs "0%"
+    // Original logic: totalSpent > 0 ? ... : null
+    // New logic: 0. If we want null, we must check totalExpensesCents > 0
+    const finalUselessPercent = totalExpensesCents > 0 ? uselessSpendPercent : null
 
     return {
         totalSpent,
@@ -144,11 +121,11 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
         netBalance,
         budgetTotal,
         budgetRemaining,
-        uselessSpendPercent,
+        uselessSpendPercent: finalUselessPercent,
         categoriesSummary,
         usefulVsUseless: {
-            useful: uselessSpendPercent !== null ? 100 - uselessSpendPercent : 100,
-            useless: uselessSpendPercent !== null ? uselessSpendPercent : 0
+            useful: finalUselessPercent !== null ? 100 - finalUselessPercent : 100,
+            useless: finalUselessPercent !== null ? finalUselessPercent : 0
         },
         monthlyExpenses
     }

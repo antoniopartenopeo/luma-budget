@@ -3,6 +3,7 @@
 // Pure functions that generate Insight objects based on transaction data
 
 import { formatCents } from "@/lib/currency-utils"
+import { calculateGrowthPct, calculateSharePct } from "@/lib/financial-math"
 import { INSIGHT_CONFIG } from "./constants"
 import {
     Insight,
@@ -53,7 +54,7 @@ export function buildBudgetRiskInsight(
     const projectedCents = Math.round(burnRatePerDay * daysInMonth)
 
     const deltaCents = projectedCents - budgetCents
-    const deltaPct = Math.round((deltaCents / budgetCents) * 100)
+    const deltaPct = calculateSharePct(deltaCents, budgetCents)
 
     // No insight if below medium threshold for triggering
     if (deltaPct < thresholds.budgetMediumPct) return null
@@ -145,7 +146,7 @@ export function buildCategorySpikeInsights(
         if (deltaCents < thresholds.spikeMinDeltaCents) continue
 
         // Skip if below percentage threshold (avoid division by zero)
-        const deltaPct = baselineCents > 0 ? Math.round((deltaCents / baselineCents) * 100) : 100
+        const deltaPct = calculateGrowthPct(currentCents, baselineCents)
         if (deltaPct < thresholds.spikeMinDeltaPct) continue
 
         const category = categoriesMap.get(categoryId)
@@ -265,7 +266,7 @@ export function buildTopDriversInsight(
             currentCents: currentTotalCents,
             baselineCents: prevTotalCents,
             deltaCents,
-            deltaPct: prevTotalCents > 0 ? Math.round((deltaCents / prevTotalCents) * 100) : 0,
+            deltaPct: calculateGrowthPct(currentTotalCents, prevTotalCents),
         },
         drivers,
         actions: [

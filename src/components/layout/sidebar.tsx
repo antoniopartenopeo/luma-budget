@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation"
 import { LayoutDashboard, Receipt, PiggyBank, LineChart, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { useSettings } from "@/features/settings/api/use-settings"
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
@@ -22,6 +23,9 @@ interface SidebarProps {
 
 export function Sidebar({ className, onNavigate }: SidebarProps) {
   const pathname = usePathname()
+  const { data: settings } = useSettings()
+  const displayName = settings?.profile?.displayName || "Account locale"
+  const initial = displayName.charAt(0).toUpperCase()
 
   return (
     <aside className={cn("flex h-full w-full flex-col bg-sidebar text-sidebar-foreground", className)}>
@@ -69,11 +73,11 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
         <div className="border-t border-sidebar-border/50 p-4">
           <div className="group flex items-center gap-3 rounded-2xl bg-sidebar-accent/30 p-3 transition-all hover:bg-sidebar-accent/50 border border-transparent hover:border-sidebar-border/50">
             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold shadow-sm">
-              U
+              {initial}
             </div>
             <div className="flex flex-1 flex-col overflow-hidden">
-              <span className="truncate text-sm font-semibold">Utente Demo</span>
-              <span className="truncate text-[10px] uppercase tracking-wider text-muted-foreground/70 font-bold">Pro Plan</span>
+              <span className="truncate text-sm font-semibold">{displayName}</span>
+              <span className="truncate text-[10px] uppercase tracking-wider text-muted-foreground/70 font-bold">Dati locali</span>
             </div>
             <Link href="/settings" className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-sidebar-accent rounded-lg text-muted-foreground">
               <Settings className="h-4 w-4" />

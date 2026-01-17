@@ -223,7 +223,7 @@ export function CategoriesSection() {
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div className="space-y-1 text-center sm:text-left">
                             <CardTitle className="flex items-center justify-center sm:justify-start gap-2 text-lg">
-                                <Database className="h-5 w-5 text-primary" />
+                                <Database className="h-5 w-5" />
                                 Categorie
                             </CardTitle>
                             <CardDescription>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useQueryClient } from "@tanstack/react-query"
-import { Trash2, Database, CheckCircle2, AlertCircle, Loader2, Info, Copy, AlertTriangle } from "lucide-react"
+import { Trash2, Database, CheckCircle2, AlertCircle, Loader2, Info, Copy, AlertTriangle, Wrench } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -190,7 +190,7 @@ export function AdvancedSection() {
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-lg">
-                            <Info className="h-5 w-5" />
+                            <Wrench className="h-5 w-5" />
                             About & Diagnostics
                         </CardTitle>
                         <CardDescription>

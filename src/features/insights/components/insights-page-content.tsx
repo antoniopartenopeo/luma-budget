@@ -82,11 +82,9 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
 
                 {/* Content */}
                 {isLoading ? (
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="space-y-4">
                         {[1, 2, 3].map(i => (
-                            <div key={i} className="space-y-4">
-                                <Skeleton className="h-48 w-full rounded-2xl" />
-                            </div>
+                            <Skeleton key={i} className="h-24 w-full rounded-2xl" />
                         ))}
                     </div>
                 ) : isEmpty ? (
@@ -102,7 +100,7 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
                         />
                     </div>
                 ) : (
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="space-y-4">
                         {insights.map(insight => (
                             <InsightCard key={insight.id} insight={insight} />
                         ))}

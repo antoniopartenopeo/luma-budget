@@ -35,14 +35,14 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
 
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
-            {/* AI Advisor Section */}
-            <AIAdvisorCard />
-
             {/* Header */}
             <PageHeader
                 title="Insights"
                 description="Analisi intelligente delle tue spese e suggerimenti personalizzati."
             />
+
+            {/* AI Advisor Section */}
+            <AIAdvisorCard />
 
             {/* Trends Section */}
             <TrendAnalysisCard />

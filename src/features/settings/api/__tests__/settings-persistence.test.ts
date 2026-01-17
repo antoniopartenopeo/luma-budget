@@ -112,4 +112,11 @@ describe("Settings V1 Persistence", () => {
         const settings = await fetchSettings()
         expect(settings).toEqual(DEFAULT_SETTINGS_V1)
     })
+    it("should persist profile display name", async () => {
+        await upsertSettings({
+            profile: { displayName: "Mario Rossi" }
+        })
+        const settings = await fetchSettings()
+        expect(settings.profile?.displayName).toBe("Mario Rossi")
+    })
 })

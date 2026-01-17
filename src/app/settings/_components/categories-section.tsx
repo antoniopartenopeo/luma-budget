@@ -245,25 +245,29 @@ export function CategoriesSection() {
                     ) : (
                         <div className="space-y-6">
                             {/* Controls */}
-                            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-                                <div className="relative w-full">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                    <Input
-                                        placeholder="Cerca..."
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="pl-9 bg-muted/50 border-none rounded-xl"
-                                    />
-                                </div>
-                                <div className="flex items-center gap-2 shrink-0">
-                                    <Switch
-                                        id="show-archived"
-                                        checked={showArchived}
-                                        onCheckedChange={setShowArchived}
-                                    />
-                                    <Label htmlFor="show-archived" className="text-xs font-medium cursor-pointer text-muted-foreground">
-                                        Mostra archiviate
-                                    </Label>
+                            {/* Controls */}
+                            <div className="flex flex-col gap-4">
+                                <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
+                                    <div className="relative w-full sm:max-w-xs">
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                        <Input
+                                            placeholder="Cerca categoria..."
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            className="pl-9 h-9 bg-muted/50 border-none rounded-xl"
+                                        />
+                                    </div>
+                                    <div className="flex items-center justify-between sm:justify-end gap-3 bg-muted/30 p-2 sm:p-0 rounded-lg sm:bg-transparent">
+                                        <Label htmlFor="show-archived" className="text-sm cursor-pointer text-muted-foreground font-medium pl-2 sm:pl-0">
+                                            Mostra archiviate
+                                        </Label>
+                                        <Switch
+                                            id="show-archived"
+                                            checked={showArchived}
+                                            onCheckedChange={setShowArchived}
+                                            className="scale-90"
+                                        />
+                                    </div>
                                 </div>
                             </div>
 

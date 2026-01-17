@@ -5,7 +5,7 @@ import { Menu } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { QuickExpenseInput } from "@/features/transactions/components/quick-expense-input"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Sidebar } from "./sidebar"
 import { useSettings } from "@/features/settings/api/use-settings"
 import { FlashOverlay } from "@/features/flash/components/flash-overlay"
@@ -31,6 +31,9 @@ export function TopBar() {
                                 </Button>
                             </SheetTrigger>
                             <SheetContent side="left" className="p-0 border-none w-64 bg-sidebar">
+                                <div className="sr-only">
+                                    <SheetTitle>Menu di Navigazione</SheetTitle>
+                                </div>
                                 <Sidebar
                                     onNavigate={() => setIsMenuOpen(false)}
                                 />

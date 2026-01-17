@@ -14,8 +14,8 @@ Il progetto è governato dal sistema **Directive, Orchestration, Execution (DOE)
 
 ## Stato del Progetto (alto livello)
 - Core (Dashboard / Transazioni / Budget): **Stabile**
-- Insights: **Stable (v1.1.x)** — Analisi Trend & AI Advisor (Algoritmo raffinato).
-- Settings: **Stable (v1.1.0)** — UI Tab, Gestione Dati, Backup/Ripristino, Gestione Categorie (CRUD + Redesign).
+- Insights: **Stable (v1.2.0)** — Analisi Trend & AI Advisor con UI Moderna (Glassmorphism/Card) + Analisi Mensile Orizzontale.
+- Settings: **Stable (v1.2.0)** — UI Tab, Preferences Redesign (Sezioni/Icone), Profilo Utente (Nome persistente), Gestione Dati.
 - UI/UX Harmony: **Audit Complete** — Standardized "Soft UI" (radius/animations), Typography (PageHeader), and Microcopy.
 
 ## Sezioni App
@@ -23,8 +23,8 @@ Il progetto è governato dal sistema **Directive, Orchestration, Execution (DOE)
 - **Transazioni**: CRUD, filtri (ricerca/tipo/categoria/periodo), export CSV.
 - **Categorie**: Gestione completa (CRUD), separazione Entrate/Uscite, icone personalizzate, Virtual Join per renames.
 - **Budget**: Pianificazione mensile (YYYY-MM) + spesa per gruppi (Essenziali / Comfort / Superfluo).
-- **Insights**: Visualizzazione trend su 12 mesi, analisi sensibilità, osservazioni guidate dall'IA.
-- **Impostazioni**: Preferenze, Gestione Dati (Backup/Restore JSON), Tema.
+- **Insights**: Visualizzazione trend su 12 mesi, AI Advisor avanzato, Analisi Mensile dettagliata (UI Card unificata).
+- **Impostazioni**: Preferenze (Profilo, Tema, Valuta), Gestione Dati (Backup/Restore JSON), Tema.
 
 ## Flusso Dati & Persistenza
 ### Fonte di Verità (Source of truth)

@@ -125,6 +125,23 @@ export function PreferencesSection() {
                     </Alert>
                 ) : (
                     <div className="grid gap-6 md:grid-cols-2">
+                        {/* Profile Name */}
+                        <div className="space-y-2 col-span-2 md:col-span-1">
+                            <Label htmlFor="displayName">Nome Profilo</Label>
+                            <Input
+                                id="displayName"
+                                placeholder="Il tuo nome (es. Mario)"
+                                value={settings?.profile?.displayName || ""}
+                                onChange={(e) => upsertSettings.mutate({
+                                    profile: { ...settings?.profile, displayName: e.target.value }
+                                })}
+                                disabled={upsertSettings.isPending}
+                            />
+                            <p className="text-[10px] text-muted-foreground">
+                                Visualizzato nella barra laterale. Lascia vuoto per default.
+                            </p>
+                        </div>
+
                         <div className="space-y-2">
                             <Label htmlFor="theme-select">Tema</Label>
                             <Select

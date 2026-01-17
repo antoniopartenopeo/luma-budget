@@ -52,12 +52,20 @@ function validateSettings(data: unknown): AppSettingsV1 {
         insightsSensitivity = candidate.insightsSensitivity
     }
 
+    // Validate profile
+    const profile = {
+        displayName: typeof candidate.profile?.displayName === "string"
+            ? candidate.profile.displayName.slice(0, 50)
+            : ""
+    }
+
     return {
         version: 1,
         theme,
         currency,
         superfluousTargetPercent,
         insightsSensitivity,
+        profile,
     }
 }
 

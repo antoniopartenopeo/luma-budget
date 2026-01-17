@@ -8,6 +8,9 @@ export type AppSettingsV1 = {
     currency: CurrencyCode
     superfluousTargetPercent: number
     insightsSensitivity: InsightsSensitivity
+    profile?: {
+        displayName?: string
+    }
 }
 
 export const DEFAULT_SETTINGS_V1: AppSettingsV1 = {
@@ -16,4 +19,7 @@ export const DEFAULT_SETTINGS_V1: AppSettingsV1 = {
     currency: "EUR",
     superfluousTargetPercent: 10,
     insightsSensitivity: "medium",
+    profile: {
+        displayName: ""
+    }
 }

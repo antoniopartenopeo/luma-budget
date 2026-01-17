@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useQueryClient } from "@tanstack/react-query"
-import { Trash2, Database, CheckCircle2, AlertCircle, Loader2, Info, Copy } from "lucide-react"
+import { Trash2, Database, CheckCircle2, AlertCircle, Loader2, Info, Copy, AlertTriangle } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -336,7 +336,7 @@ export function AdvancedSection() {
                                         className="justify-start text-muted-foreground hover:bg-muted"
                                     >
                                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
-                                        Ripristina impostazioni default
+                                        Reset Impostazioni
                                     </Button>
                                 </div>
                             </div>
@@ -390,19 +390,22 @@ export function AdvancedSection() {
             <AlertDialog open={!!resetDialog} onOpenChange={(open) => !open && setResetDialog(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>{dialogContent.title}</AlertDialogTitle>
+                        <AlertDialogTitle className="flex items-center gap-2">
+                            <AlertTriangle className="h-5 w-5 text-destructive" />
+                            {dialogContent.title}
+                        </AlertDialogTitle>
                         <AlertDialogDescription>
                             {dialogContent.description}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
+                    <AlertDialogFooter className="gap-2 sm:gap-2">
                         <AlertDialogCancel disabled={isLoading}>Annulla</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleConfirmReset}
                             disabled={isLoading}
                             className={resetDialog === "all" ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : ""}
                         >
-                            {isLoading ? "Operazione in corso..." : "Conferma"}
+                            {isLoading ? "In corso..." : "Conferma"}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

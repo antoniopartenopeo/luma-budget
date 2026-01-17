@@ -189,7 +189,7 @@ export function BackupSection() {
                                     >
                                         <label htmlFor="backup-upload" className="cursor-pointer">
                                             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
-                                            Ripristina Backup
+                                            Importa Backup
                                         </label>
                                     </Button>
                                 </div>
@@ -203,7 +203,7 @@ export function BackupSection() {
             <AlertDialog open={showImportDialog} onOpenChange={setShowImportDialog}>
                 <AlertDialogContent className="sm:max-w-md">
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Conferma Importazione Backup</AlertDialogTitle>
+                        <AlertDialogTitle>Conferma Importazione</AlertDialogTitle>
                         <AlertDialogDescription>
                             ATTENZIONE: Importare questo backup sovrascriverà TUTTI i dati locali attuali.
                         </AlertDialogDescription>
@@ -212,7 +212,7 @@ export function BackupSection() {
                     {pendingBackup && (
                         <div className="py-4 space-y-3">
                             <div className="rounded-md bg-muted p-4 space-y-2 text-sm">
-                                <p className="font-semibold border-b pb-1 mb-2">Pillola dei dati trovati:</p>
+                                <p className="font-semibold border-b pb-1 mb-2">Riepilogo dati trovati:</p>
                                 <div className="grid grid-cols-2 gap-2">
                                     <span className="text-muted-foreground">Transazioni:</span>
                                     <span className="font-medium">{pendingBackup.summary.txCount}</span>

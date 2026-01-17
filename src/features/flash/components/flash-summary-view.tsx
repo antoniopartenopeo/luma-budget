@@ -7,15 +7,13 @@ import {
     Wallet,
     PiggyBank,
     Target,
-    AlertTriangle,
     Eye,
     EyeOff,
     Sparkles,
     ArrowUpRight,
-    LayoutDashboard
+    X
 } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Card, CardContent } from "@/components/ui/card"
+import { motion, Variants } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
@@ -25,9 +23,12 @@ import { useCurrency } from "@/features/settings/api/use-currency"
 import { getCurrentPeriod, formatPeriodLabel } from "@/features/insights/utils"
 import { formatEuroNumber } from "@/lib/currency-utils"
 import { cn } from "@/lib/utils"
-import Link from "next/link"
 
-export function FlashSummaryView() {
+interface FlashSummaryViewProps {
+    onClose?: () => void
+}
+
+export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
     const [isPrivate, setIsPrivate] = useState(false)
     const period = getCurrentPeriod()
 
@@ -39,8 +40,8 @@ export function FlashSummaryView() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-[#0F172A] p-6 flex items-center justify-center">
-                <Skeleton className="h-[700px] w-full max-w-sm rounded-[2.5rem]" />
+            <div className="flex items-center justify-center p-6">
+                <Skeleton className="h-[600px] w-full max-w-sm rounded-[2.5rem] bg-white/5" />
             </div>
         )
     }
@@ -77,10 +78,11 @@ export function FlashSummaryView() {
 
     const blurClass = isPrivate ? "blur-xl select-none opacity-50 transition-all duration-500" : "transition-all duration-500"
 
-    const containerVariants = {
-        hidden: { opacity: 0 },
+    const containerVariants: Variants = {
+        hidden: { opacity: 0, scale: 0.95 },
         visible: {
             opacity: 1,
+            scale: 1,
             transition: {
                 staggerChildren: 0.1,
                 delayChildren: 0.2
@@ -88,128 +90,126 @@ export function FlashSummaryView() {
         }
     }
 
-    const itemVariants = {
+    const itemVariants: Variants = {
         hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.5 }
+        }
     }
 
     return (
-        <div className="min-h-screen bg-[#020617] flex flex-col items-center justify-center p-4 sm:p-6 overflow-hidden">
-            {/* Main Poster Container */}
+        <div className="w-full h-full flex items-center justify-center overflow-auto py-8">
             <motion.div
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
-                className="relative w-full max-w-md aspect-[9/16] max-h-[90vh] sm:max-h-[850px] overflow-hidden rounded-[2.5rem] border border-white/10 bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] shadow-2xl flex flex-col p-6 sm:p-8"
+                className="relative w-full max-w-md overflow-hidden rounded-[2rem] border border-white/40 bg-white/40 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] flex flex-col p-6"
             >
-                {/* Ambient Glows */}
-                <div className="absolute top-[-10%] right-[-20%] w-[300px] h-[300px] bg-primary/20 blur-[100px] rounded-full pointer-events-none" />
-                <div className="absolute bottom-[-10%] left-[-20%] w-[300px] h-[300px] bg-indigo-500/10 blur-[100px] rounded-full pointer-events-none" />
-                <div className="absolute top-[30%] left-[10%] w-[150px] h-[150px] bg-blue-500/5 blur-[80px] rounded-full pointer-events-none" />
+                {/* Visual Glass Reflection Accent */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none" />
 
-                {/* Header Branding */}
-                <motion.div variants={itemVariants} className="relative z-10 flex items-center justify-between mb-8">
+                {/* Header Branding & Close */}
+                <motion.div variants={itemVariants} className="relative z-10 flex items-start justify-between mb-4">
                     <div className="flex flex-col">
-                        <div className="flex items-center gap-2 text-primary font-bold tracking-tighter text-xl">
-                            <Sparkles className="h-5 w-5 fill-primary" />
+                        <div className="flex items-center gap-1.5 text-slate-900 font-bold tracking-tight text-lg">
+                            <Sparkles className="h-4 w-4 fill-primary text-primary" />
                             Luma Flash
                         </div>
-                        <span className="text-[10px] text-white/40 font-bold uppercase tracking-[0.2em] mt-0.5">Financial Snapshot</span>
+                        <h2 className="text-sm font-medium text-slate-500">
+                            {formatPeriodLabel(period)}
+                        </h2>
                     </div>
-                    <Link href="/">
-                        <Button variant="ghost" size="icon" className="rounded-full bg-white/5 border border-white/5 hover:bg-white/10 text-white/50">
-                            <LayoutDashboard className="h-4 w-4" />
+                    {onClose && (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={onClose}
+                            className="rounded-full bg-black/5 hover:bg-black/10 text-slate-500 h-8 w-8"
+                        >
+                            <X className="h-4 w-4" />
                         </Button>
-                    </Link>
+                    )}
                 </motion.div>
 
-                {/* Date & Title */}
-                <motion.div variants={itemVariants} className="relative z-10 mb-8">
-                    <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tighter text-white leading-tight">
-                        {formatPeriodLabel(period).split(" ")[0]}
-                        <span className="block text-white/30">{formatPeriodLabel(period).split(" ")[1]}</span>
-                    </h2>
-                </motion.div>
-
-                {/* KPI Section - Glassmorphic Horizontal */}
-                <motion.div variants={itemVariants} className="relative z-10 grid grid-cols-3 gap-3 mb-6">
-                    {[
-                        { label: "Entrate", value: totalIncome, icon: TrendingUp, color: "text-emerald-400", bg: "bg-emerald-500/10" },
-                        { label: "Uscite", value: totalExpenses, icon: TrendingDown, color: "text-rose-400", bg: "bg-rose-500/10" },
-                        { label: "Saldo", value: netBalance, icon: Wallet, color: netBalance >= 0 ? "text-blue-400" : "text-orange-400", bg: "bg-blue-500/10" }
-                    ].map((kpi, idx) => (
-                        <div key={idx} className="bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-2xl p-4 flex flex-col items-center justify-center text-center">
-                            <div className={cn("p-1.5 rounded-lg mb-2", kpi.bg)}>
-                                <kpi.icon className={cn("h-4 w-4", kpi.color)} />
-                            </div>
-                            <div className={cn("text-sm sm:text-base font-bold text-white", blurClass)}>
-                                {kpi.label === "Saldo" && kpi.value >= 0 ? "+" : ""}
-                                {formatEuroNumber(kpi.value, currency, locale).replace(",00", "")}
-                            </div>
-                            <div className="text-[9px] uppercase font-bold tracking-wider text-white/40 mt-1">{kpi.label}</div>
+                {/* Main Bento Grid */}
+                <div className="relative z-10 grid grid-cols-2 gap-3 mb-3">
+                    {/* Primary Balance Card - Big Square */}
+                    <motion.div variants={itemVariants} className="col-span-2 bg-white/50 border border-white/40 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-sm">
+                        <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-1">Saldo Netto</span>
+                        <div className={cn("text-3xl font-extrabold text-slate-900 tracking-tight", blurClass)}>
+                            {netBalance >= 0 ? "+" : ""}
+                            {formatEuroNumber(netBalance, currency, locale).replace(",00", "")}
                         </div>
-                    ))}
-                </motion.div>
-
-                {/* Budget & Superfluous - Two Column Mini Cards */}
-                <div className="relative z-10 grid grid-cols-2 gap-3 mb-6">
-                    {/* Budget */}
-                    <motion.div variants={itemVariants} className="bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-3xl p-5 flex flex-col justify-between">
-                        <div className="flex items-center justify-between mb-4">
-                            <PiggyBank className="h-5 w-5 text-yellow-500" />
-                            <Badge variant="outline" className="text-[9px] border-white/10 text-white/60 px-1.5 py-0 h-4">BUDGET</Badge>
-                        </div>
-                        <div className="space-y-2">
-                            <div className={cn("text-xl font-bold text-white", blurClass)}>{budgetUsedPct}%</div>
-                            <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                <motion.div
-                                    initial={{ width: 0 }}
-                                    animate={{ width: `${Math.min(budgetUsedPct, 100)}%` }}
-                                    transition={{ duration: 1, ease: "circOut" }}
-                                    className={cn("h-full", budgetUsedPct > 90 ? "bg-rose-500" : "bg-primary")}
-                                />
+                        <div className="flex items-center gap-4 mt-3 w-full justify-center">
+                            <div className="flex items-center gap-1.5">
+                                <div className="p-1 rounded-full bg-emerald-100/50">
+                                    <TrendingUp className="h-3 w-3 text-emerald-600" />
+                                </div>
+                                <span className={cn("text-xs font-semibold text-emerald-700", blurClass)}>
+                                    {formatEuroNumber(totalIncome, currency, locale).replace(",00", "")}
+                                </span>
                             </div>
-                            <p className="text-[10px] text-white/40 font-medium leading-tight">Del piano mensile utilizzato.</p>
+                            <div className="w-px h-3 bg-slate-200" />
+                            <div className="flex items-center gap-1.5">
+                                <div className="p-1 rounded-full bg-rose-100/50">
+                                    <TrendingDown className="h-3 w-3 text-rose-600" />
+                                </div>
+                                <span className={cn("text-xs font-semibold text-rose-700", blurClass)}>
+                                    {formatEuroNumber(totalExpenses, currency, locale).replace(",00", "")}
+                                </span>
+                            </div>
                         </div>
                     </motion.div>
 
-                    {/* Superfluous */}
-                    <motion.div variants={itemVariants} className="bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-3xl p-5 flex flex-col justify-between">
-                        <div className="flex items-center justify-between mb-4">
-                            <Target className="h-5 w-5 text-indigo-400" />
-                            <Badge variant="outline" className="text-[9px] border-white/10 text-white/60 px-1.5 py-0 h-4">GOAL</Badge>
+                    {/* Budget & Goal - Half width */}
+                    <motion.div variants={itemVariants} className="bg-white/50 border border-white/40 rounded-2xl p-4 shadow-sm">
+                        <div className="flex items-center justify-between mb-3">
+                            <PiggyBank className="h-4 w-4 text-slate-400" />
+                            <span className="text-[10px] font-bold text-slate-400 uppercase">Budget</span>
                         </div>
-                        <div className="space-y-2">
-                            <div className={cn("text-xl font-bold text-white", blurClass)}>{uselessSpendPercent ?? 0}%</div>
-                            <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                <motion.div
-                                    initial={{ width: 0 }}
-                                    animate={{ width: `${Math.min(uselessSpendPercent ?? 0, 100)}%` }}
-                                    transition={{ duration: 1, ease: "circOut" }}
-                                    className={cn("h-full", isSuperfluousOver ? "bg-rose-500" : "bg-indigo-400")}
-                                />
-                            </div>
-                            <p className="text-[10px] text-white/40 font-medium leading-tight">Spese non essenziali rilevate.</p>
+                        <div className={cn("text-lg font-bold text-slate-900", blurClass)}>{budgetUsedPct}%</div>
+                        <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden mt-2">
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${Math.min(budgetUsedPct, 100)}%` }}
+                                className={cn("h-full", budgetUsedPct > 90 ? "bg-rose-500" : "bg-blue-500")}
+                            />
+                        </div>
+                    </motion.div>
+
+                    <motion.div variants={itemVariants} className="bg-white/50 border border-white/40 rounded-2xl p-4 shadow-sm">
+                        <div className="flex items-center justify-between mb-3">
+                            <Target className="h-4 w-4 text-slate-400" />
+                            <span className="text-[10px] font-bold text-slate-400 uppercase">Superfluo</span>
+                        </div>
+                        <div className={cn("text-lg font-bold text-slate-900", blurClass)}>{uselessSpendPercent ?? 0}%</div>
+                        <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden mt-2">
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${Math.min(uselessSpendPercent ?? 0, 100)}%` }}
+                                className={cn("h-full", isSuperfluousOver ? "bg-rose-500" : "bg-indigo-500")}
+                            />
                         </div>
                     </motion.div>
                 </div>
 
-                {/* Top Categories - Clean List */}
-                <motion.div variants={itemVariants} className="relative z-10 bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-3xl p-6 mb-6">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-xs font-bold uppercase tracking-widest text-white/60">Top Categories</h3>
-                        <ArrowUpRight className="h-4 w-4 text-white/20" />
+                {/* Top Categories - Compact List */}
+                <motion.div variants={itemVariants} className="relative z-10 bg-white/50 border border-white/40 rounded-2xl p-4 mb-3 shadow-sm">
+                    <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Top Categories</h3>
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-2">
                         {top3Categories.map((cat, idx) => (
-                            <div key={cat.id} className="flex items-center justify-between group">
-                                <div className="flex items-center gap-3">
-                                    <div className="h-8 w-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-bold text-white/40">
-                                        0{idx + 1}
+                            <div key={cat.id} className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <div className="h-5 w-5 rounded-md bg-white border border-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-400 shadow-sm">
+                                        {idx + 1}
                                     </div>
-                                    <span className="text-sm font-semibold text-white/80">{cat.name}</span>
+                                    <span className="text-xs font-semibold text-slate-700">{cat.name}</span>
                                 </div>
-                                <div className={cn("text-sm font-bold text-white", blurClass)}>
+                                <div className={cn("text-xs font-bold text-slate-900", blurClass)}>
                                     {formatEuroNumber(cat.value, currency, locale).replace(",00", "")}
                                 </div>
                             </div>
@@ -217,43 +217,30 @@ export function FlashSummaryView() {
                     </div>
                 </motion.div>
 
-                {/* Insight - Magical Gradient Block */}
-                <motion.div variants={itemVariants} className="relative z-10 mt-auto bg-gradient-to-br from-indigo-500/20 to-purple-600/20 border border-white/10 rounded-3xl p-6 overflow-hidden">
-                    <div className="absolute top-0 right-0 p-3 opacity-20">
-                        <AlertTriangle className="h-8 w-8 text-yellow-300" />
-                    </div>
-                    <div className="flex items-center gap-2 text-[10px] font-bold text-indigo-300 mb-2 uppercase tracking-widest">
+                {/* Insight - Clean Text */}
+                <motion.div variants={itemVariants} className="relative z-10 mt-auto bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100/50 rounded-2xl p-4">
+                    <div className="flex items-center gap-1.5 text-[9px] font-bold text-indigo-500 mb-1.5 uppercase tracking-widest">
                         <Sparkles className="h-3 w-3" />
-                        Smart Observation
+                        AI Insight
                     </div>
-                    <p className="text-sm sm:text-base font-medium text-blue-50 leading-snug pr-4">
-                        &quot;{generateInsight()}&quot;
+                    <p className="text-xs font-medium text-slate-600 leading-snug">
+                        {generateInsight()}
                     </p>
                 </motion.div>
 
-                {/* Privacy Toggle Overlay */}
-                <motion.div variants={itemVariants} className="relative z-10 mt-6 flex justify-center">
+                {/* Privacy Toggle */}
+                <motion.div variants={itemVariants} className="relative z-10 mt-4 flex justify-center">
                     <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setIsPrivate(!isPrivate)}
-                        className="rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white/40 text-[10px] uppercase font-bold tracking-widest px-6 gap-2"
+                        className="rounded-full bg-white/60 hover:bg-white border border-white/50 text-slate-400 hover:text-slate-600 text-[10px] uppercase font-bold tracking-widest px-4 h-7 gap-1.5 shadow-sm transition-all"
                     >
-                        {isPrivate ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
-                        {isPrivate ? "Reveals Amounts" : "Privacy On"}
+                        {isPrivate ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
+                        {isPrivate ? "Mostra" : "Nascondi"}
                     </Button>
                 </motion.div>
             </motion.div>
-
-            {/* Hint for mobile */}
-            <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.4 }}
-                transition={{ delay: 2 }}
-                className="mt-6 text-[10px] uppercase font-bold tracking-[0.3em] text-white/50"
-            >
-                Screenshot Ready
-            </motion.p>
         </div>
     )
 }

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { CategoryIcon } from "@/features/categories/components/category-icon";
 import { formatTransactionDate } from "../utils/format-date";
 import { cn } from "@/lib/utils";
-import { Edit2, Trash2, Calendar, Tag, Info, ArrowLeft, Loader2 } from "lucide-react";
+import { Edit2, Trash2, Calendar, Tag, Info, ArrowLeft, Loader2, AlertTriangle } from "lucide-react";
 import { TransactionForm } from "./transaction-form";
 import { useUpdateTransaction, useDeleteTransaction } from "@/features/transactions/api/use-transactions";
 import { parseCurrencyToCents } from "@/lib/currency-utils";
@@ -290,7 +290,10 @@ function TransactionDetailSheetContent({
             <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
                 <AlertDialogContent className="rounded-2xl">
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Sei sicuro di voler eliminare?</AlertDialogTitle>
+                        <AlertDialogTitle className="flex items-center gap-2">
+                            <AlertTriangle className="h-5 w-5 text-rose-600" />
+                            Sei sicuro di voler eliminare?
+                        </AlertDialogTitle>
                         <AlertDialogDescription>
                             Questa azione è irreversibile. La transazione verrà rimossa permanentemente.
                         </AlertDialogDescription>

@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { LayoutDashboard, Receipt, PiggyBank, LineChart, Settings, Camera } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -13,7 +12,6 @@ const sidebarItems = [
   { icon: Receipt, label: "Transazioni", href: "/transactions" },
   { icon: PiggyBank, label: "Budget", href: "/budget" },
   { icon: LineChart, label: "Insights", href: "/insights" },
-  { icon: Camera, label: "Flash", href: "/flash" },
   { icon: Settings, label: "Impostazioni", href: "/settings" },
 ]
 
@@ -32,16 +30,10 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
     <aside className={cn("flex h-full w-full flex-col bg-sidebar text-sidebar-foreground", className)}>
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
         {/* Logo Area */}
-        <div className="flex h-20 items-center border-b px-4">
-          <Link href="/" className="flex items-center">
-            <div className="relative h-12 w-52 overflow-hidden">
-              <Image
-                src="/app-logo.png"
-                alt="LumaBudget"
-                fill
-                className="object-contain object-left"
-                priority
-              />
+        <div className="flex h-20 items-center border-b px-6">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="text-xl font-bold tracking-tight text-foreground">
+              LumaBudget
             </div>
           </Link>
         </div>

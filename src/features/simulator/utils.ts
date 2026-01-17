@@ -199,17 +199,27 @@ export function groupAndSortCategories(
     validCategories.forEach(cat => {
         const avg = averages[cat.id]?.averageAmount || 0
         if (groups[cat.spendingNature]) {
-            groups[cat.spendingNature].items.push({
-                category: cat,
-                averageAmount: avg
-            })
             groups[cat.spendingNature].totalBaseline += avg
+
+            // Only add to items list if > 0 (REAL expenses criteria)
+            if (avg > 0) {
+                groups[cat.spendingNature].items.push({
+                    category: cat,
+                    averageAmount: avg
+                })
+            }
         }
     })
 
-    // Sort items by averageAmount desc
+    // Sort items by averageAmount desc and slice top 5
     Object.values(groups).forEach(g => {
-        g.items.sort((a, b) => b.averageAmount - a.averageAmount)
+        g.items.sort((a, b) => {
+            const diff = b.averageAmount - a.averageAmount
+            if (diff !== 0) return diff
+            // Tie-break by label for deterministic order
+            return a.category.label.localeCompare(b.category.label)
+        })
+        g.items = g.items.slice(0, 5)
     })
 
     return groups

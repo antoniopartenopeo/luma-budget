@@ -14,7 +14,7 @@ import { useMonthlyAverages } from "@/features/simulator/hooks"
 import { applySavings, SimulationPeriod, groupAndSortCategories, computeEffectiveSavingsPct, classifySuperfluousSpend } from "@/features/simulator/utils"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { useCurrency } from "@/features/settings/api/use-currency"
-import { formatEuroNumber } from "@/lib/currency-utils"
+import { formatCents } from "@/lib/currency-utils"
 import { cn } from "@/lib/utils"
 import { SpendingNature, CATEGORY_GROUP_LABELS } from "@/features/categories/config"
 
@@ -109,7 +109,8 @@ export default function SimulatorPage() {
         const group = groupedData[nature]
         // If empty, don't render? Or render empty? User said "expanded groups".
         // If empty baseline, maybe skip.
-        if (group.totalBaseline === 0) return null
+        // If empty, we still render the card but with empty state or 0 baseline
+        // if (group.totalBaseline === 0) return null
 
         const isExpanded = expandedGroups[nature]
         const currentGroupSaving = groupSavings[nature]
@@ -158,17 +159,17 @@ export default function SimulatorPage() {
                                     {priorityBadge}
                                 </h3>
                                 <p className="text-xs text-muted-foreground">
-                                    Spesa media: <span className="font-medium text-slate-700">{formatEuroNumber(group.totalBaseline, currency, locale)}</span>
+                                    Spesa media: <span className="font-medium text-slate-700">{formatCents(group.totalBaseline, currency, locale)}</span>
                                 </p>
                             </div>
                         </div>
                         <div className="text-right">
                             <div className="text-lg font-bold text-slate-900">
-                                {formatEuroNumber(groupSimulatedTotal, currency, locale)}
+                                {formatCents(groupSimulatedTotal, currency, locale)}
                             </div>
                             {group.totalBaseline > groupSimulatedTotal && (
                                 <span className="text-xs font-semibold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full inline-block">
-                                    -{formatEuroNumber(group.totalBaseline - groupSimulatedTotal, currency, locale)}
+                                    -{formatCents(group.totalBaseline - groupSimulatedTotal, currency, locale)}
                                 </span>
                             )}
                         </div>
@@ -202,7 +203,7 @@ export default function SimulatorPage() {
                                 </Button>
                             </div>
 
-                            {group.items.slice(0, 5).map(item => {
+                            {group.items.map(item => {
                                 const overrideVal = categoryOverrides[item.category.id]
                                 const hasOverride = overrideVal !== undefined && overrideVal !== null
                                 const effectivePct = computeEffectiveSavingsPct(currentGroupSaving, overrideVal ?? null)
@@ -217,7 +218,7 @@ export default function SimulatorPage() {
                                             </div>
                                             <div className="truncate">
                                                 <div className="text-sm font-medium truncate">{item.category.label}</div>
-                                                <div className="text-[10px] text-slate-400">{formatEuroNumber(item.averageAmount, currency, locale)}</div>
+                                                <div className="text-[10px] text-slate-400">{formatCents(item.averageAmount, currency, locale)}</div>
                                             </div>
                                         </div>
 
@@ -237,7 +238,7 @@ export default function SimulatorPage() {
                                         {/* Result */}
                                         <div className="text-right">
                                             <div className={cn("text-sm font-bold", effectivePct > 0 ? "text-primary" : "text-slate-700")}>
-                                                {formatEuroNumber(itemSimulated, currency, locale)}
+                                                {formatCents(itemSimulated, currency, locale)}
                                             </div>
                                             {effectivePct > 0 && (
                                                 <div className="text-[10px] text-emerald-600">-{effectivePct}%</div>
@@ -247,9 +248,9 @@ export default function SimulatorPage() {
                                 )
                             })}
 
-                            {group.items.length > 5 && (
-                                <div className="text-center text-xs text-muted-foreground py-2">
-                                    + altre {group.items.length - 5} categorie minori
+                            {group.items.length === 0 && (
+                                <div className="text-center text-xs text-muted-foreground py-4 bg-slate-50 rounded-lg italic border border-dashed border-slate-200">
+                                    Nessuna spesa rilevante in questo gruppo nel periodo selezionato.
                                 </div>
                             )}
                         </div>
@@ -346,12 +347,12 @@ export default function SimulatorPage() {
                                 <div className="space-y-2 bg-white/50 rounded-xl p-4 border border-white/50 shadow-sm">
                                     <div className="flex justify-between text-sm text-slate-500 font-medium">
                                         <span>Spesa Attuale</span>
-                                        <span>{formatEuroNumber(simulationResult.baselineTotal, currency, locale)}</span>
+                                        <span>{formatCents(simulationResult.baselineTotal, currency, locale)}</span>
                                     </div>
                                     <Separator className="bg-slate-200/50" />
                                     <div className="flex justify-between text-xl font-bold text-slate-900 items-baseline">
                                         <span>Nuova Spesa</span>
-                                        <span>{formatEuroNumber(simulationResult.simulatedTotal, currency, locale)}</span>
+                                        <span>{formatCents(simulationResult.simulatedTotal, currency, locale)}</span>
                                     </div>
                                 </div>
 
@@ -362,7 +363,7 @@ export default function SimulatorPage() {
                                             Risparmio Mensile
                                         </div>
                                         <div className="text-3xl font-extrabold">
-                                            {formatEuroNumber(simulationResult.savingsAmount, currency, locale)}
+                                            {formatCents(simulationResult.savingsAmount, currency, locale)}
                                         </div>
                                         <div className="text-sm font-semibold text-emerald-100 mt-1">
                                             -{simulationResult.savingsPercent}% del totale

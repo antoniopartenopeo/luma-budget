@@ -1,4 +1,4 @@
-import { computeMonthlyAverages, applySavings, SimulationPeriod, CategoryAverage, computeEffectiveSavingsPct, classifySuperfluousSpend } from "../utils"
+import { computeMonthlyAverages, applySavings, SimulationPeriod, CategoryAverage, computeEffectiveSavingsPct, classifySuperfluousSpend, groupAndSortCategories } from "../utils"
 import { Transaction } from "@/features/transactions/api/types"
 import { describe, it, expect } from "vitest"
 

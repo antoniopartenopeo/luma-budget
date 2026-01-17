@@ -11,6 +11,7 @@ import { getCurrentPeriod, calculateGroupSpending } from "@/features/budget/util
 import { BudgetGroupId, BUDGET_GROUP_LABELS, BUDGET_GROUPS } from "@/features/budget/api/types"
 import { StateMessage } from "@/components/ui/state-message"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { PageHeader } from "@/components/ui/page-header"
 
 export default function BudgetPage() {
     const [period, setPeriod] = useState(getCurrentPeriod())
@@ -111,15 +112,11 @@ export default function BudgetPage() {
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
             {/* Header */}
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Budget</h1>
-                    <p className="text-muted-foreground">
-                        Gestisci il tuo budget mensile e monitora le spese.
-                    </p>
-                </div>
-                <MonthSelector period={period} onPeriodChange={setPeriod} />
-            </div>
+            <PageHeader
+                title="Budget"
+                description="Gestisci il tuo budget mensile e monitora le spese."
+                actions={<MonthSelector period={period} onPeriodChange={setPeriod} />}
+            />
 
             {/* Warning for group budgets exceeding global */}
             {showGroupWarning && (

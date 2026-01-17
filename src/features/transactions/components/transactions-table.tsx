@@ -28,6 +28,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
+import { CategoryLabel } from "@/features/categories/components/category-label"
 import { formatTransactionDate } from "@/features/transactions/utils/format-date"
 import { SortField, SortOrder } from "../utils/transactions-logic"
 
@@ -73,7 +74,7 @@ export function TransactionsTable({
     return (
         <div className="space-y-4">
             {/* Desktop View: Table */}
-            <div className="hidden md:block rounded-3xl border bg-card overflow-hidden shadow-sm">
+            <div className="hidden md:block rounded-xl border bg-card overflow-hidden shadow-sm">
                 <Table>
                     <TableHeader className="bg-muted/30">
                         <TableRow className="hover:bg-transparent border-b">
@@ -145,7 +146,12 @@ export function TransactionsTable({
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex items-center gap-3">
-                                        <CategoryIcon categoryName={transaction.category} size={24} showBackground />
+                                        <CategoryIcon
+                                            categoryName={transaction.category}
+                                            categoryId={transaction.categoryId}
+                                            size={24}
+                                            showBackground
+                                        />
                                         <div className="flex flex-col">
                                             <span className="font-bold text-foreground leading-tight group-hover:text-primary transition-colors">
                                                 {transaction.description}
@@ -160,7 +166,9 @@ export function TransactionsTable({
                                         </div>
                                     </div>
                                 </TableCell>
-                                <TableCell className="text-sm text-foreground/70 font-bold">{transaction.category}</TableCell>
+                                <TableCell className="text-sm text-foreground/70 font-bold">
+                                    <CategoryLabel id={transaction.categoryId} fallback={transaction.category} />
+                                </TableCell>
                                 <TableCell className="text-center">
                                     <Badge
                                         variant="secondary"
@@ -200,18 +208,23 @@ export function TransactionsTable({
                 {transactions.map((transaction) => (
                     <div
                         key={transaction.id}
-                        className="p-4 rounded-3xl border bg-card/50 backdrop-blur-sm shadow-sm space-y-4 active:scale-[0.98] transition-transform cursor-pointer"
+                        className="p-4 rounded-xl border bg-card/50 backdrop-blur-sm shadow-sm space-y-4 active:scale-[0.98] transition-transform cursor-pointer"
                         onClick={() => onRowClick(transaction)}
                     >
                         <div className="flex items-start justify-between">
                             <div className="flex items-center gap-3">
-                                <CategoryIcon categoryName={transaction.category} size={36} showBackground />
+                                <CategoryIcon
+                                    categoryName={transaction.category}
+                                    categoryId={transaction.categoryId}
+                                    size={36}
+                                    showBackground
+                                />
                                 <div className="flex flex-col">
                                     <span className="font-black text-foreground leading-tight text-base">
                                         {transaction.description}
                                     </span>
                                     <span className="text-xs text-muted-foreground font-medium mt-0.5">
-                                        {formatTransactionDate(transaction)} • {transaction.category}
+                                        {formatTransactionDate(transaction)} • <CategoryLabel id={transaction.categoryId} fallback={transaction.category} />
                                     </span>
                                 </div>
                             </div>

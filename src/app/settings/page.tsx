@@ -8,6 +8,7 @@ import { PreferencesSection } from "./_components/preferences-section"
 import { CategoriesSection } from "./_components/categories-section"
 import { BackupSection } from "./_components/backup-section"
 import { AdvancedSection } from "./_components/advanced-section"
+import { PageHeader } from "@/components/ui/page-header"
 
 const VALID_TABS = ["preferences", "categories", "backup", "advanced"] as const
 type TabValue = typeof VALID_TABS[number]
@@ -85,17 +86,21 @@ function SettingsLoading() {
     )
 }
 
+// ... existing code ...
+
 export default function SettingsPage() {
     return (
         <div className="container mx-auto py-6 px-4 max-w-4xl">
             <div className="mb-8">
-                <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-                    <Settings2 className="h-8 w-8" />
-                    Impostazioni
-                </h1>
-                <p className="text-muted-foreground mt-2">
-                    Configura le preferenze dell&apos;applicazione e gestisci i tuoi dati.
-                </p>
+                <PageHeader
+                    title={
+                        <span className="flex items-center gap-3">
+                            <Settings2 className="h-8 w-8" />
+                            Impostazioni
+                        </span>
+                    }
+                    description="Configura le preferenze dell'applicazione e gestisci i tuoi dati."
+                />
             </div>
 
             <Suspense fallback={<SettingsLoading />}>

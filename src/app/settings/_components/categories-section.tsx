@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Database, RotateCcw, Search, ChevronLeft, ChevronRight } from "lucide-react"
+import { Database, RotateCcw, Search, MoreHorizontal, Archive, RefreshCw } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,13 +9,17 @@ import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/components/ui/tabs"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -26,13 +30,16 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { useCategories, useArchiveCategory, useUnarchiveCategory, useResetCategories } from "@/features/categories/api/use-categories"
+import { useCategories, useArchiveCategory, useUnarchiveCategory, useResetCategories, useUpsertCategory } from "@/features/categories/api/use-categories"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
-
-const PAGE_SIZE = 20
+import { CategoryFormSheet } from "@/features/categories/components/category-form-sheet"
+import { Plus, Pencil } from "lucide-react"
+import { Category } from "@/features/categories/config"
+import { cn } from "@/lib/utils"
 
 export function CategoriesSection() {
     const { data: allCategories = [], isLoading: isCategoriesLoading } = useCategories({ includeArchived: true })
+    const upsertCategory = useUpsertCategory()
     const archiveCategory = useArchiveCategory()
     const unarchiveCategory = useUnarchiveCategory()
     const resetCategories = useResetCategories()
@@ -40,13 +47,17 @@ export function CategoriesSection() {
     // Filters
     const [searchQuery, setSearchQuery] = useState("")
     const [showArchived, setShowArchived] = useState(false)
-    const [currentPage, setCurrentPage] = useState(0)
+    const [activeTab, setActiveTab] = useState("expense")
 
     // Confirmation dialogs
     const [archiveDialogId, setArchiveDialogId] = useState<string | null>(null)
     const [showResetDialog, setShowResetDialog] = useState(false)
 
-    // Memoized filtered & paginated list
+    // Form Dialog State
+    const [showFormDialog, setShowFormDialog] = useState(false)
+    const [editingCategory, setEditingCategory] = useState<Category | null>(null)
+
+    // Memoized filtered list
     const filteredCategories = useMemo(() => {
         let result = allCategories
 
@@ -67,21 +78,29 @@ export function CategoriesSection() {
         return result
     }, [allCategories, showArchived, searchQuery])
 
-    const totalPages = Math.ceil(filteredCategories.length / PAGE_SIZE)
-    const paginatedCategories = useMemo(() => {
-        const start = currentPage * PAGE_SIZE
-        return filteredCategories.slice(start, start + PAGE_SIZE)
-    }, [filteredCategories, currentPage])
+    // Split by Kind
+    const expenseCategories = useMemo(() => filteredCategories.filter(c => c.kind === "expense"), [filteredCategories])
+    const incomeCategories = useMemo(() => filteredCategories.filter(c => c.kind === "income"), [filteredCategories])
 
-    // Reset page when filters change
-    const handleSearchChange = (value: string) => {
-        setSearchQuery(value)
-        setCurrentPage(0)
+    const isOperationPending = archiveCategory.isPending || unarchiveCategory.isPending || resetCategories.isPending || upsertCategory.isPending
+
+    const handleCreateClick = () => {
+        setEditingCategory(null)
+        setShowFormDialog(true)
     }
 
-    const handleToggleArchived = (checked: boolean) => {
-        setShowArchived(checked)
-        setCurrentPage(0)
+    const handleEditClick = (category: Category) => {
+        setEditingCategory(category)
+        setShowFormDialog(true)
+    }
+
+    const handleSaveCategory = (category: Category) => {
+        upsertCategory.mutate(category, {
+            onSuccess: () => {
+                setShowFormDialog(false)
+                setEditingCategory(null)
+            }
+        })
     }
 
     const handleArchive = (id: string) => {
@@ -94,170 +113,197 @@ export function CategoriesSection() {
         unarchiveCategory.mutate(id)
     }
 
-    const handleReset = () => {
-        resetCategories.mutate(undefined, {
-            onSuccess: () => setShowResetDialog(false)
-        })
-    }
+    const renderCategoryList = (categories: Category[], emptyMessage: string) => {
+        if (categories.length === 0) {
+            return (
+                <div className="text-center py-12 text-muted-foreground bg-muted/30 rounded-xl border border-dashed">
+                    <p>{searchQuery ? "Nessuna categoria trovata" : emptyMessage}</p>
+                </div>
+            )
+        }
 
-    const isOperationPending = archiveCategory.isPending || unarchiveCategory.isPending || resetCategories.isPending
+        return (
+            <div className="grid gap-2">
+                {categories.map((cat) => (
+                    <div
+                        key={cat.id}
+                        className={cn(
+                            "group flex items-center justify-between p-3 rounded-xl border bg-card hover:bg-accent/50 transition-colors",
+                            cat.archived && "opacity-50 grayscale bg-muted/50"
+                        )}
+                    >
+                        <div className="flex items-center gap-4 overflow-hidden">
+                            <div className="shrink-0">
+                                <CategoryIcon categoryName={cat.label} size={24} showBackground />
+                            </div>
+                            <div className="flex flex-col min-w-0">
+                                <span className={cn("font-medium truncate", cat.archived && "line-through text-muted-foreground")}>
+                                    {cat.label}
+                                </span>
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                    {cat.kind === "expense" && cat.spendingNature && (
+                                        <span className={cn(
+                                            "capitalize px-1.5 py-0.5 rounded-md bg-muted font-medium",
+                                            cat.spendingNature === "essential" && "text-emerald-600 bg-emerald-50",
+                                            cat.spendingNature === "comfort" && "text-blue-600 bg-blue-50",
+                                            cat.spendingNature === "superfluous" && "text-amber-600 bg-amber-50"
+                                        )}>
+                                            {cat.spendingNature === "essential" ? "Essenziale" :
+                                                cat.spendingNature === "comfort" ? "Benessere" : "Superfluo"}
+                                        </span>
+                                    )}
+                                    {cat.archived && (
+                                        <span className="text-[10px] font-bold uppercase tracking-wider bg-zinc-100 text-zinc-500 px-1.5 py-0.5 rounded">
+                                            Archiviata
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                            {/* Toggle Archive / Restore */}
+                            {cat.archived ? (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                                    onClick={() => handleUnarchive(cat.id)}
+                                    disabled={isOperationPending}
+                                    title="Ripristina"
+                                >
+                                    <RefreshCw className="h-4 w-4" />
+                                </Button>
+                            ) : (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
+                                    onClick={() => handleEditClick(cat)}
+                                    disabled={isOperationPending}
+                                >
+                                    <Pencil className="h-4 w-4" />
+                                </Button>
+                            )}
+
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100">
+                                        <MoreHorizontal className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-[160px]">
+                                    {!cat.archived ? (
+                                        <DropdownMenuItem
+                                            className="text-destructive focus:text-destructive"
+                                            onClick={() => setArchiveDialogId(cat.id)}
+                                        >
+                                            <Archive className="mr-2 h-4 w-4" />
+                                            Archivia
+                                        </DropdownMenuItem>
+                                    ) : (
+                                        <DropdownMenuItem onClick={() => handleUnarchive(cat.id)}>
+                                            <RefreshCw className="mr-2 h-4 w-4" />
+                                            Ripristina
+                                        </DropdownMenuItem>
+                                    )}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        )
+    }
 
     return (
         <>
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Database className="h-5 w-5" />
-                        Gestione Categorie
-                    </CardTitle>
-                    <CardDescription>
-                        Visualizza e gestisci le categorie di spesa e introito.
-                        L&apos;archiviazione nasconde la categoria dai menu senza cancellare i dati storici.
-                    </CardDescription>
+            <Card className="border-none shadow-none sm:border sm:shadow-sm">
+                <CardHeader className="px-0 sm:px-6">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div className="space-y-1 text-center sm:text-left">
+                            <CardTitle className="flex items-center justify-center sm:justify-start gap-2 text-xl">
+                                <Database className="h-5 w-5 text-primary" />
+                                Categorie
+                            </CardTitle>
+                            <CardDescription>
+                                Organizza le tue entrate e uscite
+                            </CardDescription>
+                        </div>
+                        <Button onClick={handleCreateClick} className="w-full sm:w-auto gap-2 rounded-full font-bold shadow-lg shadow-primary/20">
+                            <Plus className="h-4 w-4" />
+                            Nuova Categoria
+                        </Button>
+                    </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-0 sm:px-6">
                     {isCategoriesLoading ? (
                         <div className="space-y-4">
-                            <Skeleton className="h-10 w-full" />
-                            <Skeleton className="h-[200px] w-full" />
+                            <Skeleton className="h-10 w-full rounded-xl" />
+                            <Skeleton className="h-[200px] w-full rounded-xl" />
                         </div>
                     ) : (
-                        <div className="space-y-4">
-                            {/* Filters */}
-                            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-                                <div className="relative w-full sm:w-[280px]">
+                        <div className="space-y-6">
+                            {/* Controls */}
+                            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                                <div className="relative w-full">
                                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                     <Input
-                                        placeholder="Cerca categoria..."
+                                        placeholder="Cerca..."
                                         value={searchQuery}
-                                        onChange={(e) => handleSearchChange(e.target.value)}
-                                        className="pl-9"
-                                        aria-label="Cerca categoria"
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="pl-9 bg-muted/50 border-none rounded-xl"
                                     />
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 shrink-0">
                                     <Switch
                                         id="show-archived"
                                         checked={showArchived}
-                                        onCheckedChange={handleToggleArchived}
-                                        aria-label="Mostra archiviate"
+                                        onCheckedChange={setShowArchived}
                                     />
-                                    <Label htmlFor="show-archived" className="text-sm cursor-pointer">
+                                    <Label htmlFor="show-archived" className="text-xs font-medium cursor-pointer text-muted-foreground">
                                         Mostra archiviate
                                     </Label>
                                 </div>
                             </div>
 
-                            {/* Table */}
-                            <div className="rounded-md border overflow-hidden">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead className="w-[40px]"></TableHead>
-                                            <TableHead>Nome</TableHead>
-                                            <TableHead>Tipo</TableHead>
-                                            <TableHead className="hidden sm:table-cell">Id</TableHead>
-                                            <TableHead className="text-right">Azioni</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {paginatedCategories.length === 0 ? (
-                                            <TableRow>
-                                                <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                                                    {searchQuery ? "Nessuna categoria trovata" : "Nessuna categoria disponibile"}
-                                                </TableCell>
-                                            </TableRow>
-                                        ) : (
-                                            paginatedCategories.map((cat) => (
-                                                <TableRow key={cat.id} className={cat.archived ? "opacity-40 grayscale" : ""}>
-                                                    <TableCell>
-                                                        <CategoryIcon categoryName={cat.label} size={18} />
-                                                    </TableCell>
-                                                    <TableCell className="font-medium">
-                                                        {cat.label}
-                                                        {cat.archived && (
-                                                            <span className="ml-2 text-[10px] bg-muted px-1.5 py-0.5 rounded uppercase tracking-wider font-bold">Archiviata</span>
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell className="capitalize text-xs">
-                                                        {cat.kind === "expense" ? "Uscita" : "Entrata"}
-                                                    </TableCell>
-                                                    <TableCell className="font-mono text-[10px] text-muted-foreground hidden sm:table-cell">
-                                                        {cat.id}
-                                                    </TableCell>
-                                                    <TableCell className="text-right">
-                                                        {cat.archived ? (
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                className="h-8 text-[11px] font-bold"
-                                                                onClick={() => handleUnarchive(cat.id)}
-                                                                disabled={isOperationPending}
-                                                            >
-                                                                Ripristina
-                                                            </Button>
-                                                        ) : (
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                className="h-8 text-[11px] font-bold text-destructive hover:text-destructive hover:bg-destructive/5"
-                                                                onClick={() => setArchiveDialogId(cat.id)}
-                                                                disabled={isOperationPending}
-                                                            >
-                                                                Archivia
-                                                            </Button>
-                                                        )}
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))
-                                        )}
-                                    </TableBody>
-                                </Table>
-                            </div>
-
-                            {/* Pagination */}
-                            {totalPages > 1 && (
-                                <div className="flex items-center justify-between text-sm">
-                                    <span className="text-muted-foreground">
-                                        {filteredCategories.length} categorie
-                                    </span>
-                                    <div className="flex items-center gap-2">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
-                                            disabled={currentPage === 0}
-                                            aria-label="Pagina precedente"
-                                        >
-                                            <ChevronLeft className="h-4 w-4" />
-                                        </Button>
-                                        <span className="text-muted-foreground">
-                                            {currentPage + 1} / {totalPages}
-                                        </span>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))}
-                                            disabled={currentPage >= totalPages - 1}
-                                            aria-label="Pagina successiva"
-                                        >
-                                            <ChevronRight className="h-4 w-4" />
-                                        </Button>
+                            {/* Tabs & List */}
+                            <Tabs defaultValue="expense" value={activeTab} onValueChange={setActiveTab} className="w-full">
+                                <TabsList className="grid w-full grid-cols-2 rounded-xl h-12 p-1 bg-muted/50">
+                                    <TabsTrigger value="expense" className="rounded-lg font-bold data-[state=active]:bg-background data-[state=active]:text-rose-600 data-[state=active]:shadow-sm transition-all duration-300">
+                                        Uscite ({expenseCategories.length})
+                                    </TabsTrigger>
+                                    <TabsTrigger value="income" className="rounded-lg font-bold data-[state=active]:bg-background data-[state=active]:text-emerald-600 data-[state=active]:shadow-sm transition-all duration-300">
+                                        Entrate ({incomeCategories.length})
+                                    </TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="expense" className="mt-6 focus-visible:outline-none animate-in fade-in-50 slide-in-from-bottom-2 duration-300">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Lista Uscite</h3>
+                                        <span className="text-xs text-muted-foreground">{expenseCategories.length} trovate</span>
                                     </div>
-                                </div>
-                            )}
+                                    {renderCategoryList(expenseCategories, "Nessuna categoria di spesa.")}
+                                </TabsContent>
+                                <TabsContent value="income" className="mt-6 focus-visible:outline-none animate-in fade-in-50 slide-in-from-bottom-2 duration-300">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Lista Entrate</h3>
+                                        <span className="text-xs text-muted-foreground">{incomeCategories.length} trovate</span>
+                                    </div>
+                                    {renderCategoryList(incomeCategories, "Nessuna categoria di entrata.")}
+                                </TabsContent>
+                            </Tabs>
 
-                            {/* Reset button */}
-                            <div className="flex justify-end pt-2">
+                            {/* Reset Action */}
+                            <div className="flex justify-center pt-8 border-t">
                                 <Button
-                                    variant="outline"
+                                    variant="ghost"
                                     size="sm"
-                                    className="gap-2"
+                                    className="gap-2 text-muted-foreground hover:text-destructive text-xs"
                                     onClick={() => setShowResetDialog(true)}
                                     disabled={isOperationPending}
                                 >
-                                    <RotateCcw className="h-4 w-4" />
-                                    Ripristina Categorie Default
+                                    <RotateCcw className="h-3 w-3" />
+                                    Ripristina Defaults
                                 </Button>
                             </div>
                         </div>
@@ -299,7 +345,7 @@ export function CategoriesSection() {
                     <AlertDialogFooter>
                         <AlertDialogCancel disabled={resetCategories.isPending}>Annulla</AlertDialogCancel>
                         <AlertDialogAction
-                            onClick={handleReset}
+                            onClick={() => resetCategories.mutate(undefined, { onSuccess: () => setShowResetDialog(false) })}
                             disabled={resetCategories.isPending}
                         >
                             {resetCategories.isPending ? "Ripristinando..." : "Ripristina"}
@@ -307,6 +353,15 @@ export function CategoriesSection() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            {/* Form Sheet */}
+            <CategoryFormSheet
+                open={showFormDialog}
+                onOpenChange={setShowFormDialog}
+                categoryToEdit={editingCategory}
+                onSave={handleSaveCategory}
+                isSaving={upsertCategory.isPending}
+            />
         </>
     )
 }

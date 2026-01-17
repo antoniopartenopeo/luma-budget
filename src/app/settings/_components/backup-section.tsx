@@ -162,7 +162,7 @@ export function BackupSection() {
                                     className="w-full sm:w-auto"
                                 >
                                     <Download className="mr-2 h-4 w-4" />
-                                    Esporta backup (JSON)
+                                    Esporta Backup
                                 </Button>
                             </div>
                         </div>
@@ -189,7 +189,7 @@ export function BackupSection() {
                                     >
                                         <label htmlFor="backup-upload" className="cursor-pointer">
                                             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
-                                            Importa backup (JSON)
+                                            Ripristina Backup
                                         </label>
                                     </Button>
                                 </div>
@@ -237,7 +237,7 @@ export function BackupSection() {
                     <AlertDialogFooter className="gap-2 sm:gap-0">
                         <AlertDialogCancel disabled={isLoading}>Annulla</AlertDialogCancel>
                         <AlertDialogAction onClick={confirmImport} disabled={isLoading}>
-                            {isLoading ? "Importando..." : "Importa e Sovrascrivi"}
+                            {isLoading ? "Ripristino..." : "Ripristina"}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

@@ -12,6 +12,13 @@ export interface CategoriesStorage {
 // Internal cache
 let categoriesCache: Category[] | null = null
 
+export function generateCategoryId(): string {
+    if (typeof globalThis !== "undefined" && globalThis.crypto?.randomUUID) {
+        return globalThis.crypto.randomUUID()
+    }
+    return Math.random().toString(36).substring(2, 11)
+}
+
 /**
  * Loads categories from storage with migration and seed logic
  */

@@ -10,6 +10,7 @@ import { InsightCard } from "./insight-card"
 import { TrendAnalysisCard } from "./trend-analysis-card"
 import { AIAdvisorCard } from "./ai-advisor-card"
 import { getCurrentPeriod, formatPeriodLabel } from "../utils"
+import { PageHeader } from "@/components/ui/page-header"
 
 interface InsightsPageContentProps {
     initialPeriod?: string
@@ -38,14 +39,10 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
             <AIAdvisorCard />
 
             {/* Header */}
-            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Insights</h1>
-                    <p className="text-muted-foreground font-medium mt-1">
-                        Analisi intelligente delle tue spese e suggerimenti personalizzati.
-                    </p>
-                </div>
-            </div>
+            <PageHeader
+                title="Insights"
+                description="Analisi intelligente delle tue spese e suggerimenti personalizzati."
+            />
 
             {/* Trends Section */}
             <TrendAnalysisCard />

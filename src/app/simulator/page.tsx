@@ -40,17 +40,9 @@ export default function SimulatorPage() {
 
     const handleReset = () => setSavingsMap({})
 
-    const handleApplyPreset = (percent: number) => {
-        const newMap: Record<string, number> = {}
-        categoriesList.forEach(c => {
-            if (c.averageAmount > 0) newMap[c.id] = percent
-        })
-        setSavingsMap(newMap)
-    }
-
     // Render Helpers
     if (isLoading) {
-        return <div className="p-8">Caricamento simulatore...</div>
+        return <div className="p-8 text-center text-muted-foreground">Caricamento simulatore...</div>
     }
 
     // Top categories (spend > 0)
@@ -60,46 +52,45 @@ export default function SimulatorPage() {
         <div className="space-y-6 pb-20 md:pb-6">
             <PageHeader
                 title="Simulatore"
-                subtitle="Prova a ridurre le tue spese per vedere quanto potresti risparmiare ogni mese."
+                description="Prova a ridurre le tue spese per vedere quanto potresti risparmiare ogni mese."
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* LEFT COL: Controls */}
                 <div className="lg:col-span-2 space-y-6">
 
-                    {/* Toolbar */}
-                    <Card className="border-none bg-muted/40 shadow-sm">
-                        <CardContent className="p-4 flex flex-col sm:flex-row gap-4 items-center justify-between">
-                            <div className="flex items-center gap-3 w-full sm:w-auto">
-                                <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Basato su ultimi:</span>
-                                <Select value={period.toString()} onValueChange={(v) => setPeriod(parseInt(v) as SimulationPeriod)}>
-                                    <SelectTrigger className="w-[140px] bg-white dark:bg-black/20">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="3">3 Mesi</SelectItem>
-                                        <SelectItem value="6">6 Mesi (Default)</SelectItem>
-                                        <SelectItem value="12">12 Mesi</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                    {/* Compact Toolbar */}
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-2 border-b">
+                        <div className="flex items-center gap-3">
+                            <span className="text-sm font-medium text-slate-500">Analisi basata su:</span>
+                            <Select value={period.toString()} onValueChange={(v) => setPeriod(parseInt(v) as SimulationPeriod)}>
+                                <SelectTrigger className="w-[180px] h-9 text-sm">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="3">Ultimi 3 Mesi</SelectItem>
+                                    <SelectItem value="6">Ultimi 6 Mesi (Default)</SelectItem>
+                                    <SelectItem value="12">Ultimo Anno</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
 
-                            <div className="flex items-center gap-2 w-full sm:w-auto">
-                                <Button variant="outline" size="sm" onClick={() => handleApplyPreset(10)} className="flex-1 sm:flex-none text-xs">
-                                    -10% Tutti
-                                </Button>
-                                <Button variant="ghost" size="sm" onClick={handleReset} className="text-muted-foreground hover:text-foreground">
-                                    <RefreshCw className="h-4 w-4 mr-2" />
-                                    Reset
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleReset}
+                            disabled={Object.keys(savingsMap).length === 0}
+                            className="text-slate-500 hover:text-red-500 hover:bg-red-50 h-9"
+                        >
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            Resetta Simulazione
+                        </Button>
+                    </div>
 
                     {/* Categories List */}
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         {activeCategories.length === 0 ? (
-                            <div className="text-center py-12 text-muted-foreground">
+                            <div className="text-center py-12 text-muted-foreground bg-muted/20 rounded-xl">
                                 Nessuna spesa trovata nel periodo selezionato.
                             </div>
                         ) : (
@@ -108,27 +99,35 @@ export default function SimulatorPage() {
                                 const simulatedAmount = Math.round(cat.averageAmount * (1 - currentSaving / 100))
 
                                 return (
-                                    <Card key={cat.id} className={cn("overflow-hidden transition-all border-none shadow-sm", currentSaving > 0 ? "bg-primary/5 ring-1 ring-primary/20" : "bg-card")}>
-                                        <div className="p-4 sm:p-5 flex flex-col gap-4">
+                                    <Card key={cat.id} className={cn(
+                                        "overflow-hidden transition-all duration-300 border shadow-sm",
+                                        currentSaving > 0
+                                            ? "bg-white/80 border-primary/20 ring-1 ring-primary/10 shadow-md"
+                                            : "bg-white border-slate-200/60"
+                                    )}>
+                                        <div className="p-4 flex flex-col gap-3">
                                             {/* Row 1: Header Info */}
                                             <div className="flex items-start justify-between">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="h-10 w-10 rounded-full flex items-center justify-center bg-muted">
+                                                    <div className={cn(
+                                                        "h-10 w-10 rounded-xl flex items-center justify-center transition-colors",
+                                                        currentSaving > 0 ? "bg-primary/10" : "bg-slate-100"
+                                                    )}>
                                                         <CategoryIcon categoryId={cat.id} />
                                                     </div>
                                                     <div>
-                                                        <h4 className="font-semibold text-sm">{cat.label}</h4>
-                                                        <div className="text-xs text-muted-foreground">
-                                                            Media mensile: <span className="font-medium text-foreground">{formatEuroNumber(cat.averageAmount, currency, locale)}</span>
+                                                        <h4 className="font-semibold text-sm text-slate-900">{cat.label}</h4>
+                                                        <div className="text-xs text-slate-500">
+                                                            Media reale: <span className="font-medium text-slate-700">{formatEuroNumber(cat.averageAmount, currency, locale)}</span>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div className="text-right">
-                                                    <div className={cn("text-lg font-bold", currentSaving > 0 ? "text-primary" : "text-foreground")}>
+                                                    <div className={cn("text-lg font-bold transition-colors", currentSaving > 0 ? "text-primary" : "text-slate-900")}>
                                                         {formatEuroNumber(simulatedAmount, currency, locale)}
                                                     </div>
                                                     {currentSaving > 0 && (
-                                                        <span className="text-xs font-semibold text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 px-2 py-0.5 rounded-full">
+                                                        <span className="text-xs font-semibold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full inline-block mt-1">
                                                             -{formatEuroNumber(cat.averageAmount - simulatedAmount, currency, locale)}
                                                         </span>
                                                     )}
@@ -136,8 +135,8 @@ export default function SimulatorPage() {
                                             </div>
 
                                             {/* Row 2: Slider */}
-                                            <div className="flex items-center gap-4">
-                                                <span className="text-xs font-medium w-12 text-muted-foreground">{currentSaving}%</span>
+                                            <div className="flex items-center gap-3 pt-1">
+                                                <div className="text-xs font-medium w-10 text-slate-400">0%</div>
                                                 <Slider
                                                     value={[currentSaving]}
                                                     max={100}
@@ -145,7 +144,12 @@ export default function SimulatorPage() {
                                                     onValueChange={(v: number[]) => handleSliderChange(cat.id, v)}
                                                     className="flex-1"
                                                 />
-                                                <span className="text-xs font-medium w-12 text-right text-muted-foreground">-100%</span>
+                                                <div className={cn(
+                                                    "text-xs font-bold w-12 text-right",
+                                                    currentSaving > 0 ? "text-primary" : "text-slate-400"
+                                                )}>
+                                                    -{currentSaving}%
+                                                </div>
                                             </div>
                                         </div>
                                     </Card>
@@ -155,48 +159,61 @@ export default function SimulatorPage() {
                     </div>
                 </div>
 
-                {/* RIGHT COL: Sticky Results */}
+                {/* RIGHT COL: Sticky Results ("White Glass" Variant) */}
                 <div className="lg:col-span-1">
                     <div className="sticky top-6">
-                        <Card className="border-none shadow-lg bg-gradient-to-br from-indigo-900 to-slate-900 text-white overflow-hidden">
-                            <CardHeader className="pb-2">
-                                <CardTitle className="flex items-center gap-2 text-lg">
-                                    <Calculator className="h-5 w-5 text-indigo-300" />
-                                    Risultato Simulazione
+                        <Card className="relative overflow-hidden rounded-[2rem] border border-white/40 shadow-xl bg-white/40 backdrop-blur-3xl p-6">
+
+                            {/* Ambient Glows */}
+                            <div className="absolute top-[-50%] right-[-50%] w-[150%] h-[150%] bg-gradient-to-br from-white/50 to-transparent pointer-events-none" />
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-[50px] rounded-full pointer-events-none" />
+
+                            <CardHeader className="p-0 pb-4 relative z-10">
+                                <CardTitle className="flex items-center gap-2 text-lg font-bold text-slate-900">
+                                    <Calculator className="h-5 w-5 text-primary" />
+                                    Risultati
                                 </CardTitle>
+                                <p className="text-xs text-slate-500 font-medium">Stima basata sulle medie storiche.</p>
                             </CardHeader>
-                            <CardContent className="space-y-6 pt-4">
+
+                            <CardContent className="space-y-6 p-0 relative z-10">
 
                                 {/* Baseline vs Simulated */}
-                                <div className="space-y-1">
-                                    <div className="flex justify-between text-sm text-indigo-200">
-                                        <span>Spesa Media Attuale</span>
+                                <div className="space-y-2 bg-white/50 rounded-xl p-4 border border-white/50 shadow-sm">
+                                    <div className="flex justify-between text-sm text-slate-500 font-medium">
+                                        <span>Spesa Attuale</span>
                                         <span>{formatEuroNumber(simulationResult.baselineTotal, currency, locale)}</span>
                                     </div>
-                                    <div className="flex justify-between text-2xl font-bold">
+                                    <Separator className="bg-slate-200/50" />
+                                    <div className="flex justify-between text-xl font-bold text-slate-900 items-baseline">
                                         <span>Nuova Spesa</span>
-                                        <span className="text-white">{formatEuroNumber(simulationResult.simulatedTotal, currency, locale)}</span>
+                                        <span>{formatEuroNumber(simulationResult.simulatedTotal, currency, locale)}</span>
                                     </div>
                                 </div>
-
-                                <Separator className="bg-white/10" />
 
                                 {/* Savings Big KPI */}
-                                <div className="bg-emerald-500/20 border border-emerald-500/30 rounded-2xl p-4 text-center">
-                                    <div className="text-xs uppercase tracking-wider font-bold text-emerald-300 mb-1">
-                                        Risparmio Mensile
+                                {simulationResult.savingsAmount > 0 ? (
+                                    <div className="bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 rounded-2xl p-5 text-center transform transition-all hover:scale-[1.02]">
+                                        <div className="text-xs uppercase tracking-wider font-bold text-emerald-100 mb-1">
+                                            Risparmio Mensile
+                                        </div>
+                                        <div className="text-3xl font-extrabold">
+                                            {formatEuroNumber(simulationResult.savingsAmount, currency, locale)}
+                                        </div>
+                                        <div className="text-sm font-semibold text-emerald-100 mt-1">
+                                            -{simulationResult.savingsPercent}% del totale
+                                        </div>
                                     </div>
-                                    <div className="text-3xl font-extrabold text-emerald-300">
-                                        {formatEuroNumber(simulationResult.savingsAmount, currency, locale)}
+                                ) : (
+                                    <div className="bg-slate-100 rounded-2xl p-5 text-center text-slate-400">
+                                        <div className="text-sm font-medium">Nessuna modifica</div>
+                                        <div className="text-xs mt-1">Muovi gli slider per simulare</div>
                                     </div>
-                                    <div className="text-sm font-medium text-emerald-400/80 mt-1">
-                                        -{simulationResult.savingsPercent}% del totale
-                                    </div>
-                                </div>
+                                )}
 
-                                {/* Call to Action / Info */}
-                                <div className="text-xs text-indigo-200/60 leading-relaxed text-center px-2">
-                                    Questa è una simulazione in tempo reale. Nessun dato verrà modificato nel tuo budget reale.
+                                {/* Info Footer */}
+                                <div className="text-[10px] text-slate-400 text-center leading-relaxed px-2">
+                                    I calcoli sono approssimativi e si basano sulle medie dei mesi passati selezionati.
                                 </div>
                             </CardContent>
                         </Card>

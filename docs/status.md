@@ -15,14 +15,16 @@ Il progetto è governato dal sistema **Directive, Orchestration, Execution (DOE)
 ## Stato del Progetto (alto livello)
 - Core (Dashboard / Transazioni / Budget): **Stabile**
 - Insights: **Stable (v1.2.0)** — Analisi Trend & AI Advisor con UI Moderna (Glassmorphism/Card) + Analisi Mensile Orizzontale.
-- Settings: **Stable (v1.2.0)** — UI Tab, Preferences Redesign (Sezioni/Icone), Profilo Utente (Nome persistente), Gestione Dati.
-- UI/UX Harmony: **Audit Complete** — Standardized "Soft UI" (radius/animations), Typography (PageHeader), and Microcopy.
+- Settings: **Stable (v1.3.0)** — UI Refinements (Mobile Toolbar, Consistent Icons/Titles), Full Width Layout, Accessibilità.
+- Simulatore: **Stable (v1.0.0)** — Strumento "What-If" Read-Only per simulazione risparmio (Slider interattivi, Medie Storiche).
+- UI/UX Harmony: **Audit Complete** — Standardized "Soft UI" (radius/animations), Typography (PageHeader), White Glass (Simulatore/Insights).
 
 ## Sezioni App
 - **Dashboard**: Panoramica alto livello (entrate, uscite, saldo mensile, budget residuo) + grafici distribuzione categorie.
 - **Transazioni**: CRUD, filtri (ricerca/tipo/categoria/periodo), export CSV.
 - **Categorie**: Gestione completa (CRUD), separazione Entrate/Uscite, icone personalizzate, Virtual Join per renames.
 - **Budget**: Pianificazione mensile (YYYY-MM) + spesa per gruppi (Essenziali / Comfort / Superfluo).
+- **Simulatore**: Analisi interattiva per ridurre le spese basata su medie storiche (calcolo real-time, zero impatto sui dati).
 - **Insights**: Visualizzazione trend su 12 mesi, AI Advisor avanzato, Analisi Mensile dettagliata (UI Card unificata).
 - **Impostazioni**: Preferenze (Profilo, Tema, Valuta), Gestione Dati (Backup/Restore JSON), Tema.
 

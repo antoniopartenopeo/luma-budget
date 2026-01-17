@@ -16,6 +16,7 @@ Il progetto è governato dal sistema **Directive, Orchestration, Execution (DOE)
 - Core (Dashboard / Transazioni / Budget): **Stabile**
 - Insights: **Stable (v1.1.x)** — Analisi Trend & AI Advisor (Algoritmo raffinato).
 - Settings: **Stable (v1.1.0)** — UI Tab, Gestione Dati, Backup/Ripristino, Gestione Categorie (CRUD + Redesign).
+- UI/UX Harmony: **Audit Complete** — Standardized "Soft UI" (radius/animations), Typography (PageHeader), and Microcopy.
 
 ## Sezioni App
 - **Dashboard**: Panoramica alto livello (entrate, uscite, saldo mensile, budget residuo) + grafici distribuzione categorie.

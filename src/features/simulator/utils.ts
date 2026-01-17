@@ -1,4 +1,9 @@
 import { Transaction } from "@/features/transactions/api/types"
+import { calculateDateRange } from "@/lib/date-ranges"
+
+// If types are defined in this file (which they were previously), restore them or import them.
+// Looking at previous file content, CategoryAverage and SimulationResult were defined inline. 
+// I should restore them if they are not in ./types.
 
 export type SimulationPeriod = 3 | 6 | 12
 
@@ -22,49 +27,60 @@ export interface SimulationResult {
     }>
 }
 
+// ... existing types export ...
+
 /**
  * Calcola la media mensile per categoria basandosi su una finestra temporale.
- * Esclude SEMPRE il mese corrente per avere dati completi.
+ * Utilizza la logica di filtering condivisa (calculateDateRange).
+ * Per il simulatore, "ultimi N mesi" si intende solitamente "ultimi N mesi completi".
+ * Quindi se oggi è il 17 Gennaio, e chiedo 3 mesi, il periodo pivot dovrebbe essere Dicembre (mese precedente).
+ * 
+ * @param periodMonths - 3, 6, or 12
+ * @param now - Reference date (default: Date.now())
  */
 export function computeMonthlyAverages(
     transactions: Transaction[],
-    monthsWindow: SimulationPeriod,
+    periodMonths: SimulationPeriod,
     now: Date = new Date()
 ): Record<string, CategoryAverage> {
-    // 1. Definisci la finestra temporale (mesi completi precedenti)
-    const endDate = new Date(now.getFullYear(), now.getMonth(), 1) // Start of current month (exclusive)
-    const startDate = new Date(endDate)
-    startDate.setMonth(startDate.getMonth() - monthsWindow)
+    // 1. Determina il "Mese Precedente" come pivot per avere mesi completi
+    // E.g. se siamo a Gennaio, pivot = "YYYY-12" dell'anno scorso
+    const previousMonthDate = new Date(now)
+    previousMonthDate.setDate(0) // Last day of previous month
 
-    // 2. Filtra transazioni: Solo spese, solo nel periodo
-    const relevantTransactions = transactions.filter(t => {
-        const tDate = new Date(t.date)
-        return (
-            t.type === "expense" &&
-            tDate >= startDate &&
-            tDate < endDate
-        )
-    })
+    const pivotYear = previousMonthDate.getFullYear()
+    const pivotMonth = previousMonthDate.getMonth() + 1 // 1-12
+    const pivotStr = `${pivotYear}-${pivotMonth.toString().padStart(2, '0')}`
 
-    // 3. Aggrega per categoria
+    // 2. Calcola range usando l'utility condivisa
+    const { startDate, endDate } = calculateDateRange(pivotStr, periodMonths)
+
+    // 3. Filtra transazioni (Expense only, in range)
     const sums: Record<string, number> = {}
 
-    relevantTransactions.forEach(t => {
-        const catId = t.categoryId || "uncategorized"
-        sums[catId] = (sums[catId] || 0) + t.amountCents
+    transactions.forEach(t => {
+        if (t.type !== 'expense') return
+
+        const tDate = new Date(t.timestamp)
+        if (tDate >= startDate && tDate <= endDate) {
+            const catId = t.categoryId || "uncategorized"
+            // Use amountCents directly (integer math)
+            sums[catId] = (sums[catId] || 0) + Math.abs(t.amountCents)
+        }
     })
 
-    // 4. Calcola medie
+    // 4. Calcola medie (Integer division with round)
     const result: Record<string, CategoryAverage> = {}
 
-    // Processa tutte le categorie trovate (anche quelle non presenti avranno average 0 se non nel filtro, ma qui processiamo solo quelle con tx)
-    // NB: Per una UI completa, il chiamante dovrebbe mergiare con la lista completa delle categorie.
     Object.keys(sums).forEach(catId => {
+        const total = sums[catId]
+        const average = Math.round(total / periodMonths)
+
         result[catId] = {
             categoryId: catId,
-            totalInPeriod: sums[catId],
-            monthCount: monthsWindow,
-            averageAmount: Math.round(sums[catId] / monthsWindow)
+            totalInPeriod: total,
+            monthCount: periodMonths,
+            averageAmount: average
         }
     })
 
@@ -73,6 +89,7 @@ export function computeMonthlyAverages(
 
 /**
  * Applica le percentuali di risparmio alle medie baseline.
+ * Lavora interamente con interi (centesimi).
  */
 export function applySavings(
     averages: Record<string, CategoryAverage>,

@@ -1,5 +1,6 @@
 import { computeMonthlyAverages, applySavings, SimulationPeriod, CategoryAverage, computeEffectiveSavingsPct, classifySuperfluousSpend } from "../utils"
 import { Transaction } from "@/features/transactions/api/types"
+import { describe, it, expect } from "vitest"
 
 describe("Simulator Utils", () => {
     // Mock Date to ensure deterministic tests
@@ -15,10 +16,10 @@ describe("Simulator Utils", () => {
             // Dicembre: 0
             // Gennaio (corrente): 50000 -> Should be IGNORED
             const transactions: Partial<Transaction>[] = [
-                { date: "2025-10-15", amountCents: 10000, type: "expense", categoryId: "cat1" },
-                { date: "2025-11-20", amountCents: 20000, type: "expense", categoryId: "cat1" },
-                { date: "2026-01-05", amountCents: 50000, type: "expense", categoryId: "cat1" }, // Current month
-                { date: "2025-11-20", amountCents: 5000, type: "income", categoryId: "cat1" }, // Income ignored
+                { date: "2025-10-15", timestamp: new Date("2025-10-15").getTime(), amountCents: 10000, type: "expense", categoryId: "cat1" },
+                { date: "2025-11-20", timestamp: new Date("2025-11-20").getTime(), amountCents: 20000, type: "expense", categoryId: "cat1" },
+                { date: "2026-01-05", timestamp: new Date("2026-01-05").getTime(), amountCents: 50000, type: "expense", categoryId: "cat1" }, // Current month
+                { date: "2025-11-20", timestamp: new Date("2025-11-20").getTime(), amountCents: 5000, type: "income", categoryId: "cat1" }, // Income ignored
             ]
 
             const result = computeMonthlyAverages(transactions as Transaction[], period, mockNow)
@@ -34,7 +35,7 @@ describe("Simulator Utils", () => {
             const period: SimulationPeriod = 3
             // Total 100. Avg 33.333 -> 33
             const transactions: Partial<Transaction>[] = [
-                { date: "2025-12-01", amountCents: 100, type: "expense", categoryId: "cat2" }
+                { date: "2025-12-01", timestamp: new Date("2025-12-01").getTime(), amountCents: 100, type: "expense", categoryId: "cat2" }
             ]
             const result = computeMonthlyAverages(transactions as Transaction[], period, mockNow)
             expect(result["cat2"].averageAmount).toBe(33)

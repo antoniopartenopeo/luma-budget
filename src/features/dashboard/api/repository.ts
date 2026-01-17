@@ -2,6 +2,7 @@ import { DashboardSummary, DashboardTimeFilter } from "./types"
 import { fetchTransactions } from "../../transactions/api/repository"
 import { fetchBudget } from "../../budget/api/repository"
 import { getSignedCents } from "@/lib/currency-utils"
+import { calculateDateRange } from "@/lib/date-ranges"
 import { delay } from "@/lib/delay"
 
 const DEFAULT_USER_ID = "user-1"
@@ -11,17 +12,10 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
     await delay(600)
 
     // 1. Determine date range for filtered metrics
-    const endDate = new Date(filter.period + "-01")
-    // Set to end of month
-    endDate.setMonth(endDate.getMonth() + 1)
-    endDate.setDate(0)
-
-    const startDate = new Date(filter.period + "-01")
-    if (filter.mode === "range" && filter.months) {
-        startDate.setMonth(startDate.getMonth() - (filter.months - 1))
-    }
-    // Set to start of month
-    startDate.setDate(1)
+    const { startDate, endDate } = calculateDateRange(
+        filter.period,
+        (filter.mode === "range" && filter.months) ? filter.months : 1
+    )
 
     // 2. Fetch all data
     // In a real app, we would filter in the query, but here we fetch all and filter in memory

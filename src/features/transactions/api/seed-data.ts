@@ -16,7 +16,6 @@ const addDays = (date: Date, days: number) => {
 
 // Random helper
 const randomInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min
-const randomItem = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)]
 
 // Generators for specific categories
 const generateTransactions = (): Transaction[] => {

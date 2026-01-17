@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Receipt, PiggyBank, LineChart, Settings, Camera } from "lucide-react"
+import { LayoutDashboard, Receipt, PiggyBank, LineChart, Settings, Calculator } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useSettings } from "@/features/settings/api/use-settings"
@@ -12,6 +12,7 @@ const sidebarItems = [
   { icon: Receipt, label: "Transazioni", href: "/transactions" },
   { icon: PiggyBank, label: "Budget", href: "/budget" },
   { icon: LineChart, label: "Insights", href: "/insights" },
+  { icon: Calculator, label: "Simulatore", href: "/simulator" },
   { icon: Settings, label: "Impostazioni", href: "/settings" },
 ]
 

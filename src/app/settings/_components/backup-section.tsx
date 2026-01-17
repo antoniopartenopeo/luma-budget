@@ -132,7 +132,7 @@ export function BackupSection() {
         <>
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                    <CardTitle className="flex items-center gap-2 text-lg">
                         <Database className="h-5 w-5" />
                         Backup & Ripristino
                     </CardTitle>

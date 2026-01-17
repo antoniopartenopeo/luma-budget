@@ -134,7 +134,7 @@ export function CategoriesSection() {
                     >
                         <div className="flex items-center gap-4 overflow-hidden">
                             <div className="shrink-0">
-                                <CategoryIcon categoryName={cat.label} size={24} showBackground />
+                                <CategoryIcon categoryName={cat.label} size={20} showBackground />
                             </div>
                             <div className="flex flex-col min-w-0">
                                 <span className={cn("font-medium truncate", cat.archived && "line-through text-muted-foreground")}>
@@ -222,7 +222,7 @@ export function CategoriesSection() {
                 <CardHeader className="px-0 sm:px-6">
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div className="space-y-1 text-center sm:text-left">
-                            <CardTitle className="flex items-center justify-center sm:justify-start gap-2 text-xl">
+                            <CardTitle className="flex items-center justify-center sm:justify-start gap-2 text-lg">
                                 <Database className="h-5 w-5 text-primary" />
                                 Categorie
                             </CardTitle>
@@ -230,7 +230,7 @@ export function CategoriesSection() {
                                 Organizza le tue entrate e uscite
                             </CardDescription>
                         </div>
-                        <Button onClick={handleCreateClick} className="w-full sm:w-auto gap-2 rounded-full font-bold shadow-lg shadow-primary/20">
+                        <Button onClick={handleCreateClick} size="sm" className="w-full sm:w-auto gap-2 rounded-full font-bold shadow-lg shadow-primary/20">
                             <Plus className="h-4 w-4" />
                             Nuova Categoria
                         </Button>
@@ -269,11 +269,11 @@ export function CategoriesSection() {
 
                             {/* Tabs & List */}
                             <Tabs defaultValue="expense" value={activeTab} onValueChange={setActiveTab} className="w-full">
-                                <TabsList className="grid w-full grid-cols-2 rounded-xl h-12 p-1 bg-muted/50">
-                                    <TabsTrigger value="expense" className="rounded-lg font-bold data-[state=active]:bg-background data-[state=active]:text-rose-600 data-[state=active]:shadow-sm transition-all duration-300">
+                                <TabsList className="grid w-full grid-cols-2 rounded-xl h-10 p-1 bg-muted/50">
+                                    <TabsTrigger value="expense" className="rounded-lg font-bold text-xs data-[state=active]:bg-background data-[state=active]:text-rose-600 data-[state=active]:shadow-sm transition-all duration-300">
                                         Uscite ({expenseCategories.length})
                                     </TabsTrigger>
-                                    <TabsTrigger value="income" className="rounded-lg font-bold data-[state=active]:bg-background data-[state=active]:text-emerald-600 data-[state=active]:shadow-sm transition-all duration-300">
+                                    <TabsTrigger value="income" className="rounded-lg font-bold text-xs data-[state=active]:bg-background data-[state=active]:text-emerald-600 data-[state=active]:shadow-sm transition-all duration-300">
                                         Entrate ({incomeCategories.length})
                                     </TabsTrigger>
                                 </TabsList>

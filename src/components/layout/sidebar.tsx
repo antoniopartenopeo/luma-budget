@@ -3,7 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Receipt, PiggyBank, LineChart, Settings } from "lucide-react"
+import { LayoutDashboard, Receipt, PiggyBank, LineChart, Settings, Camera } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
@@ -12,6 +12,7 @@ const sidebarItems = [
   { icon: Receipt, label: "Transazioni", href: "/transactions" },
   { icon: PiggyBank, label: "Budget", href: "/budget" },
   { icon: LineChart, label: "Insights", href: "/insights" },
+  { icon: Camera, label: "Flash", href: "/flash" },
   { icon: Settings, label: "Impostazioni", href: "/settings" },
 ]
 

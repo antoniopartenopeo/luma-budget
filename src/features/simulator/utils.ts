@@ -1,4 +1,4 @@
-import { Transaction, TransactionType } from "@/features/transactions/api/types"
+import { Transaction } from "@/features/transactions/api/types"
 
 export type SimulationPeriod = 3 | 6 | 12
 
@@ -111,4 +111,89 @@ export function applySavings(
             : 0,
         categoryResults
     }
+}
+
+// ==========================================
+// NEW FEATURES: Group Expansion & Overrides
+// ==========================================
+
+import { Category, SpendingNature } from "@/features/categories/config"
+
+export type SuperfluousStatus = "OK" | "WARN" | "HIGH"
+
+/**
+ * Determina la percentuale effettiva da applicare.
+ * L'override vince sempre sul gruppo se presente (non null).
+ */
+export function computeEffectiveSavingsPct(groupPct: number, overridePct: number | null): number {
+    if (overridePct !== null) {
+        return Math.min(100, Math.max(0, overridePct))
+    }
+    return Math.min(100, Math.max(0, groupPct))
+}
+
+/**
+ * Classifica lo stato delle spese superflue per la Priority Card.
+ */
+export function classifySuperfluousSpend(
+    superfluousAvgCents: number,
+    totalExpensesAvgCents: number
+): SuperfluousStatus {
+    if (totalExpensesAvgCents === 0) return "OK"
+    if (superfluousAvgCents === 0) return "OK"
+
+    // Converti in Euro per i check di soglia assoluta
+    const superfluousEuro = superfluousAvgCents / 100
+    const share = superfluousAvgCents / totalExpensesAvgCents
+
+    // Rule: HIGH se share >= 20% OR spese > 200€
+    if (share >= 0.20 || superfluousEuro >= 200) return "HIGH"
+
+    // Rule: WARN se 10% <= share < 20% AND spese >= 50€
+    if (share >= 0.10 && superfluousEuro >= 50) return "WARN"
+
+    return "OK"
+}
+
+export interface GroupedSimulationData {
+    nature: SpendingNature
+    items: {
+        category: Category
+        averageAmount: number
+    }[]
+    totalBaseline: number
+}
+
+/**
+ * Raggruppa le categorie per SpendingNature e le ordina per spesa decrescente (Baseline).
+ */
+export function groupAndSortCategories(
+    averages: Record<string, CategoryAverage>,
+    allCategories: Category[]
+): Record<SpendingNature, GroupedSimulationData> {
+    const groups: Record<SpendingNature, GroupedSimulationData> = {
+        essential: { nature: "essential", items: [], totalBaseline: 0 },
+        comfort: { nature: "comfort", items: [], totalBaseline: 0 },
+        superfluous: { nature: "superfluous", items: [], totalBaseline: 0 }
+    }
+
+    const validCategories = allCategories.filter(c => c.kind === "expense")
+
+    validCategories.forEach(cat => {
+        const avg = averages[cat.id]?.averageAmount || 0
+        if (groups[cat.spendingNature]) {
+            groups[cat.spendingNature].items.push({
+                category: cat,
+                averageAmount: avg
+            })
+            groups[cat.spendingNature].totalBaseline += avg
+        }
+    })
+
+    // Sort items by averageAmount desc
+    Object.values(groups).forEach(g => {
+        g.items.sort((a, b) => b.averageAmount - a.averageAmount)
+    })
+
+    return groups
 }

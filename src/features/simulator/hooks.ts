@@ -1,7 +1,7 @@
-import { useState, useMemo } from "react"
+import { useMemo } from "react"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
 import { useCategories } from "@/features/categories/api/use-categories"
-import { computeMonthlyAverages, SimulationPeriod, CategoryAverage } from "./utils"
+import { computeMonthlyAverages, SimulationPeriod } from "./utils"
 
 export function useMonthlyAverages(period: SimulationPeriod) {
     const { data: transactions, isLoading: isTxLoading } = useTransactions()

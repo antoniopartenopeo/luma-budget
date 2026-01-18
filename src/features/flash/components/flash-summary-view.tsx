@@ -235,7 +235,7 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                         variant="ghost"
                         size="sm"
                         onClick={() => setIsPrivate(!isPrivate)}
-                        className="rounded-full bg-white/60 hover:bg-white border border-white/50 text-slate-400 hover:text-slate-600 text-[10px] uppercase font-bold tracking-widest px-4 h-7 gap-1.5 shadow-sm transition-all"
+                        className="rounded-full bg-white/60 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 border border-white/50 dark:border-white/10 text-muted-foreground hover:text-foreground text-[10px] uppercase font-bold tracking-widest px-4 h-7 gap-1.5 shadow-sm transition-all"
                     >
                         {isPrivate ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
                         {isPrivate ? "Mostra" : "Nascondi"}

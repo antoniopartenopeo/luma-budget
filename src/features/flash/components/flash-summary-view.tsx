@@ -22,6 +22,7 @@ import { useSettings } from "@/features/settings/api/use-settings"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { getCurrentPeriod, formatPeriodLabel } from "@/features/insights/utils"
 import { formatEuroNumber } from "@/lib/currency-utils"
+import { calculateUtilizationPct, calculateSharePct } from "@/lib/financial-math"
 import { cn } from "@/lib/utils"
 
 interface FlashSummaryViewProps {
@@ -58,7 +59,9 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
         categoriesSummary
     } = data
 
-    const budgetUsedPct = budgetTotal > 0 ? Math.round(((budgetTotal - budgetRemaining) / budgetTotal) * 100) : 0
+    // Use centralized calculation (inputs in EUR units, convert to cents equivalent for ratio)
+    const budgetSpentUnits = budgetTotal - budgetRemaining
+    const budgetUsedPct = calculateUtilizationPct(budgetSpentUnits * 100, budgetTotal * 100)
     const top3Categories = [...categoriesSummary].sort((a, b) => b.value - a.value).slice(0, 3)
     const isSuperfluousOver = (uselessSpendPercent ?? 0) > superfluousTarget
 
@@ -70,7 +73,8 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
             return `Attenzione! Hai eroso il ${budgetUsedPct}% del tuo budget. Prova a stringere la cinghia negli ultimi giorni.`
         }
         if (netBalance > 0 && totalIncome > 0) {
-            const savingsRate = Math.round((netBalance / totalIncome) * 100)
+            // Use centralized calculation (convert EUR to cents equivalent)
+            const savingsRate = calculateSharePct(netBalance * 100, totalIncome * 100)
             return `Livello di risparmio incredibile: ${savingsRate}% questo mese. Continua così!`
         }
         return "Gestione finanziaria impeccabile, non ci sono anomalie rilevanti questo mese."

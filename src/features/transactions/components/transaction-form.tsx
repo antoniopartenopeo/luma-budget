@@ -1,11 +1,15 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Loader2, TrendingUp, TrendingDown } from "lucide-react"
+import { Loader2, TrendingUp, TrendingDown, CalendarIcon } from "lucide-react"
+import { format } from "date-fns"
+import { it } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
 import { cn } from "@/lib/utils"
 import { getGroupedCategories } from "@/features/categories/config"
 import { useCategories } from "@/features/categories/api/use-categories"
@@ -36,6 +40,11 @@ export function TransactionForm({
     // Prefer categoryId, fallback to finding id by label, or empty
     const [categoryId, setCategoryId] = useState(defaultValues?.categoryId || "")
     const [type, setType] = useState<"expense" | "income">(defaultValues?.type || "expense")
+
+    // Parse date from defaultValues or use today
+    const [date, setDate] = useState<Date>(
+        defaultValues?.date ? new Date(defaultValues.date) : new Date()
+    )
 
     const handleFieldChange = <T,>(setter: (val: T) => void, value: T) => {
         setter(value)
@@ -109,7 +118,8 @@ export function TransactionForm({
             category: selectedCategory?.label || categoryId, // Fallback
             type,
             isSuperfluous,
-            classificationSource: isManualOverride ? "manual" : "ruleBased"
+            classificationSource: isManualOverride ? "manual" : "ruleBased",
+            date: date.toISOString() // Send date
         })
     }
 
@@ -174,6 +184,32 @@ export function TransactionForm({
                     />
                 </div>
                 {errors.amount && <p className="text-xs text-destructive">{errors.amount}</p>}
+            </div>
+
+            <div className="space-y-2">
+                <Label>Data</Label>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button
+                            variant={"outline"}
+                            className={cn(
+                                "w-full justify-start text-left font-normal h-10",
+                                !date && "text-muted-foreground"
+                            )}
+                        >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {date ? format(date, "PPP", { locale: it }) : <span>Seleziona data</span>}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                        <Calendar
+                            mode="single"
+                            selected={date}
+                            onSelect={(d) => d && setDate(d)}
+                            initialFocus
+                        />
+                    </PopoverContent>
+                </Popover>
             </div>
 
             <div className="space-y-2">

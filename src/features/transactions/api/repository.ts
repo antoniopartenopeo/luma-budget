@@ -185,13 +185,13 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
         id: generateTransactionId(),
         amount: formattedAmount,
         amountCents: amountCents, // Persist integer cents
-        date: "Adesso",
+        date: data.date ? new Date(data.date).toISOString() : new Date().toISOString(), // Use provided date or now
         description: data.description,
         category: data.category,
         categoryId: data.categoryId,
         icon: isIncome ? "💰" : "🆕",
         type: data.type,
-        timestamp: Date.now(),
+        timestamp: data.date ? new Date(data.date).getTime() : Date.now(),
         isSuperfluous,
         classificationSource
     }
@@ -247,6 +247,9 @@ export const updateTransaction = async (id: string, data: Partial<CreateTransact
     const updatedTransaction: Transaction = {
         ...currentTransaction,
         ...data,
+        // Update date/timestamp only if new date provided
+        date: data.date ? new Date(data.date).toISOString() : currentTransaction.date,
+        timestamp: data.date ? new Date(data.date).getTime() : currentTransaction.timestamp,
         amount: formattedAmount,
         amountCents: amountCents, // Persist updated cents
         icon: isIncome ? "💰" : "🆕",

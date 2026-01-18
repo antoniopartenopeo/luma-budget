@@ -26,4 +26,5 @@ export interface CreateTransactionDTO {
     type: TransactionType
     isSuperfluous?: boolean
     classificationSource?: "ruleBased" | "manual" | "ai"
+    date?: string // Optional ISO string (or YYYY-MM-DD), defaults to now
 }

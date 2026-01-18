@@ -60,6 +60,7 @@ Registro definito in `src/lib/storage-keys.ts`:
 ## Changelog Recente
 | Data | Modulo | Cambiamento |
 |------|--------|-------------|
+| 2026-01-18 | Transactions | Added Date Selection (Quick Add + Edit) |
 | 2026-01-18 | Flash | Refactored to use `financial-math.ts` |
 | 2026-01-18 | DOE | Added §5 (Documentation Sync) and §6 (Continuous Improvement) |
 | 2026-01-17 | Simulator | v2.0.0 - Expandable groups, real data, premium UI |

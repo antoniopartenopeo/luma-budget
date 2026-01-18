@@ -1,15 +1,20 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Loader2, CheckCircle2, AlertCircle, TrendingUp, TrendingDown } from "lucide-react"
+import { Loader2, CheckCircle2, AlertCircle, TrendingUp, TrendingDown, CalendarIcon } from "lucide-react"
+import { format } from "date-fns"
+import { it } from "date-fns/locale"
 import { parseCurrencyToCents } from "@/lib/currency-utils"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
 import { cn } from "@/lib/utils"
+
 import { useCreateTransaction } from "@/features/transactions/api/use-transactions"
 import { Transaction } from "@/features/transactions/api/types"
-
 import { getGroupedCategories } from "@/features/categories/config"
 import { useCategories } from "@/features/categories/api/use-categories"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
@@ -22,7 +27,9 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
     const [description, setDescription] = useState("")
     const [amount, setAmount] = useState("")
     const [category, setCategory] = useState("")
+    const [date, setDate] = useState<Date>(new Date())
     const [type, setType] = useState<"expense" | "income">("expense")
+
     const { data: categories = [] } = useCategories()
     const [isFocused, setIsFocused] = useState(false)
     const [validationError, setValidationError] = useState<string | null>(null)
@@ -30,6 +37,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
     // Superfluous expense logic
     const [isSuperfluousManual, setIsSuperfluousManual] = useState<boolean | null>(null)
     const isManualOverride = isSuperfluousManual !== null
+    const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
 
     const { mutate: create, isPending, isSuccess, isError } = useCreateTransaction()
 
@@ -82,12 +90,14 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                 type,
                 isSuperfluous: type === "expense" ? isSuperfluous : false,
                 classificationSource: isManualOverride ? "manual" : "ruleBased",
+                date: date.toISOString()
             },
             {
                 onSuccess: (data) => {
                     setDescription("")
                     setAmount("")
                     setCategory("")
+                    setDate(new Date()) // Reset to today
                     setIsSuperfluousManual(null)
                     // Keep type as is for convenience
                     if (onExpenseCreated) {
@@ -116,6 +126,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                 )}
                 onFocus={() => setIsFocused(true)}
                 onBlur={(e) => {
+                    // Check if focus moved inside the popover or other elements
                     if (!e.currentTarget.contains(e.relatedTarget)) {
                         setIsFocused(false)
                     }
@@ -169,7 +180,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                 <div className="h-px w-full bg-border/50 sm:hidden" />
                 <div className="h-6 w-px bg-border/50 hidden sm:block" />
 
-                {/* Mobile: Row 2 (Amount + Category + Action) | Desktop: Horizontal flow */}
+                {/* Mobile: Row 2 (Amount + Date + Category + Action) | Desktop: Horizontal flow */}
                 <div className="flex items-center gap-1">
                     {/* Amount */}
                     <div className="relative flex items-center shrink-0 w-24 sm:w-auto">
@@ -191,6 +202,36 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                     </div>
 
                     <div className="h-6 w-px bg-border/50 hidden md:block" />
+
+                    {/* Date Picker (Small Icon) */}
+                    <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className={cn(
+                                    "h-8 w-8 rounded-full shrink-0 text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                                    (date.toDateString() !== new Date().toDateString()) && "text-primary bg-primary/10"
+                                )}
+                                title={format(date, "P", { locale: it })}
+                            >
+                                <CalendarIcon className="h-4 w-4" />
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="end">
+                            <Calendar
+                                mode="single"
+                                selected={date}
+                                onSelect={(d) => {
+                                    if (d) {
+                                        setDate(d)
+                                        setIsDatePickerOpen(false)
+                                    }
+                                }}
+                                initialFocus
+                            />
+                        </PopoverContent>
+                    </Popover>
 
                     {/* Category */}
                     <Select
@@ -281,3 +322,4 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
         </div>
     )
 }
+

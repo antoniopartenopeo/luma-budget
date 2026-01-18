@@ -2,24 +2,25 @@
 
 > "Focus on one thing at a time."
 
-**Task ID**: FLASH-REFACTOR-001
+**Task ID**: TRANS-DATE-001
 **Status**: ✅ Completed
-**Last Update**: 2026-01-18 13:20
+**Last Update**: 2026-01-18 13:35
 
 ## Scope (What are we doing?)
-- [x] Refactor Flash Summary to use centralized `financial-math.ts`.
-- [x] Update DOE system with self-improvement mechanisms.
-- [x] Create `lessons-learned.md` for error tracking.
+- [x] Add Date Picker to `QuickExpenseInput` (Top Bar).
+- [x] Add Date Picker to `TransactionForm` (Edit Modal/Sheet).
+- [x] Ensure Repository accepts custom dates.
 
 ## Rationale (Why?)
-- Eliminare duplicazione di logica finanziaria.
-- Creare un sistema che impara dagli errori e previene ricorrenze.
+- Permits backdating transactions.
+- Essential for correcting wrong dates in edit mode.
+- Users requested explicit date control.
 
 ## Exit Criteria (Definition of Done)
 - [x] Tests passed (`doe:verify`)
-- [x] Flash uses centralized functions
-- [x] DOE updated with new rules (§5, §6)
-- [x] `lessons-learned.md` creato con storico errori
+- [x] UI allows selecting past/future dates.
+- [x] Date persists correctly in DB/LocalStorage.
+- [x] Documentation updated.
 
 ---
 

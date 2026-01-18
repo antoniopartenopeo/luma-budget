@@ -55,3 +55,13 @@ Registro definito in `src/lib/storage-keys.ts`:
 ## Note
 - **Branching Policy**: I feature branch DEVONO partire da `origin/main` (vedi Governance). Usa `docs/doe/active-context.md` per tracciare lo scope.
 - **Seed Data**: seed manuale (nessun auto-seed).
+- **DOE System**: Sistema di governance auto-evolutivo. Vedi `docs/doe/` per regole e lessons learned.
+
+## Changelog Recente
+| Data | Modulo | Cambiamento |
+|------|--------|-------------|
+| 2026-01-18 | Flash | Refactored to use `financial-math.ts` |
+| 2026-01-18 | DOE | Added §5 (Documentation Sync) and §6 (Continuous Improvement) |
+| 2026-01-17 | Simulator | v2.0.0 - Expandable groups, real data, premium UI |
+| 2026-01-17 | Core Math | v1.0 - Centralized `financial-math.ts` library |
+

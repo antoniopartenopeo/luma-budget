@@ -1,16 +1,13 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Loader2, CheckCircle2, AlertCircle, TrendingUp, TrendingDown, CalendarIcon } from "lucide-react"
-import { format } from "date-fns"
-import { it } from "date-fns/locale"
+import { Loader2, CheckCircle2, AlertCircle, TrendingUp, TrendingDown } from "lucide-react"
 import { parseCurrencyToCents } from "@/lib/currency-utils"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
+import { DatePicker } from "@/components/ui/date-picker"
 import { cn } from "@/lib/utils"
 
 import { useCreateTransaction } from "@/features/transactions/api/use-transactions"
@@ -37,7 +34,6 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
     // Superfluous expense logic
     const [isSuperfluousManual, setIsSuperfluousManual] = useState<boolean | null>(null)
     const isManualOverride = isSuperfluousManual !== null
-    const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
 
     const { mutate: create, isPending, isSuccess, isError } = useCreateTransaction()
 
@@ -203,35 +199,14 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
 
                     <div className="h-6 w-px bg-border/50 hidden md:block" />
 
-                    {/* Date Picker (Small Icon) */}
-                    <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className={cn(
-                                    "h-8 w-8 rounded-full shrink-0 text-muted-foreground hover:text-foreground hover:bg-muted/50",
-                                    (date.toDateString() !== new Date().toDateString()) && "text-primary bg-primary/10"
-                                )}
-                                title={format(date, "P", { locale: it })}
-                            >
-                                <CalendarIcon className="h-4 w-4" />
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="end">
-                            <Calendar
-                                mode="single"
-                                selected={date}
-                                onSelect={(d) => {
-                                    if (d) {
-                                        setDate(d)
-                                        setIsDatePickerOpen(false)
-                                    }
-                                }}
-                                initialFocus
-                            />
-                        </PopoverContent>
-                    </Popover>
+                    {/* Date Picker (Compact Icon) */}
+                    <DatePicker
+                        value={date}
+                        onChange={(d) => d && setDate(d)}
+                        variant="icon"
+                        align="end"
+                        disabled={isPending}
+                    />
 
                     {/* Category */}
                     <Select

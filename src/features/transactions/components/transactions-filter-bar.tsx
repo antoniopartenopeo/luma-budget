@@ -123,6 +123,8 @@ export function TransactionsFilterBar({
                             <SelectItem value="all">Tutti i tipi</SelectItem>
                             <SelectItem value="income">Entrate</SelectItem>
                             <SelectItem value="expense">Uscite</SelectItem>
+                            <Separator className="my-1 opacity-50" />
+                            <SelectItem value="superfluous">Superflue</SelectItem>
                         </SelectContent>
                     </Select>
 
@@ -158,21 +160,6 @@ export function TransactionsFilterBar({
                         </SelectContent>
                     </Select>
 
-                    {/* Superfluous Toggle */}
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className={cn(
-                            "h-10 w-full sm:w-[150px] lg:w-[164px] px-3 md:px-4 rounded-xl gap-2 border-muted-foreground/10 transition-all justify-start shrink-0 outline-none",
-                            isSuperfluousOnly
-                                ? "bg-amber-500/10 text-amber-600 border-amber-500/30 font-bold hover:bg-amber-500/20"
-                                : "bg-muted/5 text-muted-foreground hover:bg-muted/10 hover:text-foreground"
-                        )}
-                        onClick={() => onSuperfluousChange(!isSuperfluousOnly)}
-                    >
-                        <Filter className="h-3.5 w-3.5 opacity-70 shrink-0 hidden xs:block" />
-                        <span className="text-xs md:text-sm">Superflue</span>
-                    </Button>
 
                     {hasActiveFilters && onResetFilters && (
                         <Button

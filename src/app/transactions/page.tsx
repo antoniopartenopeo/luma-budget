@@ -35,9 +35,8 @@ function TransactionsPageContent() {
 
     // --- Filter / Sorting / Pagination State (from URL) ---
     const search = searchParams.get("q") || ""
-    const type = (searchParams.get("type") || "all") as "all" | "income" | "expense"
+    const type = (searchParams.get("type") || "all") as "all" | "income" | "expense" | "superfluous"
     const categoryId = searchParams.get("cat") || "all"
-    const isSuperfluous = searchParams.get("waste") === "true"
     const period = (searchParams.get("period") || "all") as PeriodPreset
     const fromDate = searchParams.get("from") || ""
     const toDate = searchParams.get("to") || ""
@@ -71,12 +70,12 @@ function TransactionsPageContent() {
 
         return {
             search,
-            type,
+            type: type === "superfluous" ? "all" : type, // 'superfluous' filters by isSuperfluous, not type
             categoryId,
-            isSuperfluous,
+            isSuperfluous: type === "superfluous", // Enable isSuperfluous filter when type is 'superfluous'
             dateRange
         }
-    }, [search, type, categoryId, isSuperfluous, period, fromDate, toDate])
+    }, [search, type, categoryId, period, fromDate, toDate])
 
     // --- Computed Data ---
     const { filteredList, sortedList, paginatedList, summary, totalPages } = useMemo(() => {
@@ -197,8 +196,8 @@ function TransactionsPageContent() {
                     onPeriodChange={(v) => updateParams({ period: v, p: "1", from: null, to: null })}
                     dateRange={{ from: fromDate, to: toDate }}
                     onDateRangeChange={(range) => updateParams({ from: range.from || null, to: range.to || null, p: "1" })}
-                    isSuperfluousOnly={isSuperfluous}
-                    onSuperfluousChange={(v) => updateParams({ waste: v ? "true" : null, p: "1" })}
+                    isSuperfluousOnly={type === "superfluous"}
+                    onSuperfluousChange={() => { }} // No-op, now handled via type dropdown
                     onResetFilters={resetFilters}
                     onExportView={() => handleExport(false)}
                     onExportAll={() => handleExport(true)}

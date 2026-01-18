@@ -16,8 +16,8 @@ Il progetto è governato dal sistema **Directive, Orchestration, Execution (DOE)
 - Core (Dashboard / Transazioni / Budget): **Stabile**
 - Insights: **Stable (v1.2.0)** — Analisi Trend & AI Advisor con UI Moderna (Glassmorphism/Card) + Analisi Mensile Orizzontale.
 - Settings: **Stable (v1.3.0)** — UI Refinements (Mobile Toolbar, Consistent Icons/Titles), Full Width Layout, Accessibilità.
-- Simulatore: **Stable (v1.0.0)** — Strumento "What-If" Read-Only per simulazione risparmio (Slider interattivi, Medie Storiche).
-- UI/UX Harmony: **Audit Complete** — Standardized "Soft UI" (radius/animations), Typography (PageHeader), White Glass (Simulatore/Insights).
+- Simulatore: **Stable (v2.0.0)** — "What-If" Interattivo e Dinamico. Supporto Gruppi Espandibili, Overrides Categoria, UI Premium Glassmorphism, Logica basata su dati reali (Ultimi 3/6/12 mesi).
+- **Core Math**: **Standardized (v1.0)** — Libreria centralizzata `financial-math.ts` per calcoli critici (percentuali, growth, utilization), con 100% test coverage.
 
 ## Sezioni App
 - **Dashboard**: Panoramica alto livello (entrate, uscite, saldo mensile, budget residuo) + grafici distribuzione categorie.

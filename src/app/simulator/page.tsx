@@ -126,33 +126,33 @@ export default function SimulatorPage() {
         const status = (isSuperfluous && superfluousStatus) ? superfluousStatus : "OK"
 
         // Dynamic Styles based on status
-        let containerClasses = "bg-white/60 hover:bg-white/80 border-white/40"
+        let containerClasses = "glass-panel hover:bg-white/70 dark:hover:bg-slate-800/60"
         let statusGlow = ""
         let statusBadge = null
 
         if (isSuperfluous) {
             if (status === "HIGH") {
-                containerClasses = "bg-rose-50/60 hover:bg-rose-50/80 border-rose-100 dark:bg-rose-900/10"
+                containerClasses = "bg-rose-50/80 dark:bg-rose-950/30 border-rose-200/50 dark:border-rose-900/50 backdrop-blur-xl shadow-xl hover:bg-rose-100/50 dark:hover:bg-rose-900/40"
                 statusGlow = "shadow-[0_0_30px_-10px_rgba(244,63,94,0.3)]"
                 statusBadge = (
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-100/80 text-rose-700 text-[10px] font-bold uppercase tracking-wider border border-rose-200/50">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-100/80 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 text-[10px] font-bold uppercase tracking-wider border border-rose-200/50 dark:border-rose-500/30">
                         <AlertTriangle className="h-3 w-3" />
                         Alta Priorità
                     </div>
                 )
             } else if (status === "WARN") {
-                containerClasses = "bg-amber-50/60 hover:bg-amber-50/80 border-amber-100 dark:bg-amber-900/10"
+                containerClasses = "bg-amber-50/80 dark:bg-amber-950/30 border-amber-200/50 dark:border-amber-900/50 backdrop-blur-xl shadow-xl hover:bg-amber-100/50 dark:hover:bg-amber-900/40"
                 statusGlow = "shadow-[0_0_30px_-10px_rgba(251,191,36,0.3)]"
                 statusBadge = (
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100/80 text-amber-700 text-[10px] font-bold uppercase tracking-wider border border-amber-200/50">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100/80 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 text-[10px] font-bold uppercase tracking-wider border border-amber-200/50 dark:border-amber-500/30">
                         <AlertCircle className="h-3 w-3" />
                         Attenzione
                     </div>
                 )
             } else {
-                containerClasses = "bg-emerald-50/60 hover:bg-emerald-50/80 border-emerald-100 dark:bg-emerald-900/10"
+                containerClasses = "bg-emerald-50/80 dark:bg-emerald-950/30 border-emerald-200/50 dark:border-emerald-900/50 backdrop-blur-xl shadow-xl hover:bg-emerald-100/50 dark:hover:bg-emerald-900/40"
                 statusBadge = (
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100/80 text-emerald-700 text-[10px] font-bold uppercase tracking-wider border border-emerald-200/50">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100/80 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold uppercase tracking-wider border border-emerald-200/50 dark:border-emerald-500/30">
                         <CheckCircle2 className="h-3 w-3" />
                         Sotto controllo
                     </div>
@@ -162,10 +162,10 @@ export default function SimulatorPage() {
 
         return (
             <div key={nature} className={cn(
-                "group relative overflow-hidden rounded-3xl border backdrop-blur-xl transition-all duration-300",
+                "group relative overflow-hidden rounded-3xl transition-all duration-300",
                 containerClasses,
                 statusGlow,
-                isExpanded ? "shadow-lg scale-[1.01]" : "shadow-sm hover:shadow-md"
+                isExpanded ? "scale-[1.01] shadow-2xl" : "shadow-sm hover:shadow-md"
             )}>
                 <div className="p-6 space-y-6">
                     {/* Header Row */}
@@ -173,13 +173,13 @@ export default function SimulatorPage() {
                         <div className="flex items-center gap-4">
                             <div className={cn(
                                 "h-12 w-12 rounded-2xl flex items-center justify-center transition-colors duration-300 shadow-sm",
-                                isExpanded ? "bg-primary text-primary-foreground shadow-primary/20" : "bg-white text-slate-400"
+                                isExpanded ? "bg-primary text-primary-foreground shadow-primary/20" : "bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-500"
                             )}>
                                 {isExpanded ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
                             </div>
                             <div>
                                 <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-1">
-                                    <h3 className="font-bold text-lg text-slate-900 tracking-tight leading-tight">
+                                    <h3 className="font-bold text-lg text-foreground tracking-tight leading-tight">
                                         {groupLabel}
                                     </h3>
                                     <div className="self-start sm:self-auto">
@@ -187,12 +187,12 @@ export default function SimulatorPage() {
                                     </div>
                                 </div>
                                 <p className="text-sm text-muted-foreground font-medium">
-                                    Media: <span className="text-slate-700">{formatCents(group.totalBaseline, currency, locale)}</span>
+                                    Media: <span className="text-foreground/80">{formatCents(group.totalBaseline, currency, locale)}</span>
                                 </p>
                             </div>
                         </div>
                         <div className="text-right">
-                            <div className="text-2xl font-bold text-slate-900 tracking-tight">
+                            <div className="text-2xl font-bold text-foreground tracking-tight">
                                 {formatCents(groupSimulatedTotal, currency, locale)}
                             </div>
                             {group.totalBaseline > groupSimulatedTotal && (
@@ -204,8 +204,8 @@ export default function SimulatorPage() {
                     </div>
 
                     {/* Group Slider */}
-                    <div className="flex items-center gap-4 bg-white/50 p-4 rounded-2xl border border-white/60 shadow-inner">
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider w-24">Risparmio Gruppo</span>
+                    <div className="flex items-center gap-4 glass-card p-4 rounded-2xl">
+                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider w-24">Risparmio Gruppo</span>
                         <Slider
                             value={[currentGroupSaving]}
                             max={100}
@@ -216,7 +216,7 @@ export default function SimulatorPage() {
                         <div className="w-12 text-right">
                             <span className={cn(
                                 "text-lg font-bold",
-                                currentGroupSaving > 0 ? "text-primary" : "text-slate-300"
+                                currentGroupSaving > 0 ? "text-primary" : "text-muted-foreground/50"
                             )}>{currentGroupSaving}%</span>
                         </div>
                     </div>
@@ -253,7 +253,7 @@ export default function SimulatorPage() {
                                             "group/item grid grid-cols-1 sm:grid-cols-[2fr_3fr_1fr] gap-4 items-center p-4 rounded-2xl border transition-all duration-200",
                                             hasOverride
                                                 ? "bg-primary/5 border-primary/20 shadow-sm"
-                                                : "bg-white/40 border-slate-100 hover:bg-white/60"
+                                                : "glass-card hover:bg-white/60 dark:hover:bg-white/10"
                                         )}>
                                             {/* Name & Icon */}
                                             <div className="flex items-center gap-3 min-w-0">
@@ -261,8 +261,8 @@ export default function SimulatorPage() {
                                                     <CategoryIcon categoryId={item.category.id} size={18} />
                                                 </div>
                                                 <div className="truncate">
-                                                    <div className="text-sm font-semibold text-slate-900 truncate">{item.category.label}</div>
-                                                    <div className="text-xs text-slate-400 font-medium">{formatCents(item.averageAmount, currency, locale)}</div>
+                                                    <div className="text-sm font-semibold text-foreground truncate">{item.category.label}</div>
+                                                    <div className="text-xs text-muted-foreground font-medium">{formatCents(item.averageAmount, currency, locale)}</div>
                                                 </div>
                                             </div>
 
@@ -279,7 +279,7 @@ export default function SimulatorPage() {
 
                                             {/* Result */}
                                             <div className="text-right">
-                                                <div className={cn("text-base font-bold tabular-nums", effectivePct > 0 ? "text-primary" : "text-slate-700")}>
+                                                <div className={cn("text-base font-bold tabular-nums", effectivePct > 0 ? "text-primary" : "text-foreground/80")}>
                                                     {formatCents(itemSimulated, currency, locale)}
                                                 </div>
                                                 {effectivePct > 0 && (
@@ -291,15 +291,16 @@ export default function SimulatorPage() {
                                 })}
 
                                 {group.items.length === 0 && (
-                                    <div className="text-center py-8 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
-                                        <p className="text-sm text-slate-500 font-medium">Nessuna spesa rilevante in questo gruppo.</p>
+                                    <div className="text-center py-8 glass-card rounded-2xl border-dashed">
+                                        <p className="text-sm text-muted-foreground font-medium">Nessuna spesa rilevante in questo gruppo.</p>
                                     </div>
                                 )}
                             </div>
                         </div>
-                    )}
-                </div>
-            </div>
+                    )
+                    }
+                </div >
+            </div >
         )
     }
 
@@ -323,8 +324,8 @@ export default function SimulatorPage() {
 
                     {/* Compact Toolbar */}
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-1">
-                        <div className="flex items-center gap-3 bg-white/50 p-1.5 rounded-xl border border-white/60 shadow-sm backdrop-blur-md">
-                            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider pl-3">Analisi:</span>
+                        <div className="flex items-center gap-3 glass-card p-1.5 rounded-xl">
+                            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-3">Analisi:</span>
                             <Select value={period.toString()} onValueChange={(v) => setPeriod(parseInt(v) as SimulationPeriod)}>
                                 <SelectTrigger className="w-[160px] h-9 text-sm border-0 bg-transparent focus:ring-0 shadow-none font-medium">
                                     <SelectValue />
@@ -357,12 +358,12 @@ export default function SimulatorPage() {
 
                         {/* Empty State Check */}
                         {simulationResult.baselineTotal === 0 && (
-                            <div className="text-center py-20 text-muted-foreground bg-white/40 border border-white/50 backdrop-blur-sm rounded-3xl">
-                                <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 mb-4">
-                                    <Calculator className="h-8 w-8 text-slate-300" />
+                            <div className="text-center py-20 text-muted-foreground glass-panel rounded-3xl">
+                                <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-muted mb-4">
+                                    <Calculator className="h-8 w-8 text-muted-foreground/50" />
                                 </div>
-                                <h3 className="text-lg font-medium text-slate-900">Nessuna spesa trovata</h3>
-                                <p className="text-sm text-slate-500 mt-1">Non ci sono transazioni nel periodo selezionato.</p>
+                                <h3 className="text-lg font-medium text-foreground">Nessuna spesa trovata</h3>
+                                <p className="text-sm text-muted-foreground mt-1">Non ci sono transazioni nel periodo selezionato.</p>
                                 <Button variant="link" className="mt-4 text-primary font-semibold">
                                     Vai alle Transazioni
                                 </Button>
@@ -373,22 +374,24 @@ export default function SimulatorPage() {
 
                 {/* RIGHT COL: Sticky Results */}
                 <div className="lg:col-span-4 sticky top-6 space-y-6">
-                    <Card className="relative overflow-hidden rounded-[2.5rem] border-0 shadow-2xl bg-slate-900 text-white p-8 group">
-                        {/* Dynamic Background */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-950" />
+                    <Card className="relative overflow-hidden rounded-[2.5rem] glass-panel p-1">
+                        {/* Visual Glass Reflection Accent */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/40 dark:from-white/5 to-transparent pointer-events-none" />
 
-                        {/* Glow Effects */}
-                        <div className="absolute top-[-50%] right-[-50%] w-[150%] h-[150%] bg-gradient-to-br from-primary/20 to-transparent pointer-events-none opacity-50 blur-3xl" />
-                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-500/10 blur-[60px] rounded-full pointer-events-none" />
+                        {/* Ambient Glows - Subtle Light Theme */}
+                        <div className="absolute top-[-20%] right-[-20%] w-[400px] h-[400px] bg-primary/10 blur-[120px] rounded-full pointer-events-none opacity-60" />
 
-                        <div className="relative z-10">
-                            <div className="flex items-center gap-3 mb-8 opacity-90">
-                                <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/10">
-                                    <Calculator className="h-5 w-5 text-emerald-400" />
+                        <div className="relative z-10 px-6 pt-6 pb-8">
+                            <div className="flex items-center gap-3 mb-8">
+                                <div className="h-10 w-10 rounded-xl bg-background/80 dark:bg-slate-800 border border-border/50 flex items-center justify-center shadow-sm">
+                                    <Calculator className="h-5 w-5 text-primary fill-primary/20" />
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-bold tracking-tight text-white">Risultati</h2>
-                                    <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">
+                                    <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
+                                        Risultati
+                                        <Badge variant="secondary" className="bg-secondary/80 text-muted-foreground hover:bg-secondary border-border/40 text-[10px] px-1.5 h-5 shadow-sm">LIVE</Badge>
+                                    </h2>
+                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
                                         Stima mensile
                                     </p>
                                 </div>
@@ -398,15 +401,15 @@ export default function SimulatorPage() {
                                 {/* Baseline vs Simulated */}
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center group/row">
-                                        <span className="text-sm text-slate-400 font-medium group-hover/row:text-slate-300 transition-colors">Spesa Attuale</span>
-                                        <span className="text-base font-medium text-slate-300 tabular-nums">{formatCents(simulationResult.baselineTotal, currency, locale)}</span>
+                                        <span className="text-sm text-muted-foreground font-medium transition-colors">Spesa Attuale</span>
+                                        <span className="text-base font-medium text-muted-foreground tabular-nums">{formatCents(simulationResult.baselineTotal, currency, locale)}</span>
                                     </div>
 
-                                    <Separator className="bg-white/10" />
+                                    <Separator className="bg-border/50" />
 
                                     <div className="flex justify-between items-center">
-                                        <span className="text-base font-semibold text-white">Nuova Spesa</span>
-                                        <span className="text-2xl font-bold text-white tabular-nums tracking-tight animate-in fade-in zoom-in-95 duration-300 key={simulationResult.simulatedTotal}">
+                                        <span className="text-base font-semibold text-foreground">Nuova Spesa</span>
+                                        <span className="text-2xl font-bold text-foreground tabular-nums tracking-tight animate-in fade-in zoom-in-95 duration-300 key={simulationResult.simulatedTotal}">
                                             {formatCents(simulationResult.simulatedTotal, currency, locale)}
                                         </span>
                                     </div>
@@ -414,29 +417,28 @@ export default function SimulatorPage() {
 
                                 {/* Savings Big KPI */}
                                 {simulationResult.savingsAmount > 0 ? (
-                                    <div className="bg-emerald-500 text-white shadow-xl shadow-emerald-900/50 rounded-[1.5rem] p-6 text-center transform transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl hover:shadow-emerald-900/30 border border-emerald-400/20 relative overflow-hidden">
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
+                                    <div className="bg-emerald-500/10 dark:bg-emerald-950/30 text-emerald-900 dark:text-emerald-100 shadow-xl shadow-emerald-500/10 rounded-[1.5rem] p-6 text-center transform transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl hover:shadow-emerald-500/20 border border-emerald-500/20 relative overflow-hidden backdrop-blur-md">
                                         <div className="relative">
-                                            <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-emerald-100 mb-2">
+                                            <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-emerald-600 dark:text-emerald-400 mb-2">
                                                 Risparmio Mensile
                                             </div>
-                                            <div className="text-4xl font-black tracking-tight drop-shadow-sm tabular-nums">
+                                            <div className="text-4xl font-black tracking-tight drop-shadow-sm tabular-nums text-emerald-700 dark:text-emerald-300">
                                                 {formatCents(simulationResult.savingsAmount, currency, locale)}
                                             </div>
-                                            <div className="inline-flex items-center gap-1.5 mt-2 bg-emerald-600/30 px-3 py-1 rounded-full border border-emerald-400/30">
-                                                <span className="text-sm font-bold text-emerald-50">-{simulationResult.savingsPercent}%</span>
+                                            <div className="inline-flex items-center gap-1.5 mt-2 bg-emerald-100/50 dark:bg-emerald-900/50 px-3 py-1 rounded-full border border-emerald-200/50 dark:border-emerald-700/50">
+                                                <span className="text-sm font-bold text-emerald-700 dark:text-emerald-300">-{simulationResult.savingsPercent}%</span>
                                             </div>
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="bg-white/5 rounded-[1.5rem] p-6 text-center text-slate-500 border border-white/5 backdrop-blur-sm">
+                                    <div className="bg-background/40 rounded-[1.5rem] p-6 text-center text-muted-foreground border border-border/50 backdrop-blur-sm">
                                         <p className="text-sm font-medium">Nessuna modifica</p>
-                                        <p className="text-xs mt-1 text-slate-600">Muovi gli slider a sinistra per simulare</p>
+                                        <p className="text-xs mt-1 text-muted-foreground/70">Muovi gli slider a sinistra per simulare</p>
                                     </div>
                                 )}
 
                                 {/* Microcopy / Advice */}
-                                <div className="text-xs text-center leading-relaxed text-slate-400 italic">
+                                <div className="text-xs text-center leading-relaxed text-muted-foreground italic">
                                     &quot;{renderSuperfluousAdvice()}&quot;
                                 </div>
                             </div>

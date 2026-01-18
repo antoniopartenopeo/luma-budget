@@ -112,6 +112,16 @@
   --sidebar-ring: oklch(0.769 0.188 150.08 / 0.3);
 }
 
+@layer components {
+  .glass-panel {
+    @apply bg-white/60 dark:bg-slate-900/60 border border-white/40 dark:border-white/10 backdrop-blur-xl shadow-xl;
+  }
+  
+  .glass-card {
+    @apply bg-white/50 dark:bg-white/5 border border-white/40 dark:border-white/10 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

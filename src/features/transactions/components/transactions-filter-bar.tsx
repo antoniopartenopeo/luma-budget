@@ -3,6 +3,7 @@ import { getGroupedCategories } from "@/features/categories/config"
 import { useCategories } from "@/features/categories/api/use-categories"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { Input } from "@/components/ui/input"
+import { DatePicker } from "@/components/ui/date-picker"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import {
@@ -208,20 +209,20 @@ export function TransactionsFilterBar({
                 <div className="flex items-center gap-3 p-3 bg-muted/5 border border-muted-foreground/10 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
                     <div className="flex flex-col gap-1.5 flex-1">
                         <label className="text-[10px] uppercase font-bold text-muted-foreground/60 px-1">Dal</label>
-                        <Input
-                            type="date"
-                            value={dateRange.from || ""}
-                            onChange={(e) => onDateRangeChange({ ...dateRange, from: e.target.value })}
-                            className="h-9 rounded-lg bg-background/50 border-muted-foreground/10"
+                        <DatePicker
+                            value={dateRange.from ? new Date(dateRange.from) : undefined}
+                            onChange={(d) => onDateRangeChange({ ...dateRange, from: d?.toISOString().split('T')[0] })}
+                            placeholder="Data inizio"
+                            dateFormat="dd/MM/yyyy"
                         />
                     </div>
                     <div className="flex flex-col gap-1.5 flex-1">
                         <label className="text-[10px] uppercase font-bold text-muted-foreground/60 px-1">Al</label>
-                        <Input
-                            type="date"
-                            value={dateRange.to || ""}
-                            onChange={(e) => onDateRangeChange({ ...dateRange, to: e.target.value })}
-                            className="h-9 rounded-lg bg-background/50 border-muted-foreground/10"
+                        <DatePicker
+                            value={dateRange.to ? new Date(dateRange.to) : undefined}
+                            onChange={(d) => onDateRangeChange({ ...dateRange, to: d?.toISOString().split('T')[0] })}
+                            placeholder="Data fine"
+                            dateFormat="dd/MM/yyyy"
                         />
                     </div>
                 </div>

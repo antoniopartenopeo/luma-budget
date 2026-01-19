@@ -55,3 +55,15 @@ export interface MappingState {
     dateFormat: "auto" | "DD/MM/YYYY" | "MM/DD/YYYY" | "YYYY-MM-DD"
     amountFormat: "single" | "split" // single = one column, split = debit/credit
 }
+
+/** Merchant group for bulk categorization */
+export interface MerchantGroup {
+    merchantKey: string         // Normalized key for grouping
+    displayName: string         // Human-readable merchant name
+    rowIndices: number[]        // Indices of rows in this group
+    totalAmountCents: number    // Sum of absolute amounts
+    count: number               // Number of transactions
+    type: TransactionType       // income or expense
+    sampleDescriptions: string[] // First 3 original descriptions
+    assignedCategoryId: string  // Currently assigned category
+}

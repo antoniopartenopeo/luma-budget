@@ -5,10 +5,12 @@
  * - Bulk transaction creation with importId
  * - Import history tracking
  * - Undo (delete by importId)
+ * - Derives isSuperfluous from category.spendingNature
  */
 
 import { storage } from "@/lib/storage-utils"
 import { Transaction } from "@/features/transactions/api/types"
+import { getCategoryById } from "@/features/categories/config"
 import type { ImportBatch, PreviewRow } from "./types"
 
 const TRANSACTIONS_KEY = "luma_transactions_v1"
@@ -24,13 +26,14 @@ export function generateImportId(): string {
 
 /**
  * Bulk creates transactions with a shared importId
- * All-or-nothing: either all succeed or none
+ * - Uses selectedCategoryId from each row
+ * - Derives category label from category config
+ * - Derives isSuperfluous from category.spendingNature
+ * - Sets classificationSource to "ruleBased"
  */
 export function bulkCreateTransactions(
     rows: PreviewRow[],
-    importId: string,
-    defaultCategoryId: string,
-    defaultCategoryLabel: string
+    importId: string
 ): Transaction[] {
     // Load current transactions
     const allData = storage.get<Record<string, Transaction[]>>(TRANSACTIONS_KEY, {})
@@ -39,20 +42,28 @@ export function bulkCreateTransactions(
     const newTransactions: Transaction[] = rows
         .filter(r => r.isSelected && r.isValid)
         .map((row): Transaction => {
-            const categoryId = row.selectedCategoryId || defaultCategoryId
+            const categoryId = row.selectedCategoryId || "altro"
+            const category = getCategoryById(categoryId)
+
+            // Derive isSuperfluous from category's spendingNature
+            // ONLY expenses can be superfluous, income is always false
+            const isSuperfluous = row.type === "expense"
+                ? category?.spendingNature === "superfluous"
+                : false
+
             return {
                 id: crypto.randomUUID(),
-                amount: "", // Will be formatted by display layer
+                amount: "", // Deprecated field, uses amountCents via formatTransactionAmount
                 amountCents: row.amountCents,
                 date: row.date || new Date().toISOString(),
                 description: row.description,
-                category: defaultCategoryLabel,
+                category: category?.label || "Altro", // Use category label
                 categoryId: categoryId,
-                icon: row.type === "income" ? "💰" : "📥",
+                icon: category?.iconName || (row.type === "income" ? "💰" : "📥"),
                 type: row.type,
                 timestamp: row.date ? new Date(row.date).getTime() : Date.now(),
-                isSuperfluous: false,
-                classificationSource: "manual",
+                isSuperfluous: isSuperfluous,
+                classificationSource: "ruleBased", // Derived from category
                 importId: importId
             }
         })

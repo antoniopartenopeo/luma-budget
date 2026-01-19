@@ -3,19 +3,22 @@
 /**
  * CSV Import Wizard
  * Multi-step UI for importing bank transactions from CSV
+ * 
+ * V2.1: Responsive Shell integration
  */
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useMemo } from "react"
 import { useQueryClient } from "@tanstack/react-query"
-import { X, Upload, FileSpreadsheet, Eye, Check, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { Upload, FileSpreadsheet, Eye, Check, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Progress } from "@/components/ui/progress"
 import { queryKeys } from "@/lib/query-keys"
 import { __resetTransactionsCache } from "@/features/transactions/api/repository"
+import { cn } from "@/lib/utils"
 
 import type { CSVFormat, MappingState, PreviewRow, ImportBatch } from "../types"
 import { detectCSVFormat, parseCSVToRows, autoDetectMapping } from "../csv-parser"
-import { checkDuplicate, checkInternalDuplicates } from "../dedupe-utils"
+import { checkDuplicateWithMap, checkInternalDuplicates, buildExistingKeysMap } from "../dedupe-utils"
 import {
     generateImportId,
     bulkCreateTransactions,
@@ -26,8 +29,9 @@ import {
 import { StepUpload } from "./step-upload"
 import { StepMapping } from "./step-mapping"
 import { StepPreview } from "./step-preview"
+import { WizardShell } from "./wizard-shell"
 
-type WizardStep = "upload" | "mapping" | "preview" | "importing" | "done"
+type WizardStep = "upload" | "mapping" | "processing" | "preview" | "importing" | "done"
 
 interface CSVImportWizardProps {
     open: boolean
@@ -50,6 +54,7 @@ export function CSVImportWizard({ open, onOpenChange }: CSVImportWizardProps) {
     const [previewRows, setPreviewRows] = useState<PreviewRow[]>([])
     const [importResult, setImportResult] = useState<{ count: number } | null>(null)
     const [error, setError] = useState<string | null>(null)
+    const [processingProgress, setProcessingProgress] = useState(0)
 
     // Reset wizard
     const resetWizard = useCallback(() => {
@@ -65,6 +70,7 @@ export function CSVImportWizard({ open, onOpenChange }: CSVImportWizardProps) {
         setPreviewRows([])
         setImportResult(null)
         setError(null)
+        setProcessingProgress(0)
     }, [])
 
     // Handle file upload
@@ -86,39 +92,58 @@ export function CSVImportWizard({ open, onOpenChange }: CSVImportWizardProps) {
             }))
 
             setStep("mapping")
-        } catch (err) {
+        } catch {
             setError("Errore nel parsing del CSV. Verifica il formato del file.")
         }
     }, [])
 
-    // Handle mapping confirmation
-    const handleMappingConfirm = useCallback(() => {
+    // Handle mapping confirmation - now with processing state
+    const handleMappingConfirm = useCallback(async () => {
         if (!format) return
 
-        try {
-            const parsed = parseCSVToRows(csvText, format, mappingState)
-            const existingTx = fetchExistingTransactions()
-            const internalDupes = checkInternalDuplicates(parsed)
+        setStep("processing")
+        setProcessingProgress(0)
+        setError(null)
 
-            const preview: PreviewRow[] = parsed.map(row => {
-                const dupCheck = checkDuplicate(row, existingTx)
-                const internalDupe = internalDupes.get(row.rowIndex)
+        // Use setTimeout to allow UI to update before heavy computation
+        setTimeout(() => {
+            try {
+                setProcessingProgress(20)
+                const parsed = parseCSVToRows(csvText, format, mappingState)
 
-                return {
-                    ...row,
-                    isValid: row.parseErrors.length === 0 && row.date !== null && row.amountCents > 0,
-                    isDuplicate: dupCheck.isDuplicate || !!internalDupe,
-                    duplicateReason: dupCheck.reason || internalDupe,
-                    selectedCategoryId: "other", // Default uncategorized
-                    isSelected: !dupCheck.isDuplicate && !internalDupe // Exclude duplicates by default
-                }
-            })
+                setProcessingProgress(40)
+                const existingTx = fetchExistingTransactions()
+                // Pre-build Map for O(1) lookups instead of O(n×m)
+                const existingKeysMap = buildExistingKeysMap(existingTx)
 
-            setPreviewRows(preview)
-            setStep("preview")
-        } catch (err) {
-            setError("Errore nella generazione dell'anteprima.")
-        }
+                setProcessingProgress(60)
+                const internalDupes = checkInternalDuplicates(parsed)
+
+                setProcessingProgress(80)
+                const preview: PreviewRow[] = parsed.map(row => {
+                    const dupCheck = checkDuplicateWithMap(row, existingKeysMap)
+                    const internalDupe = internalDupes.get(row.rowIndex)
+
+                    return {
+                        ...row,
+                        isValid: row.parseErrors.length === 0 && row.date !== null && row.amountCents > 0,
+                        isDuplicate: dupCheck.isDuplicate || !!internalDupe,
+                        duplicateReason: dupCheck.reason || internalDupe,
+                        selectedCategoryId: row.type === "income" ? "entrate-occasionali" : "altro",
+                        isSelected: !dupCheck.isDuplicate && !internalDupe
+                    }
+                })
+
+                setProcessingProgress(100)
+                setPreviewRows(preview)
+
+                // Small delay to show 100% before transitioning
+                setTimeout(() => setStep("preview"), 200)
+            } catch {
+                setError("Errore nella generazione dell'anteprima.")
+                setStep("mapping")
+            }
+        }, 50)
     }, [csvText, format, mappingState])
 
     // Handle import confirmation
@@ -130,9 +155,7 @@ export function CSVImportWizard({ open, onOpenChange }: CSVImportWizardProps) {
             const importId = generateImportId()
             const created = bulkCreateTransactions(
                 previewRows,
-                importId,
-                "other",
-                "Altro"
+                importId
             )
 
             // Save to history
@@ -154,7 +177,7 @@ export function CSVImportWizard({ open, onOpenChange }: CSVImportWizardProps) {
 
             setImportResult({ count: created.length })
             setStep("done")
-        } catch (err) {
+        } catch {
             setError("Errore durante l'importazione. Nessuna transazione è stata salvata.")
             setStep("preview")
         }
@@ -174,6 +197,15 @@ export function CSVImportWizard({ open, onOpenChange }: CSVImportWizardProps) {
         ))
     }, [])
 
+    // Bulk update category for uncategorized rows
+    const bulkUpdateCategory = useCallback((categoryId: string) => {
+        setPreviewRows(prev => prev.map(r =>
+            (r.isSelected && r.isValid && (r.selectedCategoryId === "altro" || r.selectedCategoryId === "entrate-occasionali"))
+                ? { ...r, selectedCategoryId: categoryId }
+                : r
+        ))
+    }, [])
+
     // Close handler
     const handleClose = useCallback(() => {
         onOpenChange(false)
@@ -188,128 +220,140 @@ export function CSVImportWizard({ open, onOpenChange }: CSVImportWizardProps) {
         { id: "done", label: "Completa", icon: Check },
     ]
 
-    const currentStepIdx = steps.findIndex(s => s.id === step || (step === "importing" && s.id === "done"))
+    // Computed stats for footer
+    const selectedCount = useMemo(() =>
+        previewRows.filter(r => r.isSelected && r.isValid).length,
+        [previewRows]
+    )
 
-    return (
-        <Dialog open={open} onOpenChange={handleClose}>
-            <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col">
-                <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                        <FileSpreadsheet className="h-5 w-5" />
-                        Importa da CSV
-                    </DialogTitle>
-                    <DialogDescription>
-                        Importa transazioni da un file CSV scaricato dalla tua banca.
-                    </DialogDescription>
-                </DialogHeader>
+    // Footer Component
+    const footerContent = (
+        <div className="flex items-center justify-between w-full">
+            <Button variant="ghost" onClick={handleClose}>
+                {step === "done" ? "Chiudi" : "Annulla"}
+            </Button>
 
-                {/* Step Indicator */}
-                <div className="flex items-center justify-center gap-2 py-4 border-b">
-                    {steps.map((s, idx) => (
-                        <div key={s.id} className="flex items-center gap-2">
-                            <div className={`
-                                flex items-center justify-center w-8 h-8 rounded-full text-xs font-medium
-                                ${idx < currentStepIdx ? "bg-primary text-primary-foreground" : ""}
-                                ${idx === currentStepIdx ? "bg-primary text-primary-foreground ring-2 ring-primary/20" : ""}
-                                ${idx > currentStepIdx ? "bg-muted text-muted-foreground" : ""}
-                            `}>
-                                <s.icon className="h-4 w-4" />
-                            </div>
-                            {idx < steps.length - 1 && (
-                                <div className={`w-8 h-0.5 ${idx < currentStepIdx ? "bg-primary" : "bg-muted"}`} />
-                            )}
-                        </div>
-                    ))}
-                </div>
-
-                {/* Error display */}
-                {error && (
-                    <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm p-3 rounded-lg">
-                        {error}
-                    </div>
+            <div className="flex gap-2">
+                {step === "mapping" && (
+                    <>
+                        <Button variant="outline" onClick={() => setStep("upload")}>
+                            <ChevronLeft className="h-4 w-4 mr-1" />
+                            Indietro
+                        </Button>
+                        <Button onClick={handleMappingConfirm}>
+                            Anteprima
+                            <ChevronRight className="h-4 w-4 ml-1" />
+                        </Button>
+                    </>
                 )}
 
-                {/* Step Content */}
-                <div className="flex-1 overflow-auto py-4">
-                    {step === "upload" && (
-                        <StepUpload onFileUpload={handleFileUpload} />
-                    )}
+                {step === "preview" && (
+                    <>
+                        <Button variant="outline" onClick={() => setStep("mapping")}>
+                            <ChevronLeft className="h-4 w-4 mr-1" />
+                            Indietro
+                        </Button>
+                        <Button
+                            onClick={handleImportConfirm}
+                            disabled={selectedCount === 0}
+                        >
+                            Importa ({selectedCount})
+                        </Button>
+                    </>
+                )}
+            </div>
+        </div>
+    )
 
-                    {step === "mapping" && format && (
-                        <StepMapping
-                            format={format}
-                            mappingState={mappingState}
-                            onMappingChange={setMappingState}
-                        />
-                    )}
-
-                    {step === "preview" && (
-                        <StepPreview
-                            rows={previewRows}
-                            onToggleRow={toggleRowSelection}
-                            onUpdateCategory={updateRowCategory}
-                        />
-                    )}
-
-                    {step === "importing" && (
-                        <div className="flex flex-col items-center justify-center py-12 gap-4">
-                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                            <p className="text-muted-foreground">Importazione in corso...</p>
-                        </div>
-                    )}
-
-                    {step === "done" && importResult && (
-                        <div className="flex flex-col items-center justify-center py-12 gap-4 text-center">
-                            <div className="h-16 w-16 rounded-full bg-green-500/10 flex items-center justify-center">
-                                <Check className="h-8 w-8 text-green-600" />
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-semibold">Importazione completata!</h3>
-                                <p className="text-muted-foreground">
-                                    {importResult.count} transazioni importate con successo.
-                                </p>
-                            </div>
-                        </div>
-                    )}
+    return (
+        <WizardShell
+            open={open}
+            onOpenChange={onOpenChange}
+            onClose={handleClose}
+            title={step === "done" ? "Importazione Completata" : "Importa da CSV"}
+            subtitle={step === "done" ? undefined : (filename || "Carica il file della tua banca")}
+            currentStepId={step}
+            steps={steps}
+            footer={footerContent}
+        >
+            {/* Error display */}
+            {error && (
+                <div className="mx-4 mt-4 md:mx-6 md:mt-6 mb-0 bg-destructive/10 border border-destructive/20 text-destructive text-sm p-3 rounded-lg">
+                    {error}
                 </div>
+            )}
 
-                {/* Footer Actions */}
-                <div className="flex items-center justify-between pt-4 border-t">
-                    <Button variant="ghost" onClick={handleClose}>
-                        {step === "done" ? "Chiudi" : "Annulla"}
-                    </Button>
+            {step === "upload" && (
+                <div className="h-full overflow-auto p-4 md:p-6">
+                    <StepUpload onFileUpload={handleFileUpload} />
+                </div>
+            )}
 
-                    <div className="flex gap-2">
-                        {step === "mapping" && (
-                            <>
-                                <Button variant="outline" onClick={() => setStep("upload")}>
-                                    <ChevronLeft className="h-4 w-4 mr-1" />
-                                    Indietro
-                                </Button>
-                                <Button onClick={handleMappingConfirm}>
-                                    Anteprima
-                                    <ChevronRight className="h-4 w-4 ml-1" />
-                                </Button>
-                            </>
-                        )}
+            {step === "mapping" && format && (
+                <div className="h-full overflow-auto p-4 md:p-6">
+                    <StepMapping
+                        format={format}
+                        mappingState={mappingState}
+                        onMappingChange={setMappingState}
+                    />
+                </div>
+            )}
 
-                        {step === "preview" && (
-                            <>
-                                <Button variant="outline" onClick={() => setStep("mapping")}>
-                                    <ChevronLeft className="h-4 w-4 mr-1" />
-                                    Indietro
-                                </Button>
-                                <Button
-                                    onClick={handleImportConfirm}
-                                    disabled={previewRows.filter(r => r.isSelected && r.isValid).length === 0}
-                                >
-                                    Importa ({previewRows.filter(r => r.isSelected && r.isValid).length})
-                                </Button>
-                            </>
-                        )}
+            {step === "processing" && (
+                <div className="h-full overflow-auto p-4 md:p-6 flex flex-col items-center justify-center min-h-[300px]">
+                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                    <div className="text-center space-y-2 mt-6">
+                        <h3 className="text-lg font-semibold">Analisi in corso...</h3>
+                        <p className="text-muted-foreground">
+                            Stiamo analizzando le transazioni e verificando i duplicati.
+                        </p>
+                    </div>
+                    <div className="w-64 mt-6">
+                        <Progress value={processingProgress} className="h-2" />
+                        <p className="text-xs text-muted-foreground text-center mt-2">
+                            {processingProgress}%
+                        </p>
                     </div>
                 </div>
-            </DialogContent>
-        </Dialog>
+            )}
+
+            {step === "preview" && (
+                <div className="h-full overflow-hidden p-4 md:p-6 flex flex-col">
+                    <StepPreview
+                        rows={previewRows}
+                        onRowsChange={setPreviewRows}
+                        onToggleRow={toggleRowSelection}
+                        onUpdateCategory={updateRowCategory}
+                        onBulkUpdateCategory={bulkUpdateCategory}
+                    />
+                </div>
+            )}
+
+            {step === "importing" && (
+                <div className="h-full overflow-auto p-4 md:p-6 flex flex-col items-center justify-center min-h-[300px]">
+                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                    <div className="text-center mt-6">
+                        <h3 className="text-lg font-semibold">Importazione in corso...</h3>
+                        <p className="text-muted-foreground">
+                            {selectedCount} transazioni in fase di salvataggio.
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            {step === "done" && importResult && (
+                <div className="h-full overflow-auto p-4 md:p-6 flex flex-col items-center justify-center text-center min-h-[300px]">
+                    <div className="h-20 w-20 rounded-full bg-green-500/10 flex items-center justify-center">
+                        <Check className="h-10 w-10 text-green-600" />
+                    </div>
+                    <div className="mt-6">
+                        <h3 className="text-2xl font-bold">Importazione completata!</h3>
+                        <p className="text-muted-foreground mt-2">
+                            {importResult.count} transazioni importate con successo.
+                        </p>
+                    </div>
+                </div>
+            )}
+        </WizardShell>
     )
 }

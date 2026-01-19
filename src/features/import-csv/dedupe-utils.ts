@@ -5,6 +5,8 @@
  * - Date (±1 day tolerance)
  * - Normalized description
  * - Amount in cents
+ * 
+ * V2: Optimized with Set for O(n+m) instead of O(n×m)
  */
 
 import { Transaction } from "@/features/transactions/api/types"
@@ -58,36 +60,94 @@ export function generateDedupKeysWithTolerance(
 }
 
 /**
- * Checks if a parsed row is a duplicate of existing transactions
- * Returns the reason if duplicate, null otherwise
+ * Builds a Set of dedup keys from existing transactions
+ * Pre-compute once, use for O(1) lookups
  */
-export function checkDuplicate(
-    row: ParsedCSVRow,
-    existingTransactions: Transaction[]
-): { isDuplicate: boolean; reason?: string } {
-    if (!row.date) {
-        return { isDuplicate: false }
+export function buildExistingKeysSet(transactions: Transaction[]): Set<string> {
+    const keys = new Set<string>()
+    for (const tx of transactions) {
+        keys.add(generateDedupKey(tx.date, tx.description, tx.amountCents))
     }
+    return keys
+}
 
-    // Generate keys for this row (with tolerance)
+/**
+ * Builds a Map of dedup keys to transaction info for detailed matching
+ */
+export function buildExistingKeysMap(transactions: Transaction[]): Map<string, Transaction> {
+    const map = new Map<string, Transaction>()
+    for (const tx of transactions) {
+        const key = generateDedupKey(tx.date, tx.description, tx.amountCents)
+        if (!map.has(key)) {
+            map.set(key, tx)
+        }
+    }
+    return map
+}
+
+/**
+ * Checks if a parsed row is a duplicate using pre-built Set (O(1) per row)
+ * DEPRECATED: Use checkDuplicateWithMap for detailed reason
+ */
+export function checkDuplicateFast(
+    row: ParsedCSVRow,
+    existingKeysSet: Set<string>
+): boolean {
+    if (!row.date) return false
+
     const rowKeys = generateDedupKeysWithTolerance(
         row.date,
         row.description,
         row.amountCents
     )
 
-    // Build set of existing keys
-    for (const tx of existingTransactions) {
-        const txKey = generateDedupKey(tx.date, tx.description, tx.amountCents)
-        if (rowKeys.includes(txKey)) {
+    return rowKeys.some(key => existingKeysSet.has(key))
+}
+
+/**
+ * Checks if a parsed row is a duplicate using pre-built Map
+ * Returns the matching transaction for detailed reason
+ */
+export function checkDuplicateWithMap(
+    row: ParsedCSVRow,
+    existingKeysMap: Map<string, Transaction>
+): { isDuplicate: boolean; reason?: string; matchedTx?: Transaction } {
+    if (!row.date) {
+        return { isDuplicate: false }
+    }
+
+    const rowKeys = generateDedupKeysWithTolerance(
+        row.date,
+        row.description,
+        row.amountCents
+    )
+
+    for (const key of rowKeys) {
+        const matchedTx = existingKeysMap.get(key)
+        if (matchedTx) {
             return {
                 isDuplicate: true,
-                reason: `Transazione simile trovata: "${tx.description}" del ${tx.date.slice(0, 10)} (${tx.amountCents / 100}€)`
+                matchedTx,
+                reason: `Transazione simile trovata: "${matchedTx.description}" del ${matchedTx.date.slice(0, 10)} (${matchedTx.amountCents / 100}€)`
             }
         }
     }
 
     return { isDuplicate: false }
+}
+
+/**
+ * OLD API: Checks if a parsed row is a duplicate of existing transactions
+ * Kept for backward compatibility, but calls optimized version
+ */
+export function checkDuplicate(
+    row: ParsedCSVRow,
+    existingTransactions: Transaction[]
+): { isDuplicate: boolean; reason?: string } {
+    // Build map on-the-fly (less efficient but backward compatible)
+    const map = buildExistingKeysMap(existingTransactions)
+    const result = checkDuplicateWithMap(row, map)
+    return { isDuplicate: result.isDuplicate, reason: result.reason }
 }
 
 /**

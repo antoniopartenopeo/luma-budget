@@ -7,7 +7,7 @@
  * - Date parsing (EU, US, ISO formats)
  * - Amount parsing (EU/US format, single or split columns)
  * 
- * Uses parseCurrencyToCents from currency-utils (no parseFloat!)
+ * Uses parseCurrencyToCents from currency-utils (integer cents, DOE compliant)
  */
 
 import { parseCurrencyToCents } from "@/lib/currency-utils"

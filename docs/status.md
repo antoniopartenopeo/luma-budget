@@ -15,7 +15,7 @@ Il progetto è governato dal sistema **Directive, Orchestration, Execution (DOE)
 ## Stato del Progetto (alto livello)
 - Core (Dashboard / Transazioni / Budget): **Stabile**
 - Insights: **Stable (v1.2.0)** — Analisi Trend & AI Advisor con UI Moderna (Glassmorphism/Card) + Analisi Mensile Orizzontale.
-- Settings: **Stable (v1.3.0)** — UI Refinements (Mobile Toolbar, Consistent Icons/Titles), Full Width Layout, Accessibilità.
+- Settings: **Stable (v1.4.0)** — CSV Import v2 (Responsive/Adaptive Wizard), UI Refinements, Full Width Layout, Accessibilità.
 - Simulatore: **Stable (v2.0.0)** — "What-If" Interattivo e Dinamico. Supporto Gruppi Espandibili, Overrides Categoria, UI Premium Glassmorphism, Logica basata su dati reali (Ultimi 3/6/12 mesi).
 - **Core Math**: **Standardized (v1.0)** — Libreria centralizzata `financial-math.ts` per calcoli critici (percentuali, growth, utilization), con 100% test coverage.
 
@@ -33,7 +33,7 @@ Il progetto è governato dal sistema **Directive, Orchestration, Execution (DOE)
 - **Budget**: Pianificazione mensile (YYYY-MM) + spesa per gruppi (Essenziali / Comfort / Superfluo).
 - **Simulatore**: Analisi interattiva per ridurre le spese basata su medie storiche (calcolo real-time, zero impatto sui dati).
 - **Insights**: Visualizzazione trend su 12 mesi, AI Advisor avanzato, Analisi Mensile dettagliata (UI Card unificata).
-- **Impostazioni**: Preferenze (Profilo, Tema, Valuta), Gestione Dati (Backup/Restore JSON).
+- **Impostazioni**: Preferenze (Profilo, Tema, Valuta), Gestione Dati (Backup/Restore JSON), CSV Import.
 
 ## Flusso Dati & Persistenza
 ### Fonte di Verità (Source of truth)
@@ -67,6 +67,7 @@ Registro definito in `src/lib/storage-keys.ts`:
 ## Changelog Recente
 | Data | Modulo | Cambiamento |
 |------|--------|-------------|
+| 2026-01-19 | Settings | CSV Import v2: Responsive Wizard, Adaptive Preview (Table/List), Virtualization ready |
 | 2026-01-19 | Settings | CSV Import v1: Multi-step wizard, separator/date/amount parsing, dedup, atomic import with undo |
 | 2026-01-18 | UI/Theming | Audit & Refactor: Unified Glass UI system, improved Dark Mode support (Simulator, Flash, Insights) |
 | 2026-01-18 | Transactions | Added Date Selection (Quick Add + Edit) |

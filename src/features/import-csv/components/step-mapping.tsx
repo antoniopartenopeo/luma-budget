@@ -15,9 +15,14 @@ interface StepMappingProps {
     onMappingChange: (state: MappingState) => void
 }
 
+import { useMediaQuery } from "@/hooks/use-media-query"
+
+// ... imports ...
+
 export function StepMapping({ format, mappingState, onMappingChange }: StepMappingProps) {
     const { headers, sampleRows } = format
     const { mapping, dateFormat, amountFormat } = mappingState
+    const isDesktop = useMediaQuery("(min-width: 768px)")
 
     const updateMapping = (field: keyof typeof mapping, value: string | null) => {
         onMappingChange({
@@ -32,34 +37,37 @@ export function StepMapping({ format, mappingState, onMappingChange }: StepMappi
 
     return (
         <div className="space-y-6">
-            {/* Sample Preview */}
-            <div className="rounded-lg border overflow-hidden">
-                <div className="bg-muted px-3 py-2 text-xs font-medium text-muted-foreground">
-                    Anteprima dati ({sampleRows.length} righe)
-                </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-xs">
-                        <thead className="bg-muted/50">
-                            <tr>
-                                {headers.map((h, i) => (
-                                    <th key={i} className="px-3 py-2 text-left font-medium">{h}</th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {sampleRows.slice(0, 3).map((row, i) => (
-                                <tr key={i} className="border-t">
-                                    {row.map((cell, j) => (
-                                        <td key={j} className="px-3 py-2 truncate max-w-[150px]">
-                                            {cell}
-                                        </td>
+            {/* Sample Preview - Desktop Only */}
+            {isDesktop && (
+                <div className="rounded-lg border overflow-hidden">
+                    <div className="bg-muted px-3 py-2 text-xs font-medium text-muted-foreground">
+                        Anteprima dati ({sampleRows.length} righe)
+                    </div>
+                    {/* ... table ... */}
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-xs">
+                            <thead className="bg-muted/50">
+                                <tr>
+                                    {headers.map((h, i) => (
+                                        <th key={i} className="px-3 py-2 text-left font-medium">{h}</th>
                                     ))}
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {sampleRows.slice(0, 3).map((row, i) => (
+                                    <tr key={i} className="border-t">
+                                        {row.map((cell, j) => (
+                                            <td key={j} className="px-3 py-2 truncate max-w-[150px]">
+                                                {cell}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Column Mapping */}
             <div className="space-y-4">

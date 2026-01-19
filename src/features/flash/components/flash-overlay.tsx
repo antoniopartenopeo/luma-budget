@@ -42,6 +42,7 @@ export function FlashOverlay({ trigger }: FlashOverlayProps) {
                         "duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95"
                     )}
                 >
+                    <DialogPrimitive.Title className="sr-only">Flash Summary Overlay</DialogPrimitive.Title>
                     <FlashSummaryView onClose={() => setOpen(false)} />
                 </DialogPrimitive.Content>
             </DialogPortal>

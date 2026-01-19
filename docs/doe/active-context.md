@@ -2,26 +2,23 @@
 
 > "Focus on one thing at a time."
 
-**Task ID**: TRANS-DATE-001
+**Task ID**: SETTINGS-IMP-002
 **Status**: ✅ Completed
-**Last Update**: 2026-01-18 13:35
+**Last Update**: 2026-01-19 23:25
 
 ## Scope (What are we doing?)
-- [x] Add Date Picker to `QuickExpenseInput` (Top Bar).
-- [x] Add Date Picker to `TransactionForm` (Edit Modal/Sheet).
-- [x] Ensure Repository accepts custom dates.
+- [x] **Slider Responsiveness**: Real-time update for significance threshold.
+- [x] **Scrolling Logic**: Fixed Sidebar behavior and scroll containment.
+- [x] **Assistant Panel**: Refactored from Side Panel to Top Horizontal Bar.
+- [x] **Category Selection**: Fixed bug in Group/Subgroup display update.
 
 ### 1. Active Focus
-- **Current Integration**: UI Theme Consistency Audit (Glass System).
-- **Goal**: Standardize Dark/Light mode behavior across Simulator, Flash, Insights.
-- **Directives**:
-  - `DD-003-ui-theme-glass.md` (Theme Integrity)
-  - `DD-004-domain-math.md` (No UI Math)
+- **Current State**: Resting / Detailed Documentation.
+- **Goal**: Ensure all docs are aligned before next major feature.
 
 ### 2. Active Patterns
-- **Glass UI**: Use `.glass-panel` and `.glass-card` in `src/app/globals.css`.
-- **No Hardcoded Styles**: NO `bg-white`, `text-slate-900` in new code.
-- **Math**: Use `financial-math.ts` for ANY calculation.
+- **Glass UI**: Consistent use of `.glass-panel` in Wizard steps.
+- **Virtualization**: Import Table uses virtualization for performance.
 - [x] Documentation updated.
 
 ---
@@ -30,9 +27,10 @@
 
 | Date | Task | Key Changes |
 |------|------|-------------|
+| 2026-01-19 | Import Wizard UI | Assistant Panel (Top), Responsive Slider, Fixed Sidebar |
+| 2026-01-19 | Import Engine | v2 Core, Separate Date/Amount parsing, Atomic Import |
 | 2026-01-18 | Flash Refactor | `financial-math.ts` integration |
 | 2026-01-17 | Simulator v2.0 | Expandable groups, real data, glassmorphism UI |
-| 2026-01-17 | Financial Math Lib | Centralized `calculateSharePct`, `calculateUtilizationPct` |
 
 ---
 

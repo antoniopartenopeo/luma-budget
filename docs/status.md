@@ -67,7 +67,7 @@ Registro definito in `src/lib/storage-keys.ts`:
 ## Changelog Recente
 | Data | Modulo | Cambiamento |
 |------|--------|-------------|
-| 2026-01-19 | Settings | CSV Import v2: Responsive Wizard, Adaptive Preview (Table/List), Virtualization ready |
+| 2026-01-19 | Settings | CSV Import v2: Responsive Wizard, Assistant Panel (Top Bar), Adaptive Preview, Virtualization |
 | 2026-01-19 | Settings | CSV Import v1: Multi-step wizard, separator/date/amount parsing, dedup, atomic import with undo |
 | 2026-01-18 | UI/Theming | Audit & Refactor: Unified Glass UI system, improved Dark Mode support (Simulator, Flash, Insights) |
 | 2026-01-18 | Transactions | Added Date Selection (Quick Add + Edit) |

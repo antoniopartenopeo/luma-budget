@@ -80,17 +80,15 @@ export function StepPreviewDesktop({
     rows,
     onRowsChange,
     onToggleRow,
-    onUpdateCategory,
+
 }: StepPreviewProps) {
     const [thresholdCents, setThresholdCents] = useState(DEFAULT_SIGNIFICANCE_THRESHOLD_CENTS)
+    const [sliderValue, setSliderValue] = useState(DEFAULT_SIGNIFICANCE_THRESHOLD_CENTS)
     const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set())
+    // Store full objects but careful to update them when data changes
     const [groupsV2State, setGroupsV2State] = useState<Map<string, MerchantGroupV2>>(new Map())
     const [showLessSignificant, setShowLessSignificant] = useState(false)
-    const [showAssistant, setShowAssistant] = useState(true)
     const [isPending, startTransition] = useTransition()
-
-    const expenseRef = useRef<HTMLDivElement>(null)
-    const incomeRef = useRef<HTMLDivElement>(null)
 
     // Category options
     const expenseCatGroups = useMemo(() => getGroupedCategories("expense"), [])
@@ -102,10 +100,35 @@ export function StepPreviewDesktop({
         [rows, thresholdCents]
     )
 
-    // Apply local state overrides (split/merge, selection)
+    // Apply local state overrides
     const groups: GroupsV2Result = useMemo(() => {
         const applyState = (groups: MerchantGroupV2[]): MerchantGroupV2[] => {
-            return groups.map(g => groupsV2State.get(g.patternKey) || g)
+            return groups.map(g => {
+                const override = groupsV2State.get(g.patternKey)
+                if (!override) return g
+
+                // Merge override but keep fresh total/count/category from base (unless specifically overridden)
+                // Actually, for category we want the LATEST selection.
+                // If override exists, it might have STALE category.
+                // We should prefer the baseGroup category unless we have a specific reason.
+                // BUT, wait, handleGroupCategoryChange updates ROWs, so baseGroup has NEW category.
+                // Override has OLD category.
+                // So we should take category from baseGroup!
+
+                return {
+                    ...override,
+                    assignedCategoryId: g.assignedCategoryId, // Always take fresh category from rows
+                    totalAbsCents: g.totalAbsCents,           // Always take fresh totals
+                    count: g.count,                           // Always take fresh count
+                    // Keep flags from override
+                    isGroupSelected: override.isGroupSelected,
+                    subgroups: g.subgroups.map(sg => {
+                        // Find matching subgroup in override to preserve isSplit
+                        const overrideSg = override.subgroups.find(osg => osg.amountCents === sg.amountCents)
+                        return overrideSg ? { ...sg, isSplit: overrideSg.isSplit } : sg
+                    })
+                }
+            })
         }
         return {
             income: applyState(baseGroups.income),
@@ -156,7 +179,10 @@ export function StepPreviewDesktop({
 
     // Handlers
     const handleThresholdChange = (value: number[]) => {
-        startTransition(() => setThresholdCents(value[0]))
+        setSliderValue(value[0]) // Immediate UI update
+        startTransition(() => {
+            setThresholdCents(value[0]) // Deferred calculation
+        })
     }
 
     const toggleGroupExpand = (patternKey: string) => {
@@ -182,21 +208,28 @@ export function StepPreviewDesktop({
         })
     }
 
+    // For split/merge/select, we update the state Map
+    // We must ensure we clone the CURRENT group structure which might have fresh data
+    const updateGroupState = (patternKey: string, updater: (g: MerchantGroupV2) => MerchantGroupV2) => {
+        // Find the current group from our 'groups' list (which merges base + state)
+        const currentGroup = groups.all.find(g => g.patternKey === patternKey)
+        if (!currentGroup) return
+
+        const updated = updater(currentGroup)
+        setGroupsV2State(prev => new Map(prev).set(patternKey, updated))
+    }
+
     const handleSplitSubgroup = (group: MerchantGroupV2, amountCents: number) => {
-        const updated = splitSubgroup(group, amountCents)
-        setGroupsV2State(prev => new Map(prev).set(group.patternKey, updated))
+        updateGroupState(group.patternKey, g => splitSubgroup(g, amountCents))
     }
 
     const handleMergeSubgroup = (group: MerchantGroupV2, amountCents: number) => {
-        const updated = mergeSubgroup(group, amountCents)
-        setGroupsV2State(prev => new Map(prev).set(group.patternKey, updated))
+        updateGroupState(group.patternKey, g => mergeSubgroup(g, amountCents))
     }
 
     const handleGroupSelectionChange = (group: MerchantGroupV2, selected: boolean) => {
-        const updated = setGroupSelected(group, selected)
-        setGroupsV2State(prev => new Map(prev).set(group.patternKey, updated))
+        updateGroupState(group.patternKey, g => setGroupSelected(g, selected))
 
-        // Also update row selection
         startTransition(() => {
             const updatedRows = rows.map(row => {
                 if (group.rowIndices.includes(row.rowIndex)) {
@@ -218,11 +251,22 @@ export function StepPreviewDesktop({
         startTransition(() => onToggleRow(index))
     }
 
-    const handleUpdateCategory = (index: number, catId: string) => {
-        startTransition(() => onUpdateCategory(index, catId))
+    // Render components...
+    const renderAssistantCard = (title: string, message: string, icon: any, colorClass = "text-primary") => {
+        const Icon = icon
+        return (
+            <div className="flex-shrink-0 w-72 p-3 rounded-lg border bg-background shadow-sm text-sm">
+                <h4 className={cn("font-medium mb-1 flex items-center gap-2", colorClass)}>
+                    <Icon className="h-4 w-4" />
+                    {title}
+                </h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                    {message}
+                </p>
+            </div>
+        )
     }
 
-    // Render subgroup row
     const renderSubgroup = (group: MerchantGroupV2, subgroup: AmountSubgroup) => {
         const categoryGroups = group.type === "income" ? incomeCatGroups : expenseCatGroups
 
@@ -234,76 +278,39 @@ export function StepPreviewDesktop({
                     subgroup.isSplit && "bg-primary/5 border-l-2 border-l-primary"
                 )}
             >
-                {/* Split indicator */}
                 {subgroup.isSplit && (
-                    <Badge variant="default" className="text-[9px] shrink-0">
-                        Slegato
-                    </Badge>
+                    <Badge variant="default" className="text-[9px] shrink-0">Slegato</Badge>
                 )}
-
-                {/* Amount × Count */}
                 <div className="flex items-center gap-2 min-w-[120px]">
-                    <span className="font-mono text-sm">
-                        {formatCents(subgroup.amountCents)}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                        × {subgroup.count}
-                    </span>
+                    <span className="font-mono text-sm">{formatCents(subgroup.amountCents)}</span>
+                    <span className="text-xs text-muted-foreground">× {subgroup.count}</span>
                 </div>
-
-                {/* Total */}
                 <div className="text-sm text-muted-foreground">
                     = {formatCents(subgroup.amountCents * subgroup.count)}
                 </div>
-
                 <div className="flex-1" />
-
-                {/* Split/Merge button */}
                 {subgroup.isSplit ? (
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 text-xs"
-                        onClick={() => handleMergeSubgroup(group, subgroup.amountCents)}
-                    >
-                        <Link2 className="h-3 w-3 mr-1" />
-                        Unisci
+                    <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => handleMergeSubgroup(group, subgroup.amountCents)}>
+                        <Link2 className="h-3 w-3 mr-1" /> Unisci
                     </Button>
                 ) : (
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 text-xs"
-                        onClick={() => handleSplitSubgroup(group, subgroup.amountCents)}
-                    >
-                        <Unlink className="h-3 w-3 mr-1" />
-                        Slega
+                    <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => handleSplitSubgroup(group, subgroup.amountCents)}>
+                        <Unlink className="h-3 w-3 mr-1" /> Slega
                     </Button>
                 )}
-
-                {/* Category select (only if split) */}
                 {subgroup.isSplit && (
                     <div className="w-40 shrink-0">
-                        <Select
-                            value={group.assignedCategoryId}
-                            onValueChange={(v) => handleSubgroupCategoryChange(subgroup, v)}
-                        >
+                        <Select value={group.assignedCategoryId} onValueChange={(v) => handleSubgroupCategoryChange(subgroup, v)}>
                             <SelectTrigger className="h-7 text-xs">
                                 <div className="flex items-center gap-1.5 truncate">
-                                    <CategoryIcon
-                                        categoryId={group.assignedCategoryId}
-                                        categoryName={getCategoryLabel(group.assignedCategoryId)}
-                                        size={12}
-                                    />
+                                    <CategoryIcon categoryId={group.assignedCategoryId} categoryName={getCategoryLabel(group.assignedCategoryId)} size={12} />
                                     <span className="truncate">{getCategoryLabel(group.assignedCategoryId)}</span>
                                 </div>
                             </SelectTrigger>
                             <SelectContent>
                                 {categoryGroups.map(catGroup => (
                                     <div key={catGroup.key}>
-                                        <div className="px-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground font-bold bg-muted/50">
-                                            {catGroup.label}
-                                        </div>
+                                        <div className="px-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground font-bold bg-muted/50">{catGroup.label}</div>
                                         {catGroup.categories.map(cat => (
                                             <SelectItem key={cat.id} value={cat.id} className="text-xs">
                                                 <div className="flex items-center gap-2">
@@ -322,7 +329,6 @@ export function StepPreviewDesktop({
         )
     }
 
-    // Render group row
     const renderGroupRow = (group: MerchantGroupV2, isLessSignificant = false) => {
         const isExpanded = expandedGroups.has(group.patternKey)
         const categoryGroups = group.type === "income" ? incomeCatGroups : expenseCatGroups
@@ -332,88 +338,35 @@ export function StepPreviewDesktop({
 
         return (
             <div key={group.patternKey} className={cn(isLessSignificant && "opacity-60")}>
-                <div
-                    className={cn(
-                        "flex items-center gap-3 px-4 py-3 border-b hover:bg-muted/50 transition-colors",
-                        isExpanded && "bg-muted/30"
-                    )}
-                >
-                    {/* Selection checkbox */}
-                    <Checkbox
-                        checked={group.isGroupSelected}
-                        onCheckedChange={(checked) => handleGroupSelectionChange(group, !!checked)}
-                        className="shrink-0"
-                    />
-
-                    {/* Expand toggle */}
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 shrink-0"
-                        onClick={() => toggleGroupExpand(group.patternKey)}
-                    >
-                        {isExpanded ? (
-                            <ChevronDown className="h-4 w-4" />
-                        ) : (
-                            <ChevronRight className="h-4 w-4" />
-                        )}
+                <div className={cn("flex items-center gap-3 px-4 py-3 border-b hover:bg-muted/50 transition-colors", isExpanded && "bg-muted/30")}>
+                    <Checkbox checked={group.isGroupSelected} onCheckedChange={(checked) => handleGroupSelectionChange(group, !!checked)} className="shrink-0" />
+                    <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => toggleGroupExpand(group.patternKey)}>
+                        {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                     </Button>
-
-                    {/* Group info */}
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                             <span className="font-medium">{group.displayName}</span>
-                            {hasSubgroups && (
-                                <Badge variant="outline" className="text-[9px]">
-                                    {group.subgroups.length} ricorrenti
-                                </Badge>
-                            )}
+                            {hasSubgroups && <Badge variant="outline" className="text-[9px]">{group.subgroups.length} ricorrenti</Badge>}
                         </div>
-                        <div className="text-xs text-muted-foreground line-clamp-1">
-                            {group.sampleDescriptions[0]}
-                        </div>
+                        <div className="text-xs text-muted-foreground line-clamp-1">{group.sampleDescriptions[0]}</div>
                     </div>
-
-                    {/* Count */}
-                    <Badge variant="secondary" className="shrink-0">
-                        {group.count}
-                    </Badge>
-
-                    {/* Total */}
-                    <div className={cn(
-                        "w-24 text-right font-medium shrink-0",
-                        group.type === "income" && "text-green-600"
-                    )}>
+                    <Badge variant="secondary" className="shrink-0">{group.count}</Badge>
+                    <div className={cn("w-24 text-right font-medium shrink-0", group.type === "income" && "text-green-600")}>
                         {group.type === "income" ? "+" : "-"}{formatCents(group.totalAbsCents)}
                     </div>
-
-                    {/* Category select */}
                     <div className="w-44 shrink-0">
-                        <Select
-                            value={group.assignedCategoryId}
-                            onValueChange={(v) => handleGroupCategoryChange(group, v)}
-                        >
+                        <Select value={group.assignedCategoryId} onValueChange={(v) => handleGroupCategoryChange(group, v)}>
                             <SelectTrigger className="h-8 text-xs">
                                 <div className="flex items-center gap-1.5 truncate">
-                                    <CategoryIcon
-                                        categoryId={group.assignedCategoryId}
-                                        categoryName={getCategoryLabel(group.assignedCategoryId)}
-                                        size={14}
-                                    />
+                                    <CategoryIcon categoryId={group.assignedCategoryId} categoryName={getCategoryLabel(group.assignedCategoryId)} size={14} />
                                     <span className="truncate">{getCategoryLabel(group.assignedCategoryId)}</span>
-                                    {tipologia && (
-                                        <Badge variant="outline" className="text-[8px] ml-auto py-0">
-                                            {tipologia}
-                                        </Badge>
-                                    )}
+                                    {tipologia && <Badge variant="outline" className="text-[8px] ml-auto py-0">{tipologia}</Badge>}
                                 </div>
                             </SelectTrigger>
                             <SelectContent>
                                 {categoryGroups.map(catGroup => (
                                     <div key={catGroup.key}>
-                                        <div className="px-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground font-bold bg-muted/50">
-                                            {catGroup.label}
-                                        </div>
+                                        <div className="px-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground font-bold bg-muted/50">{catGroup.label}</div>
                                         {catGroup.categories.map(cat => (
                                             <SelectItem key={cat.id} value={cat.id} className="text-xs">
                                                 <div className="flex items-center gap-2">
@@ -428,64 +381,27 @@ export function StepPreviewDesktop({
                         </Select>
                     </div>
                 </div>
-
-                {/* Expanded content: subgroups + rows */}
                 {isExpanded && (
                     <div className="border-b">
-                        {/* Subgroups */}
                         {group.subgroups.map(sg => renderSubgroup(group, sg))}
-
-                        {/* Individual rows */}
                         {groupRows.slice(0, 20).map(row => (
-                            <div
-                                key={row.rowIndex}
-                                className={cn(
-                                    "flex items-center gap-3 px-4 py-2 pl-16 border-b bg-background",
-                                    !row.isValid && "bg-destructive/5",
-                                    row.isDuplicate && "bg-amber-500/5"
-                                )}
-                            >
-                                <Checkbox
-                                    checked={row.isSelected}
-                                    onCheckedChange={() => handleToggleRow(row.rowIndex)}
-                                    disabled={!row.isValid}
-                                    className="shrink-0"
-                                />
-                                <span className="text-xs text-muted-foreground w-20 shrink-0">
-                                    {row.date?.slice(0, 10) || "—"}
-                                </span>
-                                <span className="text-sm flex-1 min-w-0 truncate">
-                                    {row.description}
-                                </span>
-                                <span className={cn(
-                                    "font-mono text-sm shrink-0",
-                                    row.type === "income" && "text-green-600"
-                                )}>
-                                    {formatCents(Math.abs(row.amountCents))}
-                                </span>
+                            <div key={row.rowIndex} className={cn("flex items-center gap-3 px-4 py-2 pl-16 border-b bg-background", !row.isValid && "bg-destructive/5", row.isDuplicate && "bg-amber-500/5")}>
+                                <Checkbox checked={row.isSelected} onCheckedChange={() => handleToggleRow(row.rowIndex)} disabled={!row.isValid} className="shrink-0" />
+                                <span className="text-xs text-muted-foreground w-20 shrink-0">{row.date?.slice(0, 10) || "—"}</span>
+                                <span className="text-sm flex-1 min-w-0 truncate">{row.description}</span>
+                                <span className={cn("font-mono text-sm shrink-0", row.type === "income" && "text-green-600")}>{formatCents(Math.abs(row.amountCents))}</span>
                             </div>
                         ))}
-                        {groupRows.length > 20 && (
-                            <div className="px-4 py-2 text-xs text-muted-foreground text-center">
-                                +{groupRows.length - 20} altre righe
-                            </div>
-                        )}
                     </div>
                 )}
             </div>
         )
     }
 
-    // Render section header
-    const renderSectionHeader = (
-        type: "expense" | "income",
-        groups: MerchantGroupV2[],
-        total: number
-    ) => {
+    const renderSectionHeader = (type: "expense" | "income", groups: MerchantGroupV2[], total: number) => {
         const Icon = type === "expense" ? TrendingDown : TrendingUp
         const label = type === "expense" ? "Uscite" : "Entrate"
         const colorClass = type === "income" ? "text-green-600" : "text-foreground"
-
         return (
             <div className="flex items-center justify-between px-4 py-3 bg-muted/50 border-b sticky top-0 z-10">
                 <div className="flex items-center gap-2">
@@ -493,212 +409,93 @@ export function StepPreviewDesktop({
                     <span className="font-semibold">{label}</span>
                     <Badge variant="secondary">{groups.length} gruppi</Badge>
                 </div>
-                <div className={cn("font-bold", colorClass)}>
-                    {type === "income" ? "+" : "-"}{formatCents(total)}
-                </div>
+                <div className={cn("font-bold", colorClass)}>{type === "income" ? "+" : "-"}{formatCents(total)}</div>
             </div>
         )
     }
 
     return (
-        <div className="flex h-full relative">
+        <div className="flex flex-col h-full bg-background relative isolate">
             <LoadingOverlay isLoading={isPending} />
 
-            {/* Main content */}
-            <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-                {/* Threshold control */}
-                <div className="flex-shrink-0 p-4 border-b bg-muted/30">
+            {/* Assistant Panel - Top Bar */}
+            <div className="flex-shrink-0 border-b bg-muted/20 p-4 flex gap-4 overflow-x-auto">
+                {renderAssistantCard(ASSISTANT_MESSAGES.initial.title, ASSISTANT_MESSAGES.initial.message, HelpCircle)}
+                {renderAssistantCard(ASSISTANT_MESSAGES.threshold.title, ASSISTANT_MESSAGES.threshold.message, Sliders)}
+                {groups.all.some(g => g.subgroups.length > 0) && renderAssistantCard(ASSISTANT_MESSAGES.subgroups.title, ASSISTANT_MESSAGES.subgroups.message, Unlink)}
+                {lessSignificantGroups.length > 0 && renderAssistantCard(ASSISTANT_MESSAGES.lessSignificant.title, ASSISTANT_MESSAGES.lessSignificant.message, Info, "text-amber-600")}
+            </div>
+
+            {/* Header Controls */}
+            <div className="flex-shrink-0 bg-background border-b z-20">
+                <div className="p-4 border-b">
                     <div className="flex items-center gap-4">
-                        <Sliders className="h-4 w-4 text-muted-foreground shrink-0" />
                         <div className="flex-1">
                             <div className="flex items-center justify-between mb-2">
                                 <span className="text-sm font-medium">Soglia importanza</span>
-                                <span className="text-sm font-mono">{formatCents(thresholdCents)}</span>
+                                <span className="text-sm font-mono">{formatCents(sliderValue)}</span>
                             </div>
                             <Slider
-                                value={[thresholdCents]}
+                                value={[sliderValue]}
                                 onValueChange={handleThresholdChange}
                                 min={0}
                                 max={50000}
                                 step={500}
-                                className="w-full"
+                                className="w-full cursor-pointer"
                             />
                         </div>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-2">
-                        Gruppi con totale ≥ soglia sono selezionati di default. Sotto soglia: meno significativi.
-                    </p>
                 </div>
 
-                {/* Stats bar */}
-                <div className="flex-shrink-0 flex items-center gap-4 px-4 py-2 border-b text-xs">
+                <div className="flex items-center gap-4 px-4 py-2 text-xs text-muted-foreground">
                     <div className="flex items-center gap-1.5">
                         <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
-                        <span>{stats.significantGroups} gruppi significativi</span>
+                        <span>{stats.significantGroups} significativi</span>
                     </div>
                     {stats.lessSignificantGroups > 0 && (
-                        <div className="flex items-center gap-1.5 text-muted-foreground">
+                        <div className="flex items-center gap-1.5">
                             <AlertCircle className="h-3.5 w-3.5" />
                             <span>{stats.lessSignificantGroups} meno significativi</span>
                         </div>
                     )}
                     <div className="flex-1" />
-                    <span className="text-muted-foreground">
-                        {stats.selectedRows} righe selezionate
-                    </span>
-                </div>
-
-                {/* Groups list */}
-                <div className="flex-1 overflow-auto">
-                    {/* Expense section */}
-                    {significantExpense.length > 0 && (
-                        <div>
-                            {renderSectionHeader("expense", significantExpense,
-                                significantExpense.reduce((s, g) => s + g.totalAbsCents, 0))}
-                            {significantExpense.map(g => renderGroupRow(g))}
-                        </div>
-                    )}
-
-                    {/* Income section */}
-                    {significantIncome.length > 0 && (
-                        <div>
-                            {renderSectionHeader("income", significantIncome,
-                                significantIncome.reduce((s, g) => s + g.totalAbsCents, 0))}
-                            {significantIncome.map(g => renderGroupRow(g))}
-                        </div>
-                    )}
-
-                    {/* Less significant section */}
-                    {lessSignificantGroups.length > 0 && (
-                        <div className="border-t-2 border-dashed">
-                            <div className="flex items-center justify-between px-4 py-3 bg-muted/30">
-                                <div className="flex items-center gap-2">
-                                    <AlertCircle className="h-4 w-4 text-muted-foreground" />
-                                    <span className="font-medium text-muted-foreground">
-                                        Meno significativi
-                                    </span>
-                                    <Badge variant="outline">{lessSignificantGroups.length}</Badge>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={handleIncludeAllLessSignificant}
-                                    >
-                                        Includi tutti
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => setShowLessSignificant(!showLessSignificant)}
-                                    >
-                                        {showLessSignificant ? "Nascondi" : "Mostra"}
-                                        <ChevronDown className={cn(
-                                            "h-4 w-4 ml-1 transition-transform",
-                                            showLessSignificant && "rotate-180"
-                                        )} />
-                                    </Button>
-                                </div>
-                            </div>
-                            {showLessSignificant && lessSignificantGroups.map(g => renderGroupRow(g, true))}
-                        </div>
-                    )}
+                    <span>{stats.selectedRows} righe selezionate</span>
                 </div>
             </div>
 
-            {/* Assistant panel */}
-            {showAssistant && (
-                <div className="w-72 border-l bg-muted/20 flex-shrink-0 flex flex-col">
-                    <div className="flex items-center justify-between px-4 py-3 border-b">
-                        <div className="flex items-center gap-2">
-                            <HelpCircle className="h-4 w-4 text-primary" />
-                            <span className="font-medium text-sm">Assistente</span>
-                        </div>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6"
-                            onClick={() => setShowAssistant(false)}
-                        >
-                            <X className="h-4 w-4" />
-                        </Button>
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto min-h-0">
+                {significantExpense.length > 0 && (
+                    <div>
+                        {renderSectionHeader("expense", significantExpense, significantExpense.reduce((s, g) => s + g.totalAbsCents, 0))}
+                        {significantExpense.map(g => renderGroupRow(g))}
                     </div>
-                    <div className="flex-1 overflow-auto p-4 space-y-4">
-                        {/* Context-aware messages */}
-                        <div className="space-y-3">
-                            <div className="rounded-lg border bg-background p-3">
-                                <h4 className="font-medium text-sm mb-1">
-                                    {ASSISTANT_MESSAGES.initial.title}
-                                </h4>
-                                <p className="text-xs text-muted-foreground">
-                                    {ASSISTANT_MESSAGES.initial.message}
-                                </p>
-                            </div>
-
-                            <div className="rounded-lg border bg-background p-3">
-                                <h4 className="font-medium text-sm mb-1">
-                                    <Sliders className="h-3 w-3 inline mr-1" />
-                                    {ASSISTANT_MESSAGES.threshold.title}
-                                </h4>
-                                <p className="text-xs text-muted-foreground">
-                                    {ASSISTANT_MESSAGES.threshold.message}
-                                </p>
-                            </div>
-
-                            {groups.all.some(g => g.subgroups.length > 0) && (
-                                <div className="rounded-lg border bg-background p-3">
-                                    <h4 className="font-medium text-sm mb-1">
-                                        <Unlink className="h-3 w-3 inline mr-1" />
-                                        {ASSISTANT_MESSAGES.subgroups.title}
-                                    </h4>
-                                    <p className="text-xs text-muted-foreground">
-                                        {ASSISTANT_MESSAGES.subgroups.message}
-                                    </p>
-                                </div>
-                            )}
-
-                            {lessSignificantGroups.length > 0 && (
-                                <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
-                                    <h4 className="font-medium text-sm mb-1 text-amber-700">
-                                        <Info className="h-3 w-3 inline mr-1" />
-                                        {ASSISTANT_MESSAGES.lessSignificant.title}
-                                    </h4>
-                                    <p className="text-xs text-muted-foreground">
-                                        {ASSISTANT_MESSAGES.lessSignificant.message}
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Quick stats */}
-                        <div className="border-t pt-4">
-                            <h4 className="font-medium text-sm mb-2">Riepilogo</h4>
-                            <div className="space-y-1 text-xs">
-                                <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Uscite totali</span>
-                                    <span className="font-mono">-{formatCents(stats.expenseTotal)}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Entrate totali</span>
-                                    <span className="font-mono text-green-600">+{formatCents(stats.incomeTotal)}</span>
-                                </div>
-                            </div>
-                        </div>
+                )}
+                {significantIncome.length > 0 && (
+                    <div>
+                        {renderSectionHeader("income", significantIncome, significantIncome.reduce((s, g) => s + g.totalAbsCents, 0))}
+                        {significantIncome.map(g => renderGroupRow(g))}
                     </div>
-                </div>
-            )}
-
-            {/* Toggle assistant button (when hidden) */}
-            {!showAssistant && (
-                <Button
-                    variant="outline"
-                    size="icon"
-                    className="fixed bottom-20 right-6 h-10 w-10 rounded-full shadow-lg"
-                    onClick={() => setShowAssistant(true)}
-                >
-                    <HelpCircle className="h-5 w-5" />
-                </Button>
-            )}
+                )}
+                {lessSignificantGroups.length > 0 && (
+                    <div className="border-t-2 border-dashed mt-8">
+                        <div className="flex items-center justify-between px-4 py-3 bg-muted/30">
+                            <div className="flex items-center gap-2">
+                                <AlertCircle className="h-4 w-4 text-muted-foreground" />
+                                <span className="font-medium text-muted-foreground">Meno significativi</span>
+                                <Badge variant="outline">{lessSignificantGroups.length}</Badge>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Button variant="ghost" size="sm" onClick={handleIncludeAllLessSignificant}>Includi tutti</Button>
+                                <Button variant="ghost" size="sm" onClick={() => setShowLessSignificant(!showLessSignificant)}>
+                                    {showLessSignificant ? "Nascondi" : "Mostra"} <ChevronDown className={cn("h-4 w-4 ml-1 transition-transform", showLessSignificant && "rotate-180")} />
+                                </Button>
+                            </div>
+                        </div>
+                        {showLessSignificant && lessSignificantGroups.map(g => renderGroupRow(g, true))}
+                    </div>
+                )}
+            </div>
         </div>
     )
 }

@@ -30,6 +30,7 @@ import {
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { CategoryLabel } from "@/features/categories/components/category-label"
 import { formatTransactionDate } from "@/features/transactions/utils/format-date"
+import { formatSignedCents } from "@/lib/currency-utils"
 import { SortField, SortOrder } from "../utils/transactions-logic"
 
 interface TransactionsTableProps {
@@ -57,6 +58,21 @@ const SortIndicator = ({ field, sortField, sortOrder }: SortIndicatorProps) => {
         ? <ArrowUp className="ml-2 h-3 w-3 text-primary" />
         : <ArrowDown className="ml-2 h-3 w-3 text-primary" />;
 };
+
+/**
+ * Formats transaction amount using amountCents as source of truth.
+ * Falls back to legacy 'amount' string if amountCents is not available.
+ */
+const formatTransactionAmount = (transaction: Transaction): string => {
+    // Source of truth: amountCents (integer, absolute value)
+    if (typeof transaction.amountCents === "number" && transaction.amountCents > 0) {
+        return formatSignedCents(
+            transaction.type === "income" ? transaction.amountCents : -transaction.amountCents
+        )
+    }
+    // Fallback to legacy string for old data
+    return transaction.amount || "—"
+}
 
 export function TransactionsTable({
     transactions,
@@ -188,7 +204,7 @@ export function TransactionsTable({
                                         transaction.type === "income" ? "text-emerald-600" : "text-rose-600"
                                     )}
                                 >
-                                    {transaction.amount}
+                                    {formatTransactionAmount(transaction)}
                                 </TableCell>
                                 <TableCell onClick={(e) => e.stopPropagation()}>
                                     <TransactionActionsMenu
@@ -262,7 +278,7 @@ export function TransactionsTable({
                                     transaction.type === "income" ? "text-emerald-600" : "text-rose-600"
                                 )}
                             >
-                                {transaction.amount}
+                                {formatTransactionAmount(transaction)}
                             </div>
                         </div>
                     </div>

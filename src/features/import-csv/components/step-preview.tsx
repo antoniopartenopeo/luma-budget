@@ -5,9 +5,7 @@
  * Renders Mobile or Desktop view based on viewport
  */
 
-import { useMediaQuery } from "@/hooks/use-media-query"
-import { StepPreviewDesktop } from "./step-preview-desktop"
-import { StepPreviewMobile } from "./step-preview-mobile"
+import { StepPreviewResponsive } from "./step-preview-responsive"
 import type { PreviewRow } from "../types"
 
 interface StepPreviewProps {
@@ -19,11 +17,5 @@ interface StepPreviewProps {
 }
 
 export function StepPreview(props: StepPreviewProps) {
-    const isDesktop = useMediaQuery("(min-width: 768px)")
-
-    if (isDesktop) {
-        return <StepPreviewDesktop {...props} />
-    }
-
-    return <StepPreviewMobile {...props} />
+    return <StepPreviewResponsive {...props} />
 }

@@ -38,6 +38,7 @@ import {
     mergeSubgroup,
     setGroupSelected
 } from "../grouping-utils-v2"
+import { generatePatternKey } from "../normalization-utils"
 import { LoadingOverlay } from "./loading-overlay"
 import { cn } from "@/lib/utils"
 
@@ -179,9 +180,47 @@ export function StepPreviewDesktop({
 
     // Handlers
     const handleThresholdChange = (value: number[]) => {
-        setSliderValue(value[0]) // Immediate UI update
+        setSliderValue(value[0]) // Immediate UI update only
+    }
+
+    const handleThresholdCommit = (value: number[]) => {
+        const newThreshold = value[0]
         startTransition(() => {
-            setThresholdCents(value[0]) // Deferred calculation
+            setThresholdCents(newThreshold)
+
+            // Logic Fix: Auto-exclude groups below threshold
+            // We need to know the total amount for each pattern key to decide
+            const groupMap = new Map<string, number>()
+
+            // 1. First pass: Compute totals per pattern key
+            rows.forEach(row => {
+                const { patternKey } = generatePatternKey(row.description, row.type)
+                // Use absolute amounts for significance
+                const current = groupMap.get(patternKey) || 0
+                groupMap.set(patternKey, current + Math.abs(row.amountCents))
+            })
+
+            // 2. Second pass: Update selection
+            const updatedRows = rows.map(row => {
+                const { patternKey } = generatePatternKey(row.description, row.type)
+                const totalAbs = groupMap.get(patternKey) || 0
+                const isSignificant = totalAbs >= newThreshold
+
+                // Only change selection if the row belongs to a group that is now significant/insignificant
+                // But wait, the user might have manually unchecked a specific row in a significant group.
+                // We should probably only AUTO-DESELECT insignificant ones, and AUTO-SELECT significant ones?
+                // Or just force reset?
+                // "The groups that should be excluded... are not excluded". This implies force sync.
+                // We will set isSelected = isSignificant for ALL rows. 
+                // This resets manual row-level toggles, but it's the expected behavior for a threshold tool.
+
+                return {
+                    ...row,
+                    isSelected: isSignificant && row.isValid // Keep valid check
+                }
+            })
+
+            onRowsChange(updatedRows)
         })
     }
 
@@ -300,7 +339,10 @@ export function StepPreviewDesktop({
                 )}
                 {subgroup.isSplit && (
                     <div className="w-40 shrink-0">
-                        <Select value={group.assignedCategoryId} onValueChange={(v) => handleSubgroupCategoryChange(subgroup, v)}>
+                        <Select
+                            value={rows[subgroup.rowIndices[0]]?.selectedCategoryId || group.assignedCategoryId}
+                            onValueChange={(v) => handleSubgroupCategoryChange(subgroup, v)}
+                        >
                             <SelectTrigger className="h-7 text-xs">
                                 <div className="flex items-center gap-1.5 truncate">
                                     <CategoryIcon categoryId={group.assignedCategoryId} categoryName={getCategoryLabel(group.assignedCategoryId)} size={12} />
@@ -415,7 +457,7 @@ export function StepPreviewDesktop({
     }
 
     return (
-        <div className="flex flex-col h-full bg-background relative isolate">
+        <div className="flex flex-col h-full bg-background relative">
             <LoadingOverlay isLoading={isPending} />
 
             {/* Assistant Panel - Top Bar */}
@@ -438,6 +480,7 @@ export function StepPreviewDesktop({
                             <Slider
                                 value={[sliderValue]}
                                 onValueChange={handleThresholdChange}
+                                onValueCommit={handleThresholdCommit}
                                 min={0}
                                 max={50000}
                                 step={500}
@@ -464,21 +507,30 @@ export function StepPreviewDesktop({
             </div>
 
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto min-h-0">
+            <div className="flex-1 overflow-y-auto min-h-0 p-4 space-y-6">
+                {/* Expense Section */}
                 {significantExpense.length > 0 && (
-                    <div>
+                    <div className="border rounded-md shadow-sm bg-card/50">
                         {renderSectionHeader("expense", significantExpense, significantExpense.reduce((s, g) => s + g.totalAbsCents, 0))}
-                        {significantExpense.map(g => renderGroupRow(g))}
+                        <div className="divide-y">
+                            {significantExpense.map(g => renderGroupRow(g))}
+                        </div>
                     </div>
                 )}
+
+                {/* Income Section */}
                 {significantIncome.length > 0 && (
-                    <div>
+                    <div className="border rounded-md shadow-sm bg-card/50">
                         {renderSectionHeader("income", significantIncome, significantIncome.reduce((s, g) => s + g.totalAbsCents, 0))}
-                        {significantIncome.map(g => renderGroupRow(g))}
+                        <div className="divide-y">
+                            {significantIncome.map(g => renderGroupRow(g))}
+                        </div>
                     </div>
                 )}
+
+                {/* Less Significant Section */}
                 {lessSignificantGroups.length > 0 && (
-                    <div className="border-t-2 border-dashed mt-8">
+                    <div className="border-2 border-dashed rounded-md bg-muted/20">
                         <div className="flex items-center justify-between px-4 py-3 bg-muted/30">
                             <div className="flex items-center gap-2">
                                 <AlertCircle className="h-4 w-4 text-muted-foreground" />
@@ -492,7 +544,11 @@ export function StepPreviewDesktop({
                                 </Button>
                             </div>
                         </div>
-                        {showLessSignificant && lessSignificantGroups.map(g => renderGroupRow(g, true))}
+                        {showLessSignificant && (
+                            <div className="divide-y">
+                                {lessSignificantGroups.map(g => renderGroupRow(g, true))}
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

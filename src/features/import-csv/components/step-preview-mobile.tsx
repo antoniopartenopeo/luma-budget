@@ -32,10 +32,12 @@ import { DEFAULT_SIGNIFICANCE_THRESHOLD_CENTS } from "../types"
 import {
     computeGroupsV2,
     applyCategoryToGroupV2,
+    applyCategoryToSubgroup,
     splitSubgroup,
     mergeSubgroup,
     setGroupSelected
 } from "../grouping-utils-v2"
+import { generatePatternKey } from "../normalization-utils"
 import { LoadingOverlay } from "./loading-overlay"
 import { cn } from "@/lib/utils"
 
@@ -60,6 +62,7 @@ export function StepPreviewMobile({
     onUpdateCategory,
 }: StepPreviewProps) {
     const [thresholdCents, setThresholdCents] = useState(DEFAULT_SIGNIFICANCE_THRESHOLD_CENTS)
+    const [sliderValue, setSliderValue] = useState(DEFAULT_SIGNIFICANCE_THRESHOLD_CENTS)
     const [groupsV2State, setGroupsV2State] = useState<Map<string, MerchantGroupV2>>(new Map())
     const [selectedGroup, setSelectedGroup] = useState<MerchantGroupV2 | null>(null)
     const [showThreshold, setShowThreshold] = useState(false)
@@ -116,9 +119,53 @@ export function StepPreviewMobile({
     }
 
     // Handlers
+    const handleThresholdChange = (value: number[]) => {
+        setSliderValue(value[0]) // UI Update
+    }
+
+    const handleThresholdCommit = (value: number[]) => {
+        const newThreshold = value[0]
+        startTransition(() => {
+            setThresholdCents(newThreshold)
+
+            // Logic Fix: Auto-exclude groups below threshold
+            // We need to know the total amount for each pattern key to decide
+            const groupMap = new Map<string, number>()
+
+            // 1. First pass: Compute totals per pattern key
+            rows.forEach(row => {
+                const { patternKey } = generatePatternKey(row.description, row.type)
+                // Use absolute amounts for significance
+                const current = groupMap.get(patternKey) || 0
+                groupMap.set(patternKey, current + Math.abs(row.amountCents))
+            })
+
+            // 2. Second pass: Update selection
+            const updatedRows = rows.map(row => {
+                const { patternKey } = generatePatternKey(row.description, row.type)
+                const totalAbs = groupMap.get(patternKey) || 0
+                const isSignificant = totalAbs >= newThreshold
+
+                return {
+                    ...row,
+                    isSelected: isSignificant && row.isValid
+                }
+            })
+
+            onRowsChange(updatedRows)
+        })
+    }
+
     const handleGroupCategoryChange = (group: MerchantGroupV2, categoryId: string) => {
         startTransition(() => {
             const updatedRows = applyCategoryToGroupV2(rows, group, categoryId)
+            onRowsChange(updatedRows)
+        })
+    }
+
+    const handleSubgroupCategoryChange = (subgroup: AmountSubgroup, categoryId: string) => {
+        startTransition(() => {
+            const updatedRows = applyCategoryToSubgroup(rows, subgroup, categoryId)
             onRowsChange(updatedRows)
         })
     }
@@ -302,8 +349,9 @@ export function StepPreviewMobile({
             {showThreshold && (
                 <div className="px-2 pb-2">
                     <Slider
-                        value={[thresholdCents]}
-                        onValueChange={(v) => setThresholdCents(v[0])}
+                        value={[sliderValue]}
+                        onValueChange={handleThresholdChange}
+                        onValueCommit={handleThresholdCommit}
                         min={0}
                         max={50000}
                         step={500}
@@ -363,29 +411,67 @@ export function StepPreviewMobile({
                                     <h4 className="text-sm font-medium mb-2">Importi ricorrenti</h4>
                                     <div className="space-y-2">
                                         {selectedGroup.subgroups.map(sg => (
-                                            <div key={sg.amountCents} className="flex items-center justify-between p-2 bg-muted/50 rounded">
-                                                <div>
-                                                    <span className="font-mono">{formatCents(sg.amountCents)}</span>
-                                                    <span className="text-muted-foreground text-xs ml-2">× {sg.count}</span>
+                                            <div key={sg.amountCents} className="flex flex-col gap-2 p-2 bg-muted/50 rounded">
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <span className="font-mono">{formatCents(sg.amountCents)}</span>
+                                                        <span className="text-muted-foreground text-xs ml-2">× {sg.count}</span>
+                                                    </div>
+                                                    {sg.isSplit ? (
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => handleMergeSubgroup(selectedGroup, sg.amountCents)}
+                                                        >
+                                                            <Link2 className="h-3 w-3 mr-1" />
+                                                            Unisci
+                                                        </Button>
+                                                    ) : (
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => handleSplitSubgroup(selectedGroup, sg.amountCents)}
+                                                        >
+                                                            <Unlink className="h-3 w-3 mr-1" />
+                                                            Slega
+                                                        </Button>
+                                                    )}
                                                 </div>
-                                                {sg.isSplit ? (
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => handleMergeSubgroup(selectedGroup, sg.amountCents)}
+                                                {sg.isSplit && (
+                                                    <Select
+                                                        value={selectedGroupRows.find(r => r.amountCents === sg.amountCents)?.selectedCategoryId || selectedGroup.assignedCategoryId}
+                                                        onValueChange={(v) => handleSubgroupCategoryChange(sg, v)}
                                                     >
-                                                        <Link2 className="h-3 w-3 mr-1" />
-                                                        Unisci
-                                                    </Button>
-                                                ) : (
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => handleSplitSubgroup(selectedGroup, sg.amountCents)}
-                                                    >
-                                                        <Unlink className="h-3 w-3 mr-1" />
-                                                        Slega
-                                                    </Button>
+                                                        <SelectTrigger className="h-8 w-full text-xs">
+                                                            <div className="flex items-center gap-2 truncate">
+                                                                <CategoryIcon
+                                                                    categoryId={selectedGroupRows.find(r => r.amountCents === sg.amountCents)?.selectedCategoryId || selectedGroup.assignedCategoryId}
+                                                                    categoryName={getCategoryLabel(selectedGroupRows.find(r => r.amountCents === sg.amountCents)?.selectedCategoryId || selectedGroup.assignedCategoryId)}
+                                                                    size={14}
+                                                                />
+                                                                <span className="truncate">
+                                                                    {getCategoryLabel(selectedGroupRows.find(r => r.amountCents === sg.amountCents)?.selectedCategoryId || selectedGroup.assignedCategoryId)}
+                                                                </span>
+                                                            </div>
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {(selectedGroup.type === "income" ? incomeCatGroups : expenseCatGroups).map(catGroup => (
+                                                                <div key={catGroup.key}>
+                                                                    <div className="px-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground font-bold bg-muted/50">
+                                                                        {catGroup.label}
+                                                                    </div>
+                                                                    {catGroup.categories.map(cat => (
+                                                                        <SelectItem key={cat.id} value={cat.id}>
+                                                                            <div className="flex items-center gap-2">
+                                                                                <CategoryIcon categoryId={cat.id} categoryName={cat.label} size={14} />
+                                                                                {cat.label}
+                                                                            </div>
+                                                                        </SelectItem>
+                                                                    ))}
+                                                                </div>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
                                                 )}
                                             </div>
                                         ))}

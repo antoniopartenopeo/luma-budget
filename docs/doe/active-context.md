@@ -11,15 +11,17 @@
 - [x] Add Date Picker to `TransactionForm` (Edit Modal/Sheet).
 - [x] Ensure Repository accepts custom dates.
 
-## Rationale (Why?)
-- Permits backdating transactions.
-- Essential for correcting wrong dates in edit mode.
-- Users requested explicit date control.
+### 1. Active Focus
+- **Current Integration**: UI Theme Consistency Audit (Glass System).
+- **Goal**: Standardize Dark/Light mode behavior across Simulator, Flash, Insights.
+- **Directives**:
+  - `DD-003-ui-theme-glass.md` (Theme Integrity)
+  - `DD-004-domain-math.md` (No UI Math)
 
-## Exit Criteria (Definition of Done)
-- [x] Tests passed (`doe:verify`)
-- [x] UI allows selecting past/future dates.
-- [x] Date persists correctly in DB/LocalStorage.
+### 2. Active Patterns
+- **Glass UI**: Use `.glass-panel` and `.glass-card` in `src/app/globals.css`.
+- **No Hardcoded Styles**: NO `bg-white`, `text-slate-900` in new code.
+- **Math**: Use `financial-math.ts` for ANY calculation.
 - [x] Documentation updated.
 
 ---

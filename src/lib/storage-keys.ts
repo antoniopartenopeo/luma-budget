@@ -70,6 +70,11 @@ export const STORAGE_KEYS_REGISTRY: StorageKeyConfig[] = [
         label: "Impostazioni",
         invalidatesQueries: ["settings", "dashboard-summary"],
     },
+    {
+        key: "luma_import_history_v1",
+        label: "Cronologia Import CSV",
+        invalidatesQueries: ["transactions", "dashboard-summary", "recent-transactions"],
+    },
 ]
 
 /** Helper to get all storage keys as string array */

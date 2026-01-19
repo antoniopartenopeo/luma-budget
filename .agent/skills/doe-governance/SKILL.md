@@ -18,7 +18,11 @@ Before beginning any significant task:
 2. **Financial Logic**:
    - **Prohibited**: `parseFloat` on monetary values.
    - **Mandatory**: Use `src/lib/financial-math.ts` for percentages, growth, utilization, and aggregations.
-3. **Styling**: Use strictly Tailwind CSS (no inline styles).
+   - **No UI Math**: Do not write ad-hoc math (e.g. `amount * 0.2`) in components.
+3. **Styling & Theme**:
+   - **Glass Standard**: Use `.glass-panel` / `.glass-card` for containers.
+   - **Prohibited**: `bg-white`, `text-slate-900`, `border-white` (breaks Dark Mode).
+   - **Text**: Use `text-foreground`, `text-muted-foreground`.
 4. **Icons**: Use centralized `CategoryIcon` or `lucide-react` consistently.
 5. **Validation**: Run `npm run doe:verify` before considering code "complete".
 

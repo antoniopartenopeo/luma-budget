@@ -59,9 +59,38 @@ for file in $CHANGED_FILES; do
 
     # If NOT whitelisted and contains parseFloat -> Fail
     if [ "$IS_WHITELISTED" = false ]; then
+        # 1. Float Check
         if grep -q "parseFloat" "$file"; then
              echo "❌ [DOE ERROR] Prohibited 'parseFloat' detected in modified file: $file"
              FAILED=true
+        fi
+
+        # 2. UI Theme Check (Glass Standard)
+        # Check only .tsx files for style violations
+        if [[ "$file" == *".tsx" ]]; then
+            # Search for hardcoded light patterns (bg-white, text-slate-900, border-white)
+            # Note: We allow 'bg-white' only if it's strictly handling a specific case, but generally we want to discourage it.
+            # Using grep -E for extended regex
+            if grep -qE "bg-white|text-slate-900|border-white" "$file"; then
+                 echo "⚠️  [DOE WARNING] Standard Violation: Potential hardcoded light-theme styles detected in: $file"
+                 echo "   -> Patterns found: bg-white*, text-slate-900, or border-white*"
+                 echo "   -> Rule: Use .glass-panel/.glass-card or theme tokens (text-foreground, border-border)."
+                 echo "   -> Reference: docs/doe/directives/DD-003-ui-theme-glass.md"
+                 # We assert strict failure for text-slate-900 as it's definitely wrong for dark mode
+                 if grep -q "text-slate-900" "$file"; then
+                    FAILED=true
+                 fi
+            fi
+        fi
+
+        # 3. Domain Math Check
+        # Check .tsx files for loose Math.* calls (heuristic)
+        if [[ "$file" == *".tsx" ]]; then
+            if grep -qE "Math\.(round|floor|ceil|pow)" "$file"; then
+                 echo "⚠️  [DOE WARNING] Math logic detected in UI component: $file"
+                 echo "   -> Found 'Math.xxx'. Please move logic to financial-math.ts or utils."
+                 echo "   -> Reference: docs/doe/directives/DD-004-domain-math.md"
+            fi
         fi
     fi
 done

@@ -19,6 +19,13 @@ Il progetto è governato dal sistema **Directive, Orchestration, Execution (DOE)
 - Simulatore: **Stable (v2.0.0)** — "What-If" Interattivo e Dinamico. Supporto Gruppi Espandibili, Overrides Categoria, UI Premium Glassmorphism, Logica basata su dati reali (Ultimi 3/6/12 mesi).
 - **Core Math**: **Standardized (v1.0)** — Libreria centralizzata `financial-math.ts` per calcoli critici (percentuali, growth, utilization), con 100% test coverage.
 
+## UI Theme Standard (Glass)
+**Normativo**: Ogni nuovo componente "card" o "panel" DEVE aderire allo standard Glass.
+- **Reference**: `src/app/globals.css` (.glass-panel / .glass-card).
+- **DO**: Usare `.glass-panel` per contenitori, `.glass-card` per item. Usare `text-foreground`.
+- **DON'T**: `bg-white/x`, `bg-slate-900`, `text-slate-900`, `border-white`.
+- **Verifica**: `npm run doe:verify` controlla pattern vietati.
+
 ## Sezioni App
 - **Dashboard**: Panoramica alto livello (entrate, uscite, saldo mensile, budget residuo) + grafici distribuzione categorie.
 - **Transazioni**: CRUD, filtri (ricerca/tipo/categoria/periodo), export CSV.
@@ -26,7 +33,7 @@ Il progetto è governato dal sistema **Directive, Orchestration, Execution (DOE)
 - **Budget**: Pianificazione mensile (YYYY-MM) + spesa per gruppi (Essenziali / Comfort / Superfluo).
 - **Simulatore**: Analisi interattiva per ridurre le spese basata su medie storiche (calcolo real-time, zero impatto sui dati).
 - **Insights**: Visualizzazione trend su 12 mesi, AI Advisor avanzato, Analisi Mensile dettagliata (UI Card unificata).
-- **Impostazioni**: Preferenze (Profilo, Tema, Valuta), Gestione Dati (Backup/Restore JSON), Tema.
+- **Impostazioni**: Preferenze (Profilo, Tema, Valuta), Gestione Dati (Backup/Restore JSON).
 
 ## Flusso Dati & Persistenza
 ### Fonte di Verità (Source of truth)
@@ -60,6 +67,8 @@ Registro definito in `src/lib/storage-keys.ts`:
 ## Changelog Recente
 | Data | Modulo | Cambiamento |
 |------|--------|-------------|
+| 2026-01-19 | Settings | CSV Import v1: Multi-step wizard, separator/date/amount parsing, dedup, atomic import with undo |
+| 2026-01-18 | UI/Theming | Audit & Refactor: Unified Glass UI system, improved Dark Mode support (Simulator, Flash, Insights) |
 | 2026-01-18 | Transactions | Added Date Selection (Quick Add + Edit) |
 | 2026-01-18 | Flash | Refactored to use `financial-math.ts` |
 | 2026-01-18 | DOE | Added §5 (Documentation Sync) and §6 (Continuous Improvement) |

@@ -14,6 +14,7 @@ export interface Transaction {
     isSuperfluous?: boolean
     classificationSource?: "ruleBased" | "manual" | "ai"
     timestamp: number // For sorting
+    importId?: string // Batch ID for CSV imports (enables undo)
 }
 
 export interface CreateTransactionDTO {
@@ -27,4 +28,5 @@ export interface CreateTransactionDTO {
     isSuperfluous?: boolean
     classificationSource?: "ruleBased" | "manual" | "ai"
     date?: string // Optional ISO string (or YYYY-MM-DD), defaults to now
+    importId?: string // Batch ID for CSV imports
 }

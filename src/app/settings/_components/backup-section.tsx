@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react"
 import { useQueryClient } from "@tanstack/react-query"
-import { Database, Download, Upload, CheckCircle2, AlertCircle, Loader2 } from "lucide-react"
+import { Database, Download, Upload, CheckCircle2, AlertCircle, Loader2, FileSpreadsheet } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -27,6 +27,7 @@ import {
     BackupSummary,
     BackupV1
 } from "@/features/settings/backup/backup-utils"
+import { CSVImportWizard } from "@/features/import-csv"
 
 export function BackupSection() {
     const queryClient = useQueryClient()
@@ -36,6 +37,7 @@ export function BackupSection() {
     const [isLoading, setIsLoading] = useState(false)
     const [showImportDialog, setShowImportDialog] = useState(false)
     const [pendingBackup, setPendingBackup] = useState<{ backup: BackupV1; summary: BackupSummary } | null>(null)
+    const [showCSVWizard, setShowCSVWizard] = useState(false)
 
     const pad2 = (n: number) => n.toString().padStart(2, "0")
 
@@ -192,6 +194,15 @@ export function BackupSection() {
                                             Importa Backup
                                         </label>
                                     </Button>
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setShowCSVWizard(true)}
+                                        disabled={isLoading}
+                                        className="w-full sm:w-auto"
+                                    >
+                                        <FileSpreadsheet className="mr-2 h-4 w-4" />
+                                        Importa da CSV
+                                    </Button>
                                 </div>
                             </div>
                         </div>
@@ -242,6 +253,9 @@ export function BackupSection() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            {/* CSV Import Wizard */}
+            <CSVImportWizard open={showCSVWizard} onOpenChange={setShowCSVWizard} />
         </>
     )
 }

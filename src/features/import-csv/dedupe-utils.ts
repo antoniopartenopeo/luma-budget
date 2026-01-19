@@ -7,21 +7,19 @@
  * - Amount in cents
  * 
  * V2: Optimized with Set for O(n+m) instead of O(n×m)
+ * V3: Uses shared normalizeBase from normalization-utils
  */
 
 import { Transaction } from "@/features/transactions/api/types"
 import type { ParsedCSVRow } from "./types"
+import { normalizeBase } from "./normalization-utils"
 
 /**
- * Normalizes a description for comparison
- * Removes common variations, lowercase, trim
+ * Normalizes a description for deduplication comparison
+ * Uses shared normalizeBase for consistency
  */
 export function normalizeDescription(desc: string): string {
-    return desc
-        .toLowerCase()
-        .replace(/\s+/g, " ")
-        .replace(/[^\w\s]/g, "")
-        .trim()
+    return normalizeBase(desc)
 }
 
 /**

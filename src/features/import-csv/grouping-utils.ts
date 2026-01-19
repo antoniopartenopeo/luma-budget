@@ -1,65 +1,54 @@
 /**
  * Grouping Utilities
  * 
- * Groups import rows by merchant for bulk categorization.
- * Uses normalized description prefix as merchant key.
+ * Groups import rows by pattern key for bulk categorization.
+ * Uses deterministic pattern-based grouping with merchantKey fallback.
+ * 
+ * V2: Uses patternKey (signature-based) instead of merchantKey
  */
 
 import type { PreviewRow, MerchantGroup } from "./types"
-import { normalizeDescription } from "./dedupe-utils"
+import { generatePatternKey, capitalizeWords, extractMerchantKey } from "./normalization-utils"
 
 /**
- * Extracts a merchant key from a description
- * Takes first 2-3 significant words, removes common patterns
- */
-export function extractMerchantKey(description: string): string {
-    const normalized = normalizeDescription(description)
-
-    // Remove common prefixes (card purchases, transfers, etc.)
-    const cleaned = normalized
-        .replace(/^(pagamento|acquisto|addebito|bonifico|prelievo|versamento|rid|mav|rata)\s+/i, "")
-        .replace(/^(carta|pos|atm|sepa)\s+/i, "")
-        .replace(/\d{2}\/\d{2}\/\d{4}/g, "") // Remove dates
-        .replace(/\d{4,}/g, "") // Remove long numbers (cards, references)
-        .trim()
-
-    // Take first 3 words max
-    const words = cleaned.split(/\s+/).filter(w => w.length > 1)
-    const key = words.slice(0, 3).join(" ")
-
-    return key || "altro" // Fallback if nothing left
-}
-
-/**
- * Groups preview rows by merchant key
+ * Groups preview rows by pattern key
+ * O(n) with Map aggregation
  * Returns sorted by count (most frequent first)
  */
-export function groupRowsByMerchant(rows: PreviewRow[]): MerchantGroup[] {
+export function computeGroups(rows: PreviewRow[]): MerchantGroup[] {
     const groupMap = new Map<string, {
-        rows: PreviewRow[],
+        patternKey: string
+        merchantKey: string
+        isFallback: boolean
+        rows: PreviewRow[]
         type: "income" | "expense"
     }>()
 
-    // Group rows
+    // Group rows by patternKey
     for (const row of rows) {
         if (!row.isValid) continue
 
-        const key = extractMerchantKey(row.description)
-        // Separate income/expense even with same merchant
-        const fullKey = `${key}|${row.type}`
+        const { patternKey, merchantKey, isFallback } = generatePatternKey(
+            row.description,
+            row.type
+        )
 
-        if (!groupMap.has(fullKey)) {
-            groupMap.set(fullKey, { rows: [], type: row.type })
+        if (!groupMap.has(patternKey)) {
+            groupMap.set(patternKey, {
+                patternKey,
+                merchantKey,
+                isFallback,
+                rows: [],
+                type: row.type
+            })
         }
-        groupMap.get(fullKey)!.rows.push(row)
+        groupMap.get(patternKey)!.rows.push(row)
     }
 
     // Convert to MerchantGroup array
     const groups: MerchantGroup[] = []
 
-    for (const [fullKey, { rows: groupRows, type }] of groupMap) {
-        const merchantKey = fullKey.split("|")[0]
-
+    for (const { patternKey, merchantKey, isFallback, rows: groupRows, type } of groupMap.values()) {
         // Get most common category in group (for default)
         const categoryCounts = new Map<string, number>()
         for (const row of groupRows) {
@@ -70,7 +59,9 @@ export function groupRowsByMerchant(rows: PreviewRow[]): MerchantGroup[] {
             .sort((a, b) => b[1] - a[1])[0]?.[0] || "altro"
 
         groups.push({
+            patternKey,
             merchantKey,
+            isFallback,
             displayName: capitalizeWords(merchantKey),
             rowIndices: groupRows.map(r => r.rowIndex),
             totalAmountCents: groupRows.reduce((sum, r) => sum + r.amountCents, 0),
@@ -83,6 +74,14 @@ export function groupRowsByMerchant(rows: PreviewRow[]): MerchantGroup[] {
 
     // Sort by count descending
     return groups.sort((a, b) => b.count - a.count)
+}
+
+/**
+ * Legacy alias for backwards compatibility
+ * @deprecated Use computeGroups instead
+ */
+export function groupRowsByMerchant(rows: PreviewRow[]): MerchantGroup[] {
+    return computeGroups(rows)
 }
 
 /**
@@ -103,12 +102,5 @@ export function applyCategoryToGroup(
     })
 }
 
-/**
- * Capitalizes words for display
- */
-function capitalizeWords(str: string): string {
-    return str
-        .split(" ")
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ")
-}
+// Re-export for convenience (used by UI components)
+export { extractMerchantKey } from "./normalization-utils"

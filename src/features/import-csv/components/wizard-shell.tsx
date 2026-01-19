@@ -56,28 +56,20 @@ export function WizardShell({
                 <DialogOverlay />
                 {/* 
                     Responsive Container:
-                    - Mobile: fixed inset-0 (fullscreen)
-                    - Desktop: fixed left-[50%] top-[50%] ... w-[90vw] max-w-5xl h-[85vh]
+                    - All viewports: fixed inset-0 (fullscreen)
                  */}
                 <div
                     className={cn(
                         "fixed z-50 flex flex-col bg-background shadow-2xl duration-200",
                         "data-[state=open]:animate-in data-[state=closed]:animate-out",
                         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-
-                        // Mobile/Tablet: Fullscreen
-                        "inset-0",
-
-                        // Desktop: Modal style
-                        "md:inset-auto md:left-[50%] md:top-[50%] md:translate-x-[-50%] md:translate-y-[-50%]",
-                        "md:w-[90vw] md:max-w-5xl md:h-[85vh]",
-                        "md:border md:rounded-xl",
-                        "md:data-[state=closed]:zoom-out-95 md:data-[state=open]:zoom-in-95"
+                        // Fullscreen on all viewports
+                        "inset-0"
                     )}
                     data-state={open ? "open" : "closed"}
                 >
                     {/* Sticky Header */}
-                    <div className="flex-shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:rounded-t-xl">
+                    <div className="flex-shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                         <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
                             <div className="flex items-center gap-3">
                                 {HeaderIcon && <HeaderIcon className="h-5 w-5 md:h-6 md:w-6 text-primary" />}
@@ -150,7 +142,7 @@ export function WizardShell({
                     </div>
 
                     {/* Sticky Footer */}
-                    <div className="flex-shrink-0 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3 md:px-6 md:py-4 md:rounded-b-xl">
+                    <div className="flex-shrink-0 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3 md:px-6 md:py-4">
                         {footer}
                     </div>
                 </div>

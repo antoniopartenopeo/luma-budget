@@ -252,7 +252,7 @@ export function StepPreviewDesktop({
     }
 
     // Render components...
-    const renderAssistantCard = (title: string, message: string, icon: any, colorClass = "text-primary") => {
+    const renderAssistantCard = (title: string, message: string, icon: React.ElementType, colorClass = "text-primary") => {
         const Icon = icon
         return (
             <div className="flex-shrink-0 w-72 p-3 rounded-lg border bg-background shadow-sm text-sm">

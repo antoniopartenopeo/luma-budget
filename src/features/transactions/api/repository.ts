@@ -13,7 +13,7 @@ const DEFAULT_USER_ID = "user-1"
 
 import { INITIAL_SEED_TRANSACTIONS } from "./seed-data"
 
-export { INITIAL_SEED_TRANSACTIONS } // Re-export to maintain compatibility if used elsewhere, although likely not needed but safer.
+
 
 
 // Private cache to avoid frequent localStorage reads

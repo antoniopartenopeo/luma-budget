@@ -203,6 +203,50 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
     return newTransaction
 }
 
+export const createBatchTransactions = async (dataList: CreateTransactionDTO[]): Promise<Transaction[]> => {
+    await delay(1500) // Simulate processing time for batch
+
+    const newTransactions: Transaction[] = dataList.map(data => {
+        const isIncome = data.type === "income"
+        const amountCents = Math.abs(Math.round(data.amountCents || 0))
+        const formattedAmount = formatCentsSignedFromType(amountCents, data.type)
+
+        // Superfluous logic
+        let isSuperfluous = false
+        let classificationSource: "ruleBased" | "manual" = "ruleBased"
+
+        if (data.classificationSource === "manual" && data.isSuperfluous !== undefined) {
+            isSuperfluous = data.isSuperfluous
+            classificationSource = "manual"
+        } else {
+            isSuperfluous = isSuperfluousRule(data.categoryId, data.type)
+            classificationSource = "ruleBased"
+        }
+
+        return {
+            id: generateTransactionId(),
+            amount: formattedAmount,
+            amountCents,
+            date: data.date ? new Date(data.date).toISOString() : new Date().toISOString(),
+            description: data.description,
+            category: data.category,
+            categoryId: data.categoryId,
+            icon: isIncome ? "💰" : "🆕",
+            type: data.type,
+            timestamp: data.date ? new Date(data.date).getTime() : Date.now(),
+            isSuperfluous,
+            classificationSource
+        }
+    })
+
+    const txs = ensureCache()
+    // Prepend all new transactions
+    txs.unshift(...newTransactions)
+    syncStorage()
+
+    return newTransactions
+}
+
 export const updateTransaction = async (id: string, data: Partial<CreateTransactionDTO>): Promise<Transaction> => {
     await delay(800)
 

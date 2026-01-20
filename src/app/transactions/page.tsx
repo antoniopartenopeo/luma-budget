@@ -24,6 +24,7 @@ import { PageHeader } from "@/components/ui/page-header"
 
 import { StateMessage } from "@/components/ui/state-message"
 import { Skeleton } from "@/components/ui/skeleton"
+import { CsvImportWizard } from "@/features/import-csv/components/csv-import-wizard"
 
 const PAGE_SIZE = 15
 
@@ -178,6 +179,7 @@ function TransactionsPageContent() {
             <PageHeader
                 title="Transazioni"
                 description="Analisi dettagliata del tuo flusso di cassa."
+                actions={<CsvImportWizard />}
             />
 
             {/* Summary KPI Bar */}

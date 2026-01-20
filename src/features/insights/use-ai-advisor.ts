@@ -2,6 +2,7 @@
 
 import { useMemo } from "react"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
+import { sumExpensesInCents, sumIncomeInCents } from "@/lib/financial-math"
 
 export interface AISubscription {
     id: string
@@ -86,8 +87,8 @@ export function useAIAdvisor() {
                 return td.getFullYear() === y && td.getMonth() === m
             })
             return {
-                income: mTransactions.filter(t => t.type === "income").reduce((s, t) => s + t.amountCents, 0),
-                expenses: mTransactions.filter(t => t.type === "expense").reduce((s, t) => s + Math.abs(t.amountCents), 0),
+                income: sumIncomeInCents(mTransactions),
+                expenses: sumExpensesInCents(mTransactions),
                 hasData: mTransactions.length > 0
             }
         })
@@ -116,8 +117,8 @@ export function useAIAdvisor() {
 
             if (currentMonthTransactions.length > 0) {
                 // Use current month actuals as best guess forecast
-                const currentIncome = currentMonthTransactions.filter(t => t.type === "income").reduce((s, t) => s + t.amountCents, 0) / 100
-                const currentExpenses = currentMonthTransactions.filter(t => t.type === "expense").reduce((s, t) => s + Math.abs(t.amountCents), 0) / 100
+                const currentIncome = sumIncomeInCents(currentMonthTransactions) / 100
+                const currentExpenses = sumExpensesInCents(currentMonthTransactions) / 100
 
                 forecast = {
                     predictedIncome: currentIncome,

@@ -2,7 +2,7 @@ import { Transaction } from "@/features/transactions/api/types"
 import { getCategoryById } from "@/features/categories/config"
 import { BudgetSpending, BudgetGroupId, BUDGET_GROUP_LABELS } from "../api/types"
 import { getSignedCents } from "@/lib/currency-utils"
-import { calculateUtilizationPct } from "@/lib/financial-math"
+import { calculateUtilizationPct, sumExpensesInCents } from "@/lib/financial-math"
 
 // =====================
 // SPENDING CALCULATIONS
@@ -12,10 +12,8 @@ import { calculateUtilizationPct } from "@/lib/financial-math"
  * Calculate total spending for a given period
  */
 export function calculateTotalSpent(transactions: Transaction[], period: string): number {
-    const totalCents = filterTransactionsByPeriod(transactions, period)
-        .filter(t => t.type === "expense")
-        .reduce((sum, t) => sum + Math.abs(getSignedCents(t)), 0)
-
+    const filtered = filterTransactionsByPeriod(transactions, period)
+    const totalCents = sumExpensesInCents(filtered)
     return totalCents / 100
 }
 
@@ -26,16 +24,15 @@ export function calculateGroupSpending(transactions: Transaction[], period: stri
     const filtered = filterTransactionsByPeriod(transactions, period)
         .filter(t => t.type === "expense")
 
-    const globalSpentCents = filtered.reduce((sum, t) => sum + Math.abs(getSignedCents(t)), 0)
+    const globalSpentCents = sumExpensesInCents(filterTransactionsByPeriod(transactions, period))
 
     const groupSpending = (["essential", "comfort", "superfluous"] as BudgetGroupId[]).map(groupId => {
-        const spentCents = filtered
-            .filter(t => {
-                const category = getCategoryById(t.categoryId)
-                const resolvedGroup = resolveBudgetGroupForTransaction(t, category?.spendingNature as BudgetGroupId)
-                return resolvedGroup === groupId
-            })
-            .reduce((sum, t) => sum + Math.abs(getSignedCents(t)), 0)
+        const groupTransactions = filtered.filter(t => {
+            const category = getCategoryById(t.categoryId)
+            const resolvedGroup = resolveBudgetGroupForTransaction(t, category?.spendingNature as BudgetGroupId)
+            return resolvedGroup === groupId
+        })
+        const spentCents = groupTransactions.reduce((sum, t) => sum + Math.abs(getSignedCents(t)), 0)
 
         return {
             groupId,

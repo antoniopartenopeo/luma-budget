@@ -2,7 +2,7 @@ import { Transaction, CreateTransactionDTO } from "./types"
 import { storage } from "@/lib/storage-utils"
 import { CATEGORIES } from "../../categories/config"
 import { parseCurrencyToCents, normalizeTransactionAmount, euroToCents, formatCentsSignedFromType } from "@/lib/currency-utils"
-import { delay } from "@/lib/delay"
+
 
 // =====================
 // STORAGE SYSTEM
@@ -134,14 +134,14 @@ const isSuperfluousRule = (categoryId: string, type: "income" | "expense"): bool
 
 export const fetchRecentTransactions = async (): Promise<Transaction[]> => {
     // Simulate network delay
-    await delay(800)
+
     const txs = ensureCache()
     // Return sorted by timestamp desc
     return [...txs].sort((a, b) => b.timestamp - a.timestamp)
 }
 
 export const fetchTransactions = async (): Promise<Transaction[]> => {
-    await delay(800)
+
     const txs = ensureCache()
     return [...txs].sort((a, b) => b.timestamp - a.timestamp)
 }
@@ -159,7 +159,7 @@ function generateTransactionId(): string {
 }
 
 export const createTransaction = async (data: CreateTransactionDTO): Promise<Transaction> => {
-    await delay(1000)
+
 
     const isIncome = data.type === "income"
     // Source of truth: Cents. Prioritize amountCents from DTO.
@@ -204,7 +204,7 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
 }
 
 export const createBatchTransactions = async (dataList: CreateTransactionDTO[]): Promise<Transaction[]> => {
-    await delay(1500) // Simulate processing time for batch
+
 
     const newTransactions: Transaction[] = dataList.map(data => {
         const isIncome = data.type === "income"
@@ -248,7 +248,7 @@ export const createBatchTransactions = async (dataList: CreateTransactionDTO[]):
 }
 
 export const updateTransaction = async (id: string, data: Partial<CreateTransactionDTO>): Promise<Transaction> => {
-    await delay(800)
+
 
     const txs = ensureCache()
     const index = txs.findIndex((t) => t.id === id)
@@ -308,7 +308,7 @@ export const updateTransaction = async (id: string, data: Partial<CreateTransact
 }
 
 export const deleteTransaction = async (id: string): Promise<void> => {
-    await delay(800)
+
 
     const txs = ensureCache()
     const index = txs.findIndex((t) => t.id === id)

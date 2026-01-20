@@ -3,14 +3,14 @@ import { fetchTransactions } from "../../transactions/api/repository"
 import { fetchBudget } from "../../budget/api/repository"
 import { getSignedCents } from "@/lib/currency-utils"
 import { calculateDateRange } from "@/lib/date-ranges"
-import { delay } from "@/lib/delay"
+
 import { sumExpensesInCents, sumIncomeInCents, calculateSharePct } from "@/lib/financial-math"
 
 const DEFAULT_USER_ID = "user-1"
 
 export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promise<DashboardSummary> => {
     // Simulate network delay
-    await delay(600)
+
 
     // 1. Determine date range for filtered metrics
     const { startDate, endDate } = calculateDateRange(

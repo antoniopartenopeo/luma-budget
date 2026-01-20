@@ -1,6 +1,6 @@
 import { BudgetPlan, CreateBudgetDTO, UpdateBudgetDTO, BUDGET_GROUP_LABELS, BudgetGroupId } from "./types"
 import { storage } from "@/lib/storage-utils"
-import { delay } from "@/lib/delay"
+
 
 // =====================
 // STORAGE HELPERS
@@ -37,7 +37,7 @@ export function __resetBudgetsCache() {
 
 export async function fetchBudget(userId: string, period: string): Promise<BudgetPlan | null> {
     // Simulate network delay
-    await delay(200)
+
 
     const plans = loadFromStorage()
     const key = getBudgetKey(userId, period)
@@ -45,7 +45,7 @@ export async function fetchBudget(userId: string, period: string): Promise<Budge
 }
 
 export async function createBudget(userId: string, data: CreateBudgetDTO): Promise<BudgetPlan> {
-    await delay(300)
+
 
     const plans = loadFromStorage()
     const key = getBudgetKey(userId, data.period)
@@ -75,7 +75,7 @@ export async function createBudget(userId: string, data: CreateBudgetDTO): Promi
 }
 
 export async function updateBudget(userId: string, period: string, data: UpdateBudgetDTO): Promise<BudgetPlan> {
-    await delay(300)
+
 
     const plans = loadFromStorage()
     const key = getBudgetKey(userId, period)
@@ -98,7 +98,7 @@ export async function updateBudget(userId: string, period: string, data: UpdateB
 }
 
 export async function deleteBudget(userId: string, period: string): Promise<void> {
-    await delay(200)
+
 
     const plans = loadFromStorage()
     const key = getBudgetKey(userId, period)

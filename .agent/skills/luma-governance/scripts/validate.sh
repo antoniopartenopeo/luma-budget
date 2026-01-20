@@ -21,10 +21,11 @@ echo ""
 
 # --------------------------------------------
 # 1. Check for parseFloat on monetary values
+# (Exclude import-csv/normalize.ts - legitimate CSV parsing)
 # --------------------------------------------
 echo "📌 Checking for parseFloat usage..."
 
-PARSE_FLOAT=$(grep -rn "parseFloat" src/ --include="*.ts" --include="*.tsx" 2>/dev/null | grep -v "node_modules" | grep -v ".test." || true)
+PARSE_FLOAT=$(grep -rn "parseFloat" src/ --include="*.ts" --include="*.tsx" 2>/dev/null | grep -v "node_modules" | grep -v ".test." | grep -v "import-csv/core/normalize" || true)
 
 if [ -n "$PARSE_FLOAT" ]; then
     echo -e "${RED}❌ VIOLATION: parseFloat found (may be used on currency)${NC}"

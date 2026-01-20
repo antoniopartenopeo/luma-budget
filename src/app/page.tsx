@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { DashboardKpiGrid } from "@/features/dashboard/components/kpi-cards"
-import { SpendingCompositionCard } from "@/features/dashboard/components/spending-composition-card"
+import { SpendingCompositionCard } from "@/features/dashboard/components/charts/spending-composition-card"
 import { RecentTransactions } from "@/features/dashboard/components/recent-transactions"
 import { useDashboardSummary } from "@/features/dashboard/api/use-dashboard"
 import { useTransactions } from "@/features/transactions/api/use-transactions"

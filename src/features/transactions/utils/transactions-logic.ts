@@ -1,5 +1,5 @@
 import { Transaction } from "../api/types";
-import { parseCurrencyToCents } from "@/lib/currency-utils";
+import { parseCurrencyToCents } from "@/domain/money";
 
 export type SortField = "date" | "amount" | "category" | "description";
 export type SortOrder = "asc" | "desc";

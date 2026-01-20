@@ -1,7 +1,8 @@
 import { Transaction, CreateTransactionDTO } from "./types"
 import { storage } from "@/lib/storage-utils"
 import { getCategoryById } from "../../categories/config"
-import { parseCurrencyToCents, normalizeTransactionAmount, euroToCents, formatCentsSignedFromType } from "@/lib/currency-utils"
+import { parseCurrencyToCents, euroToCents } from "@/domain/money"
+import { normalizeTransactionAmount, formatCentsSignedFromType, calculateSuperfluousStatus, getSignedCents } from "@/domain/transactions"
 
 
 // =====================
@@ -43,39 +44,9 @@ function ensureCache(): Transaction[] {
         // BACKFILL: Normalize on read and detect if persistence is needed
         // Robust handling of legacy formats (number, string, missing cents)
         const normalized = userTransactions.map(t => {
-            const raw = t as Transaction & { amount?: number | string }
-
-            // 1. Check if already migrated
-            if (raw.amountCents !== undefined && typeof raw.amountCents === 'number') {
-                return raw as Transaction
-            }
-
-            // 2. Resolve amountCents from any legacy source
-            let absCents: number
-            if (raw.amount !== undefined) {
-                if (typeof raw.amount === 'number') {
-                    // Legacy float: format 12.34
-                    absCents = Math.abs(Math.round(raw.amount * 100))
-                } else if (typeof raw.amount === 'string') {
-                    // Legacy string: format "€ 10.50"
-                    absCents = Math.abs(parseCurrencyToCents(raw.amount))
-                } else {
-                    absCents = 0
-                }
-            } else {
-                absCents = 0
-            }
-
-            didChange = true
-
-            // Normalize to full Transaction structure
-            const normalizedT: Transaction = {
-                ...raw,
-                amountCents: absCents,
-                // Regenerate amount string only if it was a number before or missing
-                amount: (typeof raw.amount === 'string' && raw.amount.includes('€'))
-                    ? raw.amount
-                    : formatCentsSignedFromType(absCents, raw.type)
+            const normalizedT = normalizeTransactionAmount(t)
+            if (normalizedT.amountCents !== (t as any).amountCents || normalizedT.amount !== (t as any).amount) {
+                didChange = true
             }
             return normalizedT
         })
@@ -120,12 +91,7 @@ export function seedTransactions() {
 // UTILS
 // =====================
 
-// Helper to check rule-based superfluous status
-const isSuperfluousRule = (categoryId: string, type: "income" | "expense"): boolean => {
-    if (type === "income") return false
-    const cat = getCategoryById(categoryId)
-    return cat?.spendingNature === "superfluous"
-}
+// Migrated to domain/transactions/utils.ts
 
 
 // =====================
@@ -177,7 +143,7 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
         isSuperfluous = data.isSuperfluous
         classificationSource = "manual"
     } else {
-        isSuperfluous = isSuperfluousRule(data.categoryId, data.type)
+        isSuperfluous = calculateSuperfluousStatus(data.categoryId, data.type)
         classificationSource = "ruleBased"
     }
 
@@ -219,7 +185,7 @@ export const createBatchTransactions = async (dataList: CreateTransactionDTO[]):
             isSuperfluous = data.isSuperfluous
             classificationSource = "manual"
         } else {
-            isSuperfluous = isSuperfluousRule(data.categoryId, data.type)
+            isSuperfluous = calculateSuperfluousStatus(data.categoryId, data.type)
             classificationSource = "ruleBased"
         }
 
@@ -284,7 +250,7 @@ export const updateTransaction = async (id: string, data: Partial<CreateTransact
         if (classificationSource === "ruleBased") {
             const newCatId = data.categoryId || currentTransaction.categoryId
             const newType = (data.type || currentTransaction.type) as "income" | "expense"
-            isSuperfluous = isSuperfluousRule(newCatId, newType)
+            isSuperfluous = calculateSuperfluousStatus(newCatId, newType)
         }
     }
 

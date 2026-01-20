@@ -14,7 +14,7 @@ import { useMonthlyAverages } from "@/features/simulator/hooks"
 import { applySavings, SimulationPeriod, groupAndSortCategories, computeEffectiveSavingsPct, classifySuperfluousSpend } from "@/features/simulator/utils"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { useCurrency } from "@/features/settings/api/use-currency"
-import { formatCents } from "@/lib/currency-utils"
+import { formatCents } from "@/domain/money"
 import { cn } from "@/lib/utils"
 import { SpendingNature, CATEGORY_GROUP_LABELS } from "@/features/categories/config"
 

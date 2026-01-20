@@ -10,7 +10,7 @@ import { DatePicker } from "@/components/ui/date-picker"
 import { cn } from "@/lib/utils"
 import { getGroupedCategories, getCategoryById } from "@/features/categories/config"
 import { useCategories } from "@/features/categories/api/use-categories"
-import { parseCurrencyToCents } from "@/lib/currency-utils"
+import { parseCurrencyToCents } from "@/domain/money"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { CreateTransactionDTO } from "@/features/transactions/api/types"
 

@@ -3,7 +3,7 @@
 import { useMemo } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useCurrency } from "@/features/settings/api/use-currency"
-import { formatEuroNumber } from "@/lib/currency-utils"
+import { formatEuroNumber } from "@/domain/money"
 import { EChartsWrapper } from "./echarts-wrapper"
 import type { EChartsOption } from "echarts"
 import { motion } from "framer-motion"

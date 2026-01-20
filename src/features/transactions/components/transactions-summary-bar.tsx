@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card";
 import { TransactionSummary } from "../utils/transactions-logic";
-import { formatCents } from "@/lib/currency-utils";
+import { formatCents } from "@/domain/money";
 import { cn } from "@/lib/utils";
 import { TrendingUp, TrendingDown, Wallet, Hash } from "lucide-react";
 

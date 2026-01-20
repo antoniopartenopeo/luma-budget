@@ -3,8 +3,8 @@
 import { useMemo, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useCurrency } from "@/features/settings/api/use-currency"
-import { formatEuroNumber } from "@/lib/currency-utils"
-import { EChartsWrapper } from "./charts/echarts-wrapper"
+import { formatEuroNumber } from "@/domain/money"
+import { EChartsWrapper } from "./echarts-wrapper"
 import type { EChartsOption } from "echarts"
 import { motion, AnimatePresence } from "framer-motion"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button"
 import { RotateCcw } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Transaction } from "@/features/transactions/api/types"
-import { DashboardTimeFilter } from "../api/types"
+import { DashboardTimeFilter } from "../../api/types"
 
 interface SpendingCompositionCardProps {
     transactions: Transaction[]

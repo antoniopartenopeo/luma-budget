@@ -12,7 +12,7 @@ import type { EChartsOption } from "echarts"
 import { motion } from "framer-motion"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useCurrency } from "@/features/settings/api/use-currency"
-import { formatEuroNumber } from "@/lib/currency-utils"
+import { formatEuroNumber } from "@/domain/money"
 
 interface CategoryDistributionEChartProps {
     data: CategorySummary[]

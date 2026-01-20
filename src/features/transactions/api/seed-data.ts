@@ -1,5 +1,5 @@
 import { Transaction } from "./types"
-import { formatCentsSignedFromType } from "@/lib/currency-utils"
+import { formatCentsSignedFromType } from "@/domain/transactions"
 
 // Configuration for the "Typical Italian Profile"
 const START_DATE = new Date()

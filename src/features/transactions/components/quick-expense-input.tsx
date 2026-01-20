@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react"
 import { Loader2, CheckCircle2, AlertCircle, TrendingUp, TrendingDown } from "lucide-react"
-import { parseCurrencyToCents } from "@/lib/currency-utils"
+import { parseCurrencyToCents } from "@/domain/money"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

@@ -1,8 +1,9 @@
 import { Transaction } from "@/features/transactions/api/types"
 import { getCategoryById } from "@/features/categories/config"
 import { BudgetSpending, BudgetGroupId, BUDGET_GROUP_LABELS } from "../api/types"
-import { getSignedCents } from "@/lib/currency-utils"
-import { calculateUtilizationPct, sumExpensesInCents } from "@/lib/financial-math"
+import { getSignedCents, resolveBudgetGroupForTransaction } from "@/domain/transactions"
+import { calculateUtilizationPct, sumExpensesInCents } from "@/domain/money"
+import { getMonthBoundariesLocal, getCurrentPeriod as getLibCurrentPeriod, formatPeriodLabel } from "@/lib/date-ranges"
 
 // =====================
 // SPENDING CALCULATIONS
@@ -47,28 +48,7 @@ export function calculateGroupSpending(transactions: Transaction[], period: stri
     }
 }
 
-/**
- * Resolve the budget group for a transaction, taking into account manual overrides.
- * Aligns budget actuals with the "isSuperfluous" logic used in Dashboard/KPIs.
- */
-export function resolveBudgetGroupForTransaction(
-    transaction: Transaction,
-    categoryNature?: BudgetGroupId
-): BudgetGroupId {
-    // 1. Manual override: if marked as superfluous, it ALWAYS goes to 'superfluous'
-    if (transaction.isSuperfluous === true) {
-        return "superfluous"
-    }
-
-    // 2. Manual override: if marked as NOT superfluous BUT category is superfluous,
-    // we de-escalate it to 'comfort' (standard behavior for non-useless svago/altro).
-    if (transaction.isSuperfluous === false && categoryNature === "superfluous") {
-        return "comfort"
-    }
-
-    // 3. Fallback to category nature, with 'essential' as default for safety/unknowns
-    return categoryNature || "essential"
-}
+// Migrated to domain/transactions/utils.ts
 
 // =====================
 // HELPERS
@@ -78,11 +58,11 @@ export function resolveBudgetGroupForTransaction(
  * Filter transactions by period (YYYY-MM format)
  */
 function filterTransactionsByPeriod(transactions: Transaction[], period: string): Transaction[] {
-    const [year, month] = period.split("-").map(Number)
+    const { start, end } = getMonthBoundariesLocal(period)
 
     return transactions.filter(t => {
-        const date = new Date(t.timestamp)
-        return date.getFullYear() === year && date.getMonth() + 1 === month
+        const timestamp = t.timestamp
+        return timestamp >= start.getTime() && timestamp <= end.getTime()
     })
 }
 
@@ -91,21 +71,11 @@ function filterTransactionsByPeriod(transactions: Transaction[], period: string)
  * Get current period in YYYY-MM format
  */
 export function getCurrentPeriod(): string {
-    const now = new Date()
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+    return getLibCurrentPeriod()
 }
 
-/**
- * Format period for display (e.g., "Dicembre 2025")
- */
 export function formatPeriodDisplay(period: string): string {
-    const [year, month] = period.split("-").map(Number)
-    const date = new Date(year, month - 1, 1)
-
-    return date.toLocaleDateString("it-IT", {
-        month: "long",
-        year: "numeric"
-    }).replace(/^\w/, c => c.toUpperCase()) // Capitalize first letter
+    return formatPeriodLabel(period)
 }
 
 /**

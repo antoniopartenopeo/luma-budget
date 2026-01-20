@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { EChartsWrapper } from "@/features/dashboard/components/charts/echarts-wrapper"
 import { useTrendData } from "../use-trend-data"
 import { useCurrency } from "@/features/settings/api/use-currency"
-import { formatEuroNumber } from "@/lib/currency-utils"
+import { formatEuroNumber } from "@/domain/money"
 import { Skeleton } from "@/components/ui/skeleton"
 import { BarChart3 } from "lucide-react"
 import type { EChartsOption } from "echarts"

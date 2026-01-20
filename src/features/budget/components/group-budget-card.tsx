@@ -11,7 +11,7 @@ import { BudgetProgressBar } from "./budget-progress-bar"
 import { formatCurrency } from "../utils/calculate-budget"
 import { BudgetGroupId, BUDGET_GROUP_LABELS } from "../api/types"
 import { cn } from "@/lib/utils"
-import { parseCurrencyToCents } from "@/lib/currency-utils"
+import { parseCurrencyToCents } from "@/domain/money"
 
 interface GroupBudgetCardProps {
     groupId: BudgetGroupId

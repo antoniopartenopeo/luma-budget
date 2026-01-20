@@ -14,17 +14,8 @@ import { cn } from "@/lib/utils";
 import { Edit2, Trash2, Calendar, Tag, Info, ArrowLeft, Loader2, AlertTriangle } from "lucide-react";
 import { TransactionForm } from "./transaction-form";
 import { useUpdateTransaction, useDeleteTransaction } from "@/features/transactions/api/use-transactions";
-import { parseCurrencyToCents } from "@/lib/currency-utils";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { parseCurrencyToCents } from "@/domain/money";
+import { ConfirmDialog } from "@/components/patterns/confirm-dialog";
 
 interface TransactionDetailSheetProps {
     transaction: Transaction | null;
@@ -261,55 +252,39 @@ function TransactionDetailSheetContent({
                 )}
             </SheetContent>
 
-            {/* Confirmation Alerts */}
-            <AlertDialog open={showCloseConfirm} onOpenChange={setShowCloseConfirm}>
-                <AlertDialogContent className="rounded-2xl">
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Scartare le modifiche?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Hai apportato delle modifiche che non sono state salvate. Vuoi davvero tornare indietro?
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel className="rounded-xl">Continua a modificare</AlertDialogCancel>
-                        <AlertDialogAction
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl"
-                            onClick={() => {
-                                setIsEditing(false);
-                                setIsDirty(false);
-                                setShowCloseConfirm(false);
-                                if (!open) onOpenChange(false);
-                            }}
-                        >
-                            Scarta modifiche
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
 
-            <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-                <AlertDialogContent className="rounded-2xl">
-                    <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center gap-2">
-                            <AlertTriangle className="h-5 w-5 text-rose-600" />
-                            Sei sicuro di voler eliminare?
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Questa azione è irreversibile. La transazione verrà rimossa permanentemente.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel className="rounded-xl">Annulla</AlertDialogCancel>
-                        <AlertDialogAction
-                            className="bg-rose-600 text-white hover:bg-rose-700 rounded-xl"
-                            onClick={handleDelete}
-                            disabled={isDeleting}
-                        >
-                            {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Elimina"}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            {/* Confirmation Alerts */}
+            <ConfirmDialog
+                open={showCloseConfirm}
+                onOpenChange={setShowCloseConfirm}
+                title="Scartare le modifiche?"
+                description="Hai apportato delle modifiche che non sono state salvate. Vuoi davvero tornare indietro?"
+                cancelLabel="Continua a modificare"
+                confirmLabel="Scarta modifiche"
+                onConfirm={() => {
+                    setIsEditing(false);
+                    setIsDirty(false);
+                    setShowCloseConfirm(false);
+                    if (!open) onOpenChange(false);
+                }}
+                variant="destructive"
+            />
+
+            <ConfirmDialog
+                open={showDeleteConfirm}
+                onOpenChange={setShowDeleteConfirm}
+                title={
+                    <div className="flex items-center gap-2">
+                        <AlertTriangle className="h-5 w-5" />
+                        Sei sicuro di voler eliminare?
+                    </div>
+                }
+                description="Questa azione è irreversibile. La transazione verrà rimossa permanentemente."
+                confirmLabel="Elimina"
+                onConfirm={handleDelete}
+                isLoading={isDeleting}
+                variant="destructive"
+            />
         </>
     );
 }

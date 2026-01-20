@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { BudgetProgressBar } from "./budget-progress-bar"
 import { formatCurrency } from "../utils/calculate-budget"
-import { parseCurrencyToCents } from "@/lib/currency-utils"
+import { parseCurrencyToCents } from "@/domain/money"
 
 interface GlobalBudgetCardProps {
     budget: number

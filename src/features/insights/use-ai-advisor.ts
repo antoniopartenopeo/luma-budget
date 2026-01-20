@@ -2,7 +2,7 @@
 
 import { useMemo } from "react"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
-import { sumExpensesInCents, sumIncomeInCents } from "@/lib/financial-math"
+import { sumExpensesInCents, sumIncomeInCents } from "@/domain/money"
 
 export interface AISubscription {
     id: string

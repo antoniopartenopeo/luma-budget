@@ -2,8 +2,8 @@
 // ===========================
 // Pure functions that generate Insight objects based on transaction data
 
-import { formatCents } from "@/lib/currency-utils"
-import { calculateGrowthPct, calculateSharePct } from "@/lib/financial-math"
+import { formatCents } from "@/domain/money"
+import { calculateGrowthPct, calculateSharePct, sumExpensesInCents } from "@/domain/money"
 import { INSIGHT_CONFIG } from "./constants"
 import {
     Insight,
@@ -16,7 +16,7 @@ import {
 } from "./types"
 import {
     filterTransactionsByMonth,
-    getTotalExpenseCents,
+
     getExpenseTotalsByCategoryCents,
     getPreviousMonths,
     getDaysElapsedInMonth,
@@ -41,7 +41,7 @@ export function buildBudgetRiskInsight(
     if (!budgetCents || budgetCents <= 0) return null
 
     const monthTransactions = filterTransactionsByMonth(transactions, period)
-    const spentCents = getTotalExpenseCents(monthTransactions)
+    const spentCents = sumExpensesInCents(monthTransactions)
 
     const daysElapsed = getDaysElapsedInMonth(period, currentDate)
     const daysInMonth = getDaysInMonth(period)
@@ -224,8 +224,8 @@ export function buildTopDriversInsight(
     const prevPeriod = previousPeriods[0]
     const prevTransactions = filterTransactionsByMonth(transactions, prevPeriod)
 
-    const currentTotalCents = getTotalExpenseCents(currentTransactions)
-    const prevTotalCents = getTotalExpenseCents(prevTransactions)
+    const currentTotalCents = sumExpensesInCents(currentTransactions)
+    const prevTotalCents = sumExpensesInCents(prevTransactions)
 
     // Calculate month-over-month delta
     const deltaCents = currentTotalCents - prevTotalCents

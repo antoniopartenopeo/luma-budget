@@ -14,16 +14,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+import { ConfirmDialog } from "@/components/patterns/confirm-dialog"
 import { queryKeys } from "@/lib/query-keys"
 import { seedTransactions, __resetTransactionsCache } from "@/features/transactions/api/repository"
 import { resetSettings } from "@/features/settings/api/repository"
@@ -386,30 +377,24 @@ export function AdvancedSection() {
                 </Alert>
             </div>
 
+
             {/* Confirmation Dialog */}
-            <AlertDialog open={!!resetDialog} onOpenChange={(open) => !open && setResetDialog(null)}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center gap-2">
-                            <AlertTriangle className="h-5 w-5 text-destructive" />
+            <ConfirmDialog
+                open={!!resetDialog}
+                onOpenChange={(open) => !open && setResetDialog(null)}
+                title={
+                    resetDialog === "all" ? (
+                        <>
+                            <AlertTriangle className="h-5 w-5" />
                             {dialogContent.title}
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                            {dialogContent.description}
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter className="gap-2 sm:gap-2">
-                        <AlertDialogCancel disabled={isLoading}>Annulla</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={handleConfirmReset}
-                            disabled={isLoading}
-                            className={resetDialog === "all" ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : ""}
-                        >
-                            {isLoading ? "In corso..." : "Conferma"}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+                        </>
+                    ) : dialogContent.title
+                }
+                description={dialogContent.description}
+                onConfirm={handleConfirmReset}
+                isLoading={isLoading}
+                variant={resetDialog === "all" ? "destructive" : "default"}
+            />
         </>
     )
 }

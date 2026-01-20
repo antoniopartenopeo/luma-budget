@@ -18,8 +18,8 @@ import { useDashboardSummary } from "@/features/dashboard/api/use-dashboard"
 import { useSettings } from "@/features/settings/api/use-settings"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { getCurrentPeriod, formatPeriodLabel } from "@/features/insights/utils"
-import { formatEuroNumber } from "@/lib/currency-utils"
-import { calculateUtilizationPct, calculateSharePct } from "@/lib/financial-math"
+import { formatEuroNumber } from "@/domain/money"
+import { calculateUtilizationPct, calculateSharePct } from "@/domain/money"
 import { cn } from "@/lib/utils"
 
 interface FlashSummaryViewProps {

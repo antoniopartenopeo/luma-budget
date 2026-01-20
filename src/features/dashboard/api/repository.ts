@@ -1,11 +1,11 @@
 import { DashboardSummary, DashboardTimeFilter } from "./types"
 import { fetchTransactions } from "../../transactions/api/repository"
 import { fetchBudget } from "../../budget/api/repository"
-import { getSignedCents } from "@/lib/currency-utils"
+import { getSignedCents } from "@/domain/transactions"
 import { calculateDateRange } from "@/lib/date-ranges"
 import { getCategoryById } from "@/features/categories/config"
 
-import { sumExpensesInCents, sumIncomeInCents, calculateSharePct } from "@/lib/financial-math"
+import { sumExpensesInCents, sumIncomeInCents, calculateSharePct } from "@/domain/money"
 
 const DEFAULT_USER_ID = "user-1"
 

@@ -141,3 +141,28 @@ const amountCents = parseCurrencyToCents(input)
 | 2026-01-17 | Simulator 100x values | `formatEuroNumber` on cents | Use `formatCents` for cent values |
 | 2026-01-18 | Duplicate calcs in Flash | Inline formulas | Always use `financial-math.ts` |
 | 2026-01-14 | Contaminated branch | Created from HEAD | Always branch from `origin/main` |
+
+---
+
+## 🔄 Self-Update Protocol
+
+**IMPORTANT**: This skill MUST be kept up to date. When any of the following happens:
+
+1. **New rule defined** → Add to appropriate `Instructions` section
+2. **Bug caused by pattern** → Add to `Lessons Learned` table
+3. **New constraint needed** → Add to `Constraints` section
+4. **New code pattern discovered** → Add to `Examples` section
+
+### Update Procedure
+
+1. Edit this `SKILL.md` file with the new rules
+2. Update `CHANGELOG.md` with the changes (follow semver):
+   - **MAJOR** (X.0.0): Breaking changes to existing rules
+   - **MINOR** (1.X.0): New rules added
+   - **PATCH** (1.0.X): Clarifications or typo fixes
+3. Commit with message: `docs(skill): [description of change]`
+
+### Version
+**Current**: v1.0.0  
+**Changelog**: See `CHANGELOG.md` in this folder
+

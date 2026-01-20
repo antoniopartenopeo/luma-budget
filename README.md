@@ -1,48 +1,88 @@
 # LumaBudget
 
-Personal Finance Management built with Next.js 16, React 19, and Tailwind CSS.
-Focuses on simplicity, local-only persistence (for now), and rich insights.
+Personal Finance Management built with **Next.js 16**, **React 19**, and **Tailwind CSS**.  
+Local-first persistence with rich analytics and insights.
 
-## Project Structure
-- `src/features`: Domain logic (Transactions, Budget, Insights).
-- `src/components`: Shared UI (Shadcn/Primitive).
-- `src/lib`: Utilities (Currency, Storage, dates).
-- `docs/doe`: **Directive, Orchestration, Execution** system.
+## ✨ Features
 
-## getting Started
+| Module | Status | Description |
+|--------|--------|-------------|
+| **Dashboard** | Stable | KPIs, charts, budget overview |
+| **Transactions** | Stable | CRUD, filters, CSV import/export |
+| **Budget** | Stable | Monthly planning by spending groups |
+| **Categories** | Stable | Full CRUD with custom icons |
+| **Simulator** | Stable v2.0 | "What-If" expense reduction analysis |
+| **Insights** | Stable v1.2 | 12-month trends, AI Advisor |
+| **Settings** | Stable v1.3 | Preferences, backup/restore, themes |
 
-First, run the development server:
+## 🏗 Architecture
+
+```
+src/
+├── app/              # Next.js routing
+├── features/         # Domain modules
+│   ├── transactions/ # api/, components/, utils/
+│   ├── budget/
+│   ├── dashboard/
+│   ├── insights/
+│   ├── categories/
+│   ├── settings/
+│   └── simulator/
+├── components/       # Shared UI (Shadcn/Radix)
+└── lib/              # Utilities (currency, dates, storage)
+```
+
+### Data Flow
+- **Repositories** → Read/write to `localStorage`
+- **React Query** → Caching and UI reactivity
+- **Cross-tab sync** → Storage event listener
+
+### Persistence Keys
+```
+luma_transactions_v1
+luma_budget_plans_v1
+luma_categories_v1
+luma_settings_v1
+```
+
+## 🚀 Getting Started
 
 ```bash
+npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser.
+Open [http://localhost:3000](http://localhost:3000)
 
-## DOE System (Development & Operations)
+## 📜 Development Rules
 
-This project uses a strict governance system for code quality and consistency.
+All development standards are defined in `.agent/skills/luma-governance/SKILL.md`.
 
-### 📚 Directives
-Read the rules before contributing:
-- [Core Principles](docs/doe/directives/00-core-principles.md)
-- [UX Standards](docs/doe/directives/ux-standards.md)
-- [Legacy Registry](docs/doe/legacy-registry.md) (Known issues)
+### Key Rules
+- **Currency**: Always use integer cents, never `parseFloat`
+- **Calculations**: Use `lib/financial-math.ts`
+- **Styling**: Tailwind CSS only, no inline styles
+- **Categories**: Use `getCategoryById()` for lookups
 
-### 🛠 Verification
-Before committing, you **MUST** run the verification protocol:
-
+### Pre-Commit
 ```bash
-npm run doe:verify
+npm run build   # Must pass
+npm run test    # Must pass
 ```
 
-This script performs:
-1. Linting (`eslint`)
-2. Unit Testing (`vitest`)
-3. Static Analysis for prohibited patterns (e.g. `parseFloat` for currency).
+## 📁 Documentation
 
-### 🧪 Regression Testing
-Check [Regression Map](docs/doe/regression-map.md) for critical manual test scenarios.
+```
+docs/
+├── IMPLEMENTATION_EVIDENCE.md  # Implementation details
+└── audits/
+    └── APP_HEALTH_AUDIT_REPORT.md  # Codebase health audit
+```
 
-## Deploy on Vercel
-Standard Next.js deployment.
+## 🚀 Deploy
+
+Standard Next.js deployment on Vercel.
+
+---
+
+Made with 💜 by Luma Team

@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils"
 
 import { useCreateTransaction } from "@/features/transactions/api/use-transactions"
 import { Transaction } from "@/features/transactions/api/types"
-import { getGroupedCategories } from "@/features/categories/config"
+import { getGroupedCategories, getCategoryById } from "@/features/categories/config"
 import { useCategories } from "@/features/categories/api/use-categories"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 
@@ -45,7 +45,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
         if (type !== "expense") return false
         if (isManualOverride) return isSuperfluousManual
 
-        const cat = categories.find(c => c.id === category)
+        const cat = getCategoryById(category, categories)
         return cat?.spendingNature === "superfluous"
         // eslint-disable-next-line react-hooks/preserve-manual-memoization
     }, [category, isManualOverride, isSuperfluousManual, type, categories])
@@ -81,7 +81,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
             {
                 description,
                 amountCents, // Send absolute integer cents
-                category: categories.find(c => c.id === category)?.label || category,
+                category: getCategoryById(category, categories)?.label || category,
                 categoryId: category,
                 type,
                 isSuperfluous: type === "expense" ? isSuperfluous : false,

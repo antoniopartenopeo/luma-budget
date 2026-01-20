@@ -1,6 +1,6 @@
 import { Transaction, CreateTransactionDTO } from "./types"
 import { storage } from "@/lib/storage-utils"
-import { CATEGORIES } from "../../categories/config"
+import { getCategoryById } from "../../categories/config"
 import { parseCurrencyToCents, normalizeTransactionAmount, euroToCents, formatCentsSignedFromType } from "@/lib/currency-utils"
 
 
@@ -123,7 +123,7 @@ export function seedTransactions() {
 // Helper to check rule-based superfluous status
 const isSuperfluousRule = (categoryId: string, type: "income" | "expense"): boolean => {
     if (type === "income") return false
-    const cat = CATEGORIES.find(c => c.id === categoryId)
+    const cat = getCategoryById(categoryId)
     return cat?.spendingNature === "superfluous"
 }
 

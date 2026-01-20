@@ -3,6 +3,7 @@ import { fetchTransactions } from "../../transactions/api/repository"
 import { fetchBudget } from "../../budget/api/repository"
 import { getSignedCents } from "@/lib/currency-utils"
 import { calculateDateRange } from "@/lib/date-ranges"
+import { getCategoryById } from "@/features/categories/config"
 
 import { sumExpensesInCents, sumIncomeInCents, calculateSharePct } from "@/lib/financial-math"
 
@@ -60,18 +61,24 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
     const budgetRemaining = Math.max((budgetTotalCents - targetMonthExpensesCents) / 100, 0)
 
     // 7. Calculate Category Distribution (Range-based)
-    const categoryMap = new Map<string, { label: string, amount: number }>()
+    const categoryMap = new Map<string, { label: string, amount: number, color: string }>()
     rangeTransactions.filter(t => t.type === 'expense').forEach(t => {
         const amountCents = Math.abs(getSignedCents(t))
-        const current = categoryMap.get(t.categoryId) || { label: t.category, amount: 0 }
-        categoryMap.set(t.categoryId, { label: t.category, amount: current.amount + (amountCents / 100) })
+        // Lookup category for consistent label and color
+        const categoryDef = getCategoryById(t.categoryId)
+        // Fallback color if not found (shouldn't happen)
+        const color = categoryDef?.hexColor || "#94a3b8"
+        const label = categoryDef?.label || t.category
+
+        const current = categoryMap.get(t.categoryId) || { label, amount: 0, color }
+        categoryMap.set(t.categoryId, { label, amount: current.amount + (amountCents / 100), color })
     })
 
-    const categoriesSummary = Array.from(categoryMap.entries()).map(([id, data], index) => ({
+    const categoriesSummary = Array.from(categoryMap.entries()).map(([id, data]) => ({
         id,
         name: data.label,
         value: data.amount,
-        color: `hsl(var(--chart-${(index % 5) + 1}))`
+        color: data.color
     }))
 
     // 8. Calculate Useless Spending (Range-based)

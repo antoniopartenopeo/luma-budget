@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DatePicker } from "@/components/ui/date-picker"
 import { cn } from "@/lib/utils"
-import { getGroupedCategories } from "@/features/categories/config"
+import { getGroupedCategories, getCategoryById } from "@/features/categories/config"
 import { useCategories } from "@/features/categories/api/use-categories"
 import { parseCurrencyToCents } from "@/lib/currency-utils"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
@@ -64,7 +64,7 @@ export function TransactionForm({
         if (type !== "expense") return false
         if (isManualOverride) return isSuperfluousManual
 
-        const cat = categories.find(c => c.id === categoryId)
+        const cat = getCategoryById(categoryId, categories)
         return cat?.spendingNature === "superfluous"
         // eslint-disable-next-line react-hooks/preserve-manual-memoization
     }, [categoryId, isManualOverride, isSuperfluousManual, type, categories])
@@ -79,7 +79,7 @@ export function TransactionForm({
         // Only reset if the current category doesn't belong to the new type
         const newGrouped = getGroupedCategories(newType, categories)
         const allCategoriesInGroups = newGrouped.flatMap(g => g.categories)
-        const currentCatInList = allCategoriesInGroups.find(c => c.id === categoryId)
+        const currentCatInList = getCategoryById(categoryId, allCategoriesInGroups)
         if (!currentCatInList) {
             setCategoryId("")
         }
@@ -106,7 +106,7 @@ export function TransactionForm({
             return
         }
 
-        const selectedCategory = categories.find(c => c.id === categoryId)
+        const selectedCategory = getCategoryById(categoryId, categories)
 
         onSubmit({
             description,

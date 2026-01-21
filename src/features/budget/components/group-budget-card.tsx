@@ -15,10 +15,10 @@ import { parseCurrencyToCents } from "@/domain/money"
 
 interface GroupBudgetCardProps {
     groupId: BudgetGroupId
-    budget: number
-    spent: number
+    budgetCents: number
+    spentCents: number
     isLoading?: boolean
-    onSave: (groupId: BudgetGroupId, amount: number) => void
+    onSave: (groupId: BudgetGroupId, amountCents: number) => void
     isSaving?: boolean
 }
 
@@ -34,24 +34,24 @@ const GROUP_COLORS: Record<BudgetGroupId, string> = {
     superfluous: "bg-orange-100 text-orange-600"
 }
 
-export function GroupBudgetCard({ groupId, budget, spent, isLoading, onSave, isSaving }: GroupBudgetCardProps) {
+export function GroupBudgetCard({ groupId, budgetCents, spentCents, isLoading, onSave, isSaving }: GroupBudgetCardProps) {
     const [isEditing, setIsEditing] = useState(false)
     const [editValue, setEditValue] = useState("")
 
-    const remaining = budget - spent
-    const isOverBudget = budget > 0 && spent > budget
+    const remainingCents = budgetCents - spentCents
+    const isOverBudget = budgetCents > 0 && spentCents > budgetCents
     const label = BUDGET_GROUP_LABELS[groupId]
     const Icon = GROUP_ICONS[groupId]
 
     const handleStartEdit = () => {
-        setEditValue(budget > 0 ? budget.toString() : "")
+        setEditValue(budgetCents > 0 ? (budgetCents / 100).toString() : "")
         setIsEditing(true)
     }
 
     const handleSave = () => {
         const amountCents = parseCurrencyToCents(editValue)
         if (amountCents >= 0) {
-            onSave(groupId, amountCents / 100)
+            onSave(groupId, amountCents)
             setIsEditing(false)
         }
     }
@@ -121,21 +121,21 @@ export function GroupBudgetCard({ groupId, budget, spent, isLoading, onSave, isS
                     <>
                         <div className="flex justify-between items-baseline">
                             <span className="text-xl font-bold">
-                                {budget > 0 ? formatCurrency(budget) : "—"}
+                                {budgetCents > 0 ? formatCurrency(budgetCents) : "—"}
                             </span>
-                            {budget > 0 && (
+                            {budgetCents > 0 && (
                                 <span className="text-sm text-muted-foreground">
-                                    {formatCurrency(spent)} spesi
+                                    {formatCurrency(spentCents)} spesi
                                 </span>
                             )}
                         </div>
-                        {budget > 0 ? (
+                        {budgetCents > 0 ? (
                             <>
-                                <BudgetProgressBar spent={spent} budget={budget} />
+                                <BudgetProgressBar spent={spentCents / 100} budget={budgetCents / 100} />
                                 <div className="text-sm">
                                     <span className="text-muted-foreground">Rimanente: </span>
-                                    <span className={remaining >= 0 ? "text-emerald-600 font-medium" : "text-rose-600 font-medium"}>
-                                        {formatCurrency(remaining)}
+                                    <span className={remainingCents >= 0 ? "text-emerald-600 font-medium" : "text-rose-600 font-medium"}>
+                                        {formatCurrency(remainingCents)}
                                     </span>
                                 </div>
                             </>

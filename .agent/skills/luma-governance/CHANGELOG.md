@@ -4,6 +4,33 @@ Storico di tutte le modifiche alle regole di sviluppo.
 
 ---
 
+## [1.2.0] - 2026-01-21
+
+### Added
+- Regola di **Test Integrity**: divieto di simulare logica di calcolo nei test (obbligo import da utils di produzione).
+- Centralizzazione logic dei **KPI Tones** in `src/features/dashboard/utils/kpi-logic.ts`.
+- Obbligo utilizzo `filterByRange` da `@/lib/date-ranges.ts` per coerenza temporale.
+- Standardizzazione overlay custom con `DialogContent`.
+
+### Changed
+- Migrazione completa del modulo **Budget** a centesimi (AmountCents).
+- Rafforzamento restrizioni nel `SKILL.md`.
+
+## [1.1.0] - 2026-01-21
+
+### Added
+- Nuova sezione `Lessons Learned` documentando errori di visualizzazione e logic leak.
+- Riferimento a `@/components/patterns/` per UI riutilizzabile (ConfirmDialog, KpiCard).
+- Centralizzazione del filtraggio date in `src/lib/date-ranges.ts`.
+
+### Changed
+- Migrazione massiva della Financial Logic al layer `src/domain/`.
+- Aggiornamento path import da `@/lib/currency-utils` a `@/domain/money`.
+- Rafforzamento regola `no-parseFloat`: estesa anche al wizard di importazione CSV.
+- Pulizia modello dati: rimosso campo `icon` da transazioni in favore di `categoryId`.
+
+---
+
 ## [1.0.0] - 2026-01-20
 
 ### Added

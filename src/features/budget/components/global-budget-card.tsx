@@ -11,29 +11,29 @@ import { formatCurrency } from "../utils/calculate-budget"
 import { parseCurrencyToCents } from "@/domain/money"
 
 interface GlobalBudgetCardProps {
-    budget: number
-    spent: number
+    budgetCents: number
+    spentCents: number
     isLoading?: boolean
-    onSave: (amount: number) => void
+    onSave: (amountCents: number) => void
     isSaving?: boolean
 }
 
-export function GlobalBudgetCard({ budget, spent, isLoading, onSave, isSaving }: GlobalBudgetCardProps) {
+export function GlobalBudgetCard({ budgetCents, spentCents, isLoading, onSave, isSaving }: GlobalBudgetCardProps) {
     const [isEditing, setIsEditing] = useState(false)
     const [editValue, setEditValue] = useState("")
 
-    const remaining = budget - spent
-    const hasNoBudget = budget === 0
+    const remainingCents = budgetCents - spentCents
+    const hasNoBudget = budgetCents === 0
 
     const handleStartEdit = () => {
-        setEditValue(budget > 0 ? budget.toString() : "")
+        setEditValue(budgetCents > 0 ? (budgetCents / 100).toString() : "")
         setIsEditing(true)
     }
 
     const handleSave = () => {
         const amountCents = parseCurrencyToCents(editValue)
         if (amountCents >= 0) {
-            onSave(amountCents / 100)
+            onSave(amountCents)
             setIsEditing(false)
         }
     }
@@ -106,17 +106,17 @@ export function GlobalBudgetCard({ budget, spent, isLoading, onSave, isSaving }:
                     </div>
                 ) : (
                     <>
-                        <div className="text-3xl font-bold">{formatCurrency(budget)}</div>
-                        <BudgetProgressBar spent={spent} budget={budget} />
+                        <div className="text-3xl font-bold">{formatCurrency(budgetCents)}</div>
+                        <BudgetProgressBar spent={spentCents / 100} budget={budgetCents / 100} />
                         <div className="grid grid-cols-2 gap-4">
                             <div className="rounded-lg bg-muted/50 p-3">
                                 <p className="text-xs text-muted-foreground">Speso finora</p>
-                                <p className="text-lg font-semibold text-rose-600">{formatCurrency(spent)}</p>
+                                <p className="text-lg font-semibold text-rose-600">{formatCurrency(spentCents)}</p>
                             </div>
                             <div className="rounded-lg bg-muted/50 p-3">
                                 <p className="text-xs text-muted-foreground">Rimanente</p>
-                                <p className={`text-lg font-semibold ${remaining >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
-                                    {formatCurrency(remaining)}
+                                <p className={`text-lg font-semibold ${remainingCents >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+                                    {formatCurrency(remainingCents)}
                                 </p>
                             </div>
                         </div>

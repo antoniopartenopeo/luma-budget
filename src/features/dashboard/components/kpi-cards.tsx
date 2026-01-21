@@ -5,6 +5,7 @@ import { formatEuroNumber } from "@/domain/money"
 import { DashboardTimeFilter } from "../api/types"
 import { useSettings } from "@/features/settings/api/use-settings"
 import { KpiCard, KpiTone } from "@/components/patterns/kpi-card"
+import { getBalanceTone, getBudgetTone, getSuperfluousTone } from "../utils/kpi-logic"
 
 
 
@@ -48,21 +49,14 @@ export function DashboardKpiGrid({ totalSpent, netBalance, budgetTotal, budgetRe
         : `Periodo: ultimi ${filter?.months || 3} mesi · Confronto: ${filter?.months || 3} mesi precedenti`
 
     // Semantica dei toni:
-    // Saldo: >0 positivo, <0 negativo, 0 neutro
-    const saldoTone: KpiTone = netBalance && netBalance > 0 ? "positive" : netBalance && netBalance < 0 ? "negative" : "neutral"
-
-    // Spesa: SEMPRE neutral (metrica descrittiva)
+    const saldoTone = getBalanceTone(netBalance || 0)
     const spesaTone: KpiTone = "neutral"
 
-    // Budget: piano non configurato -> neutro, >=0 positivo, <0 negativo
-    const hasBudget = budgetTotal && budgetTotal > 0
+    const hasBudget = !!(budgetTotal && budgetTotal > 0)
     const isMonthlyView = filter?.mode === "month"
-    const budgetTone: KpiTone = (!hasBudget || !isMonthlyView) ? "neutral" : ((budgetRemaining || 0) >= 0 ? "positive" : "negative")
+    const budgetTone = (!isMonthlyView) ? "neutral" : getBudgetTone(budgetRemaining || 0, hasBudget)
 
-    // Superflue: <=target positivo, >target negativo
-    const superflueTone: KpiTone = (uselessSpendPercent !== undefined && uselessSpendPercent !== null)
-        ? (uselessSpendPercent <= superfluousTarget ? "positive" : "negative")
-        : "neutral"
+    const superflueTone = getSuperfluousTone(uselessSpendPercent ?? null, superfluousTarget)
 
     return (
         <div className="space-y-4">

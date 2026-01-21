@@ -61,7 +61,7 @@ export async function createBudget(userId: string, data: CreateBudgetDTO): Promi
         userId,
         period: data.period,
         currency: "EUR",
-        globalBudgetAmount: data.globalBudgetAmount,
+        globalBudgetAmountCents: data.globalBudgetAmountCents,
         groupBudgets: data.groupBudgets.length > 0
             ? data.groupBudgets
             : createDefaultGroupBudgets(),
@@ -87,7 +87,7 @@ export async function updateBudget(userId: string, period: string, data: UpdateB
 
     const updated: BudgetPlan = {
         ...existing,
-        globalBudgetAmount: data.globalBudgetAmount ?? existing.globalBudgetAmount,
+        globalBudgetAmountCents: data.globalBudgetAmountCents ?? existing.globalBudgetAmountCents,
         groupBudgets: data.groupBudgets ?? existing.groupBudgets,
         updatedAt: new Date().toISOString()
     }
@@ -114,7 +114,7 @@ function createDefaultGroupBudgets() {
     return (["essential", "comfort", "superfluous"] as BudgetGroupId[]).map(groupId => ({
         groupId,
         label: BUDGET_GROUP_LABELS[groupId],
-        amount: 0
+        amountCents: 0
     }))
 }
 
@@ -124,7 +124,7 @@ export async function upsertBudget(userId: string, period: string, data: CreateB
 
     if (existing) {
         return updateBudget(userId, period, {
-            globalBudgetAmount: data.globalBudgetAmount,
+            globalBudgetAmountCents: data.globalBudgetAmountCents,
             groupBudgets: data.groupBudgets
         })
     } else {

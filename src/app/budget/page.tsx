@@ -27,7 +27,7 @@ export default function BudgetPage() {
 
     // Calculate spending from transactions
     const spending = useMemo(() => {
-        if (!transactions) return { globalSpent: 0, groupSpending: [] }
+        if (!transactions) return { globalSpentCents: 0, groupSpending: [] }
         return calculateGroupSpending(transactions, period)
     }, [transactions, period])
 
@@ -37,51 +37,51 @@ export default function BudgetPage() {
     const getGroupBudget = (groupId: BudgetGroupId): number => {
         if (!budget) return 0
         const group = budget.groupBudgets.find(g => g.groupId === groupId)
-        return group?.amount || 0
+        return group?.amountCents || 0
     }
 
     // Get spent amount for a group
     const getGroupSpent = (groupId: BudgetGroupId): number => {
         const group = spending.groupSpending.find(g => g.groupId === groupId)
-        return group?.spent || 0
+        return group?.spentCents || 0
     }
 
     // Calculate if group budgets exceed global budget
     const totalGroupBudgets = useMemo(() => {
         if (!budget) return 0
-        return budget.groupBudgets.reduce((sum, g) => sum + g.amount, 0)
+        return budget.groupBudgets.reduce((sum, g) => sum + g.amountCents, 0)
     }, [budget])
 
-    const showGroupWarning = budget && totalGroupBudgets > budget.globalBudgetAmount && budget.globalBudgetAmount > 0
+    const showGroupWarning = budget && totalGroupBudgets > budget.globalBudgetAmountCents && budget.globalBudgetAmountCents > 0
 
     // Handle saving global budget
-    const handleSaveGlobalBudget = (amount: number) => {
+    const handleSaveGlobalBudget = (amountCents: number) => {
         saveBudget({
             period,
-            globalBudgetAmount: amount,
+            globalBudgetAmountCents: amountCents,
             groupBudgets: budget?.groupBudgets || BUDGET_GROUPS.map(groupId => ({
                 groupId,
                 label: BUDGET_GROUP_LABELS[groupId],
-                amount: 0
+                amountCents: 0
             }))
         })
     }
 
     // Handle saving group budget
-    const handleSaveGroupBudget = (groupId: BudgetGroupId, amount: number) => {
+    const handleSaveGroupBudget = (groupId: BudgetGroupId, amountCents: number) => {
         const currentGroupBudgets = budget?.groupBudgets || BUDGET_GROUPS.map(gId => ({
             groupId: gId,
             label: BUDGET_GROUP_LABELS[gId],
-            amount: 0
+            amountCents: 0
         }))
 
         const updatedGroupBudgets = currentGroupBudgets.map(g =>
-            g.groupId === groupId ? { ...g, amount } : g
+            g.groupId === groupId ? { ...g, amountCents } : g
         )
 
         saveBudget({
             period,
-            globalBudgetAmount: budget?.globalBudgetAmount || 0,
+            globalBudgetAmountCents: budget?.globalBudgetAmountCents || 0,
             groupBudgets: updatedGroupBudgets
         })
     }
@@ -130,8 +130,8 @@ export default function BudgetPage() {
 
             {/* Global Budget Card */}
             <GlobalBudgetCard
-                budget={budget?.globalBudgetAmount || 0}
-                spent={spending.globalSpent}
+                budgetCents={budget?.globalBudgetAmountCents || 0}
+                spentCents={spending.globalSpentCents}
                 isLoading={isLoading}
                 onSave={handleSaveGlobalBudget}
                 isSaving={isSaving}
@@ -145,8 +145,8 @@ export default function BudgetPage() {
                         <GroupBudgetCard
                             key={groupId}
                             groupId={groupId}
-                            budget={getGroupBudget(groupId)}
-                            spent={getGroupSpent(groupId)}
+                            budgetCents={getGroupBudget(groupId)}
+                            spentCents={getGroupSpent(groupId)}
                             isLoading={isLoading}
                             onSave={handleSaveGroupBudget}
                             isSaving={isSaving}

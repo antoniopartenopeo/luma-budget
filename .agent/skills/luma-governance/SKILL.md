@@ -29,8 +29,9 @@ Before writing any code that handles money:
    // Import from domain/transactions
    import { getSignedCents, normalizeTransactionAmount } from "@/domain/transactions"
    ```
-3. **Transaction amounts**: Always use `amountCents` (integer) not `amount` (string)
+3. **Transaction & Budget amounts**: Always use `amountCents` (integer). For budgets, use `globalBudgetAmountCents` and `amountCents` for groups.
 4. **Sign convention**: `getSignedCents()` returns positive for income, negative for expense
+5. **UI Tones & Calculations**: Use `@/features/dashboard/utils/kpi-logic` for consistent KPI colors (Tones) and percentages.
 
 ### 2. UI Component Patterns
 
@@ -40,6 +41,7 @@ When creating or modifying UI components:
    - `Sheet` → Complex forms, mobile-friendly edit views
    - `Dialog` → Quick confirmations, simple forms
    - `AlertDialog` → Destructive actions (delete, reset)
+   - **Consistency**: Standardize custom overlays with `DialogContent` where possible.
 
 2. **Page Structure**:
    ```tsx
@@ -76,17 +78,14 @@ When creating or modifying UI components:
    - `categories/` → Category definitions and mapping.
 
 3. **Shared code**:
-   - `src/lib/` → Generic utilities (storage, dates)
+   - `src/lib/` → Generic utilities (`storage.ts`, `date-ranges.ts`)
    - `src/components/ui/` → Radix/shadcn primitives
    - `src/components/patterns/` → Higher-level reusable patterns (ConfirmDialog, KpiCard)
 
-4. **Category handling**:
-   ```typescript
-   import { getCategoryById, getCategoryIcon } from "@/features/categories/config"
-   import { CategoryIcon } from "@/features/categories/components/category-icon"
-   ```
+4. **Filtering & Dates**:
+   - Always use `filterByRange` from `@/lib/date-ranges.ts` for consistency in period-based filtering.
 
-### 4. Git Workflow
+### 4. Git & Test Workflow
 
 Before committing:
 
@@ -96,12 +95,15 @@ Before committing:
    git checkout -b feat/my-feature
    ```
 
-2. Pre-push checklist:
-   - [ ] `npm run build` passes
-   - [ ] `npm run test` passes  
+2. **Test Integrity**:
+   - **Import Production Logic**: NEVER rewrite or simulate math/logic in tests. Import the actual utility (e.g., `calculateSuperfluousMetrics`) to ensure tests validate the real system.
+   - [ ] `npm run test` passes (specifically test the feature you modified)
    - [ ] No `console.log` in production code
 
-3. Commit message format:
+3. Pre-push checklist:
+   - [ ] `npm run build` passes
+
+4. Commit message format:
    - `feat:` → New features
    - `fix:` → Bug fixes
    - `refactor:` → Code restructuring
@@ -113,7 +115,8 @@ Before committing:
 2. **NEVER** duplicate financial calculations - use `@/domain/money`
 3. **NEVER** use inline styles - only Tailwind classes
 4. **ALWAYS** use `getCategoryById()` for category lookups
-5. **ALWAYS** run tests before committing
+5. **ALWAYS** use `filterByRange()` for period filtering
+6. **NEVER** simulate production logic in tests - import from utils
 
 ## Examples
 
@@ -149,7 +152,7 @@ const amountCents = parseCurrencyToCents(input)
 |------|-------|------------|------------|
 | 2026-01-17 | Simulator 100x values | `formatEuroNumber` on cents | Use `formatCents` for cent values |
 | 2026-01-18 | Duplicate calcs in Flash | Inline formulas | Always use `financial-math.ts` |
-| 2026-01-14 | Contaminated branch | Created from HEAD | Always branch from `origin/main` |
+| 2026-01-21 | Fragile Tests | Simulated logic in mocks | Import production utils in tests |
 
 ---
 
@@ -172,8 +175,9 @@ const amountCents = parseCurrencyToCents(input)
 3. Commit with message: `docs(skill): [description of change]`
 
 ### Version
-**Current**: v1.1.0  
+**Current**: v1.2.0  
 **Changelog**: 
+- v1.2.0: Budget Cents migration. Centralized KPI Tones logic. Test Integrity rule (prohibits simulating logic in tests).
 - v1.1.0: Migrated paths to Domain-Driven Architecture (`@/domain/*`). Consolidated financial logic rules. Added `@/components/patterns`.
 - v1.0.0: Initial release.
 

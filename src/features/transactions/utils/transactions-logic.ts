@@ -1,5 +1,5 @@
 import { Transaction } from "../api/types";
-import { parseCurrencyToCents, sumIncomeInCents, sumExpensesInCents } from "@/domain/money";
+import { parseCurrencyToCents, sumIncomeInCents, sumExpensesInCents, calculateSharePct } from "@/domain/money";
 
 export type SortField = "date" | "amount" | "category" | "description";
 export type SortOrder = "asc" | "desc";
@@ -119,4 +119,17 @@ export function computeSummary(transactions: Transaction[]): TransactionSummary 
 export function paginateData<T>(data: T[], page: number, pageSize: number): T[] {
     const start = (page - 1) * pageSize;
     return data.slice(start, start + pageSize);
+}
+/**
+ * Calculate superfluous expenditure metrics for a set of transactions
+ */
+export function calculateSuperfluousMetrics(transactions: Transaction[]) {
+    const totalSpentCents = sumExpensesInCents(transactions);
+    const superfluousSpentCents = sumExpensesInCents(transactions.filter(t => t.isSuperfluous));
+
+    return {
+        totalSpentCents,
+        superfluousSpentCents,
+        percentage: calculateSharePct(superfluousSpentCents, totalSpentCents)
+    };
 }

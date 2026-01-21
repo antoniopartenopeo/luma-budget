@@ -3,7 +3,7 @@ import { getCategoryById } from "@/features/categories/config"
 import { BudgetSpending, BudgetGroupId, BUDGET_GROUP_LABELS } from "../api/types"
 import { getSignedCents, resolveBudgetGroupForTransaction } from "@/domain/transactions"
 import { calculateUtilizationPct, sumExpensesInCents } from "@/domain/money"
-import { getMonthBoundariesLocal, getCurrentPeriod as getLibCurrentPeriod, formatPeriodLabel } from "@/lib/date-ranges"
+import { getMonthBoundariesLocal, getCurrentPeriod as getLibCurrentPeriod, formatPeriodLabel, filterByRange } from "@/lib/date-ranges"
 
 // =====================
 // SPENDING CALCULATIONS
@@ -13,19 +13,20 @@ import { getMonthBoundariesLocal, getCurrentPeriod as getLibCurrentPeriod, forma
  * Calculate total spending for a given period
  */
 export function calculateTotalSpent(transactions: Transaction[], period: string): number {
-    const filtered = filterTransactionsByPeriod(transactions, period)
-    const totalCents = sumExpensesInCents(filtered)
-    return totalCents / 100
+    const { start, end } = getMonthBoundariesLocal(period)
+    const filtered = filterByRange(transactions, start, end)
+    return sumExpensesInCents(filtered)
 }
 
 /**
  * Calculate spending broken down by budget group (essential, comfort, superfluous)
  */
 export function calculateGroupSpending(transactions: Transaction[], period: string): BudgetSpending {
-    const filtered = filterTransactionsByPeriod(transactions, period)
+    const { start, end } = getMonthBoundariesLocal(period)
+    const filtered = filterByRange(transactions, start, end)
         .filter(t => t.type === "expense")
 
-    const globalSpentCents = sumExpensesInCents(filterTransactionsByPeriod(transactions, period))
+    const globalSpentCents = sumExpensesInCents(filtered)
 
     const groupSpending = (["essential", "comfort", "superfluous"] as BudgetGroupId[]).map(groupId => {
         const groupTransactions = filtered.filter(t => {
@@ -38,34 +39,19 @@ export function calculateGroupSpending(transactions: Transaction[], period: stri
         return {
             groupId,
             label: BUDGET_GROUP_LABELS[groupId],
-            spent: spentCents / 100
+            spentCents
         }
     })
 
     return {
-        globalSpent: globalSpentCents / 100,
+        globalSpentCents,
         groupSpending
     }
 }
 
-// Migrated to domain/transactions/utils.ts
-
 // =====================
 // HELPERS
 // =====================
-
-/**
- * Filter transactions by period (YYYY-MM format)
- */
-function filterTransactionsByPeriod(transactions: Transaction[], period: string): Transaction[] {
-    const { start, end } = getMonthBoundariesLocal(period)
-
-    return transactions.filter(t => {
-        const timestamp = t.timestamp
-        return timestamp >= start.getTime() && timestamp <= end.getTime()
-    })
-}
-
 
 /**
  * Get current period in YYYY-MM format
@@ -103,14 +89,12 @@ export function formatCurrency(amount: number): string {
     return new Intl.NumberFormat("it-IT", {
         style: "currency",
         currency: "EUR"
-    }).format(amount)
+    }).format(amount / 100)
 }
 
 /**
  * Calculate percentage spent
  */
-export function calculatePercentage(spent: number, budget: number): number {
-    // Note: inputs are Units (EUR), but ratio is same as Cents.
-    // We treat them as "units" here.
-    return calculateUtilizationPct(spent, budget)
+export function calculatePercentage(spentCents: number, budgetCents: number): number {
+    return calculateUtilizationPct(spentCents, budgetCents)
 }

@@ -4,6 +4,7 @@ import { fetchBudget } from "../../budget/api/repository"
 import { getSignedCents } from "@/domain/transactions"
 import { calculateDateRange, filterByRange, getMonthBoundariesLocal } from "@/lib/date-ranges"
 import { getCategoryById } from "@/features/categories/config"
+import { calculateSuperfluousMetrics } from "../../transactions/utils/transactions-logic"
 
 import { sumExpensesInCents, sumIncomeInCents, calculateSharePct } from "@/domain/money"
 
@@ -49,8 +50,8 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
     const targetMonthTransactions = filterByRange(transactions, pivotStart, pivotEnd)
     const targetMonthExpensesCents = sumExpensesInCents(targetMonthTransactions)
 
-    const budgetTotal = budgetPlan?.globalBudgetAmount || 0
-    const budgetTotalCents = Math.round(budgetTotal * 100)
+    const budgetTotalCents = budgetPlan?.globalBudgetAmountCents || 0
+    const budgetTotal = budgetTotalCents / 100
     const budgetRemaining = Math.max((budgetTotalCents - targetMonthExpensesCents) / 100, 0)
 
     // 7. Calculate Category Distribution (Range-based)
@@ -74,13 +75,13 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
         color: data.color
     }))
 
-    // 8. Calculate Useless Spending (Range-based)
-    const uselessTransactions = rangeTransactions.filter(t => t.type === 'expense' && t.isSuperfluous)
-    const uselessSpentCents = sumExpensesInCents(uselessTransactions)
+    // 8. Calculate Superfluous Spending (Range-based)
+    const {
+        superfluousSpentCents: uselessSpentCents,
+        percentage: uselessSpendPercent
+    } = calculateSuperfluousMetrics(rangeTransactions)
 
     const uselessSpent = uselessSpentCents / 100
-    // Use shared percent calculation (input is Cents)
-    const uselessSpendPercent = calculateSharePct(uselessSpentCents, totalExpensesCents)
 
     // 9. Monthly Data for Charts
     const monthlyExpenses = []

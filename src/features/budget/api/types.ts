@@ -7,7 +7,7 @@ export type BudgetGroupId = "essential" | "comfort" | "superfluous"
 export interface GroupBudget {
     groupId: BudgetGroupId
     label: string
-    amount: number
+    amountCents: number
 }
 
 export interface BudgetPlan {
@@ -15,18 +15,18 @@ export interface BudgetPlan {
     userId: string
     period: string // "YYYY-MM" format
     currency: string
-    globalBudgetAmount: number
+    globalBudgetAmountCents: number
     groupBudgets: GroupBudget[]
     createdAt: string
     updatedAt: string
 }
 
 export interface BudgetSpending {
-    globalSpent: number
+    globalSpentCents: number
     groupSpending: {
         groupId: BudgetGroupId
         label: string
-        spent: number
+        spentCents: number
     }[]
 }
 
@@ -54,11 +54,11 @@ export const BUDGET_GROUPS: BudgetGroupId[] = ["essential", "comfort", "superflu
 
 export interface CreateBudgetDTO {
     period: string
-    globalBudgetAmount: number
+    globalBudgetAmountCents: number
     groupBudgets: GroupBudget[]
 }
 
 export interface UpdateBudgetDTO {
-    globalBudgetAmount?: number
+    globalBudgetAmountCents?: number
     groupBudgets?: GroupBudget[]
 }

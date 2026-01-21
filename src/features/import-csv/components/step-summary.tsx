@@ -13,19 +13,29 @@ interface ImportStepSummaryProps {
     importState: ImportState
     overrides: Override[]
     thresholdCents: number
+    excludedGroupIds: string[]
     onBack: () => void
     onClose: () => void
 }
 
-export function ImportStepSummary({ importState, overrides, thresholdCents, onBack, onClose }: ImportStepSummaryProps) {
+export function ImportStepSummary({
+    importState,
+    overrides,
+    thresholdCents,
+    excludedGroupIds,
+    onBack,
+    onClose
+}: ImportStepSummaryProps) {
     const { mutateAsync: createBatch, isPending, isError: isSaveError, error: saveError } = useCreateBatchTransactions()
     const [isSuccess, setIsSuccess] = useState(false)
 
-    // Use shared filter function for consistency with step-review
-    const { includedGroups } = useMemo(
-        () => getIncludedGroups(importState.groups, thresholdCents),
-        [importState.groups, thresholdCents]
-    )
+    // Filter groups using the explicit list from the previous step
+    const includedGroups = useMemo(() => {
+        const excludedSet = new Set(excludedGroupIds)
+        return importState.groups
+            .filter(g => !excludedSet.has(g.id))
+            .sort((a, b) => Math.abs(b.totalCents) - Math.abs(a.totalCents))
+    }, [importState.groups, excludedGroupIds])
 
     // Compute Final Stats using ONLY included groups
     const payload = useMemo(() => {

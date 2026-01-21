@@ -342,9 +342,6 @@ export function ImportStepReview({
                                                                     <div className="flex items-center justify-between w-full gap-2 pr-2">
                                                                         <div className="flex items-center gap-2 min-w-0">
                                                                             <span className="font-medium truncate">{sg.label}</span>
-                                                                            <Badge variant="outline" className="text-[10px] font-mono shrink-0">
-                                                                                {sg.rowIds.length}
-                                                                            </Badge>
                                                                         </div>
                                                                         <div className="flex items-center gap-2 shrink-0">
                                                                             <span className="text-xs font-mono text-muted-foreground">

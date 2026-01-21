@@ -8,7 +8,8 @@ const STOPWORDS = new Set([
     // Articles and prepositions
     "DI", "IL", "LA", "LO", "LE", "GLI", "UN", "UNA", "DA", "IN", "SU", "PER", "CON", "TRA", "FRA", "DEL", "DELLA", "DELLO", "DEI", "DEGLI", "DELLE", "AL", "ALLA", "ALLO", "AI", "AGLI", "ALLE",
     // Countries/regions
-    "IT", "ITA", "ITALIA", "ITALY", "EU", "EUR", "EUROPE",
+    // Countries/regions
+    "IT", "ITA", "ITALIA", "ITALY",
     // Legal suffixes
     "SRL", "S.R.L.", "SPA", "S.P.A.", "SRLS", "SNC", "SAS", "LTD", "GMBH", "LLC", "INC", "CORP", "AG", "SA", "BV", "NV",
     // Address components
@@ -53,8 +54,7 @@ const NOISE_PATTERNS = [
     /\d{8,}/g,                                   // Long IDs
     /[\*X]{4,}\d{0,4}/g,                        // Masked cards
     /\d{6,}/g,                                   // 6+ digit sequences
-    /[.,;:!?()'"\[\]{}@#$%^&+=]/g,              // Punctuation
-    /\s{2,}/g,                                   // Multiple spaces
+    /[.,;:!?()'"\[\]{}@#$%\^&\*+=/]/g            // Punctuation (added * and /)
 ];
 
 /**
@@ -95,6 +95,13 @@ export function cleanNoise(text: string): string {
         result = result.replace(pattern, " ");
     }
 
+    // New in v2.1: Remove trailing locations (e.g., RM IT, DE)
+    // Only strip 2-letter codes (Country, Province) at the end
+    const locationPattern = /(\s+[A-Z]{2})+$/;
+    if (locationPattern.test(result)) {
+        result = result.replace(locationPattern, "");
+    }
+
     return result.trim();
 }
 
@@ -102,7 +109,8 @@ export function cleanNoise(text: string): string {
  * Filter out stopwords from tokens
  */
 export function filterStopwords(tokens: string[]): string[] {
-    return tokens.filter(t => t.length > 2 && !STOPWORDS.has(t));
+    // v2.1: Allow 2-letter tokens (MC, HM) but filter confirmed stopwords
+    return tokens.filter(t => (t.length >= 2 || /^[A-Z0-9]$/.test(t)) && !STOPWORDS.has(t));
 }
 
 /**

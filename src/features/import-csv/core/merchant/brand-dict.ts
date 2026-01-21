@@ -4,7 +4,13 @@
  */
 export const BRAND_DICT: Record<string, string> = {
     // Supermarkets
+    "ESSELUNGA": "ESSELUNGA",
     "ESSE LUNGA": "ESSELUNGA",
+    "COOP": "COOP",
+    "CONAD": "CONAD",
+    "CARREFOUR": "CARREFOUR",
+    "EUROSPIN": "EUROSPIN",
+    "LIDL": "LIDL",
     "ESSELUNGA VIA": "ESSELUNGA",
     "ESSELUNGA VIALE": "ESSELUNGA",
     "COOP ITALIA": "COOP",
@@ -20,29 +26,44 @@ export const BRAND_DICT: Record<string, string> = {
     "MC DONALD": "MCDONALD",
     "MC DONALDS": "MCDONALD",
     "MCDONALDS": "MCDONALD",
-    "BURGER KING": "BURGERKING",
+    "BURGER KING": "BURGER KING",
+    "BURGERKING": "BURGER KING",
     "OLD WILD": "OLDWILDWEST",
+    "OLD WILD WEST": "OLDWILDWEST",
 
     // Services
+    "AUTOSTRADE": "AUTOSTRADE",
     "AUTOSTRADE PER": "AUTOSTRADE",
+    "TELEPASS": "TELEPASS",
     "TELEPASS PAY": "TELEPASS",
+    "STARBUCKS": "STARBUCKS",
+    "SHELL": "SHELL",
 
-    // Streaming
+    // Streaming & Tech
+    "NETFLIX": "NETFLIX",
+    "SPOTIFY": "SPOTIFY",
+    "APPLE": "APPLE",
+    "GOOGLE": "GOOGLE",
+    "AMAZON": "AMAZON",
+    "DISNEY PLUS": "DISNEYPLUS",
+    "DISNEYPLUS": "DISNEYPLUS",
     "NETFLIX COM": "NETFLIX",
     "SPOTIFY AB": "SPOTIFY",
     "APPLE COM": "APPLE",
-    "DISNEY PLUS": "DISNEYPLUS",
+
+    // Clothing
+    "ZARA": "ZARA",
+    "H&M": "H&M",
+    "H M": "H&M",
+    "ZARA ROMA": "ZARA",
+    "ZARA MILANO": "ZARA",
+
+    // Restaurants
+    "RISTORANTE DA GINO": "RISTORANTE DA GINO",
 
     // Utilities
-    "ENEL ENERGIA": "ENEL",
-    "A2A ENERGIA": "A2A",
-
-    // Marketplaces (special handling)
-    "AMAZON EU": "AMAZON",
-    "AMAZON PRIME": "AMAZON PRIME",
-    "AMAZON PAYMENTS": "AMAZON",
-    "PAYPAL EUROPE": "PAYPAL",
-    "SUMUP": "SUMUP",
+    "ENEL": "ENEL",
+    "A2A": "A2A",
 };
 
 /**
@@ -60,12 +81,41 @@ export const MARKETPLACE_PREFIXES = [
 ];
 
 /**
+ * Bridge tokens often found between marketplace and sub-merchant
+ * e.g., "AMAZON *MARKETPLACE* ACME"
+ */
+export const BRIDGE_TOKENS = [
+    "MARKETPLACE",
+    "MKTP",
+    "EU",
+    "SRL",
+    "SPA",
+    "LU",
+    "IE",
+    "IT",
+    "FR",
+    "DE",
+    "ES",
+    "UK",
+    "GB",
+    "COM"
+];
+
+/**
  * Separator patterns for sub-merchant extraction
  */
 export const SUB_MERCHANT_SEPARATORS = [
+    " * ",
+    " *",
+    "* ",
     "*",
+    " # ",
     " - ",
-    "MARKETPLACE",
-    "SELLER",
-    "PAGAMENTO A",
+    " / ",
+    " : ",
+    "@",
+    "PAGAMENTO A ",
+    "SELLER ",
+    "MARKETPLACE ",
+    "MKTP "
 ];

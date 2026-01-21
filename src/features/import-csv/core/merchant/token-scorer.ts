@@ -1,46 +1,68 @@
-/**
- * Token scoring for merchant key extraction
- * Step 6 of the pipeline
- */
-
 import { BRAND_DICT } from "./brand-dict";
 
 interface ScoredToken {
     token: string;
     score: number;
+    originalIndex: number;
 }
+
+// Tokens that should never be selected as merchant keys
+export const SCORING_BLACKLIST = new Set([
+    "PAGAMENTO", "TRANSAZIONE", "OPERAZIONE", "CARTA", "BANCOMAT",
+    "MOVIMENTO", "ACQUISTO", "PRELIEVO", "AUTORIZZAZIONE", "COMMISSIONE",
+    "GIROCONTO", "DISPOSIZIONE", "SEPA", "ATM", "POS"
+]);
 
 // Known brand fragments for partial matching
 const BRAND_FRAGMENTS = new Set(
     Object.values(BRAND_DICT).flatMap(brand =>
-        brand.split(" ").filter(t => t.length > 3)
+        brand.split(" ").filter(t => t.length > 2)
     )
 );
 
+// Tokens that act as "glue" between words and shouldn't be heavily penalized
+const GLUE_WORDS = new Set(["DA", "DI", "DE", "DEL", "DELLA", "DELLE", "AND", "WITH", "FOR"]);
+
 /**
- * Score tokens by relevance for merchant identification
- * 
- * Scoring factors:
- * - Position: earlier tokens score higher
- * - Length: longer tokens score higher (more specific)
- * - Brand match: tokens matching known brands score highest
+ * Score tokens by relevance
+ * v2.1: Blacklist + Bigram check + Tie-break + Glue words
  */
 export function scoreTokens(tokens: string[]): ScoredToken[] {
-    return tokens.map((token, index) => {
+    const scored: ScoredToken[] = tokens.map((token, index) => {
         let score = 0;
 
-        // Position score (first token = 100, decreasing)
+        // 0. Blacklist check
+        if (SCORING_BLACKLIST.has(token)) {
+            return { token, score: -1000, originalIndex: index };
+        }
+
+        // 1. Position score (first token = 100, decreasing)
         score += Math.max(0, 100 - index * 20);
 
-        // Length score (longer = better, capped)
+        // 2. Length score (longer = better, capped)
         score += Math.min(token.length * 5, 50);
 
-        // Brand fragment match (big bonus)
+        // 3. Brand fragment match (big bonus)
         if (BRAND_FRAGMENTS.has(token)) {
             score += 200;
         }
 
-        // Partial brand match
+        // 4. Bigram check: does this + next token form a brand?
+        if (index < tokens.length - 1) {
+            const bigram = `${token} ${tokens[index + 1]}`;
+            if (BRAND_DICT[bigram]) {
+                score += 300; // Super bonus for bigram match
+            }
+        }
+        // Bigram check: does prev + this token form a brand?
+        if (index > 0) {
+            const bigram = `${tokens[index - 1]} ${token}`;
+            if (BRAND_DICT[bigram]) {
+                score += 300;
+            }
+        }
+
+        // 5. Partial brand match
         for (const fragment of BRAND_FRAGMENTS) {
             if (token.includes(fragment) || fragment.includes(token)) {
                 score += 50;
@@ -48,35 +70,41 @@ export function scoreTokens(tokens: string[]): ScoredToken[] {
             }
         }
 
-        // Penalize all-numeric tokens
-        if (/^\d+$/.test(token)) {
-            score -= 100;
-        }
+        // 6. Penalties
+        if (/^\d+$/.test(token)) score -= 150;
 
-        // Penalize very short tokens
+        // v2.1 refinement: Glue words are neutral but don't get the heavy noise penalty
+        // Regular short tokens (noise) get a heavy penalty
         if (token.length <= 2) {
-            score -= 50;
+            if (GLUE_WORDS.has(token)) {
+                score -= 30; // Small penalty to break ties in favor of non-glue words
+            } else {
+                score -= 100;
+            }
         }
 
-        return { token, score };
+        return { token, score, originalIndex: index };
     });
+
+    return scored;
 }
 
 /**
  * Get top N tokens by score
+ * v2.1: Deterministic tie-break
  */
 export function getTopTokens(tokens: string[], count: number = 2): string[] {
     const scored = scoreTokens(tokens);
 
     return scored
-        .filter(t => t.score > 0)
-        .sort((a, b) => b.score - a.score)
-        .slice(0, count)
+        .filter(t => t.score > -500) // Exclude blacklisted
         .sort((a, b) => {
-            // Re-sort by original position for natural reading order
-            const indexA = tokens.indexOf(a.token);
-            const indexB = tokens.indexOf(b.token);
-            return indexA - indexB;
+            // Primary: Score
+            if (b.score !== a.score) return b.score - a.score;
+            // Tie-break: Original position (earlier wins)
+            return a.originalIndex - b.originalIndex;
         })
+        .slice(0, count)
+        .sort((a, b) => a.originalIndex - b.originalIndex) // Back to natural order
         .map(t => t.token);
 }

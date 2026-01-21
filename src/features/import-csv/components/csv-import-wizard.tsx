@@ -9,6 +9,11 @@ import { ImportStepReview } from "./step-review"
 import { ImportStepSummary } from "./step-summary"
 import { ImportState, Override } from "../core/types"
 
+export interface ReviewResult {
+    overrides: Override[]
+    excludedGroupIds: string[]
+}
+
 export function CsvImportWizard() {
     const [open, setOpen] = useState(false)
     const [step, setStep] = useState<"upload" | "review" | "summary">("upload")
@@ -16,17 +21,22 @@ export function CsvImportWizard() {
     // Core Logic State
     const [importState, setImportState] = useState<ImportState | null>(null)
     const [overrides, setOverrides] = useState<Override[]>([])
+    const [excludedGroupIds, setExcludedGroupIds] = useState<string[]>([])
+
+    // Lifted threshold state - survives back navigation
+    const [thresholdCents, setThresholdCents] = useState(0)
 
     const resetWizard = () => {
         setStep("upload")
         setImportState(null)
         setOverrides([])
+        setExcludedGroupIds([])
+        setThresholdCents(0)
     }
 
     const handleOpenChange = (newOpen: boolean) => {
         setOpen(newOpen)
         if (!newOpen) {
-            // Optional: delay reset to avoid flickering closing animation
             setTimeout(resetWizard, 300)
         }
     }
@@ -37,8 +47,9 @@ export function CsvImportWizard() {
         setStep("review")
     }
 
-    const handleReviewComplete = (finalOverrides: Override[]) => {
-        setOverrides(finalOverrides)
+    const handleReviewComplete = (result: ReviewResult) => {
+        setOverrides(result.overrides)
+        setExcludedGroupIds(result.excludedGroupIds)
         setStep("summary")
     }
 
@@ -55,9 +66,8 @@ export function CsvImportWizard() {
                     Importa CSV
                 </Button>
             </DialogTrigger>
-            {/* Mobile trigger (icon only) handled by parent if needed, or responsive CSS above */}
 
-            <DialogContent className="max-w-4xl max-h-[85vh] h-[85vh] flex flex-col p-0 gap-0 outline-none overflow-hidden sm:rounded-2xl">
+            <DialogContent className="w-full h-full max-w-full max-h-full sm:max-w-4xl sm:max-h-[90vh] sm:h-[90vh] flex flex-col p-0 gap-0 outline-none overflow-hidden sm:rounded-2xl rounded-none">
                 {step === "upload" && (
                     <ImportStepUpload onContinue={handleUploadComplete} />
                 )}
@@ -65,7 +75,9 @@ export function CsvImportWizard() {
                 {step === "review" && importState && (
                     <ImportStepReview
                         initialState={importState}
-                        initialOverrides={overrides} // usually empty coming from upload
+                        initialOverrides={overrides}
+                        thresholdCents={thresholdCents}
+                        onThresholdChange={setThresholdCents}
                         onBack={() => setStep("upload")}
                         onContinue={handleReviewComplete}
                     />
@@ -75,6 +87,7 @@ export function CsvImportWizard() {
                     <ImportStepSummary
                         importState={importState}
                         overrides={overrides}
+                        thresholdCents={thresholdCents}
                         onBack={() => setStep("review")}
                         onClose={handleImportSuccess}
                     />

@@ -5,29 +5,37 @@ import { CheckCircle2, ArrowRight, Wallet, TrendingUp, TrendingDown, Loader2, Al
 import { Button } from "@/components/ui/button"
 import { ImportState, Override } from "../core/types"
 import { generatePayload } from "../core/pipeline"
+import { getIncludedGroups } from "../core/filters"
 import { StateMessage } from "@/components/ui/state-message"
 import { useCreateBatchTransactions } from "@/features/transactions/api/use-transactions"
 
 interface ImportStepSummaryProps {
     importState: ImportState
     overrides: Override[]
+    thresholdCents: number
     onBack: () => void
     onClose: () => void
 }
 
-export function ImportStepSummary({ importState, overrides, onBack, onClose }: ImportStepSummaryProps) {
+export function ImportStepSummary({ importState, overrides, thresholdCents, onBack, onClose }: ImportStepSummaryProps) {
     const { mutateAsync: createBatch, isPending, isError: isSaveError, error: saveError } = useCreateBatchTransactions()
     const [isSuccess, setIsSuccess] = useState(false)
 
-    // Compute Final Stats
+    // Use shared filter function for consistency with step-review
+    const { includedGroups } = useMemo(
+        () => getIncludedGroups(importState.groups, thresholdCents),
+        [importState.groups, thresholdCents]
+    )
+
+    // Compute Final Stats using ONLY included groups
     const payload = useMemo(() => {
         try {
-            return generatePayload(importState.groups, importState.rows, overrides)
+            return generatePayload(includedGroups, importState.rows, overrides)
         } catch (e) {
             console.error("Payload gen error", e)
             return null
         }
-    }, [importState, overrides])
+    }, [includedGroups, importState.rows, overrides])
 
     const stats = useMemo(() => {
         if (!payload) return null
@@ -53,7 +61,6 @@ export function ImportStepSummary({ importState, overrides, onBack, onClose }: I
             setIsSuccess(true)
         } catch (err) {
             console.error("Failed to save transactions", err)
-            // Error handling is managed by UI state below
         }
     }
 

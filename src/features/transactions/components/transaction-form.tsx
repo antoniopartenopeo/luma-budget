@@ -5,13 +5,12 @@ import { Loader2, TrendingUp, TrendingDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DatePicker } from "@/components/ui/date-picker"
 import { cn } from "@/lib/utils"
-import { getGroupedCategories, getCategoryById } from "@/features/categories/config"
+import { getCategoryById, getGroupedCategories } from "@/features/categories/config"
 import { useCategories } from "@/features/categories/api/use-categories"
 import { parseCurrencyToCents } from "@/domain/money"
-import { CategoryIcon } from "@/features/categories/components/category-icon"
+import { CategoryPicker } from "@/features/categories/components/category-picker"
 import { CreateTransactionDTO } from "@/features/transactions/api/types"
 
 interface TransactionFormProps {
@@ -194,28 +193,13 @@ export function TransactionForm({
 
             <div className="space-y-2">
                 <Label htmlFor="category">Categoria</Label>
-                <Select value={categoryId} onValueChange={handleCategoryChange}>
-                    <SelectTrigger className={errors.category ? "border-destructive ring-destructive" : ""}>
-                        <SelectValue placeholder="Seleziona categoria" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-[300px]">
-                        {groupedCategories.map((group) => (
-                            <div key={group.key}>
-                                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                                    {group.label}
-                                </div>
-                                {group.categories.map((cat) => (
-                                    <SelectItem key={cat.id} value={cat.id}>
-                                        <div className="flex items-center gap-2">
-                                            <CategoryIcon categoryName={cat.label} size={16} />
-                                            <span>{cat.label}</span>
-                                        </div>
-                                    </SelectItem>
-                                ))}
-                            </div>
-                        ))}
-                    </SelectContent>
-                </Select>
+                <CategoryPicker
+                    value={categoryId}
+                    onChange={handleCategoryChange}
+                    type={type}
+                    disabled={isLoading}
+                    className={errors.category ? "border-destructive ring-destructive" : ""}
+                />
                 {errors.category && <p className="text-xs text-destructive">{errors.category}</p>}
             </div>
 

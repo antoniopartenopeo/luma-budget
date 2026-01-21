@@ -50,9 +50,7 @@ export function useInsights({ period }: UseInsightsOptions): UseInsightsResult {
         )
 
         const currentDate = new Date()
-        const budgetCents = budgetPlan?.globalBudgetAmount
-            ? Math.round(budgetPlan.globalBudgetAmount * 100)
-            : null
+        const budgetCents = budgetPlan?.globalBudgetAmountCents ?? null
 
         const insights: Insight[] = []
 

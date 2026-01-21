@@ -4,6 +4,19 @@ Storico di tutte le modifiche alle regole di sviluppo.
 
 ---
 
+## [1.3.0] - 2026-01-21
+
+### Added
+- Nuova sezione **UBI (Unitary/Unified Behavioral Interface)** con 10 regole per UI responsive senza branching mobile/desktop.
+- 3 nuove regole in Constraints: divieto `useMediaQuery`, divieto componenti `*Mobile/*Desktop`, obbligo `Sheet`/`Dialog` universali.
+- Riferimento a `docs/audits/UBI_UI_ANALYSIS.md` per analisi dettagliata.
+- Template Flex Layout per contenitori scrollabili.
+
+### Changed
+- Rinumerazione sezioni (Code Organization → 4, Git Workflow → 5).
+
+---
+
 ## [1.2.0] - 2026-01-21
 
 ### Added

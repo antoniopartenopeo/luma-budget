@@ -1,5 +1,5 @@
 import { Transaction } from "../api/types";
-import { parseCurrencyToCents } from "@/domain/money";
+import { parseCurrencyToCents, sumIncomeInCents, sumExpensesInCents } from "@/domain/money";
 
 export type SortField = "date" | "amount" | "category" | "description";
 export type SortOrder = "asc" | "desc";
@@ -102,23 +102,15 @@ export function applySorting(
  * Calculate summary KPIs for a set of transactions
  */
 export function computeSummary(transactions: Transaction[]): TransactionSummary {
-    return transactions.reduce(
-        (acc, t) => {
-            const cents = t.amountCents ?? parseCurrencyToCents(t.amount);
+    const totalIncome = sumIncomeInCents(transactions);
+    const totalExpense = sumExpensesInCents(transactions);
 
-            if (t.type === "income") {
-                acc.totalIncome += cents;
-                acc.netBalance += cents;
-            } else {
-                acc.totalExpense += cents;
-                acc.netBalance -= cents;
-            }
-
-            acc.totalCount += 1;
-            return acc;
-        },
-        { totalCount: 0, totalIncome: 0, totalExpense: 0, netBalance: 0 }
-    );
+    return {
+        totalCount: transactions.length,
+        totalIncome,
+        totalExpense,
+        netBalance: totalIncome - totalExpense,
+    };
 }
 
 /**

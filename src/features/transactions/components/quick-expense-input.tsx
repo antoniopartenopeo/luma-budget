@@ -140,6 +140,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                                 type === "expense" ? "bg-background text-red-500 shadow-sm" : "text-muted-foreground hover:text-foreground"
                             )}
                             title="Uscita"
+                            aria-label="Registra come Uscita"
                         >
                             <TrendingDown className="h-4 w-4" />
                         </button>
@@ -151,6 +152,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                                 type === "income" ? "bg-background text-green-500 shadow-sm" : "text-muted-foreground hover:text-foreground"
                             )}
                             title="Entrata"
+                            aria-label="Registra come Entrata"
                         >
                             <TrendingUp className="h-4 w-4" />
                         </button>

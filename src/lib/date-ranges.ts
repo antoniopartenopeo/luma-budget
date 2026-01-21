@@ -92,3 +92,22 @@ export function getDaysInMonth(period: string): number {
     const [year, month] = period.split("-").map(Number)
     return new Date(year, month, 0).getDate()
 }
+
+/**
+ * Checks if a timestamp represents a date within the given start/end boundaries.
+ */
+export function isDateInRange(timestamp: number, start: Date, end: Date): boolean {
+    const d = new Date(timestamp)
+    return d >= start && d <= end
+}
+
+/**
+ * Generic filter for objects with a timestamp field.
+ */
+export function filterByRange<T extends { timestamp: number }>(
+    items: T[],
+    start: Date,
+    end: Date
+): T[] {
+    return items.filter(t => isDateInRange(t.timestamp, start, end))
+}

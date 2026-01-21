@@ -4,7 +4,7 @@
 
 import { InsightsSensitivity } from "@/features/settings/api/types"
 import { InsightThresholds } from "./types"
-import { getMonthBoundariesLocal } from "@/lib/date-ranges"
+import { getMonthBoundariesLocal, filterByRange } from "@/lib/date-ranges"
 
 // Re-export centralized date utilities
 export {
@@ -57,10 +57,7 @@ export function filterTransactionsByMonth<T extends { timestamp: number }>(
     period: string
 ): T[] {
     const { start, end } = getMonthBoundariesLocal(period)
-    return transactions.filter(t => {
-        const date = new Date(t.timestamp)
-        return date >= start && date <= end
-    })
+    return filterByRange(transactions, start, end)
 }
 
 /**

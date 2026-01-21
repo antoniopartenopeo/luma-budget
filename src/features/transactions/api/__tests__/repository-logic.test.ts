@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { createTransaction, updateTransaction, __resetTransactionsCache } from '../repository'
 import { Transaction } from '../types'
-import { parseCurrencyToCents } from '@/lib/currency-utils'
+import { parseCurrencyToCents } from '@/domain/money'
 
 describe('Transaction Repository Logic (amountCents)', () => {
     beforeEach(() => {
@@ -183,7 +183,7 @@ describe('Transaction Repository Logic (amountCents)', () => {
         })
 
         it('should be idempotent and NOT write to storage if already normalized', async () => {
-            const { formatCentsSignedFromType } = await import('@/lib/currency-utils')
+            const { formatCentsSignedFromType } = await import('@/domain/transactions')
             const cleanData = {
                 [USER_ID]: [
                     {

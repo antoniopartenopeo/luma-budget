@@ -22,12 +22,7 @@ export function buildImportPayload(
 
                 let categoryId = resolveCategory(row, subgroup, group, overrides);
 
-                // Fallback for unassigned items (Non-blocking Import)
-                if (!categoryId) {
-                    categoryId = row.amountCents > 0 ? "entrate-occasionali" : "altro";
-                }
-
-                // Validation I1: Must have category (Should be safe now)
+                // Validation I1: Must have category
                 if (!categoryId) {
                     throw new Error(`Row ${row.lineNumber} (${row.description}) has no category assigned.`);
                 }

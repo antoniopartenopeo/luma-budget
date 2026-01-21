@@ -9,7 +9,6 @@ export interface Transaction {
     description: string
     category: string // Label, kept for display compatibility
     categoryId: string // ID for filtering and logic
-    icon: string
     type: TransactionType
     isSuperfluous?: boolean
     classificationSource?: "ruleBased" | "manual" | "ai"

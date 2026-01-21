@@ -1,24 +1,18 @@
 "use client"
 
-import { useState, useMemo, Suspense } from "react"
+import { useState, Suspense } from "react"
 import { ArrowUpRight } from "lucide-react"
-import { useSearchParams, useRouter } from "next/navigation"
+
 import { Button } from "@/components/ui/button"
 import { TransactionsTable } from "@/features/transactions/components/transactions-table"
 import { TransactionsFilterBar, PeriodPreset } from "@/features/transactions/components/transactions-filter-bar"
 import { TransactionsSummaryBar } from "@/features/transactions/components/transactions-summary-bar"
 import { TransactionDetailSheet } from "@/features/transactions/components/transaction-detail-sheet"
-import { useTransactions } from "@/features/transactions/api/use-transactions"
+import { ConfirmDialog } from "@/components/patterns/confirm-dialog"
+import { useTransactions, useDeleteTransaction } from "@/features/transactions/api/use-transactions"
+import { useTransactionsView } from "@/features/transactions/hooks/use-transactions-view"
 import { exportTransactionsToCSV } from "@/features/transactions/utils/export-transactions"
-import {
-    applyFilters,
-    applySorting,
-    computeSummary,
-    paginateData,
-    SortField,
-    SortOrder,
-    TransactionFilters
-} from "@/features/transactions/utils/transactions-logic"
+import { SortField } from "@/features/transactions/utils/transactions-logic"
 import { Transaction } from "@/features/transactions/api/types"
 import { PageHeader } from "@/components/ui/page-header"
 
@@ -29,88 +23,22 @@ import { CsvImportWizard } from "@/features/import-csv/components/csv-import-wiz
 const PAGE_SIZE = 15
 
 function TransactionsPageContent() {
-    const router = useRouter()
-    const searchParams = useSearchParams()
-
     const { data: transactions = [], isLoading, isError, refetch } = useTransactions()
-
-    // --- Filter / Sorting / Pagination State (from URL) ---
-    const search = searchParams.get("q") || ""
-    const type = (searchParams.get("type") || "all") as "all" | "income" | "expense" | "superfluous"
-    const categoryId = searchParams.get("cat") || "all"
-    const period = (searchParams.get("period") || "all") as PeriodPreset
-    const fromDate = searchParams.get("from") || ""
-    const toDate = searchParams.get("to") || ""
-
-    const sort = (searchParams.get("sort") || "date") as SortField
-    const order = (searchParams.get("order") || "desc") as SortOrder
-    const page = parseInt(searchParams.get("p") || "1", 10)
+    const {
+        search, type, categoryId, period, fromDate, toDate,
+        sort, order, page,
+        filteredList, sortedList, paginatedList, summary, totalPages,
+        updateParams, resetFilters, handleSortChange, filters
+    } = useTransactionsView(transactions)
 
     // --- Local UI State for Detail Sheet ---
     const [selectedDetail, setSelectedDetail] = useState<Transaction | null>(null)
     const [detailMode, setDetailMode] = useState<"view" | "edit">("view")
     const [isExporting, setIsExporting] = useState(false)
+    const [exportError, setExportError] = useState<string | null>(null)
+    const [transactionToDelete, setTransactionToDelete] = useState<Transaction | null>(null)
 
-    // --- Derived Filters Object ---
-    const filters = useMemo((): TransactionFilters => {
-        const dateRange: { from?: Date; to?: Date } = {}
-
-        if (period === "custom") {
-            if (fromDate) dateRange.from = new Date(fromDate)
-            if (toDate) dateRange.to = new Date(toDate)
-        } else if (period !== "all") {
-            const now = new Date()
-            dateRange.to = now
-            const from = new Date()
-            if (period === "1m") from.setMonth(now.getMonth() - 1)
-            else if (period === "3m") from.setMonth(now.getMonth() - 3)
-            else if (period === "6m") from.setMonth(now.getMonth() - 6)
-            else if (period === "1y") from.setFullYear(now.getFullYear() - 1)
-            dateRange.from = from
-        }
-
-        return {
-            search,
-            type: type === "superfluous" ? "all" : type, // 'superfluous' filters by isSuperfluous, not type
-            categoryId,
-            isSuperfluous: type === "superfluous", // Enable isSuperfluous filter when type is 'superfluous'
-            dateRange
-        }
-    }, [search, type, categoryId, period, fromDate, toDate])
-
-    // --- Computed Data ---
-    const { filteredList, sortedList, paginatedList, summary, totalPages } = useMemo(() => {
-        const filtered = applyFilters(transactions, filters)
-        const sorted = applySorting(filtered, sort, order)
-        const paginated = paginateData(sorted, page, PAGE_SIZE)
-        const summ = computeSummary(filtered)
-        const totalP = Math.ceil(filtered.length / PAGE_SIZE)
-
-        return {
-            filteredList: filtered,
-            sortedList: sorted,
-            paginatedList: paginated,
-            summary: summ,
-            totalPages: totalP
-        }
-    }, [transactions, filters, sort, order, page])
-
-    // --- URL Update Helpers ---
-    const updateParams = (updates: Record<string, string | null>) => {
-        const params = new URLSearchParams(searchParams.toString())
-        Object.entries(updates).forEach(([key, value]) => {
-            if (value === null || value === "" || value === "all" || (key === "p" && value === "1")) {
-                params.delete(key)
-            } else {
-                params.set(key, value)
-            }
-        })
-        router.push(`/transactions?${params.toString()}`)
-    }
-
-    const resetFilters = () => {
-        router.push("/transactions")
-    }
+    const { mutate: deleteTx, isPending: isDeleting } = useDeleteTransaction()
 
     // --- Actions ---
     const handleEdit = (transaction: Transaction) => {
@@ -121,12 +49,15 @@ function TransactionsPageContent() {
     const handleDelete = (id: string) => {
         const transaction = transactions.find(t => t.id === id)
         if (transaction) {
-            setSelectedDetail(transaction)
-            setDetailMode("view")
-            // The sheet will be opened, and the user can click 'Delete' there.
-            // Or we could have a 'delete' mode that shows the confirm immediately.
-            // Given the requirement "Delete confirms...", opening the sheet is correct.
+            setTransactionToDelete(transaction)
         }
+    }
+
+    const confirmDelete = () => {
+        if (!transactionToDelete) return
+        deleteTx(transactionToDelete.id, {
+            onSuccess: () => setTransactionToDelete(null)
+        })
     }
 
     const handleExport = async (all: boolean = false) => {
@@ -146,13 +77,8 @@ function TransactionsPageContent() {
 
         setIsExporting(false)
         if (!result.success) {
-            alert(result.error || "Si è verificato un errore durante l'esportazione.")
+            setExportError(result.error || "Si è verificato un errore durante l'esportazione.")
         }
-    }
-
-    const handleSortChange = (field: SortField) => {
-        const newOrder = sort === field && order === "desc" ? "asc" : "desc"
-        updateParams({ sort: field, order: newOrder, p: "1" })
     }
 
     if (isError) {
@@ -255,6 +181,30 @@ function TransactionsPageContent() {
                 open={!!selectedDetail}
                 onOpenChange={(open) => !open && setSelectedDetail(null)}
                 mode={detailMode}
+            />
+
+            {/* Export Error Dialog */}
+            <ConfirmDialog
+                open={!!exportError}
+                onOpenChange={(open) => !open && setExportError(null)}
+                title="Errore di Esportazione"
+                description={exportError}
+                confirmLabel="OK"
+                cancelLabel="Chiudi"
+                onConfirm={() => setExportError(null)}
+            />
+
+            {/* Direct Deletion Confirmation */}
+            <ConfirmDialog
+                open={!!transactionToDelete}
+                onOpenChange={(open) => !open && setTransactionToDelete(null)}
+                title="Conferma eliminazione"
+                description={`Sei sicuro di voler eliminare la transazione "${transactionToDelete?.description}"? Questa azione non può essere annullata.`}
+                confirmLabel="Elimina"
+                cancelLabel="Annulla"
+                onConfirm={confirmDelete}
+                isLoading={isDeleting}
+                variant="destructive"
             />
         </div>
     )

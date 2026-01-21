@@ -1,5 +1,6 @@
 import { RawRow, ParsedRow, ParseError } from "./types";
 import { parse, isValid, startOfDay, format } from "date-fns";
+import { parseCurrencyToCents } from "@/domain/money";
 
 /**
  * Normalizes a RawRow into a ParsedRow.
@@ -84,38 +85,25 @@ function parseDate(raw: string): Date | null {
 
 /**
  * Amount Parsing Logic
+ * Leverages the centralized domain parser for financial safety.
  */
 function parseAmount(raw: string): number {
     if (!raw) return NaN;
-    // Remove currency symbols and whitespace
-    let clean = raw.replace(/[€$£\s]/g, "");
 
-    // Parenthesis for negative: (50.00) -> -50.00
+    // Check for negative parentheses before passing to the general parser
+    // as it is a specific CSV format not yet in the general domain parser
+    const clean = raw.trim();
     const isNegativeParenthesis = /^\(.*\)$/.test(clean);
+
+    let amountStr = clean;
     if (isNegativeParenthesis) {
-        clean = clean.replace(/[()]/g, "");
+        amountStr = clean.replace(/[()]/g, "");
     }
 
-    const lastComma = clean.lastIndexOf(",");
-    const lastDot = clean.lastIndexOf(".");
+    const cents = parseCurrencyToCents(amountStr);
 
-    let value: number;
-
-    if (lastComma > -1 && lastDot > -1) {
-        if (lastComma > lastDot) {
-            clean = clean.replace(/\./g, "").replace(",", ".");
-        } else {
-            clean = clean.replace(/,/g, "");
-        }
-    } else if (lastComma > -1) {
-        clean = clean.replace(",", ".");
-    }
-
-    value = parseFloat(clean);
-
-    if (isNegativeParenthesis) value = -Math.abs(value);
-
-    return Math.round(value * 100);
+    // If it was in parentheses, ensure it's negative
+    return isNegativeParenthesis ? -Math.abs(cents) : cents;
 }
 
 /**

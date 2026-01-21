@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
-import { parseCurrencyToCents, getSignedCents, normalizeTransactionAmount, formatCentsSignedFromType } from "../currency-utils"
+import { parseCurrencyToCents } from "../currency"
+import { getSignedCents, normalizeTransactionAmount, formatCentsSignedFromType } from "@/domain/transactions"
 import { Transaction } from "@/features/transactions/api/types"
 
 describe("Currency Refactor", () => {

@@ -18,13 +18,16 @@ Ensure consistent, safe, and maintainable code by enforcing financial logic rule
 Before writing any code that handles money:
 
 1. **Never use `parseFloat` on monetary values** - Store and calculate in integer cents
-2. **Use centralized utilities**:
+2. **Use centralized domain logic**:
    ```typescript
-   // Import from lib/financial-math.ts
-   import { sumExpensesInCents, sumIncomeInCents, calculateSharePct, calculateUtilizationPct } from "@/lib/financial-math"
+   // Import from domain/money
+   import { sumExpensesInCents, sumIncomeInCents, calculateSharePct, calculateUtilizationPct } from "@/domain/money"
    
-   // Import from lib/currency-utils.ts
-   import { getSignedCents, formatCents, parseCurrencyToCents } from "@/lib/currency-utils"
+   // Import from domain/money/currency
+   import { formatCents, parseCurrencyToCents } from "@/domain/money"
+   
+   // Import from domain/transactions
+   import { getSignedCents, normalizeTransactionAmount } from "@/domain/transactions"
    ```
 3. **Transaction amounts**: Always use `amountCents` (integer) not `amount` (string)
 4. **Sign convention**: `getSignedCents()` returns positive for income, negative for expense
@@ -66,12 +69,18 @@ When creating or modifying UI components:
    - `utils/` → Feature-specific logic
    - `__tests__/` → All tests
 
-2. **Shared code**:
-   - `src/lib/` → Generic utilities
-   - `src/components/ui/` → Radix/shadcn primitives
-   - `src/features/categories/config.ts` → Category definitions
+2. **Domain Layer** in `src/domain/[domain-name]/`:
+   - Core financial logic, types, and pure utils.
+   - `money/` → Math, parsing, currency formatting.
+   - `transactions/` → Model normalization, signed cents logic.
+   - `categories/` → Category definitions and mapping.
 
-3. **Category handling**:
+3. **Shared code**:
+   - `src/lib/` → Generic utilities (storage, dates)
+   - `src/components/ui/` → Radix/shadcn primitives
+   - `src/components/patterns/` → Higher-level reusable patterns (ConfirmDialog, KpiCard)
+
+4. **Category handling**:
    ```typescript
    import { getCategoryById, getCategoryIcon } from "@/features/categories/config"
    import { CategoryIcon } from "@/features/categories/components/category-icon"
@@ -101,7 +110,7 @@ Before committing:
 ## Constraints
 
 1. **NEVER** use `parseFloat()` on currency values
-2. **NEVER** duplicate financial calculations - use `lib/financial-math.ts`
+2. **NEVER** duplicate financial calculations - use `@/domain/money`
 3. **NEVER** use inline styles - only Tailwind classes
 4. **ALWAYS** use `getCategoryById()` for category lookups
 5. **ALWAYS** run tests before committing
@@ -117,7 +126,7 @@ const percent = Math.round((spent / budget) * 100)
 ### Good: Use centralized function
 ```typescript
 // ✅ CORRECT
-import { calculateUtilizationPct } from "@/lib/financial-math"
+import { calculateUtilizationPct } from "@/domain/money"
 const percent = calculateUtilizationPct(spentCents, budgetCents)
 ```
 
@@ -130,7 +139,7 @@ const amount = parseFloat(input.replace(/[€,]/g, ''))
 ### Good: Use currency utils
 ```typescript
 // ✅ CORRECT
-import { parseCurrencyToCents } from "@/lib/currency-utils"
+import { parseCurrencyToCents } from "@/domain/money"
 const amountCents = parseCurrencyToCents(input)
 ```
 
@@ -163,6 +172,8 @@ const amountCents = parseCurrencyToCents(input)
 3. Commit with message: `docs(skill): [description of change]`
 
 ### Version
-**Current**: v1.0.0  
-**Changelog**: See `CHANGELOG.md` in this folder
+**Current**: v1.1.0  
+**Changelog**: 
+- v1.1.0: Migrated paths to Domain-Driven Architecture (`@/domain/*`). Consolidated financial logic rules. Added `@/components/patterns`.
+- v1.0.0: Initial release.
 

@@ -35,22 +35,22 @@ const generateTransactions = (): Transaction[] => {
 
         // Stipendio: 27th of month
         if (day === 27) {
-            addTransaction(transactions, nextId(), ms, "income", "Stipendio Mensile", "stipendio", 185000, "💰", false)
+            addTransaction(transactions, nextId(), ms, "income", "Stipendio Mensile", "stipendio", 185000, false)
         }
 
         // Rent/Mortgage: 5th of month
         if (day === 5) {
-            addTransaction(transactions, nextId(), ms, "expense", "Affitto Casa", "casa", 75000, "🏠", false)
+            addTransaction(transactions, nextId(), ms, "expense", "Affitto Casa", "casa", 75000, false)
         }
 
         // Utilities: 15th of month (approx)
         if (day === 15) {
-            addTransaction(transactions, nextId(), ms, "expense", "Bollette Luce/Gas", "utenze", randomInt(8500, 14000), "⚡", false)
+            addTransaction(transactions, nextId(), ms, "expense", "Bollette Luce/Gas", "utenze", randomInt(8500, 14000), false)
         }
 
         // Subscription: 2nd of month
         if (day === 2) {
-            addTransaction(transactions, nextId(), ms, "expense", "Spotify & Netflix", "abbonamenti", 2499, "📺", false) // Comfort
+            addTransaction(transactions, nextId(), ms, "expense", "Spotify & Netflix", "abbonamenti", 2499, false) // Comfort
         }
 
 
@@ -61,12 +61,12 @@ const generateTransactions = (): Transaction[] => {
             const isBigShop = Math.random() > 0.7
             const amount = isBigShop ? randomInt(9000, 15000) : randomInt(2500, 6000)
             const desc = isBigShop ? "Spesa Settimanale Esselunga" : "Spesa Alimentari"
-            addTransaction(transactions, nextId(), ms, "expense", desc, "cibo", amount, "🛒", false)
+            addTransaction(transactions, nextId(), ms, "expense", desc, "cibo", amount, false)
         }
 
         // Transport (Fuel): Every ~10 days
         if (day % 10 === 3) {
-            addTransaction(transactions, nextId(), ms, "expense", "Rifornimento Benzina", "trasporti", 5000, "⛽", false)
+            addTransaction(transactions, nextId(), ms, "expense", "Rifornimento Benzina", "trasporti", 5000, false)
         }
 
         // 3. LIFESTYLE (Weekend heavy)
@@ -74,22 +74,22 @@ const generateTransactions = (): Transaction[] => {
         // Pizza/Restaurant: Weekends
         if (isWeekend && Math.random() > 0.4) {
             const amount = randomInt(3500, 8000)
-            addTransaction(transactions, nextId(), ms, "expense", "Cena Fuori / Pizzeria", "ristoranti", amount, "🍕", false) // Comfort
+            addTransaction(transactions, nextId(), ms, "expense", "Cena Fuori / Pizzeria", "ristoranti", amount, false) // Comfort
         }
 
         // Breakfast/Coffee: Random weekdays
         if (!isWeekend && Math.random() > 0.6) {
-            addTransaction(transactions, nextId(), ms, "expense", "Colazione Bar", "ristoranti", 450, "☕", true) // Superfluous
+            addTransaction(transactions, nextId(), ms, "expense", "Colazione Bar", "ristoranti", 450, true) // Superfluous
         }
 
         // Svago/Hobby: Random
         if (Math.random() > 0.85) {
-            addTransaction(transactions, nextId(), ms, "expense", "Cinema / Svago", "svago", randomInt(1500, 4000), "🎟️", true) // Superfluous
+            addTransaction(transactions, nextId(), ms, "expense", "Cinema / Svago", "svago", randomInt(1500, 4000), true) // Superfluous
         }
 
         // Shopping: Once/Twice a month random
         if (Math.random() > 0.95) {
-            addTransaction(transactions, nextId(), ms, "expense", "Shopping / Abbigliamento", "shopping", randomInt(4000, 12000), "🛍️", true) // Comfort
+            addTransaction(transactions, nextId(), ms, "expense", "Shopping / Abbigliamento", "shopping", randomInt(4000, 12000), true) // Comfort
         }
 
         // Next Day
@@ -109,7 +109,6 @@ const addTransaction = (
     desc: string,
     catId: string,
     cents: number,
-    icon: string,
     isSuperfluous: boolean
 ) => {
     // Add realistic randomness to time (9:00 - 21:00)
@@ -130,7 +129,6 @@ const addTransaction = (
         description: desc,
         category: getCategoryLabel(catId), // We approximate label here, ideally imported
         categoryId: catId,
-        icon,
         type,
         isSuperfluous,
         classificationSource: isSuperfluous ? "manual" : "ruleBased" // Mock

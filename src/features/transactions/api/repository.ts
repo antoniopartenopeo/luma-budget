@@ -155,7 +155,6 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
         description: data.description,
         category: data.category,
         categoryId: data.categoryId,
-        icon: isIncome ? "💰" : "🆕",
         type: data.type,
         timestamp: data.date ? new Date(data.date).getTime() : Date.now(),
         isSuperfluous,
@@ -197,7 +196,6 @@ export const createBatchTransactions = async (dataList: CreateTransactionDTO[]):
             description: data.description,
             category: data.category,
             categoryId: data.categoryId,
-            icon: isIncome ? "💰" : "🆕",
             type: data.type,
             timestamp: data.date ? new Date(data.date).getTime() : Date.now(),
             isSuperfluous,
@@ -262,7 +260,6 @@ export const updateTransaction = async (id: string, data: Partial<CreateTransact
         timestamp: data.date ? new Date(data.date).getTime() : currentTransaction.timestamp,
         amount: formattedAmount,
         amountCents: amountCents, // Persist updated cents
-        icon: isIncome ? "💰" : "🆕",
         isSuperfluous,
         classificationSource
     }

@@ -2,7 +2,7 @@ import { DashboardSummary, DashboardTimeFilter } from "./types"
 import { fetchTransactions } from "../../transactions/api/repository"
 import { fetchBudget } from "../../budget/api/repository"
 import { getSignedCents } from "@/domain/transactions"
-import { calculateDateRange } from "@/lib/date-ranges"
+import { calculateDateRange, filterByRange, getMonthBoundariesLocal } from "@/lib/date-ranges"
 import { getCategoryById } from "@/features/categories/config"
 
 import { sumExpensesInCents, sumIncomeInCents, calculateSharePct } from "@/domain/money"
@@ -34,10 +34,7 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
     const netBalance = (allTimeIncomeCents - allTimeExpensesCents) / 100
 
     // 4. Filter transactions for the selected range
-    const rangeTransactions = transactions.filter(t => {
-        const tDate = new Date(t.timestamp)
-        return tDate >= startDate && tDate <= endDate
-    })
+    const rangeTransactions = filterByRange(transactions, startDate, endDate)
 
     // 5. Calculate Metrics based on range
     const totalExpensesCents = sumExpensesInCents(rangeTransactions)
@@ -48,12 +45,8 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
 
     // 6. Calculate Budget Remaining
     // Rule: mode="month" -> use period; mode="range" -> use end period (filter.period)
-    const [tYear, tMonth] = filter.period.split('-').map(Number)
-    const targetMonthTransactions = transactions.filter(t => {
-        const tDate = new Date(t.timestamp)
-        return tDate.getFullYear() === tYear &&
-            tDate.getMonth() + 1 === tMonth
-    })
+    const { start: pivotStart, end: pivotEnd } = getMonthBoundariesLocal(filter.period)
+    const targetMonthTransactions = filterByRange(transactions, pivotStart, pivotEnd)
     const targetMonthExpensesCents = sumExpensesInCents(targetMonthTransactions)
 
     const budgetTotal = budgetPlan?.globalBudgetAmount || 0

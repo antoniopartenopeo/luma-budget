@@ -4,8 +4,8 @@ import {
     formatCents,
     euroToCents,
     formatEuroNumber,
-    getSignedCents
-} from '../currency-utils'
+} from '../currency'
+import { getSignedCents } from '@/domain/transactions'
 import { Transaction } from '@/features/transactions/api/types'
 
 describe('currency-utils', () => {

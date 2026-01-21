@@ -55,11 +55,8 @@ export function normalizeTransactionAmount(t: any): Transaction {
     }
 
     // 2. Derive normalized string
-    // This ensures that "€ 10.50" becomes "+€10,50" consistently
-    // We only keep the original string if it already contains the € symbol and it was a string
-    const normalizedString = (typeof raw.amount === 'string' && raw.amount.includes('€'))
-        ? raw.amount
-        : formatCentsSignedFromType(absCents, raw.type)
+    // This ensures that "€ 10.50" becomes "-10,50 €" consistently
+    const normalizedString = formatCentsSignedFromType(absCents, raw.type)
 
     // 3. Return updated object
     return {

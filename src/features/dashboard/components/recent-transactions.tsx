@@ -3,6 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { cn } from "@/lib/utils"
+import { calculateDateRange, filterByRange } from "@/lib/date-ranges"
 import { useRecentTransactions } from "@/features/transactions/api/use-transactions"
 import { StateMessage } from "@/components/ui/state-message"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -68,22 +69,12 @@ export function RecentTransactions({ filter }: RecentTransactionsProps) {
 
     // Client-side Filtering
     let filteredTransactions = transactions || []
-
     if (filter) {
-        const endDate = new Date(filter.period + "-01")
-        endDate.setMonth(endDate.getMonth() + 1)
-        endDate.setDate(0) // End of month
-
-        const startDate = new Date(filter.period + "-01")
-        if (filter.mode === "range" && filter.months) {
-            startDate.setMonth(startDate.getMonth() - (filter.months - 1))
-        }
-        startDate.setDate(1) // Start of month
-
-        filteredTransactions = filteredTransactions.filter(t => {
-            const d = new Date(t.timestamp)
-            return d >= startDate && d <= endDate
-        })
+        const { startDate, endDate } = calculateDateRange(
+            filter.period,
+            (filter.mode === "range" && filter.months) ? filter.months : 1
+        )
+        filteredTransactions = filterByRange(filteredTransactions, startDate, endDate)
     }
 
     // Sort by date desc (assuming API does, but good to ensure) and take top 5

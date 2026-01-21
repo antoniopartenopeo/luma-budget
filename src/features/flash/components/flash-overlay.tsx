@@ -3,10 +3,8 @@
 import {
     Dialog,
     DialogTrigger,
-    DialogPortal,
-    DialogOverlay,
+    DialogContent,
 } from "@/components/ui/dialog"
-import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { FlashSummaryView } from "./flash-summary-view"
 import { Button } from "@/components/ui/button"
 import { Sparkles } from "lucide-react"
@@ -33,18 +31,9 @@ export function FlashOverlay({ trigger }: FlashOverlayProps) {
                     </Button>
                 )}
             </DialogTrigger>
-            <DialogPortal>
-                {/* Overlay più chiaro per far risaltare il vetro bianco */}
-                <DialogOverlay className="bg-white/5 backdrop-blur-[2px]" />
-                <DialogPrimitive.Content
-                    className={cn(
-                        "fixed left-[50%] top-[50%] z-50 w-full max-w-md translate-x-[-50%] translate-y-[-50%] outline-none",
-                        "duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95"
-                    )}
-                >
-                    <FlashSummaryView onClose={() => setOpen(false)} />
-                </DialogPrimitive.Content>
-            </DialogPortal>
+            <DialogContent className="max-w-md p-0 border-none bg-transparent shadow-none [&>button]:hidden">
+                <FlashSummaryView onClose={() => setOpen(false)} />
+            </DialogContent>
         </Dialog>
     )
 }

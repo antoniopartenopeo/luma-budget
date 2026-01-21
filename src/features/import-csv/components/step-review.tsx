@@ -279,11 +279,21 @@ export function ImportStepReview({ initialState, initialOverrides, onBack, onCon
                     <ArrowLeft className="h-4 w-4" /> Indietro
                 </Button>
                 <div className="flex items-center gap-4">
-                    <div className="text-xs text-muted-foreground text-right hidden lg:block">
+                    <div className={cn(
+                        "text-xs text-right hidden lg:block",
+                        stats.total > stats.assigned ? "text-amber-600 font-medium" : "text-muted-foreground"
+                    )}>
                         {stats.total - stats.assigned} da assegnare
                     </div>
-                    <Button onClick={() => onContinue(overrides)} className="gap-2 rounded-xl px-8 h-12 shadow-lg hover:translate-y-[-1px] transition-all">
-                        Procedi al Riepilogo
+                    <Button
+                        onClick={() => onContinue(overrides)}
+                        className={cn(
+                            "gap-2 rounded-xl px-8 h-12 shadow-lg hover:translate-y-[-1px] transition-all",
+                            stats.total > stats.assigned && "border-amber-200 bg-amber-50 text-amber-900 hover:bg-amber-100 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-200"
+                        )}
+                        variant={stats.total > stats.assigned ? "outline" : "default"}
+                    >
+                        {stats.total > stats.assigned ? "Continua con non assegnati" : "Procedi al Riepilogo"}
                         <ArrowRight className="h-4 w-4" />
                     </Button>
                 </div>

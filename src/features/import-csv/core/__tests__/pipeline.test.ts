@@ -49,7 +49,7 @@ describe("CSV Import Core Integration", () => {
         expect(txNetflix?.classificationSource).toBe("ruleBased");
     });
 
-    it("validates invariants I1 (Category) and I2 (Non-zero)", () => {
+    it("fallbacks to 'altro' if category is missing (Invariant I1 relaxed)", () => {
         const csv = `Data,Descrizione,Importo
 2024-01-01,UNKNOWN AMT,10`;
         const state = processCSV(csv, []);
@@ -57,7 +57,7 @@ describe("CSV Import Core Integration", () => {
         const unknownRow = state.rows[0];
         expect(unknownRow.suggestedCategoryId).toBeNull();
 
-        expect(() => generatePayload(state.groups, state.rows, []))
-            .toThrow(/has no category assigned/);
+        const payload = generatePayload(state.groups, state.rows, []);
+        expect(payload.transactions[0].categoryId).toBe("altro");
     });
 });

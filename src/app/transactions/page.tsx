@@ -18,7 +18,7 @@ import { PageHeader } from "@/components/ui/page-header"
 
 import { StateMessage } from "@/components/ui/state-message"
 import { Skeleton } from "@/components/ui/skeleton"
-import { CsvImportWizard } from "@/features/import-csv/components/csv-import-wizard"
+import { TransactionsActions } from "@/features/transactions/components/transactions-actions"
 
 const PAGE_SIZE = 15
 
@@ -105,7 +105,14 @@ function TransactionsPageContent() {
             <PageHeader
                 title="Transazioni"
                 description="Analisi dettagliata del tuo flusso di cassa."
-                actions={<CsvImportWizard />}
+                actions={
+                    <TransactionsActions
+                        onExportView={() => handleExport(false)}
+                        onExportAll={() => handleExport(true)}
+                        isExporting={isExporting}
+                        hasResults={filteredList.length > 0}
+                    />
+                }
             />
 
             {/* Summary KPI Bar */}
@@ -127,10 +134,6 @@ function TransactionsPageContent() {
                     isSuperfluousOnly={type === "superfluous"}
                     onSuperfluousChange={() => { }} // No-op, now handled via type dropdown
                     onResetFilters={resetFilters}
-                    onExportView={() => handleExport(false)}
-                    onExportAll={() => handleExport(true)}
-                    isExporting={isExporting}
-                    hasResults={filteredList.length > 0}
                 />
             </div>
 

@@ -31,11 +31,6 @@ interface TransactionsFilterBarProps {
     isSuperfluousOnly: boolean
     onSuperfluousChange: (value: boolean) => void
     onResetFilters?: () => void
-    // Export Props
-    onExportView: () => void
-    onExportAll: () => void
-    isExporting?: boolean
-    hasResults: boolean
 }
 
 export function TransactionsFilterBar({
@@ -51,11 +46,7 @@ export function TransactionsFilterBar({
     onDateRangeChange,
     isSuperfluousOnly,
     onSuperfluousChange,
-    onResetFilters,
-    onExportView,
-    onExportAll,
-    isExporting,
-    hasResults
+    onResetFilters
 }: TransactionsFilterBarProps) {
     const { data: categories = [] } = useCategories()
     const hasActiveFilters =
@@ -173,34 +164,6 @@ export function TransactionsFilterBar({
                             <X className="h-4 w-4" />
                         </Button>
                     )}
-                </div>
-
-                {/* Zone 3: Export */}
-                <div className="flex items-center gap-2 lg:ml-auto w-full lg:w-auto">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-10 flex-1 lg:flex-none rounded-xl font-bold text-muted-foreground hover:text-foreground hover:bg-muted/10 px-4 gap-2 border border-transparent hover:border-muted-foreground/10 transition-all"
-                        onClick={onExportAll}
-                        disabled={isExporting}
-                    >
-                        <Download className="h-4 w-4 opacity-70" />
-                        Tutto
-                    </Button>
-                    <Button
-                        variant="default"
-                        size="sm"
-                        className="h-10 flex-1 lg:flex-none rounded-xl font-bold gap-2 shadow-sm px-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-all active:scale-[0.98]"
-                        onClick={onExportView}
-                        disabled={isExporting || !hasResults}
-                    >
-                        {isExporting ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                            <Download className="h-4 w-4" />
-                        )}
-                        Vista
-                    </Button>
                 </div>
             </div>
 

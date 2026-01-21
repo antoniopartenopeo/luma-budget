@@ -22,9 +22,9 @@ export function buildImportPayload(
 
                 let categoryId = resolveCategory(row, subgroup, group, overrides);
 
-                // Validation I1: Must have category
+                // Fallback for unassigned categories (as promised by UI)
                 if (!categoryId) {
-                    throw new Error(`Row ${row.lineNumber} (${row.description}) has no category assigned.`);
+                    categoryId = "altro";
                 }
 
                 // Validation helper

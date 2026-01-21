@@ -31,6 +31,8 @@ type PeriodBreakdownItem = {
 }
 
 const TOP_N_CATEGORIES = 4
+// Unique ID for synthetic "Altro" category to avoid collision with real categories
+const SYNTHETIC_ALTRI_ID = "__altri__"
 
 export function SpendingCompositionCard({ transactions, filter, isLoading: isExternalLoading }: SpendingCompositionCardProps) {
     const { currency, locale } = useCurrency()
@@ -119,8 +121,8 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
 
         if (othersCatIds.length > 0) {
             seriesCategories.push({
-                id: "altro",
-                name: "Altro",
+                id: SYNTHETIC_ALTRI_ID,
+                name: "Altri",
                 color: "#94a3b8" // Muted gray
             })
         }
@@ -138,7 +140,7 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
             })
 
             if (othersCatIds.length > 0) {
-                row["altro"] = othersSum
+                row[SYNTHETIC_ALTRI_ID] = othersSum
             }
 
             return row
@@ -147,7 +149,7 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
         // Build Period-wide breakdown
         const pb: PeriodBreakdownItem[] = seriesCategories.map(cat => {
             let total = 0
-            if (cat.id === "altro") {
+            if (cat.id === SYNTHETIC_ALTRI_ID) {
                 total = othersCatIds.reduce((acc, id) => acc + (periodCategoryTotals[id] || 0), 0)
             } else {
                 total = periodCategoryTotals[cat.id] || 0
@@ -156,8 +158,8 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
         })
         // Sort: top categories first, Altro ALWAYS last
         const pbSorted = pb.sort((a, b) => {
-            if (a.id === "altro") return 1
-            if (b.id === "altro") return -1
+            if (a.id === SYNTHETIC_ALTRI_ID) return 1
+            if (b.id === SYNTHETIC_ALTRI_ID) return -1
             return b.value - a.value
         })
 
@@ -179,8 +181,8 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
             ...cat,
             value: Number(monthRow[cat.id]) || 0
         })).sort((a, b) => {
-            if (a.id === "altro") return 1
-            if (b.id === "altro") return -1
+            if (a.id === SYNTHETIC_ALTRI_ID) return 1
+            if (b.id === SYNTHETIC_ALTRI_ID) return -1
             return b.value - a.value
         })
     }, [selectedMonth, chartData, periodBreakdown, allCategories])
@@ -210,8 +212,8 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
 
                     // Sort items by value for tooltip, but maybe keep Altro last?
                     const sortedParams = [...pArray].sort((a, b) => {
-                        if (a.seriesId === 'altro') return 1
-                        if (b.seriesId === 'altro') return -1
+                        if (a.seriesId === SYNTHETIC_ALTRI_ID) return 1
+                        if (b.seriesId === SYNTHETIC_ALTRI_ID) return -1
                         return b.value - a.value
                     })
 
@@ -310,36 +312,6 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
                     <CardTitle className="text-xl font-bold tracking-tight">Composizione Spese</CardTitle>
                     <CardDescription>Andamento mensile suddiviso per categoria</CardDescription>
                 </div>
-
-                <div className="flex flex-col items-start sm:items-end gap-1.5 min-w-[180px]">
-                    <div className="flex items-center gap-3">
-                        <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.15em] whitespace-nowrap">
-                            {selectedMonth ? `Dettaglio ${selectedMonth}` : "Dettaglio Periodo"}
-                        </h4>
-                        <AnimatePresence>
-                            {(selectedMonth || highlightedCategory) && (
-                                <motion.div
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.9 }}
-                                >
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={handleReset}
-                                        className="h-6 w-6 rounded-full hover:bg-primary/5 transition-colors"
-                                        title="Reset filtri"
-                                    >
-                                        <RotateCcw className="h-3 w-3" />
-                                    </Button>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
-                    <div className="text-3xl font-extrabold tracking-tight tabular-nums text-foreground">
-                        {formatEuroNumber(totalInView, currency, locale)}
-                    </div>
-                </div>
             </CardHeader>
 
             <CardContent>
@@ -371,39 +343,98 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
 
                         {/* BREAKDOWN SECTION */}
                         <div className="lg:col-span-1">
-                            <div className="space-y-3 pr-2">
-                                {currentBreakdown.map((item) => (
-                                    <motion.div
-                                        key={item.id}
-                                        layout
-                                        className={cn(
-                                            "flex items-center justify-between p-3 rounded-2xl transition-all cursor-pointer border border-transparent",
-                                            highlightedCategory === item.id
-                                                ? "bg-background shadow-sm border-primary/10 ring-1 ring-primary/5"
-                                                : "hover:bg-muted/40",
-                                            highlightedCategory && highlightedCategory !== item.id && "opacity-40 grayscale-[0.8]"
-                                        )}
-                                        onClick={() => setHighlightedCategory(prev => prev === item.id ? null : item.id)}
-                                    >
-                                        <div className="flex items-center gap-4">
-                                            <div
-                                                className="h-3 w-3 rounded-full"
-                                                style={{ backgroundColor: item.color }}
-                                            />
-                                            <div className="flex flex-col">
-                                                <span className="text-sm font-bold text-foreground leading-tight">
-                                                    {item.name}
-                                                </span>
-                                                <span className="text-[11px] text-muted-foreground font-semibold mt-0.5">
-                                                    {totalInView > 0 ? Math.round((item.value / totalInView) * 100) : 0}%
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <span className="text-sm font-bold tabular-nums text-foreground/80">
-                                            {formatEuroNumber(item.value, currency, locale)}
-                                        </span>
-                                    </motion.div>
-                                ))}
+                            {/* Section header aligned with chart */}
+                            <div className="flex items-center justify-between mb-4">
+                                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wide">
+                                    {selectedMonth ? `Dettaglio ${selectedMonth}` : "Dettaglio Periodo"}
+                                </h4>
+                                <AnimatePresence>
+                                    {(selectedMonth || highlightedCategory) && (
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0.9 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.9 }}
+                                        >
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={handleReset}
+                                                className="h-5 w-5 rounded-full hover:bg-primary/5 transition-colors"
+                                                title="Reset filtri"
+                                            >
+                                                <RotateCcw className="h-3 w-3" />
+                                            </Button>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                            <div className="space-y-2">
+                                {currentBreakdown
+                                    .sort((a, b) => b.value - a.value)
+                                    .map((item, idx) => {
+                                        const percent = totalInView > 0 ? (item.value / totalInView) * 100 : 0
+                                        return (
+                                            <motion.div
+                                                key={`${item.id}-${idx}`}
+                                                layout
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: idx * 0.05 }}
+                                                className={cn(
+                                                    "group relative p-3 rounded-xl transition-all cursor-pointer",
+                                                    highlightedCategory === item.id
+                                                        ? "bg-background shadow-lg ring-1 ring-primary/20"
+                                                        : "hover:bg-muted/50",
+                                                    highlightedCategory && highlightedCategory !== item.id && "opacity-30"
+                                                )}
+                                                onClick={() => setHighlightedCategory(prev => prev === item.id ? null : item.id)}
+                                            >
+                                                {/* Top row: name + amount */}
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <div className="flex items-center gap-2.5">
+                                                        <div
+                                                            className="h-2.5 w-2.5 rounded-full ring-2 ring-white/50 ring-offset-1 ring-offset-background"
+                                                            style={{ backgroundColor: item.color }}
+                                                        />
+                                                        <span className="text-sm font-semibold text-foreground">
+                                                            {item.name}
+                                                        </span>
+                                                        {idx < 3 && (
+                                                            <span className={cn(
+                                                                "text-[9px] font-bold px-1.5 py-0.5 rounded-full",
+                                                                idx === 0 && "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+                                                                idx === 1 && "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+                                                                idx === 2 && "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400"
+                                                            )}>
+                                                                #{idx + 1}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <span className="text-sm font-bold tabular-nums text-foreground">
+                                                        {formatEuroNumber(item.value, currency, locale)}
+                                                    </span>
+                                                </div>
+
+                                                {/* Progress bar */}
+                                                <div className="relative h-1.5 bg-muted/60 rounded-full overflow-hidden">
+                                                    <motion.div
+                                                        className="absolute inset-y-0 left-0 rounded-full"
+                                                        style={{ backgroundColor: item.color }}
+                                                        initial={{ width: 0 }}
+                                                        animate={{ width: `${percent}%` }}
+                                                        transition={{ duration: 0.5, ease: "easeOut", delay: idx * 0.05 }}
+                                                    />
+                                                </div>
+
+                                                {/* Percentage label */}
+                                                <div className="flex justify-end mt-1">
+                                                    <span className="text-[10px] font-semibold text-muted-foreground tabular-nums">
+                                                        {Math.round(percent)}%
+                                                    </span>
+                                                </div>
+                                            </motion.div>
+                                        )
+                                    })}
                             </div>
 
                             {selectedMonth && (

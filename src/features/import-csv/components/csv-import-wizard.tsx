@@ -8,6 +8,8 @@ import { ImportStepUpload } from "./step-upload"
 import { ImportStepReview } from "./step-review"
 import { ImportStepSummary } from "./step-summary"
 import { ImportState, Override } from "../core/types"
+import { useCategories } from "@/features/categories/api/use-categories"
+import { buildImportPayload } from "../core/payload"
 
 export interface ReviewResult {
     overrides: Override[]
@@ -15,6 +17,7 @@ export interface ReviewResult {
 }
 
 export function CsvImportWizard() {
+    const { data: categories = [] } = useCategories()
     const [open, setOpen] = useState(false)
     const [step, setStep] = useState<"upload" | "review" | "summary">("upload")
 
@@ -50,6 +53,19 @@ export function CsvImportWizard() {
     const handleReviewComplete = (result: ReviewResult) => {
         setOverrides(result.overrides)
         setExcludedGroupIds(result.excludedGroupIds)
+
+        // Generate payload immediately to catch errors early
+        try {
+            buildImportPayload(
+                importState!.groups,
+                new Map(importState!.rows.map(r => [r.id, r])),
+                result.overrides,
+                categories
+            )
+        } catch (e) {
+            console.error("Payload validation failed", e)
+        }
+
         setStep("summary")
     }
 

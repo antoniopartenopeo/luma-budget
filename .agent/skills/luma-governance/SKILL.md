@@ -145,6 +145,22 @@ Before committing:
    - `refactor:` → Code restructuring
    - `docs:` → Documentation
 
+### 6. System Health & Diagnostics
+
+Maintain transparency of the application's local state by ensuring the diagnostics system is always accurate.
+
+1. **Storage Registration**:
+   - ALL `localStorage` keys starting with `luma_` MUST be registered in `@/lib/storage-keys.ts` inside `STORAGE_KEYS_REGISTRY`.
+   - Provide a `countFn` where applicable to show the number of records in diagnostics.
+   - Specify `invalidatesQueries` to support cross-tab synchronization.
+
+2. **Versioning**:
+   - The app version in `@/features/settings/diagnostics/diagnostics-utils.ts` (`getAppVersion`) MUST match the version in `package.json`.
+   - When increasing the app version for a release, update both files.
+
+3. **Storage Monitoring**:
+   - Any new feature that introduces a new storage key must be audited for its impact on "Total Storage Used" in the Advanced Settings section.
+
 ## Constraints
 
 1. **NEVER** use `parseFloat()` on currency values
@@ -156,6 +172,8 @@ Before committing:
 7. **NEVER** use `useMediaQuery` or `if (isMobile)` for render branching - UBI forbids it
 8. **NEVER** create `*Mobile.tsx` / `*Desktop.tsx` component variants
 9. **ALWAYS** use `Sheet` for detail views, `Dialog` for wizards - same on all devices
+10. **ALWAYS** register new `luma_` storage keys in `STORAGE_KEYS_REGISTRY`
+11. **ALWAYS** keep `getAppVersion()` in sync with `package.json`
 
 ## Examples
 
@@ -214,10 +232,10 @@ const amountCents = parseCurrencyToCents(input)
 3. Commit with message: `docs(skill): [description of change]`
 
 ### Version
-**Current**: v1.3.0  
+**Current**: v1.4.0  
 **Changelog**: 
+- v1.4.0: Added System Health & Diagnostics section. Enforced `STORAGE_KEYS_REGISTRY` registration and version alignment.
 - v1.3.0: Added UBI (Unitary/Unified Behavioral Interface) section with 10 rules. Added 3 new UBI constraints. Reference to `docs/audits/UBI_UI_ANALYSIS.md`.
 - v1.2.0: Budget Cents migration. Centralized KPI Tones logic. Test Integrity rule (prohibits simulating logic in tests).
 - v1.1.0: Migrated paths to Domain-Driven Architecture (`@/domain/*`). Consolidated financial logic rules. Added `@/components/patterns`.
 - v1.0.0: Initial release.
-

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { processCSV, generatePayload } from "../pipeline";
 import { Override } from "../types";
+import { CategoryIds, CATEGORIES } from "@/domain/categories";
 
 describe("CSV Import Core Integration", () => {
     it("runs full pipeline deterministic end-to-end", () => {
@@ -23,33 +24,33 @@ describe("CSV Import Core Integration", () => {
 
         // Check Suggestions
         const netflixRow = state.rows.find(r => r.merchantKey === "NETFLIX");
-        expect(netflixRow?.suggestedCategoryId).toBe("abbonamenti");
+        expect(netflixRow?.suggestedCategoryId).toBe(CategoryIds.ABBONAMENTI);
 
         // 2. Override (Simulate User Action)
         const salaryRow = state.rows.find(r => r.amountCents === 250000);
         expect(salaryRow).toBeDefined();
 
         const overrides: Override[] = [
-            { targetId: salaryRow!.id, level: "row", categoryId: "altro" }
+            { targetId: salaryRow!.id, level: "row", categoryId: CategoryIds.ALTRO_ESSENZIALE }
         ];
 
         // 3. Generate Payload
-        const payload = generatePayload(state.groups, state.rows, overrides);
+        const payload = generatePayload(state.groups, state.rows, overrides, CATEGORIES);
 
         expect(payload.transactions).toHaveLength(3);
         expect(payload.importId).toBeDefined();
 
         // Check results
         const txSalary = payload.transactions.find(t => t.amountCents === 250000);
-        expect(txSalary?.categoryId).toBe("altro"); // Override applied
+        expect(txSalary?.categoryId).toBe(CategoryIds.ALTRO_ESSENZIALE); // Override applied
         expect(txSalary?.classificationSource).toBe("manual");
 
         const txNetflix = payload.transactions.find(t => t.description === "NETFLIX");
-        expect(txNetflix?.categoryId).toBe("abbonamenti"); // Suggestion applied
+        expect(txNetflix?.categoryId).toBe(CategoryIds.ABBONAMENTI); // Suggestion applied
         expect(txNetflix?.classificationSource).toBe("ruleBased");
     });
 
-    it("fallbacks to 'altro' if category is missing (Invariant I1 relaxed)", () => {
+    it("fallbacks to ALTRO_SUPERFLUO if category is missing (Invariant I1 relaxed)", () => {
         const csv = `Data,Descrizione,Importo
 2024-01-01,UNKNOWN AMT,10`;
         const state = processCSV(csv, []);
@@ -57,7 +58,7 @@ describe("CSV Import Core Integration", () => {
         const unknownRow = state.rows[0];
         expect(unknownRow.suggestedCategoryId).toBeNull();
 
-        const payload = generatePayload(state.groups, state.rows, []);
-        expect(payload.transactions[0].categoryId).toBe("altro");
+        const payload = generatePayload(state.groups, state.rows, [], CATEGORIES);
+        expect(payload.transactions[0].categoryId).toBe(CategoryIds.ALTRO_SUPERFLUO);
     });
 });

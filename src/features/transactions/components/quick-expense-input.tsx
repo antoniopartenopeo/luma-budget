@@ -38,7 +38,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
     const { mutate: create, isPending, isSuccess, isError } = useCreateTransaction()
 
     // Get grouped categories based on current transaction type
-    const groupedCategories = getGroupedCategories(type, categories)
+    const groupedCategories = getGroupedCategories(categories, type)
 
     // Derive isSuperfluous based on category (rule-based), unless manually overridden
     const isSuperfluous = useMemo(() => {

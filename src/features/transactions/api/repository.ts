@@ -1,6 +1,7 @@
 import { Transaction, CreateTransactionDTO } from "./types"
 import { storage } from "@/lib/storage-utils"
 import { getCategoryById } from "../../categories/config"
+import { getCategories } from "../../categories/api/repository"
 import { parseCurrencyToCents, euroToCents } from "@/domain/money"
 import { normalizeTransactionAmount, formatCentsSignedFromType, calculateSuperfluousStatus, getSignedCents } from "@/domain/transactions"
 
@@ -139,11 +140,12 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
     let isSuperfluous = false
     let classificationSource: "ruleBased" | "manual" = "ruleBased"
 
+    const categories = await getCategories()
     if (data.classificationSource === "manual" && data.isSuperfluous !== undefined) {
         isSuperfluous = data.isSuperfluous
         classificationSource = "manual"
     } else {
-        isSuperfluous = calculateSuperfluousStatus(data.categoryId, data.type)
+        isSuperfluous = calculateSuperfluousStatus(data.categoryId, data.type, categories)
         classificationSource = "ruleBased"
     }
 
@@ -169,6 +171,7 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
 }
 
 export const createBatchTransactions = async (dataList: CreateTransactionDTO[]): Promise<Transaction[]> => {
+    const categories = await getCategories()
 
 
     const newTransactions: Transaction[] = dataList.map(data => {
@@ -184,7 +187,11 @@ export const createBatchTransactions = async (dataList: CreateTransactionDTO[]):
             isSuperfluous = data.isSuperfluous
             classificationSource = "manual"
         } else {
-            isSuperfluous = calculateSuperfluousStatus(data.categoryId, data.type)
+            // NOTE: In a real batch, we should probably fetch categories once outside the loop.
+            // But getCategories() has a cache, so it's fine. 
+            // However, to be cleaner, we should have fetched it once.
+            // Let's optimize: fetch once outside the map.
+            isSuperfluous = calculateSuperfluousStatus(data.categoryId, data.type, categories)
             classificationSource = "ruleBased"
         }
 
@@ -246,9 +253,10 @@ export const updateTransaction = async (id: string, data: Partial<CreateTransact
     }
     else if ((data.categoryId && data.categoryId !== currentTransaction.categoryId) || (data.type && data.type !== currentTransaction.type)) {
         if (classificationSource === "ruleBased") {
+            const categories = await getCategories()
             const newCatId = data.categoryId || currentTransaction.categoryId
             const newType = (data.type || currentTransaction.type) as "income" | "expense"
-            isSuperfluous = calculateSuperfluousStatus(newCatId, newType)
+            isSuperfluous = calculateSuperfluousStatus(newCatId, newType, categories)
         }
     }
 

@@ -10,16 +10,35 @@ import {
 // HELPER FUNCTIONS (Pure / Dynamic)
 // =====================
 
-export function getCategoryById(id: string, categories: Category[] = CATEGORIES): Category | undefined {
+export function getCategoryById(id: string, categories: Category[]): Category | undefined {
     return categories.find(c => c.id === id)
 }
 
-export function getCategoryLabel(id: string, categories: Category[] = CATEGORIES): string {
+/**
+ * Robust lookup that returns a dummy category instead of undefined
+ */
+export function getCategoryOrFallback(id: string, categories: Category[]): Category {
+    const found = getCategoryById(id, categories)
+    if (found) return found
+
+    return {
+        id: id,
+        label: id === "" ? "Nessuna Categoria" : `ID: ${id}`,
+        kind: "expense",
+        color: "text-gray-400 bg-gray-50",
+        hexColor: "#94a3b8",
+        iconName: "helpCircle",
+        spendingNature: "comfort",
+        archived: true
+    }
+}
+
+export function getCategoryLabel(id: string, categories: Category[]): string {
     const category = getCategoryById(id, categories)
     return category ? category.label : id
 }
 
-export function getCategoryColor(id: string, categories: Category[] = CATEGORIES): string {
+export function getCategoryColor(id: string, categories: Category[]): string {
     const category = getCategoryById(id, categories)
     return category ? category.color : "text-gray-600 bg-gray-100"
 }
@@ -29,8 +48,8 @@ export function getCategoryColor(id: string, categories: Category[] = CATEGORIES
  * Returns only non-empty groups
  */
 export function getGroupedCategories(
+    categories: Category[],
     kind?: CategoryKind,
-    categories: Category[] = CATEGORIES,
     options: { includeArchived?: boolean } = { includeArchived: false }
 ): CategoryGroup[] {
     const groupOrder = kind === "income"

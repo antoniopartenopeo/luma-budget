@@ -10,6 +10,7 @@ import { TransactionsSummaryBar } from "@/features/transactions/components/trans
 import { TransactionDetailSheet } from "@/features/transactions/components/transaction-detail-sheet"
 import { ConfirmDialog } from "@/components/patterns/confirm-dialog"
 import { useTransactions, useDeleteTransaction } from "@/features/transactions/api/use-transactions"
+import { useCategories } from "@/features/categories/api/use-categories"
 import { useTransactionsView } from "@/features/transactions/hooks/use-transactions-view"
 import { exportTransactionsToCSV } from "@/features/transactions/utils/export-transactions"
 import { SortField } from "@/features/transactions/utils/transactions-logic"
@@ -39,6 +40,7 @@ function TransactionsPageContent() {
     const [transactionToDelete, setTransactionToDelete] = useState<Transaction | null>(null)
 
     const { mutate: deleteTx, isPending: isDeleting } = useDeleteTransaction()
+    const { data: categories = [] } = useCategories()
 
     // --- Actions ---
     const handleEdit = (transaction: Transaction) => {
@@ -70,6 +72,7 @@ function TransactionsPageContent() {
         const exportList = all ? transactions : sortedList
         const result = exportTransactionsToCSV({
             transactions: exportList,
+            categories: categories,
             dateRange: filters.dateRange.from && filters.dateRange.to
                 ? { start: filters.dateRange.from.toISOString(), end: filters.dateRange.to.toISOString() }
                 : undefined

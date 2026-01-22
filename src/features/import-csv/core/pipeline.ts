@@ -6,6 +6,7 @@ import { enrichRows } from "./enrich";
 import { groupRowsByMerchant } from "./grouping";
 import { buildImportPayload } from "./payload";
 import { EnrichedRow, Group, ImportPayload, ImportSummary, Override, ParseError, ImportState } from "./types";
+import { Category } from "../../categories/config";
 
 /**
  * Stage 1: Process CSV to Interactive State
@@ -60,16 +61,14 @@ export function processCSV(
     };
 }
 
-/**
- * Stage 2: Generate Final Payload
- */
 export function generatePayload(
     groups: Group[],
-    rows: EnrichedRow[], // We need rows map, passing array is fine, we'll index it
-    overrides: Override[]
+    rows: EnrichedRow[],
+    overrides: Override[],
+    categories: Category[]
 ): ImportPayload {
     const rowsMap = new Map(rows.map(r => [r.id, r]));
-    return buildImportPayload(groups, rowsMap, overrides);
+    return buildImportPayload(groups, rowsMap, overrides, categories);
 }
 
 // Helper: Summary

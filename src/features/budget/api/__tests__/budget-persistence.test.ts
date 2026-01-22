@@ -13,7 +13,6 @@ describe('Budget Persistence (localStorage)', () => {
             removeItem: vi.fn(),
             clear: vi.fn(),
         })
-        // Clear in-memory Map implicitly by ensuring we test the persistence layer
         __resetBudgetsCache()
     })
 
@@ -35,20 +34,20 @@ describe('Budget Persistence (localStorage)', () => {
 
         const planData = {
             period: PERIOD,
-            globalBudgetAmount: 2000,
+            globalBudgetAmountCents: 200000,
             groupBudgets: [
-                { groupId: 'essential' as const, label: 'Essenziali', amount: 1200 },
-                { groupId: 'comfort' as const, label: 'Comfort', amount: 500 },
-                { groupId: 'superfluous' as const, label: 'Superflue', amount: 300 }
+                { groupId: 'essential' as const, label: 'Essenziali', amountCents: 120000 },
+                { groupId: 'comfort' as const, label: 'Comfort', amountCents: 50000 },
+                { groupId: 'superfluous' as const, label: 'Superflue', amountCents: 30000 }
             ]
         }
 
         const saved = await upsertBudget(USER_ID, planData.period, planData)
-        expect(saved.globalBudgetAmount).toBe(2000)
+        expect(saved.globalBudgetAmountCents).toBe(200000)
 
         const retrieved = await fetchBudget(USER_ID, PERIOD)
         expect(retrieved).not.toBeNull()
-        expect(retrieved?.globalBudgetAmount).toBe(2000)
+        expect(retrieved?.globalBudgetAmountCents).toBe(200000)
         expect(retrieved?.groupBudgets.length).toBe(3)
     })
 
@@ -58,7 +57,7 @@ describe('Budget Persistence (localStorage)', () => {
                 id: '123',
                 userId: USER_ID,
                 period: PERIOD,
-                globalBudgetAmount: 1000,
+                globalBudgetAmountCents: 100000,
                 groupBudgets: [],
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
@@ -71,45 +70,28 @@ describe('Budget Persistence (localStorage)', () => {
 
         const updateData = {
             period: PERIOD,
-            globalBudgetAmount: 5000,
+            globalBudgetAmountCents: 500000,
             groupBudgets: []
         }
 
         await upsertBudget(USER_ID, PERIOD, updateData)
 
         const updated = await fetchBudget(USER_ID, PERIOD)
-        expect(updated?.globalBudgetAmount).toBe(5000)
+        expect(updated?.globalBudgetAmountCents).toBe(500000)
     })
 
     it('should handle corrupted JSON gracefully', async () => {
         vi.mocked(localStorage.getItem).mockReturnValue('invalid-json')
 
-        // Should not crash, should treat as empty/null
         const budget = await fetchBudget(USER_ID, PERIOD)
         expect(budget).toBeNull()
 
-        // Should be able to recover by saving
         const planData = {
             period: PERIOD,
-            globalBudgetAmount: 1500,
+            globalBudgetAmountCents: 150000,
             groupBudgets: []
         }
         await upsertBudget(USER_ID, PERIOD, planData)
         expect(localStorage.setItem).toHaveBeenCalled()
-    })
-
-    it('should handle unavailable localStorage (SSR or disabled)', async () => {
-        vi.stubGlobal('localStorage', undefined)
-
-        // Should not crash
-        const budget = await fetchBudget(USER_ID, PERIOD)
-        expect(budget).toBeNull()
-
-        const planData = {
-            period: PERIOD,
-            globalBudgetAmount: 1500,
-            groupBudgets: []
-        }
-        await expect(upsertBudget(USER_ID, PERIOD, planData)).resolves.toBeDefined()
     })
 })

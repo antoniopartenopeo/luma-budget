@@ -1,20 +1,10 @@
 import { EnrichedRow } from "./types";
 import { Transaction } from "../../transactions/api/types";
 import { extractMerchantKey } from "./merchant/pipeline";
+import { CategoryIds, CATEGORY_ENRICHMENT_RULES } from "@/domain/categories";
 
-// Keyword to Category mapping (hardcoded for now as per spec)
-const PATTERN_RULES: Array<[string[], string]> = [
-    [["netflix", "spotify", "disney", "youtube", "apple music", "prime video", "dazn"], "abbonamenti"],
-    [["esselunga", "coop", "carrefour", "lidl", "conad", "unes", "aldi", "eurospin", "penny", "md"], "cibo"],
-    [["enel", "a2a", "iren", "hera", "sorgenia", "acea", "eni gas"], "utenze"],
-    [["trenitalia", "italo", "flixbus", "uber", "taxi", "atm", "atac", "metro", "bus"], "trasporti"],
-    [["amazon", "paypal", "ebay", "zalando", "asos"], "shopping"],
-    [["farmacia", "medico", "ospedale", "ticket", "sanitario"], "salute"],
-    [["bar", "ristorante", "pizzeria", "mcdonald", "burger", "autogrill", "trattoria"], "ristoranti"],
-    [["distributore", "q8", "esso", "ip", "eni", "tamoil", "benzina", "diesel", "carburante"], "auto"],
-    [["palestra", "fitness", "gym", "sport"], "sport"],
-    [["assicurazione", "polizza", "generali", "allianz", "unipol"], "assicurazioni"],
-];
+// Use centralized rules from domain
+const PATTERN_RULES = CATEGORY_ENRICHMENT_RULES;
 
 /**
  * Suggest category based on rules and history

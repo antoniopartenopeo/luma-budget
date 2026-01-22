@@ -1,6 +1,7 @@
 import { Transaction, TransactionType } from "./types"
 import { formatSignedCents, parseCurrencyToCents } from "@/domain/money/currency"
 import { getCategoryById } from "@/domain/categories/utils"
+import { migrateCategoryId } from "@/domain/categories/migration"
 
 /**
  * Helper to get signed cents from amountCents if available, falling back to parsing.
@@ -30,10 +31,14 @@ export function formatCentsSignedFromType(absCents: number, type: TransactionTyp
 /**
  * Normalizes a transaction by ensuring amountCents is present and amount string is consistent.
  * Handles legacy formats (float numbers, unformatted strings).
+ * Migration: Automatically migrates legacy category IDs to the new system.
  * Does NOT mutate the input object.
  */
 export function normalizeTransactionAmount(t: any): Transaction {
     const raw = t as Transaction & { amount?: number | string }
+
+    // 0. Migrate categoryId if it's legacy
+    const migratedId = raw.categoryId ? migrateCategoryId(raw.categoryId) : raw.categoryId
 
     // 1. Resolve source of truth (amountCents > parse(amount))
     let absCents: number
@@ -61,6 +66,7 @@ export function normalizeTransactionAmount(t: any): Transaction {
     // 3. Return updated object
     return {
         ...raw,
+        categoryId: migratedId,
         amountCents: absCents,
         amount: normalizedString
     } as Transaction
@@ -69,9 +75,13 @@ export function normalizeTransactionAmount(t: any): Transaction {
 /**
  * Helper to check rule-based superfluous status
  */
-export const calculateSuperfluousStatus = (categoryId: string, type: TransactionType): boolean => {
+export const calculateSuperfluousStatus = (
+    categoryId: string,
+    type: TransactionType,
+    categories: any[] // Using any[] to avoid circular dependency if Category is in domain/categories/types
+): boolean => {
     if (type === "income") return false
-    const cat = getCategoryById(categoryId)
+    const cat = getCategoryById(categoryId, categories)
     return cat?.spendingNature === "superfluous"
 }
 

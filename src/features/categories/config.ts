@@ -7,7 +7,7 @@ import { Category, CATEGORIES } from "@/domain/categories"
 export * from "@/domain/categories"
 
 // UI-Specific helper functions (dependent on Lucide React)
-export function getCategoryIcon(id: string, categories: Category[] = CATEGORIES): LucideIcon {
+export function getCategoryIcon(id: string, categories: Category[]): LucideIcon {
     const category = getCategoryById(id, categories)
     return getIconByName(category?.iconName || "helpCircle")
 }

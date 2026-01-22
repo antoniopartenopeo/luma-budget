@@ -1,8 +1,10 @@
+import { CategoryGroupKey } from "@/domain/categories"
+
 // =====================
 // BUDGET TYPES
 // =====================
 
-export type BudgetGroupId = "essential" | "comfort" | "superfluous"
+export type BudgetGroupId = Exclude<CategoryGroupKey, "income">
 
 export interface GroupBudget {
     groupId: BudgetGroupId

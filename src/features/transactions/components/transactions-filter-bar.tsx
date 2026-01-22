@@ -56,7 +56,7 @@ export function TransactionsFilterBar({
         periodValue !== "all" ||
         isSuperfluousOnly
 
-    const allGroupedCategories = getGroupedCategories(undefined, categories)
+    const allGroupedCategories = getGroupedCategories(categories, undefined)
 
     return (
         <div className="space-y-4">

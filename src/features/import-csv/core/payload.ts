@@ -1,12 +1,14 @@
 import { Group, ImportPayload, Override, EnrichedRow } from "./types";
 import { CreateTransactionDTO } from "../../transactions/api/types";
 import { resolveCategory } from "./overrides";
-import { CATEGORIES, getCategoryById } from "../../categories/config";
+import { getCategoryById, Category } from "../../categories/config";
+import { CategoryIds } from "@/domain/categories";
 
 export function buildImportPayload(
     groups: Group[],
     rowsById: Map<string, EnrichedRow>,
-    overrides: Override[]
+    overrides: Override[],
+    categories: Category[]
 ): ImportPayload {
     const transactions: CreateTransactionDTO[] = [];
     const timestamp = Date.now();
@@ -24,11 +26,11 @@ export function buildImportPayload(
 
                 // Fallback for unassigned categories (as promised by UI)
                 if (!categoryId) {
-                    categoryId = "altro";
+                    categoryId = CategoryIds.ALTRO_SUPERFLUO;
                 }
 
                 // Validation helper
-                const categoryDef = getCategoryById(categoryId, CATEGORIES);
+                const categoryDef = getCategoryById(categoryId, categories);
                 if (!categoryDef) {
                     throw new Error(`Invalid category ID: ${categoryId}`);
                 }
@@ -45,12 +47,6 @@ export function buildImportPayload(
                 const isSuperfluous = categoryDef.spendingNature === "superfluous";
 
                 // Classification Source
-                // If override existed at ANY level, it's 'manual'. Else 'ruleBased'.
-                // We need to re-check if override was used.
-                // Simplification: if resolved !== suggested, then manual?
-                // Or strictly check if override matched.
-                // We'll trust logic: if `resolveCategory` hit an override or locked group, it's manual.
-                // If it fell back to suggestion, it's ruleBased.
                 let source: "manual" | "ruleBased" | "ai" = "ruleBased";
 
                 if (overrides.some(o => o.targetId === row.id || o.targetId === subgroup.id || o.targetId === group.id)) {
@@ -58,7 +54,7 @@ export function buildImportPayload(
                 } else if (group.categoryLocked || subgroup.categoryLocked) {
                     source = "manual";
                 } else if (categoryId !== row.suggestedCategoryId) {
-                    // Implicit override (should ideally use Override object)
+                    // Implicit override
                     source = "manual";
                 }
 
@@ -71,10 +67,6 @@ export function buildImportPayload(
                     date: row.date,
                     isSuperfluous,
                     classificationSource: source as "ruleBased" | "manual" | "ai",
-                    // Note: we don't pass `importId` to DTO here because `CreateTransactionDTO` 
-                    // might not have it, but the `ImportPayload` structure wraps it?
-                    // The Spec says `ImportPayload` has `importId` and list of txs.
-                    // The Import Service will likely attach importId to each tx when saving to DB.
                 });
             }
         }

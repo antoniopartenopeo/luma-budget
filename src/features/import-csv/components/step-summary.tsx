@@ -8,6 +8,7 @@ import { generatePayload } from "../core/pipeline"
 import { getIncludedGroups } from "../core/filters"
 import { StateMessage } from "@/components/ui/state-message"
 import { useCreateBatchTransactions } from "@/features/transactions/api/use-transactions"
+import { useCategories } from "@/features/categories/api/use-categories"
 
 interface ImportStepSummaryProps {
     importState: ImportState
@@ -27,6 +28,7 @@ export function ImportStepSummary({
     onClose
 }: ImportStepSummaryProps) {
     const { mutateAsync: createBatch, isPending, isError: isSaveError, error: saveError } = useCreateBatchTransactions()
+    const { data: categories = [] } = useCategories()
     const [isSuccess, setIsSuccess] = useState(false)
 
     // Filter groups using the explicit list from the previous step
@@ -40,12 +42,12 @@ export function ImportStepSummary({
     // Compute Final Stats using ONLY included groups
     const payload = useMemo(() => {
         try {
-            return generatePayload(includedGroups, importState.rows, overrides)
+            return generatePayload(includedGroups, importState.rows, overrides, categories)
         } catch (e) {
             console.error("Payload gen error", e)
             return null
         }
-    }, [includedGroups, importState.rows, overrides])
+    }, [includedGroups, importState.rows, overrides, categories])
 
     const stats = useMemo(() => {
         if (!payload) return null

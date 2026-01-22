@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import { calculateGroupSpending, calculateTotalSpent } from '../calculate-budget'
+import { CATEGORIES } from '@/domain/categories'
 import { Transaction } from '@/features/transactions/api/types'
 import { parseCurrencyToCents } from '@/domain/money'
+import { CategoryIds } from '@/domain/categories'
 
 const createMockTransaction = (
     id: string,
@@ -32,10 +34,10 @@ describe('calculateGroupSpending', () => {
 
     it('Caso 1: categoria essential + t.isSuperfluous=true => should count as superfluous', () => {
         const transactions: Transaction[] = [
-            createMockTransaction('1', '-10,00', 'cibo', timestamp, true)
+            createMockTransaction('1', '-10,00', CategoryIds.CIBO, timestamp, true)
         ]
 
-        const result = calculateGroupSpending(transactions, period)
+        const result = calculateGroupSpending(transactions, period, CATEGORIES)
         const superfluousGroup = result.groupSpending.find(g => g.groupId === 'superfluous')
         const essentialGroup = result.groupSpending.find(g => g.groupId === 'essential')
 
@@ -45,10 +47,10 @@ describe('calculateGroupSpending', () => {
 
     it('Caso 2: categoria superfluous + t.isSuperfluous=false => should count as comfort', () => {
         const transactions: Transaction[] = [
-            createMockTransaction('2', '-20,00', 'svago', timestamp, false)
+            createMockTransaction('2', '-20,00', CategoryIds.SVAGO_EXTRA, timestamp, false)
         ]
 
-        const result = calculateGroupSpending(transactions, period)
+        const result = calculateGroupSpending(transactions, period, CATEGORIES)
         const superfluousGroup = result.groupSpending.find(g => g.groupId === 'superfluous')
         const comfortGroup = result.groupSpending.find(g => g.groupId === 'comfort')
 
@@ -58,10 +60,10 @@ describe('calculateGroupSpending', () => {
 
     it('Caso 3: categoria comfort + t.isSuperfluous=true => should count as superfluous', () => {
         const transactions: Transaction[] = [
-            createMockTransaction('3', '-30,00', 'shopping', timestamp, true)
+            createMockTransaction('3', '-30,00', CategoryIds.SHOPPING, timestamp, true)
         ]
 
-        const result = calculateGroupSpending(transactions, period)
+        const result = calculateGroupSpending(transactions, period, CATEGORIES)
         const superfluousGroup = result.groupSpending.find(g => g.groupId === 'superfluous')
         const comfortGroup = result.groupSpending.find(g => g.groupId === 'comfort')
 
@@ -71,10 +73,10 @@ describe('calculateGroupSpending', () => {
 
     it('Caso 4: categoria essential + t.isSuperfluous=undefined => should stay essential', () => {
         const transactions: Transaction[] = [
-            createMockTransaction('4', '-40,00', 'cibo', timestamp, undefined)
+            createMockTransaction('4', '-40,00', CategoryIds.CIBO, timestamp, undefined)
         ]
 
-        const result = calculateGroupSpending(transactions, period)
+        const result = calculateGroupSpending(transactions, period, CATEGORIES)
         const essentialGroup = result.groupSpending.find(g => g.groupId === 'essential')
 
         expect(essentialGroup?.spentCents).toBe(4000)
@@ -85,7 +87,7 @@ describe('calculateGroupSpending', () => {
             createMockTransaction('5', '-50,00', 'unknown', timestamp, undefined)
         ]
 
-        const result = calculateGroupSpending(transactions, period)
+        const result = calculateGroupSpending(transactions, period, CATEGORIES)
         const essentialGroup = result.groupSpending.find(g => g.groupId === 'essential')
 
         expect(essentialGroup?.spentCents).toBe(5000)
@@ -98,8 +100,8 @@ describe('Budget Calculations (Specific Case)', () => {
         const timestamp = new Date(2025, 11, 15).getTime()
 
         const transactions: Transaction[] = [
-            createMockTransaction('t1', '+1250,00', 'salary', timestamp),
-            createMockTransaction('t2', '-30,00', 'cibo', timestamp)
+            createMockTransaction('t1', '+1250,00', CategoryIds.STIPENDIO, timestamp),
+            createMockTransaction('t2', '-30,00', CategoryIds.CIBO, timestamp)
         ]
 
         const spentCents = calculateTotalSpent(transactions, period)

@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CategorySummary } from "@/features/dashboard/api/types"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { getCategoryById } from "@/features/categories/config"
+import { useCategories } from "@/features/categories/api/use-categories"
 import { StateMessage } from "@/components/ui/state-message"
 import { EChartsWrapper } from "./echarts-wrapper"
 import type { EChartsOption } from "echarts"
@@ -19,9 +20,11 @@ interface CategoryDistributionEChartProps {
     isLoading?: boolean
 }
 
-export function CategoryDistributionEChart({ data, isLoading }: CategoryDistributionEChartProps) {
+export function CategoryDistributionEChart({ data, isLoading: isExternalLoading }: CategoryDistributionEChartProps) {
     const router = useRouter()
     const { currency, locale } = useCurrency()
+    const { data: categories = [], isLoading: isCategoriesLoading } = useCategories()
+    const isLoading = isExternalLoading || isCategoriesLoading
 
     const preparedData = useMemo(() => {
         if (!data || data.length === 0) return []
@@ -103,7 +106,7 @@ export function CategoryDistributionEChart({ data, isLoading }: CategoryDistribu
                         show: false
                     },
                     data: preparedData.map(item => {
-                        const cat = getCategoryById(item.id || "")
+                        const cat = getCategoryById(item.id || "", categories)
                         return {
                             value: item.value,
                             name: item.name,
@@ -115,7 +118,7 @@ export function CategoryDistributionEChart({ data, isLoading }: CategoryDistribu
                 }
             ]
         }
-    }, [preparedData, currency, locale])
+    }, [preparedData, currency, locale, categories])
 
     if (isLoading) {
         return (
@@ -163,7 +166,7 @@ export function CategoryDistributionEChart({ data, isLoading }: CategoryDistribu
                             </div>
                             <div className="grid grid-cols-1 gap-1.5 mt-6 text-sm">
                                 {preparedData.map((item, index) => {
-                                    const cat = getCategoryById(item.id || "")
+                                    const cat = getCategoryById(item.id || "", categories)
                                     const color = cat ? cat.hexColor : item.color
                                     const isOther = item.id === "altro"
 

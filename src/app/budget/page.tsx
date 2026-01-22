@@ -4,6 +4,7 @@ import { useState, useMemo } from "react"
 import { AlertCircle } from "lucide-react"
 import { useBudget, useUpsertBudget } from "@/features/budget/api/use-budget"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
+import { useCategories } from "@/features/categories/api/use-categories"
 import { MonthSelector } from "@/features/budget/components/month-selector"
 import { GlobalBudgetCard } from "@/features/budget/components/global-budget-card"
 import { GroupBudgetCard } from "@/features/budget/components/group-budget-card"
@@ -22,16 +23,19 @@ export default function BudgetPage() {
     // Fetch all transactions to calculate spending
     const { data: transactions, isLoading: isTransactionsLoading } = useTransactions()
 
+    // Fetch categories for SpendingNature lookup
+    const { data: categories = [], isLoading: isCategoriesLoading } = useCategories()
+
     // Mutation for saving budget
     const { mutate: saveBudget, isPending: isSaving } = useUpsertBudget()
 
     // Calculate spending from transactions
     const spending = useMemo(() => {
         if (!transactions) return { globalSpentCents: 0, groupSpending: [] }
-        return calculateGroupSpending(transactions, period)
-    }, [transactions, period])
+        return calculateGroupSpending(transactions, period, categories)
+    }, [transactions, period, categories])
 
-    const isLoading = isBudgetLoading || isTransactionsLoading
+    const isLoading = isBudgetLoading || isTransactionsLoading || isCategoriesLoading
 
     // Get current group budgets with fallback to 0
     const getGroupBudget = (groupId: BudgetGroupId): number => {

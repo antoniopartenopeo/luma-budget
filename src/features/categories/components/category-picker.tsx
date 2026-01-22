@@ -1,7 +1,7 @@
 "use client"
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { getGroupedCategories, getCategoryById } from "@/features/categories/config"
+import { getGroupedCategories, getCategoryById, CategoryKind } from "@/features/categories/config"
 import { useCategories } from "@/features/categories/api/use-categories"
 import { CategoryIcon } from "./category-icon"
 import { cn } from "@/lib/utils"
@@ -43,7 +43,7 @@ export function CategoryPicker({
 
     // For "all" type, show flat list; otherwise show grouped
     const showGrouped = type !== "all"
-    const groupedCategories = showGrouped ? getGroupedCategories(type, categories) : null
+    const groupedCategories = showGrouped ? getGroupedCategories(categories, type as CategoryKind) : null
     const flatCategories = !showGrouped ? categories : null
 
     return (

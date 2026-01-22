@@ -4,6 +4,7 @@ import { fetchBudget } from "../../budget/api/repository"
 import { getSignedCents } from "@/domain/transactions"
 import { calculateDateRange, filterByRange, getMonthBoundariesLocal } from "@/lib/date-ranges"
 import { getCategoryById } from "@/features/categories/config"
+import { getCategories } from "@/features/categories/api/repository"
 import { calculateSuperfluousMetrics } from "../../transactions/utils/transactions-logic"
 
 import { sumExpensesInCents, sumIncomeInCents, calculateSharePct } from "@/domain/money"
@@ -22,10 +23,11 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
 
     // 2. Fetch all data
     // In a real app, we would filter in the query, but here we fetch all and filter in memory
-    const [transactions, budgetPlan] = await Promise.all([
+    const [transactions, budgetPlan, categories] = await Promise.all([
         fetchTransactions(),
         // Budget logic: always fetch for the "pivot" period (filter.period)
-        fetchBudget(DEFAULT_USER_ID, filter.period)
+        fetchBudget(DEFAULT_USER_ID, filter.period),
+        getCategories()
     ])
 
     // 3. Calculate All-Time Net Balance (Global, unfiltered)
@@ -59,7 +61,7 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
     rangeTransactions.filter(t => t.type === 'expense').forEach(t => {
         const amountCents = Math.abs(getSignedCents(t))
         // Lookup category for consistent label and color
-        const categoryDef = getCategoryById(t.categoryId)
+        const categoryDef = getCategoryById(t.categoryId, categories)
         // Fallback color if not found (shouldn't happen)
         const color = categoryDef?.hexColor || "#94a3b8"
         const label = categoryDef?.label || t.category

@@ -1,5 +1,5 @@
 import { Transaction } from "@/features/transactions/api/types"
-import { getCategoryById } from "@/features/categories/config"
+import { getCategoryById, Category } from "@/features/categories/config"
 import { BudgetSpending, BudgetGroupId, BUDGET_GROUP_LABELS } from "../api/types"
 import { getSignedCents, resolveBudgetGroupForTransaction } from "@/domain/transactions"
 import { calculateUtilizationPct, sumExpensesInCents } from "@/domain/money"
@@ -21,7 +21,11 @@ export function calculateTotalSpent(transactions: Transaction[], period: string)
 /**
  * Calculate spending broken down by budget group (essential, comfort, superfluous)
  */
-export function calculateGroupSpending(transactions: Transaction[], period: string): BudgetSpending {
+export function calculateGroupSpending(
+    transactions: Transaction[],
+    period: string,
+    categories: Category[]
+): BudgetSpending {
     const { start, end } = getMonthBoundariesLocal(period)
     const filtered = filterByRange(transactions, start, end)
         .filter(t => t.type === "expense")
@@ -30,7 +34,7 @@ export function calculateGroupSpending(transactions: Transaction[], period: stri
 
     const groupSpending = (["essential", "comfort", "superfluous"] as BudgetGroupId[]).map(groupId => {
         const groupTransactions = filtered.filter(t => {
-            const category = getCategoryById(t.categoryId)
+            const category = getCategoryById(t.categoryId, categories)
             const resolvedGroup = resolveBudgetGroupForTransaction(t, category?.spendingNature as BudgetGroupId)
             return resolvedGroup === groupId
         })

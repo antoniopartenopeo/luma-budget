@@ -56,7 +56,7 @@ export function TransactionForm({
     const isManualOverride = isSuperfluousManual !== null
 
     // Get grouped categories based on current transaction type
-    const groupedCategories = getGroupedCategories(type, categories)
+    const groupedCategories = getGroupedCategories(categories, type)
 
     // Derive isSuperfluous based on category (rule-based), unless manually overridden
     const isSuperfluous = useMemo(() => {
@@ -76,7 +76,7 @@ export function TransactionForm({
     const handleTypeChange = (newType: "expense" | "income") => {
         handleFieldChange(setType, newType)
         // Only reset if the current category doesn't belong to the new type
-        const newGrouped = getGroupedCategories(newType, categories)
+        const newGrouped = getGroupedCategories(categories, newType)
         const allCategoriesInGroups = newGrouped.flatMap(g => g.categories)
         const currentCatInList = getCategoryById(categoryId, allCategoriesInGroups)
         if (!currentCatInList) {

@@ -4,6 +4,16 @@ Storico di tutte le modifiche alle regole di sviluppo.
 
 ---
 
+## [1.4.0] - 2026-01-22
+
+### Added
+- Nuova sezione **System Health & Diagnostics** per garantire la trasparenza dello stato locale.
+- Obbligo registrazione di tutte le chiavi `luma_*` in `STORAGE_KEYS_REGISTRY`.
+- Regola di allineamento versione tra `package.json` e `getAppVersion()`.
+- Monitoraggio dello storage totale nella sezione Advanced Settings.
+
+---
+
 ## [1.3.0] - 2026-01-21
 
 ### Added

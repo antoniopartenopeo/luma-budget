@@ -4,6 +4,7 @@ import { detectDuplicates } from "../dedupe";
 import { enrichRows, extractMerchantKey } from "../enrich";
 import { ParsedRow, EnrichedRow } from "../types";
 import { Transaction } from "../../../transactions/api/types";
+import { CategoryIds } from "@/domain/categories";
 
 describe("dedupe & enrich", () => {
     const baseTx: Transaction = {
@@ -16,7 +17,6 @@ describe("dedupe & enrich", () => {
         categoryId: "cibo",
         type: "expense",
         timestamp: new Date("2024-01-01").getTime(),
-        icon: "utensils"
     };
 
     const createRow = (overrides: Partial<EnrichedRow>): EnrichedRow => ({
@@ -69,22 +69,22 @@ describe("dedupe & enrich", () => {
     });
 
     it("extracts merchant key", () => {
-        // Logic removes POS prefix and takes first 3 words.
-        expect(extractMerchantKey("POS ESSELUNGA MILANO")).toBe("ESSELUNGA MILANO");
-        expect(extractMerchantKey("NETFLIX.COM")).toBe("NETFLIX.COM");
+        // Logic removes POS prefix and applies canonical brand dictionary (ESSELUNGA)
+        expect(extractMerchantKey("POS ESSELUNGA MILANO")).toBe("ESSELUNGA");
+        expect(extractMerchantKey("NETFLIX.COM")).toBe("NETFLIX");
     });
 
     it("suggests category from pattern", () => {
         const rows = [createRow({ description: "NETFLIX", merchantKey: "NETFLIX" })];
         const enriched = enrichRows(rows, []);
-        expect(enriched[0].suggestedCategoryId).toBe("abbonamenti");
+        expect(enriched[0].suggestedCategoryId).toBe(CategoryIds.ABBONAMENTI);
     });
 
     it("prioritizes history", () => {
         const rows = [createRow({ description: "ESSELUNGA", merchantKey: "ESSELUNGA" })];
-        const existing: Transaction[] = [{ ...baseTx, description: "ESSELUNGA", categoryId: "svago", amountCents: -5000 }];
+        const existing: Transaction[] = [{ ...baseTx, description: "ESSELUNGA", categoryId: CategoryIds.SVAGO_EXTRA, amountCents: -5000 }];
 
         const enriched = enrichRows(rows, existing);
-        expect(enriched[0].suggestedCategoryId).toBe("svago");
+        expect(enriched[0].suggestedCategoryId).toBe(CategoryIds.SVAGO_EXTRA);
     });
 });

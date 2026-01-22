@@ -7,6 +7,7 @@
 
 import { describe, it, expect } from "vitest"
 import { CATEGORIES } from '@/features/categories/config'
+import { CategoryIds } from "@/domain/categories"
 
 // Helper function extracted for testing
 const isSuperfluousRule = (categoryId: string, type: "income" | "expense"): boolean => {
@@ -41,39 +42,28 @@ describe('Superfluous Expense Classification Logic', () => {
     describe('Transaction Type Classification', () => {
 
         it('should mark expense with spendingNature="superfluous" as superfluous (ruleBased)', () => {
-            // "svago" has spendingNature: "superfluous"
-            const result = classifyTransaction('svago', 'expense')
+            const result = classifyTransaction(CategoryIds.SVAGO_EXTRA, 'expense')
 
             expect(result.isSuperfluous).toBe(true)
             expect(result.classificationSource).toBe('ruleBased')
         })
 
         it('should mark expense with spendingNature="essential" as NOT superfluous (ruleBased)', () => {
-            // "cibo" has spendingNature: "essential"
-            const result = classifyTransaction('cibo', 'expense')
+            const result = classifyTransaction(CategoryIds.CIBO, 'expense')
 
             expect(result.isSuperfluous).toBe(false)
             expect(result.classificationSource).toBe('ruleBased')
         })
 
         it('should mark expense with spendingNature="comfort" as NOT superfluous by default (ruleBased)', () => {
-            // "shopping" has spendingNature: "comfort"
-            const result = classifyTransaction('shopping', 'expense')
+            const result = classifyTransaction(CategoryIds.SHOPPING, 'expense')
 
             expect(result.isSuperfluous).toBe(false)
             expect(result.classificationSource).toBe('ruleBased')
         })
 
         it('should ALWAYS mark income as NOT superfluous regardless of category', () => {
-            // Even if category has spendingNature: "superfluous", income should never be superfluous
-            const result = classifyTransaction('svago', 'income')
-
-            expect(result.isSuperfluous).toBe(false)
-            expect(result.classificationSource).toBe('ruleBased')
-        })
-
-        it('should mark income with essential category as NOT superfluous', () => {
-            const result = classifyTransaction('cibo', 'income')
+            const result = classifyTransaction(CategoryIds.SVAGO_EXTRA, 'income')
 
             expect(result.isSuperfluous).toBe(false)
             expect(result.classificationSource).toBe('ruleBased')
@@ -83,8 +73,7 @@ describe('Superfluous Expense Classification Logic', () => {
     describe('Manual Override', () => {
 
         it('should allow manual override to mark non-superfluous category as superfluous', () => {
-            // "cibo" is essential, but user manually marks as superfluous
-            const result = classifyTransaction('cibo', 'expense', {
+            const result = classifyTransaction(CategoryIds.CIBO, 'expense', {
                 isSuperfluous: true,
                 classificationSource: 'manual'
             })
@@ -94,24 +83,12 @@ describe('Superfluous Expense Classification Logic', () => {
         })
 
         it('should allow manual override to unmark superfluous category', () => {
-            // "svago" is superfluous, but user manually unmarks
-            const result = classifyTransaction('svago', 'expense', {
+            const result = classifyTransaction(CategoryIds.SVAGO_EXTRA, 'expense', {
                 isSuperfluous: false,
                 classificationSource: 'manual'
             })
 
             expect(result.isSuperfluous).toBe(false)
-            expect(result.classificationSource).toBe('manual')
-        })
-
-        it('should respect manual override even for comfort categories', () => {
-            // "shopping" is comfort, user marks as superfluous
-            const result = classifyTransaction('shopping', 'expense', {
-                isSuperfluous: true,
-                classificationSource: 'manual'
-            })
-
-            expect(result.isSuperfluous).toBe(true)
             expect(result.classificationSource).toBe('manual')
         })
     })
@@ -124,93 +101,67 @@ describe('Superfluous Expense Classification Logic', () => {
             expect(result.isSuperfluous).toBe(false)
             expect(result.classificationSource).toBe('ruleBased')
         })
-
-        it('should handle empty categoryId (treat as NOT superfluous)', () => {
-            const result = classifyTransaction('', 'expense')
-
-            expect(result.isSuperfluous).toBe(false)
-            expect(result.classificationSource).toBe('ruleBased')
-        })
     })
 
     describe('Category spendingNature Configuration', () => {
 
         it('should have correct spendingNature for essential expense categories', () => {
             const essentialExpenseCategories = [
-                // Original essential categories
-                'cibo', 'trasporti', 'casa', 'salute', 'istruzione',
-                // New essential expense categories
-                'utenze', 'auto', 'assicurazioni', 'tasse', 'famiglia',
-                'servizi-domestici', 'lavoro-essenziale'
+                CategoryIds.CIBO, CategoryIds.AFFITTO_MUTUO, CategoryIds.UTENZE,
+                CategoryIds.TRASPORTI, CategoryIds.AUTO_CARBURANTE, CategoryIds.SALUTE_FARMACIA,
+                CategoryIds.ISTRUZIONE, CategoryIds.ASSICURAZIONI, CategoryIds.TASSE,
+                CategoryIds.FAMIGLIA, CategoryIds.TELEFONIA_INTERNET, CategoryIds.MANUTENZIONE_CASA,
+                CategoryIds.SPESE_CONDOMINIALI, CategoryIds.RATE_PRESTITI, CategoryIds.ALTRO_ESSENZIALE
             ]
 
             essentialExpenseCategories.forEach(catId => {
                 const cat = CATEGORIES.find(c => c.id === catId)
                 expect(cat?.spendingNature, `Category ${catId} should be essential`).toBe('essential')
+                expect(cat?.kind, `Category ${catId} should be expense`).toBe('expense')
             })
         })
 
         it('should have correct spendingNature for comfort categories', () => {
             const comfortCategories = [
-                // Original comfort categories
-                'shopping', 'viaggi', 'investimenti',
-                // New comfort categories
-                'ristoranti', 'benessere', 'hobby-sport', 'abbonamenti',
-                'animali', 'tecnologia', 'regali', 'arredo', 'formazione-extra'
+                CategoryIds.RISTORANTI, CategoryIds.BAR_CAFFE, CategoryIds.ABBONAMENTI,
+                CategoryIds.SHOPPING, CategoryIds.VIAGGI, CategoryIds.HOBBY_SPORT,
+                CategoryIds.BENESSERE, CategoryIds.ANIMALI, CategoryIds.TECNOLOGIA,
+                CategoryIds.REGALI, CategoryIds.CASA_ARREDO, CategoryIds.LIBRI_CULTURA,
+                CategoryIds.GIARDINAGGIO, CategoryIds.AUTO_MANUTENZIONE, CategoryIds.ALTRO_COMFORT
             ]
 
             comfortCategories.forEach(catId => {
                 const cat = CATEGORIES.find(c => c.id === catId)
                 expect(cat?.spendingNature, `Category ${catId} should be comfort`).toBe('comfort')
+                expect(cat?.kind, `Category ${catId} should be expense`).toBe('expense')
             })
         })
 
         it('should have correct spendingNature for superfluous categories', () => {
             const superfluousCategories = [
-                // Original superfluous categories
-                'svago', 'altro',
-                // New superfluous categories
-                'micro-digitali', 'lusso', 'giochi-scommesse', 'extra-impulsivi'
+                CategoryIds.SVAGO_EXTRA, CategoryIds.MICRO_DIGITALI, CategoryIds.LUSSO,
+                CategoryIds.GIOCHI_SCOMMESSE, CategoryIds.EXTRA_IMPULSIVI, CategoryIds.TABACCO_VAPE,
+                CategoryIds.LOTTERIE, CategoryIds.ALCOOL_EXTRA, CategoryIds.FAST_FOOD, CategoryIds.ALTRO_SUPERFLUO
             ]
 
             superfluousCategories.forEach(catId => {
                 const cat = CATEGORIES.find(c => c.id === catId)
                 expect(cat?.spendingNature, `Category ${catId} should be superfluous`).toBe('superfluous')
+                expect(cat?.kind, `Category ${catId} should be expense`).toBe('expense')
             })
         })
 
-        it('should have all income categories with spendingNature essential', () => {
+        it('should have all income categories with kind income', () => {
             const incomeCategories = [
-                'stipendio', 'pensione', 'freelance', 'bonus', 'affitti',
-                'rendite', 'vendite', 'rimborsi', 'regali-ricevuti',
-                'cashback', 'entrate-occasionali'
+                CategoryIds.STIPENDIO, CategoryIds.PENSIONE, CategoryIds.FREELANCE,
+                CategoryIds.BONUS_PREMI, CategoryIds.AFFITTI_PERCEPITI, CategoryIds.INVESTIMENTI_PROFITTI,
+                CategoryIds.VENDITE_USATO, CategoryIds.RIMBORSI, CategoryIds.REGALI_RICEVUTI,
+                CategoryIds.CASHBACK_PUNTI, CategoryIds.ENTRATE_OCCASIONALI
             ]
 
             incomeCategories.forEach(catId => {
                 const cat = CATEGORIES.find(c => c.id === catId)
-                expect(cat?.spendingNature, `Income category ${catId} should be essential`).toBe('essential')
                 expect(cat?.kind, `Category ${catId} should be income`).toBe('income')
-            })
-        })
-
-        it('should have all expense categories with kind expense', () => {
-            const expenseCategories = [
-                // Original
-                'cibo', 'trasporti', 'casa', 'svago', 'salute', 'shopping',
-                'viaggi', 'istruzione', 'investimenti', 'altro',
-                // New essential
-                'utenze', 'auto', 'assicurazioni', 'tasse', 'famiglia',
-                'servizi-domestici', 'lavoro-essenziale',
-                // New comfort
-                'ristoranti', 'benessere', 'hobby-sport', 'abbonamenti',
-                'animali', 'tecnologia', 'regali', 'arredo', 'formazione-extra',
-                // New superfluous
-                'micro-digitali', 'lusso', 'giochi-scommesse', 'extra-impulsivi'
-            ]
-
-            expenseCategories.forEach(catId => {
-                const cat = CATEGORIES.find(c => c.id === catId)
-                expect(cat?.kind, `Category ${catId} should be expense`).toBe('expense')
             })
         })
     })

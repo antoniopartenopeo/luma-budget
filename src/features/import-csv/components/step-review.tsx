@@ -13,6 +13,7 @@ import { resolveCategory } from "../core/overrides"
 import { getIncludedGroups, THRESHOLD_MAX_CENTS, THRESHOLD_STEP_CENTS } from "../core/filters"
 import { getCategoryById } from "@/features/categories/config"
 import { CategoryPicker } from "@/features/categories/components/category-picker"
+import { useCategories } from "@/features/categories/api/use-categories"
 import { cn } from "@/lib/utils"
 import { formatCents } from "@/domain/money"
 import { ReviewResult } from "./csv-import-wizard"
@@ -34,6 +35,7 @@ export function ImportStepReview({
     onBack,
     onContinue
 }: ImportStepReviewProps) {
+    const { data: categories = [] } = useCategories()
     const [overrides, setOverrides] = useState<Override[]>(initialOverrides)
     const [viewMode, setViewMode] = useState<"merchant" | "category">("merchant")
 
@@ -113,7 +115,7 @@ export function ImportStepReview({
 
                         if (catId) {
                             assigned++
-                            const def = getCategoryById(catId)
+                            const def = getCategoryById(catId, categories)
                             if (!catMap.has(catId) && def) {
                                 catMap.set(catId, {
                                     id: catId,
@@ -148,7 +150,7 @@ export function ImportStepReview({
             stats: { assigned, total },
             categoryGroups: Array.from(catMap.values()).sort((a, b) => b.amount - a.amount)
         }
-    }, [filteredGroups, rows, overrides])
+    }, [filteredGroups, rows, overrides, categories])
 
     const completionPercent = stats.total > 0 ? (stats.assigned / stats.total) * 100 : 0
 

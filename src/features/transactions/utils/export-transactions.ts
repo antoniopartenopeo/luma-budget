@@ -1,7 +1,7 @@
 "use client"
 
 import { Transaction } from "@/features/transactions/api/types"
-import { getCategoryById, CATEGORY_GROUP_LABELS, CategoryGroupKey } from "@/features/categories/config"
+import { getCategoryById, CATEGORY_GROUP_LABELS, CategoryGroupKey, Category } from "@/features/categories/config"
 import { formatTransactionDate } from "@/features/transactions/utils/format-date"
 import { parseCurrencyToCents } from "@/domain/money"
 
@@ -12,7 +12,7 @@ import { parseCurrencyToCents } from "@/domain/money"
 interface ExportColumn {
     key: string
     header: string
-    getValue: (transaction: Transaction) => string
+    getValue: (transaction: Transaction, categories: Category[]) => string
 }
 
 const EXPORT_COLUMNS: ExportColumn[] = [
@@ -34,8 +34,8 @@ const EXPORT_COLUMNS: ExportColumn[] = [
     {
         key: "categoryGroup",
         header: "Gruppo categoria",
-        getValue: (t) => {
-            const cat = getCategoryById(t.categoryId)
+        getValue: (t, categories) => {
+            const cat = getCategoryById(t.categoryId, categories)
             if (!cat) return ""
 
             if (cat.kind === "income") {
@@ -98,14 +98,14 @@ function escapeCSVField(value: string): string {
     return value
 }
 
-function generateCSVContent(transactions: Transaction[]): string {
+function generateCSVContent(transactions: Transaction[], categories: Category[]): string {
     // Header row
     const headers = EXPORT_COLUMNS.map(col => col.header).join(";")
 
     // Data rows
     const rows = transactions.map(transaction => {
         return EXPORT_COLUMNS
-            .map(col => escapeCSVField(col.getValue(transaction)))
+            .map(col => escapeCSVField(col.getValue(transaction, categories)))
             .join(";")
     })
 
@@ -133,6 +133,7 @@ function generateFilename(dateRange?: { start?: string; end?: string }): string 
 
 export interface ExportOptions {
     transactions: Transaction[]
+    categories: Category[]
     dateRange?: { start?: string; end?: string }
 }
 
@@ -144,10 +145,10 @@ export interface ExportResult {
 }
 
 export function exportTransactionsToCSV(options: ExportOptions): ExportResult {
-    const { transactions, dateRange } = options
+    const { transactions, categories, dateRange } = options
 
     try {
-        const csvContent = generateCSVContent(transactions)
+        const csvContent = generateCSVContent(transactions, categories)
         const filename = generateFilename(dateRange)
 
         // Create blob and trigger download

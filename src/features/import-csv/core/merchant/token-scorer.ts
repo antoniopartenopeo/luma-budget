@@ -71,12 +71,14 @@ export function scoreTokens(tokens: string[]): ScoredToken[] {
         }
 
         // 6. Penalties
-        if (/^\d+$/.test(token)) score -= 150;
+        if (/^\d+$/.test(token)) score -= 1000;
 
         // v2.1 refinement: Glue words are neutral but don't get the heavy noise penalty
         // Regular short tokens (noise) get a heavy penalty
         if (token.length <= 2) {
-            if (GLUE_WORDS.has(token)) {
+            if (token.length === 1) {
+                score -= 200;
+            } else if (GLUE_WORDS.has(token)) {
                 score -= 30; // Small penalty to break ties in favor of non-glue words
             } else {
                 score -= 100;
@@ -97,7 +99,8 @@ export function getTopTokens(tokens: string[], count: number = 2): string[] {
     const scored = scoreTokens(tokens);
 
     return scored
-        .filter(t => t.score > -500) // Exclude blacklisted
+        .filter(t => t.score > -50) // Exclude blacklisted (score threshold)
+        .filter(t => !/^\d+$/.test(t.token)) // Explicitly exclude pure numbers (safety net)
         .sort((a, b) => {
             // Primary: Score
             if (b.score !== a.score) return b.score - a.score;

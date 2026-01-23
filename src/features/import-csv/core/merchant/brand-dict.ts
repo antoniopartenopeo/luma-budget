@@ -57,6 +57,10 @@ export const BRAND_DICT: Record<string, string> = {
     "H M": "H&M",
     "ZARA ROMA": "ZARA",
     "ZARA MILANO": "ZARA",
+    "AMZN": "AMAZON",
+
+    // Tech
+    "FACEBOOK": "FACEBOOK",
 
     // Restaurants
     "RISTORANTE DA GINO": "RISTORANTE DA GINO",

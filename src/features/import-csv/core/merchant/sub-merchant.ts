@@ -75,3 +75,51 @@ export function extractSubMerchant(normalizedText: string): SubMerchantResult {
 
     return { marketplace, subMerchant };
 }
+
+/**
+ * v3 Helper: Extract sub-merchant from a remainder string (where rail is already stripped).
+ * Uses BRIDGE_TOKENS and separators to find the real merchant.
+ */
+export function extractSubMerchantFromRemainder(remainder: string): { subMerchant: string | null, primary: string | null } {
+    if (!remainder) return { subMerchant: null, primary: null };
+
+    // 1. Try separators first (e.g. "* SPOTIFY", "- UBER")
+    let bestSepIndex = Infinity;
+    let usedSepLength = 0;
+
+    for (const sep of SUB_MERCHANT_SEPARATORS) {
+        const idx = remainder.indexOf(sep);
+        // We only care if separator is at the START or very close to start (e.g. " * ")
+        // But some rails like PayPal leave the clean string as "* SPOTIFY".
+        // Or "Mktp IT*R83".
+        if (idx !== -1 && idx < bestSepIndex) {
+            bestSepIndex = idx;
+            usedSepLength = sep.length;
+        }
+    }
+
+    let candidate = remainder;
+
+    if (bestSepIndex !== Infinity) {
+        // If separator is at the start (index 0 or 1), take what's after
+        // If it's in the middle, it might be "AMZN Mktp * R83" -> "R83"
+        candidate = remainder.substring(bestSepIndex + usedSepLength).trim();
+    }
+
+    // 2. Clean bridge tokens (Mktp, SRL, etc)
+    // Remove leading symbols
+    candidate = candidate.replace(/^[^A-Z0-9]+/, "").trim();
+
+    // Tokenize and filter bridge tokens
+    const tokens = tokenize(candidate);
+
+    // Check if the FIRST token is a bridge token (e.g. "Mktp ...")
+    // If so, remove it and continue
+    // Logic similar to existing extractSubMerchant but permissive
+    const cleanedTokens = tokens.filter(t => !BRIDGE_TOKENS.includes(t));
+
+    return {
+        subMerchant: cleanedTokens.length > 0 ? cleanedTokens.join(" ") : null,
+        primary: bestSepIndex !== Infinity ? remainder.substring(0, bestSepIndex).trim() : null
+    };
+}

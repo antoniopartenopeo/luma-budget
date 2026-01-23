@@ -54,7 +54,7 @@ const NOISE_PATTERNS = [
     /\d{8,}/g,                                   // Long IDs
     /[\*X]{4,}\d{0,4}/g,                        // Masked cards
     /\d{6,}/g,                                   // 6+ digit sequences
-    /[.,;:!?()'"\[\]{}@#$%\^&\*+=/]/g            // Punctuation (added * and /)
+    /[.,;:!?()'"\[\]{}@#$%\^&+=/]/g            // Punctuation (removed *)
 ];
 
 /**
@@ -103,6 +103,45 @@ export function cleanNoise(text: string): string {
     }
 
     return result.trim();
+}
+
+const COMMON_CITIES = [
+    "ROMA", "MILANO", "TORINO", "NAPOLI", "FIRENZE", "BOLOGNA", "GENOVA", "VENEZIA", "VERONA", "BARI",
+    "LONDRA", "PARIGI", "DUBLIN", "LUXEMBOURG", "AMSTERDAM", "BERLIN", "MADRID", "BARCELONA"
+];
+
+/**
+ * Step 4b: Strip positional noise (Cities, Country Codes)
+ * Only if they appear at the END of the string and aren't the only word.
+ */
+export function stripPositionalNoise(text: string): string {
+    let result = text;
+    const tokens = result.split(/\s+/);
+
+    if (tokens.length <= 1) return result;
+
+    // 1. Country codes (2 chars uppercase at end)
+    // Already handled loosely in cleanNoise v2.1, but let's be strict here.
+    const lastToken = tokens[tokens.length - 1];
+
+    if (lastToken.length === 2 && /^[A-Z]{2}$/.test(lastToken)) {
+        // Remove it
+        result = result.substring(0, result.lastIndexOf(lastToken)).trim();
+    }
+
+    // 2. Common Cities
+    // Check if the NEW last token (after country strip) is a city
+    if (result.length > 0) {
+        const currentTokens = result.split(/\s+/);
+        if (currentTokens.length > 1) {
+            const currentLast = currentTokens[currentTokens.length - 1];
+            if (COMMON_CITIES.includes(currentLast)) {
+                result = result.substring(0, result.lastIndexOf(currentLast)).trim();
+            }
+        }
+    }
+
+    return result;
 }
 
 /**

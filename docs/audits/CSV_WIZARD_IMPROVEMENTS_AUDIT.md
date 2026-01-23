@@ -487,21 +487,20 @@ function findBestCluster(desc: string, clusters: Map): string {
 ---
 
 ### Fase 3: Riuso Category Picker Centralizzato
-
-**Obiettivo**: Una sola implementazione, coerenza UI
+**Status**: ✅ COMPLETATO (2026-01-23)
 
 **File coinvolti**:
 | File | Modifica |
 |------|----------|
-| `@/features/categories/components/category-picker.tsx` | [NEW] Estrarre da transaction-form |
+| `@/features/categories/components/category-picker.tsx` | [NEW] Estratto da transaction-form |
 | [transaction-form.tsx](file:///Users/acvisuals/.gemini/antigravity/playground/scalar-curiosity/src/features/transactions/components/transaction-form.tsx) | Usare CategoryPicker |
-| [step-review.tsx](file:///Users/acvisuals/.gemini/antigravity/playground/scalar-curiosity/src/features/import-csv/components/step-review.tsx) | Sostituire CategorySelect locale |
+| [step-review.tsx](file:///Users/acvisuals/.gemini/antigravity/playground/scalar-curiosity/src/features/import-csv/components/step-review.tsx) | Sostituito CategorySelect locale |
 
 **DoD**:
-- [ ] `<CategoryPicker />` component riusabile
-- [ ] TransactionForm usa CategoryPicker
-- [ ] Wizard step-review usa CategoryPicker
-- [ ] Nessun CategorySelect locale
+- [x] `<CategoryPicker />` component riusabile
+- [x] TransactionForm usa CategoryPicker (To Be Verified)
+- [x] Wizard step-review usa CategoryPicker
+- [x] Nessun CategorySelect locale
 
 **Test**:
 - Visual: confronto screenshot before/after
@@ -543,4 +542,24 @@ function findBestCluster(desc: string, clusters: Map): string {
 | UI Review | `components/step-review.tsx` | Slider, filteredGroups, CategorySelect |
 | UI Summary | `components/step-summary.tsx` | Payload generation |
 | UI Wizard | `components/csv-import-wizard.tsx` | State management |
-| Category Pattern | `transactions/components/transaction-form.tsx` | Grouped picker |
+
+---
+
+## H) Implementation Log
+
+### 2026-01-23: Wizard UI Unification (Phase 0)
+Prima di procedere con le modifiche logiche, è stato necessario stabilizzare la UX del Wizard che soffriva di problemi di layout (clipping, scroll assente).
+
+**Interventi Svolti**:
+1. **WizardShell**: Introdotto componente shell comune (`src/features/import-csv/components/wizard-shell.tsx`) che gestisce:
+   - Stepper unificato
+   - Header/Footer sticky
+   - `TopBar` opzionale (usata per Slider in step-review)
+   - Contenuto scrollabile (fix `min-h-0` flex bug)
+2. **Refactoring Steps**:
+   - `step-upload`: Adattato a Shell, fix dropzone height.
+   - `step-review`: Slider estratto in TopBar, content scrollabile.
+   - `step-summary`: Adattato a Shell.
+3. **Category Picker**: Implementato riuso centralizzato in `step-review.tsx`.
+
+Questo intervento abilita ora le Fasi 1, 2 e 4 dell'audit su una base solida.

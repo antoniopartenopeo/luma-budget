@@ -54,30 +54,21 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000)
 
-## 📜 Development Rules
+## 📜 Development Standards
 
-All development standards are defined in `.agent/skills/luma-governance/SKILL.md`.
+Luma Budget follows a strict set of development standards to ensure financial accuracy, UI consistency (UBI), and maintainable architecture.
 
-### Key Rules
-- **Currency**: Always use integer cents, never `parseFloat`
-- **Calculations**: Use `lib/financial-math.ts`
-- **Styling**: Tailwind CSS only, no inline styles
-- **Categories**: Use `getCategoryById()` for lookups
-
-### Pre-Commit
-```bash
-npm run build   # Must pass
-npm run test    # Must pass
-```
+> [!IMPORTANT]
+> All technical rules, architectural patterns, and UI constraints are defined in the **[Luma Governance Skill](file:///.agent/skills/luma-governance/SKILL.md)**.
+> 
+> Before contributing, ensure you have read the **[Contributing Guidelines](file:///docs/CONTRIBUTING.md)**.
 
 ## 📁 Documentation
 
-```
-docs/
-├── IMPLEMENTATION_EVIDENCE.md  # Implementation details
-└── audits/
-    └── APP_HEALTH_AUDIT_REPORT.md  # Codebase health audit
-```
+- **[Luma Governance](file:///.agent/skills/luma-governance/SKILL.md)**: Core development standards and constraints.
+- **[App Health Audit](file:///docs/audits/APP_HEALTH_AUDIT_REPORT.md)**: Latest codebase health status.
+- **[UBI Analysis](file:///docs/audits/UBI_UI_ANALYSIS.md)**: Principles of the Unitary Behavioral Interface.
+- **[Implementation Evidence](file:///docs/IMPLEMENTATION_EVIDENCE.md)**: Detailed technical logs.
 
 ## 🚀 Deploy
 

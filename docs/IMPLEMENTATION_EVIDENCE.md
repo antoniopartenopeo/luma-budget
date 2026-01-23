@@ -67,15 +67,19 @@ Use this to manually verify the UI behavior:
 - [ ] **Responsive**: Does the layout break on mobile (check Sheet vs Dialog width)?
 
 ## 4. UI Fixes & Enhancements (Post-MVP)
-- **Scroll Fix**: Enforced `flex flex-col h-[85vh] outline-none` in `DialogContent` to ensure internal scrolling works reliably on all steps.
+- **Wizard Shell Unification**: Introduced `WizardShell` for a consistent, robust UI across all steps.
+  - Resolved flexbox clipping issues with `min-h-0` and proper overflow handling.
+  - Standardized Stepper, Header and Footer layout.
+  - Implemented sticky `TopBar` pattern for the Threshold Slider in review step.
 - **Category Drill-Down**: Added "Per Categoria" tab in `StepReview`, enabling:
   - Aggregate view of spending per category.
   - Drill-down accordion to see specific transactions (first 50) and identify outliers.
   - Consistent logic re-using `resolveCategory` and internal `overrides` state.
+- **Category Picker Reuse**: Refactored `step-review.tsx` to use the shared `<CategoryPicker />` component, ensuring consistency with the Transaction Form.
 - **Non-blocking Payload**: Updated `generatePayload` to default unassigned rows to:
   - `altro` (Expenses)
   - `entrate-occasionali` (Income)
-  Instead of throwing errors, preventing blocking bugs when user skips categorization.
+  - Instead of throwing errors, preventing blocking bugs when user skips categorization.
 
 ## 6. Real Persistence (P0 Fix)
 - **Atomic Batch Import**: Implemented `createBatchTransactions` in `repository.ts` to save all imported transactions in a single operation.

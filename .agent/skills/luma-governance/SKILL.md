@@ -30,10 +30,19 @@ Before writing any code that handles money:
    import { getSignedCents, normalizeTransactionAmount } from "@/domain/transactions"
    ```
 3. **Transaction & Budget amounts**: Always use `amountCents` (integer). For budgets, use `globalBudgetAmountCents` and `amountCents` for groups.
-4. **Sign convention**: `getSignedCents()` returns positive for income, negative for expense
+4. **Sign convention**: 
+   - `getSignedCents()` returns positive for income, negative for expense. 
+   - **ALWAYS** use signed values for balance calculations and total aggregations.
+   - **ONLY** use `Math.abs()` for display purposes (e.g., in a "Spent" label) or when the context explicitly requires unsigned values (e.g., comparing absolute magnitude).
 5. **UI Tones & Calculations**: Use `@/features/dashboard/utils/kpi-logic` for consistent KPI colors (Tones) and percentages.
 
-### 2. UI Component Patterns
+### 2. Date & Time Standards
+
+1. **Storage Format**: Always store dates as **ISO-8601 strings** (`YYYY-MM-DD`) or full timestamps (`ISO-8601`) if time is needed.
+2. **Consistency**: Use `filterByRange` from `@/lib/date-ranges.ts` for all period-based filtering (Dashboard, Insights, Transactions).
+3. **Comparison**: Avoid manual string parsing. Use `date-fns` or native `Date` comparison on ISO strings.
+
+### 3. UI Component Patterns
 
 When creating or modifying UI components:
 
@@ -161,6 +170,18 @@ Maintain transparency of the application's local state by ensuring the diagnosti
 3. **Storage Monitoring**:
    - Any new feature that introduces a new storage key must be audited for its impact on "Total Storage Used" in the Advanced Settings section.
 
+### 7. CSV Import & Data Enrichment
+
+1. **Merchant Normalization**: 
+   - Use `extractMerchantKey()` for grouping. 
+   - Preference: 2-3 significant words, remove stop words (DI, IL, LA, POS, etc.), remove dates and IDs.
+2. **Subgrouping Strategy**: 
+   - Group by **exact amountCents** to identify recurring subscriptions.
+   - Subgroups should be sorted by absolute total magnitude (Descending).
+3. **Category Enrichment**:
+   - Use historical frequency for auto-assignment.
+   - Use `<CategoryPicker />` for manual overrides.
+
 ## Constraints
 
 1. **NEVER** use `parseFloat()` on currency values
@@ -174,6 +195,8 @@ Maintain transparency of the application's local state by ensuring the diagnosti
 9. **ALWAYS** use `Sheet` for detail views, `Dialog` for wizards - same on all devices
 10. **ALWAYS** register new `luma_` storage keys in `STORAGE_KEYS_REGISTRY`
 11. **ALWAYS** keep `getAppVersion()` in sync with `package.json`
+12. **NEVER** store dates in formats other than ISO-8601
+13. **ALWAYS** use signed cents for multi-transaction balance aggregations
 
 ## Examples
 
@@ -232,8 +255,9 @@ const amountCents = parseCurrencyToCents(input)
 3. Commit with message: `docs(skill): [description of change]`
 
 ### Version
-**Current**: v1.4.0  
+**Current**: v1.5.0  
 **Changelog**: 
+- v1.5.0: Consolidated standards. Added Date & Time Standards (ISO-8601), CSV Import & Data Enrichment section. Clarified money sign convention rules and storage key registry mandate.
 - v1.4.0: Added System Health & Diagnostics section. Enforced `STORAGE_KEYS_REGISTRY` registration and version alignment.
 - v1.3.0: Added UBI (Unitary/Unified Behavioral Interface) section with 10 rules. Added 3 new UBI constraints. Reference to `docs/audits/UBI_UI_ANALYSIS.md`.
 - v1.2.0: Budget Cents migration. Centralized KPI Tones logic. Test Integrity rule (prohibits simulating logic in tests).

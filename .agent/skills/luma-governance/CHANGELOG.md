@@ -4,6 +4,20 @@ Storico di tutte le modifiche alle regole di sviluppo.
 
 ---
 
+## [1.5.0] - 2026-01-23
+
+### Added
+- **Consolidamento Single Source of Truth**: `SKILL.md` è ora l'unico riferimento tecnico; `README.md` è stato semplificato.
+- Nuova sezione **Date & Time Standards** (obbligo ISO-8601).
+- Nuova sezione **CSV Import & Data Enrichment** con regole su merchant normalization e subgrouping.
+- Nuovi Constraints: divieto formati date non ISO, obbligo signed cents per aggregazioni.
+
+### Changed
+- Rafforzamento regole **Sign Convention**: chiarito l'uso di `Math.abs()` solo per display.
+- README.md: rimosse regole duplicate, aggiunti link diretti alla Skill e alle linee guida di contribuzione.
+
+---
+
 ## [1.4.0] - 2026-01-22
 
 ### Added

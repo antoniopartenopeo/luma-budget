@@ -1,7 +1,7 @@
-# Luma Budget - App Health Audit Report
+# Numa Budget - App Health Audit Report
 
 ## A) Executive Summary
-Luma Budget is in a positive transition phase toward a robust Domain-Driven Architecture (`src/domain`). However, the audit reveals a significant "Technical Debt" overlap between legacy utilities and new domain logic. A **critical P0 issue** was identified in the CSV Import logic using unsafe floating-point math for financial values, violating the core `SKILL.md` governance. UI/UX is highly polished but suffers from minor inconsistencies in feedback mechanisms (native alerts) and accessibility (missing ARIA labels).
+Numa Budget is in a positive transition phase toward a robust Domain-Driven Architecture (`src/domain`). However, the audit reveals a significant "Technical Debt" overlap between legacy utilities and new domain logic. A **critical P0 issue** was identified in the CSV Import logic using unsafe floating-point math for financial values, violating the core `SKILL.md` governance. UI/UX is highly polished but suffers from minor inconsistencies in feedback mechanisms (native alerts) and accessibility (missing ARIA labels).
 
 **Top 5 Issues:**
 1. **[P0] Unsafe Money Parsing**: `import-csv` uses `parseFloat` for amounts, risking precision errors.

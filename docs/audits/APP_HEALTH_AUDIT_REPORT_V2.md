@@ -1,4 +1,4 @@
-# Luma Budget - App Health Audit Report V2
+# Numa Budget - App Health Audit Report V2
 
 ## A) Executive Summary
 Following the Phase 1-3 remediation, the core "Safety" issues (P0) related to financial parsing and "Consistency" issues (P1) related to date filtering have been largely resolved. The transition to `src/domain` is now an established pattern. However, the audit reveals a significant "Remnant Debt" in the **Test Suite**, where logic is often simulated rather than imported, and a **Domain Lag** in the Budget feature.

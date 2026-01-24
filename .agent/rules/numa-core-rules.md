@@ -1,4 +1,4 @@
-# Regole Core di Luma Budget
+# Regole Core di Numa Budget
 
 > Questo file contiene i vincoli **SEMPRE ATTIVI** su qualunque modifica al repository.
 > Per procedure dettagliate, attiva le skill specializzate.
@@ -83,10 +83,10 @@ Per procedure dettagliate, attiva la skill appropriata:
 
 | Contesto | Skill |
 |----------|-------|
-| Calcoli monetari, KPI, budget | `luma-financial-logic` |
-| Componenti React, layout, UBI | `luma-ui-standards` |
-| Import CSV, enrichment | `luma-import-csv` |
-| Aggiornare governance, versioni | `luma-governance-update` |
+| Calcoli monetari, KPI, budget | `numa-financial-logic` |
+| Componenti React, layout, UBI | `numa-ui-standards` |
+| Import CSV, enrichment | `numa-import-csv` |
+| Aggiornare governance, versioni | `numa-governance-update` |
 
 ---
 

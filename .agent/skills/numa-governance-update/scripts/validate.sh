@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # ============================================
-# Luma Governance Validator (v2.0)
-# Posizione: .agent/skills/luma-governance-update/scripts/
+# Numa Governance Validator (v2.0)
+# Posizione: .agent/skills/numa-governance-update/scripts/
 # Checks for common rule violations
 # ============================================
 
@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 ERRORS=0
 WARNINGS=0
 
-echo "🔍 Luma Governance Validator"
+echo "🔍 Numa Governance Validator"
 echo "============================"
 echo ""
 

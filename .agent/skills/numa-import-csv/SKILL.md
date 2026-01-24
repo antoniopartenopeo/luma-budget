@@ -1,5 +1,5 @@
 ---
-name: luma-import-csv
+name: numa-import-csv
 description: Use when working on CSV import feature, transaction enrichment, merchant normalization, or category auto-assignment.
 ---
 

@@ -1,4 +1,4 @@
-# LumaBudget
+# NumaBudget
 
 Personal Finance Management built with **Next.js 16**, **React 19**, and **Tailwind CSS**.  
 Local-first persistence with rich analytics and insights.
@@ -56,16 +56,16 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ## 📜 Development Standards
 
-Luma Budget follows a strict set of development standards to ensure financial accuracy, UI consistency (UBI), and maintainable architecture.
+Numa Budget follows a strict set of development standards to ensure financial accuracy, UI consistency (UBI), and maintainable architecture.
 
 > [!IMPORTANT]
-> All technical rules, architectural patterns, and UI constraints are defined in the **[Luma Governance Skill](file:///.agent/skills/luma-governance/SKILL.md)**.
+> All technical rules, architectural patterns, and UI constraints are defined in the **[Numa Core Rules](file:///.agent/rules/numa-core-rules.md)**.
 > 
 > Before contributing, ensure you have read the **[Contributing Guidelines](file:///docs/CONTRIBUTING.md)**.
 
 ## 📁 Documentation
 
-- **[Luma Governance](file:///.agent/skills/luma-governance/SKILL.md)**: Core development standards and constraints.
+- **[Numa Core Rules](file:///.agent/rules/numa-core-rules.md)**: Core development standards and constraints.
 - **[App Health Audit](file:///docs/audits/APP_HEALTH_AUDIT_REPORT.md)**: Latest codebase health status.
 - **[UBI Analysis](file:///docs/audits/UBI_UI_ANALYSIS.md)**: Principles of the Unitary Behavioral Interface.
 - **[Implementation Evidence](file:///docs/IMPLEMENTATION_EVIDENCE.md)**: Detailed technical logs.
@@ -76,4 +76,4 @@ Standard Next.js deployment on Vercel.
 
 ---
 
-Made with 💜 by Luma Team
+Made with 💜 by Numa Team

@@ -1,4 +1,4 @@
-# UBI Pattern Analysis - Luma Budget
+# UBI Pattern Analysis - Numa Budget
 
 **Report Date**: 2026-01-21  
 **Author**: AI Analysis Agent  
@@ -19,7 +19,7 @@
 
 ### Perché è già una scelta architetturale implicita
 
-Luma Budget **applica già UBI in modo naturale** attraverso:
+Numa Budget **applica già UBI in modo naturale** attraverso:
 
 | Evidenza | Esempio |
 |----------|---------|
@@ -438,7 +438,7 @@ Prima di implementare nuove UI nel wizard:
 
 ## Conclusione
 
-Luma Budget **implementa già UBI implicitamente** attraverso scelte architetturali coerenti. L'unica area grigia (`TransactionsTable` dual render) è un compromesso accettabile e non viola i principi core.
+Numa Budget **implementa già UBI implicitamente** attraverso scelte architetturali coerenti. L'unica area grigia (`TransactionsTable` dual render) è un compromesso accettabile e non viola i principi core.
 
 Per mantenere UBI-compliance nelle evoluzioni future:
 1. Non creare componenti `*Mobile` / `*Desktop`

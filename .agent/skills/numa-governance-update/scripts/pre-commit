@@ -1,15 +1,15 @@
 #!/bin/bash
 
 # ============================================
-# Pre-commit hook for Luma Budget
+# Pre-commit hook for Numa Budget
 # Runs governance validator before each commit
 # ============================================
 
-echo "🔒 Running Luma Governance Validator..."
+echo "🔒 Running Numa Governance Validator..."
 echo ""
 
 # Run the validator
-./.agent/skills/luma-governance-update/scripts/validate.sh
+./.agent/skills/numa-governance-update/scripts/validate.sh
 
 # Check exit code
 if [ $? -ne 0 ]; then

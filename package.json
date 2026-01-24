@@ -9,7 +9,7 @@
     "lint": "eslint",
     "test": "vitest",
     "test:run": "vitest run",
-    "validate": "./.agent/skills/luma-governance/scripts/validate.sh"
+    "validate": "./.agent/skills/numa-governance-update/scripts/validate.sh"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",

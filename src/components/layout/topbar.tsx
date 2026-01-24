@@ -7,22 +7,20 @@ import { Button } from "@/components/ui/button"
 import { QuickExpenseInput } from "@/features/transactions/components/quick-expense-input"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Sidebar } from "./sidebar"
-import { useSettings } from "@/features/settings/api/use-settings"
 import { FlashOverlay } from "@/features/flash/components/flash-overlay"
-import { BrandLogo } from "@/components/ui/brand-logo"
 
+/**
+ * TopBar: Streamlined for actions. 
+ * Primary identity (Brand/Profile) is delegated to the Sidebar.
+ */
 export function TopBar() {
     const pathname = usePathname()
     const isSettingsPage = pathname === "/settings"
     const [isMenuOpen, setIsMenuOpen] = useState(false)
-    const { data: settings } = useSettings()
-
-    const displayName = settings?.profile?.displayName || "Account locale"
-    const initial = displayName.charAt(0).toUpperCase()
 
     return (
         <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur-md">
-            <div className="flex min-h-[80px] h-auto flex-col">
+            <div className="flex min-h-[80px] lg:min-h-[80px] h-auto flex-col">
                 <div className="flex h-20 items-center justify-between gap-4 px-4 md:px-6">
                     <div className="flex items-center gap-2">
                         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
@@ -40,11 +38,6 @@ export function TopBar() {
                                 />
                             </SheetContent>
                         </Sheet>
-
-                        {/* Desktop Search/QuickAdd placeholder */}
-                        <div className="lg:hidden">
-                            <BrandLogo variant="smart" height={28} />
-                        </div>
                     </div>
 
                     {!isSettingsPage && (
@@ -55,13 +48,10 @@ export function TopBar() {
 
                     <div className="flex items-center gap-3 shrink-0">
                         <FlashOverlay />
-                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold shadow-sm border border-primary/20">
-                            {initial}
-                        </div>
                     </div>
                 </div>
 
-                {/* Mobile QuickAdd - Centered row */}
+                {/* Mobile QuickAdd - Revealed on mobile scroll/header */}
                 {!isSettingsPage && (
                     <div className="sm:hidden px-4 pb-4 flex justify-center border-t pt-4">
                         <div className="w-full max-w-md">

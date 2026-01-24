@@ -1,10 +1,10 @@
-# Contributing to Luma Budget
+# Contributing to Numa Budget
 
-Thank you for your interest in contributing to Luma Budget! To maintain the highest standards of financial accuracy and UI consistency, we follow a strict governance process.
+Thank you for your interest in contributing to Numa Budget! To maintain the highest standards of financial accuracy and UI consistency, we follow a strict governance process.
 
 ## 🛠 Technical Standards
 
-All development is governed by the **[Luma Governance Skill](file:///../.agent/skills/luma-governance/SKILL.md)**. 
+All development is governed by the **[Numa Core Rules](file:///../.agent/rules/numa-core-rules.md)**. 
 
 Before you start writing code, please review the rules regarding:
 - **Financial Logic**: Handling cents, sign conventions, and domain-driven architecture.

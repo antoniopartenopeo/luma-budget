@@ -1,9 +1,9 @@
 ---
-name: luma-governance-update
+name: numa-governance-update
 description: Use when updating rules, skills, CHANGELOG, or version numbers after adding new patterns or fixing bugs.
 ---
 
-# Aggiornamento Governance Luma Budget
+# Aggiornamento Governance Numa Budget
 
 Questa skill fornisce le procedure per aggiornare regole, skill, changelog, e versioni.
 
@@ -22,7 +22,7 @@ Non procedere in modalità "best effort".
 |--------|--------|
 | Nuovo pattern definito | Aggiungi a skill appropriata |
 | Bug causato da pattern mancante | Aggiungi a Lessons Learned |
-| Nuovo vincolo critico | Aggiungi a `luma-core-rules.md` |
+| Nuovo vincolo critico | Aggiungi a `numa-core-rules.md` |
 | Nuova feature con regole specifiche | Valuta se creare nuova skill |
 
 ---
@@ -32,15 +32,15 @@ Non procedere in modalità "best effort".
 ```
 .agent/
 ├── rules/
-│   └── luma-core-rules.md      # Vincoli always-on
+│   └── numa-core-rules.md      # Vincoli always-on
 └── skills/
-    ├── luma-financial-logic/
+    ├── numa-financial-logic/
     │   └── SKILL.md
-    ├── luma-ui-standards/
+    ├── numa-ui-standards/
     │   └── SKILL.md
-    ├── luma-import-csv/
+    ├── numa-import-csv/
     │   └── SKILL.md
-    └── luma-governance-update/
+    └── numa-governance-update/
         ├── SKILL.md            # Questo file
         ├── CHANGELOG.md        # Storico modifiche
         └── scripts/
@@ -56,7 +56,7 @@ Non procedere in modalità "best effort".
 
 ```bash
 # 1. Edita il file
-vim .agent/rules/luma-core-rules.md
+vim .agent/rules/numa-core-rules.md
 
 # 2. Aggiorna versione in fondo al file
 # 3. Documenta in CHANGELOG
@@ -68,7 +68,7 @@ git commit -m "docs(rules): [descrizione]"
 
 ```bash
 # 1. Edita SKILL.md della skill appropriata
-vim .agent/skills/luma-financial-logic/SKILL.md
+vim .agent/skills/numa-financial-logic/SKILL.md
 
 # 2. Aggiorna "Ultimo aggiornamento" in fondo
 # 3. Documenta in CHANGELOG consolidato
@@ -136,13 +136,13 @@ grep 'getAppVersion' src/features/settings/diagnostics/diagnostics-utils.ts
 ### Esecuzione Manuale
 
 ```bash
-./.agent/skills/luma-governance-update/scripts/validate.sh
+./.agent/skills/numa-governance-update/scripts/validate.sh
 ```
 
 ### Setup Pre-Commit Hook
 
 ```bash
-cp .agent/skills/luma-governance-update/scripts/pre-commit .git/hooks/
+cp .agent/skills/numa-governance-update/scripts/pre-commit .git/hooks/
 chmod +x .git/hooks/pre-commit
 ```
 

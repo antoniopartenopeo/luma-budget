@@ -1,16 +1,16 @@
 #!/bin/bash
 
 # ============================================
-# Setup script for Luma Budget
+# Setup script for Numa Budget
 # Installs git hooks and dev dependencies
 # ============================================
 
-echo "🚀 Setting up Luma Budget development environment..."
+echo "🚀 Setting up Numa Budget development environment..."
 echo ""
 
 # Install git hooks
 echo "📌 Installing git hooks..."
-cp .agent/skills/luma-governance/scripts/pre-commit .git/hooks/pre-commit
+cp .agent/skills/numa-governance-update/scripts/pre-commit .git/hooks/pre-commit
 chmod +x .git/hooks/pre-commit
 echo "✅ Pre-commit hook installed"
 

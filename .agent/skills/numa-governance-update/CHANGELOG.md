@@ -1,4 +1,4 @@
-# Changelog - Governance Luma Budget
+# Changelog - Governance Numa Budget
 
 Storico consolidato di tutte le modifiche a regole, skill, e standard di sviluppo.
 
@@ -13,11 +13,11 @@ Storico consolidato di tutte le modifiche a regole, skill, e standard di svilupp
 ### Added
 
 - **Nuova struttura**:
-  - `.agent/rules/luma-core-rules.md` → Vincoli always-on (~85 righe)
-  - `.agent/skills/luma-financial-logic/` → Logica finanziaria dettagliata
-  - `.agent/skills/luma-ui-standards/` → Standard UI e UBI
-  - `.agent/skills/luma-import-csv/` → Import CSV e enrichment
-  - `.agent/skills/luma-governance-update/` → Questo file + scripts
+  - `.agent/rules/numa-core-rules.md` → Vincoli always-on (~85 righe)
+  - `.agent/skills/numa-financial-logic/` → Logica finanziaria dettagliata
+  - `.agent/skills/numa-ui-standards/` → Standard UI e UBI
+  - `.agent/skills/numa-import-csv/` → Import CSV e enrichment
+  - `.agent/skills/numa-governance-update/` → Questo file + scripts
 
 - **Nuove feature**:
   - Guard di Attivazione in ogni skill
@@ -27,7 +27,7 @@ Storico consolidato di tutte le modifiche a regole, skill, e standard di svilupp
 ### Changed
 
 - Migrazione da skill monolitica `luma-governance` a sistema modulare
-- Scripts spostati in `luma-governance-update/scripts/`
+- Scripts spostati in `numa-governance-update/scripts/`
 - CHANGELOG consolidato in un unico file
 
 ### Removed

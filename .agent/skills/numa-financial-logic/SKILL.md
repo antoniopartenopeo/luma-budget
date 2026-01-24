@@ -1,9 +1,9 @@
 ---
-name: luma-financial-logic
+name: numa-financial-logic
 description: Use when modifying transaction calculations, budget logic, KPI formulas, or any code handling monetary values (amountCents, formatCents, signed values).
 ---
 
-# Logica Finanziaria di Luma Budget
+# Logica Finanziaria di Numa Budget
 
 Questa skill fornisce le procedure dettagliate per lavorare con calcoli monetari, budget, e KPI.
 

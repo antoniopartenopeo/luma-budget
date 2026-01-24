@@ -1,9 +1,9 @@
 ---
-name: luma-ui-standards
+name: numa-ui-standards
 description: Use when creating or modifying React components, styling, layouts, or implementing responsive behavior.
 ---
 
-# Standard UI di Luma Budget
+# Standard UI di Numa Budget
 
 Questa skill fornisce le procedure dettagliate per creare e modificare componenti React, layout, e stili.
 

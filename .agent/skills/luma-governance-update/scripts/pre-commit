@@ -9,7 +9,7 @@ echo "🔒 Running Luma Governance Validator..."
 echo ""
 
 # Run the validator
-./.agent/skills/luma-governance/scripts/validate.sh
+./.agent/skills/luma-governance-update/scripts/validate.sh
 
 # Check exit code
 if [ $? -ne 0 ]; then

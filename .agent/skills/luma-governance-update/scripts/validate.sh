@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # ============================================
-# Luma Governance Validator
+# Luma Governance Validator (v2.0)
+# Posizione: .agent/skills/luma-governance-update/scripts/
 # Checks for common rule violations
 # ============================================
 

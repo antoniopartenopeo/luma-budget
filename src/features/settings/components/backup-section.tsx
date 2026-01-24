@@ -64,7 +64,7 @@ export function BackupSection() {
 
             const link = document.createElement("a")
             link.href = url
-            link.download = `luma-backup-v1-${dateStr}-${timeStr}.json`
+            link.download = `numa-backup-v1-${dateStr}-${timeStr}.json`
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)

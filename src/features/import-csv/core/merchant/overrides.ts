@@ -9,6 +9,7 @@
 
 export const MERCHANT_OVERRIDES: Map<string, string> = new Map([
     // Example: ["PAGAMENTO POS BAR DA GINO", "BAR DA GINO"]
+    ["COMMISSIONE POS BANCOMAT", "ALTRO"],
 ]);
 
 export function getOverride(normalizedDescription: string): string | null {

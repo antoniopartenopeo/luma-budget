@@ -385,7 +385,7 @@ export function AdvancedSection() {
                     <AlertCircle className="h-4 w-4" />
                     <AlertTitle>Nota sulla privacy</AlertTitle>
                     <AlertDescription>
-                        LumaBudget è un&apos;applicazione &quot;local-first&quot;. I tuoi dati non lasciano mai questo dispositivo e non vengono inviati a nessun server esterno.
+                        NUMA Budget è un&apos;applicazione &quot;local-first&quot;. I tuoi dati non lasciano mai questo dispositivo e non vengono inviati a nessun server esterno.
                     </AlertDescription>
                 </Alert>
             </div>

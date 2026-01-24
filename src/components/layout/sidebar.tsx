@@ -6,6 +6,7 @@ import { LayoutDashboard, Receipt, PiggyBank, LineChart, Settings, Calculator } 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useSettings } from "@/features/settings/api/use-settings"
+import { BrandLogo } from "@/components/ui/brand-logo"
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
@@ -33,9 +34,7 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
         {/* Logo Area */}
         <div className="flex h-20 items-center border-b px-6">
           <Link href="/" className="flex items-center gap-2">
-            <div className="text-xl font-bold tracking-tight text-foreground">
-              LumaBudget
-            </div>
+            <BrandLogo variant="full" height={32} />
           </Link>
         </div>
 

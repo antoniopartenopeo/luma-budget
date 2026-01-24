@@ -57,7 +57,7 @@ export function AIAdvisorCard() {
                             </div>
                             <div>
                                 <CardTitle className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                                    Luma AI
+                                    Numa AI
                                     <Badge variant="secondary" className="bg-secondary/80 text-muted-foreground hover:bg-secondary border-border/40 text-[10px] px-1.5 h-5 shadow-sm">BETA</Badge>
                                 </CardTitle>
                                 <CardDescription className="text-muted-foreground text-xs font-bold uppercase tracking-wider">Financial Intelligence</CardDescription>

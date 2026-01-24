@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { Sidebar } from "./sidebar"
 import { useSettings } from "@/features/settings/api/use-settings"
 import { FlashOverlay } from "@/features/flash/components/flash-overlay"
+import { BrandLogo } from "@/components/ui/brand-logo"
 
 export function TopBar() {
     const pathname = usePathname()
@@ -41,8 +42,8 @@ export function TopBar() {
                         </Sheet>
 
                         {/* Desktop Search/QuickAdd placeholder */}
-                        <div className="text-xl font-bold tracking-tight lg:hidden">
-                            LumaBudget
+                        <div className="lg:hidden">
+                            <BrandLogo variant="smart" height={28} />
                         </div>
                     </div>
 

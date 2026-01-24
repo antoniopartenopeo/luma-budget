@@ -68,6 +68,7 @@ export const BRAND_DICT: Record<string, string> = {
     // Utilities
     "ENEL": "ENEL",
     "A2A": "A2A",
+    "SATISPAY": "SATISPAY",
 };
 
 /**

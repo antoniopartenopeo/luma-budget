@@ -116,7 +116,7 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                     <div className="flex flex-col">
                         <div className="flex items-center gap-1.5 text-foreground font-bold tracking-tight text-lg">
                             <Sparkles className="h-4 w-4 fill-primary text-primary" />
-                            Luma Flash
+                            Numa Flash
                         </div>
                         <h2 className="text-sm font-medium text-muted-foreground">
                             {formatPeriodLabel(period)}

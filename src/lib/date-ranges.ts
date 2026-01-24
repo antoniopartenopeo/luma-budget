@@ -1,5 +1,5 @@
 /**
- * Centralized date utility functions for Luma Budget.
+ * Centralized date utility functions for NUMA Budget.
  * Provides consistent handling of periods (YYYY-MM) and date ranges.
  */
 

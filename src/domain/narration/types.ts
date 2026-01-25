@@ -136,3 +136,35 @@ export type TrendState =
     | "stable"         // Minimum variation
     | "volatile"       // Significant oscillations
     | "neutral"        // Contextual or insufficient data
+
+// =====================
+// ORCHESTRATOR TYPES
+// =====================
+
+/**
+ * A candidate for orchestration. 
+ * Represents a signal from any source (forecast, trend, spike, etc.)
+ */
+export interface NarrationCandidate {
+    id: string
+    source: "projection" | "trend" | "risk_spike" | "snapshot" | "subscription"
+    scope: "current_period" | "long_term"
+    severity: "low" | "medium" | "high" | "critical"
+    narration: NarrationResult
+}
+
+/**
+ * The final output of the orchestrator
+ */
+export interface OrchestratedNarration {
+    /** The top priority signal */
+    primary: NarrationCandidate
+    /** Up to 2 secondary signals for context */
+    secondary: NarrationCandidate[]
+    /** Signals that were filtered out */
+    suppressed: NarrationCandidate[]
+    /** Metadata about why this orchestration was chosen */
+    rationale: {
+        rulesTriggered: string[]
+    }
+}

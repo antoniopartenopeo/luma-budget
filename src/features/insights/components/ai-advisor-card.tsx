@@ -6,20 +6,24 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useAIAdvisor } from "../use-ai-advisor"
+import { useOrchestratedInsights } from "../use-orchestrated-insights"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { formatEuroNumber } from "@/domain/money"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 export function AIAdvisorCard() {
-    const { forecast, subscriptions, tips, isLoading } = useAIAdvisor()
+    const { forecast, subscriptions, isLoading: aiLoading } = useAIAdvisor()
+    const { orchestration, isLoading: orchestratorLoading } = useOrchestratedInsights()
     const { currency, locale } = useCurrency()
+
+    const isLoading = aiLoading || orchestratorLoading
 
     if (isLoading) {
         return <Skeleton className="h-[240px] w-full rounded-2xl" />
     }
 
-    if (!forecast && tips.length === 0) {
+    if (!forecast && (!orchestration || !orchestration.primary)) {
         return (
             <Card className="rounded-2xl border-none bg-gradient-to-br from-muted/50 via-card to-card shadow-sm overflow-hidden">
                 <CardContent className="flex flex-col items-center justify-center text-center p-8 gap-4">
@@ -35,6 +39,8 @@ export function AIAdvisorCard() {
         )
     }
 
+    const { primary, secondary } = orchestration || {}
+
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.98 }}
@@ -45,7 +51,7 @@ export function AIAdvisorCard() {
                 {/* Visual Glass Reflection Accent */}
                 <div className="absolute inset-0 bg-gradient-to-br from-white/40 dark:from-white/5 to-transparent pointer-events-none" />
 
-                {/* Ambient Glows - Subtle Light Theme */}
+                {/* Ambient Glows */}
                 <div className="absolute top-[-20%] right-[-20%] w-[400px] h-[400px] bg-primary/10 blur-[120px] rounded-full pointer-events-none opacity-60" />
                 <div className="absolute bottom-[-20%] left-[-20%] w-[400px] h-[400px] bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none opacity-40" />
 
@@ -68,7 +74,7 @@ export function AIAdvisorCard() {
 
                 <CardContent className="relative z-10 pt-6 px-6 pb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 
-                    {/* 1. Proiezione (Hero Metric) */}
+                    {/* 1. Proiezione */}
                     {forecast && (
                         <div className="relative group rounded-2xl glass-card hover:bg-white/70 dark:hover:bg-white/10 p-5">
                             <div className="flex items-center justify-between mb-4">
@@ -82,7 +88,7 @@ export function AIAdvisorCard() {
                                         ? "bg-emerald-100/50 text-emerald-700 border-emerald-200"
                                         : "bg-amber-100/50 text-amber-700 border-amber-200"
                                 )}>
-                                    {forecast.confidence === "high" ? "ALTA AFFIDABILITÀ" : "MEDIA AFFIDABILITÀ"}
+                                    {forecast.confidence === "high" ? "ALTA" : "MEDIA"}
                                 </div>
                             </div>
 
@@ -118,26 +124,32 @@ export function AIAdvisorCard() {
                                         Servizio #{i + 1}
                                     </div>
                                 ))}
-                                {subscriptions.length > 3 && (
-                                    <div className="px-2 py-1 rounded-md bg-white border border-slate-100 text-xs font-medium text-slate-500 shadow-sm">
-                                        +{subscriptions.length - 3}
-                                    </div>
-                                )}
                             </div>
                         </div>
                     )}
 
-                    {/* 3. Smart Tip */}
-                    {tips.length > 0 && (
+                    {/* 3. Smart Tip (Orchestrated) */}
+                    {primary && (
                         <div className="md:col-span-2 lg:col-span-1 rounded-2xl bg-gradient-to-br from-indigo-50/80 to-purple-50/80 dark:from-indigo-950/40 dark:to-purple-950/40 border border-indigo-100/50 dark:border-indigo-500/20 p-5 relative overflow-hidden shadow-sm">
-                            <div className="flex items-center gap-1.5 text-sm font-bold text-indigo-600 dark:text-indigo-400 mb-3 uppercase tracking-wider">
+                            <div className="flex items-center gap-1.5 text-sm font-bold text-indigo-600 dark:text-indigo-400 mb-2 uppercase tracking-wider">
                                 <Lightbulb className="h-4 w-4 fill-current" />
                                 SMART TIP
                             </div>
 
-                            <p className="text-sm md:text-base leading-relaxed text-foreground/90 font-medium">
-                                &quot;{tips[0]}&quot;
+                            <p className="text-sm leading-relaxed text-foreground/90 font-medium mb-3">
+                                &quot;{primary.narration.text}&quot;
                             </p>
+
+                            {secondary && secondary.length > 0 && (
+                                <div className="space-y-1.5 pt-2 border-t border-indigo-200/30 dark:border-indigo-500/20">
+                                    {secondary.map((s, idx) => (
+                                        <p key={idx} className="text-[10px] leading-tight text-muted-foreground/80 lowercase italic">
+                                            <span className="font-bold uppercase not-italic mr-1 text-indigo-500/60 text-[9px]">Contesto:</span>
+                                            {s.narration.text}
+                                        </p>
+                                    ))}
+                                </div>
+                            )}
 
                             <div className="mt-4 flex justify-end">
                                 <Button variant="ghost" size="sm" className="h-8 text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 hover:bg-indigo-100/50 dark:hover:bg-indigo-900/30 -mr-2">

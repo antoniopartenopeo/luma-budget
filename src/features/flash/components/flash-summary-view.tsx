@@ -20,6 +20,7 @@ import { useCurrency } from "@/features/settings/api/use-currency"
 import { getCurrentPeriod, formatPeriodLabel } from "@/features/insights/utils"
 import { formatEuroNumber } from "@/domain/money"
 import { calculateUtilizationPct, calculateSharePct } from "@/domain/money"
+import { narrateSnapshot, deriveSnapshotState, SnapshotFacts } from "@/domain/narration"
 import { cn } from "@/lib/utils"
 
 interface FlashSummaryViewProps {
@@ -62,20 +63,28 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
     const top3Categories = [...categoriesSummary].sort((a, b) => b.value - a.value).slice(0, 3)
     const isSuperfluousOver = (uselessSpendPercent ?? 0) > superfluousTarget
 
-    const generateInsight = (): string => {
-        if (isSuperfluousOver) {
-            return `Le tue spese superflue sono al ${uselessSpendPercent}%, oltre il target del ${superfluousTarget}%. Un piccolo taglio qui farebbe miracoli.`
-        }
-        if (budgetUsedPct > 90) {
-            return `Attenzione! Hai eroso il ${budgetUsedPct}% del tuo budget. Prova a stringere la cinghia negli ultimi giorni.`
-        }
-        if (netBalance > 0 && totalIncome > 0) {
-            // Use centralized calculation (convert EUR to cents equivalent)
-            const savingsRate = calculateSharePct(netBalance * 100, totalIncome * 100)
-            return `Livello di risparmio incredibile: ${savingsRate}% questo mese. Continua così!`
-        }
-        return "Gestione finanziaria impeccabile, non ci sono anomalie rilevanti questo mese."
+    // Build SnapshotFacts for Narration Layer (all values pre-formatted)
+    const savingsRatePercent = totalIncome > 0
+        ? calculateSharePct(netBalance * 100, totalIncome * 100)
+        : undefined
+
+    const snapshotFacts: SnapshotFacts = {
+        snapshotId: `flash-${period}`,
+        periodLabel: formatPeriodLabel(period),
+        incomeFormatted: formatEuroNumber(totalIncome, currency, locale),
+        expensesFormatted: formatEuroNumber(totalExpenses, currency, locale),
+        balanceFormatted: formatEuroNumber(netBalance, currency, locale),
+        balanceCents: Math.round(netBalance * 100),
+        budgetFormatted: budgetTotal > 0 ? formatEuroNumber(budgetTotal, currency, locale) : undefined,
+        utilizationPercent: budgetTotal > 0 ? budgetUsedPct : undefined,
+        superfluousPercent: uselessSpendPercent ?? undefined,
+        superfluousTargetPercent: superfluousTarget,
+        savingsRatePercent
     }
+
+    // Derive state and generate narrative
+    const snapshotState = deriveSnapshotState(snapshotFacts)
+    const narration = narrateSnapshot(snapshotFacts, snapshotState)
 
     const blurClass = isPrivate ? "blur-xl select-none opacity-50 transition-all duration-500" : "transition-all duration-500"
 
@@ -225,7 +234,7 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                         AI Insight
                     </div>
                     <p className="text-xs font-medium text-foreground/90 leading-snug">
-                        {generateInsight()}
+                        {narration.text}
                     </p>
                 </motion.div>
 

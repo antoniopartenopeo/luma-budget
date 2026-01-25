@@ -1,0 +1,64 @@
+/**
+ * State Derivation for Snapshot Narration
+ * ========================================
+ * 
+ * Derives SnapshotState from SnapshotFacts using deterministic rules.
+ * This is the ONLY place where business logic lives for state determination.
+ */
+
+import { SnapshotFacts, SnapshotState } from "./types"
+
+/**
+ * Derives the SnapshotState from facts.
+ * 
+ * Rules (in priority order):
+ * 1. critical: budget >100% AND superfluous over target
+ * 2. strained: budget >90% OR superfluous over target
+ * 3. thriving: positive balance AND savingsRate >= 10%
+ * 4. stable: everything else that's ok
+ * 5. calm: insufficient data
+ */
+export function deriveSnapshotState(facts: SnapshotFacts): SnapshotState {
+    const {
+        balanceCents,
+        utilizationPercent,
+        superfluousPercent,
+        superfluousTargetPercent,
+        savingsRatePercent
+    } = facts
+
+    // Check if we have enough data
+    const hasUtilization = utilizationPercent !== undefined && utilizationPercent > 0
+    const hasSuperfluousData = superfluousPercent !== undefined && superfluousTargetPercent !== undefined
+
+    // Derived flags
+    const isBudgetOverrun = hasUtilization && utilizationPercent > 100
+    const isBudgetStrained = hasUtilization && utilizationPercent > 90
+    const isSuperfluousOver = hasSuperfluousData && superfluousPercent > superfluousTargetPercent
+    const hasPositiveBalance = balanceCents > 0
+    const hasNegativeBalance = balanceCents < 0
+    const hasGoodSavings = savingsRatePercent !== undefined && savingsRatePercent >= 10
+
+    // Priority 1: Critical - negative balance AND (budget overrun OR superfluous over)
+    if (hasNegativeBalance && (isBudgetOverrun || isSuperfluousOver)) {
+        return "critical"
+    }
+
+    // Priority 2: Strained - one significant issue (negative balance OR budget pressure OR superfluous)
+    if (hasNegativeBalance || isBudgetStrained || isSuperfluousOver) {
+        return "strained"
+    }
+
+    // Priority 3: Thriving - clearly positive (only if positive balance AND good savings AND NOT budget strained)
+    if (hasPositiveBalance && hasGoodSavings && !isBudgetStrained) {
+        return "thriving"
+    }
+
+    // Priority 4: Stable - positive balance but no specific "thriving" indicators or just okay
+    if (hasPositiveBalance) {
+        return "stable"
+    }
+
+    // Default: Calm - insufficient data or initial period (usually balance is 0 or very small positive with no other data)
+    return "calm"
+}

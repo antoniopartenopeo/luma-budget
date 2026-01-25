@@ -24,6 +24,8 @@ Non procedere in modalità "best effort".
 | Bug causato da pattern mancante | Aggiungi a Lessons Learned |
 | Nuovo vincolo critico | Aggiungi a `numa-core-rules.md` |
 | Nuova feature con regole specifiche | Valuta se creare nuova skill |
+| **Feature implementata** | **Aggiorna `ROADMAP.md`** ✨ |
+| **Fix significativo applicato** | **Spunta in `ROADMAP.md`** ✨ |
 
 ---
 

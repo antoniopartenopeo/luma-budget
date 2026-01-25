@@ -134,12 +134,6 @@ Usa la scala standard: `gap-1`, `gap-2`, `gap-4`, `gap-6`, `gap-8`
 
 ---
 
-## Riferimenti
-
-- Analisi completa: [docs/audits/UBI_UI_ANALYSIS.md](file:///docs/audits/UBI_UI_ANALYSIS.md)
-
----
-
 ## Checklist Pre-Commit
 
 - [ ] Nessun inline style

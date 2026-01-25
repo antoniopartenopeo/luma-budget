@@ -9,12 +9,33 @@ import { formatEuroNumber } from "@/domain/money"
 import { Skeleton } from "@/components/ui/skeleton"
 import { BarChart3 } from "lucide-react"
 import type { EChartsOption } from "echarts"
+import { narrateTrend, deriveTrendState, TrendFacts } from "@/domain/narration"
 
 export function TrendAnalysisCard() {
     const { data, isLoading } = useTrendData()
     const { currency, locale } = useCurrency()
 
+    const trendNarration = useMemo(() => {
+        if (!data || data.length < 2) return null
+
+        // Calculate trend facts based on last 2 months for simplicity in this V3 step
+        const current = data[data.length - 1]
+        const previous = data[data.length - 2]
+
+        const facts: TrendFacts = {
+            metricType: "savings_rate",
+            currentValueFormatted: current.savingsRateLabel,
+            changePercent: current.savingsRate - previous.savingsRate,
+            direction: current.savingsRate > previous.savingsRate ? "up" :
+                current.savingsRate < previous.savingsRate ? "down" : "flat"
+        }
+
+        const state = deriveTrendState(facts)
+        return narrateTrend(facts, state).text
+    }, [data])
+
     const option: EChartsOption = useMemo(() => {
+        // ... (existing option logic remains same)
         if (!data.length) return {}
 
         return {
@@ -166,7 +187,9 @@ export function TrendAnalysisCard() {
         <Card className="rounded-2xl border-none bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden">
             <CardHeader>
                 <CardTitle className="text-xl font-bold tracking-tight">Velocità Finanziaria (12 Mesi)</CardTitle>
-                <CardDescription>Confronto tra entrate e uscite storiche</CardDescription>
+                <CardDescription className="text-muted-foreground/90 font-medium">
+                    {trendNarration || "Confronto tra entrate e uscite storiche"}
+                </CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="h-[350px] w-full">

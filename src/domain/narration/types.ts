@@ -104,3 +104,35 @@ export type KPIState =
     | "attention"   // Needs monitoring
     | "critical"    // Action required
     | "neutral"      // Contextual or insufficient data
+
+// =====================
+// TREND TYPES (Insights)
+// =====================
+
+/**
+ * Facts for a trend analysis narration
+ */
+export interface TrendFacts {
+    /** The metric being analyzed */
+    metricType: "income" | "expenses" | "savings_rate"
+    /** Percentage change compared to previous period or average */
+    changePercent: number
+    /** Direction of the trend */
+    direction: "up" | "down" | "flat"
+    /** Formatted current value */
+    currentValueFormatted: string
+    /** Formatted previous or average value for comparison */
+    comparisonValueFormatted?: string
+    /** Optional period label */
+    periodLabel?: string
+}
+
+/**
+ * Derived state for Trend narration
+ */
+export type TrendState =
+    | "improving"      // Positive financial evolution
+    | "deteriorating"  // Negative financial evolution
+    | "stable"         // Minimum variation
+    | "volatile"       // Significant oscillations
+    | "neutral"        // Contextual or insufficient data

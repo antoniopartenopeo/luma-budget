@@ -6,7 +6,39 @@
  * This is the ONLY place where business logic lives for state determination.
  */
 
-import { KPIFacts, KPIState, SnapshotFacts, SnapshotState } from "./types"
+import { KPIFacts, KPIState, SnapshotFacts, SnapshotState, TrendFacts, TrendState } from "./types"
+
+/**
+ * Derives the TrendState from temporal facts.
+ */
+export function deriveTrendState(facts: TrendFacts): TrendState {
+    const { metricType, direction, changePercent } = facts
+    const absChange = Math.abs(changePercent)
+
+    // Priority 1: Volatile (large oscillations, e.g. > 50% change)
+    if (absChange > 50) {
+        return "volatile"
+    }
+
+    // Priority 2: Stable (insufficient change or context)
+    if (direction === "flat" || absChange < 2) {
+        return "stable"
+    }
+
+    // Priority 3: Improve/Deteriorate based on metric type
+    if (metricType === "income" || metricType === "savings_rate") {
+        if (direction === "up") return "improving"
+        if (direction === "down") return "deteriorating"
+    }
+
+    if (metricType === "expenses") {
+        if (direction === "up") return "deteriorating"
+        if (direction === "down") return "improving"
+    }
+
+    // Default Fallback
+    return "neutral"
+}
 
 /**
  * Derives the KPIState from facts for a single card.

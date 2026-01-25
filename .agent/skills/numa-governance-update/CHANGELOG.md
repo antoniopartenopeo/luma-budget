@@ -4,6 +4,22 @@ Storico consolidato di tutte le modifiche a regole, skill, e standard di svilupp
 
 ---
 
+## [2.1.0] - 2026-01-25
+
+### Added
+
+- **Nuove regole in `numa-financial-logic`**:
+  - Sezione **Narration & Insights (Flash Summary)**:
+    - Invariante: Saldo negativo impedisce stati `thriving`, `stable`, o `calm`.
+    - Definizione Priorità Segnali: Saldo > Budget > Superfluo > Composizione.
+    - Standard per i Toni di Voce (no auto-assoluzione in negativo).
+
+### Lessons Learned
+
+- Documentato fallback errato su "Calm" in caso di saldo negativo senza budget.
+
+---
+
 ## [2.0.0] - 2026-01-24
 
 ### Major Refactor: Separazione Rules vs Skills

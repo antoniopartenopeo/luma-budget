@@ -178,12 +178,35 @@ formatCents(amountCents) // → "€123,45"
 
 ---
 
+## Narration & Insights (Flash Summary)
+
+### Derivazione Stato (Invarianti)
+
+Se il saldo è negativo (`balanceCents < 0`), lo stato **NON PUÒ MAI** essere `thriving`, `stable` o `calm`. 
+
+### Priorità dei Segnali
+
+L'analisi deve seguire questo ordine gerarchico:
+1. **Saldo** (Deficit)
+2. **Budget** (Sforamento)
+3. **Spese Superflue** (Oltre target)
+4. **Composizione** (Top categories)
+
+### Toni di Voce
+
+- **Saldo Negativo**: Mai usare toni celebrativi o auto-assolutori.
+- **Stato Stable**: Deve essere descrittivo (equilibrio) e non di lode ("impeccabile").
+- **Stato Calm**: Riservato a dati insufficienti o inizio periodo.
+
+---
+
 ## Lessons Learned
 
 | Data | Problema | Causa | Prevenzione |
 |------|----------|-------|-------------|
 | 2026-01-17 | Simulatore mostra valori 100x | `formatEuroNumber` su cents | Usa `formatCents` per cents |
 | 2026-01-18 | Calcoli duplicati in Flash Summary | Formule inline | Usa sempre `financial-math.ts` |
+| 2026-01-25 | Narration elogia saldo negativo | Fallback errato su "Calm" | Invariante: saldo negativo != stable |
 
 ---
 
@@ -197,5 +220,5 @@ formatCents(amountCents) // → "€123,45"
 
 ---
 
-**Versione**: 1.0.0  
-**Ultimo aggiornamento**: 2026-01-24
+**Versione**: 1.1.0  
+**Ultimo aggiornamento**: 2026-01-25

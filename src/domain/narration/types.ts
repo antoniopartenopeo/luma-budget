@@ -76,3 +76,31 @@ export type SnapshotState =
     | "strained"    // deficit or budget pressure
     | "critical"    // multiple negative indicators
     | "calm"        // insufficient data, no alarms
+// =====================
+// KPI TYPES (Dashboard Cards)
+// =====================
+
+/**
+ * Facts for a single KPI card narration
+ */
+export interface KPIFacts {
+    /** Unique identifier for the KPI */
+    kpiId: "balance" | "expenses" | "budget" | "superfluous"
+    /** Formatted value for display (e.g., "€1.234") */
+    valueFormatted: string
+    /** Optional raw percentage (0-100+) */
+    percent?: number
+    /** Optional target percentage for comparison */
+    targetPercent?: number
+    /** Optional pre-calculated tone from KPI logic */
+    tone?: "positive" | "negative" | "warning" | "neutral"
+}
+
+/**
+ * Derived state for KPI narration
+ */
+export type KPIState =
+    | "good"        // Positive/encouraging
+    | "attention"   // Needs monitoring
+    | "critical"    // Action required
+    | "neutral"      // Contextual or insufficient data

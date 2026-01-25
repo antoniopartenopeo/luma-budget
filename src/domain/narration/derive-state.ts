@@ -6,7 +6,37 @@
  * This is the ONLY place where business logic lives for state determination.
  */
 
-import { SnapshotFacts, SnapshotState } from "./types"
+import { KPIFacts, KPIState, SnapshotFacts, SnapshotState } from "./types"
+
+/**
+ * Derives the KPIState from facts for a single card.
+ */
+export function deriveKPIState(facts: KPIFacts): KPIState {
+    const { tone, kpiId, percent } = facts
+
+    // Priority 1: Critical (explicitly negative tone or critical thresholds)
+    if (tone === "negative") {
+        return "critical"
+    }
+
+    // Priority 2: Attention (warning tone or near-limit thresholds)
+    if (tone === "warning") {
+        return "attention"
+    }
+
+    // Special cases for attention if tone not provided
+    if (kpiId === "budget" && percent !== undefined && percent < 10 && percent > 0) {
+        return "attention"
+    }
+
+    // Priority 3: Good (explicitly positive tone)
+    if (tone === "positive") {
+        return "good"
+    }
+
+    // Default: Neutral
+    return "neutral"
+}
 
 /**
  * Derives the SnapshotState from facts.

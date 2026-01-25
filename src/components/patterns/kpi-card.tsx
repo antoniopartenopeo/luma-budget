@@ -19,6 +19,7 @@ interface KpiCardProps {
     tone?: KpiTone
     onClick?: () => void
     className?: string
+    description?: string
 }
 
 export function KpiCard({
@@ -32,7 +33,8 @@ export function KpiCard({
     isLoading,
     tone = "neutral",
     onClick,
-    className
+    className,
+    description
 }: KpiCardProps) {
     if (isLoading) {
         return (
@@ -101,6 +103,11 @@ export function KpiCard({
                                 </span>
                             )}
                             <span className="text-muted-foreground/60">{comparisonLabel}</span>
+                        </p>
+                    )}
+                    {description && (
+                        <p className="text-[10px] text-muted-foreground/50 mt-2 italic leading-tight">
+                            {description}
                         </p>
                     )}
                 </CardContent>

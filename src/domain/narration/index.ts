@@ -10,5 +10,7 @@
 export type { NarrationResult, SnapshotFacts, SnapshotState } from "./types"
 
 // Snapshot (Flash Summary)
-export { narrateSnapshot } from "./snapshot.narrator"
-export { deriveSnapshotState } from "./derive-state"
+export * from "./types"
+export * from "./snapshot.narrator"
+export * from "./kpi.narrator"
+export * from "./derive-state"

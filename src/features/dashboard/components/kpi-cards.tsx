@@ -5,9 +5,9 @@ import { formatEuroNumber } from "@/domain/money"
 import { DashboardTimeFilter } from "../api/types"
 import { useSettings } from "@/features/settings/api/use-settings"
 import { KpiCard, KpiTone } from "@/components/patterns/kpi-card"
+import { narrateKPI, deriveKPIState, KPIFacts } from "@/domain/narration"
+
 import { getBalanceTone, getBudgetTone, getSuperfluousTone } from "../utils/kpi-logic"
-
-
 
 interface DashboardKpiGridProps {
     totalSpent?: number
@@ -19,7 +19,15 @@ interface DashboardKpiGridProps {
     filter?: DashboardTimeFilter
 }
 
-export function DashboardKpiGrid({ totalSpent, netBalance, budgetTotal, budgetRemaining, uselessSpendPercent, isLoading, filter }: DashboardKpiGridProps) {
+export function DashboardKpiGrid({
+    totalSpent,
+    netBalance,
+    budgetTotal,
+    budgetRemaining,
+    uselessSpendPercent,
+    isLoading,
+    filter
+}: DashboardKpiGridProps) {
     const router = useRouter()
     const { currency, locale } = useCurrency()
     const { data: settings } = useSettings()
@@ -58,6 +66,18 @@ export function DashboardKpiGrid({ totalSpent, netBalance, budgetTotal, budgetRe
 
     const superflueTone = getSuperfluousTone(uselessSpendPercent ?? null, superfluousTarget)
 
+    const buildNarration = (kpiId: KPIFacts["kpiId"], value: number | string, tone: any, percent?: number) => {
+        const facts: KPIFacts = {
+            kpiId,
+            valueFormatted: typeof value === "number" ? formatValue(value) : value,
+            tone,
+            percent: percent ?? undefined,
+            targetPercent: kpiId === "superfluous" ? superfluousTarget : undefined
+        }
+        const state = deriveKPIState(facts)
+        return narrateKPI(facts, state).text
+    }
+
     return (
         <div className="space-y-4">
             <div className="px-1">
@@ -74,6 +94,7 @@ export function DashboardKpiGrid({ totalSpent, netBalance, budgetTotal, budgetRe
                     tone={saldoTone}
                     icon={CreditCard}
                     isLoading={isLoading}
+                    description={isLoading ? undefined : buildNarration("balance", netBalance || 0, saldoTone)}
                 />
                 <KpiCard
                     title="Spesa"
@@ -84,6 +105,7 @@ export function DashboardKpiGrid({ totalSpent, netBalance, budgetTotal, budgetRe
                     icon={Wallet}
                     isLoading={isLoading}
                     onClick={() => router.push("/transactions")}
+                    description={isLoading ? undefined : buildNarration("expenses", totalSpent || 0, spesaTone)}
                 />
                 <KpiCard
                     title="Budget Rimanente"
@@ -95,6 +117,7 @@ export function DashboardKpiGrid({ totalSpent, netBalance, budgetTotal, budgetRe
                     icon={DollarSign}
                     isLoading={isLoading}
                     onClick={isMonthlyView && !hasBudget ? () => router.push("/budget") : undefined}
+                    description={isLoading ? undefined : buildNarration("budget", budgetRemaining || 0, budgetTone, budgetPercent)}
                 />
                 <KpiCard
                     title="Spese Superflue"
@@ -105,6 +128,7 @@ export function DashboardKpiGrid({ totalSpent, netBalance, budgetTotal, budgetRe
                     icon={AlertTriangle}
                     isLoading={isLoading}
                     onClick={() => router.push("/transactions?filter=wants")}
+                    description={isLoading ? undefined : buildNarration("superfluous", uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—", superflueTone, uselessSpendPercent ?? undefined)}
                 />
             </div>
         </div>

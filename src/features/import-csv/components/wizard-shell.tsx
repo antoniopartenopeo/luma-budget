@@ -115,7 +115,7 @@ export function WizardShell({
             {/* 2. Scrollable Content Area */}
             <div className={cn(
                 "flex-1 overflow-y-auto overflow-x-hidden min-h-0", // min-h-0 is crucial for flex children scrolling
-                "bg-muted/10",
+                "bg-background",
                 className
             )}>
                 <div className="w-full h-full max-w-5xl mx-auto p-4 md:p-8">

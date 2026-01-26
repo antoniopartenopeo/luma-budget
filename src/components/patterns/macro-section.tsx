@@ -11,17 +11,14 @@ interface MacroSectionProps extends Omit<HTMLMotionProps<"div">, "title" | "chil
     headerActions?: React.ReactNode
     children: React.ReactNode
     variant?: "default" | "premium"
+    status?: "default" | "warning" | "critical"
     className?: string
     contentClassName?: string
 }
 
 /**
  * MacroSection: La primitiva strutturale universale Numa Premium.
- * Centralizza:
- * - Radius: Var(--radius) [40px] via Card default
- * - Materiale: Glass panel via Card default
- * - Motion: Scale-in 0.98 -> 1
- * - Depth: Shadow-xl via Card default
+ * Allineata al "Budget Surface Spec" (Gold Standard).
  */
 export function MacroSection({
     title,
@@ -29,30 +26,51 @@ export function MacroSection({
     headerActions,
     children,
     variant = "default",
+    status = "default",
     className,
     contentClassName,
     ...props
 }: MacroSectionProps) {
     const isPremium = variant === "premium"
+    const isWarning = status === "warning"
+    const isCritical = status === "critical"
+
+    const itemVariants: Variants = {
+        hidden: { opacity: 0, scale: 0.98 },
+        visible: {
+            opacity: 1,
+            scale: 1,
+            transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] }
+        }
+    }
 
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} // Custom premium ease
+            variants={itemVariants}
+            initial="hidden"
+            animate="visible"
             className={cn("w-full relative", className)}
             {...props}
         >
             <Card className={cn(
-                "relative overflow-hidden border-none p-1",
-                isPremium && "bg-gradient-to-br from-white/40 dark:from-white/5 to-transparent"
+                "relative overflow-hidden border-none p-1 rounded-[2.5rem] bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl transition-all duration-500",
+                "shadow-xl dark:border-white/5",
+                isWarning && "shadow-[0_0_40px_-10px_rgba(251,191,36,0.2)] ring-1 ring-amber-500/20",
+                isCritical && "shadow-[0_0_40px_-10px_rgba(244,63,94,0.3)] ring-1 ring-rose-500/20"
             )}>
-                {/* Ambient Glows for Premium Variant */}
-                {isPremium && (
-                    <>
-                        <div className="absolute top-[-20%] right-[-20%] w-[500px] h-[500px] bg-primary/10 blur-[120px] rounded-full pointer-events-none opacity-60" />
-                        <div className="absolute bottom-[-20%] left-[-20%] w-[400px] h-[400px] bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none opacity-40" />
-                    </>
+                {/* Visual Glass Reflection Accent */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/40 dark:from-white/5 to-transparent pointer-events-none" />
+
+                {/* Ambient Glows */}
+                {(isPremium || isWarning || isCritical) && (
+                    <div
+                        className={cn(
+                            "absolute top-[-20%] right-[-20%] w-[400px] h-[400px] blur-[120px] rounded-full pointer-events-none opacity-60",
+                            isWarning && "bg-amber-500/10",
+                            isCritical && "bg-rose-500/10",
+                            isPremium && !isWarning && !isCritical && "bg-primary/10"
+                        )}
+                    />
                 )}
 
                 {(title || description || headerActions) && (

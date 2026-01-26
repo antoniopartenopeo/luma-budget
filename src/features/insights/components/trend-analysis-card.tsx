@@ -158,46 +158,56 @@ export function TrendAnalysisCard() {
 
     if (isLoading) {
         return (
-            <MacroSection
-                title={<Skeleton className="h-6 w-48 mb-2" />}
-                description={<Skeleton className="h-4 w-64" />}
-            >
-                <div className="h-[350px]">
-                    <Skeleton className="h-full w-full rounded-2xl" />
+            <div className="space-y-4">
+                <div className="px-1 space-y-1">
+                    <Skeleton className="h-6 w-48 mb-2" />
+                    <Skeleton className="h-4 w-64" />
                 </div>
-            </MacroSection>
+                <div className="rounded-[2.5rem] border border-border/40 bg-card/20 p-6 md:p-8">
+                    <div className="h-[350px]">
+                        <Skeleton className="h-full w-full rounded-2xl" />
+                    </div>
+                </div>
+            </div>
         )
     }
 
     if (!data.length) {
         return (
-            <MacroSection
-                title="Velocità Finanziaria (12 Mesi)"
-                description="Confronto tra entrate e uscite storiche"
-            >
-                <div className="h-[350px] flex items-center justify-center text-center p-8">
-                    <div className="max-w-[280px] space-y-2">
-                        <div className="bg-muted/30 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <BarChart3 className="h-6 w-6 text-muted-foreground" />
+            <div className="space-y-4">
+                <div className="px-1 space-y-1">
+                    <h3 className="text-xl font-bold tracking-tight text-foreground/90">Velocità Finanziaria (12 Mesi)</h3>
+                    <p className="text-sm text-muted-foreground font-medium">Confronto tra entrate e uscite storiche</p>
+                </div>
+                <div className="rounded-[2.5rem] border border-border/40 bg-card/20 p-6 md:p-8">
+                    <div className="h-[350px] flex items-center justify-center text-center p-8">
+                        <div className="max-w-[280px] space-y-2">
+                            <div className="bg-muted/30 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <BarChart3 className="h-6 w-6 text-muted-foreground" />
+                            </div>
+                            <h3 className="font-semibold">Dati insufficienti</h3>
+                            <p className="text-sm text-muted-foreground">
+                                Non ci sono abbastanza transazioni negli ultimi 12 mesi per generare il grafico.
+                            </p>
                         </div>
-                        <h3 className="font-semibold">Dati insufficienti</h3>
-                        <p className="text-sm text-muted-foreground">
-                            Non ci sono abbastanza transazioni negli ultimi 12 mesi per generare il grafico.
-                        </p>
                     </div>
                 </div>
-            </MacroSection>
+            </div>
         )
     }
 
     return (
-        <MacroSection
-            title="Velocità Finanziaria (12 Mesi)"
-            description={trendNarration || "Confronto tra entrate e uscite storiche"}
-        >
-            <div className="h-[350px] w-full">
-                <EChartsWrapper option={option} />
+        <div className="space-y-4">
+            <div className="px-1 space-y-1">
+                <h3 className="text-xl font-bold tracking-tight text-foreground/90">Velocità Finanziaria (12 Mesi)</h3>
+                <p className="text-sm text-muted-foreground font-medium">{trendNarration || "Confronto tra entrate e uscite storiche"}</p>
             </div>
-        </MacroSection>
+
+            <div className="rounded-[2.5rem] border border-border/40 bg-card/20 p-6 md:p-8">
+                <div className="h-[350px] w-full">
+                    <EChartsWrapper option={option} />
+                </div>
+            </div>
+        </div>
     )
 }

@@ -9,6 +9,7 @@ import { StateMessage } from "@/components/ui/state-message"
 import { useCreateBatchTransactions } from "@/features/transactions/api/use-transactions"
 import { useCategories } from "@/features/categories/api/use-categories"
 import { WizardShell } from "./wizard-shell"
+import { MacroSection } from "@/components/patterns/macro-section"
 
 interface ImportStepSummaryProps {
     importState: ImportState
@@ -124,55 +125,51 @@ export function ImportStepSummary({
             footer={footer}
         >
             <div className="flex-1 p-6 md:p-12 animate-in fade-in slide-in-from-right-4 duration-300">
-                <div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* KPI Cards */}
-                    <div className="bg-emerald-500/5 p-6 rounded-2xl border border-emerald-500/20 flex flex-col justify-center items-center text-emerald-700 dark:text-emerald-400">
-                        <TrendingUp className="h-8 w-8 mb-2 opacity-50" />
-                        <div className="text-sm font-medium opacity-70">Entrate Totali</div>
-                        <div className="text-2xl font-bold">
-                            {(stats.income / 100).toLocaleString("it-IT", { style: "currency", currency: "EUR" })}
-                        </div>
-                    </div>
-
-                    <div className="bg-rose-500/5 p-6 rounded-2xl border border-rose-500/20 flex flex-col justify-center items-center text-rose-700 dark:text-rose-400">
-                        <TrendingDown className="h-8 w-8 mb-2 opacity-50" />
-                        <div className="text-sm font-medium opacity-70">Uscite Totali</div>
-                        <div className="text-2xl font-bold">
-                            {(stats.expense / 100).toLocaleString("it-IT", { style: "currency", currency: "EUR" })}
-                        </div>
-                    </div>
-
-                    <div className="bg-primary/5 p-6 rounded-2xl border border-primary/20 flex flex-col justify-center items-center text-primary md:col-span-1 border-t-4 border-t-primary">
-                        <Wallet className="h-8 w-8 mb-2 opacity-50" />
-                        <div className="text-sm font-medium opacity-70">Saldo del Periodo</div>
-                        <div className="text-2xl font-bold">
-                            {(stats.net / 100).toLocaleString("it-IT", { style: "currency", currency: "EUR" })}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="max-w-xl mx-auto mt-12 text-center space-y-6">
-                    <p className="text-muted-foreground">
-                        Premendo conferma, queste <strong className="text-foreground">{stats.count} transazioni</strong> diventeranno parte del tuo storico.
-                        Potrai sempre modificarle, cancellarle o riorganizzarle in seguito.
-                    </p>
-
-                    {isSaveError && (
-                        <div className="p-4 rounded-xl bg-destructive/10 text-destructive border border-destructive/20 flex items-center gap-3 text-left">
-                            <AlertCircle className="h-5 w-5 shrink-0" />
-                            <div>
-                                <p className="font-bold text-sm">Errore durante il salvataggio</p>
-                                <p className="text-xs opacity-90">Ci dispiace, qualcosa è andato storto. Riprova.</p>
+                <MacroSection>
+                    <div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {/* KPI Cards */}
+                        <div className="bg-emerald-500/5 p-6 rounded-2xl border border-emerald-500/20 flex flex-col justify-center items-center text-emerald-700 dark:text-emerald-400">
+                            <TrendingUp className="h-8 w-8 mb-2 opacity-50" />
+                            <div className="text-sm font-medium opacity-70">Entrate Totali</div>
+                            <div className="text-2xl font-bold">
+                                {(stats.income / 100).toLocaleString("it-IT", { style: "currency", currency: "EUR" })}
                             </div>
                         </div>
-                    )}
 
-                    {!isSaveError && (
-                        <div className="p-4 rounded-xl bg-muted/30 border border-dashed border-muted-foreground/20 text-xs text-muted-foreground">
-                            Nota: Questo import genererà un ID batch unico per permetterti, se serve, di annullare l&apos;intera operazione in un colpo solo.
+                        <div className="bg-rose-500/5 p-6 rounded-2xl border border-rose-500/20 flex flex-col justify-center items-center text-rose-700 dark:text-rose-400">
+                            <TrendingDown className="h-8 w-8 mb-2 opacity-50" />
+                            <div className="text-sm font-medium opacity-70">Uscite Totali</div>
+                            <div className="text-2xl font-bold">
+                                {(stats.expense / 100).toLocaleString("it-IT", { style: "currency", currency: "EUR" })}
+                            </div>
                         </div>
-                    )}
-                </div>
+
+                        <div className="bg-primary/5 p-6 rounded-2xl border border-primary/20 flex flex-col justify-center items-center text-primary md:col-span-1 border-t-4 border-t-primary">
+                            <Wallet className="h-8 w-8 mb-2 opacity-50" />
+                            <div className="text-sm font-medium opacity-70">Saldo del Periodo</div>
+                            <div className="text-2xl font-bold">
+                                {(stats.net / 100).toLocaleString("it-IT", { style: "currency", currency: "EUR" })}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="max-w-xl mx-auto mt-12 text-center space-y-6">
+                        <p className="text-muted-foreground">
+                            Premendo conferma, queste <strong className="text-foreground">{stats.count} transazioni</strong> diventeranno parte del tuo storico.
+                            Potrai sempre modificarle, cancellarle o riorganizzarle in seguito.
+                        </p>
+
+                        {isSaveError && (
+                            <div className="p-4 rounded-xl bg-destructive/10 text-destructive border border-destructive/20 flex items-center gap-3 text-left">
+                                <AlertCircle className="h-5 w-5 shrink-0" />
+                                <div>
+                                    <p className="font-bold text-sm">Errore durante il salvataggio</p>
+                                    <p className="text-xs opacity-90">Ci dispiace, qualcosa è andato storto. Riprova.</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </MacroSection>
             </div>
         </WizardShell>
     )

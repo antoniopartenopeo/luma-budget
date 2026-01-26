@@ -15,6 +15,7 @@ import { StateMessage } from "@/components/ui/state-message"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { PageHeader } from "@/components/ui/page-header"
 import { getDaysElapsedInMonth, getDaysInMonth } from "@/lib/date-ranges"
+import { StaggerContainer } from "@/components/patterns/stagger-container"
 
 export default function BudgetPage() {
     const [period, setPeriod] = useState(getCurrentPeriod())
@@ -104,7 +105,7 @@ export default function BudgetPage() {
             <div className="space-y-6">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Budget</h1>
+                        <h1 className="text-3xl font-bold tracking-tight text-foreground">Budget</h1>
                         <p className="text-muted-foreground">
                             Gestisci il tuo budget mensile.
                         </p>
@@ -123,7 +124,7 @@ export default function BudgetPage() {
     }
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500 w-full">
+        <div className="space-y-8 w-full">
             {/* Header */}
             <PageHeader
                 title="Budget"
@@ -141,45 +142,42 @@ export default function BudgetPage() {
                 </Alert>
             )}
 
-            {/* Global Budget Card */}
-            <GlobalBudgetCard
-                budgetCents={budget?.globalBudgetAmountCents || 0}
-                spentCents={spending.globalSpentCents}
-                isLoading={isLoading}
-                onSave={handleSaveGlobalBudget}
-                isSaving={isSaving}
-                elapsedRatio={elapsedRatio}
-            />
+            <StaggerContainer>
+                {/* Global Budget Card */}
+                <GlobalBudgetCard
+                    budgetCents={budget?.globalBudgetAmountCents || 0}
+                    spentCents={spending.globalSpentCents}
+                    isLoading={isLoading}
+                    onSave={handleSaveGlobalBudget}
+                    isSaving={isSaving}
+                    elapsedRatio={elapsedRatio}
+                />
 
-            {/* Group Budget Cards Section */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.5 }}
-                className="space-y-6 pt-4"
-            >
-                <div className="flex flex-col gap-1">
-                    <h2 className="text-xl font-bold tracking-tight text-foreground/90">Gruppi di Spesa</h2>
-                    <p className="text-sm text-muted-foreground font-medium">
-                        Analisi dettagliata per natura di spesa (Essenziali, Comfort, Superflue).
-                    </p>
-                </div>
+                {/* Group Budget Cards Section */}
+                <div className="space-y-6 pt-4">
+                    <div className="flex flex-col gap-1">
+                        <h2 className="text-xl font-bold tracking-tight text-foreground/90">Gruppi di Spesa</h2>
+                        <p className="text-sm text-muted-foreground font-medium">
+                            Analisi dettagliata per natura di spesa (Essenziali, Comfort, Superflue).
+                        </p>
+                    </div>
 
-                <div className="flex flex-col gap-6 pb-12">
-                    {BUDGET_GROUPS.map((groupId, index) => (
-                        <GroupBudgetCard
-                            key={groupId}
-                            groupId={groupId}
-                            budgetCents={getGroupBudget(groupId)}
-                            spentCents={getGroupSpent(groupId)}
-                            isLoading={isLoading}
-                            onSave={handleSaveGroupBudget}
-                            isSaving={isSaving}
-                            elapsedRatio={elapsedRatio}
-                        />
-                    ))}
+                    <div className="flex flex-col gap-6 pb-12">
+                        {BUDGET_GROUPS.map((groupId) => (
+                            <GroupBudgetCard
+                                key={groupId}
+                                groupId={groupId}
+                                budgetCents={getGroupBudget(groupId)}
+                                spentCents={getGroupSpent(groupId)}
+                                isLoading={isLoading}
+                                onSave={handleSaveGroupBudget}
+                                isSaving={isSaving}
+                                elapsedRatio={elapsedRatio}
+                            />
+                        ))}
+                    </div>
                 </div>
-            </motion.div>
+            </StaggerContainer>
         </div>
     )
 }

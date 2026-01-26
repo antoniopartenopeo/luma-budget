@@ -122,7 +122,7 @@ export function CategoryDistributionEChart({ data, isLoading: isExternalLoading 
 
     if (isLoading) {
         return (
-            <Card className="rounded-xl shadow-sm border-none bg-card/50">
+            <Card className="rounded-xl glass-card">
                 <CardHeader>
                     <Skeleton className="h-6 w-32 mb-2" />
                     <Skeleton className="h-4 w-48" />
@@ -142,7 +142,7 @@ export function CategoryDistributionEChart({ data, isLoading: isExternalLoading 
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
         >
-            <Card className="rounded-2xl shadow-sm hover:shadow-md transition-all h-full border-none bg-card/50 backdrop-blur-sm">
+            <Card className="rounded-2xl h-full glass-card hover:shadow-md transition-all">
                 <CardHeader className="pb-2">
                     <CardTitle className="text-xl font-bold tracking-tight">Categorie</CardTitle>
                     <CardDescription>Distribuzione delle spese nel periodo</CardDescription>

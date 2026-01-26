@@ -63,7 +63,7 @@ export function AIAdvisorCard() {
             <div className="flex flex-col gap-6">
                 {/* 1. Proiezione */}
                 {forecast && (
-                    <div className="relative group rounded-3xl glass-card hover:bg-white/70 dark:hover:bg-white/10 p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="relative group rounded-2xl glass-card hover:bg-white/70 dark:hover:bg-white/10 p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div className="space-y-4">
                             <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-widest">
                                 <TrendingUp className="h-4 w-4 text-emerald-500" />
@@ -79,7 +79,7 @@ export function AIAdvisorCard() {
                             </div>
                         </div>
                         <div className={cn(
-                            "px-4 py-2 rounded-2xl text-xs font-black border self-start md:self-auto",
+                            "px-4 py-2 rounded-xl text-xs font-black border self-start md:self-auto",
                             forecast.confidence === "high"
                                 ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
                                 : "bg-amber-500/10 text-amber-600 border-amber-500/20"
@@ -91,7 +91,7 @@ export function AIAdvisorCard() {
 
                 {/* 2. Subscriptions */}
                 {subscriptions.length > 0 && (
-                    <div className="rounded-3xl glass-card hover:bg-white/70 dark:hover:bg-white/10 p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="rounded-2xl glass-card hover:bg-white/70 dark:hover:bg-white/10 p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div className="space-y-4">
                             <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-widest">
                                 <Wallet className="h-4 w-4 text-indigo-500" />
@@ -115,14 +115,14 @@ export function AIAdvisorCard() {
 
                 {/* 3. Smart Tip (Orchestrated) */}
                 {primary && (
-                    <div className="rounded-3xl bg-gradient-to-br from-indigo-500/5 to-purple-500/5 border border-indigo-500/10 p-6 relative overflow-hidden shadow-inner">
-                        <div className="flex items-center gap-2 text-xs font-black text-indigo-600 dark:text-indigo-400 mb-4 uppercase tracking-widest">
+                    <div className="rounded-2xl bg-gradient-to-br from-indigo-500/5 to-purple-500/5 border border-indigo-500/10 p-6 relative overflow-hidden shadow-inner">
+                        <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-4">
                             <Lightbulb className="h-4 w-4 fill-current" />
                             SMART ADVICE
                         </div>
 
                         <div className="space-y-4">
-                            <p className="text-lg leading-relaxed text-foreground/90 font-bold tracking-tight">
+                            <p className="text-sm font-medium leading-relaxed text-foreground/90">
                                 &quot;{primary.narration.text}&quot;
                             </p>
 
@@ -130,7 +130,7 @@ export function AIAdvisorCard() {
                                 <div className="space-y-2 pt-4 border-t border-indigo-500/10">
                                     {secondary.map((s, idx) => (
                                         <p key={idx} className="text-xs leading-relaxed text-muted-foreground/80 font-medium italic">
-                                            <span className="font-black uppercase not-italic mr-2 text-indigo-500/40 text-[10px] tracking-widest">Contesto:</span>
+                                            <span className="font-bold uppercase not-italic mr-2 text-indigo-500/40 text-[10px] tracking-wider">Contesto:</span>
                                             {s.narration.text}
                                         </p>
                                     ))}

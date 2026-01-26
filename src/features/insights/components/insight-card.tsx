@@ -68,7 +68,7 @@ export function InsightCard({ insight }: InsightCardProps) {
             <Card
                 className={cn(
                     "group relative overflow-hidden rounded-2xl border bg-card/50 backdrop-blur-sm transition-all duration-300 hover:shadow-md cursor-pointer",
-                    isExpanded ? "ring-2 ring-primary/5 shadow-lg bg-card" : "hover:bg-accent/5"
+                    isExpanded ? "border-primary/20 shadow-lg bg-card" : "hover:bg-accent/5"
                 )}
                 onClick={() => setIsExpanded(!isExpanded)}
             >

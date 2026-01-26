@@ -25,6 +25,9 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -39,37 +42,53 @@
   --color-card: var(--card);
 
   /* NUMA PREMIUM FOUNDATION */
-  --radius-xl: var(--radius); /* 2.5rem / 40px - Macro surfaces */
-  --radius-lg: 1rem;            /* 16px - Large cards (legacy ref) */
-  --radius-md: 0.75rem;         /* 12px - Controls (Buttons, Inputs) */
-  --radius-sm: 0.5rem;          /* 8px - Small elements */
+  --radius-xl: var(--radius);
+  /* 2.5rem / 40px - Macro surfaces */
+  --radius-lg: 1rem;
+  /* 16px - Large cards (legacy ref) */
+  --radius-md: 0.75rem;
+  /* 12px - Controls (Buttons, Inputs) */
+  --radius-sm: 0.5rem;
+  /* 8px - Small elements */
 }
 
 :root {
-  --radius: 2.5rem; /* Standard Numa Premium Macro Radius */
+  --radius: 2.5rem;
+  /* Standard Numa Premium Macro Radius */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.6 0.16 200); /* NUMA Teal */
+  --primary: oklch(0.6 0.16 200);
+  /* NUMA Teal */
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.95 0.05 200); /* Cyan tint */
+  --accent: oklch(0.95 0.05 200);
+  /* Cyan tint */
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
+  --success: oklch(0.6 0.16 160);
+  /* Emerald-600 equivalent */
+  --warning: oklch(0.75 0.18 70);
+  /* Amber-500 equivalent */
+  --info: oklch(0.6 0.16 250);
+  /* Blue-500 equivalent */
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.6 0.16 200 / 0.3);
-  --chart-1: oklch(0.6 0.16 200); /* Teal */
-  --chart-2: oklch(0.7 0.15 180); /* Cyan */
+  --chart-1: oklch(0.6 0.16 200);
+  /* Teal */
+  --chart-2: oklch(0.7 0.15 180);
+  /* Cyan */
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08); /* Conserved Lime as decorative */
+  --chart-5: oklch(0.769 0.188 70.08);
+  /* Conserved Lime as decorative */
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.6 0.16 200);
@@ -87,7 +106,8 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.6 0.16 200); /* NUMA Teal */
+  --primary: oklch(0.6 0.16 200);
+  /* NUMA Teal */
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
@@ -96,6 +116,9 @@
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
+  --success: oklch(0.6 0.16 160);
+  --warning: oklch(0.75 0.18 70);
+  --info: oklch(0.6 0.16 250);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.6 0.16 200 / 0.3);
@@ -118,7 +141,7 @@
   .glass-panel {
     @apply bg-white/60 dark:bg-slate-900/60 border border-white/40 dark:border-white/10 backdrop-blur-xl shadow-xl;
   }
-  
+
   .glass-card {
     @apply bg-white/50 dark:bg-white/5 border border-white/40 dark:border-white/10 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300;
   }
@@ -128,6 +151,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }

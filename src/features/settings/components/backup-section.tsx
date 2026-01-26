@@ -27,6 +27,7 @@ import {
     BackupSummary,
     BackupV1
 } from "@/features/settings/backup/backup-utils"
+import { MacroSection } from "@/components/patterns/macro-section"
 
 export function BackupSection() {
     const queryClient = useQueryClient()
@@ -130,74 +131,76 @@ export function BackupSection() {
 
     return (
         <>
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                        <Download className="h-5 w-5" />
+
+            <MacroSection
+                title={
+                    <div className="flex items-center gap-2 text-2xl font-bold tracking-tight">
+                        <Download className="h-6 w-6" />
                         Backup & Ripristino
-                    </CardTitle>
-                    <CardDescription>
+                    </div>
+                }
+                description={
+                    <>
                         Esporta i tuoi dati in un file JSON o importa un backup esistente.
                         L&apos;importazione sovrascriverà tutti i dati attuali.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    {status && (
-                        <Alert variant={status.type === "success" ? "default" : "destructive"} className={status.type === "success" ? "border-green-500/20 bg-green-500/5 text-green-600 dark:text-green-400" : ""}>
-                            {status.type === "success" ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
-                            <AlertTitle>{status.type === "success" ? "Operazione completata" : "Errore"}</AlertTitle>
-                            <AlertDescription>{status.message}</AlertDescription>
-                        </Alert>
-                    )}
+                    </>
+                }
+            >
+                {status && (
+                    <Alert variant={status.type === "success" ? "default" : "destructive"} className={status.type === "success" ? "border-green-500/20 bg-green-500/5 text-green-600 dark:text-green-400" : ""}>
+                        {status.type === "success" ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
+                        <AlertTitle>{status.type === "success" ? "Operazione completata" : "Errore"}</AlertTitle>
+                        <AlertDescription>{status.message}</AlertDescription>
+                    </Alert>
+                )}
 
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        <div className="flex-1 space-y-4">
-                            <div className="space-y-2">
-                                <h3 className="text-sm font-medium">Esporta</h3>
-                                <p className="text-xs text-muted-foreground">Scarica una copia dei tuoi dati sul dispositivo.</p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="flex-1 space-y-4">
+                        <div className="space-y-2">
+                            <h3 className="text-sm font-medium">Esporta</h3>
+                            <p className="text-xs text-muted-foreground">Scarica una copia dei tuoi dati sul dispositivo.</p>
+                            <Button
+                                variant="outline"
+                                onClick={handleExport}
+                                disabled={isLoading}
+                                className="w-full sm:w-auto"
+                            >
+                                <Download className="mr-2 h-4 w-4" />
+                                Esporta Backup
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 space-y-4 border-t sm:border-t-0 sm:border-l pt-4 sm:pt-0 sm:pl-6">
+                        <div className="space-y-2">
+                            <h3 className="text-sm font-medium">Importa</h3>
+                            <p className="text-xs text-muted-foreground">Carica un file di backup precedentemente esportato.</p>
+                            <div className="flex flex-col gap-2">
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept=".json"
+                                    onChange={handleImport}
+                                    className="hidden"
+                                    id="backup-upload"
+                                    disabled={isLoading}
+                                />
                                 <Button
                                     variant="outline"
-                                    onClick={handleExport}
+                                    asChild
                                     disabled={isLoading}
                                     className="w-full sm:w-auto"
                                 >
-                                    <Download className="mr-2 h-4 w-4" />
-                                    Esporta Backup
+                                    <label htmlFor="backup-upload" className="cursor-pointer">
+                                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                                        Importa Backup
+                                    </label>
                                 </Button>
                             </div>
                         </div>
-
-                        <div className="flex-1 space-y-4 border-t sm:border-t-0 sm:border-l pt-4 sm:pt-0 sm:pl-6">
-                            <div className="space-y-2">
-                                <h3 className="text-sm font-medium">Importa</h3>
-                                <p className="text-xs text-muted-foreground">Carica un file di backup precedentemente esportato.</p>
-                                <div className="flex flex-col gap-2">
-                                    <input
-                                        ref={fileInputRef}
-                                        type="file"
-                                        accept=".json"
-                                        onChange={handleImport}
-                                        className="hidden"
-                                        id="backup-upload"
-                                        disabled={isLoading}
-                                    />
-                                    <Button
-                                        variant="outline"
-                                        asChild
-                                        disabled={isLoading}
-                                        className="w-full sm:w-auto"
-                                    >
-                                        <label htmlFor="backup-upload" className="cursor-pointer">
-                                            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
-                                            Importa Backup
-                                        </label>
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+            </MacroSection>
 
             {/* Import Confirmation Dialog */}
             <AlertDialog open={showImportDialog} onOpenChange={setShowImportDialog}>

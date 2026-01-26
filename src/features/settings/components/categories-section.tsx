@@ -30,6 +30,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { MacroSection } from "@/components/patterns/macro-section"
 import { useCategories, useArchiveCategory, useUnarchiveCategory, useResetCategories, useUpsertCategory } from "@/features/categories/api/use-categories"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { CategoryFormSheet } from "@/features/categories/components/category-form-sheet"
@@ -218,102 +219,99 @@ export function CategoriesSection() {
 
     return (
         <>
-            <Card className="border-none shadow-none sm:border sm:shadow-sm">
-                <CardHeader className="px-0 sm:px-6">
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <div className="space-y-1 text-center sm:text-left">
-                            <CardTitle className="flex items-center justify-center sm:justify-start gap-2 text-lg">
-                                <Database className="h-5 w-5" />
-                                Categorie
-                            </CardTitle>
-                            <CardDescription>
-                                Organizza le tue entrate e uscite
-                            </CardDescription>
-                        </div>
-                        <Button onClick={handleCreateClick} size="sm" className="w-full sm:w-auto gap-2 rounded-full font-bold shadow-lg shadow-primary/20">
-                            <Plus className="h-4 w-4" />
-                            Nuova Categoria
-                        </Button>
+
+            <MacroSection
+                title={
+                    <div className="flex items-center gap-2 text-2xl font-bold tracking-tight">
+                        <Database className="h-6 w-6" />
+                        Categorie
                     </div>
-                </CardHeader>
-                <CardContent className="px-0 sm:px-6">
-                    {isCategoriesLoading ? (
-                        <div className="space-y-4">
-                            <Skeleton className="h-10 w-full rounded-xl" />
-                            <Skeleton className="h-[200px] w-full rounded-xl" />
-                        </div>
-                    ) : (
-                        <div className="space-y-6">
-                            {/* Controls */}
-                            {/* Controls */}
-                            <div className="flex flex-col gap-4">
-                                <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
-                                    <div className="relative w-full sm:max-w-xs">
-                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                        <Input
-                                            placeholder="Cerca categoria..."
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="pl-9 h-9 bg-muted/50 border-none rounded-xl"
-                                        />
-                                    </div>
-                                    <div className="flex items-center justify-between sm:justify-end gap-3 bg-muted/30 p-2 sm:p-0 rounded-lg sm:bg-transparent">
-                                        <Label htmlFor="show-archived" className="text-sm cursor-pointer text-muted-foreground font-medium pl-2 sm:pl-0">
-                                            Mostra archiviate
-                                        </Label>
-                                        <Switch
-                                            id="show-archived"
-                                            checked={showArchived}
-                                            onCheckedChange={setShowArchived}
-                                            className="scale-90"
-                                        />
-                                    </div>
+                }
+                description="Organizza le tue entrate e uscite"
+                headerActions={
+                    <Button onClick={handleCreateClick} size="sm" className="w-full sm:w-auto gap-2 rounded-full font-bold shadow-lg shadow-primary/20">
+                        <Plus className="h-4 w-4" />
+                        Nuova Categoria
+                    </Button>
+                }
+                contentClassName="px-0 sm:px-6"
+            >
+                {isCategoriesLoading ? (
+                    <div className="space-y-4">
+                        <Skeleton className="h-10 w-full rounded-xl" />
+                        <Skeleton className="h-[200px] w-full rounded-xl" />
+                    </div>
+                ) : (
+                    <div className="space-y-6">
+                        {/* Controls */}
+                        {/* Controls */}
+                        <div className="flex flex-col gap-4">
+                            <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
+                                <div className="relative w-full sm:max-w-xs">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                    <Input
+                                        placeholder="Cerca categoria..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="pl-9 h-9 bg-muted/50 border-none rounded-xl"
+                                    />
+                                </div>
+                                <div className="flex items-center justify-between sm:justify-end gap-3 bg-muted/30 p-2 sm:p-0 rounded-lg sm:bg-transparent">
+                                    <Label htmlFor="show-archived" className="text-sm cursor-pointer text-muted-foreground font-medium pl-2 sm:pl-0">
+                                        Mostra archiviate
+                                    </Label>
+                                    <Switch
+                                        id="show-archived"
+                                        checked={showArchived}
+                                        onCheckedChange={setShowArchived}
+                                        className="scale-90"
+                                    />
                                 </div>
                             </div>
-
-                            {/* Tabs & List */}
-                            <Tabs defaultValue="expense" value={activeTab} onValueChange={setActiveTab} className="w-full">
-                                <TabsList className="grid w-full grid-cols-2 rounded-xl h-10 p-1 bg-muted/50">
-                                    <TabsTrigger value="expense" className="rounded-lg font-bold text-xs data-[state=active]:bg-background data-[state=active]:text-rose-600 data-[state=active]:shadow-sm transition-all duration-300">
-                                        Uscite ({expenseCategories.length})
-                                    </TabsTrigger>
-                                    <TabsTrigger value="income" className="rounded-lg font-bold text-xs data-[state=active]:bg-background data-[state=active]:text-emerald-600 data-[state=active]:shadow-sm transition-all duration-300">
-                                        Entrate ({incomeCategories.length})
-                                    </TabsTrigger>
-                                </TabsList>
-                                <TabsContent value="expense" className="mt-6 focus-visible:outline-none animate-in fade-in-50 slide-in-from-bottom-2 duration-300">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Lista Uscite</h3>
-                                        <span className="text-xs text-muted-foreground">{expenseCategories.length} trovate</span>
-                                    </div>
-                                    {renderCategoryList(expenseCategories, "Nessuna categoria di spesa.")}
-                                </TabsContent>
-                                <TabsContent value="income" className="mt-6 focus-visible:outline-none animate-in fade-in-50 slide-in-from-bottom-2 duration-300">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Lista Entrate</h3>
-                                        <span className="text-xs text-muted-foreground">{incomeCategories.length} trovate</span>
-                                    </div>
-                                    {renderCategoryList(incomeCategories, "Nessuna categoria di entrata.")}
-                                </TabsContent>
-                            </Tabs>
-
-                            {/* Reset Action */}
-                            <div className="flex justify-center pt-8 border-t">
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="gap-2 text-muted-foreground hover:text-destructive text-xs"
-                                    onClick={() => setShowResetDialog(true)}
-                                    disabled={isOperationPending}
-                                >
-                                    <RotateCcw className="h-3 w-3" />
-                                    Ripristina Defaults
-                                </Button>
-                            </div>
                         </div>
-                    )}
-                </CardContent>
-            </Card>
+
+                        {/* Tabs & List */}
+                        <Tabs defaultValue="expense" value={activeTab} onValueChange={setActiveTab} className="w-full">
+                            <TabsList className="grid w-full grid-cols-2 rounded-xl h-10 p-1 bg-muted/50">
+                                <TabsTrigger value="expense" className="rounded-lg font-bold text-xs data-[state=active]:bg-background data-[state=active]:text-rose-600 data-[state=active]:shadow-sm transition-all duration-300">
+                                    Uscite ({expenseCategories.length})
+                                </TabsTrigger>
+                                <TabsTrigger value="income" className="rounded-lg font-bold text-xs data-[state=active]:bg-background data-[state=active]:text-emerald-600 data-[state=active]:shadow-sm transition-all duration-300">
+                                    Entrate ({incomeCategories.length})
+                                </TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="expense" className="mt-6 focus-visible:outline-none animate-in fade-in-50 slide-in-from-bottom-2 duration-300">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Lista Uscite</h3>
+                                    <span className="text-xs text-muted-foreground">{expenseCategories.length} trovate</span>
+                                </div>
+                                {renderCategoryList(expenseCategories, "Nessuna categoria di spesa.")}
+                            </TabsContent>
+                            <TabsContent value="income" className="mt-6 focus-visible:outline-none animate-in fade-in-50 slide-in-from-bottom-2 duration-300">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Lista Entrate</h3>
+                                    <span className="text-xs text-muted-foreground">{incomeCategories.length} trovate</span>
+                                </div>
+                                {renderCategoryList(incomeCategories, "Nessuna categoria di entrata.")}
+                            </TabsContent>
+                        </Tabs>
+
+                        {/* Reset Action */}
+                        <div className="flex justify-center pt-8 border-t">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="gap-2 text-muted-foreground hover:text-destructive text-xs"
+                                onClick={() => setShowResetDialog(true)}
+                                disabled={isOperationPending}
+                            >
+                                <RotateCcw className="h-3 w-3" />
+                                Ripristina Defaults
+                            </Button>
+                        </div>
+                    </div>
+                )}
+            </MacroSection>
 
             {/* Archive Confirmation Dialog */}
             <AlertDialog open={!!archiveDialogId} onOpenChange={(open) => !open && setArchiveDialogId(null)}>

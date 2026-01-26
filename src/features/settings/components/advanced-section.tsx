@@ -21,6 +21,7 @@ import { seedTransactions, __resetTransactionsCache } from "@/features/transacti
 import { resetSettings } from "@/features/settings/api/repository"
 import { resetAllData } from "@/features/settings/backup/backup-utils"
 import { buildDiagnosticsSnapshot, DiagnosticsSnapshot } from "@/features/settings/diagnostics/diagnostics-utils"
+import { MacroSection } from "@/components/patterns/macro-section"
 
 type ResetType = "transactions" | "budgets" | "settings" | "all" | null
 
@@ -178,18 +179,17 @@ export function AdvancedSection() {
     return (
         <>
             <div className="space-y-6">
-                {/* Diagnostics */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-lg">
-                            <Wrench className="h-5 w-5" />
-                            About & Diagnostics
-                        </CardTitle>
-                        <CardDescription>
-                            Informazioni tecniche sulla versione e sullo stato dei dati locali.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
+                <div className="space-y-6">
+                    {/* Diagnostics */}
+                    <MacroSection
+                        title={
+                            <div className="flex items-center gap-2 text-2xl font-bold tracking-tight">
+                                <Wrench className="h-6 w-6" />
+                                About & Diagnostics
+                            </div>
+                        }
+                        description="Informazioni tecniche sulla versione e sullo stato dei dati locali."
+                    >
                         {diagnostics ? (
                             <div className="space-y-4">
                                 <div className="flex flex-wrap items-center gap-x-8 gap-y-2 text-sm">
@@ -284,21 +284,19 @@ export function AdvancedSection() {
                                 Caricamento diagnostica in corso... (disponibile solo nel browser)
                             </div>
                         )}
-                    </CardContent>
-                </Card>
+                    </MacroSection>
 
-                {/* Danger Zone */}
-                <Card className="border-destructive/20">
-                    <CardHeader>
-                        <CardTitle className="text-destructive flex items-center gap-2">
-                            <Trash2 className="h-5 w-5" />
-                            Gestione Dati e Ripristino
-                        </CardTitle>
-                        <CardDescription>
-                            Azioni distruttive per rimuovere i dati dall&apos;applicazione.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
+                    {/* Danger Zone */}
+                    <MacroSection
+                        status="critical"
+                        title={
+                            <div className="flex items-center gap-2 text-2xl font-bold tracking-tight text-destructive">
+                                <Trash2 className="h-6 w-6" />
+                                Gestione Dati e Ripristino
+                            </div>
+                        }
+                        description="Azioni distruttive per rimuovere i dati dall'applicazione."
+                    >
                         {status && (
                             <Alert variant={status.type === "success" ? "default" : "destructive"} className={`mb-6 ${status.type === "success" ? "border-green-500/20 bg-green-500/5 text-green-600 dark:text-green-400" : ""}`}>
                                 {status.type === "success" ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
@@ -377,17 +375,17 @@ export function AdvancedSection() {
                                 </div>
                             </div>
                         </div>
-                    </CardContent>
-                </Card>
+                    </MacroSection>
 
-                {/* Privacy Note */}
-                <Alert>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Nota sulla privacy</AlertTitle>
-                    <AlertDescription>
-                        NUMA Budget è un&apos;applicazione &quot;local-first&quot;. I tuoi dati non lasciano mai questo dispositivo e non vengono inviati a nessun server esterno.
-                    </AlertDescription>
-                </Alert>
+                    {/* Privacy Note */}
+                    <Alert>
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Nota sulla privacy</AlertTitle>
+                        <AlertDescription>
+                            NUMA Budget è un&apos;applicazione &quot;local-first&quot;. I tuoi dati non lasciano mai questo dispositivo e non vengono inviati a nessun server esterno.
+                        </AlertDescription>
+                    </Alert>
+                </div>
             </div>
 
 

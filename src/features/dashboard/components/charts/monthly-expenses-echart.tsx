@@ -111,7 +111,7 @@ export function MonthlyExpensesEChart({ data, isLoading, isError, onRetry }: Mon
 
     if (isLoading) {
         return (
-            <Card className="col-span-2 rounded-xl shadow-sm border-none bg-card/50">
+            <Card className="col-span-2 rounded-xl glass-card">
                 <CardHeader>
                     <Skeleton className="h-6 w-32 mb-2" />
                     <Skeleton className="h-4 w-48" />
@@ -146,7 +146,7 @@ export function MonthlyExpensesEChart({ data, isLoading, isError, onRetry }: Mon
             transition={{ duration: 0.5 }}
             className="col-span-2"
         >
-            <Card className="rounded-2xl shadow-sm hover:shadow-md transition-all h-full border-none bg-card/50 backdrop-blur-sm">
+            <Card className="rounded-2xl h-full glass-card hover:shadow-md transition-all">
                 <CardHeader className="pb-2">
                     <CardTitle className="text-xl font-bold tracking-tight">Spese Mensili</CardTitle>
                     <CardDescription>Andamento nel periodo selezionato</CardDescription>

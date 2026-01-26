@@ -20,6 +20,7 @@ import { PageHeader } from "@/components/ui/page-header"
 import { StateMessage } from "@/components/ui/state-message"
 import { Skeleton } from "@/components/ui/skeleton"
 import { TransactionsActions } from "@/features/transactions/components/transactions-actions"
+import { MacroSection } from "@/components/patterns/macro-section"
 
 const PAGE_SIZE = 15
 
@@ -104,7 +105,7 @@ function TransactionsPageContent() {
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
-            {/* Header */}
+            {/* Header: PageHeader component preferred */}
             <PageHeader
                 title="Transazioni"
                 description="Analisi dettagliata del tuo flusso di cassa."
@@ -118,68 +119,77 @@ function TransactionsPageContent() {
                 }
             />
 
-            {/* Summary KPI Bar */}
-            <TransactionsSummaryBar summary={summary} isLoading={isLoading} />
+            {/* MacroSection for Main Content */}
+            <MacroSection
+                title="Elenco Movimenti"
+                description="Tutte le transazioni del periodo"
+                headerActions={
+                    <TransactionsFilterBar
+                        searchValue={search}
+                        onSearchChange={(v) => updateParams({ q: v, p: "1" })}
+                        typeValue={type}
+                        onTypeChange={(v) => updateParams({ type: v, p: "1" })}
+                        categoryValue={categoryId}
+                        onCategoryChange={(v) => updateParams({ cat: v, p: "1" })}
+                        periodValue={period}
+                        onPeriodChange={(v) => updateParams({ period: v, p: "1", from: null, to: null })}
+                        dateRange={{ from: fromDate, to: toDate }}
+                        onDateRangeChange={(range) => updateParams({ from: range.from || null, to: range.to || null, p: "1" })}
+                        isSuperfluousOnly={type === "superfluous"}
+                        onSuperfluousChange={() => { }}
+                        onResetFilters={resetFilters}
+                    />
+                }
+                className="h-full"
+            >
 
-            {/* Filters Section */}
-            <div className="p-4 bg-card/30 border border-muted-foreground/10 rounded-2xl shadow-sm backdrop-blur-md">
-                <TransactionsFilterBar
-                    searchValue={search}
-                    onSearchChange={(v) => updateParams({ q: v, p: "1" })}
-                    typeValue={type}
-                    onTypeChange={(v) => updateParams({ type: v, p: "1" })}
-                    categoryValue={categoryId}
-                    onCategoryChange={(v) => updateParams({ cat: v, p: "1" })}
-                    periodValue={period}
-                    onPeriodChange={(v) => updateParams({ period: v, p: "1", from: null, to: null })}
-                    dateRange={{ from: fromDate, to: toDate }}
-                    onDateRangeChange={(range) => updateParams({ from: range.from || null, to: range.to || null, p: "1" })}
-                    isSuperfluousOnly={type === "superfluous"}
-                    onSuperfluousChange={() => { }} // No-op, now handled via type dropdown
-                    onResetFilters={resetFilters}
-                />
-            </div>
-
-            {/* Main Content: Table or Empty State */}
-            {isLoading ? (
-                <div className="space-y-4">
-                    <Skeleton className="h-20 w-full rounded-2xl" />
-                    <Skeleton className="h-64 w-full rounded-3xl" />
+                {/* Summary KPI Bar */}
+                <div className="mb-8">
+                    <TransactionsSummaryBar summary={summary} isLoading={isLoading} />
                 </div>
-            ) : filteredList.length > 0 ? (
-                <TransactionsTable
-                    transactions={paginatedList}
-                    onEditTransaction={handleEdit}
-                    onDeleteTransaction={handleDelete}
-                    onRowClick={(t) => {
-                        setSelectedDetail(t)
-                        setDetailMode("view")
-                    }}
-                    sortField={sort}
-                    sortOrder={order}
-                    onSortChange={handleSortChange}
-                    currentPage={page}
-                    totalPages={totalPages}
-                    onPageChange={(p) => updateParams({ p: p.toString() })}
-                />
-            ) : (
-                <div className="py-20 flex flex-col items-center justify-center text-center max-w-md mx-auto">
-                    <div className="w-20 h-20 rounded-full bg-muted/50 flex items-center justify-center mb-6">
-                        <ArrowUpRight className="h-10 w-10 text-muted-foreground/50" />
+
+                {/* Main Content: Table or Empty State */}
+                {isLoading ? (
+                    <div className="space-y-4">
+                        <Skeleton className="h-20 w-full rounded-2xl" />
+                        <Skeleton className="h-64 w-full rounded-3xl" />
                     </div>
-                    <h3 className="text-xl font-bold tracking-tight mb-2">Nessun risultato</h3>
-                    <p className="text-muted-foreground font-medium mb-8">
-                        Non abbiamo trovato transazioni che corrispondano ai criteri selezionati.
-                    </p>
-                    <Button
-                        onClick={resetFilters}
-                        variant="secondary"
-                        className="rounded-xl font-bold px-8"
-                    >
-                        Azzera tutti i filtri
-                    </Button>
-                </div>
-            )}
+                ) : filteredList.length > 0 ? (
+                    <TransactionsTable
+                        transactions={paginatedList}
+                        onEditTransaction={handleEdit}
+                        onDeleteTransaction={handleDelete}
+                        onRowClick={(t) => {
+                            setSelectedDetail(t)
+                            setDetailMode("view")
+                        }}
+                        sortField={sort}
+                        sortOrder={order}
+                        onSortChange={handleSortChange}
+                        currentPage={page}
+                        totalPages={totalPages}
+                        onPageChange={(p) => updateParams({ p: p.toString() })}
+                    />
+                ) : (
+                    <div className="py-20 flex flex-col items-center justify-center text-center max-w-md mx-auto">
+                        <div className="w-20 h-20 rounded-full bg-muted/50 flex items-center justify-center mb-6">
+                            <ArrowUpRight className="h-10 w-10 text-muted-foreground/50" />
+                        </div>
+                        <h3 className="text-xl font-bold tracking-tight mb-2 text-foreground">Nessun risultato</h3>
+                        <p className="text-muted-foreground font-medium mb-8 leading-relaxed">
+                            Non abbiamo trovato transazioni che corrispondano ai criteri selezionati.
+                        </p>
+                        <Button
+                            onClick={resetFilters}
+                            variant="secondary"
+                            className="rounded-xl font-bold px-8"
+                        >
+                            Azzera tutti i filtri
+                        </Button>
+                    </div>
+                )}
+
+            </MacroSection>
 
             {/* Detail Sidebar */}
             <TransactionDetailSheet

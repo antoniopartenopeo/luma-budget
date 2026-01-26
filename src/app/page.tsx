@@ -11,6 +11,9 @@ import { DashboardTimeFilter } from "@/features/dashboard/api/types"
 
 import { PageHeader } from "@/components/ui/page-header"
 
+import { StaggerContainer } from "@/components/patterns/stagger-container"
+import { MacroSection } from "@/components/patterns/macro-section"
+
 export default function DashboardPage() {
   const [filter, setFilter] = useState<DashboardTimeFilter>({
     mode: "month",
@@ -21,33 +24,42 @@ export default function DashboardPage() {
   const { data: transactions, isLoading: isLoadingTransactions } = useTransactions()
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-8 w-full">
       <PageHeader
         title="Dashboard"
         description="Panoramica delle tue finanze"
       />
 
-      <DashboardFilterBar filter={filter} onFilterChange={setFilter} />
+      <StaggerContainer>
+        {/* HERO SECTION: Financial Overview & KPIs */}
+        <MacroSection
+          title="Panoramica Finanziaria"
+          description="Indicatori chiave del mese corrente"
+          headerActions={<DashboardFilterBar filter={filter} onFilterChange={setFilter} />}
+          className="w-full"
+        >
+          <DashboardKpiGrid
+            totalSpent={data?.totalSpent}
+            netBalance={data?.netBalance}
+            budgetTotal={data?.budgetTotal}
+            budgetRemaining={data?.budgetRemaining}
+            uselessSpendPercent={data?.uselessSpendPercent}
+            isLoading={isLoading}
+            filter={filter}
+          />
+        </MacroSection>
 
-      <DashboardKpiGrid
-        totalSpent={data?.totalSpent}
-        netBalance={data?.netBalance}
-        budgetTotal={data?.budgetTotal}
-        budgetRemaining={data?.budgetRemaining}
-        uselessSpendPercent={data?.uselessSpendPercent}
-        isLoading={isLoading}
-        filter={filter}
-      />
+        {/* SUBORDINATE CONTENT */}
+        <div className="space-y-6">
+          <SpendingCompositionCard
+            transactions={transactions || []}
+            filter={filter}
+            isLoading={isLoading || isLoadingTransactions}
+          />
 
-      <SpendingCompositionCard
-        transactions={transactions || []}
-        filter={filter}
-        isLoading={isLoading || isLoadingTransactions}
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <RecentTransactions filter={filter} />
-      </div>
+          <RecentTransactions filter={filter} />
+        </div>
+      </StaggerContainer>
     </div>
   )
 }

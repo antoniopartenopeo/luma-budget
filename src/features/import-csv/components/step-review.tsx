@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils"
 import { formatCents } from "@/domain/money"
 import { ReviewResult } from "./csv-import-wizard"
 import { WizardShell } from "./wizard-shell"
+import { MacroSection } from "@/components/patterns/macro-section"
 
 interface ImportStepReviewProps {
     initialState: ImportState
@@ -270,176 +271,178 @@ export function ImportStepReview({
                 </div>
 
                 {/* Content Area with Tabs - scrollable */}
-                <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "merchant" | "category")} className="flex-1 flex flex-col min-h-0">
-                    <div className="pb-4 shrink-0">
-                        <TabsList className="grid w-full grid-cols-2 h-9">
-                            <TabsTrigger value="merchant" className="gap-1.5 text-xs md:text-sm">
-                                <Store className="h-3.5 w-3.5" /> Per Esercente
-                            </TabsTrigger>
-                            <TabsTrigger value="category" className="gap-1.5 text-xs md:text-sm">
-                                <Tags className="h-3.5 w-3.5" /> Per Categoria
-                            </TabsTrigger>
-                        </TabsList>
-                    </div>
+                <MacroSection contentClassName="p-0">
+                    <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "merchant" | "category")} className="flex-1 flex flex-col min-h-0">
+                        <div className="pb-4 shrink-0">
+                            <TabsList className="grid w-full grid-cols-2 h-9">
+                                <TabsTrigger value="merchant" className="gap-1.5 text-xs md:text-sm">
+                                    <Store className="h-3.5 w-3.5" /> Per Esercente
+                                </TabsTrigger>
+                                <TabsTrigger value="category" className="gap-1.5 text-xs md:text-sm">
+                                    <Tags className="h-3.5 w-3.5" /> Per Categoria
+                                </TabsTrigger>
+                            </TabsList>
+                        </div>
 
-                    {/* View: Merchants - Accordion-based with subgroups */}
-                    <TabsContent value="merchant" className="flex-1 min-h-0 data-[state=inactive]:hidden mt-0">
-                        {filteredGroups.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-12 text-center">
-                                <Filter className="h-10 w-10 text-muted-foreground/50 mb-3" />
-                                <p className="text-muted-foreground text-sm">Nessun gruppo sopra la soglia selezionata</p>
-                                <Button variant="ghost" size="sm" className="mt-2" onClick={() => onThresholdChange(0)}>
-                                    Mostra tutti
-                                </Button>
-                            </div>
-                        ) : (
-                            <Accordion type="multiple" className="space-y-2">
-                                {filteredGroups.map((group, index) => {
-                                    const effectiveCatId = getGroupEffectiveCategory(group) ||
-                                        group.subgroups[0]?.categoryId ||
-                                        rows.find(r => r.merchantKey === group.merchantKey)?.suggestedCategoryId
-                                    const isHighImpact = index < Math.ceil(filteredGroups.length * 0.2) // Top 20%
-                                    const hasMultipleSubgroups = group.subgroups.length > 1
+                        {/* View: Merchants - Accordion-based with subgroups */}
+                        <TabsContent value="merchant" className="flex-1 min-h-0 data-[state=inactive]:hidden mt-0">
+                            {filteredGroups.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center py-12 text-center">
+                                    <Filter className="h-10 w-10 text-muted-foreground/50 mb-3" />
+                                    <p className="text-muted-foreground text-sm">Nessun gruppo sopra la soglia selezionata</p>
+                                    <Button variant="ghost" size="sm" className="mt-2" onClick={() => onThresholdChange(0)}>
+                                        Mostra tutti
+                                    </Button>
+                                </div>
+                            ) : (
+                                <Accordion type="multiple" className="space-y-2">
+                                    {filteredGroups.map((group, index) => {
+                                        const effectiveCatId = getGroupEffectiveCategory(group) ||
+                                            group.subgroups[0]?.categoryId ||
+                                            rows.find(r => r.merchantKey === group.merchantKey)?.suggestedCategoryId
+                                        const isHighImpact = index < Math.ceil(filteredGroups.length * 0.2) // Top 20%
+                                        const hasMultipleSubgroups = group.subgroups.length > 1
 
-                                    return (
-                                        <AccordionItem
-                                            key={group.id}
-                                            value={group.id}
-                                            className={cn(
-                                                "bg-card border rounded-xl shadow-sm overflow-hidden",
-                                                isHighImpact && "border-primary/30 ring-1 ring-primary/10"
-                                            )}
-                                        >
-                                            <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-muted/30 transition-colors">
-                                                <div className="flex items-center justify-between w-full gap-3 pr-2">
-                                                    <div className="flex-1 min-w-0 text-left">
-                                                        <div className="flex items-center gap-2 mb-0.5">
-                                                            <h3 className="font-bold text-sm md:text-base truncate">
-                                                                {group.label}
-                                                            </h3>
-                                                            {isHighImpact && (
-                                                                <Badge className="bg-primary/10 text-primary border-primary/20 text-[9px] uppercase tracking-wider shrink-0">
-                                                                    Top
-                                                                </Badge>
-                                                            )}
+                                        return (
+                                            <AccordionItem
+                                                key={group.id}
+                                                value={group.id}
+                                                className={cn(
+                                                    "bg-card border rounded-xl shadow-sm overflow-hidden",
+                                                    isHighImpact && "border-primary/30 ring-1 ring-primary/10"
+                                                )}
+                                            >
+                                                <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-muted/30 transition-colors">
+                                                    <div className="flex items-center justify-between w-full gap-3 pr-2">
+                                                        <div className="flex-1 min-w-0 text-left">
+                                                            <div className="flex items-center gap-2 mb-0.5">
+                                                                <h3 className="font-bold text-sm md:text-base truncate">
+                                                                    {group.label}
+                                                                </h3>
+                                                                {isHighImpact && (
+                                                                    <Badge className="bg-primary/10 text-primary border-primary/20 text-[9px] uppercase tracking-wider shrink-0">
+                                                                        Top
+                                                                    </Badge>
+                                                                )}
+                                                            </div>
+                                                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                                                <span className="font-semibold text-foreground">
+                                                                    {formatCents(Math.abs(group.totalCents))}
+                                                                </span>
+                                                                <span className="w-1 h-1 rounded-full bg-border" />
+                                                                <span>{group.rowCount} tx</span>
+                                                                {hasMultipleSubgroups && (
+                                                                    <>
+                                                                        <span className="w-1 h-1 rounded-full bg-border" />
+                                                                        <span>{group.subgroups.length} pattern</span>
+                                                                    </>
+                                                                )}
+                                                            </div>
                                                         </div>
-                                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                                            <span className="font-semibold text-foreground">
-                                                                {formatCents(Math.abs(group.totalCents))}
-                                                            </span>
-                                                            <span className="w-1 h-1 rounded-full bg-border" />
-                                                            <span>{group.rowCount} tx</span>
-                                                            {hasMultipleSubgroups && (
-                                                                <>
-                                                                    <span className="w-1 h-1 rounded-full bg-border" />
-                                                                    <span>{group.subgroups.length} pattern</span>
-                                                                </>
-                                                            )}
+                                                        <div className="shrink-0 w-32 md:w-40" onClick={e => e.stopPropagation()}>
+                                                            <CategoryPicker
+                                                                value={effectiveCatId || ""}
+                                                                onChange={(val) => setGroupCategory(group.id, val)}
+                                                                type="all"
+                                                                compact
+                                                            />
                                                         </div>
                                                     </div>
-                                                    <div className="shrink-0 w-32 md:w-40" onClick={e => e.stopPropagation()}>
-                                                        <CategoryPicker
-                                                            value={effectiveCatId || ""}
-                                                            onChange={(val) => setGroupCategory(group.id, val)}
-                                                            type="all"
-                                                            compact
-                                                        />
+                                                </AccordionTrigger>
+                                                <AccordionContent className="px-4 pb-4 pt-0">
+                                                    {hasMultipleSubgroups ? (
+                                                        // Nested subgroups accordion
+                                                        <Accordion type="multiple" className="space-y-1.5 mt-2">
+                                                            {group.subgroups.map(sg => {
+                                                                const sgCatId = getSubgroupEffectiveCategory(sg, group)
+                                                                const sgRows = sg.rowIds.map(getRowById).filter(Boolean) as EnrichedRow[]
+                                                                const sgTotal = sgRows.reduce((sum, r) => sum + r.amountCents, 0)
+
+                                                                return (
+                                                                    <AccordionItem
+                                                                        key={sg.id}
+                                                                        value={sg.id}
+                                                                        className="bg-muted/30 border rounded-lg"
+                                                                    >
+                                                                        <AccordionTrigger className="px-3 py-2 hover:no-underline text-sm">
+                                                                            <div className="flex items-center justify-between w-full gap-2 pr-2">
+                                                                                <div className="flex items-center gap-2 min-w-0">
+                                                                                    <span className="font-medium truncate">{sg.label}</span>
+                                                                                </div>
+                                                                                <div className="flex items-center gap-2 shrink-0">
+                                                                                    <span className="text-xs font-mono text-muted-foreground">
+                                                                                        {formatCents(Math.abs(sgTotal))}
+                                                                                    </span>
+                                                                                    <div onClick={e => e.stopPropagation()} className="w-28">
+                                                                                        <CategoryPicker
+                                                                                            value={sgCatId || ""}
+                                                                                            onChange={(val) => setSubgroupCategory(sg.id, val)}
+                                                                                            type="all"
+                                                                                            compact
+                                                                                            size="sm"
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </AccordionTrigger>
+                                                                        <AccordionContent className="px-3 pb-3">
+                                                                            <RowsList rows={sgRows} />
+                                                                        </AccordionContent>
+                                                                    </AccordionItem>
+                                                                )
+                                                            })}
+                                                        </Accordion>
+                                                    ) : (
+                                                        // Single subgroup - show rows directly
+                                                        <div className="mt-2">
+                                                            <RowsList
+                                                                rows={group.subgroups[0]?.rowIds.map(getRowById).filter(Boolean) as EnrichedRow[] || []}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </AccordionContent>
+                                            </AccordionItem>
+                                        )
+                                    })}
+                                </Accordion>
+                            )}
+                        </TabsContent>
+
+                        {/* View: Categories (Drill-down) */}
+                        <TabsContent value="category" className="flex-1 min-h-0 data-[state=inactive]:hidden mt-0">
+                            <div className="space-y-2">
+                                <Accordion type="multiple" className="w-full space-y-2">
+                                    {categoryGroups.map((cg) => (
+                                        <AccordionItem key={cg.id} value={cg.id} className="bg-card border rounded-xl px-4 shadow-sm">
+                                            <AccordionTrigger className="hover:no-underline py-3">
+                                                <div className="flex items-center justify-between w-full pr-4">
+                                                    <div className="flex items-center gap-2">
+                                                        {cg.id !== 'unassigned' && (
+                                                            <div className={cn("w-2.5 h-2.5 rounded-full", cg.color.split(" ")[1])} />
+                                                        )}
+                                                        <span className="font-bold text-sm md:text-base">{cg.label}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-3 text-xs md:text-sm">
+                                                        <Badge variant="outline" className="font-mono">{cg.count}</Badge>
+                                                        <span className="font-mono font-medium">
+                                                            {formatCents(Math.abs(cg.amount))}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </AccordionTrigger>
-                                            <AccordionContent className="px-4 pb-4 pt-0">
-                                                {hasMultipleSubgroups ? (
-                                                    // Nested subgroups accordion
-                                                    <Accordion type="multiple" className="space-y-1.5 mt-2">
-                                                        {group.subgroups.map(sg => {
-                                                            const sgCatId = getSubgroupEffectiveCategory(sg, group)
-                                                            const sgRows = sg.rowIds.map(getRowById).filter(Boolean) as EnrichedRow[]
-                                                            const sgTotal = sgRows.reduce((sum, r) => sum + r.amountCents, 0)
-
-                                                            return (
-                                                                <AccordionItem
-                                                                    key={sg.id}
-                                                                    value={sg.id}
-                                                                    className="bg-muted/30 border rounded-lg"
-                                                                >
-                                                                    <AccordionTrigger className="px-3 py-2 hover:no-underline text-sm">
-                                                                        <div className="flex items-center justify-between w-full gap-2 pr-2">
-                                                                            <div className="flex items-center gap-2 min-w-0">
-                                                                                <span className="font-medium truncate">{sg.label}</span>
-                                                                            </div>
-                                                                            <div className="flex items-center gap-2 shrink-0">
-                                                                                <span className="text-xs font-mono text-muted-foreground">
-                                                                                    {formatCents(Math.abs(sgTotal))}
-                                                                                </span>
-                                                                                <div onClick={e => e.stopPropagation()} className="w-28">
-                                                                                    <CategoryPicker
-                                                                                        value={sgCatId || ""}
-                                                                                        onChange={(val) => setSubgroupCategory(sg.id, val)}
-                                                                                        type="all"
-                                                                                        compact
-                                                                                        size="sm"
-                                                                                    />
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </AccordionTrigger>
-                                                                    <AccordionContent className="px-3 pb-3">
-                                                                        <RowsList rows={sgRows} />
-                                                                    </AccordionContent>
-                                                                </AccordionItem>
-                                                            )
-                                                        })}
-                                                    </Accordion>
-                                                ) : (
-                                                    // Single subgroup - show rows directly
-                                                    <div className="mt-2">
-                                                        <RowsList
-                                                            rows={group.subgroups[0]?.rowIds.map(getRowById).filter(Boolean) as EnrichedRow[] || []}
-                                                        />
-                                                    </div>
-                                                )}
+                                            <AccordionContent className="pt-0 pb-4">
+                                                <RowsList
+                                                    rows={cg.rowIds.slice(0, 50).map(getRowById).filter(Boolean) as EnrichedRow[]}
+                                                    showMore={cg.rowIds.length > 50 ? cg.rowIds.length - 50 : 0}
+                                                />
                                             </AccordionContent>
                                         </AccordionItem>
-                                    )
-                                })}
-                            </Accordion>
-                        )}
-                    </TabsContent>
-
-                    {/* View: Categories (Drill-down) */}
-                    <TabsContent value="category" className="flex-1 min-h-0 data-[state=inactive]:hidden mt-0">
-                        <div className="space-y-2">
-                            <Accordion type="multiple" className="w-full space-y-2">
-                                {categoryGroups.map((cg) => (
-                                    <AccordionItem key={cg.id} value={cg.id} className="bg-card border rounded-xl px-4 shadow-sm">
-                                        <AccordionTrigger className="hover:no-underline py-3">
-                                            <div className="flex items-center justify-between w-full pr-4">
-                                                <div className="flex items-center gap-2">
-                                                    {cg.id !== 'unassigned' && (
-                                                        <div className={cn("w-2.5 h-2.5 rounded-full", cg.color.split(" ")[1])} />
-                                                    )}
-                                                    <span className="font-bold text-sm md:text-base">{cg.label}</span>
-                                                </div>
-                                                <div className="flex items-center gap-3 text-xs md:text-sm">
-                                                    <Badge variant="outline" className="font-mono">{cg.count}</Badge>
-                                                    <span className="font-mono font-medium">
-                                                        {formatCents(Math.abs(cg.amount))}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </AccordionTrigger>
-                                        <AccordionContent className="pt-0 pb-4">
-                                            <RowsList
-                                                rows={cg.rowIds.slice(0, 50).map(getRowById).filter(Boolean) as EnrichedRow[]}
-                                                showMore={cg.rowIds.length > 50 ? cg.rowIds.length - 50 : 0}
-                                            />
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                ))}
-                            </Accordion>
-                        </div>
-                    </TabsContent>
-                </Tabs>
+                                    ))}
+                                </Accordion>
+                            </div>
+                        </TabsContent>
+                    </Tabs>
+                </MacroSection>
             </div>
         </WizardShell>
     )

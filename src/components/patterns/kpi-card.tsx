@@ -60,7 +60,7 @@ export function KpiCard({
         >
             <Card
                 className={cn(
-                    "rounded-xl shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-300 h-full",
+                    "rounded-xl h-full glass-card",
                     onClick && "cursor-pointer active:scale-[0.98] ring-primary/5 hover:ring-2",
                     className
                 )}
@@ -75,25 +75,25 @@ export function KpiCard({
                     </div>
                     <div className={cn(
                         "h-8 w-8 rounded-full flex items-center justify-center transition-colors duration-300",
-                        tone === "positive" && "bg-emerald-500/10 text-emerald-500 dark:text-emerald-400",
-                        tone === "negative" && "bg-rose-500/10 text-rose-500 dark:text-rose-400",
-                        tone === "warning" && "bg-amber-500/10 text-amber-500 dark:text-amber-400",
+                        tone === "positive" && "bg-success/10 text-success",
+                        tone === "negative" && "bg-destructive/10 text-destructive",
+                        tone === "warning" && "bg-warning/10 text-warning",
                         tone === "neutral" && "bg-muted text-muted-foreground"
                     )}>
                         <Icon className="h-4 w-4" />
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{value}</div>
+                    <div className="text-3xl font-black tracking-tighter tabular-nums">{value}</div>
                     {(change || comparisonLabel) && (
                         <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
                             {change && (
                                 <span
                                     className={cn(
-                                        "flex items-center font-medium",
-                                        trend === "up" ? "text-emerald-600" :
-                                            trend === "down" ? "text-rose-600" :
-                                                trend === "warning" ? "text-amber-600" :
+                                        "flex items-center font-bold",
+                                        trend === "up" ? "text-success" :
+                                            trend === "down" ? "text-destructive" :
+                                                trend === "warning" ? "text-warning" :
                                                     "text-muted-foreground"
                                     )}
                                 >

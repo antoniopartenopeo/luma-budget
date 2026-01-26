@@ -1,3 +1,5 @@
+"use client"
+
 import { useRouter } from "next/navigation"
 import { DollarSign, Wallet, CreditCard, AlertTriangle } from "lucide-react"
 import { useCurrency } from "@/features/settings/api/use-currency"
@@ -6,7 +8,7 @@ import { DashboardTimeFilter } from "../api/types"
 import { useSettings } from "@/features/settings/api/use-settings"
 import { KpiCard, KpiTone } from "@/components/patterns/kpi-card"
 import { narrateKPI, deriveKPIState, KPIFacts } from "@/domain/narration"
-
+import { MacroSection } from "@/components/patterns/macro-section"
 import { getBalanceTone, getBudgetTone, getSuperfluousTone } from "../utils/kpi-logic"
 
 interface DashboardKpiGridProps {
@@ -67,8 +69,6 @@ export function DashboardKpiGrid({
     const superflueTone = getSuperfluousTone(uselessSpendPercent ?? null, superfluousTarget)
 
     const buildNarration = (kpiId: KPIFacts["kpiId"], value: number | string, tone: any, percent?: number) => {
-        // Derive Income roughly (since we don't have it explicit props, but logic holds: Net = Inc - Exp -> Inc = Net + Exp)
-        // This is safe because these values passed are totals for the period
         let bufferRatio: number | undefined = undefined
         if (kpiId === "balance" && typeof value === "number" && totalSpent !== undefined) {
             const derivedIncome = value + totalSpent
@@ -90,14 +90,12 @@ export function DashboardKpiGrid({
     }
 
     return (
-        <div className="space-y-4">
-            <div className="px-1">
-                <p className="text-xs text-muted-foreground/80 font-medium">
-                    {contextText}
-                </p>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <MacroSection
+            title="Overview Performance"
+            description={contextText}
+            className="w-full"
+        >
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 pt-4">
                 <KpiCard
                     title="Saldo"
                     value={isLoading ? 0 : formatValue(netBalance || 0)}
@@ -142,6 +140,6 @@ export function DashboardKpiGrid({
                     description={isLoading ? undefined : buildNarration("superfluous", uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—", superflueTone, uselessSpendPercent ?? undefined)}
                 />
             </div>
-        </div>
+        </MacroSection>
     )
 }

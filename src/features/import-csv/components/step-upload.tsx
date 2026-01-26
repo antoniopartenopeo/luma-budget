@@ -12,6 +12,7 @@ import { useTransactions } from "@/features/transactions/api/use-transactions"
 import { cn } from "@/lib/utils"
 import { WizardShell } from "./wizard-shell"
 import { BankCsvHelpSection } from "./bank-csv-help-section"
+import { MacroSection } from "@/components/patterns/macro-section"
 
 interface ImportStepUploadProps {
     onContinue: (state: ImportState) => void
@@ -147,7 +148,7 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
         >
             <div className="flex flex-col items-center justify-center space-y-5 min-h-[30vh] animate-in fade-in zoom-in-95 duration-500">
                 {/* 3. Drop Zone / Tabs */}
-                <Card className="w-full max-w-3xl bg-card border-none shadow-xl ring-1 ring-border/50 overflow-hidden">
+                <MacroSection className="w-full max-w-3xl" contentClassName="p-0">
                     <Tabs defaultValue="upload" className="w-full flex flex-col">
                         <TabsList className="w-full grid grid-cols-2 rounded-none border-b bg-muted/30 p-0 h-11">
                             <TabsTrigger value="upload" className="h-full rounded-none data-[state=active]:bg-card data-[state=active]:shadow-none border-r border-transparent data-[state=active]:border-border/50 transition-all gap-2 text-base">
@@ -185,7 +186,7 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
                                                 <CheckCircle2 className="h-6 w-6" />
                                             </div>
                                             <div className="space-y-0.5">
-                                                <p className="font-bold text-lg tracking-tight">{fileName}</p>
+                                                <p className="font-bold text-xl tracking-tight">{fileName}</p>
                                                 <p className="text-emerald-600 dark:text-emerald-400 font-medium text-sm">File pronto</p>
                                             </div>
                                             <Button
@@ -203,8 +204,8 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
                                                 <Upload className="h-6 w-6" />
                                             </div>
                                             <div className="space-y-1">
-                                                <p className="font-bold text-lg">Trascina il CSV qui</p>
-                                                <p className="text-muted-foreground text-sm">o clicca per selezionare</p>
+                                                <p className="font-bold text-xl tracking-tight">Trascina il CSV qui</p>
+                                                <p className="text-muted-foreground text-sm font-medium">o clicca per selezionare</p>
                                             </div>
                                         </div>
                                     )}
@@ -235,9 +236,8 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
                             )}
                         </div>
                     </Tabs>
-                </Card>
+                </MacroSection>
 
-                {/* Bank CSV Help Section */}
                 <BankCsvHelpSection />
 
             </div>

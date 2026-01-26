@@ -105,7 +105,7 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
     const blurClass = isPrivate ? "blur-xl select-none opacity-50 transition-all duration-500" : "transition-all duration-500"
 
     const containerVariants: Variants = {
-        hidden: { opacity: 0, scale: 0.95 },
+        hidden: { opacity: 0, scale: 0.98 },
         visible: {
             opacity: 1,
             scale: 1,
@@ -117,11 +117,11 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
     }
 
     const itemVariants: Variants = {
-        hidden: { opacity: 0, y: 20 },
+        hidden: { opacity: 0, scale: 0.98 },
         visible: {
             opacity: 1,
-            y: 0,
-            transition: { duration: 0.5 }
+            scale: 1,
+            transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] }
         }
     }
 

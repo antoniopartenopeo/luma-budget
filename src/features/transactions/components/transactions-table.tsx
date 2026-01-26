@@ -74,10 +74,10 @@ export function TransactionsTable({
     return (
         <div className="space-y-4">
             {/* Desktop View: Table */}
-            <div className="hidden md:block rounded-xl border bg-card overflow-hidden shadow-sm">
+            <div className="hidden md:block overflow-hidden">
                 <Table>
-                    <TableHeader className="bg-muted/30">
-                        <TableRow className="hover:bg-transparent border-b">
+                    <TableHeader className="bg-transparent border-b">
+                        <TableRow className="hover:bg-transparent border-b border-white/5">
                             <TableHead className="w-[180px]">
                                 <Button
                                     variant="ghost"
@@ -158,7 +158,7 @@ export function TransactionsTable({
                                             </span>
                                             {transaction.isSuperfluous && (
                                                 <div className="flex mt-1">
-                                                    <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 uppercase tracking-tighter text-amber-600 border-amber-200 bg-amber-50 font-bold">
+                                                    <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 uppercase tracking-tighter text-warning border-warning/30 bg-warning/10 font-bold">
                                                         Superflua
                                                     </Badge>
                                                 </div>
@@ -175,8 +175,8 @@ export function TransactionsTable({
                                         className={cn(
                                             "text-[10px] font-black px-2 py-0.5 rounded-full border",
                                             transaction.type === "income"
-                                                ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-                                                : "bg-rose-50 text-rose-700 border-rose-100"
+                                                ? "bg-success/10 text-success border-success/20"
+                                                : "bg-destructive/10 text-destructive border-destructive/20"
                                         )}
                                     >
                                         {transaction.type === "income" ? "Entrata" : "Uscita"}
@@ -185,7 +185,7 @@ export function TransactionsTable({
                                 <TableCell
                                     className={cn(
                                         "text-right font-black tabular-nums text-base",
-                                        transaction.type === "income" ? "text-emerald-600" : "text-rose-600"
+                                        transaction.type === "income" ? "text-success" : "text-destructive"
                                     )}
                                 >
                                     {transaction.amount}
@@ -208,7 +208,7 @@ export function TransactionsTable({
                 {transactions.map((transaction) => (
                     <div
                         key={transaction.id}
-                        className="p-4 rounded-xl border bg-card/50 backdrop-blur-sm shadow-sm space-y-4 active:scale-[0.98] transition-transform cursor-pointer"
+                        className="p-4 rounded-[2rem] border-none bg-white/5 backdrop-blur-sm shadow-none space-y-4 active:scale-[0.98] transition-transform cursor-pointer"
                         onClick={() => onRowClick(transaction)}
                     >
                         <div className="flex items-start justify-between">
@@ -244,14 +244,14 @@ export function TransactionsTable({
                                     className={cn(
                                         "text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border",
                                         transaction.type === "income"
-                                            ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-                                            : "bg-rose-50 text-rose-700 border-rose-100"
+                                            ? "bg-success/10 text-success border-success/20"
+                                            : "bg-destructive/10 text-destructive border-destructive/20"
                                     )}
                                 >
                                     {transaction.type === "income" ? "Entrata" : "Uscita"}
                                 </Badge>
                                 {transaction.isSuperfluous && (
-                                    <Badge variant="outline" className="text-[9px] px-2 py-0.5 uppercase tracking-tighter text-amber-600 border-amber-200 bg-amber-50 font-bold">
+                                    <Badge variant="outline" className="text-[9px] px-2 py-0.5 uppercase tracking-tighter text-warning border-warning/30 bg-warning/10 font-bold">
                                         Superflua
                                     </Badge>
                                 )}
@@ -259,7 +259,7 @@ export function TransactionsTable({
                             <div
                                 className={cn(
                                     "text-xl font-black tabular-nums tracking-tighter",
-                                    transaction.type === "income" ? "text-emerald-600" : "text-rose-600"
+                                    transaction.type === "income" ? "text-success" : "text-destructive"
                                 )}
                             >
                                 {transaction.amount}
@@ -323,7 +323,7 @@ function TransactionActionsMenu({
                     Modifica
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                    className="text-rose-600 focus:text-rose-600 focus:bg-rose-50 gap-2 font-bold"
+                    className="text-destructive focus:text-destructive focus:bg-destructive/10 gap-2 font-bold"
                     onClick={() => onDelete(transaction.id)}
                 >
                     Elimina

@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { ChevronDown, AlertTriangle, TrendingUp, Zap, ExternalLink, Activity } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, Variants } from "framer-motion"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -47,6 +47,15 @@ const kindIcons = {
     "top-drivers": Zap,
 }
 
+const itemVariants: Variants = {
+    hidden: { opacity: 0, scale: 0.98 },
+    visible: {
+        opacity: 1,
+        scale: 1,
+        transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] }
+    }
+}
+
 export function InsightCard({ insight }: InsightCardProps) {
     const [isExpanded, setIsExpanded] = useState(false)
     const config = severityConfig[insight.severity]
@@ -54,9 +63,7 @@ export function InsightCard({ insight }: InsightCardProps) {
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
+            variants={itemVariants}
         >
             <Card
                 className={cn(

@@ -1,16 +1,16 @@
 "use client"
 
 import { useMemo } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { MacroSection } from "@/components/patterns/macro-section"
+import { Skeleton } from "@/components/ui/skeleton"
 import { EChartsWrapper } from "@/features/dashboard/components/charts/echarts-wrapper"
 import { useTrendData } from "../use-trend-data"
 import { useOrchestratedInsights } from "../use-orchestrated-insights"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { formatEuroNumber } from "@/domain/money"
-import { Skeleton } from "@/components/ui/skeleton"
+import { narrateTrend, deriveTrendState, type TrendFacts } from "@/domain/narration"
 import { BarChart3 } from "lucide-react"
 import type { EChartsOption } from "echarts"
-import { narrateTrend, deriveTrendState, TrendFacts } from "@/domain/narration"
 
 export function TrendAnalysisCard() {
     const { data, isLoading } = useTrendData()
@@ -158,26 +158,24 @@ export function TrendAnalysisCard() {
 
     if (isLoading) {
         return (
-            <Card className="rounded-[2.5rem] border-none bg-card/50 backdrop-blur-sm shadow-xl">
-                <CardHeader>
-                    <Skeleton className="h-6 w-48 mb-2" />
-                    <Skeleton className="h-4 w-64" />
-                </CardHeader>
-                <CardContent className="h-[350px]">
+            <MacroSection
+                title={<Skeleton className="h-6 w-48 mb-2" />}
+                description={<Skeleton className="h-4 w-64" />}
+            >
+                <div className="h-[350px]">
                     <Skeleton className="h-full w-full rounded-2xl" />
-                </CardContent>
-            </Card>
+                </div>
+            </MacroSection>
         )
     }
 
     if (!data.length) {
         return (
-            <Card className="rounded-[2.5rem] border-none bg-card/50 backdrop-blur-sm shadow-xl overflow-hidden">
-                <CardHeader>
-                    <CardTitle className="text-xl font-bold tracking-tight">Velocità Finanziaria (12 Mesi)</CardTitle>
-                    <CardDescription>Confronto tra entrate e uscite storiche</CardDescription>
-                </CardHeader>
-                <CardContent className="h-[350px] flex items-center justify-center text-center p-8">
+            <MacroSection
+                title="Velocità Finanziaria (12 Mesi)"
+                description="Confronto tra entrate e uscite storiche"
+            >
+                <div className="h-[350px] flex items-center justify-center text-center p-8">
                     <div className="max-w-[280px] space-y-2">
                         <div className="bg-muted/30 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
                             <BarChart3 className="h-6 w-6 text-muted-foreground" />
@@ -187,24 +185,19 @@ export function TrendAnalysisCard() {
                             Non ci sono abbastanza transazioni negli ultimi 12 mesi per generare il grafico.
                         </p>
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+            </MacroSection>
         )
     }
 
     return (
-        <Card className="rounded-[2.5rem] border-none bg-card/50 backdrop-blur-sm shadow-xl overflow-hidden p-1">
-            <CardHeader className="px-8 pt-8">
-                <CardTitle className="text-xl font-bold tracking-tight">Velocità Finanziaria (12 Mesi)</CardTitle>
-                <CardDescription className="text-muted-foreground/90 font-medium">
-                    {trendNarration || "Confronto tra entrate e uscite storiche"}
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="px-8 pb-8">
-                <div className="h-[350px] w-full">
-                    <EChartsWrapper option={option} />
-                </div>
-            </CardContent>
-        </Card>
+        <MacroSection
+            title="Velocità Finanziaria (12 Mesi)"
+            description={trendNarration || "Confronto tra entrate e uscite storiche"}
+        >
+            <div className="h-[350px] w-full">
+                <EChartsWrapper option={option} />
+            </div>
+        </MacroSection>
     )
 }

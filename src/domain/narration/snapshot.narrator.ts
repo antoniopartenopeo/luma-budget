@@ -31,10 +31,14 @@ export function narrateSnapshot(
             return narrateThriving(facts)
         case "stable":
             return narrateStable(facts)
+        case "at_risk":
+            return narrateAtRisk(facts)
         case "strained":
             return narrateStrained(facts)
         case "critical":
             return narrateCritical(facts)
+        case "early_uncertain":
+            return narrateEarlyUncertain(facts)
         case "calm":
         default:
             return narrateCalm(facts)
@@ -103,19 +107,49 @@ function narrateStrained(facts: SnapshotFacts): NarrationResult {
     }
 }
 
+function narrateAtRisk(facts: SnapshotFacts): NarrationResult {
+    const { isProjectedOverrun, utilizationPercent } = facts
+
+    if (isProjectedOverrun) {
+        return {
+            text: "Il ritmo di spesa attuale indica una proiezione superiore al budget mensile. Valuta se regolare alcune uscite nei prossimi giorni.",
+            shortText: "Proiezione: oltre il budget"
+        }
+    }
+
+    if (utilizationPercent !== undefined) {
+        return {
+            text: `La spesa (${utilizationPercent}%) è superiore alla proiezione temporale. Considera un monitoraggio più attento per restare nei piani.`,
+            shortText: "Ritmo spesa elevato"
+        }
+    }
+
+    return {
+        text: "Rilevata una velocità di spesa superiore alla media. Possibile pressione sul budget.",
+        shortText: "Andamento a rischio"
+    }
+}
+
+function narrateEarlyUncertain(facts: SnapshotFacts): NarrationResult {
+    return {
+        text: "Il mese è appena iniziato. I dati attuali non sono ancora sufficienti per una proiezione affidabile dell'andamento.",
+        shortText: "Analisi in corso"
+    }
+}
+
 function narrateCritical(facts: SnapshotFacts): NarrationResult {
     const { utilizationPercent, superfluousPercent, balanceCents } = facts
 
     if (balanceCents < 0 && utilizationPercent !== undefined && utilizationPercent > 100) {
         return {
-            text: `Situazione critica: sei oltre il budget (${utilizationPercent}%) con un saldo negativo. È necessaria una revisione immediata delle spese.`,
-            shortText: "Criticità budget"
+            text: `Il budget è stato superato (${utilizationPercent}%) ed il saldo attuale è in negativo. Si consiglia una revisione degli impegni di spesa.`,
+            shortText: "Budget oltre limite"
         }
     }
 
     return {
-        text: `Indicatori fuori soglia: budget al ${utilizationPercent ?? "?"}% e spese superflue al ${superfluousPercent ?? "?"}%. Richiesta attenzione immediata.`,
-        shortText: "Attenzione urgente"
+        text: `Indicatori fuori soglia: budget al ${utilizationPercent ?? "?"}% e spese superflue al ${superfluousPercent ?? "?"}%. È necessaria attenzione per rientrare nei piani.`,
+        shortText: "Attenzione necessaria"
     }
 }
 

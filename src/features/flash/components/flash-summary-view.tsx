@@ -21,6 +21,7 @@ import { getCurrentPeriod, formatPeriodLabel } from "@/features/insights/utils"
 import { formatEuroNumber } from "@/domain/money"
 import { calculateUtilizationPct, calculateSharePct } from "@/domain/money"
 import { narrateSnapshot, deriveSnapshotState, SnapshotFacts } from "@/domain/narration"
+import { getDaysElapsedInMonth, getDaysInMonth } from "@/lib/date-ranges"
 import { cn } from "@/lib/utils"
 
 interface FlashSummaryViewProps {
@@ -60,13 +61,24 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
     // Use centralized calculation (inputs in EUR units, convert to cents equivalent for ratio)
     const budgetSpentUnits = budgetTotal - budgetRemaining
     const budgetUsedPct = calculateUtilizationPct(budgetSpentUnits * 100, budgetTotal * 100)
+
+    // Core facts derived from data
     const top3Categories = [...categoriesSummary].sort((a, b) => b.value - a.value).slice(0, 3)
     const isSuperfluousOver = (uselessSpendPercent ?? 0) > superfluousTarget
-
-    // Build SnapshotFacts for Narration Layer (all values pre-formatted)
     const savingsRatePercent = totalIncome > 0
         ? calculateSharePct(netBalance * 100, totalIncome * 100)
         : undefined
+
+    // Calculate pacing facts (BUDGET-2 Skill: B1-B6)
+    const daysElapsed = getDaysElapsedInMonth(period, new Date())
+    const daysInMonth = getDaysInMonth(period)
+    const elapsedRatio = daysElapsed / daysInMonth
+
+    const projectedSpent = elapsedRatio > 0 ? (totalExpenses / elapsedRatio) : 0
+    const isProjectedOverrun = budgetTotal > 0 && projectedSpent > budgetTotal
+
+    // Rule B6: Data Integrity flag
+    const isDataIncomplete = categoriesSummary.length === 0 && daysElapsed > 2
 
     const snapshotFacts: SnapshotFacts = {
         snapshotId: `flash-${period}`,
@@ -79,7 +91,11 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
         utilizationPercent: budgetTotal > 0 ? budgetUsedPct : undefined,
         superfluousPercent: uselessSpendPercent ?? undefined,
         superfluousTargetPercent: superfluousTarget,
-        savingsRatePercent
+        savingsRatePercent,
+        incomeCents: Math.round(totalIncome * 100),
+        elapsedRatio,
+        isProjectedOverrun,
+        isDataIncomplete
     }
 
     // Derive state and generate narrative

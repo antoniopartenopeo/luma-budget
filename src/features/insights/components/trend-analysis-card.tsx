@@ -4,6 +4,7 @@ import { useMemo } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { EChartsWrapper } from "@/features/dashboard/components/charts/echarts-wrapper"
 import { useTrendData } from "../use-trend-data"
+import { useOrchestratedInsights } from "../use-orchestrated-insights"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { formatEuroNumber } from "@/domain/money"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -15,6 +16,10 @@ export function TrendAnalysisCard() {
     const { data, isLoading } = useTrendData()
     const { currency, locale } = useCurrency()
 
+    // Phase 6: Get Orchestration Context to prevent tone-deafness
+    const { orchestration } = useOrchestratedInsights()
+    const context = orchestration?.context
+
     const trendNarration = useMemo(() => {
         if (!data || data.length < 2) return null
 
@@ -24,15 +29,19 @@ export function TrendAnalysisCard() {
 
         const facts: TrendFacts = {
             metricType: "savings_rate",
+            metricId: "savings_rate",
             currentValueFormatted: current.savingsRateLabel,
+            savingsRateValue: current.savingsRate / 100,
+            isSavingsRateNegative: current.savingsRate < 0,
             changePercent: current.savingsRate - previous.savingsRate,
             direction: current.savingsRate > previous.savingsRate ? "up" :
                 current.savingsRate < previous.savingsRate ? "down" : "flat"
         }
 
         const state = deriveTrendState(facts)
-        return narrateTrend(facts, state).text
-    }, [data])
+        // Pass context to narrator
+        return narrateTrend(facts, state, context).text
+    }, [data, context])
 
     const option: EChartsOption = useMemo(() => {
         // ... (existing option logic remains same)

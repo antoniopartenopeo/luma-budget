@@ -13,6 +13,7 @@ import { BudgetGroupId, BUDGET_GROUP_LABELS, BUDGET_GROUPS } from "@/features/bu
 import { StateMessage } from "@/components/ui/state-message"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { PageHeader } from "@/components/ui/page-header"
+import { getDaysElapsedInMonth, getDaysInMonth } from "@/lib/date-ranges"
 
 export default function BudgetPage() {
     const [period, setPeriod] = useState(getCurrentPeriod())
@@ -34,6 +35,13 @@ export default function BudgetPage() {
         if (!transactions) return { globalSpentCents: 0, groupSpending: [] }
         return calculateGroupSpending(transactions, period, categories)
     }, [transactions, period, categories])
+
+    // Calculate elapsed month ratio (BUDGET-2 Skill: B1-B3)
+    const elapsedRatio = useMemo(() => {
+        const daysElapsed = getDaysElapsedInMonth(period, new Date())
+        const daysInMonth = getDaysInMonth(period)
+        return daysElapsed / daysInMonth
+    }, [period])
 
     const isLoading = isBudgetLoading || isTransactionsLoading || isCategoriesLoading
 
@@ -139,6 +147,7 @@ export default function BudgetPage() {
                 isLoading={isLoading}
                 onSave={handleSaveGlobalBudget}
                 isSaving={isSaving}
+                elapsedRatio={elapsedRatio}
             />
 
             {/* Group Budget Cards */}
@@ -154,6 +163,7 @@ export default function BudgetPage() {
                             isLoading={isLoading}
                             onSave={handleSaveGroupBudget}
                             isSaving={isSaving}
+                            elapsedRatio={elapsedRatio}
                         />
                     ))}
                 </div>

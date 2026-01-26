@@ -67,12 +67,23 @@ export function DashboardKpiGrid({
     const superflueTone = getSuperfluousTone(uselessSpendPercent ?? null, superfluousTarget)
 
     const buildNarration = (kpiId: KPIFacts["kpiId"], value: number | string, tone: any, percent?: number) => {
+        // Derive Income roughly (since we don't have it explicit props, but logic holds: Net = Inc - Exp -> Inc = Net + Exp)
+        // This is safe because these values passed are totals for the period
+        let bufferRatio: number | undefined = undefined
+        if (kpiId === "balance" && typeof value === "number" && totalSpent !== undefined) {
+            const derivedIncome = value + totalSpent
+            if (derivedIncome > 0) {
+                bufferRatio = value / derivedIncome
+            }
+        }
+
         const facts: KPIFacts = {
             kpiId,
             valueFormatted: typeof value === "number" ? formatValue(value) : value,
             tone,
             percent: percent ?? undefined,
-            targetPercent: kpiId === "superfluous" ? superfluousTarget : undefined
+            targetPercent: kpiId === "superfluous" ? superfluousTarget : undefined,
+            bufferRatio
         }
         const state = deriveKPIState(facts)
         return narrateKPI(facts, state).text

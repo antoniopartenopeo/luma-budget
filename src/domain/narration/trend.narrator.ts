@@ -5,7 +5,7 @@
  * Pure functions to generate narrative text for temporal trends.
  */
 
-import { NarrationResult, TrendFacts, TrendState } from "./types"
+import { NarrationResult, TrendFacts, TrendState, OrchestrationContext } from "./types"
 
 /**
  * Generates narrative text for a trend analysis.
@@ -14,13 +14,15 @@ import { NarrationResult, TrendFacts, TrendState } from "./types"
  * @param state - Derived state (improving/deteriorating/stable/volatile/neutral)
  * @returns NarrationResult with text
  */
+// Update signature to accept context
 export function narrateTrend(
     facts: TrendFacts,
-    state: TrendState
+    state: TrendState,
+    context?: OrchestrationContext
 ): NarrationResult {
     switch (state) {
         case "improving":
-            return narrateImproving(facts)
+            return narrateImproving(facts, context)
         case "deteriorating":
             return narrateDeteriorating(facts)
         case "stable":
@@ -37,20 +39,42 @@ export function narrateTrend(
 // STATE-SPECIFIC NARRATORS
 // =====================
 
-function narrateImproving(facts: TrendFacts): NarrationResult {
-    const { metricType, currentValueFormatted, changePercent } = facts
+function narrateImproving(facts: TrendFacts, context?: OrchestrationContext): NarrationResult {
+    const { metricType, metricId, currentValueFormatted, changePercent, isSavingsRateNegative, savingsRateValue } = facts
     const absChange = Math.abs(changePercent).toFixed(1)
+
+    // Contextual Flag: Check if we need to warn about current crisis despite improvement
+    const showContextWarning = context?.hasHighSeverityCurrentIssue && metricType === "savings_rate"
+
+    let baseText = ""
 
     switch (metricType) {
         case "income":
-            return { text: `Le entrate sono in crescita del ${absChange}% (${currentValueFormatted}). Trend positivo per il tuo cash flow.` }
+            baseText = `Le entrate sono in crescita del ${absChange}% (${currentValueFormatted}). Trend positivo per il tuo cash flow.`
+            break
         case "expenses":
-            return { text: `Ottimo lavoro: le uscite sono diminuite del ${absChange}%. Stai ottimizzando i tuoi costi.` }
+            baseText = `Ottimo lavoro: le uscite sono diminuite del ${absChange}%. Stai ottimizzando i tuoi costi.`
+            break
         case "savings_rate":
-            return { text: `Il tasso di risparmio è migliorato del ${absChange}%. La tua efficienza finanziaria sta aumentando.` }
+            // Semantic Safeguard: If we are still in negative territory (deficit), avoid "Efficiency" / "Improving".
+            if (metricId === "savings_rate" && isSavingsRateNegative) {
+                baseText = `Il disavanzo si è ridotto del ${absChange}%. Stai recuperando terreno.`
+            } else if (savingsRateValue !== undefined && savingsRateValue < 0.05) {
+                // Micro-hardening: avoid "efficienza" (ambiguous).
+                baseText = `Il tasso di risparmio è aumentato del ${absChange}%. Continua a costruire il tuo margine.`
+            } else {
+                baseText = `Il tasso di risparmio è in aumento del ${absChange}%. La tua capacità di risparmio sta crescendo.`
+            }
+            break
         default:
-            return { text: `Questo indicatore mostra un miglioramento del ${absChange}%.` }
+            baseText = `Questo indicatore mostra un miglioramento del ${absChange}%.`
     }
+
+    if (showContextWarning) {
+        return { text: `${baseText} Questo mese però mostra un disavanzo, quindi la priorità è rientrare dal picco di spesa.` }
+    }
+
+    return { text: baseText }
 }
 
 function narrateDeteriorating(facts: TrendFacts): NarrationResult {

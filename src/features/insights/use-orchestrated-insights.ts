@@ -9,12 +9,14 @@ import {
     NarrationCandidate,
     deriveTrendState,
     narrateTrend,
-    TrendFacts
+    TrendFacts,
+    deriveAdvisorState,
+    narrateAdvisor
 } from "@/domain/narration"
 import { getCurrentPeriod } from "./utils"
 
 export function useOrchestratedInsights(period: string = getCurrentPeriod()) {
-    const { forecast, subscriptions, tips: rawTips, isLoading: aiLoading } = useAIAdvisor()
+    const { facts: advisorFacts, subscriptions, isLoading: aiLoading } = useAIAdvisor()
     const { insights, isLoading: insightsLoading } = useInsights({ period })
     const { data: trendData, isLoading: trendLoading } = useTrendData()
 
@@ -25,27 +27,38 @@ export function useOrchestratedInsights(period: string = getCurrentPeriod()) {
 
         const candidates: NarrationCandidate[] = []
 
-        // 1. Map Forecast (from useAIAdvisor)
-        if (forecast) {
-            const isDeficit = forecast.predictedSavings < 0
+        // 1. Map Forecast (from useAIAdvisor via Narrator)
+        if (advisorFacts) {
+            const state = deriveAdvisorState(advisorFacts)
+            const narration = narrateAdvisor(advisorFacts, state)
+
             candidates.push({
-                id: "forecast-deficit-surplus",
+                id: "forecast-advisor",
                 source: "projection",
                 scope: "current_period",
-                severity: isDeficit ? "critical" : "low",
-                narration: { text: rawTips[0] || "" } // Using the existing logic-generated string
+                severity: state === "deficit" ? "critical" : state === "positive_balance" ? "low" : "low",
+                narration
             })
         }
 
         // 2. Map Subscriptions (from useAIAdvisor)
-        if (subscriptions.length > 0 && rawTips.some(t => t.includes("abbonamenti"))) {
-            const subTip = rawTips.find(t => t.includes("abbonamenti"))
+        // Subscription text is now handled by advisor narrator if relevant, OR we can keep a separate signal.
+        // The original logic had a specific subscription tip.
+        // Let's create a specific subscription signal if impact is high.
+        if (subscriptions.length > 0 && advisorFacts && advisorFacts.subscriptionTotalYearlyCents > 50000) { // > €500
+            // We can use a simple static narration for now or add to advisor narrator. 
+            // The prompt asked to MIGRATE logic. The old logic checked: totalYearly > 500 -> Add Tip.
+            // We'll generate a candidate for this.
+            const totalFormatted = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(advisorFacts.subscriptionTotalYearlyCents / 100)
+
             candidates.push({
                 id: "subscription-signal",
                 source: "subscription",
                 scope: "long_term",
                 severity: "medium",
-                narration: { text: subTip || "" }
+                narration: {
+                    text: `Hai ${subscriptions.length} abbonamenti attivi che pesano circa ${totalFormatted}/anno. Una revisione potrebbe farti risparmiare.`
+                }
             })
         }
 
@@ -86,7 +99,7 @@ export function useOrchestratedInsights(period: string = getCurrentPeriod()) {
         }
 
         return orchestrateNarration(candidates)
-    }, [forecast, subscriptions, rawTips, insights, trendData, isLoading])
+    }, [advisorFacts, subscriptions, insights, trendData, isLoading])
 
     return {
         orchestration,

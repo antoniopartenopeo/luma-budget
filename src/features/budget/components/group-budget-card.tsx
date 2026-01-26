@@ -12,6 +12,7 @@ import { formatCurrency } from "../utils/calculate-budget"
 import { BudgetGroupId, BUDGET_GROUP_LABELS } from "../api/types"
 import { cn } from "@/lib/utils"
 import { parseCurrencyToCents } from "@/domain/money"
+import { BudgetFacts, deriveBudgetState } from "@/domain/narration"
 
 interface GroupBudgetCardProps {
     groupId: BudgetGroupId
@@ -20,6 +21,7 @@ interface GroupBudgetCardProps {
     isLoading?: boolean
     onSave: (groupId: BudgetGroupId, amountCents: number) => void
     isSaving?: boolean
+    elapsedRatio?: number
 }
 
 const GROUP_ICONS: Record<BudgetGroupId, LucideIcon> = {
@@ -34,7 +36,25 @@ const GROUP_COLORS: Record<BudgetGroupId, string> = {
     superfluous: "bg-orange-100 text-orange-600"
 }
 
-export function GroupBudgetCard({ groupId, budgetCents, spentCents, isLoading, onSave, isSaving }: GroupBudgetCardProps) {
+export function GroupBudgetCard({ groupId, budgetCents, spentCents, isLoading, onSave, isSaving, elapsedRatio }: GroupBudgetCardProps) {
+    const safeElapsedRatio = elapsedRatio ?? 0
+    const utilizationRatio = budgetCents > 0 ? spentCents / budgetCents : 0
+    const pacingRatio = safeElapsedRatio > 0 ? utilizationRatio / safeElapsedRatio : 0
+    const projectedSpendCents = safeElapsedRatio > 0 ? Math.round(spentCents / safeElapsedRatio) : 0
+
+    // Facts for State Derivation
+    const budgetFacts: BudgetFacts = {
+        spentCents,
+        limitCents: budgetCents,
+        elapsedRatio: safeElapsedRatio,
+        utilizationRatio,
+        pacingRatio,
+        projectedSpendCents,
+        isDataIncomplete: budgetCents === 0 && spentCents === 0
+    }
+
+    const state = deriveBudgetState(budgetFacts)
+
     const [isEditing, setIsEditing] = useState(false)
     const [editValue, setEditValue] = useState("")
 
@@ -85,10 +105,16 @@ export function GroupBudgetCard({ groupId, budgetCents, spentCents, isLoading, o
                     <CardTitle className="text-base font-medium">{label}</CardTitle>
                 </div>
                 <div className="flex items-center gap-1">
-                    {isOverBudget && (
+                    {state === "over_budget" && (
                         <Badge variant="outline" className="text-rose-600 border-rose-200 bg-rose-50 text-xs">
                             <AlertTriangle className="h-3 w-3 mr-1" />
-                            Superato
+                            Over
+                        </Badge>
+                    )}
+                    {state === "at_risk" && (
+                        <Badge variant="outline" className="text-amber-600 border-amber-200 bg-amber-50 text-xs">
+                            <AlertTriangle className="h-3 w-3 mr-1" />
+                            Rischio
                         </Badge>
                     )}
                     {!isEditing && (
@@ -131,11 +157,23 @@ export function GroupBudgetCard({ groupId, budgetCents, spentCents, isLoading, o
                         </div>
                         {budgetCents > 0 ? (
                             <>
-                                <BudgetProgressBar spent={spentCents / 100} budget={budgetCents / 100} />
+                                <BudgetProgressBar
+                                    spent={spentCents / 100}
+                                    budget={budgetCents / 100}
+                                    elapsedRatio={elapsedRatio}
+                                    status={state}
+                                />
+                                {utilizationRatio > 1 && (
+                                    <p className="text-[10px] text-muted-foreground text-right -mt-0.5 font-medium">
+                                        +{Math.round((utilizationRatio - 1) * 100)}% oltre il limite
+                                    </p>
+                                )}
                                 <div className="text-sm">
-                                    <span className="text-muted-foreground">Rimanente: </span>
-                                    <span className={remainingCents >= 0 ? "text-emerald-600 font-medium" : "text-rose-600 font-medium"}>
-                                        {formatCurrency(remainingCents)}
+                                    <span className="text-muted-foreground">
+                                        {state === "over_budget" ? "Sforamento: " : "Rimanente: "}
+                                    </span>
+                                    <span className={state === "over_budget" ? "text-rose-600 font-medium" : remainingCents >= 0 ? "text-emerald-600 font-medium" : "text-rose-600 font-medium"}>
+                                        {formatCurrency(Math.abs(remainingCents))}
                                     </span>
                                 </div>
                             </>

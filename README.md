@@ -12,7 +12,7 @@ Local-first persistence with rich analytics and insights.
 | **Budget** | Stable | Monthly planning by spending groups |
 | **Categories** | Stable | Full CRUD with custom icons |
 | **Simulator** | Stable v2.0 | "What-If" expense reduction analysis |
-| **Insights** | Stable v1.2 | 12-month trends, AI Advisor |
+| **Insights** | Stable v1.2 | Deterministic Narration & Semantic Constraints |
 | **Settings** | Stable v1.3 | Preferences, backup/restore, themes |
 
 ## 🏗 Architecture
@@ -45,6 +45,10 @@ luma_categories_v1
 luma_settings_v1
 ```
 
+### Global Semantic Enforcement
+- **Deterministic Narration Layer**: All text generation is governed by strict semantic rules.
+- **Enforcement Tests**: Automated tests ensure no "tone-deaf" or mathematically incorrect statements are generated.
+
 ## 🚀 Getting Started
 
 ```bash
@@ -61,14 +65,12 @@ Numa Budget follows a strict set of development standards to ensure financial ac
 > [!IMPORTANT]
 > All technical rules, architectural patterns, and UI constraints are defined in the **[Numa Core Rules](file:///.agent/rules/numa-core-rules.md)**.
 > 
-> Before contributing, ensure you have read the **[Contributing Guidelines](file:///docs/CONTRIBUTING.md)**.
+> Before contributing, ensure you have read the **[Numa Core Rules](file:///.agent/rules/numa-core-rules.md)**.
 
 ## 📁 Documentation
 
 - **[Numa Core Rules](file:///.agent/rules/numa-core-rules.md)**: Core development standards and constraints.
-- **[App Health Audit](file:///docs/audits/APP_HEALTH_AUDIT_REPORT.md)**: Latest codebase health status.
-- **[UBI Analysis](file:///docs/audits/UBI_UI_ANALYSIS.md)**: Principles of the Unitary Behavioral Interface.
-- **[Implementation Evidence](file:///docs/IMPLEMENTATION_EVIDENCE.md)**: Detailed technical logs.
+- **[Numa Core Rules](file:///.agent/rules/numa-core-rules.md)**: Core development standards and constraints.
 
 ## 🚀 Deploy
 

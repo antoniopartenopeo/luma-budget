@@ -3,6 +3,7 @@
 import { useMemo } from "react"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
 import { sumExpensesInCents, sumIncomeInCents } from "@/domain/money"
+import { AdvisorFacts } from "@/domain/narration"
 
 export interface AISubscription {
     id: string
@@ -19,9 +20,9 @@ export interface AIForecast {
 }
 
 export interface AIAdvisorResult {
+    facts: AdvisorFacts | null
     forecast: AIForecast | null
     subscriptions: AISubscription[]
-    tips: string[]
     isLoading: boolean
 }
 
@@ -30,13 +31,12 @@ export function useAIAdvisor() {
 
     return useMemo((): AIAdvisorResult => {
         if (isLoading || transactions.length < 2) {
-            return { forecast: null, subscriptions: [], tips: [], isLoading }
+            return { facts: null, forecast: null, subscriptions: [], isLoading }
         }
 
         const expenses = transactions.filter(t => t.type === "expense")
 
         // 1. Subscription Detection Logic
-        // group by description and amount (cents)
         const patternMap = new Map<string, number[]>()
         expenses.forEach(t => {
             const key = `${t.description.toLowerCase()}_${Math.abs(t.amountCents)}`
@@ -46,9 +46,10 @@ export function useAIAdvisor() {
         })
 
         const detectedSubscriptions: AISubscription[] = []
+        let subscriptionTotalYearlyCents = 0
+
         patternMap.forEach((dates, key) => {
             if (dates.length >= 2) {
-                // Simple check: are they roughly 25-35 days apart?
                 dates.sort((a, b) => a - b)
                 let isMonthly = false
                 for (let i = 1; i < dates.length; i++) {
@@ -57,10 +58,11 @@ export function useAIAdvisor() {
                 }
 
                 if (isMonthly) {
-                    const [desc, amountCents] = key.split("_")
-                    const amount = parseInt(amountCents) / 100
+                    const [desc, amountCentsStr] = key.split("_")
+                    const amountCents = parseInt(amountCentsStr)
+                    const amount = amountCents / 100
 
-                    // Noise Gate: Ignore subscriptions under €5 to avoid coffee/snacks
+                    // Noise Gate: Ignore subscriptions under €5
                     if (Math.abs(amount) >= 5) {
                         detectedSubscriptions.push({
                             id: key,
@@ -68,12 +70,13 @@ export function useAIAdvisor() {
                             amount: amount,
                             frequency: "monthly"
                         })
+                        subscriptionTotalYearlyCents += (Math.abs(amountCents) * 12)
                     }
                 }
             }
         })
 
-        // 2. Forecasting Logic (3-month moving average)
+        // 2. Forecasting Logic
         const last3Months = []
         const now = new Date()
         for (let i = 1; i <= 3; i++) {
@@ -94,73 +97,58 @@ export function useAIAdvisor() {
         })
 
         const historicalMonthsWithData = monthlyStats.filter(m => m.hasData).length
-        let forecast: AIForecast | null = null
+        let facts: AdvisorFacts | null = null
 
         if (historicalMonthsWithData > 0) {
-            // Standard Case: We have historical data
-            const avgIncome = monthlyStats.reduce((s, m) => s + m.income, 0) / historicalMonthsWithData / 100
-            const avgExpenses = monthlyStats.reduce((s, m) => s + m.expenses, 0) / historicalMonthsWithData / 100
-            const predictedSavings = avgIncome - avgExpenses
+            const avgIncomeCents = Math.round(monthlyStats.reduce((s, m) => s + m.income, 0) / historicalMonthsWithData)
+            const avgExpensesCents = Math.round(monthlyStats.reduce((s, m) => s + m.expenses, 0) / historicalMonthsWithData)
+            const predictedSavingsCents = avgIncomeCents - avgExpensesCents
 
-            forecast = {
-                predictedIncome: avgIncome,
-                predictedExpenses: avgExpenses,
-                predictedSavings,
-                confidence: historicalMonthsWithData >= 3 ? "high" : "medium"
+            facts = {
+                predictedIncomeCents: avgIncomeCents,
+                predictedExpensesCents: avgExpensesCents,
+                deltaCents: predictedSavingsCents,
+                historicalMonthsCount: historicalMonthsWithData,
+                subscriptionCount: detectedSubscriptions.length,
+                subscriptionTotalYearlyCents
             }
         } else {
-            // Cold Start Case: No historical data (Oct/Nov/Dec empty), check Current Month (Jan)
+            // Cold Start: Use current month
             const currentMonthTransactions = transactions.filter(t => {
                 const td = new Date(t.timestamp)
                 return td.getFullYear() === now.getFullYear() && td.getMonth() === now.getMonth()
             })
 
             if (currentMonthTransactions.length > 0) {
-                // Use current month actuals as best guess forecast
-                const currentIncome = sumIncomeInCents(currentMonthTransactions) / 100
-                const currentExpenses = sumExpensesInCents(currentMonthTransactions) / 100
+                const currentIncomeCents = sumIncomeInCents(currentMonthTransactions)
+                const currentExpensesCents = sumExpensesInCents(currentMonthTransactions)
 
-                forecast = {
-                    predictedIncome: currentIncome,
-                    predictedExpenses: currentExpenses,
-                    predictedSavings: currentIncome - currentExpenses,
-                    confidence: "low" // It's just a snapshot of now, not a trend
+                facts = {
+                    predictedIncomeCents: currentIncomeCents,
+                    predictedExpensesCents: currentExpensesCents,
+                    deltaCents: currentIncomeCents - currentExpensesCents,
+                    historicalMonthsCount: 0,
+                    subscriptionCount: detectedSubscriptions.length,
+                    subscriptionTotalYearlyCents
                 }
-            } else {
-                // Absolute Zero: No history, no current data -> Calm Mode
-                forecast = null
             }
         }
 
-
-        // 3. Smart Tips
-        const tips = []
-        const formatMoney = (amount: number) => {
-            return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(amount)
-        }
-
-        if (forecast) {
-            const { predictedSavings, predictedIncome } = forecast
-
-            if (predictedSavings < 0) {
-                tips.push(`Attenzione: le proiezioni indicano un deficit di ${formatMoney(Math.abs(predictedSavings))}. Considera di tagliare le spese non essenziali.`)
-            } else if (predictedSavings > 100) {
-                const savingsRate = predictedIncome > 0 ? (predictedSavings / predictedIncome) * 100 : 0
-                tips.push(`Ottimo lavoro! Surplus stimato di ${formatMoney(predictedSavings)} (${savingsRate.toFixed(0)}% delle entrate). Potresti investirlo nel fondo emergenza.`)
-            }
-        }
-
-        if (detectedSubscriptions.length > 0) {
-            const totalYearly = detectedSubscriptions.reduce((s, sub) => s + sub.amount, 0) * 12
-            if (totalYearly > 500) {
-                tips.push(`Hai ${detectedSubscriptions.length} abbonamenti attivi (>€5) che pesano circa ${formatMoney(totalYearly)}/anno. Una revisione potrebbe farti risparmiare.`)
+        // Map facts to legacy Forecast object for UI
+        let forecast: AIForecast | null = null
+        if (facts) {
+            forecast = {
+                predictedIncome: facts.predictedIncomeCents / 100,
+                predictedExpenses: facts.predictedExpensesCents / 100,
+                predictedSavings: facts.deltaCents / 100,
+                confidence: facts.historicalMonthsCount >= 3 ? "high" : facts.historicalMonthsCount > 0 ? "medium" : "low"
             }
         }
 
         return {
+            facts,
             forecast,
             subscriptions: detectedSubscriptions,
-            tips,
             isLoading: false
         }
     }, [transactions, isLoading])

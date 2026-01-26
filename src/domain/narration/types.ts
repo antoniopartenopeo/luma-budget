@@ -48,21 +48,25 @@ export interface SnapshotFacts {
     balanceFormatted: string
     /** Balance in cents - ONLY for sign determination, not for display */
     balanceCents: number
+    /** Income in cents - required for relative buffer calculation */
+    incomeCents?: number
 
     // === Budget (optional) ===
     budgetFormatted?: string
     /** Budget utilization 0-100+ */
     utilizationPercent?: number
-
-    // === Behavior (optional) ===
     /** Superfluous spending percentage */
     superfluousPercent?: number
     /** User's target for superfluous spending */
     superfluousTargetPercent?: number
-
-    // === Derived (pre-calculated) ===
     /** Savings rate as percentage of income */
     savingsRatePercent?: number
+    /** Ratio of time passed in the period (0-1) */
+    elapsedRatio?: number
+    /** Whether the current spending pace exceeds the budget at end of period */
+    isProjectedOverrun?: boolean
+    /** Data integrity flag for Rule B6 */
+    isDataIncomplete?: boolean
 }
 
 /**
@@ -73,8 +77,10 @@ export interface SnapshotFacts {
 export type SnapshotState =
     | "thriving"    // surplus, under budget, superfluous ok
     | "stable"      // balanced, on track
+    | "at_risk"     // NEW: projection exceeds budget or pacing is off
     | "strained"    // deficit or budget pressure
     | "critical"    // multiple negative indicators
+    | "early_uncertain" // NEW: first days of month, no praise allowed
     | "calm"        // insufficient data, no alarms
 // =====================
 // KPI TYPES (Dashboard Cards)
@@ -94,6 +100,8 @@ export interface KPIFacts {
     targetPercent?: number
     /** Optional pre-calculated tone from KPI logic */
     tone?: "positive" | "negative" | "warning" | "neutral"
+    /** Optional relative buffer (net / income) for balance KPI */
+    bufferRatio?: number
 }
 
 /**
@@ -104,6 +112,39 @@ export type KPIState =
     | "attention"   // Needs monitoring
     | "critical"    // Action required
     | "neutral"      // Contextual or insufficient data
+
+// =====================
+// BUDGET TYPES (Specific Section)
+// =====================
+
+/**
+ * Facts for a dedicated Budget section narration.
+ * Strict alignment with BUDEGT-2 Skill.
+ */
+export interface BudgetFacts {
+    spentCents: number
+    limitCents: number
+    /** 0 to 1 ratio of time elapsed in period */
+    elapsedRatio: number
+    /** 0 to 1 ratio of budget used */
+    utilizationRatio: number
+    /** Derived metric for pacing (utilization / elapsed) */
+    pacingRatio: number
+    /** Predicted spend at end of period based on current burn rate */
+    projectedSpendCents: number
+    /** Data integrity flag */
+    isDataIncomplete: boolean
+}
+
+/**
+ * States for the Budget domain
+ */
+export type BudgetState =
+    | "early_uncertain" // Rule B1: Pacing not yet relevant
+    | "calm"            // Rule B6: Missing data or zero signal
+    | "on_track"        // Rule B3: Pacing is healthy
+    | "at_risk"         // Rule B4: Pacing/Projection is off
+    | "over_budget"     // Rule B5: spent > limit
 
 // =====================
 // TREND TYPES (Insights)
@@ -125,6 +166,12 @@ export interface TrendFacts {
     comparisonValueFormatted?: string
     /** Optional period label */
     periodLabel?: string
+    /** Metric Identifier for logic checks */
+    metricId?: "expenses" | "income" | "savings" | "savings_rate"
+    /** Raw savings rate value (decimal, e.g. -0.10 for -10%) if applicable */
+    savingsRateValue?: number
+    /** Flag to explicitly indicate negative savings rate without parsing */
+    isSavingsRateNegative?: boolean
 }
 
 /**
@@ -143,7 +190,7 @@ export type TrendState =
 
 /**
  * A candidate for orchestration. 
- * Represents a signal from any source (forecast, trend, spike, etc.)
+ * Represents a signal from any source (forecast, trend, risk_spike, etc.)
  */
 export interface NarrationCandidate {
     id: string
@@ -167,4 +214,31 @@ export interface OrchestratedNarration {
     rationale: {
         rulesTriggered: string[]
     }
+    /** Context for cross-component awareness (e.g. current crisis affecting long-term trends) */
+    context: OrchestrationContext
 }
+
+/**
+ * Context derived from the orchestration process to inform other narrators.
+ */
+export interface OrchestrationContext {
+    /** True if there is a High or Critical severity issue in the current period */
+    hasHighSeverityCurrentIssue: boolean
+}
+
+// =====================
+// AI ADVISOR TYPES
+// =====================
+
+export interface AdvisorFacts {
+    predictedIncomeCents: number
+    predictedExpensesCents: number
+    deltaCents: number
+    deltaPercent?: number
+    historicalMonthsCount: number
+    subscriptionCount: number
+    subscriptionTotalYearlyCents: number
+    monthlyBudgetLimitCents?: number
+}
+
+export type AdvisorState = "deficit" | "positive_balance" | "neutral"

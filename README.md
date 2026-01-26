@@ -13,6 +13,7 @@ Local-first persistence with rich analytics and insights.
 | **Categories** | Stable | Full CRUD with custom icons |
 | **Simulator** | Stable v2.0 | "What-If" expense reduction analysis |
 | **Insights** | Stable v1.2 | Deterministic Narration & Semantic Constraints |
+| **UI/UX** | **Premium v1.0**| Unified Glassmorphism & Narrative Flow |
 | **Settings** | Stable v1.3 | Preferences, backup/restore, themes |
 
 ## 🏗 Architecture

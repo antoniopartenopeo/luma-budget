@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react"
 import { AlertCircle } from "lucide-react"
+import { motion } from "framer-motion"
 import { useBudget, useUpsertBudget } from "@/features/budget/api/use-budget"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
 import { useCategories } from "@/features/categories/api/use-categories"
@@ -122,7 +123,7 @@ export default function BudgetPage() {
     }
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
+        <div className="space-y-8 animate-in fade-in duration-500 w-full">
             {/* Header */}
             <PageHeader
                 title="Budget"
@@ -150,11 +151,22 @@ export default function BudgetPage() {
                 elapsedRatio={elapsedRatio}
             />
 
-            {/* Group Budget Cards */}
-            <div>
-                <h2 className="text-lg font-semibold mb-4">Budget per Gruppi di Spesa</h2>
-                <div className="grid gap-4 md:grid-cols-3">
-                    {BUDGET_GROUPS.map(groupId => (
+            {/* Group Budget Cards Section */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="space-y-6 pt-4"
+            >
+                <div className="flex flex-col gap-1">
+                    <h2 className="text-xl font-bold tracking-tight text-foreground/90">Gruppi di Spesa</h2>
+                    <p className="text-sm text-muted-foreground font-medium">
+                        Analisi dettagliata per natura di spesa (Essenziali, Comfort, Superflue).
+                    </p>
+                </div>
+
+                <div className="flex flex-col gap-6 pb-12">
+                    {BUDGET_GROUPS.map((groupId, index) => (
                         <GroupBudgetCard
                             key={groupId}
                             groupId={groupId}
@@ -167,7 +179,7 @@ export default function BudgetPage() {
                         />
                     ))}
                 </div>
-            </div>
+            </motion.div>
         </div>
     )
 }

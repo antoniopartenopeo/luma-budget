@@ -41,19 +41,45 @@ Non procedere in modalità "best effort".
 ## Struttura Pagina Standard
 
 ```tsx
-<div className="container mx-auto p-4 md:p-8 space-y-8">
-  {/* Header */}
-  <div className="flex items-center justify-between">
-    <div>
-      <h1 className="text-3xl font-bold tracking-tight">Titolo</h1>
-      <p className="text-muted-foreground mt-1">Sottotitolo</p>
-    </div>
-    {/* Azioni */}
-  </div>
+<div className="space-y-8 animate-in fade-in duration-500 w-full">
+  {/* Header: PageHeader component preferred */}
+  <PageHeader
+    title="Titolo"
+    description="Sottotitolo"
+    actions={<Actions />}
+  />
   
-  {/* Contenuto */}
+  {/* Contenuto: Macro-card full-width */}
+  <Card className="rounded-[2.5rem] border-none glass-panel shadow-xl">
+    {/* ... */}
+  </Card>
 </div>
 ```
+
+> [!IMPORTANT]
+> **MAI** usare `max-w-4xl` o limiti di larghezza arbitrari sulle pagine principali. 
+> Il layout deve adattarsi al container di sistema (`max-w-7xl` fornito dall'AppShell).
+
+---
+
+## Numa Premium Aesthetic
+
+Tutti i componenti principali devono seguire questi standard visuali:
+
+### 1. Macro-Geometria
+- **Border Radius**: `rounded-[2.5rem]` (40px) per tutte le macro-card principali.
+- **Surface**: Classe `glass-panel` (backdrop-blur-xl, bg-white/60).
+- **Shadows**: `shadow-xl` + **Ambient Glows** (gradienti radiali sfocati) per stati critici.
+
+### 2. Animazioni (Standard Numa)
+- **Entrance**: `initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}`.
+- **Duration**: `500ms`.
+- **Easing**: `easeOut` o default Framer Motion.
+- **Divieto**: Non usare `y: 10` o salti verticali che frammentano il flusso narrativo.
+
+### 3. Tono & Feedback
+- **Advisor-centric**: Gli stati vuoti o i messaggi di sistema devono avere un tono proattivo e "intelligente" (es. "Pianificazione Necessaria" invece di "Nessun Dato").
+- **Visual Hierarchy**: Risparmio e focus primario sempre in evidenza con pesi font maggiori (font-black, tracking-tighter).
 
 ---
 
@@ -134,14 +160,45 @@ Usa la scala standard: `gap-1`, `gap-2`, `gap-4`, `gap-6`, `gap-8`
 
 ---
 
+---
+
+## Checklist di Verifica UI/UX (Obbligatoria)
+
+Ogni feature/componente deve passare la **[UI Regression Checklist](file:///.agent/rules/ui-regression-checklist.md)** prima di essere considerata **COMPLETA**.
+
+Il mancato rispetto anche di un solo punto della checklist tecnica automatizzabile è motivo di scarto della feature.
+
+### 1. Layout & Struttura
+- [ ] **Narrative Flow**: Il contenuto segue un flusso verticale logico. Nessuna colonna laterale persistente.
+- [ ] **Full Width**: Le macro-card occupano tutto lo spazio disponibile nel container di sistema.
+- [ ] **Responsive**: Il layout si adatta fluidamente senza "branching" (no `ComponentMobile.tsx`).
+
+### 2. Macro-Geometria & Stile
+- [ ] **Radius**: Le macro-card usano esattamente `rounded-[2.5rem]` (40px).
+- [ ] **Surface**: Utilizzata la classe `glass-panel` per le superfici principali.
+- [ ] **Shadows/Glows**: Ombre standard `shadow-xl` + `ambient-glows` per stati critici.
+
+### 3. Spacing & Densità
+- [ ] **Vertical Gap**: Spacing tra card/sezioni coerente (tipicamente `space-y-8` o `gap-6`).
+- [ ] **Padding**: Padding interno uniforme (es. `p-8` desktop, `p-4` mobile).
+
+### 4. Animazioni
+- [ ] **Pattern**: Utilizzato lo standard `scale-in 0.98` (non `y: 10`).
+- [ ] **Duration**: Durata fissa di `500ms`.
+- [ ] **Smoothness**: Le transizioni sono fluide e non scattose.
+
+### 5. Tone of Voice
+- [ ] **Advisor Style**: I testi (empty states, errori) hanno un tono proattivo e intelligente.
+
+---
+
 ## Checklist Pre-Commit
 
+- [ ] Superata **Checklist di Verifica UI/UX** sopra riportata
 - [ ] Nessun inline style
 - [ ] Nessun componente `*Mobile/*Desktop`
 - [ ] Responsive solo con CSS/Tailwind
-- [ ] Overlay corretti (`Sheet`, `Dialog`, `AlertDialog`)
 - [ ] Layout flex corretto per scroll
-- [ ] Spacing dalla scala standard
 
 ---
 

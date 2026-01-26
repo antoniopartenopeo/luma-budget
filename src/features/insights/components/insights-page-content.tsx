@@ -35,7 +35,7 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
     const periodLabel = formatPeriodLabel(period)
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-700">
+        <div className="space-y-8 animate-in fade-in duration-700 w-full">
             {/* Header */}
             <PageHeader
                 title="Insights"
@@ -48,7 +48,7 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
             {/* Trends Section */}
             <TrendAnalysisCard />
 
-            <Card className="rounded-2xl border-none bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden">
+            <Card className="rounded-[2.5rem] border-none bg-card/50 backdrop-blur-sm shadow-xl overflow-hidden p-2">
                 <CardHeader>
                     <CardTitle className="text-xl font-bold tracking-tight">Analisi Mensile</CardTitle>
                     <CardDescription>Dettagli e suggerimenti specifici per il periodo selezionato.</CardDescription>

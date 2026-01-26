@@ -9,7 +9,8 @@ import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Calculator, RefreshCw, ChevronDown, ChevronUp, AlertTriangle, CheckCircle2, AlertCircle } from "lucide-react"
+import { Calculator, RefreshCw, ChevronDown, ChevronUp, AlertTriangle, CheckCircle2, AlertCircle, Sparkles } from "lucide-react"
+import { motion } from "framer-motion"
 import { useMonthlyAverages } from "@/features/simulator/hooks"
 import { applySavings, SimulationPeriod, groupAndSortCategories, computeEffectiveSavingsPct, classifySuperfluousSpend } from "@/features/simulator/utils"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
@@ -312,138 +313,144 @@ export default function SimulatorPage() {
     }
 
     return (
-        <div className="space-y-8 pb-24 md:pb-12 max-w-7xl mx-auto">
+        <div className="space-y-8 pb-24 md:pb-12 w-full">
             <PageHeader
                 title="Simulatore Spese"
                 description="Analizza il tuo stile di vita e simula scenari di risparmio intelligenti."
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                {/* LEFT COL: Groups & Controls */}
-                <div className="lg:col-span-8 space-y-8">
+            {/* HERO RESULTS: Top of the page */}
+            <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+            >
+                <Card className="relative overflow-hidden rounded-[2.5rem] glass-panel p-1 border-none shadow-xl">
+                    {/* Visual Glass Reflection Accent */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/40 dark:from-white/5 to-transparent pointer-events-none" />
 
-                    {/* Compact Toolbar */}
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-1">
-                        <div className="flex items-center gap-3 glass-card p-1.5 rounded-xl">
-                            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-3">Analisi:</span>
-                            <Select value={period.toString()} onValueChange={(v) => setPeriod(parseInt(v) as SimulationPeriod)}>
-                                <SelectTrigger className="w-[160px] h-9 text-sm border-0 bg-transparent focus:ring-0 shadow-none font-medium">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="3">Ultimi 3 Mesi</SelectItem>
-                                    <SelectItem value="6">Ultimi 6 Mesi</SelectItem>
-                                    <SelectItem value="12">Ultimo Anno</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
+                    {/* Ambient Glows */}
+                    <div className="absolute top-[-20%] right-[-20%] w-[500px] h-[500px] bg-primary/10 blur-[120px] rounded-full pointer-events-none opacity-60" />
 
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={handleReset}
-                            className="text-slate-400 hover:text-rose-500 hover:bg-rose-50 h-9 rounded-xl px-4 transition-colors"
-                        >
-                            <RefreshCw className="h-4 w-4 mr-2" />
-                            Resetta tutto
-                        </Button>
-                    </div>
-
-                    {/* Groups List */}
-                    <div className="space-y-6">
-                        {/* Order: Superfluous (Priority), then others */}
-                        {renderGroupCard("superfluous")}
-                        {renderGroupCard("comfort")}
-                        {renderGroupCard("essential")}
-
-                        {/* Empty State Check */}
-                        {simulationResult.baselineTotal === 0 && (
-                            <div className="text-center py-20 text-muted-foreground glass-panel rounded-3xl">
-                                <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-muted mb-4">
-                                    <Calculator className="h-8 w-8 text-muted-foreground/50" />
-                                </div>
-                                <h3 className="text-lg font-medium text-foreground">Nessuna spesa trovata</h3>
-                                <p className="text-sm text-muted-foreground mt-1">Non ci sono transazioni nel periodo selezionato.</p>
-                                <Button variant="link" className="mt-4 text-primary font-semibold">
-                                    Vai alle Transazioni
-                                </Button>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* RIGHT COL: Sticky Results */}
-                <div className="lg:col-span-4 sticky top-6 space-y-6">
-                    <Card className="relative overflow-hidden rounded-[2.5rem] glass-panel p-1">
-                        {/* Visual Glass Reflection Accent */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/40 dark:from-white/5 to-transparent pointer-events-none" />
-
-                        {/* Ambient Glows - Subtle Light Theme */}
-                        <div className="absolute top-[-20%] right-[-20%] w-[400px] h-[400px] bg-primary/10 blur-[120px] rounded-full pointer-events-none opacity-60" />
-
-                        <div className="relative z-10 px-6 pt-6 pb-8">
-                            <div className="flex items-center gap-3 mb-8">
-                                <div className="h-10 w-10 rounded-xl bg-background/80 dark:bg-slate-800 border border-border/50 flex items-center justify-center shadow-sm">
-                                    <Calculator className="h-5 w-5 text-primary fill-primary/20" />
+                    <div className="relative z-10 px-6 sm:px-10 pt-8 pb-10">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                            <div className="flex items-center gap-4">
+                                <div className="h-14 w-14 rounded-2xl bg-white dark:bg-slate-800 border border-border/50 flex items-center justify-center shadow-sm">
+                                    <Calculator className="h-7 w-7 text-primary fill-primary/20" />
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                                        Risultati
-                                        <Badge variant="secondary" className="bg-secondary/80 text-muted-foreground hover:bg-secondary border-border/40 text-[10px] px-1.5 h-5 shadow-sm">LIVE</Badge>
+                                    <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
+                                        Risultati Simulazione
+                                        <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 text-[10px] px-2 h-6 font-bold">LIVE</Badge>
                                     </h2>
-                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
-                                        Stima mensile
+                                    <p className="text-sm text-muted-foreground font-bold uppercase tracking-widest mt-1">
+                                        Analisi Risparmio Mensile
                                     </p>
                                 </div>
                             </div>
 
-                            <div className="space-y-8">
-                                {/* Baseline vs Simulated */}
-                                <div className="space-y-4">
-                                    <div className="flex justify-between items-center group/row">
-                                        <span className="text-sm text-muted-foreground font-medium transition-colors">Spesa Attuale</span>
-                                        <span className="text-base font-medium text-muted-foreground tabular-nums">{formatCents(simulationResult.baselineTotal, currency, locale)}</span>
-                                    </div>
-
-                                    <Separator className="bg-border/50" />
-
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-base font-semibold text-foreground">Nuova Spesa</span>
-                                        <span className="text-2xl font-bold text-foreground tabular-nums tracking-tight animate-in fade-in zoom-in-95 duration-300 key={simulationResult.simulatedTotal}">
-                                            {formatCents(simulationResult.simulatedTotal, currency, locale)}
-                                        </span>
-                                    </div>
+                            {/* Period Selector & Reset moved here for better flow */}
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2 glass-card p-1.5 rounded-xl border-none">
+                                    <Select value={period.toString()} onValueChange={(v) => setPeriod(parseInt(v) as SimulationPeriod)}>
+                                        <SelectTrigger className="w-[150px] h-9 text-xs border-0 bg-transparent focus:ring-0 shadow-none font-bold uppercase tracking-wider">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="3">Ultimi 3 Mesi</SelectItem>
+                                            <SelectItem value="6">Ultimi 6 Mesi</SelectItem>
+                                            <SelectItem value="12">Ultimo Anno</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={handleReset}
+                                    className="h-10 w-10 rounded-full hover:bg-rose-500/10 hover:text-rose-600 transition-colors"
+                                    title="Resetta tutto"
+                                >
+                                    <RefreshCw className="h-5 w-5" />
+                                </Button>
+                            </div>
+                        </div>
 
-                                {/* Savings Big KPI */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                            {/* Detailed Stats */}
+                            <div className="space-y-4 md:col-span-1">
+                                <div className="space-y-1">
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Spesa Baseline</p>
+                                    <p className="text-xl font-bold tabular-nums text-foreground/70">{formatCents(simulationResult.baselineTotal, currency, locale)}</p>
+                                </div>
+                                <Separator className="bg-border/30" />
+                                <div className="space-y-1">
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Nuova Proiezione</p>
+                                    <p className="text-xl font-bold tabular-nums text-foreground">{formatCents(simulationResult.simulatedTotal, currency, locale)}</p>
+                                </div>
+                            </div>
+
+                            {/* Main Result Hero */}
+                            <div className="md:col-span-2">
                                 {simulationResult.savingsAmount > 0 ? (
-                                    <div className="bg-emerald-500/10 dark:bg-emerald-950/30 text-emerald-900 dark:text-emerald-100 shadow-xl shadow-emerald-500/10 rounded-[1.5rem] p-6 text-center transform transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl hover:shadow-emerald-500/20 border border-emerald-500/20 relative overflow-hidden backdrop-blur-md">
-                                        <div className="relative">
-                                            <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-emerald-600 dark:text-emerald-400 mb-2">
-                                                Risparmio Mensile
-                                            </div>
-                                            <div className="text-4xl font-black tracking-tight drop-shadow-sm tabular-nums text-emerald-700 dark:text-emerald-300">
+                                    <div className="relative group">
+                                        <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-[2rem] blur opacity-25 group-hover:opacity-40 transition duration-500" />
+                                        <div className="relative bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/20 rounded-[2rem] p-8 flex flex-col items-center justify-center text-center">
+                                            <div className="text-[10px] uppercase tracking-[0.3em] font-black text-emerald-600 mb-2">Risparmio Stimato</div>
+                                            <div className="text-5xl font-black tracking-tighter text-emerald-600 tabular-nums mb-3">
                                                 {formatCents(simulationResult.savingsAmount, currency, locale)}
                                             </div>
-                                            <div className="inline-flex items-center gap-1.5 mt-2 bg-emerald-100/50 dark:bg-emerald-900/50 px-3 py-1 rounded-full border border-emerald-200/50 dark:border-emerald-700/50">
-                                                <span className="text-sm font-bold text-emerald-700 dark:text-emerald-300">-{simulationResult.savingsPercent}%</span>
+                                            <div className="px-4 py-1.5 rounded-full bg-emerald-500 text-white text-sm font-black shadow-lg shadow-emerald-500/30">
+                                                -{simulationResult.savingsPercent}% / Mese
                                             </div>
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="bg-background/40 rounded-[1.5rem] p-6 text-center text-muted-foreground border border-border/50 backdrop-blur-sm">
-                                        <p className="text-sm font-medium">Nessuna modifica</p>
-                                        <p className="text-xs mt-1 text-muted-foreground/70">Muovi gli slider a sinistra per simulare</p>
+                                    <div className="h-full flex items-center justify-center p-8 border-2 border-dashed border-border/40 rounded-[2rem] text-muted-foreground/60 italic font-medium">
+                                        Regola gli slider sotto per vedere il risparmio
                                     </div>
                                 )}
-
-                                {/* Microcopy / Advice */}
-                                <div className="text-xs text-center leading-relaxed text-muted-foreground italic">
-                                    &quot;{renderSuperfluousAdvice()}&quot;
-                                </div>
                             </div>
                         </div>
-                    </Card>
+
+                        {/* Semantic Advice Layer */}
+                        <div className="mt-8 pt-6 border-t border-border/30 flex gap-4 items-start">
+                            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 text-primary">
+                                <Sparkles className="h-4 w-4" />
+                            </div>
+                            <p className="text-sm font-medium text-foreground/80 leading-relaxed italic py-1">
+                                &quot;{renderSuperfluousAdvice()}&quot;
+                            </p>
+                        </div>
+                    </div>
+                </Card>
+            </motion.div>
+
+            {/* GROUPS: The interactive part */}
+            <div className="space-y-6 pt-4">
+                <div className="flex flex-col gap-1 px-1">
+                    <h2 className="text-xl font-bold tracking-tight text-foreground/90">Interventi per Categoria</h2>
+                    <p className="text-sm text-muted-foreground font-medium">Modula il risparmio per ogni natura di spesa.</p>
+                </div>
+
+                <div className="space-y-6">
+                    {/* Order: Superfluous (Priority), then others */}
+                    {renderGroupCard("superfluous")}
+                    {renderGroupCard("comfort")}
+                    {renderGroupCard("essential")}
+
+                    {/* Empty State Check */}
+                    {simulationResult.baselineTotal === 0 && (
+                        <div className="text-center py-20 text-muted-foreground glass-panel rounded-3xl">
+                            <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-muted mb-4">
+                                <Calculator className="h-8 w-8 text-muted-foreground/50" />
+                            </div>
+                            <h3 className="text-lg font-medium text-foreground">Nessuna spesa trovata</h3>
+                            <p className="text-sm text-muted-foreground mt-1">Non ci sono transazioni nel periodo selezionato.</p>
+                            <Button variant="link" className="mt-4 text-primary font-semibold">
+                                Vai alle Transazioni
+                            </Button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

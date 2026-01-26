@@ -26,8 +26,10 @@ Le regole finanziarie e di sicurezza NON sono negoziabili.
 | 2 | **MAI** usare inline styles (`style={{...}}`) | Solo classi Tailwind CSS |
 | 3 | **MAI** creare componenti `*Mobile.tsx` / `*Desktop.tsx` | UBI vieta branching per device |
 | 4 | **MAI** usare `useMediaQuery` o `if (isMobile)` per render | CSS-only responsiveness |
-| 5 | **MAI** simulare logica di produzione nei test | Importa le utility reali |
+| 5 | **MAI** simulare logica di produzione nei test | Importa le utility reali. Nessuna logica UI simulata. |
 | 6 | **MAI** salvare date in formati diversi da ISO-8601 | `YYYY-MM-DD` o timestamp ISO |
+| 7 | **MAI** usare radius inferiori a 2rem per macro-card | Coerenza Numa Premium (2.5rem standard) |
+| 8 | **MAI** usare layout multi-colonna persistenti | Favorire il flusso narrativo verticale |
 
 ---
 
@@ -41,6 +43,7 @@ Le regole finanziarie e di sicurezza NON sono negoziabili.
 | 4 | **SEMPRE** registrare nuove chiavi `luma_*` in `STORAGE_KEYS_REGISTRY` | `@/lib/storage-keys.ts` |
 | 5 | **SEMPRE** allineare `getAppVersion()` con `package.json` | Prima di ogni release |
 | 6 | **SEMPRE** usare `Sheet` per edit/detail, `Dialog` per wizard | UBI standard overlay |
+| 7 | **SEMPRE** passare la **[Checklist UI/UX](file:///.agent/rules/ui-regression-checklist.md)** prima di chiudere un task | DoD Obbligatorio |
 
 ---
 
@@ -90,5 +93,5 @@ Per procedure dettagliate, attiva la skill appropriata:
 
 ---
 
-**Versione**: 1.0.0  
-**Ultimo aggiornamento**: 2026-01-24
+**Versione**: 1.1.0  
+**Ultimo aggiornamento**: 2026-01-26

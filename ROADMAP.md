@@ -68,6 +68,7 @@
 - [x] **Backup/Restore** — Esporta/importa dati
 - [x] **Reset Dati** — Con conferma
 - [x] **Diagnostica** — Storage health, versione app
+- [x] **UI Unification** — Standard Numa Premium (2.5rem, Glassmorphism, Scale-in)
 
 ---
 
@@ -123,6 +124,7 @@
 
 | Data | Modifica |
 |------|----------|
+| 2026-01-26 | Unificazione UI/UX, upgrade a Numa Premium Aesthetic |
 | 2026-01-24 | Creazione documento, inventario iniziale |
 
 ---

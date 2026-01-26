@@ -158,13 +158,13 @@ export function TrendAnalysisCard() {
 
     if (isLoading) {
         return (
-            <Card className="rounded-2xl border-none bg-card/50 backdrop-blur-sm shadow-sm">
+            <Card className="rounded-[2.5rem] border-none bg-card/50 backdrop-blur-sm shadow-xl">
                 <CardHeader>
                     <Skeleton className="h-6 w-48 mb-2" />
                     <Skeleton className="h-4 w-64" />
                 </CardHeader>
                 <CardContent className="h-[350px]">
-                    <Skeleton className="h-full w-full rounded-xl" />
+                    <Skeleton className="h-full w-full rounded-2xl" />
                 </CardContent>
             </Card>
         )
@@ -172,7 +172,7 @@ export function TrendAnalysisCard() {
 
     if (!data.length) {
         return (
-            <Card className="rounded-2xl border-none bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden">
+            <Card className="rounded-[2.5rem] border-none bg-card/50 backdrop-blur-sm shadow-xl overflow-hidden">
                 <CardHeader>
                     <CardTitle className="text-xl font-bold tracking-tight">Velocità Finanziaria (12 Mesi)</CardTitle>
                     <CardDescription>Confronto tra entrate e uscite storiche</CardDescription>
@@ -193,14 +193,14 @@ export function TrendAnalysisCard() {
     }
 
     return (
-        <Card className="rounded-2xl border-none bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden">
-            <CardHeader>
+        <Card className="rounded-[2.5rem] border-none bg-card/50 backdrop-blur-sm shadow-xl overflow-hidden p-1">
+            <CardHeader className="px-8 pt-8">
                 <CardTitle className="text-xl font-bold tracking-tight">Velocità Finanziaria (12 Mesi)</CardTitle>
                 <CardDescription className="text-muted-foreground/90 font-medium">
                     {trendNarration || "Confronto tra entrate e uscite storiche"}
                 </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-8 pb-8">
                 <div className="h-[350px] w-full">
                     <EChartsWrapper option={option} />
                 </div>

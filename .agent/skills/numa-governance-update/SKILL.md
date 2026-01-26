@@ -170,8 +170,7 @@ chmod +x .git/hooks/pre-commit
 
 ---
 
-## Checklist Aggiornamento
-
+- [ ] Superata **Checklist di Verifica UI/UX** (se applicabile)
 - [ ] Modifica al file appropriato (Rule o Skill)
 - [ ] Versione/data aggiornata
 - [ ] Entry in CHANGELOG

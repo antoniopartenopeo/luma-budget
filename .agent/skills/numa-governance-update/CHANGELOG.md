@@ -4,6 +4,37 @@ Storico consolidato di tutte le modifiche a regole, skill, e standard di svilupp
 
 ---
 
+## [2.2.1] - 2026-01-26
+
+### Added
+- **Formalizzazione [UI Regression Checklist](file:///.agent/rules/ui-regression-checklist.md)**:
+  - Spostata in modo permanente in `.agent/rules/ui-regression-checklist.md`.
+  - Integrata come riferimento bloccante nel **Definition of Done (DoD)** core.
+- **Aggiornamento Link Governance**:
+  - Sincronizzati riferimenti in `numa-ui-standards` e `numa-core-rules.md`.
+
+---
+
+## [2.2.0] - 2026-01-26
+
+### Added
+- **Standard UI Numa Premium** in `numa-ui-standards`:
+  - Macro-geometria: raggio 2.5rem (40px) per macro-card.
+  - Surface: Glassmorphism e Ambient Glows.
+  - Animazioni: Normalizzazione `scale-in 0.98` (500ms).
+  - **Checklist di Verifica UI/UX Obbligatoria**: integrata nel flusso di review/test.
+- **Nuovi vincoli in `numa-core-rules.md`**:
+  - Obbligo radius > 2rem per macro-card.
+  - Preferenza per flusso narrativo verticale vs griglie multi-colonna.
+  - **Vincolo di Chiusura**: nessun task è "completo" senza passare la verifica UI/UX.
+  - Rinforzato divieto di simulazione logica UI nei test.
+
+### Changed
+- Rimosso constraint obsoleto `max-w-4xl` dai template di pagina.
+- Aggiornato `README.md` e `ROADMAP.md` per riflettere l'unificazione UI.
+
+---
+
 ## [2.1.0] - 2026-01-25
 
 ### Added

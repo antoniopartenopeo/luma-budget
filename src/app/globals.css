@@ -51,6 +51,51 @@
   --radius-sm: 0.5rem;
   /* 8px - Small elements */
 
+  /* Custom Premium Animations */
+  --animate-enter-up: enter-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-pulse-soft: pulse-soft 3s ease-in-out infinite;
+  --animate-flash-green: flash-green 0.8s ease-out forwards;
+
+  @keyframes enter-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes pulse-soft {
+
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    50% {
+      opacity: 0.85;
+      transform: scale(1.02);
+    }
+  }
+
+  @keyframes flash-green {
+    0% {
+      background-color: oklch(0.6 0.16 160 / 0.3);
+      /* Emerald 600 equivalent with opacity */
+      box-shadow: 0 0 20px oklch(0.6 0.16 160 / 0.5);
+    }
+
+    100% {
+      background-color: transparent;
+      box-shadow: none;
+    }
+  }
+
+  /* Existing Shimmer */
   --animate-shimmer: shimmer 3s infinite linear;
 
   @keyframes shimmer {

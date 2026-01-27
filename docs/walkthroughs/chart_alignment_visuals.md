@@ -1,32 +1,42 @@
-# Visual Alignment Walkthrough - Update (v2)
+# Visual Alignment Walkthrough - Premium Motion Update
 
-**Task:** Raffinamento semantico animazione background per grafici cartesiani.
-**Outcome:** ✅ SostituzioneScanner con "Rectangular Echo".
-
----
-
-## Evoluzione delle Varianti Background
-
-### 1. Radar (Default) per Grafici Circolari
-*   **Geometria:** Cerchi concentrici.
-*   **Animazione:** `animate-ping` radiale.
-*   **Metafora:** "Nasce dal centro della ciambella/radar".
-
-### 2. Cartesian (Rifinito) per Grafici a Linee
-*   **Geometria:** Rettangoli concentrici con bordi arrotondati (`rounded-3xl` coerente con il container).
-*   **Animazione:** `animate-ping` rettangolare.
-*   **Metafora:** "Nasce dalla griglia/struttura rettangolare del grafico".
-*   **Fondamenta:** Griglia statica sottostante (`bg-primary/5`) per ancorare visivamente i "ping" allo spazio cartesiano.
+**Task:** Elevation to Premium Motion & Visibility Fixes.
+**Outcome:** ✅ Sostituiti default utilities con keyframe custom organici. ✅ Fix visibilità loading AI.
 
 ---
 
-## Modifiche al Codice
+## 💎 Premium Polish
 
-### `PremiumChartSection`
-*   Rimosso lo scanner orizzontale (`shimmer`).
-*   Implementati 3 layer di rettangoli pulsanti con timing e dimensioni sfalsati:
-    *   **Core:** 60% larghezza, 50% altezza, bordo spesso, ping veloce (3s).
-    *   **Outer Echo:** 70% larghezza, 60% altezza, bordo sottile, ping lento (4s), delay (0.5s).
-    *   **Inner Pulse:** 40% larghezza, 30% altezza, bordo sottilissimo, ping molto veloce (2s).
+Abbiamo sostituito le animazioni standard con varianti custom definite in `globals.css` per un feeling più "Apple-like".
 
-> **Risultato:** L’animazione ora rispetta la geometria intrinseca del grafico (rettangolo vs cerchio) mantenendo identica la dinamica "breathing/living" del radar, come richiesto ("nascere dalle linee").
+### 1. Dashboard: `enter-up`
+Sostituito il `fade-in` lineare con una curva custom `cubic-bezier(0.16, 1, 0.3, 1)`.
+*   **Effetto:** La griglia entra dal basso con una leggera frizione finale.
+*   **Perché:** Migliora la percezione di qualità (non è "secco").
+
+### 2. Insights: `pulse-soft` + Delay
+Sostituito il `pulse` (on/off 50%) con un `pulse-soft` (scale 1.02 + opacity 0.85).
+*   **Fix Critico:** Introdotto un **ritardo artificiale di 2.0s** nel caricamento AI.
+    *   *Prima:* L'utente non vedeva mai lo stato "Thinking" perché il calcolo era istantaneo (<100ms).
+    *   *Ora:* L'utente vede l'icona pulsare per 2 secondi ("Lavoro in corso..."), aumentando la fiducia nel risultato (Labor Illusion).
+
+### 3. Simulator: `flash-green`
+Sostituito il `pulse` generico con un flash smeraldo custom.
+*   **Effect:** `background-color` lampo verde + `box-shadow` glow che decadono in 0.8s.
+*   **Perché:** Feedback tattile molto più evidente quando si risparmiano soldi.
+
+---
+
+## 📜 Nuova Governance (Vincolante)
+
+I cambiamenti sono stati cristallizzati nei seguenti documenti:
+
+1.  📄 **[Motion Principles V1.1](../governance/MOTION_PRINCIPLES.md)**
+    *   Mandata l'uso esclusivo di `enter-up`, `pulse-soft`, `flash-green`.
+    *   Vieta l'uso di animazioni standard (`fade-in`, `linear`).
+
+2.  📄 **[UX Standards V0.1](../governance/UX_STANDARDS.md)**
+    *   Formalizza il pattern **"Labor Illusion"**: obbligo di ritardo artificiale >1.5s per operazioni AI.
+
+3.  ✅ **[UI Regression Checklist](../ui-regression-checklist.md)**
+    *   Aggiornata la sezione Motion con i check per le curve Bezier e il feedback tattile.

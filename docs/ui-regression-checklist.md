@@ -21,10 +21,12 @@ Ogni PR o modifica che tocca l'interfaccia utente DEVE superare questa checklist
 - [ ] **Surface**: `glass-panel` per il Monolite.
 - [ ] **Shadows**: `shadow-xl` solo per il Monolite.
 
-## 4. Motion System
-- [ ] **Loader**: Usare `StaggerContainer` per l'ingresso.
-- [ ] **Scale-In**: Scala `0.98` -> `1` (mai offset Y).
-- [ ] **Duration**: `500ms`.
+## 4. Motion System (PREMIUM)
+- [ ] **Entry**: Usare `animate-enter-up` (Bezier Custom) per l'ingresso di card e griglie. (VIETATO `fade-in` standard).
+- [ ] **AI "Labor Illusion"**: I caricamenti intelligenti hanno un ritardo artificiale (>1.5s) e usano `animate-pulse-soft`?
+- [ ] **Feedback**: Le azioni che alterano i dati restituiscono un feedback immediato (`animate-flash-green`)?
+- [ ] **No Generic**: Nessun `pulse`, `bounce` o `spin` standard visibile.
+- [ ] **Accessibility**: Tutte le animazioni sono disabilitate/ridotte con `prefers-reduced-motion`.
 
 ## 5. Typography System (LOCKED)
 - [ ] **Hero Title**: `text-2xl font-bold tracking-tight`.

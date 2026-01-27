@@ -1,6 +1,4 @@
-"use client"
-
-import { useMemo } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
 import { sumExpensesInCents, sumIncomeInCents } from "@/domain/money"
 import { AdvisorFacts } from "@/domain/narration"
@@ -27,11 +25,21 @@ export interface AIAdvisorResult {
 }
 
 export function useAIAdvisor() {
-    const { data: transactions = [], isLoading } = useTransactions()
+    const { data: transactions = [], isLoading: isDataLoading } = useTransactions()
+    const [isArtificialLoading, setIsArtificialLoading] = useState(true)
 
-    return useMemo((): AIAdvisorResult => {
-        if (isLoading || transactions.length < 2) {
-            return { facts: null, forecast: null, subscriptions: [], isLoading }
+    // Force "Thinking" time to allow user to appreciate the semantic animation
+    useEffect(() => {
+        setIsArtificialLoading(true)
+        const timer = setTimeout(() => {
+            setIsArtificialLoading(false)
+        }, 2000) // 2s "Thinking" time per user request
+        return () => clearTimeout(timer)
+    }, []) // Run once on mount
+
+    const computation = useMemo(() => {
+        if (isDataLoading || transactions.length < 2) {
+            return { facts: null, forecast: null, subscriptions: [] }
         }
 
         const expenses = transactions.filter(t => t.type === "expense")
@@ -148,8 +156,23 @@ export function useAIAdvisor() {
         return {
             facts,
             forecast,
-            subscriptions: detectedSubscriptions,
-            isLoading: false
+            subscriptions: detectedSubscriptions
         }
-    }, [transactions, isLoading])
+    }, [transactions, isDataLoading])
+
+    const isLoading = isDataLoading || isArtificialLoading
+
+    if (isLoading) {
+        return {
+            facts: null,
+            forecast: null,
+            subscriptions: [],
+            isLoading: true
+        }
+    }
+
+    return {
+        ...computation,
+        isLoading: false
+    }
 }

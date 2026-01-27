@@ -92,12 +92,17 @@ Tutti i componenti principali devono seguire questi standard visuali:
 - **Card**: `rounded-[2.5rem]` (Macro) o `rounded-xl` (Micro).
 - **Shadows**: `shadow-xl` + **Ambient Glows** (gradienti radiali sfocati) per stati critici.
 
-### 2. Motion System (Standard Numa)
-- **Orchestrazione**: Usare sempre `StaggerContainer` (`src/components/patterns/stagger-container.tsx`) a livello di layout/pagina.
-- **Vietato Motion Locale**: Non definire `initial`, `animate` o `transition` direttamente nei componenti. Usare i `Variants`.
-- **Grammatica Scale-In**: L'ingresso deve avvenire tramite scale-in (`0.98` -> `1`) e fade-in opacità.
-- **Divieto Y-Offset**: È severamente vietato l'uso di `y: 20` o simili per animazioni di ingresso.
-- **Easing**: Usare `[0.22, 1, 0.36, 1]` per transizioni premium.
+### 2. Motion System (Premium Standard)
+- **Primitives Only**: Usare **ESCLUSIVAMENTE** le classi globali `src/app/globals.css`.
+    - `animate-enter-up`: Entrata standard per card/griglie (sostituisce fade-in).
+    - `animate-pulse-soft`: Stati di attesa/thinking (sostituisce pulse).
+    - `animate-flash-green`: Feedback successo azione (sostituisce flash).
+- **Easing**: Il default è `cubic-bezier(0.16, 1, 0.3, 1)` (Apple-like friction).
+- **Divieti**: Vietato usare utility standard come `animate-in fade-in` o `animate-pulse`.
+
+### 3. UX Patterns (Critical)
+- **Labor Illusion (AI)**: Ogni operazione "Intelligente" (es. Advisor) DEVE avere un ritardo artificiale di almeno **1.5s - 2.0s** per permettere all'utente di vedere l'animazione "Thinking".
+- **Tactile Feedback**: Ogni slider o input che cambia valori monetari deve triggerare `animate-flash-green` sul risultato.
 
 ### 4. Ultra-Tech Premium Visuals (Command Center)
 Per sezioni ad alto impatto (Dashboard, Insights), utilizzare il pattern **Ultra-Tech**:

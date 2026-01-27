@@ -95,7 +95,11 @@ export function DashboardKpiGrid({
             description={contextText}
             className="w-full"
         >
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 pt-4">
+            {/* Animated Grid Container for Soft Transitions */}
+            <div
+                key={filter?.period || "default"}
+                className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 pt-4 animate-enter-up"
+            >
                 <KpiCard
                     title="Saldo"
                     value={isLoading ? 0 : formatValue(netBalance || 0)}

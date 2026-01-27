@@ -19,7 +19,21 @@ export function AIAdvisorCard() {
     const isLoading = aiLoading || orchestratorLoading
 
     if (isLoading) {
-        return <Skeleton className="h-[240px] w-full rounded-2xl" />
+        return (
+            <MacroSection title="Numa AI Advisor" description="Analisi finanziaria in corso..." className="h-[auto] min-h-[240px]">
+                <div className="flex flex-col items-center justify-center py-12 gap-4 animate-in fade-in duration-700">
+                    <div className="relative">
+                        <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse-soft" />
+                        <div className="relative h-12 w-12 rounded-2xl bg-background/50 border border-primary/20 flex items-center justify-center shadow-lg">
+                            <Sparkles className="h-6 w-6 text-primary animate-pulse-soft" />
+                        </div>
+                    </div>
+                    <p className="text-sm font-medium text-muted-foreground animate-pulse">
+                        Elaborazione insight...
+                    </p>
+                </div>
+            </MacroSection>
+        )
     }
 
     if (!forecast && (!orchestration || !orchestration.primary)) {

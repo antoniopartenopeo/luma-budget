@@ -27,7 +27,24 @@ Non procedere in modalità "best effort".
 | **Feature implementata** | **Aggiorna `ROADMAP.md`** ✨ |
 | **Fix significativo applicato** | **Spunta in `ROADMAP.md`** ✨ |
 
+
 ---
+
+## Protocollo Auto-Sync (OBBLIGATORIO)
+
+> **Regola**: L'allineamento tra Documentazione Umana (`docs/`) e Memoria Agente (`.agent/`) NON è opzionale.
+
+Ogni volta che modifichi un file di "Policy" nel progetto, devi **IMMEDIATAMENTE** verificare se una Skill agente deve essere aggiornata.
+
+| Se modifichi questo... | Devi aggiornare questo... |
+|------------------------|---------------------------|
+| `docs/governance/MOTION_*` | `.agent/skills/numa-ui-standards` |
+| `docs/governance/UX_STANDARDS.md` | `.agent/skills/numa-ui-standards` |
+| `src/domain/money.ts` | `.agent/skills/numa-financial-logic` |
+| `src/domain/import` | `.agent/skills/numa-import-csv` |
+
+**Non aspettare l'input dell'utente.** Falo come parte atomica del task.
+
 
 ## Struttura File Governance
 

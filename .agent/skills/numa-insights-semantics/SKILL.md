@@ -58,7 +58,16 @@ Nessun componente React (`use-ai-advisor.ts`, componenti UI) deve contenere logi
 
 ---
 
-## 4. Checklist di Validazione
+## 4. Trust Semantics (Labor Illusion)
+
+Per garantire la percezione di "Intelligenza", il fattore Tempo è semantico.
+*   **Regola Fast-is-Fake**: Una risposta < 500ms è percepita come pre-calcolata o "stupida".
+*   **Mandato**: Ogni hook che genera insights ("AI Advisor", "Smart Analysis") DEVE includere un `Artificial Delay` (ritardo artificiale) minimo di **1.5s - 2.0s**.
+*   **Eccezione**: Se i dati sono già in cache (revalidating), mostrare immediatamente (il "pensiero" è già avvenuto in passato).
+
+---
+
+## 5. Checklist di Validazione
 
 Prima di approvare una PR su Insights, verificare:
 1.  [ ] Il termine "Risparmio" è usato solo con saldo positivo?

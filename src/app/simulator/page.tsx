@@ -388,7 +388,10 @@ export default function SimulatorPage() {
                             {simulationResult.savingsAmount > 0 ? (
                                 <div className="relative group">
                                     <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-[2rem] blur opacity-25 group-hover:opacity-40 transition duration-500" />
-                                    <div className="relative bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/20 rounded-[2rem] p-8 flex flex-col items-center justify-center text-center">
+                                    <div
+                                        key={simulationResult.savingsAmount}
+                                        className="relative bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/20 rounded-[2rem] p-8 flex flex-col items-center justify-center text-center animate-flash-green"
+                                    >
                                         <div className="text-[10px] uppercase tracking-[0.3em] font-black text-emerald-600 mb-2">Risparmio Stimato</div>
                                         <div className="text-5xl font-black tracking-tighter text-emerald-600 tabular-nums mb-3">
                                             {formatCents(simulationResult.savingsAmount, currency, locale)}

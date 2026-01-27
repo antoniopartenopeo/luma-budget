@@ -46,7 +46,7 @@ function ensureCache(): Transaction[] {
         // Robust handling of legacy formats (number, string, missing cents)
         const normalized = userTransactions.map(t => {
             const normalizedT = normalizeTransactionAmount(t as unknown as Record<string, unknown>)
-            if (normalizedT.amountCents !== (t as Record<string, unknown>).amountCents) {
+            if (normalizedT.amountCents !== (t as unknown as Record<string, unknown>).amountCents) {
                 didChange = true
             }
             return normalizedT
@@ -82,7 +82,7 @@ export const __resetTransactionsCache = () => {
  * Can be called from Settings or DevTools.
  */
 export function seedTransactions() {
-    _transactionsCache = [...INITIAL_SEED_TRANSACTIONS].map(t => normalizeTransactionAmount(t))
+    _transactionsCache = [...INITIAL_SEED_TRANSACTIONS].map(t => normalizeTransactionAmount(t as any))
     const allData = loadAllFromStorage()
     allData[DEFAULT_USER_ID] = _transactionsCache
     saveToStorage(allData)

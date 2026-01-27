@@ -1,3 +1,4 @@
+import { formatCents } from "@/domain/money/currency";
 import { EnrichedRow, Group, Subgroup } from "./types";
 
 /**
@@ -57,16 +58,9 @@ export function computeSubgroups(group: Group, rows: EnrichedRow[]): Subgroup[] 
 
     // Add recurring subgroups
     for (const { amount, rows: amountRows } of recurring) {
-        const absAmount = Math.abs(amount);
-        const formattedAmount = (absAmount / 100).toLocaleString("it-IT", {
-            style: "currency",
-            currency: "EUR",
-            minimumFractionDigits: 2
-        });
-
         subgroups.push({
             id: crypto.randomUUID(),
-            label: formattedAmount,
+            label: formatCents(Math.abs(amount)),
             rowIds: amountRows.map(r => r.id),
             categoryId: null,
             categoryLocked: false
@@ -98,11 +92,4 @@ export function computeSubgroups(group: Group, rows: EnrichedRow[]): Subgroup[] 
     });
 
     return subgroups;
-}
-
-/**
- * @deprecated - Not used. Subgroups are computed inline in grouping.ts
- */
-export function populateSubgroups(groups: Group[], allRows: Map<string, EnrichedRow>): Group[] {
-    return groups;
 }

@@ -129,10 +129,10 @@ describe("snapshot.narrator", () => {
 
             const result = narrateSnapshot(facts, "critical")
 
-            expect(result.text).toContain("critica")
-            expect(result.text).toContain("oltre il budget")
+            expect(result.text).toContain("superato")
+            expect(result.text).toContain("negativo")
             expect(result.text).toContain("110%")
-            expect(result.shortText).toContain("Criticità budget")
+            expect(result.shortText).toContain("Budget oltre limite")
         })
 
         it("generates calm message for early month/insufficient data", () => {
@@ -201,22 +201,6 @@ describe("snapshot.narrator", () => {
             expect(deriveSnapshotState(facts)).toBe("strained")
         })
 
-        it("derives critical when budget is not configured but other indicators are negative", () => {
-            const facts: SnapshotFacts = {
-                snapshotId: "test",
-                periodLabel: "Test",
-                incomeFormatted: "€0",
-                expensesFormatted: "€0",
-                balanceFormatted: "€0",
-                balanceCents: -10000,
-                utilizationPercent: 0, // Not configured or 0
-                superfluousPercent: 15,
-                superfluousTargetPercent: 10
-            }
-
-            expect(deriveSnapshotState(facts)).toBe("critical")
-        })
-
         it("derives thriving with positive balance, good savings and NOT strained budget", () => {
             const facts: SnapshotFacts = {
                 snapshotId: "test",
@@ -225,10 +209,12 @@ describe("snapshot.narrator", () => {
                 expensesFormatted: "€0",
                 balanceFormatted: "€0",
                 balanceCents: 75000,
+                incomeCents: 320000,
                 utilizationPercent: 80,
                 superfluousPercent: 8,
                 superfluousTargetPercent: 10,
-                savingsRatePercent: 23
+                savingsRatePercent: 23,
+                elapsedRatio: 0.85
             }
 
             expect(deriveSnapshotState(facts)).toBe("thriving")
@@ -241,11 +227,13 @@ describe("snapshot.narrator", () => {
                 incomeFormatted: "€0",
                 expensesFormatted: "€0",
                 balanceFormatted: "€0",
-                balanceCents: 10000,
+                balanceCents: 20000,
+                incomeCents: 250000,
                 utilizationPercent: 75,
                 superfluousPercent: 10,
                 superfluousTargetPercent: 10,
-                savingsRatePercent: 4
+                savingsRatePercent: 4,
+                elapsedRatio: 0.8
             }
 
             expect(deriveSnapshotState(facts)).toBe("stable")

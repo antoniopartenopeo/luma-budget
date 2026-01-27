@@ -19,6 +19,7 @@ Non procedere in modalità "best effort".
 ## Principio Fondamentale
 
 > **Tutti i valori monetari sono memorizzati e calcolati in CENTESIMI (integer).**
+> Il campo deprecato `amount` è stato **RIMOSSO**. **NON USARE**. Usa solo `amountCents`.
 > Mai usare `parseFloat` su valori monetari.
 
 ---
@@ -207,6 +208,7 @@ L'analisi deve seguire questo ordine gerarchico:
 | 2026-01-17 | Simulatore mostra valori 100x | `formatEuroNumber` su cents | Usa `formatCents` per cents |
 | 2026-01-18 | Calcoli duplicati in Flash Summary | Formule inline | Usa sempre `financial-math.ts` |
 | 2026-01-25 | Narration elogia saldo negativo | Fallback errato su "Calm" | Invariante: saldo negativo != stable |
+| 2026-01-27 | Refactor `amountCents` broken metrics | Fallback su `amount` (stringa) rimosso | Rimosso ogni riferimento a `t.amount` |
 
 ---
 

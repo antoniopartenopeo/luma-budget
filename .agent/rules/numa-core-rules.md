@@ -37,7 +37,7 @@ Le regole finanziarie e di sicurezza NON sono negoziabili.
 
 | # | Obbligo | Riferimento |
 |---|---------|-------------|
-| 1 | **SEMPRE** usare `amountCents` (integer) per importi | `@/domain/money` |
+| 1 | **SEMPRE** usare `amountCents` (integer) per importi. Rimosso campo `amount` deprecato. | `@/domain/money` |
 | 2 | **SEMPRE** usare signed cents per aggregazioni multi-transazione | `getSignedCents()` |
 | 3 | **SEMPRE** usare `filterByRange()` per filtri temporali | `@/lib/date-ranges.ts` |
 | 4 | **SEMPRE** registrare nuove chiavi `luma_*` in `STORAGE_KEYS_REGISTRY` | `@/lib/storage-keys.ts` |
@@ -93,5 +93,5 @@ Per procedure dettagliate, attiva la skill appropriata:
 
 ---
 
-**Versione**: 1.1.0  
-**Ultimo aggiornamento**: 2026-01-26
+**Versione**: 1.2.0  
+**Ultimo aggiornamento**: 2026-01-27

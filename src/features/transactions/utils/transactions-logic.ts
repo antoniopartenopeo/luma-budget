@@ -1,5 +1,5 @@
 import { Transaction } from "../api/types";
-import { parseCurrencyToCents, sumIncomeInCents, sumExpensesInCents, calculateSharePct } from "@/domain/money";
+import { sumIncomeInCents, sumExpensesInCents, calculateSharePct } from "@/domain/money";
 
 export type SortField = "date" | "amount" | "category" | "description";
 export type SortOrder = "asc" | "desc";
@@ -35,8 +35,7 @@ export function applyFilters(
         // Search filter (description or amount string)
         const matchesSearch =
             filters.search === "" ||
-            t.description.toLowerCase().includes(filters.search.toLowerCase()) ||
-            t.amount.includes(filters.search);
+            t.description.toLowerCase().includes(filters.search.toLowerCase());
 
         if (!matchesSearch) return false;
 
@@ -81,9 +80,7 @@ export function applySorting(
                 comparison = a.timestamp - b.timestamp;
                 break;
             case "amount": {
-                const aCents = a.amountCents ?? parseCurrencyToCents(a.amount);
-                const bCents = b.amountCents ?? parseCurrencyToCents(b.amount);
-                comparison = aCents - bCents;
+                comparison = (a.amountCents || 0) - (b.amountCents || 0);
                 break;
             }
             case "category":

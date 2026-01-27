@@ -1,6 +1,6 @@
 # Numa Budget - UI Regression Checklist
 
-**Versione**: 2.0.0 (UI Lock)
+**Versione**: 2.1.0 (UI Lock)
 **Data**: 2026-01-27
 
 Ogni PR o modifica che tocca l'interfaccia utente DEVE superare questa checklist.
@@ -33,10 +33,13 @@ Ogni PR o modifica che tocca l'interfaccia utente DEVE superare questa checklist
 - [ ] **Eyebrow/Label**: `text-[10px] uppercase font-bold tracking-wider`.
 - [ ] **Body**: `text-sm font-medium`.
 - [ ] **NO Custom**: Nessun `text-[14px]`, `font-semibold` locale.
+- [ ] **Data Integrity**: Tutti gli importi sono formattati da `amountCents` (usa `formatSignedCents`)? No fallback a stringhe statiche.
 
-## 6. Visual Consistency
-- [ ] **Dashboard** == **Budget** == **Insights** == **Simulatore** == **Transazioni**.
-- [ ] Tono dei testi proattivo ("Intelligent Advisor").
+## 7. Ultra-Tech Pattern (SE APPLICABILE)
+- [ ] **Radar Background**: Il grafico ha gli impulsi neon (`animate-ping`) di sfondo?
+- [ ] **Focus-Mode Interaction**: Al passaggio del mouse, gli elementi non attivi vengono nascosti/sfocati?
+- [ ] **Kinetic Labels**: Le etichette esterne seguono l'enfasi dei segmenti del grafico?
+- [ ] **Pure Glass**: Il centro del donut è libero da testi ridondanti?
 
 ---
 **Status**: LOCKED. Nessuna deroga ammessa senza approvazione governance.

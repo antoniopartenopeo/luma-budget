@@ -28,8 +28,7 @@ describe('Transaction Repository Logic (amountCents)', () => {
             const result = await createTransaction(data)
 
             expect(result.amountCents).toBe(1550)
-            // String should be signed correctly for expense
-            expect(parseCurrencyToCents(result.amount)).toBe(-1550)
+            expect(result.type).toBe('expense')
         })
 
         it('should handle negative amountCents by taking absolute value', async () => {
@@ -44,14 +43,12 @@ describe('Transaction Repository Logic (amountCents)', () => {
             const result = await createTransaction(data)
             expect(result.amountCents).toBe(2000)
             expect(result.type).toBe('income')
-            expect(parseCurrencyToCents(result.amount)).toBe(2000)
         })
 
-        it('should fallback to legacy float amount if amountCents is missing', async () => {
+        it('should use amountCents directly', async () => {
             const data = {
-                description: 'Legacy Float',
-                amount: 10.50,
-                amountCents: 1050, // Added to satisfy mandatory field in type
+                description: 'Cents Only',
+                amountCents: 1050,
                 categoryId: CategoryIds.CIBO,
                 category: 'Cibo',
                 type: 'expense' as const
@@ -59,7 +56,6 @@ describe('Transaction Repository Logic (amountCents)', () => {
 
             const result = await createTransaction(data)
             expect(result.amountCents).toBe(1050)
-            expect(parseCurrencyToCents(result.amount)).toBe(-1050)
         })
     })
 
@@ -78,7 +74,6 @@ describe('Transaction Repository Logic (amountCents)', () => {
             })
 
             expect(updated.amountCents).toBe(2000)
-            expect(parseCurrencyToCents(updated.amount)).toBe(-2000)
         })
 
         it('should preserve manual override provided in DTO', async () => {
@@ -104,13 +99,13 @@ describe('Transaction Repository Logic (amountCents)', () => {
         const STORAGE_KEY = "luma_transactions_v1"
         const USER_ID = "user-1"
 
-        it('should backfill legacy data to localStorage on read', async () => {
+        it('should backfill amountCents consistency on read', async () => {
             const legacyData = {
                 [USER_ID]: [
                     {
                         id: 'legacy-1',
                         description: 'Legacy',
-                        amount: '10.50',
+                        amountCents: "1050", // String triggers backfill/didChange
                         type: 'expense',
                         categoryId: 'cibo',
                         category: 'Cibo',
@@ -126,6 +121,7 @@ describe('Transaction Repository Logic (amountCents)', () => {
             const txs = await fetchTransactions()
 
             expect(txs[0].amountCents).toBe(1050)
+            // Backfill still runs to ensure structural integrity and re-syncs to localStorage
             const writeCalls = setItemSpy.mock.calls.filter(call => call[0] === STORAGE_KEY)
             expect(writeCalls.length).toBe(1)
         })

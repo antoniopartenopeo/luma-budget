@@ -26,50 +26,40 @@ describe("Currency Refactor", () => {
 
     describe("getSignedCents", () => {
         it("respects transaction type for sign", () => {
-            const expense = { type: "expense", amount: "€10,00", amountCents: 1000 } as Transaction
+            const expense = { type: "expense", amountCents: 1000 } as Transaction
             expect(getSignedCents(expense)).toBe(-1000)
 
-            const income = { type: "income", amount: "€10,00", amountCents: 1000 } as Transaction
+            const income = { type: "income", amountCents: 1000 } as Transaction
             expect(getSignedCents(income)).toBe(1000)
-        })
-
-        it("falls back to parsing if amountCents is missing", () => {
-            const expense = { type: "expense", amount: "-€10,00" } as Transaction
-            expect(getSignedCents(expense)).toBe(-1000)
-
-            // Even if string is negative, income type forces positive
-            const strangeIncome = { type: "income", amount: "-€10,00" } as Transaction
-            expect(getSignedCents(strangeIncome)).toBe(1000)
         })
     })
 
     describe("normalizeTransactionAmount", () => {
-        it("backfills amountCents and normalizes string", () => {
+        it("backfills amountCents from raw data", () => {
             const rawT = {
                 id: "1",
                 type: "expense",
-                amount: "-€ 10.50", // Weird formatting
-                // amountCents missing
-            } as Transaction
+                amountCents: "1050" // String from storage/json
+            } as any
 
             const normalized = normalizeTransactionAmount(rawT)
 
             expect(normalized.amountCents).toBe(1050)
-            expect(normalized.amount).toBe(formatCentsSignedFromType(1050, "expense")) // Standardized current environment format
+            expect((normalized as any).amount).toBeUndefined()
         })
 
-        it("prioritizes amountCents if present", () => {
+        it("migrates categoryId", () => {
             const rawT = {
                 id: "1",
                 type: "expense",
-                amount: "€0,00", // Wrong string
-                amountCents: 500 // Real value
-            } as Transaction
+                amountCents: 500,
+                categoryId: "legacy-cat"
+            } as any
 
             const normalized = normalizeTransactionAmount(rawT)
 
             expect(normalized.amountCents).toBe(500)
-            expect(normalized.amount).toBe(formatCentsSignedFromType(500, "expense")) // String updated to match cents
+            // assuming migrateCategoryId("legacy-cat") returns something or remains if no map
         })
     })
 

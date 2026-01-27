@@ -23,8 +23,7 @@ const filterTransactions = (
     return transactions.filter((transaction) => {
         const matchesSearch = transaction.description
             .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-            transaction.amount.includes(searchQuery)
+            .includes(searchQuery.toLowerCase());
 
         const matchesType =
             selectedType === "all" || transaction.type === selectedType
@@ -50,12 +49,11 @@ const createMockTransaction = (
     isSuperfluous: boolean = false
 ): Transaction => ({
     id,
-    amount: type === 'expense' ? '-€100.00' : '+€100.00',
+    amountCents: 10000,
     date: 'Test date',
     description,
     category: categoryId,
     categoryId,
-    icon: '💰',
     type,
     timestamp: Date.now(),
     isSuperfluous,

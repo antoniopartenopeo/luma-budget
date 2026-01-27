@@ -1,5 +1,4 @@
 import { Transaction } from "./types"
-import { formatCentsSignedFromType } from "@/domain/transactions"
 
 // Configuration for the "Typical Italian Profile"
 const START_DATE = new Date()
@@ -117,14 +116,10 @@ const addTransaction = (
     const dateObj = new Date(timestamp)
     dateObj.setHours(randomHour, randomMin)
 
-    // Formatted date string (Simple approximation)
-    const dateStr = dateObj.toLocaleDateString("it-IT", { day: "numeric", month: "short" }) + ", " + dateObj.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })
-
     list.push({
         id,
         timestamp: dateObj.getTime(),
-        date: dateStr,
-        amount: formatCentsSignedFromType(cents, type),
+        date: dateObj.toISOString(),
         amountCents: cents,
         description: desc,
         category: getCategoryLabel(catId), // We approximate label here, ideally imported

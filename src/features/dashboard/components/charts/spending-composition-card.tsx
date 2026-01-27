@@ -2,20 +2,14 @@
 
 import { useMemo, useState } from "react"
 import { useCurrency } from "@/features/settings/api/use-currency"
-import { formatEuroNumber } from "@/domain/money"
-import { EChartsWrapper } from "./echarts-wrapper"
-import type { EChartsOption } from "echarts"
-import { motion, AnimatePresence, Variants } from "framer-motion"
-import { Skeleton } from "@/components/ui/skeleton"
-import { StateMessage } from "@/components/ui/state-message"
+import { formatCents } from "@/domain/money/currency"
+import { PremiumChartSection } from "./premium-chart-section"
+import * as echarts from "echarts"
 import { getCategoryById } from "@/features/categories/config"
 import { useCategories } from "@/features/categories/api/use-categories"
-import { Button } from "@/components/ui/button"
-import { RotateCcw } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { useSettings } from "@/features/settings/api/use-settings"
 import { Transaction } from "@/features/transactions/api/types"
 import { DashboardTimeFilter } from "../../api/types"
-import { MacroSection } from "@/components/patterns/macro-section"
 
 interface SpendingCompositionCardProps {
     transactions: Transaction[]
@@ -23,351 +17,230 @@ interface SpendingCompositionCardProps {
     isLoading?: boolean
 }
 
-type PeriodBreakdownItem = {
-    id: string
-    name: string
-    color: string
-    value: number
-}
-
-const TOP_N_CATEGORIES = 4
-const SYNTHETIC_ALTRI_ID = "__altri__"
-
-const itemVariants: Variants = {
-    hidden: { opacity: 0, scale: 0.98 },
-    visible: {
-        opacity: 1,
-        scale: 1,
-        transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] }
-    }
-}
+const TOP_N_CATEGORIES = 5
+const SYNTHETIC_ALTRI_ID = "altro-synthetic"
 
 export function SpendingCompositionCard({ transactions, filter, isLoading: isExternalLoading }: SpendingCompositionCardProps) {
     const { currency, locale } = useCurrency()
     const { data: categories = [], isLoading: isCategoriesLoading } = useCategories()
+    const { data: settings } = useSettings()
+    const isDarkMode = settings?.theme === "dark" || (settings?.theme === "system" && typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches)
     const isLoading = isExternalLoading || isCategoriesLoading
 
-    const [selectedMonth, setSelectedMonth] = useState<string | null>(null)
     const [highlightedCategory, setHighlightedCategory] = useState<string | null>(null)
 
-    const { chartData, allCategories, periodBreakdown } = useMemo(() => {
-        if (!transactions || transactions.length === 0) {
-            return { chartData: [], allCategories: [], periodBreakdown: [] }
-        }
+    const chartData = useMemo(() => {
+        if (!transactions || transactions.length === 0) return []
 
-        const endDate = new Date(filter.period + "-01")
-        endDate.setMonth(endDate.getMonth() + 1)
-        endDate.setDate(0)
+        const periodTransactions = transactions.filter(t => {
+            const date = new Date(t.timestamp)
+            const startDate = new Date(filter.period + "-01")
+            startDate.setDate(1)
 
-        const startDate = new Date(filter.period + "-01")
-        if (filter.mode === "range" && filter.months) {
-            startDate.setMonth(startDate.getMonth() - (filter.months - 1))
-        }
-        startDate.setDate(1)
+            const endDate = new Date(filter.period + "-01")
+            endDate.setMonth(endDate.getMonth() + 1)
+            endDate.setDate(0)
 
-        const expenses = transactions.filter(t => {
-            const d = new Date(t.timestamp)
-            return t.type === "expense" && d >= startDate && d <= endDate
-        })
+            if (filter.mode === "range" && filter.months) {
+                startDate.setMonth(startDate.getMonth() - (filter.months - 1))
+            }
 
-        if (expenses.length === 0) {
-            return { chartData: [], allCategories: [], periodBreakdown: [] }
-        }
-
-        const matrix: Record<string, Record<string, number>> = {}
-        const months: string[] = []
-        const iterDate = new Date(startDate)
-        while (iterDate <= endDate) {
-            const mLabel = new Intl.DateTimeFormat("it-IT", { month: "short" }).format(iterDate)
-            const label = mLabel.charAt(0).toUpperCase() + mLabel.slice(1)
-            months.push(label)
-            matrix[label] = {}
-            iterDate.setMonth(iterDate.getMonth() + 1)
-        }
-
-        expenses.forEach(tx => {
-            const tDate = new Date(tx.timestamp)
-            const mLabel = new Intl.DateTimeFormat("it-IT", { month: "short" }).format(tDate)
-            const label = mLabel.charAt(0).toUpperCase() + mLabel.slice(1)
-            if (!matrix[label]) return
-            const current = matrix[label][tx.categoryId] || 0
-            matrix[label][tx.categoryId] = current + (tx.amountCents || 0) / 100
+            return t.type === "expense" && date >= startDate && date <= endDate
         })
 
         const periodCategoryTotals: Record<string, number> = {}
-        expenses.forEach(tx => {
-            const current = periodCategoryTotals[tx.categoryId] || 0
-            periodCategoryTotals[tx.categoryId] = current + (tx.amountCents || 0) / 100
+        periodTransactions.forEach(t => {
+            const val = Math.abs(t.amountCents)
+            periodCategoryTotals[t.categoryId] = (periodCategoryTotals[t.categoryId] || 0) + val
         })
 
         const sortedCategories = Object.entries(periodCategoryTotals)
             .sort(([, a], [, b]) => b - a)
-            .map(([id, value]) => ({ id, value }))
 
-        const topCatIds = sortedCategories.slice(0, TOP_N_CATEGORIES).map(c => c.id)
-        const othersCatIds = sortedCategories.slice(TOP_N_CATEGORIES).map(c => c.id)
+        const topCats = sortedCategories.slice(0, TOP_N_CATEGORIES)
+        const othersSum = sortedCategories.slice(TOP_N_CATEGORIES)
+            .reduce((acc, [, val]) => acc + val, 0)
 
-        const seriesCategories = topCatIds.map(id => {
+        const data = topCats.map(([id, value]) => {
             const config = getCategoryById(id, categories)
             return {
                 id,
                 name: config?.label || "Sconosciuta",
-                color: config?.hexColor || "hsl(var(--primary))"
+                value,
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: config?.hexColor || "#6366f1" },
+                        { offset: 1, color: (config?.hexColor || "#6366f1") + "88" }
+                    ])
+                }
             }
         })
 
-        if (othersCatIds.length > 0) {
-            seriesCategories.push({
+        if (othersSum > 0) {
+            data.push({
                 id: SYNTHETIC_ALTRI_ID,
                 name: "Altri",
-                color: "#94a3b8"
+                value: othersSum,
+                itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: "#94a3b8" },
+                        { offset: 1, color: "#94a3b888" }
+                    ])
+                }
             })
         }
 
-        const chartData = months.map(month => {
-            const row: Record<string, string | number> = { name: month }
-            let othersSum = 0
-            topCatIds.forEach(id => {
-                row[id] = matrix[month][id] || 0
-            })
-            othersCatIds.forEach(id => {
-                othersSum += matrix[month][id] || 0
-            })
-            if (othersCatIds.length > 0) {
-                row[SYNTHETIC_ALTRI_ID] = othersSum
-            }
-            return row
-        })
-
-        const pb: PeriodBreakdownItem[] = seriesCategories.map(cat => {
-            let total = 0
-            if (cat.id === SYNTHETIC_ALTRI_ID) {
-                total = othersCatIds.reduce((acc, id) => acc + (periodCategoryTotals[id] || 0), 0)
-            } else {
-                total = periodCategoryTotals[cat.id] || 0
-            }
-            return { ...cat, value: total }
-        })
-
-        const pbSorted = pb.sort((a, b) => {
-            if (a.id === SYNTHETIC_ALTRI_ID) return 1
-            if (b.id === SYNTHETIC_ALTRI_ID) return -1
-            return b.value - a.value
-        })
-
-        return { chartData, allCategories: seriesCategories, periodBreakdown: pbSorted }
+        return data
     }, [transactions, filter, categories])
 
-    const currentBreakdown = useMemo<PeriodBreakdownItem[]>(() => {
-        if (!selectedMonth || !chartData.length) return periodBreakdown
-        const monthRow = chartData.find(d => d.name === selectedMonth)
-        if (!monthRow) return periodBreakdown
-        return allCategories.map(cat => ({
-            ...cat,
-            value: Number(monthRow[cat.id]) || 0
-        })).sort((a, b) => {
-            if (a.id === SYNTHETIC_ALTRI_ID) return 1
-            if (b.id === SYNTHETIC_ALTRI_ID) return -1
-            return b.value - a.value
-        })
-    }, [selectedMonth, chartData, periodBreakdown, allCategories])
-
-    const totalInView = currentBreakdown.reduce((acc, curr) => acc + curr.value, 0)
-
-    const option: EChartsOption = useMemo(() => {
+    const option: echarts.EChartsOption = useMemo(() => {
         if (!chartData.length) return {}
         return {
             tooltip: {
-                trigger: 'axis',
-                axisPointer: { type: 'shadow' },
-                backgroundColor: 'rgba(255, 255, 255, 0.98)',
-                borderColor: '#f1f5f9',
+                trigger: 'item',
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                borderColor: 'rgba(255, 255, 255, 0.1)',
                 borderWidth: 1,
                 padding: [12, 16],
-                textStyle: { color: '#1e293b', fontSize: 13 },
+                textStyle: { color: '#f8fafc', fontSize: 13 },
                 formatter: (params: any) => {
-                    const pArray = params as any[]
-                    const total = pArray.reduce((acc, p) => acc + (p.value || 0), 0)
-                    let res = `<div style="font-weight: 700; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center; gap: 24px;">
-                        <span>${pArray[0].name}</span>
-                        <span style="color: #0f172a;">${formatEuroNumber(total, currency, locale)}</span>
-                    </div>`
-                    const sortedParams = [...pArray].sort((a, b) => {
-                        if (a.seriesId === SYNTHETIC_ALTRI_ID) return 1
-                        if (b.seriesId === SYNTHETIC_ALTRI_ID) return -1
-                        return b.value - a.value
-                    })
-                    sortedParams.forEach((p) => {
-                        const percent = total > 0 ? Math.round((p.value / total) * 100) : 0
-                        const isHighlighted = highlightedCategory && highlightedCategory !== p.seriesId
-                        res += `
-                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 32px; margin-bottom: 6px; opacity: ${isHighlighted ? 0.3 : 1}">
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <div style="width: 10px; height: 10px; border-radius: 3px; background-color: ${p.color};"></div>
-                                    <span style="color: #64748b; font-weight: 500;">${p.seriesName}</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <span style="color: #94a3b8; font-size: 11px; font-weight: 600; min-width: 28px; text-align: right;">${percent}%</span>
-                                    <span style="font-weight: 700; color: #334155; min-width: 60px; text-align: right;">${formatEuroNumber(p.value, currency, locale)}</span>
-                                </div>
+                    return `
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 8px; height: 8px; border-radius: 50%; background: ${(params.color as any).colorStops?.[0]?.color || params.color};"></div>
+                                <span style="font-weight: 700; opacity: 0.8; text-transform: uppercase; font-size: 10px; tracking: 0.1em; color: #94a3b8;">${params.name}</span>
                             </div>
-                        `
-                    })
-                    return res
-                },
-                extraCssText: 'box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border-radius: 12px;'
-            },
-            legend: { show: false },
-            grid: { left: '2%', right: '2%', bottom: '2%', top: '2%', containLabel: true },
-            xAxis: {
-                type: 'category',
-                data: chartData.map(d => d.name),
-                axisLine: { show: true, lineStyle: { color: '#e2e8f0' } },
-                axisTick: { show: false },
-                axisLabel: { color: '#64748b', fontSize: 11, margin: 12, fontWeight: 500 }
-            },
-            yAxis: {
-                type: 'value',
-                splitLine: { lineStyle: { type: 'dashed', color: '#f1f5f9', opacity: 0.8 } },
-                axisLine: { show: false },
-                axisLabel: {
-                    color: '#94a3b8',
-                    fontSize: 10,
-                    margin: 8,
-                    formatter: (val: number) => val >= 1000 ? `${(val / 1000).toFixed(1)}k` : val.toString()
+                            <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 24px;">
+                                <span style="font-size: 16px; font-weight: 900; letter-spacing: -0.02em; color: #ffffff;">${formatCents(params.value, currency, locale)}</span>
+                                <span style="font-size: 11px; font-weight: 700; color: #6366f1;">${params.percent}%</span>
+                            </div>
+                        </div>
+                    `
                 }
             },
-            series: allCategories.map(cat => ({
-                id: cat.id,
-                name: cat.name,
-                type: 'bar',
-                stack: 'total',
-                barWidth: '40%',
-                itemStyle: {
-                    color: cat.color,
-                    borderRadius: cat.id === allCategories[allCategories.length - 1].id ? [10, 10, 0, 0] : [0, 0, 0, 0],
-                    opacity: highlightedCategory ? (highlightedCategory === cat.id ? 1 : 0.15) : (selectedMonth ? 1 : 0.85)
-                },
-                data: chartData.map(d => Number(d[cat.id]) || 0),
-                animationDuration: 800
-            }))
+            series: [
+                {
+                    name: 'Composizione Spese',
+                    type: 'pie',
+                    radius: ['55%', '78%'],
+                    center: ['50%', '50%'],
+                    avoidLabelOverlap: true,
+                    itemStyle: {
+                        borderRadius: 16,
+                        borderColor: 'transparent',
+                        borderWidth: 4,
+                        shadowBlur: 30,
+                        shadowColor: 'rgba(0,0,0,0.25)'
+                    },
+                    label: {
+                        show: true,
+                        position: 'outside',
+                        padding: [0, -35],
+                        formatter: (params: any) => {
+                            return `{name|${params.name.toUpperCase()}}\n{value|${formatCents(params.value, currency, locale)}}\n{percent|${params.percent}%}`
+                        },
+                        rich: {
+                            name: {
+                                color: '#94a3b8',
+                                fontSize: 9,
+                                fontWeight: 800,
+                                padding: [0, 0, 4, 0],
+                                align: 'center'
+                            },
+                            value: {
+                                color: isDarkMode ? '#f8fafc' : '#1e293b',
+                                fontSize: 13,
+                                fontWeight: 900,
+                                padding: [0, 0, 2, 0],
+                                align: 'center'
+                            },
+                            percent: {
+                                color: '#6366f1',
+                                fontSize: 10,
+                                fontWeight: 800,
+                                align: 'center'
+                            }
+                        }
+                    },
+                    emphasis: {
+                        scale: true,
+                        scaleSize: 15,
+                        focus: 'self',
+                        itemStyle: {
+                            shadowBlur: 65,
+                            shadowColor: 'rgba(99, 102, 241, 0.65)'
+                        },
+                        label: {
+                            show: true,
+                            rich: {
+                                name: {
+                                    fontSize: 12,
+                                    fontWeight: 900,
+                                    padding: [0, 0, 8, 0],
+                                    color: isDarkMode ? '#f8fafc' : '#1e293b'
+                                },
+                                value: {
+                                    fontSize: 18,
+                                    fontWeight: 900,
+                                    padding: [0, 0, 4, 0]
+                                },
+                                percent: {
+                                    fontSize: 13,
+                                    fontWeight: 900
+                                }
+                            }
+                        }
+                    },
+                    blur: {
+                        label: {
+                            show: false
+                        },
+                        itemStyle: {
+                            opacity: 0.15,
+                            shadowBlur: 0
+                        },
+                        labelLine: {
+                            show: false
+                        }
+                    },
+                    data: chartData,
+                    animationType: 'scale',
+                    animationEasing: 'cubicOut',
+                    animationDuration: 1200
+                }
+            ],
+            graphic: []
         }
-    }, [chartData, allCategories, highlightedCategory, selectedMonth, currency, locale])
-
-    const handleReset = () => {
-        setSelectedMonth(null)
-        setHighlightedCategory(null)
-    }
-
-    if (isLoading) {
-        return (
-            <MacroSection title="Composizione Spese" description="Caricamento in corso..." className="w-full">
-                <div className="h-[400px]">
-                    <Skeleton className="h-full w-full rounded-2xl" />
-                </div>
-            </MacroSection>
-        )
-    }
-
-    const hasData = chartData.length > 0
+    }, [chartData, currency, locale, isDarkMode])
 
     return (
-        <MacroSection
+        <PremiumChartSection
             title="Composizione Spese"
-            description="Andamento mensile suddiviso per categoria"
-            className="w-full"
+            description="Visualizzazione immersiva dell'andamento mensile"
+            option={option}
+            isLoading={isLoading}
+            hasData={chartData.length > 0}
+            onEvents={{
+                'mouseover': (params: any) => setHighlightedCategory(params.data.id),
+                'mouseout': () => setHighlightedCategory(null)
+            }}
         >
-            {!hasData ? (
-                <div className="h-[400px] flex items-center justify-center">
-                    <StateMessage
-                        variant="empty"
-                        title="Nessun dato"
-                        description="Le tue spese appariranno qui suddivise per categoria"
-                    />
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 items-start py-4">
-                    <div className="lg:col-span-3 h-[400px] relative">
-                        <EChartsWrapper
-                            option={option}
-                            onEvents={{
-                                'click': (params: any) => {
-                                    if (params.componentType === 'series' || params.componentType === 'xAxis') {
-                                        setSelectedMonth(prev => prev === params.name ? null : params.name)
-                                    }
-                                }
-                            }}
+            <div className="mt-4 flex flex-wrap justify-center gap-12">
+                {chartData.slice(0, 3).map((item, idx) => (
+                    <div key={item.id} className="flex flex-col items-center gap-1.5 group cursor-default">
+                        <span className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground/40 group-hover:text-primary transition-colors">
+                            TOP {idx + 1}
+                        </span>
+                        <span className="text-sm font-bold text-foreground">
+                            {item.name}
+                        </span>
+                        <div
+                            className="h-[3px] w-12 rounded-full transition-all duration-300 group-hover:w-16"
+                            style={{ background: (item.itemStyle.color as any)?.colorStops?.[0]?.color || (item.itemStyle.color as any) }}
                         />
                     </div>
-
-                    <div className="lg:col-span-1">
-                        <div className="flex items-center justify-between mb-6">
-                            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                                {selectedMonth ? `Dettaglio ${selectedMonth}` : "Dettaglio Periodo"}
-                            </h4>
-                            {(selectedMonth || highlightedCategory) && (
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={handleReset}
-                                    className="h-5 w-5 rounded-full hover:bg-primary/5 transition-colors"
-                                >
-                                    <RotateCcw className="h-3 w-3" />
-                                </Button>
-                            )}
-                        </div>
-                        <div className="space-y-2">
-                            {currentBreakdown.map((item, idx) => {
-                                const percent = totalInView > 0 ? (item.value / totalInView) * 100 : 0
-                                return (
-                                    <motion.div
-                                        key={`${item.id}-${idx}`}
-                                        layout
-                                        variants={itemVariants}
-                                        className={cn(
-                                            "group relative p-3 rounded-2xl transition-all cursor-pointer border border-transparent",
-                                            highlightedCategory === item.id
-                                                ? "bg-muted/40 border-border shadow-sm ring-1 ring-primary/10"
-                                                : "hover:bg-muted/30 hover:border-border/50",
-                                            highlightedCategory && highlightedCategory !== item.id && "opacity-30"
-                                        )}
-                                        onClick={() => setHighlightedCategory(prev => prev === item.id ? null : item.id)}
-                                    >
-                                        <div className="flex items-center justify-between mb-2">
-                                            <div className="flex items-center gap-2.5">
-                                                <div
-                                                    className="h-2.5 w-2.5 rounded-full shadow-sm"
-                                                    style={{ backgroundColor: item.color }}
-                                                />
-                                                <span className="text-sm font-bold text-foreground tracking-tight">
-                                                    {item.name}
-                                                </span>
-                                            </div>
-                                            <span className="text-sm font-black tabular-nums text-foreground">
-                                                {formatEuroNumber(item.value, currency, locale)}
-                                            </span>
-                                        </div>
-                                        <div className="relative h-1.5 bg-muted/60 rounded-full overflow-hidden">
-                                            <motion.div
-                                                className="absolute inset-y-0 left-0 rounded-full"
-                                                style={{ backgroundColor: item.color }}
-                                                initial={{ width: 0 }}
-                                                animate={{ width: `${percent}%` }}
-                                                transition={{ duration: 0.5, ease: "easeOut" }}
-                                            />
-                                        </div>
-                                        <div className="flex justify-end mt-1">
-                                            <span className="text-[10px] font-bold text-muted-foreground/60 tabular-nums">
-                                                {Math.round(percent)}%
-                                            </span>
-                                        </div>
-                                    </motion.div>
-                                )
-                            })}
-                        </div>
-                    </div>
-                </div>
-            )}
-        </MacroSection>
+                ))}
+            </div>
+        </PremiumChartSection>
     )
 }

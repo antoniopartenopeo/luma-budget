@@ -4,6 +4,34 @@ Storico consolidato di tutte le modifiche a regole, skill, e standard di svilupp
 
 ---
 
+## [2.4.0] - 2026-01-27
+
+### Changed
+- **Major Refactor: Transaction Source of Truth**:
+  - Eliminato definitivamente il campo deprecato `amount` (stringa/float) da `Transaction` e `CreateTransactionDTO`.
+  - Consolidato `amountCents` (integer) come unica fonte di verità per logica, calcoli e persistenza.
+  - Aggiornate utility di dominio (`math.ts`, `utils.ts`) per rimuovere fallback su stringhe.
+  - Formattazione UI centralizzata su `formatSignedCents` e `getSignedCents`.
+- **Aggiornamento Skill `numa-financial-logic`**:
+  - Rinforzato divieto assoluto di utilizzo di qualsiasi campo "amount" che non sia `amountCents`.
+
+---
+
+## [2.3.0] - 2026-01-27
+
+### Added
+- **Standard [Ultra-Tech Visuals](file:///.agent/skills/numa-ui-standards/SKILL.md#4-ultra-tech-premium-visuals-command-center)** in `numa-ui-standards`:
+  - Introdotto pattern per "Command Center" (Radar Background, Focus-Mode, Kinetic Labels).
+  - Creato componente modulare `PremiumChartSection` per la riusabilità del design futuristico.
+- **Aggiornamento [UI Regression Checklist](file:///docs/ui-regression-checklist.md)**:
+  - Inseriti controlli specifici per il pattern Ultra-Tech.
+
+### Changed
+- Refactor `SpendingCompositionCard` per utilizzare l'architettura modulare.
+- Pulizia del centro del grafico ("Pure Glass") per standard estetico superiore.
+
+---
+
 ## [2.2.1] - 2026-01-26
 
 ### Added

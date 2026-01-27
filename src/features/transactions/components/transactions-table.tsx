@@ -30,6 +30,8 @@ import {
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { CategoryLabel } from "@/features/categories/components/category-label"
 import { formatTransactionDate } from "@/features/transactions/utils/format-date"
+import { formatSignedCents } from "@/domain/money/currency"
+import { getSignedCents } from "@/domain/transactions"
 import { SortField, SortOrder } from "../utils/transactions-logic"
 
 interface TransactionsTableProps {
@@ -188,7 +190,7 @@ export function TransactionsTable({
                                         transaction.type === "income" ? "text-success" : "text-destructive"
                                     )}
                                 >
-                                    {transaction.amount}
+                                    {formatSignedCents(getSignedCents(transaction))}
                                 </TableCell>
                                 <TableCell onClick={(e) => e.stopPropagation()}>
                                     <TransactionActionsMenu
@@ -262,7 +264,7 @@ export function TransactionsTable({
                                     transaction.type === "income" ? "text-success" : "text-destructive"
                                 )}
                             >
-                                {transaction.amount}
+                                {formatSignedCents(getSignedCents(transaction))}
                             </div>
                         </div>
                     </div>

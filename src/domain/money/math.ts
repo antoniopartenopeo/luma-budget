@@ -1,5 +1,3 @@
-import { parseCurrencyToCents } from "./currency"
-
 /**
  * Calculates the percentage of a part relative to a total.
  * Returns an integer percentage (0-100).
@@ -38,15 +36,10 @@ export function calculateUtilizationPct(spentCents: number, budgetCents: number)
  * Only processes transactions of type 'expense'.
  * Returns result in CENTS.
  */
-export function sumExpensesInCents(transactions: { type: string, amountCents?: number, amount?: string }[]): number {
+export function sumExpensesInCents(transactions: { type: string, amountCents?: number }[]): number {
     return transactions
         .filter(t => t.type === 'expense')
-        .reduce((sum, t) => {
-            let val = 0
-            if (t.amountCents !== undefined) val = t.amountCents
-            else if (t.amount) val = parseCurrencyToCents(t.amount)
-            return sum + Math.abs(val)
-        }, 0)
+        .reduce((sum, t) => sum + Math.abs(t.amountCents || 0), 0)
 }
 
 /**
@@ -54,13 +47,8 @@ export function sumExpensesInCents(transactions: { type: string, amountCents?: n
  * Only processes transactions of type 'income'.
  * Returns result in CENTS.
  */
-export function sumIncomeInCents(transactions: { type: string, amountCents?: number, amount?: string }[]): number {
+export function sumIncomeInCents(transactions: { type: string, amountCents?: number }[]): number {
     return transactions
         .filter(t => t.type === 'income')
-        .reduce((sum, t) => {
-            let val = 0
-            if (t.amountCents !== undefined) val = t.amountCents
-            else if (t.amount) val = parseCurrencyToCents(t.amount)
-            return sum + Math.abs(val)
-        }, 0)
+        .reduce((sum, t) => sum + Math.abs(t.amountCents || 0), 0)
 }

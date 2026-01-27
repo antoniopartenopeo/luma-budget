@@ -14,7 +14,8 @@ import { cn } from "@/lib/utils";
 import { Edit2, Trash2, Calendar, Tag, Info, ArrowLeft, Loader2, AlertTriangle } from "lucide-react";
 import { TransactionForm } from "./transaction-form";
 import { useUpdateTransaction, useDeleteTransaction } from "@/features/transactions/api/use-transactions";
-import { parseCurrencyToCents } from "@/domain/money";
+import { formatCents, formatSignedCents } from "@/domain/money/currency";
+import { getSignedCents } from "@/domain/transactions";
 import { ConfirmDialog } from "@/components/patterns/confirm-dialog";
 
 interface TransactionDetailSheetProps {
@@ -90,16 +91,9 @@ function TransactionDetailSheetContent({
     };
 
 
-    // Parse amount string to number for form default values
-    const amountToNumber = (amountStr: string) => {
-        const amountCents = Math.abs(parseCurrencyToCents(amountStr));
-        const value = amountCents / 100;
-        return isNaN(value) ? 0 : value;
-    };
-
     const defaultFormValues: Partial<CreateTransactionDTO> = {
         description: transaction.description,
-        amount: amountToNumber(transaction.amount),
+        amountCents: transaction.amountCents,
         category: transaction.category,
         categoryId: transaction.categoryId,
         type: transaction.type,
@@ -170,7 +164,7 @@ function TransactionDetailSheetContent({
                                     "text-5xl font-black tabular-nums tracking-tighter",
                                     transaction.type === "income" ? "text-emerald-600" : "text-foreground"
                                 )}>
-                                    {transaction.amount}
+                                    {formatSignedCents(getSignedCents(transaction))}
                                 </div>
                             </div>
 

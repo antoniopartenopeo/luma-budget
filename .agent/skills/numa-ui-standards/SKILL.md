@@ -99,9 +99,15 @@ Tutti i componenti principali devono seguire questi standard visuali:
 - **Divieto Y-Offset**: È severamente vietato l'uso di `y: 20` o simili per animazioni di ingresso.
 - **Easing**: Usare `[0.22, 1, 0.36, 1]` per transizioni premium.
 
-### 3. Tono & Feedback
-- **Advisor-centric**: Gli stati vuoti o i messaggi di sistema devono avere un tono proattivo e "intelligente" (es. "Pianificazione Necessaria" invece di "Nessun Dato").
-- **Visual Hierarchy**: Risparmio e focus primario sempre in evidenza con pesi font maggiori (font-black, tracking-tighter).
+### 4. Ultra-Tech Premium Visuals (Command Center)
+Per sezioni ad alto impatto (Dashboard, Insights), utilizzare il pattern **Ultra-Tech**:
+- **Componente Core**: `PremiumChartSection` (`src/features/dashboard/components/charts/premium-chart-section.tsx`).
+- **Visuals**:
+    - **Radar Background**: Impulsi neon (`animate-ping`) circolari dietro il grafico.
+    - **Focus-Mode**: Al passaggio del mouse, nascondere gli elementi non attivi (`blur state`) per evitare sovrapposizioni e guidare l'occhio.
+    - **Kinetic Labels**: Etichette esterne che scalano e si illuminano in sincronia con i segmenti del grafico.
+    - **Pure Glass**: Preferire centri vuoti o estremamente minimalisti per grafici a ciambella.
+- **Theme Awareness**: Il componente gestisce automaticamente i colori di contrasto tra Light e Dark mode.
 
 ---
 
@@ -274,5 +280,5 @@ Il mancato rispetto anche di un solo punto della checklist tecnica automatizzabi
 
 ---
 
-**Versione**: 1.0.0  
-**Ultimo aggiornamento**: 2026-01-24
+**Versione**: 1.1.0  
+**Ultimo aggiornamento**: 2026-01-27

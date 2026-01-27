@@ -53,11 +53,7 @@ const EXPORT_COLUMNS: ExportColumn[] = [
         key: "amount",
         header: "Importo (€)",
         getValue: (t) => {
-            // Parse amount using the helper and format with comma as decimal separator
-            // parseCurrencyToCents returns value in cents, so divide by 100 for Euro
-            // It also handles the sign correctly based on the input string (e.g., "-€30.00")
-            const numericAmountInCents = parseCurrencyToCents(t.amount)
-            const numericAmountInEuros = numericAmountInCents / 100
+            const numericAmountInEuros = t.amountCents / 100
             return numericAmountInEuros.toFixed(2).replace(".", ",")
         }
     },

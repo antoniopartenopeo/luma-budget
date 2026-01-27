@@ -16,7 +16,8 @@
 
 ### Dashboard
 - [x] **KPI Cards** — Entrate, Uscite, Saldo, con filtri temporali
-- [x] **Grafico Spese** — Breakdown per categoria
+- [x] **Grafico Spese (Ultra-Tech)** — Breakdown categorico immersivo con animazioni radar e focus-mode
+- [x] **PremiumChartSection** — Motore UI modulare per grafici futuristici e kinetic
 - [x] **Transazioni Recenti** — Lista ultimi movimenti
 - [x] **Flash Summary** — Riepilogo rapido con insights
 
@@ -26,8 +27,9 @@
 - [x] **Lista Transazioni** — Tabella desktop / Cards mobile
 - [x] **CRUD Completo** — Aggiungi, modifica, elimina
 - [x] **Quick Add** — Input rapido dalla Topbar
-- [x] **Filtri e Ricerca** — Per data, tipo, categoria
-- [x] **Export CSV** — Esporta transazioni filtrate
+- [x] **Filtri e Ricerca** — Per data, tipo, categoria, importo (integer)
+- [x] **Export CSV** — Esporta transazioni filtrate (preciso al centesimo)
+- [x] **Source of Truth** — Migrazione integrale a `amountCents`, rimosso campo `amount` deprecato
 - [x] **Import CSV Wizard** — Importazione guidata con:
   - Upload file / Incolla testo
   - Raggruppamento automatico esercenti
@@ -124,6 +126,8 @@
 
 | Data | Modifica |
 |------|----------|
+| 2026-01-27 | Refactor Logic Transazioni (amountCents come unica Source of Truth, rimozione field `amount`) |
+| 2026-01-27 | Modularizzazione Ultra-Tech UI (PremiumChartSection, Focus-Mode) |
 | 2026-01-26 | Unificazione UI/UX, upgrade a Numa Premium Aesthetic |
 | 2026-01-24 | Creazione documento, inventario iniziale |
 

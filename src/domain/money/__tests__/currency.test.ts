@@ -91,7 +91,7 @@ describe('currency-utils', () => {
     describe('getSignedCents', () => {
         it('should return positive cents for income', () => {
             const t = {
-                amount: "€50,00",
+                amountCents: 5000,
                 type: "income"
             } as Transaction
             expect(getSignedCents(t)).toBe(5000)
@@ -99,27 +99,18 @@ describe('currency-utils', () => {
 
         it('should return negative cents for expense', () => {
             const t = {
-                amount: "€50,00",
+                amountCents: 5000,
                 type: "expense"
             } as Transaction
             expect(getSignedCents(t)).toBe(-5000)
         })
 
-        it('should handle negative input string correctly for expense', () => {
+        it('should handle zero cents', () => {
             const t = {
-                amount: "€-50,00",
+                amountCents: 0,
                 type: "expense"
             } as Transaction
-            expect(getSignedCents(t)).toBe(-5000)
-        })
-
-        it('should handle negative input string correctly for income (fix sign)', () => {
-            // Edge case: data says negative but type says income -> should force positive logic
-            const t = {
-                amount: "€-50,00",
-                type: "income"
-            } as Transaction
-            expect(getSignedCents(t)).toBe(5000)
+            expect(getSignedCents(t)).toBe(0)
         })
     })
 })

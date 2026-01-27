@@ -2,8 +2,8 @@ import { Transaction, CreateTransactionDTO } from "./types"
 import { storage } from "@/lib/storage-utils"
 import { getCategoryById } from "../../categories/config"
 import { getCategories } from "../../categories/api/repository"
-import { parseCurrencyToCents, euroToCents } from "@/domain/money"
-import { normalizeTransactionAmount, formatCentsSignedFromType, calculateSuperfluousStatus, getSignedCents } from "@/domain/transactions"
+import { parseCurrencyToCents } from "@/domain/money"
+import { normalizeTransactionAmount, calculateSuperfluousStatus } from "@/domain/transactions"
 
 
 // =====================
@@ -45,8 +45,8 @@ function ensureCache(): Transaction[] {
         // BACKFILL: Normalize on read and detect if persistence is needed
         // Robust handling of legacy formats (number, string, missing cents)
         const normalized = userTransactions.map(t => {
-            const normalizedT = normalizeTransactionAmount(t)
-            if (normalizedT.amountCents !== (t as any).amountCents || normalizedT.amount !== (t as any).amount) {
+            const normalizedT = normalizeTransactionAmount(t as unknown as Record<string, unknown>)
+            if (normalizedT.amountCents !== (t as Record<string, unknown>).amountCents) {
                 didChange = true
             }
             return normalizedT
@@ -133,9 +133,6 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
     // For new records, we strictly use amountCents.
     const amountCents = Math.abs(Math.round(data.amountCents || 0))
 
-    // Derived string for display only - we won't strictly depend on it for logic
-    const formattedAmount = formatCentsSignedFromType(amountCents, data.type)
-
     // Determine superfluous status
     let isSuperfluous = false
     let classificationSource: "ruleBased" | "manual" = "ruleBased"
@@ -151,7 +148,6 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
 
     const newTransaction: Transaction = {
         id: generateTransactionId(),
-        amount: formattedAmount,
         amountCents: amountCents, // Persist integer cents
         date: data.date ? new Date(data.date).toISOString() : new Date().toISOString(), // Use provided date or now
         description: data.description,
@@ -177,7 +173,6 @@ export const createBatchTransactions = async (dataList: CreateTransactionDTO[]):
     const newTransactions: Transaction[] = dataList.map(data => {
         const isIncome = data.type === "income"
         const amountCents = Math.abs(Math.round(data.amountCents || 0))
-        const formattedAmount = formatCentsSignedFromType(amountCents, data.type)
 
         // Superfluous logic
         let isSuperfluous = false
@@ -197,7 +192,6 @@ export const createBatchTransactions = async (dataList: CreateTransactionDTO[]):
 
         return {
             id: generateTransactionId(),
-            amount: formattedAmount,
             amountCents,
             date: data.date ? new Date(data.date).toISOString() : new Date().toISOString(),
             description: data.description,
@@ -236,12 +230,7 @@ export const updateTransaction = async (id: string, data: Partial<CreateTransact
 
     if (data.amountCents !== undefined) {
         amountCents = Math.abs(Math.round(data.amountCents))
-    } else if (data.amount !== undefined && typeof data.amount === 'number') {
-        // Fallback for partial updates if legacy code still sends float 'amount'
-        amountCents = euroToCents(Math.abs(data.amount))
     }
-
-    const formattedAmount = formatCentsSignedFromType(amountCents, nextType)
 
     // Determine superflous logic update
     let isSuperfluous = currentTransaction.isSuperfluous
@@ -266,11 +255,10 @@ export const updateTransaction = async (id: string, data: Partial<CreateTransact
         // Update date/timestamp only if new date provided
         date: data.date ? new Date(data.date).toISOString() : currentTransaction.date,
         timestamp: data.date ? new Date(data.date).getTime() : currentTransaction.timestamp,
-        amount: formattedAmount,
         amountCents: amountCents, // Persist updated cents
         isSuperfluous,
         classificationSource
-    }
+    } as Transaction
 
     txs[index] = updatedTransaction
     syncStorage()

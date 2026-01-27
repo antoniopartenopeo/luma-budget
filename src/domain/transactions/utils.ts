@@ -4,16 +4,12 @@ import { getCategoryById } from "@/domain/categories/utils"
 import { migrateCategoryId } from "@/domain/categories/migration"
 
 /**
- * Helper to get signed cents from amountCents if available, falling back to parsing.
+ * Helper to get signed cents from amountCents.
  * Income is positive, Expense is negative.
  */
 export function getSignedCents(t: Transaction): number {
-    let absCents: number
-    if (t.amountCents !== undefined && !isNaN(t.amountCents)) {
-        absCents = Math.abs(t.amountCents)
-    } else {
-        absCents = Math.abs(parseCurrencyToCents(t.amount))
-    }
+    const absCents = Math.abs(t.amountCents || 0)
+    if (absCents === 0) return 0
     return t.type === "income" ? absCents : -absCents
 }
 
@@ -24,52 +20,29 @@ export function getSignedCents(t: Transaction): number {
  */
 export function formatCentsSignedFromType(absCents: number, type: TransactionType): string {
     const signedValue = type === "income" ? absCents : -Math.abs(absCents)
-    // We reuse formatSignedCents which handles standard formatting
     return formatSignedCents(signedValue)
 }
 
 /**
- * Normalizes a transaction by ensuring amountCents is present and amount string is consistent.
- * Handles legacy formats (float numbers, unformatted strings).
+ * Normalizes a transaction by ensuring amountCents is present.
  * Migration: Automatically migrates legacy category IDs to the new system.
  * Does NOT mutate the input object.
  */
-export function normalizeTransactionAmount(t: any): Transaction {
-    const raw = t as Transaction & { amount?: number | string }
+export function normalizeTransactionAmount(t: Partial<Transaction> & Record<string, unknown>): Transaction {
+    const raw = t as Transaction
 
     // 0. Migrate categoryId if it's legacy
     const migratedId = raw.categoryId ? migrateCategoryId(raw.categoryId) : raw.categoryId
 
-    // 1. Resolve source of truth (amountCents > parse(amount))
-    let absCents: number
+    // 1. Ensure amountCents is a number
+    const absCents = Math.abs(Number(raw.amountCents) || 0)
 
-    if (raw.amountCents !== undefined && typeof raw.amountCents === 'number' && !isNaN(raw.amountCents)) {
-        absCents = Math.abs(raw.amountCents)
-    } else if (raw.amount !== undefined) {
-        if (typeof raw.amount === 'number') {
-            // Legacy float: format 12.34
-            absCents = Math.abs(Math.round(raw.amount * 100))
-        } else if (typeof raw.amount === 'string') {
-            // Legacy string: format "€ 10.50"
-            absCents = Math.abs(parseCurrencyToCents(raw.amount))
-        } else {
-            absCents = 0
-        }
-    } else {
-        absCents = 0
-    }
-
-    // 2. Derive normalized string
-    // This ensures that "€ 10.50" becomes "-10,50 €" consistently
-    const normalizedString = formatCentsSignedFromType(absCents, raw.type)
-
-    // 3. Return updated object
+    // 2. Return updated object (no more legacy 'amount' string)
     return {
         ...raw,
         categoryId: migratedId,
-        amountCents: absCents,
-        amount: normalizedString
-    } as Transaction
+        amountCents: absCents
+    }
 }
 
 /**

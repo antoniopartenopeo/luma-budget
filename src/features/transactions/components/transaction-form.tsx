@@ -32,7 +32,7 @@ export function TransactionForm({
 }: TransactionFormProps) {
     const { data: categories = [] } = useCategories()
     const [description, setDescription] = useState(defaultValues?.description || "")
-    const [amount, setAmount] = useState(defaultValues?.amount ? defaultValues.amount.toString() : "")
+    const [amount, setAmount] = useState(defaultValues?.amountCents ? (defaultValues.amountCents / 100).toString() : "")
     // Prefer categoryId, fallback to finding id by label, or empty
     const [categoryId, setCategoryId] = useState(defaultValues?.categoryId || "")
     const [type, setType] = useState<"expense" | "income">(defaultValues?.type || "expense")

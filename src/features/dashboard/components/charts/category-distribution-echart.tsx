@@ -8,6 +8,7 @@ import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { getCategoryById } from "@/features/categories/config"
 import { useCategories } from "@/features/categories/api/use-categories"
 import { StateMessage } from "@/components/ui/state-message"
+import { MacroSection } from "@/components/patterns/macro-section"
 import { EChartsWrapper } from "./echarts-wrapper"
 import type { EChartsOption } from "echarts"
 import { motion } from "framer-motion"
@@ -122,90 +123,79 @@ export function CategoryDistributionEChart({ data, isLoading: isExternalLoading 
 
     if (isLoading) {
         return (
-            <Card className="rounded-xl glass-card">
-                <CardHeader>
-                    <Skeleton className="h-6 w-32 mb-2" />
-                    <Skeleton className="h-4 w-48" />
-                </CardHeader>
-                <CardContent>
-                    <Skeleton className="h-[250px] w-[250px] mx-auto rounded-full" />
-                </CardContent>
-            </Card>
+            <MacroSection title="Categorie" description="Caricamento in corso...">
+                <div className="h-[300px] flex items-center justify-center">
+                    <Skeleton className="h-[250px] w-[250px] rounded-full" />
+                </div>
+            </MacroSection>
         )
     }
 
     const hasData = preparedData && preparedData.length > 0 && preparedData.some(d => d.value > 0)
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+        <MacroSection
+            title="Categorie"
+            description="Distribuzione delle spese nel periodo"
         >
-            <Card className="rounded-2xl h-full glass-card hover:shadow-md transition-all">
-                <CardHeader className="pb-2">
-                    <CardTitle className="text-xl font-bold tracking-tight">Categorie</CardTitle>
-                    <CardDescription>Distribuzione delle spese nel periodo</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    {hasData ? (
-                        <>
-                            <div className="h-[250px] w-full">
-                                <EChartsWrapper
-                                    option={option}
-                                    onEvents={{
-                                        'click': (params: unknown) => {
-                                            const p = params as { name: string }
-                                            const item = preparedData.find(d => d.name === p.name)
-                                            if (item && item.id && item.id !== "altro") {
-                                                router.push(`/transactions?category=${item.id}`)
-                                            }
+            <div className="py-4">
+                {hasData ? (
+                    <>
+                        <div className="h-[250px] w-full">
+                            <EChartsWrapper
+                                option={option}
+                                onEvents={{
+                                    'click': (params: unknown) => {
+                                        const p = params as { name: string }
+                                        const item = preparedData.find(d => d.name === p.name)
+                                        if (item && item.id && item.id !== "altro") {
+                                            router.push(`/transactions?category=${item.id}`)
                                         }
-                                    }}
-                                />
-                            </div>
-                            <div className="grid grid-cols-1 gap-1.5 mt-6 text-sm">
-                                {preparedData.map((item, index) => {
-                                    const cat = getCategoryById(item.id || "", categories)
-                                    const color = cat ? cat.hexColor : item.color
-                                    const isOther = item.id === "altro"
-
-                                    return (
-                                        <div
-                                            key={`legend-${index}`}
-                                            className="flex items-center justify-between group cursor-pointer p-1.5 rounded-lg hover:bg-muted/50 transition-colors"
-                                            onClick={() => {
-                                                if (item.id && !isOther) {
-                                                    router.push(`/transactions?category=${item.id}`)
-                                                }
-                                            }}
-                                        >
-                                            <div className="flex items-center gap-2.5">
-                                                <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />
-                                                <div className="flex items-center gap-2">
-                                                    {!isOther && <CategoryIcon categoryName={item.name} size={14} />}
-                                                    <span className="text-muted-foreground font-medium">{item.name}</span>
-                                                </div>
-                                            </div>
-                                            <span className="font-semibold tabular-nums">
-                                                {formatEuroNumber(item.value, currency, locale)}
-                                            </span>
-                                        </div>
-                                    )
-                                })}
-                            </div>
-                        </>
-                    ) : (
-                        <div className="h-[350px] flex items-center justify-center">
-                            <StateMessage
-                                variant="empty"
-                                title="Nessun dato"
-                                description="Non ci sono spese da categorizzare"
+                                    }
+                                }}
                             />
                         </div>
-                    )}
-                </CardContent>
-            </Card>
-        </motion.div>
+                        <div className="grid grid-cols-1 gap-1.5 mt-6 text-sm">
+                            {preparedData.map((item, index) => {
+                                const cat = getCategoryById(item.id || "", categories)
+                                const color = cat ? cat.hexColor : item.color
+                                const isOther = item.id === "altro"
+
+                                return (
+                                    <div
+                                        key={`legend-${index}`}
+                                        className="flex items-center justify-between group cursor-pointer p-2 rounded-xl hover:bg-muted/50 transition-colors border border-transparent hover:border-border/50"
+                                        onClick={() => {
+                                            if (item.id && !isOther) {
+                                                router.push(`/transactions?category=${item.id}`)
+                                            }
+                                        }}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-2.5 w-2.5 rounded-full shadow-sm" style={{ backgroundColor: color }} />
+                                            <div className="flex items-center gap-2">
+                                                {!isOther && <CategoryIcon categoryName={item.name} size={14} />}
+                                                <span className="text-muted-foreground font-bold tracking-tight">{item.name}</span>
+                                            </div>
+                                        </div>
+                                        <span className="font-black tabular-nums text-foreground">
+                                            {formatEuroNumber(item.value, currency, locale)}
+                                        </span>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </>
+                ) : (
+                    <div className="h-[350px] flex items-center justify-center">
+                        <StateMessage
+                            variant="empty"
+                            title="Nessun dato"
+                            description="Non ci sono spese da categorizzare"
+                        />
+                    </div>
+                )}
+            </div>
+        </MacroSection>
     )
 }

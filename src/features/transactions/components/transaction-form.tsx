@@ -122,14 +122,14 @@ export function TransactionForm({
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             {/* Type Selection - Glass Segmented Control */}
-            <div className="grid grid-cols-2 p-1 bg-muted/40 dark:bg-white/5 rounded-lg border border-white/10">
+            <div className="grid grid-cols-2 p-1.5 bg-muted/40 dark:bg-white/5 rounded-xl border border-white/10">
                 <button
                     type="button"
                     onClick={() => handleTypeChange("expense")}
                     className={cn(
-                        "flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-md transition-all duration-300",
+                        "flex items-center justify-center gap-2 py-2.5 text-sm font-bold rounded-lg transition-all duration-300",
                         type === "expense"
-                            ? "bg-white dark:bg-white/10 text-destructive shadow-sm"
+                            ? "bg-white dark:bg-white/10 text-destructive shadow-md scale-[1.02]"
                             : "text-muted-foreground hover:bg-white/10 hover:text-foreground"
                     )}
                 >
@@ -140,9 +140,9 @@ export function TransactionForm({
                     type="button"
                     onClick={() => handleTypeChange("income")}
                     className={cn(
-                        "flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-md transition-all duration-300",
+                        "flex items-center justify-center gap-2 py-2.5 text-sm font-bold rounded-lg transition-all duration-300",
                         type === "income"
-                            ? "bg-white dark:bg-white/10 text-emerald-600 shadow-sm"
+                            ? "bg-white dark:bg-white/10 text-emerald-600 shadow-md scale-[1.02]"
                             : "text-muted-foreground hover:bg-white/10 hover:text-foreground"
                     )}
                 >
@@ -152,7 +152,7 @@ export function TransactionForm({
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="description" className="text-xs font-bold uppercase tracking-wider text-muted-foreground pl-1">Descrizione</Label>
+                <Label htmlFor="description" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground pl-1">Descrizione</Label>
                 <Input
                     id="description"
                     placeholder="es. Spesa settimanale"
@@ -164,7 +164,7 @@ export function TransactionForm({
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="amount" className="text-xs font-bold uppercase tracking-wider text-muted-foreground pl-1">Importo</Label>
+                <Label htmlFor="amount" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground pl-1">Importo</Label>
                 <div className="relative">
                     <span className="absolute left-3 top-2.5 text-muted-foreground font-medium">€</span>
                     <Input
@@ -183,7 +183,7 @@ export function TransactionForm({
             </div>
 
             <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground pl-1">Data</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground pl-1">Data</Label>
                 <div className="h-11">
                     <DatePicker
                         value={date}
@@ -194,7 +194,7 @@ export function TransactionForm({
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="category" className="text-xs font-bold uppercase tracking-wider text-muted-foreground pl-1">Categoria</Label>
+                <Label htmlFor="category" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground pl-1">Categoria</Label>
                 <CategoryPicker
                     value={categoryId}
                     onChange={handleCategoryChange}

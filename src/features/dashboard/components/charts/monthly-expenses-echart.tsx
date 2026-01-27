@@ -9,6 +9,7 @@ import type { EChartsOption } from "echarts"
 import { motion } from "framer-motion"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StateMessage } from "@/components/ui/state-message"
+import { MacroSection } from "@/components/patterns/macro-section"
 
 interface MonthlyExpensesEChartProps {
     data?: { name: string; total: number }[]
@@ -95,7 +96,7 @@ export function MonthlyExpensesEChart({ data, isLoading, isError, onRetry }: Mon
                     barWidth: '40%',
                     itemStyle: {
                         color: '#6366f1',
-                        borderRadius: [6, 6, 0, 0]
+                        borderRadius: [10, 10, 0, 0]
                     },
                     emphasis: {
                         itemStyle: {
@@ -111,15 +112,11 @@ export function MonthlyExpensesEChart({ data, isLoading, isError, onRetry }: Mon
 
     if (isLoading) {
         return (
-            <Card className="col-span-2 rounded-xl glass-card">
-                <CardHeader>
-                    <Skeleton className="h-6 w-32 mb-2" />
-                    <Skeleton className="h-4 w-48" />
-                </CardHeader>
-                <CardContent className="h-[350px] flex items-center justify-center">
-                    <Skeleton className="h-[300px] w-full rounded-lg" />
-                </CardContent>
-            </Card>
+            <MacroSection title="Spese Mensili" description="Caricamento in corso..." className="col-span-2">
+                <div className="h-[350px]">
+                    <Skeleton className="h-full w-full rounded-2xl" />
+                </div>
+            </MacroSection>
         )
     }
 
@@ -140,33 +137,24 @@ export function MonthlyExpensesEChart({ data, isLoading, isError, onRetry }: Mon
     const hasData = data && data.length > 0 && data.some(item => item.total > 0)
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+        <MacroSection
+            title="Spese Mensili"
+            description="Andamento nel periodo selezionato"
             className="col-span-2"
         >
-            <Card className="rounded-2xl h-full glass-card hover:shadow-md transition-all">
-                <CardHeader className="pb-2">
-                    <CardTitle className="text-xl font-bold tracking-tight">Spese Mensili</CardTitle>
-                    <CardDescription>Andamento nel periodo selezionato</CardDescription>
-                </CardHeader>
-                <CardContent className="pt-0">
-                    {hasData ? (
-                        <div className="h-[350px] w-full">
-                            <EChartsWrapper option={option} />
-                        </div>
-                    ) : (
-                        <div className="h-[350px] flex items-center justify-center">
-                            <StateMessage
-                                variant="empty"
-                                title="Nessun dato"
-                                description="Inizia a registrare transazioni per vedere l'andamento"
-                            />
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
-        </motion.div>
+            <div className="h-[350px] w-full py-4">
+                {hasData ? (
+                    <EChartsWrapper option={option} />
+                ) : (
+                    <div className="h-full flex items-center justify-center">
+                        <StateMessage
+                            variant="empty"
+                            title="Nessun dato"
+                            description="Inizia a registrare transazioni per vedere l'andamento"
+                        />
+                    </div>
+                )}
+            </div>
+        </MacroSection>
     )
 }

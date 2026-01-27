@@ -234,7 +234,7 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
                     color: '#94a3b8',
                     fontSize: 10,
                     margin: 8,
-                    formatter: (val: number) => val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val.toString()
+                    formatter: (val: number) => val >= 1000 ? `${(val / 1000).toFixed(1)}k` : val.toString()
                 }
             },
             series: allCategories.map(cat => ({
@@ -245,7 +245,7 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
                 barWidth: '40%',
                 itemStyle: {
                     color: cat.color,
-                    borderRadius: cat.id === allCategories[allCategories.length - 1].id ? [4, 4, 0, 0] : [0, 0, 0, 0],
+                    borderRadius: cat.id === allCategories[allCategories.length - 1].id ? [10, 10, 0, 0] : [0, 0, 0, 0],
                     opacity: highlightedCategory ? (highlightedCategory === cat.id ? 1 : 0.15) : (selectedMonth ? 1 : 0.85)
                 },
                 data: chartData.map(d => Number(d[cat.id]) || 0),
@@ -301,8 +301,8 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
                     </div>
 
                     <div className="lg:col-span-1">
-                        <div className="flex items-center justify-between mb-4">
-                            <h4 className="text-xs font-black text-foreground/80 uppercase tracking-wider">
+                        <div className="flex items-center justify-between mb-6">
+                            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                                 {selectedMonth ? `Dettaglio ${selectedMonth}` : "Dettaglio Periodo"}
                             </h4>
                             {(selectedMonth || highlightedCategory) && (

@@ -68,7 +68,7 @@ export function DashboardKpiGrid({
 
     const superflueTone = getSuperfluousTone(uselessSpendPercent ?? null, superfluousTarget)
 
-    const buildNarration = (kpiId: KPIFacts["kpiId"], value: number | string, tone: any, percent?: number) => {
+    const buildNarration = (kpiId: KPIFacts["kpiId"], value: number | string, tone: KpiTone, percent?: number) => {
         let bufferRatio: number | undefined = undefined
         if (kpiId === "balance" && typeof value === "number" && totalSpent !== undefined) {
             const derivedIncome = value + totalSpent
@@ -108,9 +108,6 @@ export function DashboardKpiGrid({
                 <KpiCard
                     title="Spesa"
                     value={isLoading ? 0 : formatValue(totalSpent || 0)}
-                    change="Uscite"
-                    trend="neutral"
-                    tone={spesaTone}
                     icon={Wallet}
                     isLoading={isLoading}
                     onClick={() => router.push("/transactions")}

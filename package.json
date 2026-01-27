@@ -9,7 +9,8 @@
     "lint": "eslint",
     "test": "vitest",
     "test:run": "vitest run",
-    "validate": "./.agent/skills/numa-governance-update/scripts/validate.sh"
+    "validate": "./.agent/skills/numa-governance-update/scripts/validate.sh",
+    "doe:verify": "npm run test:run && npm run lint && npm run validate"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",

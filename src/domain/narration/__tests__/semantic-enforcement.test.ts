@@ -59,7 +59,7 @@ describe("Global Semantic Anti-Regression", () => {
                 utilizationPercent: undefined, superfluousPercent: undefined,
                 elapsedRatio: 0.5 // Mid-month for standard tests
             }
-            // @ts-ignore
+            // @ts-expect-error - testing invalid facts structure
             const state = deriveSnapshotState(facts)
 
             expect(state).not.toBe("stable")
@@ -73,7 +73,7 @@ describe("Global Semantic Anti-Regression", () => {
         })
 
         it("KPI Balance: Should be ATTENTION (not Good)", () => {
-            const facts: any = {
+            const facts: unknown = {
                 kpiId: "balance",
                 valueFormatted: "€30",
                 tone: "positive", // Input tone might be positive, but derivation must downgrade
@@ -104,13 +104,12 @@ describe("Global Semantic Anti-Regression", () => {
                 incomeCents: income,
                 elapsedRatio: 0.5 // satisfy B2 (pacing required)
             }
-            // @ts-ignore
             const state = deriveSnapshotState(facts)
             expect(["stable", "thriving"]).toContain(state)
         })
 
         it("KPI Balance: Should be GOOD", () => {
-            const facts: any = {
+            const facts: unknown = {
                 kpiId: "balance",
                 valueFormatted: "€60",
                 tone: "positive",
@@ -132,7 +131,6 @@ describe("Global Semantic Anti-Regression", () => {
                 balanceCents: 1000,
                 incomeCents: 0 // Missing/Zero
             }
-            // @ts-ignore
             const state = deriveSnapshotState(facts)
             expect(state).toBe("calm")
             expect(state).not.toBe("stable")
@@ -150,11 +148,10 @@ describe("Global Semantic Anti-Regression", () => {
                 balanceCents: 10000, incomeCents: 100000,
                 utilizationPercent: 5, elapsedRatio: 0.1 // day 3/30
             }
-            // @ts-ignore
             const state = deriveSnapshotState(facts)
             expect(state).toBe("early_uncertain")
 
-            const narration = narrateSnapshot(facts as any, state)
+            const narration = narrateSnapshot(facts, state)
             expect(narration.text).toContain("iniziato")
         })
 
@@ -164,11 +161,10 @@ describe("Global Semantic Anti-Regression", () => {
                 balanceCents: 50000, incomeCents: 100000,
                 utilizationPercent: 60, elapsedRatio: 0.4 // spent 60% in 40% time
             }
-            // @ts-ignore
             const state = deriveSnapshotState(facts)
             expect(state).toBe("at_risk")
 
-            const narration = narrateSnapshot(facts as any, state)
+            const narration = narrateSnapshot(facts, state)
             const text = narration.text.toLowerCase()
             expect(text.match(/inferiore|ritmo|proiezione|elevato/)).toBeTruthy()
         })
@@ -180,11 +176,10 @@ describe("Global Semantic Anti-Regression", () => {
                 utilizationPercent: 50, elapsedRatio: 0.4,
                 isProjectedOverrun: true
             }
-            // @ts-ignore
             const state = deriveSnapshotState(facts)
             expect(state).toBe("at_risk")
 
-            const narration = narrateSnapshot(facts as any, state)
+            const narration = narrateSnapshot(facts, state)
             expect(narration.text).toContain("proiezione")
         })
 
@@ -194,11 +189,10 @@ describe("Global Semantic Anti-Regression", () => {
                 balanceCents: -500, incomeCents: 100000,
                 utilizationPercent: 110, elapsedRatio: 0.9
             }
-            // @ts-ignore
             const state = deriveSnapshotState(facts)
             expect(state).toBe("critical")
 
-            const narration = narrateSnapshot(facts as any, state)
+            const narration = narrateSnapshot(facts, state)
             expect(narration.text).toContain("superato")
         })
 
@@ -208,11 +202,10 @@ describe("Global Semantic Anti-Regression", () => {
                 balanceCents: 0, incomeCents: 0,
                 isDataIncomplete: true
             }
-            // @ts-ignore
             const state = deriveSnapshotState(facts)
             expect(state).toBe("calm")
 
-            const narration = narrateSnapshot(facts as any, state)
+            const narration = narrateSnapshot(facts, state)
             expect(narration.text).toContain("limitati")
         })
     })

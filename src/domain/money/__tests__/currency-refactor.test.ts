@@ -40,12 +40,12 @@ describe("Currency Refactor", () => {
                 id: "1",
                 type: "expense",
                 amountCents: "1050" // String from storage/json
-            } as any
+            } as unknown as Transaction
 
-            const normalized = normalizeTransactionAmount(rawT)
+            const normalized = normalizeTransactionAmount(rawT as unknown as Partial<Transaction> & Record<string, unknown>)
 
             expect(normalized.amountCents).toBe(1050)
-            expect((normalized as any).amount).toBeUndefined()
+            expect((normalized as unknown as Record<string, unknown>).amount).toBeUndefined()
         })
 
         it("migrates categoryId", () => {
@@ -54,9 +54,9 @@ describe("Currency Refactor", () => {
                 type: "expense",
                 amountCents: 500,
                 categoryId: "legacy-cat"
-            } as any
+            } as unknown as Transaction
 
-            const normalized = normalizeTransactionAmount(rawT)
+            const normalized = normalizeTransactionAmount(rawT as unknown as Partial<Transaction> & Record<string, unknown>)
 
             expect(normalized.amountCents).toBe(500)
             // assuming migrateCategoryId("legacy-cat") returns something or remains if no map

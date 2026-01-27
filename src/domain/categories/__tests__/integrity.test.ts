@@ -43,7 +43,7 @@ describe("Category Migration Integrity", () => {
         const currentIds = new Set(Object.values(CategoryIds))
 
         Object.entries(LEGACY_CATEGORY_ID_MAP).forEach(([legacyId, newId]) => {
-            expect(currentIds.has(newId as any)).toBe(true)
+            expect(currentIds.has(newId as unknown as (typeof CategoryIds)[keyof typeof CategoryIds])).toBe(true)
             expect(legacyId).not.toBe(newId)
         })
     })

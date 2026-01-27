@@ -20,6 +20,14 @@ interface SpendingCompositionCardProps {
 const TOP_N_CATEGORIES = 5
 const SYNTHETIC_ALTRI_ID = "altro-synthetic"
 
+interface EChartsPieParam {
+    name: string
+    value: number
+    percent: number
+    color: string | { colorStops: { color: string }[] }
+    data: { id: string }
+}
+
 export function SpendingCompositionCard({ transactions, filter, isLoading: isExternalLoading }: SpendingCompositionCardProps) {
     const { currency, locale } = useCurrency()
     const { data: categories = [], isLoading: isCategoriesLoading } = useCategories()
@@ -103,16 +111,18 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
                 borderWidth: 1,
                 padding: [12, 16],
                 textStyle: { color: '#f8fafc', fontSize: 13 },
-                formatter: (params: any) => {
+                formatter: (params: unknown) => {
+                    const p = params as EChartsPieParam
+                    const color = typeof p.color === 'string' ? p.color : p.color.colorStops?.[0]?.color
                     return `
-                        <div style="display: flex; flex-direction: column; gap: 4px;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <div style="width: 8px; height: 8px; border-radius: 50%; background: ${(params.color as any).colorStops?.[0]?.color || params.color};"></div>
-                                <span style="font-weight: 700; opacity: 0.8; text-transform: uppercase; font-size: 10px; tracking: 0.1em; color: #94a3b8;">${params.name}</span>
+                        <div style=\"display: flex; flex-direction: column; gap: 4px;\">
+                            <div style=\"display: flex; align-items: center; gap: 8px;\">
+                                <div style=\"width: 8px; height: 8px; border-radius: 50%; background: ${color};\"></div>
+                                <span style=\"font-weight: 700; opacity: 0.8; text-transform: uppercase; font-size: 10px; tracking: 0.1em; color: #94a3b8;\">${p.name}</span>
                             </div>
-                            <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 24px;">
-                                <span style="font-size: 16px; font-weight: 900; letter-spacing: -0.02em; color: #ffffff;">${formatCents(params.value, currency, locale)}</span>
-                                <span style="font-size: 11px; font-weight: 700; color: #6366f1;">${params.percent}%</span>
+                            <div style=\"display: flex; justify-content: space-between; align-items: baseline; gap: 24px;\">
+                                <span style=\"font-size: 16px; font-weight: 900; letter-spacing: -0.02em; color: #ffffff;\">${formatCents(p.value, currency, locale)}</span>
+                                <span style=\"font-size: 11px; font-weight: 700; color: #6366f1;\">${p.percent}%</span>
                             </div>
                         </div>
                     `
@@ -136,8 +146,9 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
                         show: true,
                         position: 'outside',
                         padding: [0, -35],
-                        formatter: (params: any) => {
-                            return `{name|${params.name.toUpperCase()}}\n{value|${formatCents(params.value, currency, locale)}}\n{percent|${params.percent}%}`
+                        formatter: (params: unknown) => {
+                            const p = params as EChartsPieParam
+                            return `{name|${p.name.toUpperCase()}}\\n{value|${formatCents(p.value, currency, locale)}}\\n{percent|${p.percent}%}`
                         },
                         rich: {
                             name: {
@@ -221,7 +232,7 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
             isLoading={isLoading}
             hasData={chartData.length > 0}
             onEvents={{
-                'mouseover': (params: any) => setHighlightedCategory(params.data.id),
+                'mouseover': (params: unknown) => setHighlightedCategory((params as EChartsPieParam).data.id),
                 'mouseout': () => setHighlightedCategory(null)
             }}
         >
@@ -236,7 +247,11 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
                         </span>
                         <div
                             className="h-[3px] w-12 rounded-full transition-all duration-300 group-hover:w-16"
-                            style={{ background: (item.itemStyle.color as any)?.colorStops?.[0]?.color || (item.itemStyle.color as any) }}
+                            style={{
+                                background: typeof item.itemStyle?.color === 'string'
+                                    ? item.itemStyle.color
+                                    : (item.itemStyle?.color as { colorStops: { color: string }[] })?.colorStops?.[0]?.color
+                            }}
                         />
                     </div>
                 ))}

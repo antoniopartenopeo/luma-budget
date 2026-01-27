@@ -36,10 +36,10 @@ export function normalizeRows(rows: RawRow[]): { valid: ParsedRow[]; errors: Par
                 rawRow: row.raw,
             });
 
-        } catch (err: any) {
+        } catch (err: unknown) {
             errors.push({
                 lineNumber: row.lineNumber,
-                message: err.message,
+                message: err instanceof Error ? err.message : String(err),
                 raw: JSON.stringify(row.raw),
             });
         }

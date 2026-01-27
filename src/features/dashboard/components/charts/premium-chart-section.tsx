@@ -14,7 +14,7 @@ interface PremiumChartSectionProps {
     option: EChartsOption
     isLoading?: boolean
     hasData?: boolean
-    onEvents?: Record<string, (params: any) => void>
+    onEvents?: Record<string, (params: unknown) => void>
     children?: ReactNode
     className?: string
     chartHeight?: number

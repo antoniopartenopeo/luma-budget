@@ -72,7 +72,7 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
             }
 
             onContinue(state)
-        } catch (e: any) {
+        } catch (e: unknown) {
             setError("Qualcosa è andato storto. Riprova o controlla il formato.")
         }
     }

@@ -51,7 +51,8 @@ export function normalizeTransactionAmount(t: Partial<Transaction> & Record<stri
 export const calculateSuperfluousStatus = (
     categoryId: string,
     type: TransactionType,
-    categories: any[] // Using any[] to avoid circular dependency if Category is in domain/categories/types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    categories: any[] // Using any[] to avoid circular dependency
 ): boolean => {
     if (type === "income") return false
     const cat = getCategoryById(categoryId, categories)

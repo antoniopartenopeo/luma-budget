@@ -27,6 +27,20 @@ Sostituito il `pulse` generico con un flash smeraldo custom.
 
 ---
 
+## 🏗️ 100% Premium Alignment (Sweep)
+
+Abbiamo esteso lo standard a **TUTTA** l'applicazione:
+
+*   **Global Skeleton**: Aggiornato `Skeleton.tsx` -> `pulse-soft`. Ogni caricamento (Transazioni, Budget) ora è "organico".
+*   **Transactions**: Filtri, input rapidi e entry pagina usano `enter-up`.
+*   **Budget**: Card ed Empty State usano `enter-up`.
+*   **Import Wizard**: Tutti gli step usano `enter-up`.
+*   **Settings**: I tab usano `enter-up`.
+
+> **Stato:** Legacy Animations (fade-in standard) eliminate al 100%.
+
+---
+
 ## 📜 Nuova Governance (Vincolante)
 
 I cambiamenti sono stati cristallizzati nei seguenti documenti:

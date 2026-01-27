@@ -51,7 +51,7 @@ export function WizardShell({
     ]
 
     return (
-        <div className="flex flex-col h-full bg-background animate-in fade-in duration-300">
+        <div className="flex flex-col h-full bg-background animate-enter-up">
             {/* 1. Shell Header (Sticky Top) */}
             <div className="shrink-0 pt-6 pb-4 px-6 md:px-8 border-b bg-card/80 backdrop-blur-xl z-20 flex flex-col gap-6 shadow-sm">
 

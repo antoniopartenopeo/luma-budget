@@ -11,7 +11,7 @@ interface EmptyBudgetStateProps {
 
 export function EmptyBudgetState({ onSetup, disabled }: EmptyBudgetStateProps) {
     return (
-        <div className="flex flex-col items-center justify-center py-10 text-center animate-in fade-in zoom-in-95 duration-500">
+        <div className="flex flex-col items-center justify-center py-10 text-center animate-enter-up">
             <div className="relative mb-6 group cursor-pointer" onClick={!disabled ? onSetup : undefined}>
                 {/* Decorative background blobs */}
                 <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl scale-0 group-hover:scale-150 transition-transform duration-500" />

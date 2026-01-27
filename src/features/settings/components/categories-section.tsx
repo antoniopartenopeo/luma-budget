@@ -280,14 +280,14 @@ export function CategoriesSection() {
                                     Entrate ({incomeCategories.length})
                                 </TabsTrigger>
                             </TabsList>
-                            <TabsContent value="expense" className="mt-6 focus-visible:outline-none animate-in fade-in-50 slide-in-from-bottom-2 duration-300">
+                            <TabsContent value="expense" className="mt-6 focus-visible:outline-none animate-enter-up">
                                 <div className="flex items-center justify-between mb-4">
                                     <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Lista Uscite</h3>
                                     <span className="text-xs text-muted-foreground">{expenseCategories.length} trovate</span>
                                 </div>
                                 {renderCategoryList(expenseCategories, "Nessuna categoria di spesa.")}
                             </TabsContent>
-                            <TabsContent value="income" className="mt-6 focus-visible:outline-none animate-in fade-in-50 slide-in-from-bottom-2 duration-300">
+                            <TabsContent value="income" className="mt-6 focus-visible:outline-none animate-enter-up">
                                 <div className="flex items-center justify-between mb-4">
                                     <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Lista Entrate</h3>
                                     <span className="text-xs text-muted-foreground">{incomeCategories.length} trovate</span>

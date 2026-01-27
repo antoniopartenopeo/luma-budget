@@ -147,7 +147,7 @@ export function GlobalBudgetCard({ budgetCents, spentCents, isLoading, onSave, i
                 {hasNoBudget && !isEditing ? (
                     <EmptyBudgetState onSetup={handleStartEdit} disabled={isSaving} />
                 ) : isEditing ? (
-                    <div className="py-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <div className="py-6 animate-enter-up">
                         <div className="flex flex-col items-center gap-6">
                             <div className="text-center space-y-1">
                                 <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Definisci Budget Mensile</span>

@@ -146,7 +146,7 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
             step="upload"
             footer={footer}
         >
-            <div className="flex flex-col items-center justify-center space-y-5 min-h-[30vh] animate-in fade-in zoom-in-95 duration-500">
+            <div className="flex flex-col items-center justify-center space-y-5 min-h-[30vh] animate-enter-up">
                 {/* 3. Drop Zone / Tabs */}
                 <MacroSection className="w-full max-w-3xl" contentClassName="p-0">
                     <Tabs defaultValue="upload" className="w-full flex flex-col">

@@ -291,7 +291,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
 
             {/* Error Message */}
             {hasError && (
-                <div className="absolute -bottom-8 left-4 flex items-center gap-2 text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1">
+                <div className="absolute -bottom-8 left-4 flex items-center gap-2 text-xs font-medium text-destructive animate-enter-up">
                     <AlertCircle className="h-3 w-3" />
                     {validationError || "Errore durante il salvataggio. Riprova."}
                 </div>

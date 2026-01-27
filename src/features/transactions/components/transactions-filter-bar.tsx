@@ -167,7 +167,7 @@ export function TransactionsFilterBar({
 
             {/* Custom Date Range Inputs */}
             {periodValue === "custom" && (
-                <div className="flex items-center gap-3 p-3 bg-muted/5 border border-muted-foreground/10 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="flex items-center gap-3 p-3 bg-muted/5 border border-muted-foreground/10 rounded-xl animate-enter-up">
                     <div className="flex flex-col gap-1.5 flex-1">
                         <label className="text-[10px] uppercase font-bold text-muted-foreground/60 px-1">Dal</label>
                         <DatePicker

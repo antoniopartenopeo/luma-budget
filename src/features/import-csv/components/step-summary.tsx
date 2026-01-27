@@ -124,7 +124,7 @@ export function ImportStepSummary({
             step="summary"
             footer={footer}
         >
-            <div className="flex-1 p-6 md:p-12 animate-in fade-in slide-in-from-right-4 duration-300">
+            <div className="flex-1 p-6 md:p-12 animate-enter-up">
                 <MacroSection>
                     <div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
                         {/* KPI Cards */}

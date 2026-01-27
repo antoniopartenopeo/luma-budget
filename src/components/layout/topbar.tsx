@@ -19,7 +19,7 @@ export function TopBar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
 
     return (
-        <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur-md">
+        <header className="sticky top-0 z-30 border-b border-white/20 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl">
             <div className="flex min-h-[80px] lg:min-h-[80px] h-auto flex-col">
                 <div className="flex h-20 items-center justify-between gap-4 px-4 md:px-6">
                     <div className="flex items-center gap-2">
@@ -29,7 +29,7 @@ export function TopBar() {
                                     <Menu className="h-6 w-6" />
                                 </Button>
                             </SheetTrigger>
-                            <SheetContent side="left" className="p-0 border-none w-64 bg-sidebar">
+                            <SheetContent side="left" className="p-0 border-none w-64 bg-transparent shadow-2xl">
                                 <div className="sr-only">
                                     <SheetTitle>Menu di Navigazione</SheetTitle>
                                 </div>

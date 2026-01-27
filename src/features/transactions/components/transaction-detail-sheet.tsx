@@ -120,15 +120,15 @@ function TransactionDetailSheetContent({
                         setShowCloseConfirm(true);
                     }
                 }}
-                className="sm:max-w-md p-0 overflow-hidden flex flex-col"
+                className="sm:max-w-md p-0 overflow-hidden flex flex-col border-none bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl shadow-2xl"
             >
-                <SheetHeader className="p-6 pb-4 bg-muted/30 border-b shrink-0">
+                <SheetHeader className="p-6 pb-4 border-b border-white/20 shrink-0">
                     <div className="flex items-center gap-4">
                         {isEditing ? (
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-10 w-10 rounded-xl"
+                                className="h-10 w-10 rounded-xl hover:bg-white/50"
                                 onClick={() => isDirty ? setShowCloseConfirm(true) : setIsEditing(false)}
                             >
                                 <ArrowLeft className="h-5 w-5" />
@@ -137,7 +137,7 @@ function TransactionDetailSheetContent({
                             <CategoryIcon categoryName={transaction.category} size={48} showBackground />
                         )}
                         <div className="flex flex-col">
-                            <SheetTitle className="text-xl font-black tracking-tight leading-tight">
+                            <SheetTitle className="text-xl font-bold tracking-tight leading-tight">
                                 {isEditing ? "Modifica Transazione" : transaction.description}
                             </SheetTitle>
                             {!isEditing && (
@@ -149,7 +149,7 @@ function TransactionDetailSheetContent({
                     </div>
                 </SheetHeader>
 
-                <div className="flex-1 overflow-y-auto p-6">
+                <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-white/20">
                     {isEditing ? (
                         <TransactionForm
                             defaultValues={defaultFormValues}
@@ -163,41 +163,41 @@ function TransactionDetailSheetContent({
                         <div className="space-y-8">
                             {/* Amount Block */}
                             <div className="flex flex-col gap-1">
-                                <span className="text-[10px] uppercase font-black tracking-widest text-muted-foreground px-1">
+                                <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground px-1">
                                     Importo
                                 </span>
                                 <div className={cn(
-                                    "text-4xl font-black tabular-nums tracking-tighter",
-                                    transaction.type === "income" ? "text-emerald-600" : "text-rose-600"
+                                    "text-5xl font-black tabular-nums tracking-tighter",
+                                    transaction.type === "income" ? "text-emerald-600" : "text-foreground"
                                 )}>
                                     {transaction.amount}
                                 </div>
                             </div>
 
                             {/* Info Grid */}
-                            <div className="grid grid-cols-2 gap-6">
+                            <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
-                                    <div className="flex items-center gap-1.5 text-[10px] uppercase font-black tracking-widest text-muted-foreground px-1">
+                                    <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider text-muted-foreground px-1">
                                         <Calendar className="h-3 w-3" />
                                         Data
                                     </div>
-                                    <div className="text-sm font-bold bg-muted/30 p-3 rounded-2xl border">
+                                    <div className="text-sm font-medium bg-white/50 dark:bg-white/5 p-3 rounded-xl border border-white/20">
                                         {formatTransactionDate(transaction)}
                                     </div>
                                 </div>
                                 <div className="space-y-1.5">
-                                    <div className="flex items-center gap-1.5 text-[10px] uppercase font-black tracking-widest text-muted-foreground px-1">
+                                    <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider text-muted-foreground px-1">
                                         <Tag className="h-3 w-3" />
                                         Tipo
                                     </div>
-                                    <div className="bg-muted/30 p-3 rounded-2xl border">
+                                    <div className="bg-white/50 dark:bg-white/5 p-3 rounded-xl border border-white/20">
                                         <Badge
                                             variant="secondary"
                                             className={cn(
-                                                "text-[10px] font-black uppercase px-2 py-0.5 rounded-full border",
+                                                "text-[10px] font-bold uppercase px-2 py-0.5 rounded-md border shadow-none",
                                                 transaction.type === "income"
-                                                    ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-                                                    : "bg-rose-50 text-rose-700 border-rose-100"
+                                                    ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20"
+                                                    : "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20"
                                             )}
                                         >
                                             {transaction.type === "income" ? "Entrata" : "Uscita"}
@@ -209,16 +209,16 @@ function TransactionDetailSheetContent({
                             {/* Status */}
                             {transaction.isSuperfluous && (
                                 <div className="space-y-1.5">
-                                    <div className="flex items-center gap-1.5 text-[10px] uppercase font-black tracking-widest text-muted-foreground px-1">
+                                    <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider text-muted-foreground px-1">
                                         <Info className="h-3 w-3" />
                                         Classificazione
                                     </div>
-                                    <div className="bg-amber-50/50 p-4 rounded-2xl border border-amber-100 flex items-center justify-between">
+                                    <div className="bg-amber-500/10 p-4 rounded-xl border border-amber-500/20 flex items-center justify-between">
                                         <div className="flex flex-col text-xs">
-                                            <span className="font-bold text-amber-800">Spesa Superflua</span>
-                                            <span className="text-amber-600/70">Questa spesa non è stata considerata essenziale.</span>
+                                            <span className="font-bold text-amber-700 dark:text-amber-400">Spesa Superflua</span>
+                                            <span className="text-muted-foreground">Considerata non essenziale.</span>
                                         </div>
-                                        <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100 border-amber-200 text-[9px] uppercase font-bold">
+                                        <Badge className="bg-amber-500/20 text-amber-800 dark:text-amber-300 border-amber-500/20 text-[9px] uppercase font-bold shadow-none rounded-md">
                                             {transaction.classificationSource === "ruleBased" ? "Regola" : "Manuale"}
                                         </Badge>
                                     </div>
@@ -229,11 +229,11 @@ function TransactionDetailSheetContent({
                 </div>
 
                 {!isEditing && (
-                    <div className="shrink-0 p-6 bg-background border-t">
+                    <div className="shrink-0 p-6 bg-white/40 dark:bg-white/5 border-t border-white/20 backdrop-blur-md">
                         <div className="grid grid-cols-2 gap-3">
                             <Button
                                 variant="outline"
-                                className="h-12 rounded-2xl gap-2 font-bold"
+                                className="h-12 rounded-xl gap-2 font-bold hover:bg-white/60"
                                 onClick={() => setIsEditing(true)}
                             >
                                 <Edit2 className="h-4 w-4" />
@@ -241,7 +241,7 @@ function TransactionDetailSheetContent({
                             </Button>
                             <Button
                                 variant="destructive"
-                                className="h-12 rounded-2xl gap-2 font-bold bg-rose-600 hover:bg-rose-700 shadow-rose-200"
+                                className="h-12 rounded-xl gap-2 font-bold shadow-lg shadow-rose-500/20"
                                 onClick={() => setShowDeleteConfirm(true)}
                             >
                                 <Trash2 className="h-4 w-4" />

@@ -110,10 +110,10 @@ export function CategoryFormSheet({ open, onOpenChange, categoryToEdit, onSave, 
 
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
-            <SheetContent side="right" className="sm:max-w-md w-full flex flex-col p-0 overflow-hidden border-l">
-                <SheetHeader className="p-6 border-b shrink-0">
-                    <SheetTitle>{categoryToEdit ? "Modifica Categoria" : "Nuova Categoria"}</SheetTitle>
-                    <SheetDescription>
+            <SheetContent side="right" className="sm:max-w-md w-full flex flex-col p-0 overflow-hidden border-none bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl shadow-2xl">
+                <SheetHeader className="p-6 border-b border-white/20 shrink-0">
+                    <SheetTitle className="text-xl font-bold tracking-tight">{categoryToEdit ? "Modifica Categoria" : "Nuova Categoria"}</SheetTitle>
+                    <SheetDescription className="text-muted-foreground">
                         {categoryToEdit ? "Modifica i dettagli della categoria." : "Crea una nuova categoria per organizzare le tue spese."}
                     </SheetDescription>
                 </SheetHeader>

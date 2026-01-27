@@ -222,16 +222,16 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
             xAxis: {
                 type: 'category',
                 data: chartData.map(d => d.name),
-                axisLine: { show: true, lineStyle: { color: '#f1f5f9' } },
+                axisLine: { show: true, lineStyle: { color: '#e2e8f0' } },
                 axisTick: { show: false },
-                axisLabel: { color: '#94a3b8', fontSize: 11, margin: 12 }
+                axisLabel: { color: '#64748b', fontSize: 11, margin: 12, fontWeight: 500 }
             },
             yAxis: {
                 type: 'value',
-                splitLine: { lineStyle: { type: 'dashed', color: '#f8fafc', opacity: 0.6 } },
+                splitLine: { lineStyle: { type: 'dashed', color: '#f1f5f9', opacity: 0.8 } },
                 axisLine: { show: false },
                 axisLabel: {
-                    color: '#cbd5e1',
+                    color: '#94a3b8',
                     fontSize: 10,
                     margin: 8,
                     formatter: (val: number) => val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val.toString()
@@ -302,7 +302,7 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
 
                     <div className="lg:col-span-1">
                         <div className="flex items-center justify-between mb-4">
-                            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wide">
+                            <h4 className="text-xs font-black text-foreground/80 uppercase tracking-wider">
                                 {selectedMonth ? `Dettaglio ${selectedMonth}` : "Dettaglio Periodo"}
                             </h4>
                             {(selectedMonth || highlightedCategory) && (

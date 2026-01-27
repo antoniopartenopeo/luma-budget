@@ -85,9 +85,11 @@ Ogni sezione principale DEVE essere composta da:
 
 Tutti i componenti principali devono seguire questi standard visuali:
 
-### 1. Macro-Geometria
-- **Border Radius**: `rounded-[2.5rem]` (40px) per tutte le macro-card principali.
-- **Surface**: Classe `glass-panel` (backdrop-blur-xl, bg-white/60).
+### 1. Materiali & Superfici
+- **Glass Panel (Standard)**: `bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/20`.
+- **Glass Overlay (Sheet/Dialog)**: DEVE usare lo stesso materiale della Top Bar: `bg-white/60` (non 80/90) `backdrop-blur-xl` per garantire coerenza visiva.
+- **Background**: `bg-[#F8F9FA]` (light) / `bg-black` (dark) + Ambient Mesh Gradients.
+- **Card**: `rounded-[2.5rem]` (Macro) o `rounded-xl` (Micro).
 - **Shadows**: `shadow-xl` + **Ambient Glows** (gradienti radiali sfocati) per stati critici.
 
 ### 2. Motion System (Standard Numa)

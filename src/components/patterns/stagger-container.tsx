@@ -11,16 +11,6 @@ interface StaggerContainerProps {
     delayChildren?: number
 }
 
-const containerVariants: Variants = {
-    hidden: { opacity: 1 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.08, // Slightly faster stagger for 0.4s items
-            delayChildren: 0.05,
-        },
-    },
-}
 
 /**
  * StaggerContainer: Orchestratore del Global Motion System.

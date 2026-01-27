@@ -50,6 +50,18 @@
   /* 12px - Controls (Buttons, Inputs) */
   --radius-sm: 0.5rem;
   /* 8px - Small elements */
+
+  --animate-shimmer: shimmer 3s infinite linear;
+
+  @keyframes shimmer {
+    from {
+      transform: translateX(-100%);
+    }
+
+    to {
+      transform: translateX(200%);
+    }
+  }
 }
 
 :root {

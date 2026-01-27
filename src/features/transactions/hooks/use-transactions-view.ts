@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useMemo } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Transaction } from "../api/types"
 import {

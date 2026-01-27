@@ -3,7 +3,6 @@
 import { Transaction } from "@/features/transactions/api/types"
 import { getCategoryById, CATEGORY_GROUP_LABELS, CategoryGroupKey, Category } from "@/features/categories/config"
 import { formatTransactionDate } from "@/features/transactions/utils/format-date"
-import { parseCurrencyToCents } from "@/domain/money"
 
 // =====================
 // EXPORT CONFIGURATION

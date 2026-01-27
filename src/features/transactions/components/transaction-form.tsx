@@ -55,8 +55,6 @@ export function TransactionForm({
     )
     const isManualOverride = isSuperfluousManual !== null
 
-    // Get grouped categories based on current transaction type
-    const groupedCategories = getGroupedCategories(categories, type)
 
     // Derive isSuperfluous based on category (rule-based), unless manually overridden
     const isSuperfluous = useMemo(() => {
@@ -65,7 +63,7 @@ export function TransactionForm({
 
         const cat = getCategoryById(categoryId, categories)
         return cat?.spendingNature === "superfluous"
-        // eslint-disable-next-line react-hooks/preserve-manual-memoization
+
     }, [categoryId, isManualOverride, isSuperfluousManual, type, categories])
 
     const handleCategoryChange = (val: string) => {

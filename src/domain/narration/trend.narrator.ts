@@ -107,12 +107,12 @@ function narrateStable(facts: TrendFacts): NarrationResult {
 }
 
 function narrateVolatile(facts: TrendFacts): NarrationResult {
-    const { metricType, changePercent } = facts
+    const { changePercent } = facts
     const absChange = Math.abs(changePercent).toFixed(1)
 
     return { text: `Forte variabilità rilevata (${absChange}%). La gestione finanziaria richiede maggiore attenzione ai flussi irregolari.` }
 }
 
-function narrateNeutral(facts: TrendFacts): NarrationResult {
+function narrateNeutral(_facts: TrendFacts): NarrationResult {
     return { text: "Dati insufficienti per identificare un trend consolidato negli ultimi mesi." }
 }

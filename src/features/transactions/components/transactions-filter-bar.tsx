@@ -1,4 +1,4 @@
-import { Search, Calendar, Filter, X, Download, Loader2 } from "lucide-react"
+import { Search, Calendar, Filter, X } from "lucide-react"
 import { getGroupedCategories } from "@/features/categories/config"
 import { useCategories } from "@/features/categories/api/use-categories"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
@@ -29,7 +29,6 @@ interface TransactionsFilterBarProps {
     dateRange: { from?: string; to?: string }
     onDateRangeChange: (range: { from?: string; to?: string }) => void
     isSuperfluousOnly: boolean
-    onSuperfluousChange: (value: boolean) => void
     onResetFilters?: () => void
 }
 
@@ -45,7 +44,6 @@ export function TransactionsFilterBar({
     dateRange,
     onDateRangeChange,
     isSuperfluousOnly,
-    onSuperfluousChange,
     onResetFilters
 }: TransactionsFilterBarProps) {
     const { data: categories = [] } = useCategories()

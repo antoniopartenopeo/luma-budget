@@ -1,6 +1,5 @@
 import { Category, CategoryGroup, CategoryGroupKey, CategoryKind } from "./types"
 import {
-    CATEGORIES,
     CATEGORY_GROUP_LABELS,
     CATEGORY_GROUP_ORDER,
     EXPENSE_GROUP_ORDER

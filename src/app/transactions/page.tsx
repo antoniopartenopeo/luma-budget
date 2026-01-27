@@ -5,7 +5,7 @@ import { ArrowUpRight } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { TransactionsTable } from "@/features/transactions/components/transactions-table"
-import { TransactionsFilterBar, PeriodPreset } from "@/features/transactions/components/transactions-filter-bar"
+import { TransactionsFilterBar } from "@/features/transactions/components/transactions-filter-bar"
 import { TransactionsSummaryBar } from "@/features/transactions/components/transactions-summary-bar"
 import { TransactionDetailSheet } from "@/features/transactions/components/transaction-detail-sheet"
 import { ConfirmDialog } from "@/components/patterns/confirm-dialog"
@@ -13,7 +13,6 @@ import { useTransactions, useDeleteTransaction } from "@/features/transactions/a
 import { useCategories } from "@/features/categories/api/use-categories"
 import { useTransactionsView } from "@/features/transactions/hooks/use-transactions-view"
 import { exportTransactionsToCSV } from "@/features/transactions/utils/export-transactions"
-import { SortField } from "@/features/transactions/utils/transactions-logic"
 import { Transaction } from "@/features/transactions/api/types"
 import { PageHeader } from "@/components/ui/page-header"
 
@@ -136,7 +135,6 @@ function TransactionsPageContent() {
                         dateRange={{ from: fromDate, to: toDate }}
                         onDateRangeChange={(range) => updateParams({ from: range.from || null, to: range.to || null, p: "1" })}
                         isSuperfluousOnly={type === "superfluous"}
-                        onSuperfluousChange={() => { }}
                         onResetFilters={resetFilters}
                     />
                 }

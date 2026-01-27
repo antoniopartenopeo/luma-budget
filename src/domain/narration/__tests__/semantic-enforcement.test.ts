@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest"
 import { narrateAdvisor } from "../advisor.narrator"
 import { deriveAdvisorState, deriveSnapshotState, deriveKPIState } from "../derive-state"
 import { narrateSnapshot, narrateKPI } from "../"
-import { AdvisorFacts } from "../types"
 
 // GLOBAL SEMANTIC ENFORCEMENT SUITE
 // =================================
@@ -59,21 +58,24 @@ describe("Global Semantic Anti-Regression", () => {
                 utilizationPercent: undefined, superfluousPercent: undefined,
                 elapsedRatio: 0.5 // Mid-month for standard tests
             }
-            // @ts-expect-error - testing invalid facts structure
-            const state = deriveSnapshotState(facts)
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const state = deriveSnapshotState(facts as any)
 
             expect(state).not.toBe("stable")
             expect(state).not.toBe("thriving")
             // Expect degradation
             expect(["strained", "calm", "attention"]).toContain(state) // inclusive check
 
-            const text = narrateSnapshot(facts, state).text.toLowerCase()
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const text = narrateSnapshot(facts as any, state).text.toLowerCase()
             expect(text).not.toContain("stabile")
             expect(text).not.toContain("ottimo")
         })
 
         it("KPI Balance: Should be ATTENTION (not Good)", () => {
-            const facts: unknown = {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const facts: any = {
                 kpiId: "balance",
                 valueFormatted: "€30",
                 tone: "positive", // Input tone might be positive, but derivation must downgrade
@@ -104,12 +106,14 @@ describe("Global Semantic Anti-Regression", () => {
                 incomeCents: income,
                 elapsedRatio: 0.5 // satisfy B2 (pacing required)
             }
-            const state = deriveSnapshotState(facts)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const state = deriveSnapshotState(facts as any)
             expect(["stable", "thriving"]).toContain(state)
         })
 
         it("KPI Balance: Should be GOOD", () => {
-            const facts: unknown = {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const facts: any = {
                 kpiId: "balance",
                 valueFormatted: "€60",
                 tone: "positive",
@@ -131,7 +135,8 @@ describe("Global Semantic Anti-Regression", () => {
                 balanceCents: 1000,
                 incomeCents: 0 // Missing/Zero
             }
-            const state = deriveSnapshotState(facts)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const state = deriveSnapshotState(facts as any)
             expect(state).toBe("calm")
             expect(state).not.toBe("stable")
         })
@@ -148,10 +153,12 @@ describe("Global Semantic Anti-Regression", () => {
                 balanceCents: 10000, incomeCents: 100000,
                 utilizationPercent: 5, elapsedRatio: 0.1 // day 3/30
             }
-            const state = deriveSnapshotState(facts)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const state = deriveSnapshotState(facts as any)
             expect(state).toBe("early_uncertain")
 
-            const narration = narrateSnapshot(facts, state)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const narration = narrateSnapshot(facts as any, state)
             expect(narration.text).toContain("iniziato")
         })
 
@@ -161,10 +168,12 @@ describe("Global Semantic Anti-Regression", () => {
                 balanceCents: 50000, incomeCents: 100000,
                 utilizationPercent: 60, elapsedRatio: 0.4 // spent 60% in 40% time
             }
-            const state = deriveSnapshotState(facts)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const state = deriveSnapshotState(facts as any)
             expect(state).toBe("at_risk")
 
-            const narration = narrateSnapshot(facts, state)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const narration = narrateSnapshot(facts as any, state)
             const text = narration.text.toLowerCase()
             expect(text.match(/inferiore|ritmo|proiezione|elevato/)).toBeTruthy()
         })
@@ -176,10 +185,12 @@ describe("Global Semantic Anti-Regression", () => {
                 utilizationPercent: 50, elapsedRatio: 0.4,
                 isProjectedOverrun: true
             }
-            const state = deriveSnapshotState(facts)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const state = deriveSnapshotState(facts as any)
             expect(state).toBe("at_risk")
 
-            const narration = narrateSnapshot(facts, state)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const narration = narrateSnapshot(facts as any, state)
             expect(narration.text).toContain("proiezione")
         })
 
@@ -189,10 +200,12 @@ describe("Global Semantic Anti-Regression", () => {
                 balanceCents: -500, incomeCents: 100000,
                 utilizationPercent: 110, elapsedRatio: 0.9
             }
-            const state = deriveSnapshotState(facts)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const state = deriveSnapshotState(facts as any)
             expect(state).toBe("critical")
 
-            const narration = narrateSnapshot(facts, state)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const narration = narrateSnapshot(facts as any, state)
             expect(narration.text).toContain("superato")
         })
 
@@ -202,10 +215,12 @@ describe("Global Semantic Anti-Regression", () => {
                 balanceCents: 0, incomeCents: 0,
                 isDataIncomplete: true
             }
-            const state = deriveSnapshotState(facts)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const state = deriveSnapshotState(facts as any)
             expect(state).toBe("calm")
 
-            const narration = narrateSnapshot(facts, state)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const narration = narrateSnapshot(facts as any, state)
             expect(narration.text).toContain("limitati")
         })
     })

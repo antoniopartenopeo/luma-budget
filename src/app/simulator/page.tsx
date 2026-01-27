@@ -1,9 +1,7 @@
-
 "use client"
 
 import { useState, useMemo } from "react"
 import { PageHeader } from "@/components/ui/page-header"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"

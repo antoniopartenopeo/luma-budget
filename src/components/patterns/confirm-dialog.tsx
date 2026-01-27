@@ -54,7 +54,7 @@ export function ConfirmDialog({
                         {cancelLabel}
                     </AlertDialogCancel>
                     <AlertDialogAction
-                        onClick={(e) => {
+                        onClick={() => {
                             // Prevent auto-closing if isLoading is managed by parent, 
                             // but usually onConfirm triggers usage of isLoading.
                             // If we want to prevent closing we might need to handle it.

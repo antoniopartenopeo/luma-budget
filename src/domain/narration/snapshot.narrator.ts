@@ -24,7 +24,7 @@ import { NarrationResult, SnapshotFacts, SnapshotState } from "./types"
 export function narrateSnapshot(
     facts: SnapshotFacts,
     state: SnapshotState,
-    locale: string = "it-IT"
+    _locale: string = "it-IT"
 ): NarrationResult {
     switch (state) {
         case "thriving":
@@ -65,7 +65,7 @@ function narrateThriving(facts: SnapshotFacts): NarrationResult {
     }
 }
 
-function narrateStable(facts: SnapshotFacts): NarrationResult {
+function narrateStable(_facts: SnapshotFacts): NarrationResult {
     return {
         text: "La situazione è in equilibrio. Non si rilevano anomalie o scostamenti significativi rispetto ai piani.",
         shortText: "Situazione stabile"
@@ -130,7 +130,7 @@ function narrateAtRisk(facts: SnapshotFacts): NarrationResult {
     }
 }
 
-function narrateEarlyUncertain(facts: SnapshotFacts): NarrationResult {
+function narrateEarlyUncertain(_facts: SnapshotFacts): NarrationResult {
     return {
         text: "Il mese è appena iniziato. I dati attuali non sono ancora sufficienti per una proiezione affidabile dell'andamento.",
         shortText: "Analisi in corso"
@@ -153,7 +153,7 @@ function narrateCritical(facts: SnapshotFacts): NarrationResult {
     }
 }
 
-function narrateCalm(facts: SnapshotFacts): NarrationResult {
+function narrateCalm(_facts: SnapshotFacts): NarrationResult {
     return {
         text: "Il mese è nelle fasi iniziali o i dati sono ancora limitati per elaborare un'analisi dettagliata.",
         shortText: "Dati iniziali"

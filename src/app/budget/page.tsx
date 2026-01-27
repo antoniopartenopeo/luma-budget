@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react"
 import { AlertCircle } from "lucide-react"
-import { motion } from "framer-motion"
 import { useBudget, useUpsertBudget } from "@/features/budget/api/use-budget"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
 import { useCategories } from "@/features/categories/api/use-categories"

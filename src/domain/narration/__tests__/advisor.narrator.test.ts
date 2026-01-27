@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { narrateAdvisor } from "../advisor.narrator"
-import { AdvisorFacts, AdvisorState } from "../types"
+import { AdvisorFacts } from "../types"
 
 // Helper to create facts
 const createFacts = (delta: number, income: number = 500000): AdvisorFacts => ({

@@ -1,8 +1,8 @@
 "use client"
 
 import { useMemo } from "react"
-import { MacroSection } from "@/components/patterns/macro-section"
-import { Skeleton } from "@/components/ui/skeleton"
+import { PremiumChartSection } from "@/features/dashboard/components/charts/premium-chart-section"
+import { useSettings } from "@/features/settings/api/use-settings"
 import { EChartsWrapper } from "@/features/dashboard/components/charts/echarts-wrapper"
 import { useTrendData } from "../use-trend-data"
 import { useOrchestratedInsights } from "../use-orchestrated-insights"
@@ -12,9 +12,12 @@ import { narrateTrend, deriveTrendState, type TrendFacts } from "@/domain/narrat
 import { BarChart3 } from "lucide-react"
 import type { EChartsOption } from "echarts"
 
+
 export function TrendAnalysisCard() {
     const { data, isLoading } = useTrendData()
     const { currency, locale } = useCurrency()
+    const { data: settings } = useSettings()
+    const isDarkMode = settings?.theme === "dark" || (settings?.theme === "system" && typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches)
 
     // Phase 6: Get Orchestration Context to prevent tone-deafness
     const { orchestration } = useOrchestratedInsights()
@@ -44,40 +47,39 @@ export function TrendAnalysisCard() {
     }, [data, context])
 
     const option: EChartsOption = useMemo(() => {
-        // ... (existing option logic remains same)
         if (!data.length) return {}
 
         return {
             tooltip: {
                 trigger: "axis",
-                axisPointer: { type: "cross" },
-                backgroundColor: "rgba(255, 255, 255, 0.98)",
-                borderColor: "#f1f5f9",
+                axisPointer: { type: "cross", label: { backgroundColor: '#6a7985' } },
+                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                borderColor: 'rgba(255, 255, 255, 0.1)',
                 borderWidth: 1,
                 padding: [12, 16],
-                textStyle: { color: "#1e293b", fontSize: 13 },
-                extraCssText: "box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border-radius: 12px;",
+                textStyle: { color: '#f8fafc', fontSize: 13 },
+                extraCssText: "box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.25); border-radius: 12px; backdrop-filter: blur(8px);",
                 formatter: (params: unknown) => {
                     const p = params as { name: string, value: number, dataIndex: number, color: string }[]
                     const [income, expenses] = p
                     const index = income.dataIndex
                     const sRate = data[index].savingsRateLabel
                     return `
-            <div style="font-weight: 700; font-size: 14px; margin-bottom: 8px; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px;">
+            <div style="font-weight: 700; font-size: 14px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; color: #f8fafc;">
               ${income.name}
             </div>
             <div style="display: flex; flex-direction: column; gap: 4px;">
               <div style="display: flex; justify-content: space-between; gap: 24px;">
-                <span style="color: #64748b;">Entrate:</span>
-                <span style="font-weight: 700; color: #10b981;">${formatEuroNumber(income.value, currency, locale)}</span>
+                <span style="color: #94a3b8; font-size: 12px;">Entrate</span>
+                <span style="font-weight: 700; color: #34d399; font-size: 13px;">${formatEuroNumber(income.value, currency, locale)}</span>
               </div>
               <div style="display: flex; justify-content: space-between; gap: 24px;">
-                <span style="color: #64748b;">Uscite:</span>
-                <span style="font-weight: 700; color: #f43f5e;">${formatEuroNumber(expenses.value, currency, locale)}</span>
+                <span style="color: #94a3b8; font-size: 12px;">Uscite</span>
+                <span style="font-weight: 700; color: #f87171; font-size: 13px;">${formatEuroNumber(expenses.value, currency, locale)}</span>
               </div>
-              <div style="display: flex; justify-content: space-between; gap: 24px; margin-top: 4px; padding-top: 4px; border-top: 1px dashed #f1f5f9;">
-                <span style="color: #64748b;">Risparmio:</span>
-                <span style="font-weight: 700; color: #3b82f6;">${sRate}</span>
+              <div style="display: flex; justify-content: space-between; gap: 24px; margin-top: 4px; padding-top: 4px; border-top: 1px dashed rgba(255,255,255,0.1);">
+                <span style="color: #94a3b8; font-size: 12px;">Risparmio</span>
+                <span style="font-weight: 700; color: #60a5fa; font-size: 13px;">${sRate}</span>
               </div>
             </div>
           `
@@ -88,7 +90,12 @@ export function TrendAnalysisCard() {
                 bottom: 0,
                 itemWidth: 10,
                 itemHeight: 10,
-                textStyle: { color: "#64748b", fontSize: 12 }
+                textStyle: {
+                    color: isDarkMode ? "#94a3b8" : "#64748b",
+                    fontSize: 12,
+                    fontWeight: 600
+                },
+                itemGap: 24
             },
             grid: {
                 left: "3%",
@@ -101,15 +108,27 @@ export function TrendAnalysisCard() {
                 type: "category",
                 boundaryGap: false,
                 data: data.map(d => d.month),
-                axisLine: { lineStyle: { color: "#f1f5f9" } },
-                axisLabel: { color: "#94a3b8", fontSize: 11 }
+                axisLine: { lineStyle: { color: isDarkMode ? "#334155" : "#e2e8f0" } },
+                axisLabel: {
+                    color: isDarkMode ? "#94a3b8" : "#64748b",
+                    fontSize: 11,
+                    fontWeight: 600
+                },
+                axisTick: { show: false }
             },
             yAxis: {
                 type: "value",
-                splitLine: { lineStyle: { type: "dashed", color: "#f8fafc" } },
+                splitLine: {
+                    lineStyle: {
+                        type: "dashed",
+                        color: isDarkMode ? "#334155" : "#e2e8f0",
+                        opacity: 0.5
+                    }
+                },
                 axisLabel: {
-                    color: "#cbd5e1",
+                    color: isDarkMode ? "#64748b" : "#94a3b8",
                     fontSize: 10,
+                    fontWeight: 600,
                     formatter: (value: number) => value >= 1000 ? `${(value / 1000).toFixed(0)}k` : value.toString()
                 }
             },
@@ -119,18 +138,28 @@ export function TrendAnalysisCard() {
                     type: "line",
                     smooth: true,
                     showSymbol: false,
+                    symbolSize: 8,
                     areaStyle: {
                         color: {
                             type: "linear",
                             x: 0, y: 0, x2: 0, y2: 1,
                             colorStops: [
-                                { offset: 0, color: "rgba(16, 185, 129, 0.2)" },
+                                { offset: 0, color: "rgba(16, 185, 129, 0.25)" },
                                 { offset: 1, color: "rgba(16, 185, 129, 0)" }
                             ]
                         }
                     },
-                    itemStyle: { color: "#10b981" },
-                    lineStyle: { width: 3 },
+                    itemStyle: {
+                        color: "#10b981",
+                        shadowBlur: 10,
+                        shadowColor: "rgba(16, 185, 129, 0.4)"
+                    },
+                    lineStyle: {
+                        width: 3,
+                        shadowBlur: 10,
+                        shadowColor: "rgba(16, 185, 129, 0.2)",
+                        shadowOffsetY: 5
+                    },
                     data: data.map(d => d.income)
                 },
                 {
@@ -138,76 +167,44 @@ export function TrendAnalysisCard() {
                     type: "line",
                     smooth: true,
                     showSymbol: false,
+                    symbolSize: 8,
                     areaStyle: {
                         color: {
                             type: "linear",
                             x: 0, y: 0, x2: 0, y2: 1,
                             colorStops: [
-                                { offset: 0, color: "rgba(244, 63, 94, 0.15)" },
+                                { offset: 0, color: "rgba(244, 63, 94, 0.25)" },
                                 { offset: 1, color: "rgba(244, 63, 94, 0)" }
                             ]
                         }
                     },
-                    itemStyle: { color: "#f43f5e" },
-                    lineStyle: { width: 3 },
+                    itemStyle: {
+                        color: "#f43f5e",
+                        shadowBlur: 10,
+                        shadowColor: "rgba(244, 63, 94, 0.4)"
+                    },
+                    lineStyle: {
+                        width: 3,
+                        shadowBlur: 10,
+                        shadowColor: "rgba(244, 63, 94, 0.2)",
+                        shadowOffsetY: 5
+                    },
                     data: data.map(d => d.expenses)
                 }
             ]
         }
-    }, [data, currency, locale])
+    }, [data, currency, locale, isDarkMode])
 
-    if (isLoading) {
-        return (
-            <div className="space-y-4">
-                <div className="px-1 space-y-1">
-                    <Skeleton className="h-6 w-48 mb-2" />
-                    <Skeleton className="h-4 w-64" />
-                </div>
-                <div className="rounded-[2.5rem] border border-border/40 bg-card/20 p-6 md:p-8">
-                    <div className="h-[350px]">
-                        <Skeleton className="h-full w-full rounded-2xl" />
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
-    if (!data.length) {
-        return (
-            <div className="space-y-4">
-                <div className="px-1 space-y-1">
-                    <h3 className="text-xl font-bold tracking-tight text-foreground/90">Velocità Finanziaria (12 Mesi)</h3>
-                    <p className="text-sm text-muted-foreground font-medium">Confronto tra entrate e uscite storiche</p>
-                </div>
-                <div className="rounded-[2.5rem] border border-border/40 bg-card/20 p-6 md:p-8">
-                    <div className="h-[350px] flex items-center justify-center text-center p-8">
-                        <div className="max-w-[280px] space-y-2">
-                            <div className="bg-muted/30 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <BarChart3 className="h-6 w-6 text-muted-foreground" />
-                            </div>
-                            <h3 className="font-semibold">Dati insufficienti</h3>
-                            <p className="text-sm text-muted-foreground">
-                                Non ci sono abbastanza transazioni negli ultimi 12 mesi per generare il grafico.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
+    // Pass using standard props pattern for PremiumChartSection
     return (
-        <div className="space-y-4">
-            <div className="px-1 space-y-1">
-                <h3 className="text-xl font-bold tracking-tight text-foreground/90">Velocità Finanziaria (12 Mesi)</h3>
-                <p className="text-sm text-muted-foreground font-medium">{trendNarration || "Confronto tra entrate e uscite storiche"}</p>
-            </div>
-
-            <div className="rounded-[2.5rem] border border-border/40 bg-card/20 p-6 md:p-8">
-                <div className="h-[350px] w-full">
-                    <EChartsWrapper option={option} />
-                </div>
-            </div>
-        </div>
+        <PremiumChartSection
+            title="Velocità Finanziaria (12 Mesi)"
+            description={trendNarration || "Confronto tra entrate e uscite storiche"}
+            option={option}
+            isLoading={isLoading}
+            hasData={data.length > 0}
+            chartHeight={400} // Custom height for line chart
+            backgroundType="cartesian"
+        />
     )
 }

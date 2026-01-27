@@ -148,7 +148,7 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
                         padding: [0, -35],
                         formatter: (params: unknown) => {
                             const p = params as EChartsPieParam
-                            return `{name|${p.name.toUpperCase()}}\\n{value|${formatCents(p.value, currency, locale)}}\\n{percent|${p.percent}%}`
+                            return `{name|${p.name.toUpperCase()}}\n{value|${formatCents(p.value, currency, locale)}}\n{percent|${p.percent}%}`
                         },
                         rich: {
                             name: {

@@ -1,5 +1,5 @@
 import { Transaction, TransactionType } from "./types"
-import { formatSignedCents, parseCurrencyToCents } from "@/domain/money/currency"
+import { formatSignedCents } from "@/domain/money/currency"
 import { getCategoryById } from "@/domain/categories/utils"
 import { migrateCategoryId } from "@/domain/categories/migration"
 

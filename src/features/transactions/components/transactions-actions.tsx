@@ -1,13 +1,12 @@
 "use client"
 
-import { Download, FileSpreadsheet, MoreHorizontal, Plus, Loader2 } from "lucide-react"
+import { Download, MoreHorizontal, Plus, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { CsvImportWizard } from "@/features/import-csv/components/csv-import-wizard"

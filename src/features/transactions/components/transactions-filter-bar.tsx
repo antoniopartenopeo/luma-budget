@@ -71,84 +71,88 @@ export function TransactionsFilterBar({
                 </div>
 
                 {/* Zone 2: Filters */}
-                <div className="grid grid-cols-2 sm:flex sm:flex-wrap lg:flex-nowrap items-center gap-2 overflow-visible">
+                <div className="grid grid-cols-1 xs:grid-cols-2 sm:flex sm:flex-wrap lg:flex-nowrap items-center gap-2 overflow-visible">
                     {/* Period */}
-                    <Select value={periodValue} onValueChange={(v) => onPeriodChange(v as PeriodPreset)}>
-                        <SelectTrigger className={cn(
-                            "w-full sm:w-[150px] lg:w-[164px] flex-shrink-0 h-10 px-3 md:px-4 rounded-xl border-muted-foreground/10 transition-colors outline-none",
-                            periodValue !== "all" ? "bg-primary/10 border-primary/30 text-primary font-bold" : "bg-muted/5 hover:bg-muted/10"
-                        )}>
-                            <div className="flex items-center gap-2 flex-1 min-w-0">
-                                <Calendar className="h-3.5 w-3.5 opacity-70 shrink-0 hidden xs:block" />
-                                <div className="truncate text-left text-xs md:text-sm">
-                                    <SelectValue placeholder="Periodo" />
+                    <div className="glass-card p-1 rounded-xl">
+                        <Select value={periodValue} onValueChange={(v) => onPeriodChange(v as PeriodPreset)}>
+                            <SelectTrigger className={cn(
+                                "w-full sm:w-[140px] lg:w-[150px] flex-shrink-0 h-9 px-3 border-0 bg-transparent shadow-none focus:ring-0 transition-colors outline-none text-xs md:text-sm font-medium",
+                                periodValue !== "all" ? "text-primary font-bold" : "text-muted-foreground"
+                            )}>
+                                <div className="flex items-center gap-2 flex-1 min-w-0">
+                                    <div className="truncate text-left uppercase tracking-wide">
+                                        <SelectValue placeholder="Periodo" />
+                                    </div>
                                 </div>
-                            </div>
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl border-muted-foreground/10">
-                            <SelectItem value="all">Tutto il tempo</SelectItem>
-                            <SelectItem value="1m">Ultimo mese</SelectItem>
-                            <SelectItem value="3m">Ultimi 3 mesi</SelectItem>
-                            <SelectItem value="6m">Ultimi 6 mesi</SelectItem>
-                            <SelectItem value="1y">Ultimo anno</SelectItem>
-                            <Separator className="my-1 opacity-50" />
-                            <SelectItem value="custom">Periodo personalizzato</SelectItem>
-                        </SelectContent>
-                    </Select>
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-white/5 backdrop-blur-xl bg-white/80 dark:bg-slate-950/80">
+                                <SelectItem value="all">Tutto il tempo</SelectItem>
+                                <SelectItem value="1m">Ultimo mese</SelectItem>
+                                <SelectItem value="3m">Ultimi 3 mesi</SelectItem>
+                                <SelectItem value="6m">Ultimi 6 mesi</SelectItem>
+                                <SelectItem value="1y">Ultimo anno</SelectItem>
+                                <Separator className="my-1 opacity-50" />
+                                <SelectItem value="custom">Periodo personalizzato</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
 
                     {/* Type */}
-                    <Select value={typeValue} onValueChange={onTypeChange}>
-                        <SelectTrigger className={cn(
-                            "w-full sm:w-[150px] lg:w-[164px] flex-shrink-0 h-10 px-3 md:px-4 rounded-xl border-muted-foreground/10 transition-colors outline-none",
-                            typeValue !== "all" ? "bg-primary/10 border-primary/30 text-primary font-bold" : "bg-muted/5 hover:bg-muted/10"
-                        )}>
-                            <div className="flex items-center gap-2 flex-1 min-w-0">
-                                <Filter className="h-3.5 w-3.5 opacity-70 shrink-0 hidden xs:block" />
-                                <div className="truncate text-left text-xs md:text-sm">
-                                    <SelectValue placeholder="Tipo" />
+                    <div className="glass-card p-1 rounded-xl">
+                        <Select value={typeValue} onValueChange={onTypeChange}>
+                            <SelectTrigger className={cn(
+                                "w-full sm:w-[120px] lg:w-[130px] flex-shrink-0 h-9 px-3 border-0 bg-transparent shadow-none focus:ring-0 transition-colors outline-none text-xs md:text-sm font-medium",
+                                typeValue !== "all" ? "text-primary font-bold" : "text-muted-foreground"
+                            )}>
+                                <div className="flex items-center gap-2 flex-1 min-w-0">
+                                    <div className="truncate text-left uppercase tracking-wide">
+                                        <SelectValue placeholder="Tipo" />
+                                    </div>
                                 </div>
-                            </div>
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl border-muted-foreground/10">
-                            <SelectItem value="all">Tutti i tipi</SelectItem>
-                            <SelectItem value="income">Entrate</SelectItem>
-                            <SelectItem value="expense">Uscite</SelectItem>
-                            <Separator className="my-1 opacity-50" />
-                            <SelectItem value="superfluous">Superflue</SelectItem>
-                        </SelectContent>
-                    </Select>
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-white/5 backdrop-blur-xl bg-white/80 dark:bg-slate-950/80">
+                                <SelectItem value="all">Tutti i tipi</SelectItem>
+                                <SelectItem value="income">Entrate</SelectItem>
+                                <SelectItem value="expense">Uscite</SelectItem>
+                                <Separator className="my-1 opacity-50" />
+                                <SelectItem value="superfluous">Superflue</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
 
                     {/* Category */}
-                    <Select value={categoryValue} onValueChange={onCategoryChange}>
-                        <SelectTrigger className={cn(
-                            "w-full sm:w-[150px] lg:w-[164px] flex-shrink-0 h-10 px-3 md:px-4 rounded-xl border-muted-foreground/10 transition-colors outline-none",
-                            categoryValue !== "all" ? "bg-primary/10 border-primary/30 text-primary font-bold" : "bg-muted/5 hover:bg-muted/10"
-                        )}>
-                            <div className="flex items-center gap-2 flex-1 min-w-0">
-                                <div className="truncate text-left text-xs md:text-sm">
-                                    <SelectValue placeholder="Categoria" />
-                                </div>
-                            </div>
-                        </SelectTrigger>
-                        <SelectContent className="max-h-[300px] rounded-xl border-muted-foreground/10">
-                            <SelectItem value="all">Tutte le categorie</SelectItem>
-                            {allGroupedCategories.map((group) => (
-                                <div key={group.key}>
-                                    <div className="px-2 py-1.5 text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest mt-2">
-                                        {group.label}
+                    <div className="glass-card p-1 rounded-xl">
+                        <Select value={categoryValue} onValueChange={onCategoryChange}>
+                            <SelectTrigger className={cn(
+                                "w-full sm:w-[140px] lg:w-[150px] flex-shrink-0 h-9 px-3 border-0 bg-transparent shadow-none focus:ring-0 transition-colors outline-none text-xs md:text-sm font-medium",
+                                categoryValue !== "all" ? "text-primary font-bold" : "text-muted-foreground"
+                            )}>
+                                <div className="flex items-center gap-2 flex-1 min-w-0">
+                                    <div className="truncate text-left uppercase tracking-wide">
+                                        <SelectValue placeholder="Categoria" />
                                     </div>
-                                    {group.categories.map((category) => (
-                                        <SelectItem key={category.id} value={category.id} className="rounded-lg">
-                                            <div className="flex items-center gap-2">
-                                                <CategoryIcon categoryName={category.label} size={14} />
-                                                <span>{category.label}</span>
-                                            </div>
-                                        </SelectItem>
-                                    ))}
                                 </div>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                            </SelectTrigger>
+                            <SelectContent className="max-h-[300px] rounded-xl border-white/5 backdrop-blur-xl bg-white/80 dark:bg-slate-950/80">
+                                <SelectItem value="all">Tutte le categorie</SelectItem>
+                                {allGroupedCategories.map((group) => (
+                                    <div key={group.key}>
+                                        <div className="px-2 py-1.5 text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest mt-2">
+                                            {group.label}
+                                        </div>
+                                        {group.categories.map((category) => (
+                                            <SelectItem key={category.id} value={category.id} className="rounded-lg">
+                                                <div className="flex items-center gap-2">
+                                                    <CategoryIcon categoryName={category.label} size={14} />
+                                                    <span>{category.label}</span>
+                                                </div>
+                                            </SelectItem>
+                                        ))}
+                                    </div>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
 
 
                     {hasActiveFilters && onResetFilters && (

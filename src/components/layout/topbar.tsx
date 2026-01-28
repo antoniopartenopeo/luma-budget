@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Menu } from "lucide-react"
+import { cn } from "@/lib/utils"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { QuickExpenseInput } from "@/features/transactions/components/quick-expense-input"
@@ -17,6 +18,7 @@ export function TopBar() {
     const pathname = usePathname()
     const isSettingsPage = pathname === "/settings"
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const [isQuickAddOpen, setIsQuickAddOpen] = useState(false)
 
     return (
         <header className="sticky top-0 z-30 glass-chrome">
@@ -41,21 +43,45 @@ export function TopBar() {
                     </div>
 
                     {!isSettingsPage && (
-                        <div className="flex-1 max-w-2xl hidden sm:block">
-                            <QuickExpenseInput />
-                        </div>
+                        <>
+                            {/* Desktop Quick Expense */}
+                            <div className="flex-1 max-w-2xl hidden sm:block">
+                                <QuickExpenseInput />
+                            </div>
+                        </>
                     )}
 
                     <div className="flex items-center gap-3 shrink-0">
+                        {/* Mobile Toggle Button */}
+                        {!isSettingsPage && (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="sm:hidden -mr-2"
+                                onClick={() => setIsQuickAddOpen(!isQuickAddOpen)}
+                            >
+                                <div className={cn(
+                                    "transition-transform duration-300",
+                                    isQuickAddOpen ? "rotate-45 text-primary" : "rotate-0"
+                                )}>
+                                    <span className="text-2xl font-light leading-none">+</span>
+                                </div>
+                            </Button>
+                        )}
                         <FlashOverlay />
                     </div>
                 </div>
 
-                {/* Mobile QuickAdd - Revealed on mobile scroll/header */}
+                {/* Mobile QuickAdd - Revealed on toggle */}
                 {!isSettingsPage && (
-                    <div className="sm:hidden px-4 pb-4 flex justify-center border-t pt-4">
-                        <div className="w-full max-w-md">
-                            <QuickExpenseInput />
+                    <div className={cn(
+                        "sm:hidden overflow-hidden transition-all duration-300 ease-in-out",
+                        isQuickAddOpen ? "max-h-96 opacity-100 pb-4" : "max-h-0 opacity-0"
+                    )}>
+                        <div className="px-4 flex justify-center border-t pt-4">
+                            <div className="w-full max-w-md">
+                                <QuickExpenseInput onExpenseCreated={() => setIsQuickAddOpen(false)} />
+                            </div>
                         </div>
                     </div>
                 )}

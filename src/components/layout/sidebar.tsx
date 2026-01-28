@@ -55,10 +55,10 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
                       "w-full justify-start gap-3 px-4 py-6 text-sm font-medium transition-all relative overflow-hidden",
                       isActive
                         ? "bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary rounded-xl"
-                        : "text-muted-foreground hover:bg-white/50 dark:hover:bg-white/5 hover:text-foreground rounded-xl"
+                        : "text-foreground/75 hover:bg-white/50 dark:hover:bg-white/5 hover:text-foreground rounded-xl"
                     )}
                   >
-                    <item.icon className={cn("h-4 w-4", isActive ? "text-primary" : "text-muted-foreground")} />
+                    <item.icon className={cn("h-4 w-4", isActive ? "text-primary" : "text-foreground/75")} />
                     <span className="flex-1 text-left">{item.label}</span>
                     {isActive && (
                       <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full" />

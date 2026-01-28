@@ -74,8 +74,8 @@ export function MacroSection({
                 )}
 
                 {(title || description || headerActions) && (
-                    <CardHeader className="relative z-10 px-8 pt-8 pb-2">
-                        <div className="flex items-center justify-between">
+                    <CardHeader className="relative z-10 px-6 sm:px-8 pt-6 sm:pt-8 pb-2">
+                        <div className="flex flex-wrap items-center justify-between gap-4">
                             <div className="space-y-1">
                                 {title && (
                                     <div className={cn(
@@ -91,7 +91,7 @@ export function MacroSection({
                                     </div>
                                 )}
                             </div>
-                            {headerActions && <div>{headerActions}</div>}
+                            {headerActions && <div className="min-w-0 shrink-0">{headerActions}</div>}
                         </div>
                     </CardHeader>
                 )}

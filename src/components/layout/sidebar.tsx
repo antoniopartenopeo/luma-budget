@@ -30,7 +30,7 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
 
   return (
     <aside className={cn(
-      "flex h-full w-full flex-col border-r border-white/20 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl text-foreground transition-all duration-300",
+      "flex h-full w-full flex-col glass-chrome text-foreground transition-all duration-300",
       className
     )}>
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">

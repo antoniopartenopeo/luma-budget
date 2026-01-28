@@ -131,7 +131,7 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
-                className="relative w-full max-w-md overflow-hidden rounded-[2rem] glass-panel shadow-[0_32px_64px_-16px_rgba(0,0,0,0.15)] ring-1 ring-black/5 dark:ring-white/10 flex flex-col p-6"
+                className="relative w-full max-w-md overflow-hidden rounded-[2rem] glass-chrome drop-shadow-2xl flex flex-col p-6"
             >
                 {/* Visual Glass Reflection Accent */}
                 <div className="absolute inset-0 bg-gradient-to-br from-white/40 dark:from-white/5 to-transparent pointer-events-none" />

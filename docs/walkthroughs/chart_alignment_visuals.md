@@ -35,9 +35,36 @@ Abbiamo esteso lo standard a **TUTTA** l'applicazione:
 *   **Transactions**: Filtri, input rapidi e entry pagina usano `enter-up`.
 *   **Budget**: Card ed Empty State usano `enter-up`.
 *   **Import Wizard**: Tutti gli step usano `enter-up`.
-*   **Settings**: I tab usano `enter-up`.
 
-> **Stato:** Legacy Animations (fade-in standard) eliminate al 100%.
+---
+
+## 📐 L-Shape Frame Layout (Soft Corner)
+
+Rispondendo al feedback visuale (freccia gialla + sticky header), abbiamo implementato il layout "L-Shape Frame":
+
+1.  **Frame Unificato**: Sidebar (Sx) e Topbar (Top) formano una "L" continua su sfondo scuro/trasparente.
+2.  **Pagina Card**: Il contenuto principale è un "Panel" bianco che inizia **sotto** l'header.
+3.  **Sticky Header**: La Topbar rimane fissa in alto, separata geometricamente dal contenuto.
+4.  **Soft Corner**: L'angolo in alto a sinistra della pagina (sotto l'header) ha una curva `rounded-tl-[40px]`, creando la connessione morbida tra frame e contenuto.
+
+### 🔮 Liquid Glass (VisionOS Material)
+Abbiamo elevato il materiale della cornice allo standard "Liquid Glass":
+*   **Ultra-Transparency**: Opacità ridotta al 30% (`white/40` -> `white/20`) per rivelare lo sfondo.
+*   **Specular Edge Only**: Mantenuto SOLO il riflesso superiore (`inset 0 1px 0 0`) per evitare bagliori sui lati verticali.
+*   **Seamless Union**: Rimossa l'ombra volumetrica interna che evidenziava la giuntura Sidebar-Topbar.
+
+### ⚡️ Flash Card Parity
+Allineato anche il componente `FlashSummary` allo stesso standard:
+*   Usa `.glass-chrome` per il materiale fisico (match 100% con Sidebar).
+*   Usa `drop-shadow-2xl` per galleggiare sopra l'interfaccia.
+
+### 🌌 Deep Space Unification
+Unificato lo sfondo dell'intera app per eliminare il "Grigio intermedio":
+*   **AppShell**: Ora usa `bg-background` (Nero profondo) invece di `bg-sidebar`.
+*   **Glass**: Opacità ridotta al minimo (`white/5`).
+*   **Risultato**: Sidebar e Topbar galleggiano sullo stesso spazio profondo del contenuto (Zero "sandwich" effect).
+
+> **Risultato:** Cornice monolitica senza linee di giunzione visibili.
 
 ---
 

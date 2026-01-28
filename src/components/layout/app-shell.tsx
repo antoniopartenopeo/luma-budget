@@ -7,17 +7,17 @@ interface AppShellProps {
 
 export function AppShell({ children }: AppShellProps) {
     return (
-        <div className="min-h-screen bg-[#F8F9FA] dark:bg-black selection:bg-primary/20">
+        <div className="min-h-screen bg-background selection:bg-primary/20">
             {/* Ambient Background Mesh */}
             <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
                 <div className="absolute top-0 left-[10%] w-[1000px] h-[1000px] bg-indigo-50/80 dark:bg-indigo-950/10 rounded-full blur-[120px] mix-blend-multiply dark:mix-blend-screen opacity-70" />
                 <div className="absolute bottom-0 right-[10%] w-[800px] h-[800px] bg-teal-50/80 dark:bg-teal-950/10 rounded-full blur-[100px] mix-blend-multiply dark:mix-blend-screen opacity-70" />
             </div>
 
-            <Sidebar className="fixed left-0 top-0 z-40 hidden h-screen w-64 border-r lg:block" />
-            <div className="lg:pl-64">
+            <Sidebar className="fixed left-0 top-0 z-40 hidden h-screen w-64 lg:block" />
+            <div className="lg:ml-64 min-h-screen transition-all duration-300 relative">
                 <TopBar />
-                <main className="container mx-auto max-w-7xl p-4 md:p-8 space-y-8">
+                <main className="container mx-auto max-w-7xl p-4 md:p-8 space-y-8 bg-background rounded-tl-[2.5rem] shadow-2xl min-h-[calc(100vh-80px)] border-t border-l border-white/5">
                     {children}
                 </main>
             </div>

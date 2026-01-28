@@ -33,6 +33,8 @@ import { formatTransactionDate } from "@/features/transactions/utils/format-date
 import { formatSignedCents } from "@/domain/money/currency"
 import { getSignedCents } from "@/domain/transactions"
 import { SortField, SortOrder } from "../utils/transactions-logic"
+import { usePrivacyStore } from "@/features/privacy/privacy.store"
+import { getPrivacyClass } from "@/features/privacy/privacy-utils"
 
 interface TransactionsTableProps {
     transactions: Transaction[]
@@ -72,6 +74,7 @@ export function TransactionsTable({
     totalPages,
     onPageChange
 }: TransactionsTableProps) {
+    const { isPrivacyMode } = usePrivacyStore()
 
     return (
         <div className="space-y-4">
@@ -187,7 +190,8 @@ export function TransactionsTable({
                                 <TableCell
                                     className={cn(
                                         "text-right font-black tabular-nums text-base",
-                                        transaction.type === "income" ? "text-success" : "text-destructive"
+                                        transaction.type === "income" ? "text-success" : "text-destructive",
+                                        getPrivacyClass(isPrivacyMode)
                                     )}
                                 >
                                     {formatSignedCents(getSignedCents(transaction))}
@@ -261,7 +265,8 @@ export function TransactionsTable({
                             <div
                                 className={cn(
                                     "text-xl font-black tabular-nums tracking-tighter",
-                                    transaction.type === "income" ? "text-success" : "text-destructive"
+                                    transaction.type === "income" ? "text-success" : "text-destructive",
+                                    getPrivacyClass(isPrivacyMode)
                                 )}
                             >
                                 {formatSignedCents(getSignedCents(transaction))}

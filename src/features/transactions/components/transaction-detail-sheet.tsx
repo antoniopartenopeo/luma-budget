@@ -17,6 +17,8 @@ import { useUpdateTransaction, useDeleteTransaction } from "@/features/transacti
 import { formatSignedCents } from "@/domain/money/currency";
 import { getSignedCents } from "@/domain/transactions";
 import { ConfirmDialog } from "@/components/patterns/confirm-dialog";
+import { usePrivacyStore } from "@/features/privacy/privacy.store";
+import { getPrivacyClass } from "@/features/privacy/privacy-utils";
 
 interface TransactionDetailSheetProps {
     transaction: Transaction | null;
@@ -65,6 +67,7 @@ function TransactionDetailSheetContent({
     const [isDirty, setIsDirty] = useState(false);
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const { isPrivacyMode } = usePrivacyStore();
 
     const { mutate: updateTransaction, isPending: isUpdating } = useUpdateTransaction();
     const { mutate: deleteTransaction, isPending: isDeleting } = useDeleteTransaction();
@@ -162,7 +165,8 @@ function TransactionDetailSheetContent({
                                 </span>
                                 <div className={cn(
                                     "text-5xl font-black tabular-nums tracking-tighter",
-                                    transaction.type === "income" ? "text-emerald-600" : "text-foreground"
+                                    transaction.type === "income" ? "text-emerald-600" : "text-foreground",
+                                    getPrivacyClass(isPrivacyMode)
                                 )}>
                                     {formatSignedCents(getSignedCents(transaction))}
                                 </div>

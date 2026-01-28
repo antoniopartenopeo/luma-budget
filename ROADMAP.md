@@ -20,6 +20,7 @@
 - [x] **PremiumChartSection** — Motore UI modulare per grafici futuristici e kinetic
 - [x] **Transazioni Recenti** — Lista ultimi movimenti
 - [x] **Flash Summary** — Riepilogo rapido con insights
+- [x] **Privacy Shield** — Modalità offuscamento dati sensibili con blur effect
 
 ---
 
@@ -81,15 +82,18 @@
 | Feature | Descrizione | Complessità |
 |---------|-------------|-------------|
 | **📱 PWA** | Installazione app su dispositivo, notifiche | Media |
-| **🔄 Transazioni Ricorrenti** | Abbonamenti auto-registrati (Netflix, affitto) | Alta |
+| **🔄 Smart Subscription Hub** | Gestione abbonamenti, calendario rinnovi, costo annuale | Alta |
+| **🧠 Smart Import 2.0** | Import con memoria (auto-categorizzazione), drag&drop multi-file | Alta |
+| **💬 Conversational AI** | Chat per interrogare i dati ("Quanto ho speso in pizza?") | Molto Alta |
 | **🏷️ Multi-Tag Transazioni** | Tagging flessibile oltre categoria singola | Media |
 | **📊 Report Mensile PDF** | Genera report scaricabile | Media |
-| **🎯 Obiettivi di Risparmio** | Goal con progress tracking | Media |
+| **🎯 Behavioral Buckets** | "Secchielli" per obiettivi di risparmio (Mental Accounting) | Media |
 | **💱 Multi-Valuta** | Supporto EUR/USD con conversione | Alta |
 | **☁️ Sync Cloud** | Backup automatico su Firebase/Supabase | Alta |
 | **🔐 PIN/Biometric Lock** | Protezione accesso app | Media |
 | **📈 Grafici Avanzati** | Heatmap spese, confronto periodi | Bassa |
 | **🧾 OCR Scontrini** | Scan e parsing automatico | Alta |
+| **🔮 Financial Forecasting** | Proiezione saldo futura (What-Will-Be) | Alta |
 
 ---
 

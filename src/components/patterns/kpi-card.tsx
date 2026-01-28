@@ -19,6 +19,7 @@ interface KpiCardProps {
     tone?: KpiTone
     onClick?: () => void
     className?: string
+    valueClassName?: string
     description?: string
 }
 
@@ -34,6 +35,7 @@ export function KpiCard({
     tone = "neutral",
     onClick,
     className,
+    valueClassName,
     description
 }: KpiCardProps) {
     if (isLoading) {
@@ -84,7 +86,7 @@ export function KpiCard({
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <div className="text-3xl font-black tracking-tighter tabular-nums">{value}</div>
+                    <div className={cn("text-3xl font-black tracking-tighter tabular-nums", valueClassName)}>{value}</div>
                     {(change || comparisonLabel) && (
                         <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
                             {change && (

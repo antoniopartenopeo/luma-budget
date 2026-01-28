@@ -10,6 +10,7 @@ import { useCategories } from "@/features/categories/api/use-categories"
 import { useSettings } from "@/features/settings/api/use-settings"
 import { Transaction } from "@/features/transactions/api/types"
 import { DashboardTimeFilter } from "../../api/types"
+import { usePrivacyStore } from "@/features/privacy/privacy.store"
 
 interface SpendingCompositionCardProps {
     transactions: Transaction[]
@@ -34,6 +35,7 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
     const { data: settings } = useSettings()
     const isDarkMode = settings?.theme === "dark" || (settings?.theme === "system" && typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches)
     const isLoading = isExternalLoading || isCategoriesLoading
+    const { isPrivacyMode } = usePrivacyStore()
 
     const [highlightedCategory, setHighlightedCategory] = useState<string | null>(null)
 
@@ -114,15 +116,22 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
                 formatter: (params: unknown) => {
                     const p = params as EChartsPieParam
                     const color = typeof p.color === 'string' ? p.color : p.color.colorStops?.[0]?.color
+
+                    const valueDisplay = isPrivacyMode ? "---" : formatCents(p.value, currency, locale)
+                    const percentDisplay = isPrivacyMode ? "" : `${p.percent}%`
+                    const percentStyle = isPrivacyMode ? "display: none;" : "font-size: 11px; font-weight: 700; color: #6366f1;"
+
                     return `
-                        <div style=\"display: flex; flex-direction: column; gap: 4px;\">
-                            <div style=\"display: flex; align-items: center; gap: 8px;\">
-                                <div style=\"width: 8px; height: 8px; border-radius: 50%; background: ${color};\"></div>
-                                <span style=\"font-weight: 700; opacity: 0.8; text-transform: uppercase; font-size: 10px; tracking: 0.1em; color: #94a3b8;\">${p.name}</span>
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 8px; height: 8px; border-radius: 50%; background: ${color};"></div>
+                                <span style="font-weight: 700; opacity: 0.8; text-transform: uppercase; font-size: 10px; tracking: 0.1em; color: #94a3b8;">${p.name}</span>
                             </div>
-                            <div style=\"display: flex; justify-content: space-between; align-items: baseline; gap: 24px;\">
-                                <span style=\"font-size: 16px; font-weight: 900; letter-spacing: -0.02em; color: #ffffff;\">${formatCents(p.value, currency, locale)}</span>
-                                <span style=\"font-size: 11px; font-weight: 700; color: #6366f1;\">${p.percent}%</span>
+                            <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 24px;">
+                                <span style="font-size: 16px; font-weight: 900; letter-spacing: -0.02em; color: #ffffff; ${isPrivacyMode ? 'filter: blur(4px); opacity: 0.7;' : ''}">
+                                    ${valueDisplay === "---" ? "••••••" : valueDisplay}
+                                </span>
+                                <span style="${percentStyle}">${percentDisplay}</span>
                             </div>
                         </div>
                     `
@@ -148,6 +157,9 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
                         padding: [0, -35],
                         formatter: (params: unknown) => {
                             const p = params as EChartsPieParam
+                            if (isPrivacyMode) {
+                                return `{name|${p.name.toUpperCase()}}` // Hide value and percent
+                            }
                             return `{name|${p.name.toUpperCase()}}\n{value|${formatCents(p.value, currency, locale)}}\n{percent|${p.percent}%}`
                         },
                         rich: {
@@ -222,7 +234,7 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
             ],
             graphic: []
         }
-    }, [chartData, currency, locale, isDarkMode])
+    }, [chartData, currency, locale, isDarkMode, isPrivacyMode])
 
     return (
         <PremiumChartSection

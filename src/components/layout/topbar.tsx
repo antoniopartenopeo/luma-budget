@@ -1,11 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { Menu } from "lucide-react"
+import { Menu, Plus, X, RotateCw, Eye, EyeOff } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { useCreateTransaction } from "@/features/transactions/api/use-create-transaction"
 import { QuickExpenseInput } from "@/features/transactions/components/quick-expense-input"
+import { usePrivacyStore } from "@/features/privacy/privacy.store"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Sidebar } from "./sidebar"
 import { FlashOverlay } from "@/features/flash/components/flash-overlay"
@@ -19,6 +21,7 @@ export function TopBar() {
     const isSettingsPage = pathname === "/settings"
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [isQuickAddOpen, setIsQuickAddOpen] = useState(false)
+    const { isPrivacyMode, togglePrivacy } = usePrivacyStore()
 
     return (
         <header className="sticky top-0 z-30 glass-chrome">
@@ -68,6 +71,15 @@ export function TopBar() {
                                 </div>
                             </Button>
                         )}
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={togglePrivacy}
+                            className="rounded-xl text-muted-foreground hover:text-foreground"
+                            title={isPrivacyMode ? "Mostra importi" : "Nascondi importi"}
+                        >
+                            {isPrivacyMode ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
+                        </Button>
                         <FlashOverlay />
                     </div>
                 </div>

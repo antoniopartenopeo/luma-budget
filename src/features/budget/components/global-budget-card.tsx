@@ -14,6 +14,8 @@ import { deriveBudgetState, narrateBudget, BudgetFacts } from "@/domain/narratio
 import { cn } from "@/lib/utils"
 import { EmptyBudgetState } from "./empty-budget-state"
 import { MacroSection } from "@/components/patterns/macro-section"
+import { usePrivacyStore } from "@/features/privacy/privacy.store"
+import { getPrivacyClass } from "@/features/privacy/privacy-utils"
 
 interface GlobalBudgetCardProps {
     budgetCents: number
@@ -42,6 +44,7 @@ export function GlobalBudgetCard({ budgetCents, spentCents, isLoading, onSave, i
 
     const state = deriveBudgetState(budgetFacts)
     const narration = narrateBudget(budgetFacts, state)
+    const { isPrivacyMode } = usePrivacyStore()
     const [isEditing, setIsEditing] = useState(false)
     const [editValue, setEditValue] = useState("")
 
@@ -188,7 +191,7 @@ export function GlobalBudgetCard({ budgetCents, spentCents, isLoading, onSave, i
                 ) : (
                     <>
                         <div className="space-y-1">
-                            <div className="text-4xl font-black tracking-tighter text-foreground tabular-nums">
+                            <div className={cn("text-4xl font-black tracking-tighter text-foreground tabular-nums", getPrivacyClass(isPrivacyMode))}>
                                 {formatCurrency(budgetCents)}
                             </div>
 
@@ -214,7 +217,8 @@ export function GlobalBudgetCard({ budgetCents, spentCents, isLoading, onSave, i
                                 <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">Speso finora</p>
                                 <p className={cn(
                                     "text-xl font-bold tabular-nums",
-                                    state === "over_budget" || state === "at_risk" ? "text-destructive" : "text-foreground"
+                                    state === "over_budget" || state === "at_risk" ? "text-destructive" : "text-foreground",
+                                    getPrivacyClass(isPrivacyMode)
                                 )}>
                                     {formatCurrency(spentCents)}
                                 </p>
@@ -232,7 +236,8 @@ export function GlobalBudgetCard({ budgetCents, spentCents, isLoading, onSave, i
                                 </p>
                                 <p className={cn(
                                     "text-xl font-bold tabular-nums",
-                                    state === "over_budget" ? "text-destructive" : remainingCents >= 0 ? "text-success" : "text-destructive"
+                                    state === "over_budget" ? "text-destructive" : remainingCents >= 0 ? "text-success" : "text-destructive",
+                                    getPrivacyClass(isPrivacyMode)
                                 )}>
                                     {formatCurrency(Math.abs(remainingCents))}
                                 </p>

@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button"
 import { ChevronRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { MacroSection } from "@/components/patterns/macro-section"
+import { usePrivacyStore } from "@/features/privacy/privacy.store"
+import { getPrivacyClass } from "@/features/privacy/privacy-utils"
 
 interface RecentTransactionsProps {
     filter?: DashboardTimeFilter
@@ -22,6 +24,7 @@ interface RecentTransactionsProps {
 export function RecentTransactions({ filter }: RecentTransactionsProps) {
     const { data: transactions, isLoading, isError, refetch } = useRecentTransactions()
     const { currency, locale } = useCurrency()
+    const { isPrivacyMode } = usePrivacyStore()
     const router = useRouter()
 
     if (isLoading) {
@@ -114,7 +117,7 @@ export function RecentTransactions({ filter }: RecentTransactionsProps) {
                                 <p className="text-xs text-muted-foreground">{transaction.category} • {transaction.date}</p>
                             </div>
                         </div>
-                        <div className={cn("font-medium tabular-nums", transaction.type === "income" ? "text-emerald-600" : "text-foreground")}>
+                        <div className={cn("font-medium tabular-nums", transaction.type === "income" ? "text-emerald-600" : "text-foreground", getPrivacyClass(isPrivacyMode))}>
                             {formatSignedCents(getSignedCents(transaction), currency, locale)}
                         </div>
                     </div>

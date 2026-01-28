@@ -10,6 +10,8 @@ import { KpiCard, KpiTone } from "@/components/patterns/kpi-card"
 import { narrateKPI, deriveKPIState, KPIFacts } from "@/domain/narration"
 import { MacroSection } from "@/components/patterns/macro-section"
 import { getBalanceTone, getBudgetTone, getSuperfluousTone } from "../utils/kpi-logic"
+import { usePrivacyStore } from "@/features/privacy/privacy.store"
+import { getPrivacyClass } from "@/features/privacy/privacy-utils"
 
 interface DashboardKpiGridProps {
     totalSpent?: number
@@ -33,6 +35,7 @@ export function DashboardKpiGrid({
     const router = useRouter()
     const { currency, locale } = useCurrency()
     const { data: settings } = useSettings()
+    const { isPrivacyMode } = usePrivacyStore()
 
     const superfluousTarget = settings?.superfluousTargetPercent ?? 10
 
@@ -103,6 +106,7 @@ export function DashboardKpiGrid({
                 <KpiCard
                     title="Saldo"
                     value={isLoading ? 0 : formatValue(netBalance || 0)}
+                    valueClassName={getPrivacyClass(isPrivacyMode)}
                     comparisonLabel="Totale storico"
                     tone={saldoTone}
                     icon={CreditCard}
@@ -112,6 +116,7 @@ export function DashboardKpiGrid({
                 <KpiCard
                     title="Spesa"
                     value={isLoading ? 0 : formatValue(totalSpent || 0)}
+                    valueClassName={getPrivacyClass(isPrivacyMode)}
                     icon={Wallet}
                     isLoading={isLoading}
                     onClick={() => router.push("/transactions")}
@@ -120,6 +125,7 @@ export function DashboardKpiGrid({
                 <KpiCard
                     title="Budget Rimanente"
                     value={isLoading ? 0 : (isMonthlyView ? formatValue(budgetRemaining || 0) : "—")}
+                    valueClassName={getPrivacyClass(isPrivacyMode)}
                     change={isLoading ? "" : (isMonthlyView && hasBudget ? `${budgetPercent}%` : "")}
                     trend={!isMonthlyView || !hasBudget ? "neutral" : (budgetTone === "positive" ? "up" : "down")}
                     comparisonLabel={!isMonthlyView ? "Solo in vista Mensile" : (hasBudget ? "Rimanenti nel periodo" : "Imposta un budget")}
@@ -132,6 +138,7 @@ export function DashboardKpiGrid({
                 <KpiCard
                     title="Spese Superflue"
                     value={isLoading ? 0 : (uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—")}
+                    // Note: percentages are not monetary, usually OK to show, but can blur if desired. Keeping visible for now.
                     change={`Target ${superfluousTarget}%`}
                     trend={superflueTone === "positive" ? "up" : superflueTone === "negative" ? "down" : "neutral"}
                     tone={superflueTone}

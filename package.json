@@ -9,6 +9,8 @@
     "lint": "eslint",
     "test": "vitest",
     "test:run": "vitest run",
+    "goals:validate": "vitest run src/features/goals/validation/",
+    "goals:report": "vitest run src/features/goals/validation/ --reporter=verbose",
     "validate": "./.agent/skills/numa-governance-update/scripts/validate.sh",
     "doe:verify": "npm run test:run && npm run lint && npm run validate"
   },

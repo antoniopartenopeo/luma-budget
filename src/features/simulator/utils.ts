@@ -93,14 +93,14 @@ export function computeMonthlyAverages(
  */
 export function applySavings(
     averages: Record<string, CategoryAverage>,
-    savingsMap: Record<string, number> // categoryId -> saving percent (0-100)
+    applicationMap: Record<string, number> // categoryId -> reduction percent (0-100)
 ): SimulationResult {
     const categoryResults: SimulationResult['categoryResults'] = {}
     let baselineTotal = 0
     let simulatedTotal = 0
 
     Object.values(averages).forEach(avg => {
-        const percent = Math.min(100, Math.max(0, savingsMap[avg.categoryId] || 0))
+        const percent = Math.min(100, Math.max(0, applicationMap[avg.categoryId] || 0))
         const baseline = avg.averageAmount
 
         // Calcolo simulato: baseline * (1 - percent/100)

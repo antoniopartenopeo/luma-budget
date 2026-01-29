@@ -1,140 +1,129 @@
 # 🗺️ Numa Budget — Roadmap
 
-> **Documento vivente**: Aggiornato automaticamente dopo ogni implementazione significativa.
+## 1. Principi Non Negoziabili
+- **Trust > Feature**: La precisione dei dati ha priorità assoluta su nuove funzionalità.
+- **Local-first by default**: I dati rimangono sul dispositivo dell'utente.
+- **Explainability > Automazione**: Ogni automatismo deve essere trasparente e spiegabile.
+- **Ogni numero ha una fonte**: Tracciabilità completa da aggregato a transazione.
+- **UX che riduce ansia**: Design calmo, non allarmista, e focalizzato sulla chiarezza.
 
 ---
 
-## 📊 Implementazioni Completate
-
-### Core App (Fondamenta)
-- [x] **App Shell** — Layout responsive con Sidebar, Topbar, tema dark/light
-- [x] **Sistema Temi** — Supporto dark mode con persistenza
-- [x] **Navigazione** — Sidebar collapsabile, Sheet mobile
-- [x] **Storage Layer** — Persistenza localStorage con registry centralizzato
-
----
-
-### Dashboard
-- [x] **KPI Cards** — Entrate, Uscite, Saldo, con filtri temporali
-- [x] **Grafico Spese (Ultra-Tech)** — Breakdown categorico immersivo con animazioni radar e focus-mode
-- [x] **PremiumChartSection** — Motore UI modulare per grafici futuristici e kinetic
-- [x] **Transazioni Recenti** — Lista ultimi movimenti
-- [x] **Flash Summary** — Riepilogo rapido con insights
-- [x] **Privacy Shield** — Modalità offuscamento dati sensibili con blur effect
+## 2. Epiche Strategiche
+1. **Trust & Reliability Foundation**: Stabilità, precisione dati, importazione robusta.
+2. **Automation Without Betrayal**: Automatismi che l'utente può verificare e correggere.
+3. **Decision & Future Planning**: Strumenti per pianificare e prevedere, non solo tracciare.
+4. **Privacy, Power & Delight**: Funzioni pro-user, privacy, e gioia nell'utilizzo.
+5. **Category Creation (Vision)**: Innovazione radicale nell'interazione finanziaria.
 
 ---
 
-### Transazioni
-- [x] **Lista Transazioni** — Tabella desktop / Cards mobile
-- [x] **CRUD Completo** — Aggiungi, modifica, elimina
-- [x] **Quick Add** — Input rapido dalla Topbar
-- [x] **Filtri e Ricerca** — Per data, tipo, categoria, importo (integer)
-- [x] **Export CSV** — Esporta transazioni filtrate (preciso al centesimo)
-- [x] **Source of Truth** — Migrazione integrale a `amountCents`, rimosso campo `amount` deprecato
-- [x] **Import CSV Wizard** — Importazione guidata con:
-  - Upload file / Incolla testo
-  - Raggruppamento automatico esercenti
-  - Assegnazione categorie bulk
-  - Slider soglia significatività
-  - Preview e conferma
+## 3. Fasi Temporali
+- **NOW (0–3 mesi)**: fiducia nel dato e perfezionamento core
+- **NEXT (3–6 mesi)**: automazione controllata e intelligenza
+- **NEXT+ (6–9 mesi)**: pianificazione e decisioni persistenti
+- **LATER (9–15 mesi)**: espansione piattaforma e power features
+- **VISION (15–24 mesi)**: intelligenza conversazionale
 
 ---
 
-### Categorie
-- [x] **Registro Categorie** — Sistema centralizzato in `src/domain/categories`
-- [x] **Gruppi Spending** — Essential / Comfort / Superfluous
-- [x] **Icone per Categoria** — Mapping automatico con `CategoryIcon`
-- [x] **CRUD Categorie Custom** — Aggiungi/modifica categorie utente
+## 4. Iniziative per Fase
+
+### NOW — Trust & Reliability
+#### Advanced Data Ingestion
+Epica: Trust & Reliability Foundation
+Outcome: importazione dati a prova di errore e duplicati
+Items: Deduplicazione Transazioni, Template Banche, Onboarding Wizard
+
+#### UI/UX Stabilization
+Epica: Privacy, Power & Delight
+Outcome: accessibilità totale e fluidità d'uso
+Items: Accessibilità (Audit ARIA), Skeleton Loading, Empty States
+
+### NEXT — Automation Without Betrayal
+#### Smart Import 2.0
+Epica: Automation Without Betrayal
+Outcome: categorizzazione automatica basata su memoria locale
+Items: Smart Import con Memoria, Memoria Categorizzazioni
+
+#### Smart Subscription Hub
+Epica: Automation Without Betrayal
+Outcome: controllo proattivo delle spese ricorrenti
+Items: Rilevamento automatico abbonamenti, Calendario rinnovi
+
+### NEXT+ — Decision & Future Planning
+#### Behavioral Buckets
+Epica: Decision & Future Planning
+Outcome: segregazione mentale dei fondi per obiettivi
+Items: "Secchielli" per obiettivi, Mental Accounting
+
+#### Financial Forecasting
+Epica: Decision & Future Planning
+Outcome: visibilità del futuro finanziario basata sullo storico
+Items: Proiezione saldo futura (What-Will-Be)
+
+### LATER — Power & Delight
+#### Platform Expansion
+Epica: Trust & Reliability Foundation
+Outcome: ubiquità e sicurezza dei dati
+Items: PWA, Sync Cloud, PIN/Biometric Lock
+
+#### Deep Analysis
+Epica: Privacy, Power & Delight
+Outcome: analisi granulare e reportistica
+Items: Grafici Avanzati (Heatmap), Report Mensile PDF, Multi-Tag
+
+### VISION — Category Creation
+#### Conversational AI
+Epica: Category Creation
+Outcome: interazione naturale con le proprie finanze
+Items: Chat query dati ("Quanto ho speso in pizza?")
 
 ---
 
-### Budget
-- [x] **Piano Budget** — Allocazione per categoria
-- [x] **Tracking Spese vs Budget** — Progress bar visive
-- [x] **Gruppi Budget** — Essential / Comfort / Superfluous
+## 5. Stato di Implementazione
+
+### Completate
+**Trust & Reliability Foundation**
+- App Shell & Navigation
+- Storage Layer & Source of Truth (amountCents)
+- Import CSV Wizard v1
+- Registro e Gestione Categorie
+- Backup/Restore & Reset Dati
+- Filtri, Ricerca ed Export CSV
+
+**Privacy, Power & Delight**
+- Privacy Shield (Blur effect & Toggle)
+- Sistema Temi (Dark/Light)
+- PremiumChartSection & Grafico Spese
+- UI Unification (Glassmorphism)
+- Flash Summary
+
+**Decision & Future Planning**
+- KPI Cards & Dashboard
+- Budget Plan & Tracking
+- Simulazione What-If
+- Gruppi Spending & Budget
+
+**Automation Without Betrayal**
+- Trend Analysis
+- AI Advisor Card (Base)
+
+### In corso
+- (Nessuna iniziativa attiva al momento)
+
+### Backlog Validato (Trust, Fix & Power)
+- **Trust**: Paginazione Server-Side, Undo Delete
+- **Power**: Bulk Actions, Keyboard Shortcuts, Multi-Valuta (Nicchia)
+- **Automation**: OCR Scontrini
+- **Decision**: Alert Superamento Budget, Rollover Budget mensile
+
+### Vision / Speculative
+- Numa AI Conversational Layer (Full integration)
 
 ---
 
-### Insights
-- [x] **Trend Analysis Card** — Andamento spese nel tempo
-- [x] **AI Advisor Card** — Suggerimenti intelligenti
-
----
-
-### Simulator
-- [x] **Simulazione What-If** — Proiezioni finanziarie
-
----
-
-### Settings
-- [x] **Gestione Categorie** — Tab dedicato
-- [x] **Backup/Restore** — Esporta/importa dati
-- [x] **Reset Dati** — Con conferma
-- [x] **Diagnostica** — Storage health, versione app
-- [x] **UI Unification** — Standard Numa Premium (2.5rem, Glassmorphism, Scale-in)
-
----
-
-## 🚀 Feature Probabili (Backlog)
-
-> Idee per sviluppi futuri, ordinate per valore/impatto stimato.
-
-| Feature | Descrizione | Complessità |
-|---------|-------------|-------------|
-| **📱 PWA** | Installazione app su dispositivo, notifiche | Media |
-| **🔄 Smart Subscription Hub** | Gestione abbonamenti, calendario rinnovi, costo annuale | Alta |
-| **🧠 Smart Import 2.0** | Import con memoria (auto-categorizzazione), drag&drop multi-file | Alta |
-| **💬 Conversational AI** | Chat per interrogare i dati ("Quanto ho speso in pizza?") | Molto Alta |
-| **🏷️ Multi-Tag Transazioni** | Tagging flessibile oltre categoria singola | Media |
-| **📊 Report Mensile PDF** | Genera report scaricabile | Media |
-| **🎯 Behavioral Buckets** | "Secchielli" per obiettivi di risparmio (Mental Accounting) | Media |
-| **💱 Multi-Valuta** | Supporto EUR/USD con conversione | Alta |
-| **☁️ Sync Cloud** | Backup automatico su Firebase/Supabase | Alta |
-| **🔐 PIN/Biometric Lock** | Protezione accesso app | Media |
-| **📈 Grafici Avanzati** | Heatmap spese, confronto periodi | Bassa |
-| **🧾 OCR Scontrini** | Scan e parsing automatico | Alta |
-| **🔮 Financial Forecasting** | Proiezione saldo futura (What-Will-Be) | Alta |
-
----
-
-## 🔧 Fix & Miglioramenti Probabili
-
-> Aree note che potrebbero beneficiare di ottimizzazioni.
-
-### Dashboard
-- [ ] **Skeleton Loading** — Migliorare UX durante caricamento dati
-- [ ] **Empty State Grafico** — Messaggio più utile quando non ci sono dati
-
-### Transazioni
-- [ ] **Paginazione Server-Side** — Performance con molti record (>1000)
-- [ ] **Undo Delete** — Toast con azione annulla dopo eliminazione
-- [ ] **Bulk Actions** — Selezione multipla per modifica/elimina
-
-### Import CSV
-- [ ] **Template Banche** — Preset per formati CSV comuni (Unicredit, Intesa, ecc.)
-- [ ] **Memoria Categorizzazioni** — Ricorda scelte utente per esercenti noti
-- [ ] **Deduplicazione** — Rileva transazioni già importate
-
-### Budget
-- [ ] **Alert Superamento** — Notifica quando superi soglia categoria
-- [ ] **Rollover** — Opzione per trasferire residuo al mese successivo
-
-### UX Generale
-- [ ] **Onboarding Wizard** — Prima esperienza guidata per nuovi utenti
-- [ ] **Keyboard Shortcuts** — Navigazione rapida da tastiera
-- [ ] **Accessibilità** — Audit ARIA labels completo
-
----
-
-## 📝 Storico Aggiornamenti
-
-| Data | Modifica |
-|------|----------|
-| 2026-01-27 | Refactor Logic Transazioni (amountCents come unica Source of Truth, rimozione field `amount`) |
-| 2026-01-27 | Modularizzazione Ultra-Tech UI (PremiumChartSection, Focus-Mode) |
-| 2026-01-26 | Unificazione UI/UX, upgrade a Numa Premium Aesthetic |
-| 2026-01-24 | Creazione documento, inventario iniziale |
-
----
-
-> **Nota per l'AI**: Dopo ogni implementazione significativa (nuova feature, fix importante), aggiorna questo documento nella sezione appropriata. Sposta item da "Probabili" a "Completate" quando implementati.
+## 6. Regole di Governance
+- Nessuna feature senza Epica + Fase.
+- Vietata anticipazione silenziosa o sviluppo non tracciato.
+- Roadmap aggiornata tassativamente dopo ogni merge significativo.

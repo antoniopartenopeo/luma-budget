@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { fetchDashboardSummary } from '../repository'
 import { createBatchTransactions, __resetTransactionsCache, createTransaction } from '@/features/transactions/api/repository'
+import { BudgetPlan } from "@/VAULT/budget/api/types"
 
 // Mock dependencies
 vi.mock('@/lib/delay', () => ({
@@ -16,7 +17,7 @@ vi.mock('@/lib/storage-utils', () => ({
 }))
 
 // Mock Budget repository
-vi.mock('@/features/budget/api/repository', () => ({
+vi.mock('@/VAULT/budget/api/repository', () => ({
     fetchBudget: vi.fn(() => Promise.resolve({
         globalBudgetAmount: 1000,
         groups: {}

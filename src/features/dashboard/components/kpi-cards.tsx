@@ -21,6 +21,7 @@ interface DashboardKpiGridProps {
     uselessSpendPercent?: number | null
     isLoading?: boolean
     filter?: DashboardTimeFilter
+    headerActions?: React.ReactNode
 }
 
 export function DashboardKpiGrid({
@@ -30,7 +31,8 @@ export function DashboardKpiGrid({
     budgetRemaining,
     uselessSpendPercent,
     isLoading,
-    filter
+    filter,
+    headerActions
 }: DashboardKpiGridProps) {
     const router = useRouter()
     const { currency, locale } = useCurrency()
@@ -96,12 +98,13 @@ export function DashboardKpiGrid({
         <MacroSection
             title="Overview Performance"
             description={contextText}
+            headerActions={headerActions}
             className="w-full"
         >
             {/* Animated Grid Container for Soft Transitions */}
             <div
                 key={filter?.period || "default"}
-                className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 pt-4 animate-enter-up"
+                className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4 pt-4 animate-enter-up"
             >
                 <KpiCard
                     title="Saldo"
@@ -132,7 +135,7 @@ export function DashboardKpiGrid({
                     tone={budgetTone}
                     icon={DollarSign}
                     isLoading={isLoading}
-                    onClick={isMonthlyView && !hasBudget ? () => router.push("/budget") : undefined}
+                    onClick={isMonthlyView && !hasBudget ? () => router.push("/goals/lab") : undefined}
                     description={isLoading ? undefined : buildNarration("budget", budgetRemaining || 0, budgetTone, budgetPercent)}
                 />
                 <KpiCard

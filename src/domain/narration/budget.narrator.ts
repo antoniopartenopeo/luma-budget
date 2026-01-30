@@ -11,7 +11,8 @@
  */
 
 import { NarrationResult, BudgetFacts, BudgetState } from "./types"
-import { formatCurrency } from "@/features/budget/utils/calculate-budget"
+import { BudgetPlan, BudgetGroupId } from "@/VAULT/budget/api/types"
+import { formatCurrency } from "@/VAULT/budget/utils/calculate-budget"
 
 /**
  * Generates narrative text for the Budget section/card.

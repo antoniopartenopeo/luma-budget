@@ -141,7 +141,7 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
                 {
                     name: 'Composizione Spese',
                     type: 'pie',
-                    radius: ['55%', '78%'],
+                    radius: ['45%', '65%'],
                     center: ['50%', '50%'],
                     avoidLabelOverlap: true,
                     itemStyle: {
@@ -154,7 +154,7 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
                     label: {
                         show: true,
                         position: 'outside',
-                        padding: [0, -35],
+                        padding: [0, -20],
                         formatter: (params: unknown) => {
                             const p = params as EChartsPieParam
                             if (isPrivacyMode) {
@@ -229,7 +229,7 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
                     data: chartData,
                     animationType: 'scale',
                     animationEasing: 'cubicOut',
-                    animationDuration: 1200
+                    animationDuration: 5000
                 }
             ],
             graphic: []

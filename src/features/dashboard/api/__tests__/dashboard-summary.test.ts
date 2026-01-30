@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { fetchDashboardSummary } from '../repository'
 import { __resetTransactionsCache, createTransaction } from '../../../transactions/api/repository'
-import { getCurrentPeriod } from '../../../budget/utils/calculate-budget'
-import { upsertBudget, __resetBudgetsCache } from '../../../budget/api/repository'
+import { getCurrentPeriod } from "@/VAULT/budget/utils/calculate-budget"
+import { upsertBudget, __resetBudgetsCache } from "@/VAULT/budget/api/repository"
 import { __resetCategoriesCache } from '../../../categories/api/repository'
 import { CategoryIds } from '@/domain/categories'
 

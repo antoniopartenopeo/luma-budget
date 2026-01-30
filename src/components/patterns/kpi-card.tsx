@@ -86,7 +86,7 @@ export function KpiCard({
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <div className={cn("text-3xl font-black tracking-tighter tabular-nums", valueClassName)}>{value}</div>
+                    <div className={cn("text-xl sm:text-2xl lg:text-3xl font-black tracking-tighter tabular-nums break-words", valueClassName)}>{value}</div>
                     {(change || comparisonLabel) && (
                         <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
                             {change && (

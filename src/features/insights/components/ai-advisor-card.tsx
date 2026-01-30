@@ -11,6 +11,8 @@ import { useAIAdvisor } from "../use-ai-advisor"
 import { useOrchestratedInsights } from "../use-orchestrated-insights"
 import { useCurrency } from "@/features/settings/api/use-currency"
 
+import { SubSectionCard } from "@/components/patterns/sub-section-card"
+
 export function AIAdvisorCard() {
     const { forecast, subscriptions, isLoading: aiLoading } = useAIAdvisor()
     const { orchestration, isLoading: orchestratorLoading } = useOrchestratedInsights()
@@ -77,64 +79,61 @@ export function AIAdvisorCard() {
             <div className="flex flex-col gap-6">
                 {/* 1. Proiezione */}
                 {forecast && (
-                    <div className="relative group rounded-2xl glass-card hover:bg-white/70 dark:hover:bg-white/10 p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                                <TrendingUp className="h-4 w-4 text-emerald-500" />
-                                <span>Proiezione Mensile</span>
+                    <SubSectionCard
+                        label="Proiezione Mensile"
+                        icon={<TrendingUp className="h-4 w-4 text-emerald-500" />}
+                        extra={
+                            <div className={cn(
+                                "px-4 py-2 rounded-xl text-xs font-black border",
+                                forecast.confidence === "high"
+                                    ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                                    : "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                            )}>
+                                {forecast.confidence === "high" ? "ATTENDIBILITÀ ALTA" : "ATTENDIBILITÀ MEDIA"}
                             </div>
-                            <div className="space-y-1">
-                                <div className="text-4xl font-black tracking-tighter text-foreground tabular-nums">
-                                    {formatEuroNumber(forecast.predictedSavings, currency, locale)}
-                                </div>
-                                <p className="text-xs text-muted-foreground font-medium">
-                                    Risparmio stimato basato sui tuoi trend attuali di spesa.
-                                </p>
+                        }
+                    >
+                        <div className="space-y-1">
+                            <div className="text-4xl font-black tracking-tighter text-foreground tabular-nums">
+                                {formatEuroNumber(forecast.predictedSavings, currency, locale)}
                             </div>
+                            <p className="text-xs text-muted-foreground font-medium">
+                                Risparmio stimato basato sui tuoi trend attuali di spesa.
+                            </p>
                         </div>
-                        <div className={cn(
-                            "px-4 py-2 rounded-xl text-xs font-black border self-start md:self-auto",
-                            forecast.confidence === "high"
-                                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                                : "bg-amber-500/10 text-amber-600 border-amber-500/20"
-                        )}>
-                            {forecast.confidence === "high" ? "ATTENDIBILITÀ ALTA" : "ATTENDIBILITÀ MEDIA"}
-                        </div>
-                    </div>
+                    </SubSectionCard>
                 )}
 
                 {/* 2. Subscriptions */}
                 {subscriptions.length > 0 && (
-                    <div className="rounded-2xl glass-card hover:bg-white/70 dark:hover:bg-white/10 p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                                <Wallet className="h-4 w-4 text-indigo-500" />
-                                <span>Abbonamenti Rilevati</span>
-                            </div>
+                    <SubSectionCard
+                        label="Abbonamenti Rilevati"
+                        icon={<Wallet className="h-4 w-4 text-indigo-500" />}
+                    >
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                             <div className="flex items-baseline gap-3">
                                 <span className="text-4xl font-black text-foreground tabular-nums">{subscriptions.length}</span>
                                 <span className="text-sm text-muted-foreground font-medium uppercase tracking-wider">Servizi attivi questo mese</span>
                             </div>
-                        </div>
 
-                        <div className="flex flex-wrap gap-2">
-                            {subscriptions.slice(0, 3).map((sub, i) => (
-                                <div key={i} className="px-3 py-1.5 rounded-xl bg-background/80 dark:bg-slate-800 border border-border/50 text-xs font-bold text-muted-foreground shadow-sm">
-                                    Servizio #{i + 1}
-                                </div>
-                            ))}
+                            <div className="flex flex-wrap gap-2">
+                                {subscriptions.slice(0, 3).map((sub, i) => (
+                                    <div key={i} className="px-3 py-1.5 rounded-xl bg-background/80 dark:bg-slate-800 border border-border/50 text-xs font-bold text-muted-foreground shadow-sm">
+                                        Servizio #{i + 1}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    </SubSectionCard>
                 )}
 
                 {/* 3. Smart Tip (Orchestrated) */}
                 {primary && (
-                    <div className="rounded-2xl bg-gradient-to-br from-indigo-500/5 to-purple-500/5 border border-indigo-500/10 p-6 relative overflow-hidden shadow-inner">
-                        <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-4">
-                            <Lightbulb className="h-4 w-4 fill-current" />
-                            SMART ADVICE
-                        </div>
-
+                    <SubSectionCard
+                        variant="accent"
+                        label="SMART ADVICE"
+                        icon={<Lightbulb className="h-4 w-4 fill-current" />}
+                    >
                         <div className="space-y-4">
                             <p className="text-sm font-medium leading-relaxed text-foreground/90">
                                 &quot;{primary.narration.text}&quot;
@@ -157,7 +156,7 @@ export function AIAdvisorCard() {
                                 Approfondisci <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                         </div>
-                    </div>
+                    </SubSectionCard>
                 )}
             </div>
         </MacroSection>

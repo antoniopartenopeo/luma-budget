@@ -314,7 +314,7 @@ export default function SimulatorPage() {
     return (
         <div className="space-y-8 pb-24 md:pb-12 w-full">
             <PageHeader
-                title="Simulatore Spese"
+                title="Ottimizzatore Spese"
                 description="Analizza il tuo stile di vita e simula scenari di risparmio intelligenti."
             />
 
@@ -332,7 +332,7 @@ export default function SimulatorPage() {
                                 <Calculator className="h-7 w-7 text-primary fill-primary/20" />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
+                                <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
                                     Risultati Simulazione
                                     <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 text-[10px] px-2 h-6 font-bold">LIVE</Badge>
                                 </h2>
@@ -390,10 +390,10 @@ export default function SimulatorPage() {
                                     <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-[2rem] blur opacity-25 group-hover:opacity-40 transition duration-500" />
                                     <div
                                         key={simulationResult.savingsAmount}
-                                        className="relative bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/20 rounded-[2rem] p-8 flex flex-col items-center justify-center text-center animate-flash-green"
+                                        className="relative bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/20 rounded-[2rem] p-6 sm:p-8 flex flex-col items-center justify-center text-center animate-flash-green"
                                     >
                                         <div className="text-[10px] uppercase tracking-[0.3em] font-black text-emerald-600 mb-2">Risparmio Stimato</div>
-                                        <div className="text-5xl font-black tracking-tighter text-emerald-600 tabular-nums mb-3">
+                                        <div className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter text-emerald-600 tabular-nums mb-3 break-all">
                                             {formatCents(simulationResult.savingsAmount, currency, locale)}
                                         </div>
                                         <div className="px-4 py-1.5 rounded-full bg-emerald-500 text-white text-sm font-black shadow-lg shadow-emerald-500/30">

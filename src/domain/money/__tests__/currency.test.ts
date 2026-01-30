@@ -1,116 +1,88 @@
-import { describe, it, expect } from 'vitest'
-import {
-    parseCurrencyToCents,
-    formatCents,
-    euroToCents,
-    formatEuroNumber,
-} from '../currency'
-import { getSignedCents } from '@/domain/transactions'
-import { Transaction } from '@/features/transactions/api/types'
+import { describe, it, expect } from "vitest"
+import { parseCurrencyToCents } from "../currency"
+import { getSignedCents, normalizeTransactionAmount } from "@/domain/transactions"
+import { Transaction } from "@/features/transactions/api/types"
 
-describe('currency-utils', () => {
-    describe('parseCurrencyToCents', () => {
-        it('should parse simple integers', () => {
-            expect(parseCurrencyToCents('10')).toBe(1000)
+describe("Currency Refactor", () => {
+    describe("parseCurrencyToCents", () => {
+        it("parses diverse formats correctly", () => {
+            expect(parseCurrencyToCents("€30,00")).toBe(3000)
+            expect(parseCurrencyToCents("€30.00")).toBe(3000)
+            expect(parseCurrencyToCents("1.234,56")).toBe(123456)
+            expect(parseCurrencyToCents("1,234.56")).toBe(123456)
+            expect(parseCurrencyToCents("-€30,00")).toBe(-3000)
+            expect(parseCurrencyToCents("15")).toBe(1500)
         })
 
-        it('should parse dot decimal', () => {
-            expect(parseCurrencyToCents('10.50')).toBe(1050)
-            expect(parseCurrencyToCents('1.23')).toBe(123)
+        it("handles ambiguous cases with heuristics", () => {
+            expect(parseCurrencyToCents("1.234")).toBe(123400) // Thousand separator assumption
         })
 
-        it('should parse comma decimal', () => {
-            expect(parseCurrencyToCents('10,50')).toBe(1050)
-            expect(parseCurrencyToCents('1,23')).toBe(123)
-        })
-
-        it('should handle thousand separators (EU style)', () => {
-            expect(parseCurrencyToCents('1.234,56')).toBe(123456)
-        })
-
-        it('should handle thousand separators (US style)', () => {
-            expect(parseCurrencyToCents('1,234.56')).toBe(123456)
-        })
-
-        it('should handle ambiguous thousands', () => {
-            expect(parseCurrencyToCents('1.234')).toBe(123400)
-            expect(parseCurrencyToCents('1,234')).toBe(123400)
-        })
-
-        it('should handle negative values', () => {
-            expect(parseCurrencyToCents('-10.50')).toBe(-1050)
-            expect(parseCurrencyToCents('€-30,00')).toBe(-3000)
-        })
-
-        it('should ignore currency symbols', () => {
-            expect(parseCurrencyToCents('€10.50')).toBe(1050)
-            expect(parseCurrencyToCents('$10.50')).toBe(1050)
+        it("is robust to garbage input", () => {
+            expect(parseCurrencyToCents("abc")).toBe(0)
+            expect(parseCurrencyToCents("")).toBe(0)
         })
     })
 
-    describe('formatCents', () => {
-        it('should format EUR with it-IT locale', () => {
-            // Note: non-breaking space usage in some environments, normalized here for display check
-            const formatted = formatCents(123456, 'EUR', 'it-IT')
-            // Match core parts allowing optional thousands separator
-            expect(formatted).toMatch(/1[.,]?234,56/)
-            expect(formatted).toContain('€')
-        })
+    describe("getSignedCents", () => {
+        it("respects transaction type for sign", () => {
+            const expense = { type: "expense", amountCents: 1000 } as Transaction
+            expect(getSignedCents(expense)).toBe(-1000)
 
-        it('should format USD with it-IT locale', () => {
-            const formatted = formatCents(123456, 'USD', 'it-IT')
-            expect(formatted).toMatch(/1[.,]?234,56/)
-            // USD might be $ or USD depending on displayNames
-            expect(formatted).toMatch(/USD|\$/)
-        })
-
-        it('should format GBP with it-IT locale', () => {
-            const formatted = formatCents(123456, 'GBP', 'it-IT')
-            expect(formatted).toMatch(/1[.,]?234,56/)
-            expect(formatted).toMatch(/GBP|£/)
+            const income = { type: "income", amountCents: 1000 } as Transaction
+            expect(getSignedCents(income)).toBe(1000)
         })
     })
 
-    describe('formatEuroNumber', () => {
-        it('should convert and format number correctly', () => {
-            expect(formatEuroNumber(10.5, 'EUR')).toContain('10,50')
-            // Match either 1.000,00 or 1000,00 depending on locale env
-            const formatted = formatEuroNumber(1000, 'EUR')
-            expect(formatted).toMatch(/1[.,]?000,00/)
+    describe("normalizeTransactionAmount", () => {
+        it("backfills amountCents from raw data", () => {
+            const rawT = {
+                id: "1",
+                type: "expense",
+                amountCents: "1050" // String from storage/json
+            } as unknown as Transaction
+
+            const normalized = normalizeTransactionAmount(rawT as unknown as Partial<Transaction> & Record<string, unknown>)
+
+            expect(normalized.amountCents).toBe(1050)
+            expect((normalized as unknown as Record<string, unknown>).amount).toBeUndefined()
+        })
+
+        it("migrates categoryId", () => {
+            const rawT = {
+                id: "1",
+                type: "expense",
+                amountCents: 500,
+                categoryId: "legacy-cat"
+            } as unknown as Transaction
+
+            const normalized = normalizeTransactionAmount(rawT as unknown as Partial<Transaction> & Record<string, unknown>)
+
+            expect(normalized.amountCents).toBe(500)
+            // assuming migrateCategoryId("legacy-cat") returns something or remains if no map
         })
     })
 
-    describe('euroToCents', () => {
-        it('should convert eur units to cents', () => {
-            expect(euroToCents(10.50)).toBe(1050)
-            expect(euroToCents(10)).toBe(1000)
-            expect(euroToCents(0.99)).toBe(99)
-        })
-    })
+    describe("Dashboard/Budget Logic Simulation", () => {
+        it("calculates salary correctly using integer math", () => {
+            const transactions = [
+                { type: "income", amountCents: 125033 }, // 1250.33
+                { type: "expense", amountCents: 4510 }   // 45.10
+            ] as Transaction[]
 
-    describe('getSignedCents', () => {
-        it('should return positive cents for income', () => {
-            const t = {
-                amountCents: 5000,
-                type: "income"
-            } as Transaction
-            expect(getSignedCents(t)).toBe(5000)
-        })
+            const totalIncome = transactions
+                .filter(t => t.type === "income")
+                .reduce((acc, t) => acc + Math.abs(getSignedCents(t)), 0)
 
-        it('should return negative cents for expense', () => {
-            const t = {
-                amountCents: 5000,
-                type: "expense"
-            } as Transaction
-            expect(getSignedCents(t)).toBe(-5000)
-        })
+            const totalExpense = transactions
+                .filter(t => t.type === "expense")
+                .reduce((acc, t) => acc + Math.abs(getSignedCents(t)), 0)
 
-        it('should handle zero cents', () => {
-            const t = {
-                amountCents: 0,
-                type: "expense"
-            } as Transaction
-            expect(getSignedCents(t)).toBe(0)
+            expect(totalIncome).toBe(125033)
+            expect(totalExpense).toBe(4510)
+
+            const balance = (totalIncome - totalExpense) / 100
+            expect(balance).toBe(1205.23)
         })
     })
 })

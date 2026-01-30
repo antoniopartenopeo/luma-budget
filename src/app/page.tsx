@@ -32,22 +32,16 @@ export default function DashboardPage() {
 
       <StaggerContainer>
         {/* HERO SECTION: Financial Overview & KPIs */}
-        <MacroSection
-          title="Panoramica Finanziaria"
-          description="Indicatori chiave del mese corrente"
+        <DashboardKpiGrid
+          totalSpent={data?.totalSpent}
+          netBalance={data?.netBalance}
+          budgetTotal={data?.budgetTotal}
+          budgetRemaining={data?.budgetRemaining}
+          uselessSpendPercent={data?.uselessSpendPercent}
+          isLoading={isLoading}
+          filter={filter}
           headerActions={<DashboardFilterBar filter={filter} onFilterChange={setFilter} />}
-          className="w-full"
-        >
-          <DashboardKpiGrid
-            totalSpent={data?.totalSpent}
-            netBalance={data?.netBalance}
-            budgetTotal={data?.budgetTotal}
-            budgetRemaining={data?.budgetRemaining}
-            uselessSpendPercent={data?.uselessSpendPercent}
-            isLoading={isLoading}
-            filter={filter}
-          />
-        </MacroSection>
+        />
 
         {/* SUBORDINATE CONTENT */}
         <div className="space-y-6">

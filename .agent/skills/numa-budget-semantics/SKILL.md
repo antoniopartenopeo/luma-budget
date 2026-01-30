@@ -1,53 +1,52 @@
 ---
 name: numa-budget-semantics
-description: Regole semantiche vincolanti per la gestione del budget e del pacing temporale.
+description: Regole semantiche vincolanti per la gestione del Pacing Temporale (ex Budget).
 ---
 
-# Budget: Regole Semantiche e Invarianti
+# Pacing Temporale: Regole Semantiche e Invarianti
 
-Questo documento definisce le regole semantiche OBBLIGATORIE per tutta la sezione Budget e per i messaggi narrativi correlati.
+Questo documento definisce le regole semantiche OBBLIGATORIE per tutta la sezione Pacing (generata dai Goals) e per i messaggi narrativi correlati.
 
-**Scopo**: Impedire che il sistema fornisca false rassicurazioni ("Early Praise") o ignori il fattore tempo ("Pacing"), garantendo una comunicazione onesta e proattiva sullo stato delle finanze dell'utente.
+**Scopo**: Il "Budget" non esiste più come entità statica, ma come proiezione del "Ritmo" (Pacing). Il sistema deve comunicare in termini di *tempo* e *sostenibilità*, non di "limiti" o "risparmio".
 
 ---
 
-## 1. Definizioni Operative
+## 1. Nuove Definizioni Operative
 
 | Termine | Definizione |
 | :--- | :--- |
-| **utilizationRatio** | `spentCents / budgetLimitCents` |
-| **elapsedRatio** | `currentDay / totalDaysInPeriod` |
-| **pacingRatio** | `utilizationRatio / elapsedRatio` |
-| **projectedOverrun** | `(spentCents / elapsedRatio) > budgetLimitCents` |
+| **Pacing Plan** | Il piano di spesa derivato automaticamente dal `ActiveRhythm` dei Goals. |
+| **Cruise Speed** | La velocità di crociera ideale (baseline) per raggiungere il traguardo nel tempo previsto. |
+| **Survival Mode** | Quando il `ProjectedOverrun` minaccia la sostenibilità del traguardo principale. |
 
 ---
 
 ## 2. Regole Vincolanti (B1 - B6)
 
 > [!IMPORTANT]
-> **Precedenza**: Se si applica la **REGOLA B1** (early-month), nessun'altra regola può produrre uno stato positivo o elogiativo.
+> **Precedenza**: Il "Ritmo" (Goals) è la fonte di verità. Qualsiasi "Budget" visualizzato è solo una conseguenza del Ritmo scelto.
 
 | Regola | Condizione | Vietato 🚫 | Ammesso ✅ | Note |
 | :--- | :--- | :--- | :--- | :--- |
 | **REGOLA B1 — No Early Praise** | `elapsedRatio < 15%` | "In linea", "OK", "Sotto controllo", "Ottimo lavoro" | **Stati neutrali:** `early_uncertain`, "Dati iniziali", "Analisi in corso" | Evita di validare un comportamento di spesa troppo presto. |
-| **REGOLA B2 — Pacing Required** | Mancanza di `elapsedRatio` o confronto spesa/tempo | Qualsiasi stato "On Track / OK" | **Stati prudenti:** "Stato non calcolabile", "Necessario contesto temporale" | Senza tempo, non c'è giudizio di andamento. |
-| **REGOLA B3 — On Track ≠ Under Budget** | `spent < limit` MA `utilizationRatio > elapsedRatio` | Stato "On Track" | `at_risk`, "Spesa superiore alla proiezione temporale" | Essere sotto il limite non significa essere "in linea" se il ritmo è troppo alto. |
-| **REGOLA B4 — At Risk Before Over** | `projectedOverrun == true` | Qualsiasi framing rassicurante | Stato `at_risk` obbligatorio | La protezione deve essere anticipata rispetto allo sforamento reale. |
-| **REGOLA B5 — Over Budget** | `spent > limit` | Qualsiasi termine positivo ("Ottimo", "Wow") o giudizi punitivi | **Linguaggio descrittivo:** "Budget superato", "Limite raggiunto" | Il tono deve essere neutro e informativo, mai celebrativo dello sforamento. |
-| **REGOLA B6 — Data Integrity** | Dati incompleti o import recente | Qualsiasi giudizio di andamento o performance | **Stati neutri / incerti:** `calm`, `neutral` | Ammesso **solo** per dati mancanti/parziali o assenza di segnale; **mai** come fallback per rischio o pacing errato. |
+| **REGOLA B2 — Time Context** | Sempre | Giudizi assoluti ("Hai speso poco") | **Giudizi relativi:** "Hai speso poco *per questo momento del mese*" | Il valore assoluto non ha significato senza il tempo. |
+| **REGOLA B3 — Pacing > Saving** | Sotto il limite ma ritmo alto | "Risparmio", "Sotto budget" | "Ritmo accelerato", "Consumo rapido" | L'obiettivo è la costanza (Pacing), non il risparmio fine a se stesso. |
+| **REGOLA B4 — Goal Protection** | `projectedOverrun == true` | Rassicurazioni generiche | "Traguardo a rischio", "Deviazione dal percorso" | La priorità è proteggere il traguardo finale (Goal). |
+| **REGOLA B5 — Non-Judgmental Deviation** | Overrun confermato | Termini punitivi ("Disastro", "Male") o celebrativi ("Wow") | **Linguaggio descrittivo:** "Ritmo insostenibile", "Deviazione rilevata" | Il sistema segnala la deviazione come un dato di fatto per permettere la correzione. |
+| **REGOLA B6 — Data Integrity** | Dati incompleti | Stime di arrivo o proiezioni | "Dati insufficienti per la proiezione" | Mai inventare proiezioni senza dati solidi. |
 
 ---
 
 ## 3. Applicazione
 Questa skill è **vincolante** per:
-- **Narration Layer**: Tutte le funzioni `deriveState` e `narrate` per il budget.
-- **UI Components**: Colori, label e badge nelle card del budget (`BudgetProgressBar`, `GlobalBudgetCard`, etc.).
-- **AI Advisor**: Qualsiasi consiglio o feedback riguardante la spesa corrente.
+- **Goals Engine**: Calcolo delle proiezioni e messaggi di stato (`NUMAExperience`, `useGoalProjection`).
+- **Dashboard**: KPI Cards e grafici di andamento (collegati al Pacing).
+- **Insights**: Consigli finanziari (devono puntare al Ritmo, non al Budget).
 
 ---
 
 ## 4. Checklist di Validazione
-1. [ ] Il messaggio di "Ottimo lavoro" è disabilitato nei primi 4-5 giorni del mese?
-2. [ ] Se l'utente ha speso il 50% del budget il giorno 10, lo stato è `at_risk` e non `ok`?
-3. [ ] Il superamento del budget è comunicato senza toni entusiastici o derisori?
-4. [ ] In assenza di transazioni o con import parziale, il sistema dichiara l'incertezza?
+1. [ ] I messaggi parlano di "Ritmo" o "Viaggio" invece di "Budget"?
+2. [ ] L'early praise è bloccato (Regola B1)?
+3. [ ] Le deviazioni sono notificate come rischi per il Traguardo (Regola B4)?
+4. [ ] Il linguaggio è privo di giudizio morale (Regola B5)?

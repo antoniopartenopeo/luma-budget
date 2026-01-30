@@ -9,9 +9,9 @@ Local-first persistence with rich analytics and insights.
 |--------|--------|-------------|
 | **Dashboard** | Stable | KPIs, charts, budget overview |
 | **Transactions** | Stable | CRUD, filters, CSV import/export |
-| **Budget** | Stable | Monthly planning by spending groups |
+| **Budget** | **Archived** | Legacy Budget Plan (Accessible via Core only) |
 | **Categories** | Stable | Full CRUD with custom icons |
-| **Simulator** | Stable v2.0 | "What-If" expense reduction analysis |
+| **Ottimizzatore** | Stable | "What-If" expense reduction analysis (ex Simulator) |
 | **Insights** | Stable v1.2 | Deterministic Narration & Semantic Constraints |
 | **UI/UX** | **Premium v1.0**| Unified Glassmorphism & Narrative Flow |
 | **Settings** | Stable v1.3 | Preferences, backup/restore, themes |

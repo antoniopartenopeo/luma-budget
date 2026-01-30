@@ -158,7 +158,7 @@ export function TransactionsTable({
                                             showBackground
                                         />
                                         <div className="flex flex-col">
-                                            <span className="font-bold text-foreground leading-tight group-hover:text-primary transition-colors">
+                                            <span className="font-bold text-foreground leading-tight group-hover:text-primary transition-colors line-clamp-2">
                                                 {transaction.description}
                                             </span>
                                             {transaction.isSuperfluous && (
@@ -226,7 +226,7 @@ export function TransactionsTable({
                                     showBackground
                                 />
                                 <div className="flex flex-col">
-                                    <span className="font-black text-foreground leading-tight text-base">
+                                    <span className="font-black text-foreground leading-tight text-base break-words">
                                         {transaction.description}
                                     </span>
                                     <span className="text-xs text-muted-foreground font-medium mt-0.5">

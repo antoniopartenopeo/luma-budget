@@ -1,6 +1,6 @@
 import { DashboardSummary, DashboardTimeFilter } from "./types"
 import { fetchTransactions } from "../../transactions/api/repository"
-import { fetchBudget } from "../../budget/api/repository"
+import { fetchBudget } from "@/VAULT/budget/api/repository"
 import { getSignedCents } from "@/domain/transactions"
 import { calculateDateRange, filterByRange, getMonthBoundariesLocal } from "@/lib/date-ranges"
 import { getCategoryById } from "@/features/categories/config"

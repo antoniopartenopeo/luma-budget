@@ -108,7 +108,8 @@ Tutti i componenti principali devono seguire questi standard visuali:
 Per sezioni ad alto impatto (Dashboard, Insights), utilizzare il pattern **Ultra-Tech**:
 - **Componente Core**: `PremiumChartSection` (`src/features/dashboard/components/charts/premium-chart-section.tsx`).
 - **Visuals**:
-    - **Radar Background**: Impulsi neon (`animate-ping`) circolari dietro il grafico.
+    - **Radar Background**: Impulsi neon (`animate-ping`) circolari. Devono essere posizionati nello slot `background` della `MacroSection` per garantire un effetto full-bleed (dietro header e content).
+    - **Immersive Timing**: Animazioni di ingresso dei dati sensibili (es. radar o slice del grafico) possono estendersi fino a **5000ms** per enfatizzare il carattere analitico/premium.
     - **Focus-Mode**: Al passaggio del mouse, nascondere gli elementi non attivi (`blur state`) per evitare sovrapposizioni e guidare l'occhio.
     - **Kinetic Labels**: Etichette esterne che scalano e si illuminano in sincronia con i segmenti del grafico.
     - **Pure Glass**: Preferire centri vuoti o estremamente minimalisti per grafici a ciambella.
@@ -184,19 +185,22 @@ La tipografia su NUMA è rigorosamente governata.
 **Reference**: Budget & Simulatore.
 
 ### 1. Scala Ufficiale
-Ogni testo deve appartenere a uno di questi livelli.
-**È VIETATO** usare dimensioni o pesi arbitrari (es. `text-[13px]`, `font-semibold` se non previsto).
+Ogni testo deve appartenere a uno di questi livelli. 
+**Fluidità**: Per Titoli e KPI è incoraggiato l'uso di breakpoint Tailwind per rendere il testo "fluido" tra mobile e desktop (es. `text-2xl sm:text-3xl lg:text-4xl`).
 
 | Livello | Tailwind Class | Uso Obbligatorio |
 | :--- | :--- | :--- |
-| **Hero Title** | `text-2xl font-bold tracking-tight` | Titoli MacroSections |
+| **Hero Title** | `text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight` | Titoli principali pagine |
+| **Section Title** | `text-lg sm:text-xl lg:text-2xl font-bold tracking-tight` | Titoli MacroSections |
 | **Hero Eyebrow**| `text-[10px] font-bold uppercase tracking-wider` | Sottotitoli / Badge Hero |
-| **Main KPI** | `text-4xl font-black tracking-tighter tabular-nums` | KPI Primario Pagina |
-| **Card KPI** | `text-3xl font-black tracking-tighter tabular-nums` | KPI Card Secondarie |
-| **Section Title**| `text-xl font-bold tracking-tight` | Titoli sottosezioni / Liste |
+| **Main KPI** | `text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter tabular-nums` | KPI Primario Pagina |
+| **Card KPI** | `text-xl sm:text-2xl lg:text-3xl font-black tracking-tighter tabular-nums` | KPI Card Secondarie |
 | **Label** | `text-[10px] font-bold uppercase tracking-wider text-muted-foreground` | Etichette, Intestazioni colonne |
 | **Body/Narration**| `text-sm font-medium leading-relaxed` | Testo discorsivo, AI Insights |
 | **Empty State** | `text-xl font-bold tracking-tight` | Titolo stati vuoti |
+
+> [!TIP]
+> **Fluid Rule**: Se un KPI o un Titolo risulta troppo ingombrante su mobile, usa `text-xl sm:text-2xl lg:text-3xl` invece di una classe fissa. La scala deve essere armoniosa.
 
 ### 2. Regole di Applicazione
 1.  **Numeri**: Usare sempre `tabular-nums` per cifre incolonnate (KPI, Tabelle).
@@ -256,7 +260,8 @@ Il mancato rispetto anche di un solo punto della checklist tecnica automatizzabi
 
 ### 3. Spacing & Densità
 - [ ] **Vertical Gap**: Spacing tra card/sezioni coerente (tipicamente `space-y-8` o `gap-6`).
-- [ ] **Padding**: Padding interno uniforme (es. `p-8` desktop, `p-4` mobile).
+- [ ] **Padding**: Padding interno adattivo (`px-4` su mobile, `px-8` su desktop per card principali).
+- [ ] **Background Slot**: Sezioni con animazioni grafiche devono usare lo slot `background` della `MacroSection`.
 
 ### 4. Animazioni
 - [ ] **Pattern**: Utilizzato lo standard `scale-in 0.98` (non `y: 10`).
@@ -285,5 +290,5 @@ Il mancato rispetto anche di un solo punto della checklist tecnica automatizzabi
 
 ---
 
-**Versione**: 1.1.0  
-**Ultimo aggiornamento**: 2026-01-27
+**Versione**: 1.2.0  
+**Ultimo aggiornamento**: 2026-01-30

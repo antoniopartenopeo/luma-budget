@@ -74,7 +74,7 @@ export function buildDiagnosticsSnapshot(): DiagnosticsSnapshot {
         }
     })
 
-    // Detect unregistered luma_ keys
+    // Detect unregistered technical keys
     if (typeof window !== "undefined") {
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i)

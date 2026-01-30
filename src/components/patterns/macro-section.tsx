@@ -14,6 +14,7 @@ interface MacroSectionProps extends Omit<HTMLMotionProps<"div">, "title" | "chil
     status?: "default" | "warning" | "critical"
     className?: string
     contentClassName?: string
+    background?: React.ReactNode
 }
 
 /**
@@ -29,6 +30,7 @@ export function MacroSection({
     status = "default",
     className,
     contentClassName,
+    background,
     ...props
 }: MacroSectionProps) {
     const isPremium = variant === "premium"
@@ -61,6 +63,13 @@ export function MacroSection({
                 {/* Visual Glass Reflection Accent */}
                 <div className="absolute inset-0 bg-gradient-to-br from-white/40 dark:from-white/5 to-transparent pointer-events-none" />
 
+                {/* Integrated Background Slot (Radar, Grids, etc) */}
+                {background && (
+                    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                        {background}
+                    </div>
+                )}
+
                 {/* Ambient Glows */}
                 {(isPremium || isWarning || isCritical) && (
                     <div
@@ -74,13 +83,13 @@ export function MacroSection({
                 )}
 
                 {(title || description || headerActions) && (
-                    <CardHeader className="relative z-10 px-6 sm:px-8 pt-6 sm:pt-8 pb-2">
+                    <CardHeader className="relative z-10 px-4 sm:px-8 pt-6 sm:pt-8 pb-2">
                         <div className="flex flex-wrap items-center justify-between gap-4">
                             <div className="space-y-1">
                                 {title && (
                                     <div className={cn(
-                                        "text-xl font-bold tracking-tight text-foreground",
-                                        isPremium && "text-2xl"
+                                        "text-lg sm:text-xl lg:text-2xl font-bold tracking-tight text-foreground",
+                                        isPremium && "text-xl sm:text-2xl lg:text-3xl"
                                     )}>
                                         {title}
                                     </div>
@@ -97,8 +106,8 @@ export function MacroSection({
                 )}
 
                 <CardContent className={cn(
-                    "relative z-10 px-8 pb-8 pt-4",
-                    !title && !description && "pt-8",
+                    "relative z-10 px-4 sm:px-8 pb-6 sm:pb-8 pt-4",
+                    !title && !description && "pt-6 sm:pt-8",
                     contentClassName
                 )}>
                     {children}

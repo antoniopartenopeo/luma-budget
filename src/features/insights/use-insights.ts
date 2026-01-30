@@ -7,7 +7,7 @@
 import { useMemo } from "react"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
 import { useCategories } from "@/features/categories/api/use-categories"
-import { useBudget } from "@/features/budget/api/use-budget"
+import { useBudget } from "@/VAULT/budget/api/use-budget"
 import { Insight } from "./types"
 import {
     buildBudgetRiskInsight,

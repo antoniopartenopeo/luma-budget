@@ -4,6 +4,33 @@ Storico consolidato di tutte le modifiche a regole, skill, e standard di svilupp
 
 ---
 
+## [2.6.0] - 2026-01-30
+
+### Added
+- **Fluid & Responsive UI Standards** in `numa-ui-standards`:
+  - Formalizzato l'uso di **Fluid Typography** (`text-xl sm:text-2xl lg:text-3xl`) per componenti Hero e KPI, per garantire leggibilità su schermi ultra-wide e mobile.
+  - Introdotto standard per **Adaptive Padding**: `px-4` (mobile) vs `px-8` (desktop) per le card principali.
+  - Aggiunto supporto allo slot **background** in `MacroSection` per animazioni full-bleed.
+- **Enhanced Motion Parameters**:
+  - Estesa la durata delle animazioni immersive (es. radar chart) fino a **5000ms** per un feeling premium analitico.
+
+---
+
+## [2.5.0] - 2026-01-29
+
+### Changed
+- **Architecture Shift: Goals First**:
+  - Il modulo "Budget" è stato archiviato come interfaccia utente.
+  - La pagina `/budget` è dismessa e reindirizza a `/goals/lab`.
+  - Il link "Budget" è stato rimosso dalla Sidebar.
+  - La card Dashboard "Budget" ora punta al Laboratorio Obiettivi.
+- **Aggiornamento Semantico `numa-budget-semantics`**:
+  - Ridefinito come "Pacing Temporale".
+  - Nuovi termini: "Traguardo", "Viaggio", "Ritmo" sostituiscono il focus su "Risparmio" e "Limite".
+  - Introdotte regole B1-B6 adattate al concetto di guida temporale.
+
+---
+
 ## [2.4.0] - 2026-01-27
 
 ### Changed

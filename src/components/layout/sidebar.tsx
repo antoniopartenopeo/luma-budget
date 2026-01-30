@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Receipt, PiggyBank, LineChart, Settings, Calculator } from "lucide-react"
+import { LayoutDashboard, LineChart, Settings, Divide, FlaskConical, Receipt, Target } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useSettings } from "@/features/settings/api/use-settings"
@@ -11,9 +11,9 @@ import { BrandLogo } from "@/components/ui/brand-logo"
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
   { icon: Receipt, label: "Transazioni", href: "/transactions" },
-  { icon: PiggyBank, label: "Budget", href: "/budget" },
+  // { icon: Target, label: "Labs", href: "/labs" }, // REMOVED (Legacy/Reset)
   { icon: LineChart, label: "Insights", href: "/insights" },
-  { icon: Calculator, label: "Simulatore", href: "/simulator" },
+  { icon: FlaskConical, label: "Ottimizzatore", href: "/simulator" },
   { icon: Settings, label: "Impostazioni", href: "/settings" },
 ]
 

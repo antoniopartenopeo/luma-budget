@@ -101,9 +101,13 @@ Items: Chat query dati ("Quanto ho speso in pizza?")
 
 **Decision & Future Planning**
 - KPI Cards & Dashboard
-- Budget Plan & Tracking
-- Simulazione What-If
+- Ottimizzatore (ex Simulator) - Read-only
 - Gruppi Spending & Budget
+
+**Nuclear Reset (Jan 2026)**
+- Budget Plan & Tracking (RESET -> Logic Vault)
+- Goals Lab UI (RESET -> Logic Vault)
+- Legacy Simulator (REMOVED)
 
 **Automation Without Betrayal**
 - Trend Analysis

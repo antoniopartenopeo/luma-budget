@@ -4,6 +4,14 @@ Storico consolidato di tutte le modifiche a regole, skill, e standard di svilupp
 
 ---
 
+## [2.7.2] - 2026-02-01
+
+### Changed
+- **UI Governance Update**:
+  - Aggiornato `numa-ui-standards` v1.3.1.
+  - Sostituito divieto di ombre interne con **obbligo** di `glass-card` (`shadow-sm`) per livelli subordinati.
+  - Formalizzato lo standard "Premium 3D" vs "Flat".
+
 ## [2.7.1] - 2026-02-01
 
 ### Added

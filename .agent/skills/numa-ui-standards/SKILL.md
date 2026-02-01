@@ -53,7 +53,7 @@ Ogni sezione principale DEVE essere composta da:
 ### Gerarchia Visiva
 - **Livello 0 (Sfondo)**: `bg-background`
 - **Livello 1 (Dominante)**: `MacroSection` (`glass-panel`, `rounded-[2.5rem]`, `shadow-xl`).
-- **Livello 2 (Subordinato)**: Card interne o grid (`bg-card/20` o `bg-transparent`). **VIETATO** usare shadow o glass pesanti per elementi interni al Monolite.
+- **Livello 2 (Subordinato)**: Card interne o grid. DEVONO usare `glass-card` (che include `shadow-sm` e `border`) per garantire l'effetto **Premium 3D**. **VIETATO** il design "Flat" (`shadow-none`, `border-none`) su elementi strutturali.
 
 ---
 
@@ -311,5 +311,5 @@ Il mancato rispetto anche di un solo punto della checklist tecnica automatizzabi
 
 ---
 
-**Versione**: 1.3.0  
+**Versione**: 1.3.1  
 **Ultimo aggiornamento**: 2026-02-01

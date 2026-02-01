@@ -67,12 +67,16 @@ export function BudgetProgressBar({ spent, budget, className, showLabel = true, 
                 {/* Pacing Marker (Today) */}
                 {pacingLeft !== null && (
                     <div
-                        className="absolute top-0 bottom-0 w-0.5 bg-foreground/80 z-10 cursor-help group/marker"
-                        style={{ left: `${pacingLeft}%` }}
-                        title={`Oggi (${Math.round(pacingLeft)}%)`}
+                        className="absolute top-0 bottom-0 z-10 pointer-events-none"
+                        style={{ width: `${pacingLeft}%` }}
                     >
-                        {/* Tick Head */}
-                        <div className="absolute -top-1 -translate-x-[calc(50%-0.5px)] w-1.5 h-1.5 rounded-full bg-foreground shadow-sm group-hover/marker:scale-125 transition-transform" />
+                        <div
+                            className="absolute right-0 top-0 bottom-0 w-0.5 bg-foreground/80 cursor-help group/marker pointer-events-auto"
+                            title={`Oggi (${Math.round(pacingLeft)}%)`}
+                        >
+                            {/* Tick Head */}
+                            <div className="absolute -top-1 -translate-x-[calc(50%-0.5px)] w-1.5 h-1.5 rounded-full bg-foreground shadow-sm group-hover/marker:scale-125 transition-transform" />
+                        </div>
                     </div>
                 )}
             </div>

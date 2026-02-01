@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { cn } from "@/lib/utils"
 
 interface BrandLogoProps {
@@ -21,13 +22,14 @@ export function BrandLogo({
 
     return (
         <div className={cn("relative flex items-center justify-center", className)}>
-            <img
+            <Image
                 src={isSmart ? "/brand/numa-logo-smart.png" : "/brand/numa-logo-full.png"}
                 alt="NUMA Budget"
                 width={width || defaultWidth}
                 height={height || defaultHeight}
                 className="object-contain"
-                loading="eager"
+                priority
+                unoptimized
             />
         </div>
     )

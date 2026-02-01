@@ -50,3 +50,7 @@ Questa skill è **vincolante** per:
 2. [ ] L'early praise è bloccato (Regola B1)?
 3. [ ] Le deviazioni sono notificate come rischi per il Traguardo (Regola B4)?
 4. [ ] Il linguaggio è privo di giudizio morale (Regola B5)?
+---
+
+**Versione**: 1.1.0  
+**Ultimo aggiornamento**: 2026-02-01

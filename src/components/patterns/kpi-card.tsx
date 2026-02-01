@@ -7,7 +7,8 @@ import { motion } from "framer-motion"
 
 export type KpiTone = "positive" | "negative" | "neutral" | "warning"
 
-interface KpiCardProps {
+
+export interface KpiCardProps {
     title: string
     subtitle?: string
     value: string | number
@@ -22,6 +23,7 @@ interface KpiCardProps {
     valueClassName?: string
     description?: string
 }
+
 
 export function KpiCard({
     title,

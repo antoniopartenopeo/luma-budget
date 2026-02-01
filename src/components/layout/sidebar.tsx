@@ -13,7 +13,7 @@ const sidebarItems = [
   { icon: Receipt, label: "Transazioni", href: "/transactions" },
   // { icon: Target, label: "Labs", href: "/labs" }, // REMOVED (Legacy/Reset)
   { icon: LineChart, label: "Insights", href: "/insights" },
-  { icon: FlaskConical, label: "Ottimizzatore", href: "/simulator" },
+  { icon: FlaskConical, label: "Financial Lab", href: "/simulator" },
   { icon: Settings, label: "Impostazioni", href: "/settings" },
 ]
 
@@ -70,21 +70,6 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
           </nav>
         </div>
 
-        {/* User Profile / Footer */}
-        <div className="p-4 mt-auto">
-          <div className="group flex items-center gap-3 rounded-2xl bg-white/40 dark:bg-white/5 p-3 transition-all hover:bg-white/60 dark:hover:bg-white/10 border border-white/20 dark:border-white/5 backdrop-blur-sm shadow-sm">
-            <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-sm font-black shadow-sm">
-              {initial}
-            </div>
-            <div className="flex flex-1 flex-col overflow-hidden">
-              <span className="truncate text-sm font-bold tracking-tight">{displayName}</span>
-              <span className="truncate text-[10px] uppercase tracking-wider text-muted-foreground/80 font-bold">Locale</span>
-            </div>
-            <Link href="/settings" className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-black/5 dark:hover:bg-white/10 rounded-lg text-muted-foreground">
-              <Settings className="h-4 w-4" />
-            </Link>
-          </div>
-        </div>
       </div>
     </aside>
   )

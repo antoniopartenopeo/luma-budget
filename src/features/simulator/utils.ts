@@ -1,5 +1,5 @@
 import { Transaction } from "@/features/transactions/api/types"
-import { calculateDateRange } from "@/lib/date-ranges"
+import { calculateDateRange, filterByRange } from "@/lib/date-ranges"
 
 // If types are defined in this file (which they were previously), restore them or import them.
 // Looking at previous file content, CategoryAverage and SimulationResult were defined inline. 
@@ -21,6 +21,11 @@ export interface CategoryAverage {
     averageAmount: number // in cents, integer
     totalInPeriod: number
     monthCount: number
+}
+
+export interface MonthlyAveragesResult {
+    categories: Record<string, CategoryAverage>
+    incomeCents: number
 }
 
 export interface SimulationResult {
@@ -45,15 +50,13 @@ export interface SimulationResult {
  * Quindi se oggi è il 17 Gennaio, e chiedo 3 mesi, il periodo pivot dovrebbe essere Dicembre (mese precedente).
  * 
  * @param periodMonths - 3, 6, or 12
- * @param now - Reference date (default: Date.now())
  */
 export function computeMonthlyAverages(
     transactions: Transaction[],
     periodMonths: SimulationPeriod,
     now: Date = new Date()
-): Record<string, CategoryAverage> {
+): MonthlyAveragesResult {
     // 1. Determina il "Mese Precedente" come pivot per avere mesi completi
-    // E.g. se siamo a Gennaio, pivot = "YYYY-12" dell'anno scorso
     const previousMonthDate = new Date(now)
     previousMonthDate.setDate(0) // Last day of previous month
 
@@ -64,36 +67,39 @@ export function computeMonthlyAverages(
     // 2. Calcola range usando l'utility condivisa
     const { startDate, endDate } = calculateDateRange(pivotStr, periodMonths)
 
-    // 3. Filtra transazioni (Expense only, in range)
+    // 3. Filtra transazioni (Income + Expense, in range)
     const sums: Record<string, number> = {}
+    let incomeTotal = 0
 
-    transactions.forEach(t => {
-        if (t.type !== 'expense') return
+    const inRangeTransactions = filterByRange(transactions, startDate, endDate)
 
-        const tDate = new Date(t.timestamp)
-        if (tDate >= startDate && tDate <= endDate) {
+    inRangeTransactions.forEach(t => {
+        const amount = Math.abs(t.amountCents)
+        if (t.type === 'income') {
+            incomeTotal += amount
+        } else {
             const catId = t.categoryId || "uncategorized"
-            // Use amountCents directly (integer math)
-            sums[catId] = (sums[catId] || 0) + Math.abs(t.amountCents)
+            sums[catId] = (sums[catId] || 0) + amount
         }
     })
 
-    // 4. Calcola medie (Integer division with round)
-    const result: Record<string, CategoryAverage> = {}
+    // 4. Calcola medie
+    const categories: Record<string, CategoryAverage> = {}
 
     Object.keys(sums).forEach(catId => {
         const total = sums[catId]
-        const average = Math.round(total / periodMonths)
-
-        result[catId] = {
+        categories[catId] = {
             categoryId: catId,
             totalInPeriod: total,
             monthCount: periodMonths,
-            averageAmount: average
+            averageAmount: Math.round(total / periodMonths)
         }
     })
 
-    return result
+    return {
+        categories,
+        incomeCents: Math.round(incomeTotal / periodMonths)
+    }
 }
 
 /**

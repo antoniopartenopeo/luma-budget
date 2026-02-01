@@ -212,9 +212,9 @@ function TransactionDetailSheetContent({
                                         Classificazione
                                     </div>
                                     <div className="bg-amber-500/10 p-4 rounded-xl border border-amber-500/20 flex items-center justify-between">
-                                        <div className="flex flex-col text-xs">
+                                        <div className="flex flex-col text-sm font-medium">
                                             <span className="font-bold text-amber-700 dark:text-amber-400">Spesa Superflua</span>
-                                            <span className="text-muted-foreground">Considerata non essenziale.</span>
+                                            <span className="text-muted-foreground/80">Considerata non essenziale.</span>
                                         </div>
                                         <Badge className="bg-amber-500/20 text-amber-800 dark:text-amber-300 border-amber-500/20 text-[9px] uppercase font-bold shadow-none rounded-md">
                                             {transaction.classificationSource === "ruleBased" ? "Regola" : "Manuale"}

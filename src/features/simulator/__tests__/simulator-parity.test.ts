@@ -38,8 +38,8 @@ describe("Simulator Parity Check", () => {
 
     it("should match Dashboard total for 3 month window", () => {
         // Simulator (3 months ending Dec 2025)
-        const avgs = computeMonthlyAverages(transactions, 3, NOW)
-        const simResult = applySavings(avgs, {}) // 0% savings
+        const avgsResult = computeMonthlyAverages(transactions, 3, NOW)
+        const simResult = applySavings(avgsResult.categories, {}) // 0% savings
 
         // Dashboard (Pivot "2025-12", Range 3 months)
         const dashTotal = calculateDashboardTotalExpenses(transactions, "2025-12", 3)

@@ -75,3 +75,7 @@ Prima di approvare una PR su Insights, verificare:
 3.  [ ] "Surplus" è usato solo per cifre significative?
 4.  [ ] Nessun calcolo matematico dentro le stringhe di template?
 5.  [ ] **Eseguire `npm test src/domain/narration/__tests__/semantic-enforcement.test.ts` e verificare che passi.**
+---
+
+**Versione**: 1.1.0  
+**Ultimo aggiornamento**: 2026-02-01

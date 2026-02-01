@@ -71,7 +71,8 @@ Numa Budget follows a strict set of development standards to ensure financial ac
 ## 📁 Documentation
 
 - **[Numa Core Rules](file:///.agent/rules/numa-core-rules.md)**: Core development standards and constraints.
-- **[Numa Core Rules](file:///.agent/rules/numa-core-rules.md)**: Core development standards and constraints.
+- **[UI Standards](file:///.agent/skills/numa-ui-standards/SKILL.md)**: Design system and UBI rules.
+- **[Financial Logic](file:///.agent/skills/numa-financial-logic/SKILL.md)**: Monetary domain rules.
 
 ## 🚀 Deploy
 

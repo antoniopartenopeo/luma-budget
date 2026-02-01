@@ -222,5 +222,5 @@ L'analisi deve seguire questo ordine gerarchico:
 
 ---
 
-**Versione**: 1.1.0  
-**Ultimo aggiornamento**: 2026-01-25
+**Versione**: 1.2.0  
+**Ultimo aggiornamento**: 2026-02-01

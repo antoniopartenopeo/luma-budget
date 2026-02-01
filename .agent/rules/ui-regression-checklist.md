@@ -38,6 +38,18 @@ Questa checklist definisce controlli **deterministici** per garantire l'integrit
 |:---|:---|:---|
 | Presenza di `PageHeader` in ogni vista principale. | Struttura semantica coerente (Titolo + Descrizione). | **DOM**: Verifica l'esistenza del componente/tag con `role="heading"` e testo descrittivo non vuoto. |
 
+## 7. Sheet Layout: Consistency
+| Verifica | Criticità | Automazione (Come) |
+|:---|:---|:---|
+| Struttura `flex flex-col h-full` con Header/Footer delimitati da bordi. | Garantisce che le azioni siano sempre visibili e lo scrolling corretto. | **DOM**: Verifica `flex-col` sul wrapper e `border-b` / `border-t` sugli elementi estremi. |
+| Altazza bottoni footer esattamente `h-12`. | Uniformità delle azioni primarie. | **CSS**: Verifica computed height di `48px` sui bottoni nel footer dello Sheet. |
+
+## 8. Typography: Premium Readability
+| Verifica | Criticità | Automazione (Come) |
+|:---|:---|:---|
+| `SheetDescription` usa la classe `font-medium`. | Leggibilità critica su materiali semitrasparenti. | **DOM**: Verifica classe `font-medium` su elementi con classe `SheetDescription`. |
+| Icone secondarie (meta-info) sono `h-3 w-3`. | Gerarchia visiva per evitare rumore. | **DOM/SVG**: Verifica attributi `width="12"` e `height="12"` su icone non principali. |
+
 ---
 
 ## 🛠 Esempi di Codice per l'Automa

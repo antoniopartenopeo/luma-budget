@@ -126,5 +126,5 @@ assignCategory(merchantKey: string): CategoryId | null
 
 ---
 
-**Versione**: 1.0.0  
-**Ultimo aggiornamento**: 2026-01-24
+**Versione**: 1.1.0  
+**Ultimo aggiornamento**: 2026-02-01

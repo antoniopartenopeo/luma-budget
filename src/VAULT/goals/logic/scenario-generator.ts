@@ -1,6 +1,7 @@
 import { Category } from "@/features/categories/config"
 import { BaselineMetrics } from "./financial-baseline"
 import { ScenarioConfig } from "../types"
+import { RHYTHMS } from "../config/rhythms"
 
 /**
  * Generates savings scenarios based on spending habits.
@@ -10,41 +11,26 @@ export function generateScenarios(
     baseline: BaselineMetrics,
     categories: Category[]
 ): ScenarioConfig[] {
-    // 1. Andamento Naturale (Baseline)
-    const baselineScenario: ScenarioConfig = {
-        type: "baseline",
-        label: "Andamento naturale",
-        description: "Continua secondo il tuo passo abituale.",
-        applicationMap: {}
-    }
+    return RHYTHMS.map(rhythm => {
+        const applicationMap: Record<string, number> = {}
 
-    // 2. Andamento Rilassato (Relaxed)
-    const relaxedSavings: Record<string, number> = {}
-    categories.forEach(cat => {
-        if (cat.spendingNature === 'superfluous') relaxedSavings[cat.id] = 10
-        if (cat.spendingNature === 'comfort') relaxedSavings[cat.id] = 2
+        categories.forEach(cat => {
+            if (cat.spendingNature === 'superfluous') {
+                applicationMap[cat.id] = rhythm.savings.superfluous
+            } else if (cat.spendingNature === 'comfort') {
+                applicationMap[cat.id] = rhythm.savings.comfort
+            } else {
+                applicationMap[cat.id] = 0
+            }
+        })
+
+        return {
+            type: rhythm.type,
+            label: rhythm.label,
+            description: rhythm.description,
+            applicationMap,
+            savingsMap: rhythm.savings
+        }
     })
 
-    const relaxedScenario: ScenarioConfig = {
-        type: "balanced",
-        label: "Andamento rilassato",
-        description: "Privilegia la fluidità nel quotidiano.",
-        applicationMap: relaxedSavings
-    }
-
-    // 3. Andamento Sostenuto (Aggressive)
-    const rapidoSavings: Record<string, number> = {}
-    categories.forEach(cat => {
-        if (cat.spendingNature === 'superfluous') rapidoSavings[cat.id] = 40
-        if (cat.spendingNature === 'comfort') rapidoSavings[cat.id] = 15
-    })
-
-    const rapidoScenario: ScenarioConfig = {
-        type: "aggressive",
-        label: "Andamento sostenuto",
-        description: "Un passo più deciso anticipa la data di arrivo.",
-        applicationMap: rapidoSavings
-    }
-
-    return [baselineScenario, rapidoScenario, relaxedScenario]
 }

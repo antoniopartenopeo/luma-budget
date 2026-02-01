@@ -9,6 +9,7 @@ import { QuickExpenseInput } from "@/features/transactions/components/quick-expe
 import { usePrivacyStore } from "@/features/privacy/privacy.store"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Sidebar } from "./sidebar"
+import { useSettings } from "@/features/settings/api/use-settings"
 import { FlashOverlay } from "@/features/flash/components/flash-overlay"
 
 /**
@@ -21,11 +22,15 @@ export function TopBar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [isQuickAddOpen, setIsQuickAddOpen] = useState(false)
     const { isPrivacyMode, togglePrivacy } = usePrivacyStore()
+    const { data: settings } = useSettings()
+
+    const displayName = settings?.profile?.displayName || "Account locale"
+    const initial = displayName.charAt(0).toUpperCase()
 
     return (
-        <header className="sticky top-0 z-30 glass-chrome">
+        <header className="sticky top-0 z-30 glass-chrome lg:pl-64">
             <div className="flex min-h-[80px] lg:min-h-[80px] h-auto flex-col">
-                <div className="flex h-20 items-center justify-between gap-4 px-4 md:px-6">
+                <div className="flex h-20 items-center justify-between gap-4 px-4 md:px-8">
                     <div className="flex items-center gap-2">
                         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                             <SheetTrigger asChild>
@@ -47,7 +52,7 @@ export function TopBar() {
                     {!isSettingsPage && (
                         <>
                             {/* Desktop Quick Expense */}
-                            <div className="flex-1 max-w-2xl hidden sm:block">
+                            <div className="flex-1 hidden sm:block">
                                 <QuickExpenseInput />
                             </div>
                         </>
@@ -70,15 +75,31 @@ export function TopBar() {
                                 </div>
                             </Button>
                         )}
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={togglePrivacy}
-                            className="rounded-xl text-muted-foreground hover:text-foreground"
-                            title={isPrivacyMode ? "Mostra importi" : "Nascondi importi"}
-                        >
-                            {isPrivacyMode ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
-                        </Button>
+
+                        <div className="flex items-center bg-white/40 dark:bg-white/5 rounded-full p-1 border border-white/20 dark:border-white/10 backdrop-blur-sm shadow-sm hover:bg-white/60 dark:hover:bg-white/10 transition-all">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={togglePrivacy}
+                                className="h-8 w-8 rounded-full text-muted-foreground hover:text-foreground"
+                                title={isPrivacyMode ? "Mostra importi" : "Nascondi importi"}
+                            >
+                                {isPrivacyMode ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                            </Button>
+
+                            <div className="h-4 w-px bg-border/50 mx-1" />
+
+                            <div className="flex items-center gap-2 pl-1 pr-2 cursor-default">
+                                <div className="h-7 w-7 rounded-full bg-primary/20 flex items-center justify-center text-primary text-[10px] font-black shadow-sm border border-primary/20">
+                                    {initial}
+                                </div>
+                                <div className="hidden sm:flex flex-col">
+                                    <span className="text-[11px] font-bold tracking-tight leading-none truncate max-w-[80px]">{displayName}</span>
+                                    <span className="text-[8px] uppercase tracking-wider text-muted-foreground/60 font-bold leading-none">Locale</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <FlashOverlay />
                     </div>
                 </div>

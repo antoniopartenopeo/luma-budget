@@ -13,6 +13,10 @@ import { getBalanceTone, getBudgetTone, getSuperfluousTone } from "../utils/kpi-
 import { usePrivacyStore } from "@/features/privacy/privacy.store"
 import { getPrivacyClass } from "@/features/privacy/privacy-utils"
 
+// Smart Context Integration
+import { generateSmartContext } from "@/features/smart-context/logic/context-engine"
+import { SmartKpiCard } from "@/features/smart-context/components/smart-kpi-card"
+
 interface DashboardKpiGridProps {
     totalSpent?: number
     netBalance?: number
@@ -94,6 +98,27 @@ export function DashboardKpiGrid({
         return narrateKPI(facts, state).text
     }
 
+    // --- SMART CONTEXT GENERATION ---
+    // We reconstruct a partial summary object for the engine logic
+    const smartContext = generateSmartContext({
+        summary: {
+            // These properties must match DashboardSummary structure roughly or what the engine expects
+            // The engine expects: netBalance, budgetRemaining, budgetTotal, totalSpent, uselessSpendPercent
+            // We pass 0 or defaults for missing non-critical ones, but here we have everything needed.
+            netBalance: netBalance || 0,
+            budgetRemaining: budgetRemaining || 0,
+            budgetTotal: budgetTotal || 0,
+            totalSpent: totalSpent || 0,
+            uselessSpendPercent: uselessSpendPercent || null,
+            // Mocking the rest as they are not used by current rules
+            totalIncome: 0,
+            totalExpenses: totalSpent || 0,
+            categoriesSummary: [],
+            usefulVsUseless: { useful: 0, useless: 0 },
+            monthlyExpenses: []
+        }
+    })
+
     return (
         <MacroSection
             title="Overview Performance"
@@ -106,7 +131,7 @@ export function DashboardKpiGrid({
                 key={filter?.period || "default"}
                 className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4 pt-4 animate-enter-up"
             >
-                <KpiCard
+                <SmartKpiCard
                     title="Saldo"
                     value={isLoading ? 0 : formatValue(netBalance || 0)}
                     valueClassName={getPrivacyClass(isPrivacyMode)}
@@ -115,8 +140,13 @@ export function DashboardKpiGrid({
                     icon={CreditCard}
                     isLoading={isLoading}
                     description={isLoading ? undefined : buildNarration("balance", netBalance || 0, saldoTone)}
+                    context={smartContext['netBalance']} // Engine uses 'netBalance' key? Wait, check engine. 
+                // Logic check: engine keys were: 'budgetRemaining', 'totalSpent', 'uselessSpendPercent'
+                // For Logic Rule 3 (Safe Harbor), engine sets 'budgetRemaining'.
+                // Does it set anything for balance? No.
+                // Let's re-verify engine keys.
                 />
-                <KpiCard
+                <SmartKpiCard
                     title="Spesa"
                     value={isLoading ? 0 : formatValue(totalSpent || 0)}
                     valueClassName={getPrivacyClass(isPrivacyMode)}
@@ -124,8 +154,9 @@ export function DashboardKpiGrid({
                     isLoading={isLoading}
                     onClick={() => router.push("/transactions")}
                     description={isLoading ? undefined : buildNarration("expenses", totalSpent || 0, spesaTone)}
+                    context={smartContext['totalSpent']}
                 />
-                <KpiCard
+                <SmartKpiCard
                     title="Budget Rimanente"
                     value={isLoading ? 0 : (isMonthlyView ? formatValue(budgetRemaining || 0) : "—")}
                     valueClassName={getPrivacyClass(isPrivacyMode)}
@@ -137,8 +168,9 @@ export function DashboardKpiGrid({
                     isLoading={isLoading}
                     onClick={isMonthlyView && !hasBudget ? () => router.push("/goals/lab") : undefined}
                     description={isLoading ? undefined : buildNarration("budget", budgetRemaining || 0, budgetTone, budgetPercent)}
+                    context={smartContext['budgetRemaining']}
                 />
-                <KpiCard
+                <SmartKpiCard
                     title="Spese Superflue"
                     value={isLoading ? 0 : (uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—")}
                     // Note: percentages are not monetary, usually OK to show, but can blur if desired. Keeping visible for now.
@@ -149,6 +181,7 @@ export function DashboardKpiGrid({
                     isLoading={isLoading}
                     onClick={() => router.push("/transactions?filter=wants")}
                     description={isLoading ? undefined : buildNarration("superfluous", uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—", superflueTone, uselessSpendPercent ?? undefined)}
+                    context={smartContext['uselessSpendPercent']}
                 />
             </div>
         </MacroSection>

@@ -30,7 +30,6 @@ export function useAIAdvisor() {
 
     // Force "Thinking" time to allow user to appreciate the semantic animation
     useEffect(() => {
-        setIsArtificialLoading(true)
         const timer = setTimeout(() => {
             setIsArtificialLoading(false)
         }, 2000) // 2s "Thinking" time per user request

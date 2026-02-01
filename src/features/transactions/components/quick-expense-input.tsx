@@ -116,8 +116,8 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
             <form
                 onSubmit={handleSubmit}
                 className={cn(
-                    "flex flex-col sm:flex-row items-stretch sm:items-center gap-2 rounded-2xl sm:rounded-full bg-background p-2 sm:p-1 shadow-sm transition-all border border-input",
-                    isFocused && "shadow-md ring-2 ring-primary/10",
+                    "flex flex-col sm:flex-row items-stretch sm:items-center gap-2 rounded-2xl h-auto sm:h-12 p-2 sm:p-1 transition-all glass-card",
+                    isFocused && "ring-2 ring-primary/20 bg-background/60 dark:bg-black/40 shadow-lg",
                     hasError && "border-destructive/50 shadow-destructive/10"
                 )}
                 onFocus={() => setIsFocused(true)}
@@ -193,7 +193,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                             }}
                             disabled={isPending}
                             className={cn(
-                                "h-9 w-full sm:w-24 border-0 bg-transparent pl-4 md:pl-6 pr-1 md:pr-2 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70 text-right font-medium text-sm md:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+                                "h-9 w-full sm:w-24 border-0 bg-transparent pl-4 md:pl-6 pr-1 md:pr-2 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70 text-right font-black tabular-nums tracking-tighter text-sm md:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
                                 validationError && (!amount || Math.abs(parseCurrencyToCents(amount)) <= 0) && "placeholder:text-destructive/50 text-destructive"
                             )}
                         />

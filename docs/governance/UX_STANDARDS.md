@@ -1,6 +1,7 @@
 # Numa UX Standards & Patterns
-> **Stato:** Draft
-> **Versione:** 0.1
+> **Stato:** Active
+> **Versione:** 0.2
+> **Ultimo aggiornamento:** 2026-02-01
 
 Questo documento raccoglie i pattern UX di alto livello che definiscono l'esperienza d'uso di Numa, al di là della pura UI.
 

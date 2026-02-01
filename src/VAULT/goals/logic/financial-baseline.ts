@@ -87,24 +87,27 @@ export function calculateBaselineMetrics(
 
     // 4. Calculate Averages & StdDev
     const months = Object.values(monthlyStats)
-    const count = months.length || periodMonths // Should match periodMonths unless date logic allows gaps
-    if (count === 0) {
-        return { averageMonthlyIncome: 0, averageMonthlyExpenses: 0, averageEssentialExpenses: 0, expensesStdDev: 0, monthsAnalyzed: 0 }
-    }
+    const count = months.length
+
+    // Invariant: If we couldn't find data for the requested period (e.g. gaps), we still normalize by periodMonths?
+    // Strictly speaking for "Average Monthly" over LAST N MONTHS, we should divide by N even if some have 0 data,
+    // assuming the period was active. 
+    // BUT the audit says "Pivot Rigido... garanzia dati completi".
+    // If strict, we divide by periodMonths.
+    const divisor = periodMonths
 
     const totalIncome = months.reduce((sum, m) => sum + m.income, 0)
     const totalExpenses = months.reduce((sum, m) => sum + m.expenses, 0)
     const totalEssential = months.reduce((sum, m) => sum + m.essential, 0)
 
-    const avgIncome = Math.round(totalIncome / count)
-    const avgExpenses = Math.round(totalExpenses / count)
-    const avgEssential = Math.round(totalEssential / count)
+    const avgIncome = Math.round(totalIncome / divisor)
+    const avgExpenses = Math.round(totalExpenses / divisor)
+    const avgEssential = Math.round(totalEssential / divisor)
 
     // StdDev of Expenses
     const squaredDiffs = months.map(m => Math.pow(m.expenses - avgExpenses, 2))
-    const avgSquaredDiff = squaredDiffs.reduce((sum, sq) => sum + sq, 0) / count
+    const avgSquaredDiff = squaredDiffs.reduce((sum, sq) => sum + sq, 0) / divisor
     const stdDev = Math.round(Math.sqrt(avgSquaredDiff))
-
 
 
     return {

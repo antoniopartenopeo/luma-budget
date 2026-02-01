@@ -16,7 +16,7 @@ src/
 │   ├── transactions/    # Transaction Management
 │   ├── insights/        # AI Analysis & Charts
 │   ├── settings/        # User Preferences
-│   └── simulator/       # "Ottimizzatore" (Read-only projections)
+│   └── simulator/       # "Ottimizzatore Avanzato" (Interactive projections)
 ├── domain/              # Pure Domain Logic (Framework Agnostic)
 │   ├── money/           # Currency math (Cents only)
 │   └── categories/      # Core Category logic
@@ -49,9 +49,10 @@ Each feature contains its own:
 3.  **Governance**: Strict ESLint rules prevent cross-feature contamination (e.g., Dashboard importing internal Insight components).
 
 ## 4. Routing (Clean)
-*   `/` -> Dashboard
-*   `/transactions` -> Transaction List
-*   `/insights` -> AI Analysis
-*   `/simulator` -> Ottimizzatore
-*   `/settings` -> Settings
-*   *(Legacy `/budget` & `/goals` -> Redirect to `/`)*
+* `/` -> Dashboard
+* `/transactions` -> Transaction List
+* `/insights` -> AI Analysis
+* `/simulator` -> Ottimizzatore Avanzato
+* `/goals` -> Financial Lab (Active)
+* `/settings` -> Settings
+* *(Legacy `/budget` -> Redirect to `/goals`)*

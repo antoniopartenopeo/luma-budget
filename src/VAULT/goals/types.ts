@@ -12,15 +12,30 @@ export interface SustainabilityResult {
 }
 
 export type ScenarioType = "baseline" | "balanced" | "aggressive" | "manual"
+export type ScenarioKey = "baseline" | "balanced" | "aggressive" | "custom"
 
 export interface ScenarioConfig {
     type: ScenarioType
     label: string
     description: string
     applicationMap: Record<string, number> // categoryId -> % of rhythm application (reduction)
+    savingsMap: { superfluous: number; comfort: number } // Abstract config percentages for UI display
+}
+
+
+export interface RhythmPreset {
+    type: ScenarioType
+    label: string
+    description: string
+    intensity: number
+    savings: {
+        superfluous: number
+        comfort: number
+    }
 }
 
 export interface GoalScenarioResult {
+    key: ScenarioKey
     config: ScenarioConfig
     projection: ProjectionResult
     sustainability: SustainabilityResult
@@ -77,15 +92,17 @@ export interface ActiveGoalCommitment {
 // Explicit "Contract" for Labs Simulation
 export interface LabsSimulationInput {
     goalTargetCents: number
-    currentFCF: number         // Current "Velocity" (Income - Expenses)
-    currentBenefit: number     // Existing Rhythm Benefit in place
-    proposedPaceAdjustment: number // User input (e.g. "I want to save +100€ more")
-    variability: number        // Standard Deviation
+    currentFCFCents: number      // Current "Velocity" (Income - Expenses)
+    currentBenefitCents: number  // Existing Rhythm Benefit in place
+    proposedPaceAdjustmentCents: number // User input (e.g. "I want to save +100€ more")
+    variabilityCents: number     // Standard Deviation
 }
 
 export interface LabsSimulationResult {
     originalMonths: number
     simulatedMonths: number
+    minMonths: number
+    maxMonths: number
     timeSaved: number
     projectedDate: Date
     canReach: boolean

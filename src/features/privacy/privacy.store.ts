@@ -26,7 +26,10 @@ export const usePrivacyStore = () => {
     const [isHydrated, setIsHydrated] = useState(false)
 
     useEffect(() => {
-        setIsHydrated(true)
+        // Use micro-task to avoid synchronous setState warning
+        Promise.resolve().then(() => {
+            setIsHydrated(true)
+        })
     }, [])
 
     return {

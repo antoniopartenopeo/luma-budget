@@ -134,28 +134,49 @@ Per sezioni ad alto impatto (Dashboard, Insights), utilizzare il pattern **Ultra
 
 ---
 
-## Template Flex Layout
+---
 
-Per contenitori scrollabili con header/footer fissi:
+## Layout Sheet Standardizzato
+
+Ogni `SheetContent` deve seguire rigorosamente questo schema flex-box per garantire che le azioni (Header/Footer) restino ancorate durante lo scroll.
 
 ```tsx
-<div className="flex flex-col h-full">
-  {/* Header fisso */}
-  <div className="shrink-0 border-b p-4">
-    Header
+<SheetContent className="flex flex-col h-full p-0 ...">
+  {/* 1. Header: Titolo + Icona + Bordo */}
+  <SheetHeader className="shrink-0 p-6 border-b border-white/20">
+    <div className="flex items-center gap-4">
+      <div className="h-12 w-12 rounded-2xl bg-primary/10 ...">
+        <Icon className="h-6 w-6 text-primary" />
+      </div>
+      <div className="flex flex-col">
+        <SheetTitle className="text-xl font-bold tracking-tight">Titolo</SheetTitle>
+        <SheetDescription className="text-sm font-medium">Descrizione premium.</SheetDescription>
+      </div>
+    </div>
+  </SheetHeader>
+
+  {/* 2. Body: Contenuto scrollabile */}
+  <div className="flex-1 overflow-y-auto p-6 space-y-6">
+    {/* Form o informazioni */}
   </div>
-  
-  {/* Body scrollabile */}
-  <div className="flex-1 overflow-y-auto min-h-0">
-    Contenuto scrollabile
+
+  {/* 3. Footer: Azioni + Bordo + Blur */}
+  <div className="shrink-0 p-6 bg-white/40 dark:bg-white/5 border-t border-white/20 backdrop-blur-md">
+    <div className="grid grid-cols-2 gap-3">
+      <Button variant="outline" className="h-12 ...">Annulla</Button>
+      <Button className="h-12 ...">Salva</Button>
+    </div>
   </div>
-  
-  {/* Footer fisso */}
-  <div className="shrink-0 border-t p-4">
-    Footer
-  </div>
-</div>
+</SheetContent>
 ```
+
+### Regole Invarianti del Layout
+1. **Scrolling**: Solo il body (`flex-1 overflow-y-auto`) deve scorrere.
+2. **Padding**: Usare `p-0` sullo `SheetContent` e re-iniettare il padding `p-6` nelle 3 micro-sezioni.
+3. **Bordi**: Header e Footer devono essere separati dal corpo via `border-b` / `border-t`.
+4. **Altezza Bottoni**: Sempre `h-12`.
+5. **Icone Header**: Standard `h-6 w-6`.
+
 
 ---
 
@@ -290,5 +311,5 @@ Il mancato rispetto anche di un solo punto della checklist tecnica automatizzabi
 
 ---
 
-**Versione**: 1.2.0  
-**Ultimo aggiornamento**: 2026-01-30
+**Versione**: 1.3.0  
+**Ultimo aggiornamento**: 2026-02-01

@@ -3,6 +3,10 @@ import { useState, useEffect, useMemo } from "react"
 import { GoalPortfolio, NUMAGoal, ProjectionInput } from "../types"
 import { getPortfolio, savePortfolio } from "../api/goal-repository"
 import { calculatePortfolioProjections, PortfolioMetrics } from "./multi-goal-orchestrator"
+import { deleteBudget } from "@/VAULT/budget/api/repository"
+import { format } from "date-fns"
+
+const DEFAULT_USER_ID = "user-1"
 
 interface UseGoalPortfolioProps {
     globalProjectionInput: Omit<ProjectionInput, "goalTarget" | "startDate">
@@ -77,8 +81,27 @@ export function useGoalPortfolio({ globalProjectionInput }: UseGoalPortfolioProp
     const removeGoal = async (goalId: string) => {
         if (!portfolio) return
         const updatedGoals = portfolio.goals.filter(g => g.id !== goalId)
+
+        // Cleanup cascade: if no goals remain, clear derived state
+        if (updatedGoals.length === 0) {
+            const updated: GoalPortfolio = {
+                ...portfolio,
+                goals: [],
+                mainGoalId: undefined as unknown as string, // Clear active goal
+                activeRhythm: undefined // Clear rhythm
+            }
+            setPortfolio(updated)
+            await savePortfolio(updated)
+
+            // Delete budget for current period to prevent stale Dashboard
+            const currentPeriod = format(new Date(), "yyyy-MM")
+            await deleteBudget(DEFAULT_USER_ID, currentPeriod)
+            return
+        }
+
+        // Standard path: reassign mainGoalId if needed
         let newMainGoalId = portfolio.mainGoalId
-        if (newMainGoalId === goalId && updatedGoals.length > 0) {
+        if (newMainGoalId === goalId) {
             newMainGoalId = updatedGoals[0].id
         }
         const updated = {
@@ -90,6 +113,17 @@ export function useGoalPortfolio({ globalProjectionInput }: UseGoalPortfolioProp
         await savePortfolio(updated)
     }
 
+    const updateGoal = async (goalId: string, updates: Partial<Pick<NUMAGoal, "title" | "targetCents">>) => {
+        if (!portfolio) return
+        const updatedGoals = portfolio.goals.map(g =>
+            g.id === goalId ? { ...g, ...updates } : g
+        )
+        const updated = { ...portfolio, goals: updatedGoals }
+        setPortfolio(updated)
+        await savePortfolio(updated)
+    }
+
+
     return {
         portfolio,
         metrics,
@@ -98,6 +132,7 @@ export function useGoalPortfolio({ globalProjectionInput }: UseGoalPortfolioProp
         setMainGoal,
         addGoal,
         removeGoal,
+        updateGoal,
         setRhythm
     }
 }

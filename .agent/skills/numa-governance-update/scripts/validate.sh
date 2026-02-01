@@ -47,8 +47,10 @@ echo "📌 Checking for inline styles..."
 # Exclude patterns that legitimately need inline styles:
 # - backgroundColor: hexColor (dynamic category colors)
 # - ECharts wrapper (library requirement)
-# - width percentage for progress bars
-INLINE_STYLES=$(grep -rn 'style={{' src/ --include="*.tsx" 2>/dev/null | grep -v "node_modules" | grep -v "backgroundColor:" | grep -v "echarts" | grep -v "width:" || true)
+# - width/height for progress bars/charts
+# - background for dynamic colors/gradients
+# - animationDelay for staggered visuals
+INLINE_STYLES=$(grep -rn 'style={{' src/ --include="*.tsx" 2>/dev/null | grep -v "node_modules" | grep -v "backgroundColor:" | grep -v "background:" | grep -v "echarts" | grep -v "width:" | grep -v "height:" | grep -v "animationDelay:" || true)
 
 if [ -n "$INLINE_STYLES" ]; then
     echo -e "${YELLOW}⚠️  WARNING: Inline styles found (use Tailwind instead)${NC}"

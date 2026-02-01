@@ -82,7 +82,7 @@ export const __resetTransactionsCache = () => {
  * Can be called from Settings or DevTools.
  */
 export function seedTransactions() {
-    _transactionsCache = [...INITIAL_SEED_TRANSACTIONS].map(t => normalizeTransactionAmount(t as any))
+    _transactionsCache = [...INITIAL_SEED_TRANSACTIONS].map(t => normalizeTransactionAmount(t as unknown as Record<string, unknown>))
     const allData = loadAllFromStorage()
     allData[DEFAULT_USER_ID] = _transactionsCache
     saveToStorage(allData)
@@ -128,7 +128,7 @@ function generateTransactionId(): string {
 export const createTransaction = async (data: CreateTransactionDTO): Promise<Transaction> => {
 
 
-    const isIncome = data.type === "income"
+    // const isIncome = data.type === "income"
     // Source of truth: Cents. Prioritize amountCents from DTO.
     // For new records, we strictly use amountCents.
     const amountCents = Math.abs(Math.round(data.amountCents || 0))
@@ -171,7 +171,7 @@ export const createBatchTransactions = async (dataList: CreateTransactionDTO[]):
 
 
     const newTransactions: Transaction[] = dataList.map(data => {
-        const isIncome = data.type === "income"
+        // const isIncome = data.type === "income"
         const amountCents = Math.abs(Math.round(data.amountCents || 0))
 
         // Superfluous logic
@@ -223,7 +223,7 @@ export const updateTransaction = async (id: string, data: Partial<CreateTransact
 
     const currentTransaction = txs[index]
     const nextType = data.type !== undefined ? data.type : currentTransaction.type
-    const isIncome = nextType === "income"
+    // const isIncome = nextType === "income"
 
     // Recalculate amounts if needed
     let amountCents = currentTransaction.amountCents

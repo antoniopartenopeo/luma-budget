@@ -196,5 +196,5 @@ chmod +x .git/hooks/pre-commit
 
 ---
 
-**Versione**: 1.0.0  
-**Ultimo aggiornamento**: 2026-01-24
+**Versione**: 1.1.0  
+**Ultimo aggiornamento**: 2026-02-01

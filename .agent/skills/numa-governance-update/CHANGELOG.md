@@ -4,6 +4,23 @@ Storico consolidato di tutte le modifiche a regole, skill, e standard di svilupp
 
 ---
 
+## [2.7.0] - 2026-02-01
+
+### Added
+- **Standardized Sheet Layout Pattern** in `numa-ui-standards`:
+  - Formalizzato il pattern Flex-Col per menu laterali (Header/Body/Footer).
+  - Imposto l'uso di `font-medium` su tutte le descrizioni e testi discorsivi per leggibilità Premium.
+  - Uniformate le icone secondarie (`h-3 w-3`) e i bottoni di footer (`h-12`).
+- **Interactive Goals & Optimizer**:
+  - Il Laboratorio Obiettivi è ora funzionale e interattivo.
+  - L'Ottimizzatore Avanzato supporta scenari "What-If" persistenti.
+
+### Changed
+- **Documentation Audit & Sync**:
+  - Allineata la `ROADMAP.md` e il `README.md` allo stato attuale.
+  - Aggiornata la `ARCHITECTURE.md` con i nuovi reindirizzamenti e feature attive.
+
+
 ## [2.6.0] - 2026-01-30
 
 ### Added

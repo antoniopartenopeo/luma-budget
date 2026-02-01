@@ -1,14 +1,11 @@
-
 import { useMemo } from "react"
 import { useMonthlyAverages } from "@/features/simulator/hooks"
 import { calculateBaselineMetrics } from "./financial-baseline"
 import { generateScenarios } from "./scenario-generator"
-import { checkScenarioSustainability } from "./sustainability-guard"
-import { projectGoalReachability } from "./projection-engine"
-import { applySavings } from "@/features/simulator/utils"
 import { Category } from "@/features/categories/config"
-import { GoalScenarioResult } from "../types"
+import { GoalScenarioResult, ScenarioKey } from "../types"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
+import { calculateScenario } from "./scenario-calculator"
 
 interface UseGoalScenariosProps {
     goalTargetCents: number
@@ -19,7 +16,7 @@ interface UseGoalScenariosProps {
 interface UseGoalScenariosResult {
     isLoading: boolean
     scenarios: GoalScenarioResult[]
-    baselineMetrics: any // Using specific type internally but generic export for now if needed by UI
+    baselineMetrics: BaselineMetrics | null
 }
 
 export function useGoalScenarios({
@@ -41,40 +38,23 @@ export function useGoalScenarios({
         // A. Baseline Metrics
         const baseline = calculateBaselineMetrics(transactions, categories, simulationPeriod)
 
-        // B. Generate Scenarios
+        // B. Generate Scenarios (Configs)
         const configs = generateScenarios(baseline, categories)
 
-        // C. Project each Scenario
+        // C. Calculate Results using Pure Logic
         const scenarioResults: GoalScenarioResult[] = configs.map(config => {
-            // Calculate Scenario Expenses
-            const simulationResult = applySavings(averages, config.applicationMap)
-            const scenarioExpenses = simulationResult.simulatedTotal
+            // Map known Rhythm types to ScenarioKeys strictly
+            let key: ScenarioKey = "baseline"
+            if (config.type === "balanced") key = "balanced"
+            if (config.type === "aggressive") key = "aggressive"
 
-            // Calculate Projected FCF (Average Income - Simulated Expenses)
-            // Note: We use Baseline Average Income
-            const projectedFCF = baseline.averageMonthlyIncome - scenarioExpenses
-
-            // Check Sustainability FIRST
-            const sustainability = checkScenarioSustainability(
-                baseline.averageMonthlyIncome,
-                baseline.averageEssentialExpenses,
-                0, // No essential savings driven manual input yet
-                scenarioExpenses
-            )
-
-            // Project Goal
-            const projection = projectGoalReachability({
-                goalTarget: goalTargetCents,
-                currentFreeCashFlow: projectedFCF,
-                historicalVariability: baseline.expensesStdDev
-            })
-
-            return {
+            return calculateScenario({
+                key,
+                baseline,
+                averages: averages.categories,
                 config,
-                projection,
-                sustainability,
-                simulatedExpenses: scenarioExpenses
-            }
+                goalTargetCents
+            })
         })
 
         return { scenarios: scenarioResults, baseline }

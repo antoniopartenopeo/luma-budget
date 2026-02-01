@@ -24,11 +24,11 @@ describe("Simulator Utils", () => {
 
             const result = computeMonthlyAverages(transactions as Transaction[], period, mockNow)
 
-            expect(result["cat1"]).toBeDefined()
+            expect(result.categories["cat1"]).toBeDefined()
             // Total: 30000. Months: 3. Avg: 10000.
-            expect(result["cat1"].averageAmount).toBe(10000)
-            expect(result["cat1"].totalInPeriod).toBe(30000)
-            expect(result["cat1"].monthCount).toBe(3)
+            expect(result.categories["cat1"].averageAmount).toBe(10000)
+            expect(result.categories["cat1"].totalInPeriod).toBe(30000)
+            expect(result.categories["cat1"].monthCount).toBe(3)
         })
 
         it("should handle rounding correctly", () => {
@@ -38,7 +38,18 @@ describe("Simulator Utils", () => {
                 { date: "2025-12-01", timestamp: new Date("2025-12-01").getTime(), amountCents: 100, type: "expense", categoryId: "cat2" }
             ]
             const result = computeMonthlyAverages(transactions as Transaction[], period, mockNow)
-            expect(result["cat2"].averageAmount).toBe(33)
+            expect(result.categories["cat2"].averageAmount).toBe(33)
+        })
+
+        it("should calculate correct average monthly income", () => {
+            const period: SimulationPeriod = 3
+            const transactions: Partial<Transaction>[] = [
+                { date: "2025-10-15", timestamp: new Date("2025-10-15").getTime(), amountCents: 300000, type: "income" }, // 3000€
+                { date: "2025-11-20", timestamp: new Date("2025-11-20").getTime(), amountCents: 150000, type: "income" }, // 1500€
+            ]
+            const result = computeMonthlyAverages(transactions as Transaction[], period, mockNow)
+            // Total: 450000. Months: 3. Avg: 150000.
+            expect(result.income).toBe(150000)
         })
     })
 

@@ -1,8 +1,8 @@
 # Numa Motion Principles & Governance
 
 > **Stato:** Attivo e Vincolante
-> **Versione:** 1.0
-> **Fonte:** Motion Audit (Gen 2026)
+> **Versione:** 1.1
+> **Fonte:** Motion Audit (Feb 2026)
 
 Questo documento definisce le regole immutabili per l'uso dell'animazione (Motion) all'interno dell'applicazione Numa. Il Motion in Numa è un linguaggio funzionale, non una decorazione estetica.
 

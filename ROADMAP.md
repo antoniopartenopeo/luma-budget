@@ -99,14 +99,17 @@ Items: Chat query dati ("Quanto ho speso in pizza?")
 - UI Unification (Glassmorphism)
 - Flash Summary
 
-**Decision & Future Planning**
+- **Decision & Future Planning**
 - KPI Cards & Dashboard
-- Ottimizzatore (ex Simulator) - Read-only
+- Ottimizzatore Avanzato (Interactive)
+- Goals Lab & Active Rhythm Tracking
 - Gruppi Spending & Budget
 
-**Nuclear Reset (Jan 2026)**
-- Budget Plan & Tracking (RESET -> Logic Vault)
-- Goals Lab UI (RESET -> Logic Vault)
+**Nuclear Reset & Refactor (Jan-Feb 2026)**
+- Budget Plan & Tracking (Logic Vault)
+- Goals Lab UI (Refactored & Active)
+- Global Sheet Refactor (Standardized Layout)
+- UI/UX Premium Polish (Typography & Icons)
 - Legacy Simulator (REMOVED)
 
 **Automation Without Betrayal**
@@ -114,7 +117,8 @@ Items: Chat query dati ("Quanto ho speso in pizza?")
 - AI Advisor Card (Base)
 
 ### In corso
-- (Nessuna iniziativa attiva al momento)
+- **Paginazione Server-Side** (Transactions)
+- **Bulk Actions** (Selection mode)
 
 ### Backlog Validato (Trust, Fix & Power)
 - **Trust**: Paginazione Server-Side, Undo Delete

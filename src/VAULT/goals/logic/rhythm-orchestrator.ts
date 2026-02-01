@@ -5,6 +5,7 @@ import { upsertBudget } from "@/VAULT/budget/api/repository"
 import { BudgetPlan, BudgetGroupId } from "@/VAULT/budget/api/types"
 import { getPortfolio, savePortfolio } from "../api/goal-repository"
 import { format } from "date-fns"
+import { RHYTHMS } from "../config/rhythms"
 
 interface ActivateRhythmInput {
     userId: string
@@ -56,13 +57,12 @@ export async function activateRhythm({
         superfluous: 0
     }
 
-    // Extract common savings from scenario (since our generator uses nature-based broad strokes)
-    if (scenario.type === 'balanced') {
-        natureAppliedIntensity.superfluous = 20
-        natureAppliedIntensity.comfort = 5
-    } else if (scenario.type === 'aggressive') {
-        natureAppliedIntensity.superfluous = 40
-        natureAppliedIntensity.comfort = 15
+    // Use the values from the provided scenario or Fallback to RHYTHMS config
+    const rhythmConfig = RHYTHMS.find(r => r.type === scenario.type)
+
+    if (rhythmConfig) {
+        natureAppliedIntensity.superfluous = rhythmConfig.savings.superfluous
+        natureAppliedIntensity.comfort = rhythmConfig.savings.comfort
     }
 
     const nonEssentialTotal = baseline.averageMonthlyExpenses - baseline.averageEssentialExpenses
@@ -79,7 +79,7 @@ export async function activateRhythm({
 
     // If goalId provided, ensure it's the main or exists
     if (goalId) {
-        const existing = portfolio.goals.find(g => g.id === goalId)
+        const existing = portfolio.goals.find((g) => g.id === goalId)
         if (existing) {
             existing.targetCents = goalTargetCents
             portfolio.mainGoalId = goalId
@@ -118,7 +118,7 @@ export async function activateRhythm({
     }
 
     // Accumulate total projected spending
-    let totalProjectedSpending = 0
+    const totalProjectedSpending = 0
 
     // Map categories to Nature clusters
     categories.forEach(cat => {
@@ -162,10 +162,8 @@ export async function activateRhythm({
  * Simplified helper to calculate an intensity score for the truth model.
  */
 function calculateAggregateIntensity(scenario: ScenarioConfig): number {
-    if (scenario.type === 'baseline') return 0
-    if (scenario.type === 'balanced') return 0.5
-    if (scenario.type === 'aggressive') return 1.0
-    return 0
+    const config = RHYTHMS.find(r => r.type === scenario.type)
+    return config?.intensity || 0
 }
 
 /**

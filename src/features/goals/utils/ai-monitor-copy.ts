@@ -51,7 +51,7 @@ export function generateAIMonitorMessage({
     if (savingsPercent > 15 && projection.likelyMonths <= 12) {
         return {
             tone: "thriving",
-            message: "Ottima configurazione! Stai massimizzando l'efficienza senza compromettere l'essenziale."
+            message: "Configurazione eccellente! Stai massimizzando il risparmio mantenendo un traguardo molto vicino."
         }
     }
 
@@ -59,7 +59,7 @@ export function generateAIMonitorMessage({
     if (savingsPercent >= 5 && projection.likelyMonths <= 24) {
         return {
             tone: "stable",
-            message: "Buon equilibrio tra risparmio e qualità della vita. Continua così."
+            message: "Equilibrio ottimale tra risparmio e qualità della vita. Il tuo piano è sostenibile nel tempo."
         }
     }
 
@@ -67,7 +67,7 @@ export function generateAIMonitorMessage({
     if (savingsPercent < 5 || projection.likelyMonths > 24) {
         return {
             tone: "strained",
-            message: "C'è margine di manovra. Prova lo scenario 'Equilibrato' per accelerare i tempi."
+            message: "Il ritmo è lento. Prova ad aumentare il risparmio del 5-10% per ridurre drasticamente l'attesa."
         }
     }
 

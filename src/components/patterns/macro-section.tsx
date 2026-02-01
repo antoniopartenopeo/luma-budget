@@ -55,7 +55,7 @@ export function MacroSection({
             {...props}
         >
             <Card className={cn(
-                "relative overflow-hidden border-none p-1 rounded-[2.5rem] bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl transition-all duration-500",
+                "relative border-none p-1 rounded-[2.5rem] bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl transition-all duration-500",
                 "shadow-xl dark:border-white/5",
                 isWarning && "shadow-[0_0_40px_-10px_rgba(251,191,36,0.2)] ring-1 ring-amber-500/20",
                 isCritical && "shadow-[0_0_40px_-10px_rgba(244,63,94,0.3)] ring-1 ring-rose-500/20"

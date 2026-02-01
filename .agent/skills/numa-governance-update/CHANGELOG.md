@@ -4,6 +4,19 @@ Storico consolidato di tutte le modifiche a regole, skill, e standard di svilupp
 
 ---
 
+## [2.7.1] - 2026-02-01
+
+### Added
+- **Financial Lab Governance Alignment**:
+  - Sincronizzato il Laboratorio con i `numa-ui-standards`.
+  - Sostituite le KPI Card ad-hoc con il componente universale `KpiCard`.
+  - Standardizzato l'Empty State con `StateMessage` premium.
+  - Risolto il shadow clipping in `MacroSection` rimuovendo l'overflow rigido.
+
+### Fixed
+- **Simulator Logic Integrity**: Corretto mismatch di proprietà `incomeCents` in `simulator-logic.test.ts`.
+- **Build Consistency**: Risolti errori di import e type safety in `page.tsx` e `use-goal-scenarios.ts`.
+
 ## [2.7.0] - 2026-02-01
 
 ### Added

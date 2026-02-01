@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 import { useMonthlyAverages } from "@/features/simulator/hooks"
-import { calculateBaselineMetrics } from "./financial-baseline"
+import { calculateBaselineMetrics, BaselineMetrics } from "./financial-baseline"
 import { generateScenarios } from "./scenario-generator"
 import { Category } from "@/features/categories/config"
 import { GoalScenarioResult, ScenarioKey } from "../types"

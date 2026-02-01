@@ -28,10 +28,13 @@ import { calculateScenario } from "@/VAULT/goals/logic/scenario-calculator"
 import { GoalContextRibbon } from "@/features/goals/components/goal-context-ribbon"
 import { generateAIMonitorMessage, getAIMonitorStyles } from "@/features/goals/utils/ai-monitor-copy"
 import { queryKeys } from "@/lib/query-keys"
+import { KpiCard } from "@/components/patterns/kpi-card"
+import { StateMessage } from "@/components/ui/state-message"
 
 export default function SimulatorPage() {
     const queryClient = useQueryClient()
     const { currency, locale } = useCurrency()
+    const [isCreatingGoal, setIsCreatingGoal] = useState(false)
 
     // 1. Goal & Rhythm State (from VAULT)
     const { portfolio, isLoading: isPortfolioLoading, addGoal, setMainGoal, updateGoal, removeGoal } = useGoalPortfolio({
@@ -216,22 +219,48 @@ export default function SimulatorPage() {
                     className="animate-enter-up"
                     title={null}
                 >
-                    <div className="flex flex-col items-center justify-center py-16 text-center space-y-8">
-                        <div className="h-24 w-24 rounded-[3rem] bg-emerald-500/10 flex items-center justify-center shadow-inner ring-1 ring-emerald-500/20">
-                            <Target className="h-12 w-12 text-emerald-500 animate-pulse-soft" />
+                    <div className="flex flex-col items-center justify-center py-24 text-center space-y-10 max-w-2xl mx-auto">
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 animate-pulse-soft" />
+                            <div className="relative h-32 w-32 rounded-[3.5rem] bg-white dark:bg-slate-900 flex items-center justify-center shadow-2xl ring-1 ring-primary/20">
+                                <Target className="h-16 w-16 text-primary animate-pulse-soft" />
+                            </div>
                         </div>
-                        <div className="space-y-3 max-w-xl">
-                            <h2 className="text-3xl font-black text-foreground tracking-tight">Inizia dal tuo Obiettivo</h2>
-                            <p className="text-lg text-muted-foreground leading-relaxed font-medium">
-                                Crea un obiettivo di risparmio, scopri quanto mettere da parte ogni mese e attiva un piano operativo sulla Dashboard.
+
+                        <div className="space-y-4">
+                            <h2 className="text-4xl font-black text-foreground tracking-tight leading-tight">
+                                Il tuo Financial Lab è pronto
+                            </h2>
+                            <p className="text-xl text-muted-foreground leading-relaxed font-medium">
+                                Inizia definendo il tuo primo obiettivo. Ti aiuteremo a scoprire il ritmo giusto per raggiungerlo in modo sostenibile.
                             </p>
                         </div>
+
                         <Button
                             size="lg"
-                            className="rounded-full px-12 h-14 text-base font-black tracking-tight shadow-xl shadow-emerald-500/20 hover:scale-105 transition-transform"
-                            onClick={() => addGoal("Nuovo Obiettivo", 0)}
+                            disabled={isCreatingGoal}
+                            className="rounded-full px-16 h-16 text-xl font-black tracking-tight shadow-2xl shadow-primary/30 hover:scale-105 transition-all active:scale-95 group relative overflow-hidden"
+                            onClick={async () => {
+                                setIsCreatingGoal(true)
+                                try {
+                                    await addGoal("Nuovo Obiettivo", 0)
+                                    toast.success("Laboratorio attivato!")
+                                } catch (e) {
+                                    toast.error("Errore durante l'attivazione.")
+                                    setIsCreatingGoal(false)
+                                }
+                            }}
                         >
-                            Crea Obiettivo
+                            <span className="relative z-10 flex items-center gap-2">
+                                {isCreatingGoal ? (
+                                    <>
+                                        <RefreshCw className="h-5 w-5 animate-spin" />
+                                        Sto creando...
+                                    </>
+                                ) : (
+                                    "Crea Primo Obiettivo"
+                                )}
+                            </span>
                         </Button>
                     </div>
                 </MacroSection>
@@ -247,19 +276,9 @@ export default function SimulatorPage() {
                         variant="premium"
                         className="overflow-visible"
                         title={
-                            <div className="flex items-center gap-4">
-                                <div className="h-14 w-14 rounded-2xl bg-white dark:bg-slate-800 border border-border/50 flex items-center justify-center shadow-sm">
-                                    <Calculator className="h-7 w-7 text-primary fill-primary/20" />
-                                </div>
-                                <div>
-                                    <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
-                                        Command Center
-                                        <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 text-[10px] px-2 h-6 font-bold animate-pulse-soft">LIVE</Badge>
-                                    </h2>
-                                    <p className="text-sm text-muted-foreground font-bold uppercase tracking-widest mt-1">
-                                        Simulazione e Ottimizzazione
-                                    </p>
-                                </div>
+                            <div>
+                                <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">Command Center</h2>
+                                <p className="text-sm font-medium text-muted-foreground">Simulazione e Ottimizzazione</p>
                             </div>
                         }
                         headerActions={
@@ -307,64 +326,65 @@ export default function SimulatorPage() {
 
                         {/* 3. PROJECTION & RESULTS (The Output) */}
                         {currentScenario && (
-                            <div className="pt-8 grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
+                            <div className="pt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 relative z-10">
                                 {/* METRIC 1: VELOCITY */}
-                                <div className="md:col-span-1 rounded-[2rem] bg-white/40 dark:bg-black/20 border border-white/10 p-6 relative overflow-hidden group hover:bg-white/60 transition-colors">
-                                    <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                                        <Calculator className="h-16 w-16 rotate-12" />
-                                    </div>
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-2">
-                                        Risparmio Mensile
-                                    </span>
-                                    <div className="text-3xl sm:text-4xl font-black text-foreground tabular-nums tracking-tighter">
-                                        {formatCents(simulatedSurplus, currency, locale)}
-                                    </div>
-                                    {extraSavings > 0 && (
-                                        <div className="mt-3 inline-flex items-center px-2.5 py-1 rounded-full bg-emerald-100/80 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-bold">
-                                            +{formatCents(extraSavings, currency, locale)} boost
-                                        </div>
-                                    )}
-                                </div>
+                                <KpiCard
+                                    title="Risparmio Mensile"
+                                    value={formatCents(simulatedSurplus, currency, locale)}
+                                    change={extraSavings > 0 ? `+${formatCents(extraSavings, currency, locale)}` : undefined}
+                                    trend={extraSavings > 0 ? "up" : "neutral"}
+                                    comparisonLabel={extraSavings > 0 ? "boost" : undefined}
+                                    icon={Calculator}
+                                    tone="neutral"
+                                    className="h-full hover:bg-white/60 transition-colors"
+                                />
 
                                 {/* METRIC 2: HORIZON */}
-                                <div className={cn(
-                                    "md:col-span-1 rounded-[2rem] border p-6 relative overflow-hidden group transition-all duration-500",
-                                    projection?.canReach ? "bg-indigo-50/40 dark:bg-indigo-950/20 border-indigo-200/50 dark:border-indigo-800/50" : "bg-rose-50/40 dark:bg-rose-950/10 border-rose-200/50 dark:border-rose-900/50"
-                                )}>
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block mb-2">
-                                        Tempo Stimato
-                                    </span>
-
-                                    <div className="text-3xl sm:text-4xl font-black text-foreground tabular-nums tracking-tighter mb-1">
-                                        {!projection?.canReach
-                                            ? <span className="text-muted-foreground">—</span>
-                                            : projection?.likelyMonths === 0
-                                                ? <span className="text-emerald-600">Raggiunto!</span>
-                                                : <span>{projection?.likelyMonths} <span className="text-xl text-muted-foreground font-bold">Mesi</span></span>
-                                        }
-                                    </div>
-                                    {!projection?.canReach && (
-                                        <p className="text-xs text-muted-foreground mt-1">Aumenta il risparmio per stimare</p>
+                                <KpiCard
+                                    title="Tempo Stimato"
+                                    value={!projection?.canReach
+                                        ? "—"
+                                        : projection?.likelyDate
+                                            ? new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' })
+                                                .format(new Date(projection.likelyDate))
+                                                .replace(/^\w/, c => c.toUpperCase())
+                                            : "—"
+                                    }
+                                    change={projection?.canReach && projection?.likelyMonths > 0 ? `${projection.likelyMonths} mesi` : undefined}
+                                    description={!projection?.canReach
+                                        ? "Aumenta il risparmio per proiettare"
+                                        : `Range: ${projection.minMonths}-${projection.maxMonths} mesi`
+                                    }
+                                    icon={Target}
+                                    tone={projection?.canReach ? "positive" : "neutral"}
+                                    className={cn(
+                                        "h-full transition-all duration-500",
+                                        projection?.canReach ? "bg-indigo-50/40 dark:bg-indigo-950/20" : "bg-rose-50/40 dark:bg-rose-950/10"
                                     )}
+                                />
 
-                                    {/* Horizon Details */}
-                                    <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-black/5 dark:border-white/5">
-                                        <div>
-                                            <span className="text-[9px] font-bold uppercase text-muted-foreground block">Ottimista</span>
-                                            <span className={cn("text-lg font-bold tabular-nums", !projection?.canReach ? "text-muted-foreground" : "text-emerald-600")}>
-                                                {!projection?.canReach ? "—" : `${projection?.minMonths}m`}
-                                            </span>
-                                        </div>
-                                        <div className="text-right">
-                                            <span className="text-[9px] font-bold uppercase text-muted-foreground block">Prudente</span>
-                                            <span className={cn("text-lg font-bold tabular-nums", !projection?.canReach ? "text-muted-foreground" : "text-amber-600")}>
-                                                {!projection?.canReach ? "—" : `${projection?.maxMonths}m`}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
+                                {/* METRIC 3: SUSTAINABILITY */}
+                                <KpiCard
+                                    title="Sostenibilità"
+                                    value={(() => {
+                                        const status = currentScenario.sustainability.status
+                                        if (status === "secure") return "Sicuro"
+                                        if (status === "sustainable") return "Sostenibile"
+                                        if (status === "fragile") return "Fragile"
+                                        return "A Rischio"
+                                    })()}
+                                    description={currentScenario.sustainability.reason || "Assetto verificato"}
+                                    icon={RefreshCw}
+                                    tone={(() => {
+                                        const status = currentScenario.sustainability.status
+                                        if (status === "secure" || status === "sustainable") return "positive"
+                                        if (status === "fragile") return "warning"
+                                        return "negative"
+                                    })()}
+                                    className="h-full"
+                                />
 
-                                {/* METRIC 3: AI ADVISOR */}
+                                {/* METRIC 4: AI ADVISOR */}
                                 {(() => {
                                     const aiMonitor = generateAIMonitorMessage({
                                         scenario: currentScenario,
@@ -373,15 +393,14 @@ export default function SimulatorPage() {
                                     })
                                     const styles = getAIMonitorStyles(aiMonitor.tone)
                                     return (
-                                        <div className={cn("md:col-span-1 rounded-[2rem] border p-6 flex flex-col justify-between", styles.containerClass)}>
-                                            <div className="flex items-center gap-2 mb-3">
-                                                <Sparkles className={cn("h-4 w-4 animate-pulse-soft", styles.iconClass)} />
-                                                <span className={cn("text-[10px] font-bold uppercase tracking-widest", styles.textClass)}>AI Monitor</span>
-                                            </div>
-                                            <p className="text-sm font-medium leading-relaxed italic text-foreground/80">
-                                                &quot;{aiMonitor.message}&quot;
-                                            </p>
-                                        </div>
+                                        <KpiCard
+                                            title="AI Monitor"
+                                            value={`"${aiMonitor.message}"`}
+                                            icon={Sparkles}
+                                            tone={aiMonitor.tone === "thriving" ? "positive" : (aiMonitor.tone === "stable" || aiMonitor.tone === "strained") ? "warning" : "negative"}
+                                            valueClassName="text-sm sm:text-sm lg:text-sm font-medium leading-relaxed italic !tracking-normal !font-sans opacity-80"
+                                            className={cn("h-full", styles.containerClass, "bg-opacity-40 hover:bg-opacity-60")}
+                                        />
                                     )
                                 })()}
                             </div>

@@ -38,7 +38,7 @@ Items: Deduplicazione Transazioni, Template Banche, Onboarding Wizard
 #### UI/UX Stabilization
 Epica: Privacy, Power & Delight
 Outcome: accessibilità totale e fluidità d'uso
-Items: Accessibilità (Audit ARIA), Skeleton Loading, Empty States
+Items: Accessibilità (Audit ARIA), Skeleton Loading, [x] Empty States
 
 ### NEXT — Automation Without Betrayal
 #### Smart Import 2.0

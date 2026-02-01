@@ -49,7 +49,7 @@ describe("Simulator Utils", () => {
             ]
             const result = computeMonthlyAverages(transactions as Transaction[], period, mockNow)
             // Total: 450000. Months: 3. Avg: 150000.
-            expect(result.income).toBe(150000)
+            expect(result.incomeCents).toBe(150000)
         })
     })
 

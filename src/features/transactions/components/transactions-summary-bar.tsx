@@ -61,8 +61,8 @@ export function TransactionsSummaryBar({ summary, isLoading }: TransactionsSumma
                 <Card
                     key={item.label}
                     className={cn(
-                        "p-3 md:p-4 border shadow-none rounded-2xl flex flex-col gap-1 transition-all",
-                        isLoading ? "opacity-50 animate-pulse" : "hover:shadow-sm"
+                        "p-3 md:p-4 rounded-xl flex flex-col gap-1 transition-all glass-card",
+                        isLoading ? "opacity-50 animate-pulse" : ""
                     )}
                 >
                     <div className="flex items-center justify-between">

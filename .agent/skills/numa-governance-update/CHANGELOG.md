@@ -4,6 +4,19 @@ Storico consolidato di tutte le modifiche a regole, skill, e standard di svilupp
 
 ---
 
+## [2.8.0] - 2026-02-02
+
+### Added
+- **Living Effect & Staggered Motion**: Implemented staggered entry animations for tables and cards to improve context preservation.
+- **Labor Illusion v2**: Standardized the thinking state (1.5s) in AI Insights to enhance perceived intelligence.
+- **Semantic Evolution**: Transitioned from "Budget" terminology to "Rhythm/Path" in the narration layer.
+- **ADR-005**: Formally documented the "Semantic Shift to Rhythm".
+
+### Changed
+- **Motion Principles**: Updated to allow context-preserving motion in tables (staggered entries).
+- **UX Standards**: Aligned Labor Illusion rules with implementation.
+- **Insights Semantics**: Updated vocabulary (Accelerazione vs Spike).
+
 ## [2.7.2] - 2026-02-01
 
 ### Changed

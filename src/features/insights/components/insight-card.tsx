@@ -25,19 +25,19 @@ const severityConfig: Record<InsightSeverity, {
         color: "text-rose-600 dark:text-rose-400",
         bgColor: "bg-rose-500/10",
         borderColor: "border-rose-500",
-        label: "Alta priorità",
+        label: "ANALISI CRITICA",
     },
     medium: {
         color: "text-amber-600 dark:text-amber-400",
         bgColor: "bg-amber-500/10",
         borderColor: "border-amber-500",
-        label: "Attenzione",
+        label: "ATTENZIONE",
     },
     low: {
         color: "text-blue-600 dark:text-blue-400",
         bgColor: "bg-blue-500/10",
         borderColor: "border-blue-500",
-        label: "Info",
+        label: "DATO NOTEVOLE",
     },
 }
 
@@ -84,7 +84,7 @@ export function InsightCard({ insight }: InsightCardProps) {
                         <Badge variant="secondary" className={cn("hidden xs:flex h-6", config.bgColor, config.color)}>
                             {config.label}
                         </Badge>
-                        <span className="text-muted-foreground text-xs font-bold uppercase tracking-widest block">
+                        <span className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest block">
                             Insight Analysis
                         </span>
                     </div>
@@ -97,7 +97,7 @@ export function InsightCard({ insight }: InsightCardProps) {
                                 {insight.metrics.currentCents !== undefined && (
                                     <div className="p-3 rounded-xl bg-muted/30 border border-border/50 space-y-1">
                                         <span className="text-[10px] uppercase font-bold text-muted-foreground/70 tracking-wider">Attuale</span>
-                                        <div className="font-mono text-sm sm:text-base font-semibold">
+                                        <div className="font-mono text-sm sm:text-base font-black tracking-tighter tabular-nums">
                                             {formatCents(insight.metrics.currentCents)}
                                         </div>
                                     </div>
@@ -105,7 +105,7 @@ export function InsightCard({ insight }: InsightCardProps) {
                                 {insight.metrics.baselineCents !== undefined && insight.metrics.baselineCents > 0 && (
                                     <div className="p-3 rounded-xl bg-muted/30 border border-border/50 space-y-1">
                                         <span className="text-[10px] uppercase font-bold text-muted-foreground/70 tracking-wider">Media</span>
-                                        <div className="font-mono text-sm sm:text-base font-semibold text-muted-foreground">
+                                        <div className="font-mono text-sm sm:text-base font-black tracking-tighter tabular-nums text-muted-foreground">
                                             {formatCents(insight.metrics.baselineCents)}
                                         </div>
                                     </div>
@@ -117,7 +117,7 @@ export function InsightCard({ insight }: InsightCardProps) {
                                     )}>
                                         <span className="text-[10px] uppercase font-bold text-muted-foreground/70 tracking-wider">Variazione</span>
                                         <div className={cn(
-                                            "font-mono text-sm sm:text-base font-bold",
+                                            "font-mono text-sm sm:text-base font-black tracking-tighter tabular-nums",
                                             insight.metrics.deltaCents > 0 ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"
                                         )}>
                                             {insight.metrics.deltaCents > 0 ? "+" : ""}
@@ -131,21 +131,46 @@ export function InsightCard({ insight }: InsightCardProps) {
                         {/* Drivers List */}
                         {insight.drivers && insight.drivers.length > 0 && (
                             <div className="space-y-2">
-                                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Dettagli / Cause</h4>
-                                <div className="space-y-1">
-                                    {insight.drivers.map((driver) => (
-                                        <div key={driver.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors text-sm">
-                                            <span className="font-medium text-foreground/80">{driver.label}</span>
-                                            <div className="flex items-center gap-3">
-                                                <span className="text-muted-foreground font-mono">{formatCents(driver.amountCents)}</span>
-                                                {driver.deltaCents !== undefined && driver.deltaCents > 0 && (
-                                                    <span className="text-rose-500 text-xs font-bold bg-rose-500/10 px-1.5 py-0.5 rounded">
-                                                        +{formatCents(driver.deltaCents)}
-                                                    </span>
-                                                )}
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 mb-3">Dettagli e Determinanti</h4>
+                                <div className="space-y-2">
+                                    {insight.drivers.map((driver) => {
+                                        const maxAmount = Math.max(...(insight.drivers?.map(d => d.amountCents) || [1]))
+                                        const impactPct = (driver.amountCents / maxAmount) * 100
+
+                                        return (
+                                            <div key={driver.id} className="group/driver relative overflow-hidden p-3 rounded-2xl bg-muted/20 hover:bg-muted/40 transition-all duration-300">
+                                                {/* Impact Bar Background */}
+                                                <div
+                                                    className={cn(
+                                                        "absolute left-0 top-0 bottom-0 opacity-[0.08] transition-all duration-1000 ease-out",
+                                                        insight.severity === 'high' ? "bg-rose-500" : insight.severity === 'medium' ? "bg-amber-500" : "bg-primary"
+                                                    )}
+                                                    style={{ width: `${impactPct}%` }}
+                                                />
+
+                                                <div className="relative z-10 flex items-center justify-between gap-4">
+                                                    <div className="flex flex-col gap-0.5 min-w-0">
+                                                        <span className="font-bold text-sm text-foreground/90 truncate">{driver.label}</span>
+                                                        <span className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest">
+                                                            Pesi sul ritmo attuale
+                                                        </span>
+                                                    </div>
+
+                                                    <div className="flex flex-col items-end gap-1 shrink-0">
+                                                        <span className="font-mono text-sm font-black tabular-nums">{formatCents(driver.amountCents)}</span>
+                                                        {driver.deltaCents !== undefined && driver.deltaCents !== 0 && (
+                                                            <div className={cn(
+                                                                "px-1.5 py-0.5 rounded text-[10px] font-black tabular-nums",
+                                                                driver.deltaCents > 0 ? "bg-rose-500/10 text-rose-600 dark:text-rose-400" : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                                                            )}>
+                                                                {driver.deltaCents > 0 ? "+" : ""}{formatCents(driver.deltaCents)}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        )
+                                    })}
                                 </div>
                             </div>
                         )}

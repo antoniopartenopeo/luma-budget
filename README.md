@@ -7,13 +7,13 @@ Local-first persistence with rich analytics and insights.
 
 | Module | Status | Description |
 |--------|--------|-------------|
-| **Dashboard** | Stable | KPIs, charts, budget overview |
-| **Transactions** | Stable | CRUD, filters, CSV import/export |
-| **Budget** | **Archived** | Legacy Budget Plan (Accessible via Core only) |
+| **Dashboard** | Stable | KPIs, charts, and financial atmosphere |
+| **Transactions** | Stable | CRUD, filters, CSV import/export with Motion |
+| **Budget** | **Archived** | Legacy Budget Plan (Accessible via Core Vault) |
 | **Categories** | Stable | Full CRUD with custom icons |
-| **Ottimizzatore** | Stable | "What-If" expense reduction analysis (ex Simulator) |
-| **Insights** | Stable v1.2 | Deterministic Narration & Semantic Constraints |
-| **UI/UX** | **Premium v1.0**| Unified Glassmorphism & Narrative Flow |
+| **Ottimizzatore**| Stable | "What-If" expense reduction analysis |
+| **Insights** | **v2.0** | Rhythm-based analysis, Labor Illusion & AI Advisor |
+| **UI/UX** | **Premium v1.1**| Glassmorphism, Living Effect & Staggered Motion |
 | **Settings** | Stable v1.3 | Preferences, backup/restore, themes |
 
 ## 🏗 Architecture
@@ -47,7 +47,9 @@ luma_settings_v1
 ```
 
 ### Global Semantic Enforcement
-- **Deterministic Narration Layer**: All text generation is governed by strict semantic rules.
+- **Deterministic Narration Layer**: All text generation is governed by strict semantic rules (ADR-005).
+- **Rhythm over Budget**: Focus on financial "Path" and "Acceleration" rather than fixed limits.
+- **Labor Illusion**: AI interactions are paced (1.5s delay) to ensure perceived intelligence and trust.
 - **Enforcement Tests**: Automated tests ensure no "tone-deaf" or mathematically incorrect statements are generated.
 
 ## 🚀 Getting Started

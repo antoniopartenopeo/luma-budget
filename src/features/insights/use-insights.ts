@@ -1,10 +1,4 @@
-"use client"
-
-// useInsights Hook
-// ================
-// Composes transactions, categories, and budget data to generate insights
-
-import { useMemo } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
 import { useCategories } from "@/features/categories/api/use-categories"
 import { useBudget } from "@/VAULT/budget/api/use-budget"
@@ -24,6 +18,7 @@ interface UseInsightsOptions {
 interface UseInsightsResult {
     insights: Insight[]
     isLoading: boolean
+    isThinking: boolean
     isEmpty: boolean
     hasTransactions: boolean
 }
@@ -34,10 +29,21 @@ export function useInsights({ period }: UseInsightsOptions): UseInsightsResult {
     const { data: budgetPlan, isLoading: budgetLoading } = useBudget(period)
     const { data: settings, isLoading: settingsLoading } = useSettings()
 
+    // 4. Trust Semantics (Labor Illusion)
+    const [isThinking, setIsThinking] = useState(false)
+
+    useEffect(() => {
+        if (!transactionsLoading && !categoriesLoading && !budgetLoading && !settingsLoading) {
+            setIsThinking(true)
+            const timer = setTimeout(() => setIsThinking(false), 1500)
+            return () => clearTimeout(timer)
+        }
+    }, [transactionsLoading, categoriesLoading, budgetLoading, settingsLoading, period])
+
     const isLoading = transactionsLoading || categoriesLoading || budgetLoading || settingsLoading
 
     const result = useMemo(() => {
-        if (isLoading) {
+        if (isLoading || isThinking) {
             return { insights: [], isEmpty: true, hasTransactions: false }
         }
 
@@ -95,10 +101,11 @@ export function useInsights({ period }: UseInsightsOptions): UseInsightsResult {
             isEmpty: insights.length === 0,
             hasTransactions,
         }
-    }, [transactions, categories, budgetPlan, period, isLoading, settings?.insightsSensitivity])
+    }, [transactions, categories, budgetPlan, period, isLoading, isThinking, settings?.insightsSensitivity])
 
     return {
         ...result,
         isLoading,
+        isThinking,
     }
 }

@@ -15,9 +15,9 @@ Quando l'AI esegue compiti complessi (come esaminare mesi di transazioni per dar
 **Regola:**
 Per le operazioni "Intelligenti" (AI Advisor, Smart Analysis), è **OBBLIGATORIO** introdurre un ritardo artificiale (Artificial Delay) se la risposta tecnica è troppo veloce.
 
-*   **Durata Minima:** 1.5s - 2.0s
-*   **Stato Visivo:** Deve essere accompagnato da un'animazione semantica "Thinking" (`animate-pulse-soft`).
-*   **Obiettivo:** Permettere all'utente di percepire che il sistema "sta lavorando per lui".
+*   **Durata Minima:** 1.5s
+*   **Stato Visivo:** Deve essere accompagnato da un'animazione semantica "Thinking" (`isThinking` state) e visual atmosphere specifica.
+*   **Obiettivo:** Permettere all'utente di percepire che il sistema "sta lavorando per lui" (Labor Illusion).
 
 ---
 

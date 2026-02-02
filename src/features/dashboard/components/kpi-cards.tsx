@@ -12,6 +12,9 @@ import { MacroSection } from "@/components/patterns/macro-section"
 import { getBalanceTone, getBudgetTone, getSuperfluousTone } from "../utils/kpi-logic"
 import { usePrivacyStore } from "@/features/privacy/privacy.store"
 import { getPrivacyClass } from "@/features/privacy/privacy-utils"
+import { motion } from "framer-motion"
+import { StaggerContainer } from "@/components/patterns/stagger-container"
+import { macroItemVariants } from "@/components/patterns/macro-section"
 
 // Smart Context Integration
 import { generateSmartContext } from "@/features/smart-context/logic/context-engine"
@@ -127,63 +130,66 @@ export function DashboardKpiGrid({
             className="w-full"
         >
             {/* Animated Grid Container for Soft Transitions */}
-            <div
+            <StaggerContainer
                 key={filter?.period || "default"}
-                className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4 pt-4 animate-enter-up"
+                className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4 pt-4"
             >
-                <SmartKpiCard
-                    title="Saldo"
-                    value={isLoading ? 0 : formatValue(netBalance || 0)}
-                    valueClassName={getPrivacyClass(isPrivacyMode)}
-                    comparisonLabel="Totale storico"
-                    tone={saldoTone}
-                    icon={CreditCard}
-                    isLoading={isLoading}
-                    description={isLoading ? undefined : buildNarration("balance", netBalance || 0, saldoTone)}
-                    context={smartContext['netBalance']} // Engine uses 'netBalance' key? Wait, check engine. 
-                // Logic check: engine keys were: 'budgetRemaining', 'totalSpent', 'uselessSpendPercent'
-                // For Logic Rule 3 (Safe Harbor), engine sets 'budgetRemaining'.
-                // Does it set anything for balance? No.
-                // Let's re-verify engine keys.
-                />
-                <SmartKpiCard
-                    title="Spesa"
-                    value={isLoading ? 0 : formatValue(totalSpent || 0)}
-                    valueClassName={getPrivacyClass(isPrivacyMode)}
-                    icon={Wallet}
-                    isLoading={isLoading}
-                    onClick={() => router.push("/transactions")}
-                    description={isLoading ? undefined : buildNarration("expenses", totalSpent || 0, spesaTone)}
-                    context={smartContext['totalSpent']}
-                />
-                <SmartKpiCard
-                    title="Budget Rimanente"
-                    value={isLoading ? 0 : (isMonthlyView ? formatValue(budgetRemaining || 0) : "—")}
-                    valueClassName={getPrivacyClass(isPrivacyMode)}
-                    change={isLoading ? "" : (isMonthlyView && hasBudget ? `${budgetPercent}%` : "")}
-                    trend={!isMonthlyView || !hasBudget ? "neutral" : (budgetTone === "positive" ? "up" : "down")}
-                    comparisonLabel={!isMonthlyView ? "Solo in vista Mensile" : (hasBudget ? "Rimanenti nel periodo" : "Imposta un budget")}
-                    tone={budgetTone}
-                    icon={DollarSign}
-                    isLoading={isLoading}
-                    onClick={isMonthlyView && !hasBudget ? () => router.push("/goals/lab") : undefined}
-                    description={isLoading ? undefined : buildNarration("budget", budgetRemaining || 0, budgetTone, budgetPercent)}
-                    context={smartContext['budgetRemaining']}
-                />
-                <SmartKpiCard
-                    title="Spese Superflue"
-                    value={isLoading ? 0 : (uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—")}
-                    // Note: percentages are not monetary, usually OK to show, but can blur if desired. Keeping visible for now.
-                    change={`Target ${superfluousTarget}%`}
-                    trend={superflueTone === "positive" ? "up" : superflueTone === "negative" ? "down" : "neutral"}
-                    tone={superflueTone}
-                    icon={AlertTriangle}
-                    isLoading={isLoading}
-                    onClick={() => router.push("/transactions?filter=wants")}
-                    description={isLoading ? undefined : buildNarration("superfluous", uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—", superflueTone, uselessSpendPercent ?? undefined)}
-                    context={smartContext['uselessSpendPercent']}
-                />
-            </div>
+                <motion.div variants={macroItemVariants}>
+                    <SmartKpiCard
+                        title="Saldo"
+                        value={isLoading ? 0 : formatValue(netBalance || 0)}
+                        valueClassName={getPrivacyClass(isPrivacyMode)}
+                        comparisonLabel="Totale storico"
+                        tone={saldoTone}
+                        icon={CreditCard}
+                        isLoading={isLoading}
+                        description={isLoading ? undefined : buildNarration("balance", netBalance || 0, saldoTone)}
+                        context={smartContext['netBalance']}
+                    />
+                </motion.div>
+                <motion.div variants={macroItemVariants}>
+                    <SmartKpiCard
+                        title="Spesa"
+                        value={isLoading ? 0 : formatValue(totalSpent || 0)}
+                        valueClassName={getPrivacyClass(isPrivacyMode)}
+                        icon={Wallet}
+                        isLoading={isLoading}
+                        onClick={() => router.push("/transactions")}
+                        description={isLoading ? undefined : buildNarration("expenses", totalSpent || 0, spesaTone)}
+                        context={smartContext['totalSpent']}
+                    />
+                </motion.div>
+                <motion.div variants={macroItemVariants}>
+                    <SmartKpiCard
+                        title="Budget Rimanente"
+                        value={isLoading ? 0 : (isMonthlyView ? formatValue(budgetRemaining || 0) : "—")}
+                        valueClassName={getPrivacyClass(isPrivacyMode)}
+                        change={isLoading ? "" : (isMonthlyView && hasBudget ? `${budgetPercent}%` : "")}
+                        trend={!isMonthlyView || !hasBudget ? "neutral" : (budgetTone === "positive" ? "up" : "down")}
+                        comparisonLabel={!isMonthlyView ? "Solo in vista Mensile" : (hasBudget ? "Rimanenti nel periodo" : "Imposta un budget")}
+                        tone={budgetTone}
+                        icon={DollarSign}
+                        isLoading={isLoading}
+                        onClick={isMonthlyView && !hasBudget ? () => router.push("/goals/lab") : undefined}
+                        description={isLoading ? undefined : buildNarration("budget", budgetRemaining || 0, budgetTone, budgetPercent)}
+                        context={smartContext['budgetRemaining']}
+                    />
+                </motion.div>
+                <motion.div variants={macroItemVariants}>
+                    <SmartKpiCard
+                        title="Spese Superflue"
+                        value={isLoading ? 0 : (uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—")}
+                        change={`Target ${superfluousTarget}%`}
+                        trend={superflueTone === "positive" ? "up" : superflueTone === "negative" ? "down" : "neutral"}
+                        tone={superflueTone}
+                        icon={AlertTriangle}
+                        isLoading={isLoading}
+                        onClick={() => router.push("/transactions?filter=wants")}
+                        description={isLoading ? undefined : buildNarration("superfluous", uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—", superflueTone, uselessSpendPercent ?? undefined)}
+                        context={smartContext['uselessSpendPercent']}
+                    />
+                </motion.div>
+            </StaggerContainer>
         </MacroSection>
     )
 }

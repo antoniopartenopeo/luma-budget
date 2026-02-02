@@ -38,7 +38,7 @@ Items: Deduplicazione Transazioni, Template Banche, Onboarding Wizard
 #### UI/UX Stabilization
 Epica: Privacy, Power & Delight
 Outcome: accessibilità totale e fluidità d'uso
-Items: Accessibilità (Audit ARIA), Skeleton Loading, [x] Empty States
+Items: Accessibilità (Audit ARIA), [x] Skeleton Loading, [x] Empty States, [x] Living Effect / Motion Entry
 
 ### NEXT — Automation Without Betrayal
 #### Smart Import 2.0
@@ -114,7 +114,8 @@ Items: Chat query dati ("Quanto ho speso in pizza?")
 
 **Automation Without Betrayal**
 - Trend Analysis
-- AI Advisor Card (Base)
+- [x] AI Advisor Card (Labor Illusion & Dynamic Atmospheres)
+- Laboratorio Budget (Core Logic Vault)
 
 ### In corso
 - **Paginazione Server-Side** (Transactions)

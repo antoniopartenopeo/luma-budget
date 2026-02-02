@@ -4,6 +4,7 @@ import { useState } from "react"
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
+import { motion, AnimatePresence } from "framer-motion"
 import { MacroSection } from "@/components/patterns/macro-section"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
 import { PageHeader } from "@/components/ui/page-header"
@@ -21,7 +22,7 @@ interface InsightsPageContentProps {
 export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps) {
     const [period, setPeriod] = useState(initialPeriod || getCurrentPeriod())
 
-    const { insights, isLoading, isEmpty, hasTransactions } = useInsights({ period })
+    const { insights, isLoading, isThinking, isEmpty, hasTransactions } = useInsights({ period })
 
     // Period navigation helpers
     const navigatePeriod = (direction: "prev" | "next") => {
@@ -54,50 +55,78 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
                     <TrendAnalysisCard />
 
                     {/* Periodic Analysis Section */}
-                    <div className="space-y-4">
-                        <div className="px-1">
-                            <h3 className="text-xl font-bold tracking-tight text-foreground/90">Analisi Mensile</h3>
-                            <p className="text-sm text-muted-foreground font-medium">Dettagli e suggerimenti specifici per il periodo selezionato.</p>
-                        </div>
+                    <MacroSection
+                        title="Analisi Mensile"
+                        description={`Scomposizione analitica del tuo ritmo per ${periodLabel}.`}
+                        headerActions={
+                            <div className="flex items-center gap-2 md:gap-3">
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => navigatePeriod("prev")}
+                                    className="h-8 w-8 md:h-9 md:w-9 rounded-xl"
+                                >
+                                    <ChevronLeft className="h-4 w-4 md:h-5 md:w-5" />
+                                </Button>
 
-                        <div className="rounded-[2.5rem] border border-border/40 bg-card/20 p-6 md:p-8">
-                            <div className="space-y-6">
-                                {/* Period Selector */}
-                                <div className="flex items-center justify-center gap-2 md:gap-3 py-2">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => navigatePeriod("prev")}
-                                        className="h-8 w-8 md:h-9 md:w-9 rounded-xl"
-                                    >
-                                        <ChevronLeft className="h-4 w-4 md:h-5 md:w-5" />
-                                    </Button>
-
-                                    <div className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-xl bg-muted/50 min-w-[150px] md:min-w-[180px] justify-center">
-                                        <CalendarDays className="h-3.5 w-3.5 md:h-4 md:w-4 text-muted-foreground hidden xs:block" />
-                                        <span className="font-semibold text-sm md:text-base">{periodLabel}</span>
-                                    </div>
-
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => navigatePeriod("next")}
-                                        disabled={isCurrentMonth}
-                                        className="h-8 w-8 md:h-9 md:w-9 rounded-xl"
-                                    >
-                                        <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
-                                    </Button>
+                                <div className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-xl bg-muted/50 min-w-[140px] md:min-w-[160px] justify-center">
+                                    <CalendarDays className="h-3.5 w-3.5 md:h-4 md:w-4 text-muted-foreground hidden xs:block" />
+                                    <span className="font-semibold text-xs md:text-sm">{periodLabel}</span>
                                 </div>
 
-                                {/* Content */}
-                                {isLoading ? (
-                                    <div className="space-y-4">
-                                        {[1, 2, 3].map(i => (
-                                            <Skeleton key={i} className="h-24 w-full rounded-2xl" />
-                                        ))}
-                                    </div>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => navigatePeriod("next")}
+                                    disabled={isCurrentMonth}
+                                    className="h-8 w-8 md:h-9 md:w-9 rounded-xl"
+                                >
+                                    <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
+                                </Button>
+                            </div>
+                        }
+                    >
+                        <div className="min-h-[200px] relative">
+                            <AnimatePresence mode="wait">
+                                {(isLoading || isThinking) ? (
+                                    <motion.div
+                                        key="loading"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        className="space-y-4 py-8"
+                                    >
+                                        {isThinking ? (
+                                            <div className="flex flex-col items-center justify-center py-12 gap-6">
+                                                <div className="relative">
+                                                    <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl animate-pulse" />
+                                                    <div className="h-10 w-10 rounded-full border-t-2 border-r-2 border-primary animate-spin" />
+                                                </div>
+                                                <div className="flex flex-col items-center gap-2 text-center">
+                                                    <p className="text-sm font-black uppercase tracking-[0.2em] text-primary/80">
+                                                        Analisi Intelligente
+                                                    </p>
+                                                    <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">
+                                                        Numa AI is processing...
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-4">
+                                                {[1, 2].map(i => (
+                                                    <Skeleton key={i} className="h-32 w-full rounded-[2rem]" />
+                                                ))}
+                                            </div>
+                                        )}
+                                    </motion.div>
                                 ) : isEmpty ? (
-                                    <div className="py-8">
+                                    <motion.div
+                                        key="empty"
+                                        initial={{ opacity: 0, scale: 0.98 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        className="py-8"
+                                    >
                                         <StateMessage
                                             variant="empty"
                                             title={hasTransactions ? "Tutto nella norma!" : "Nessuna transazione"}
@@ -107,17 +136,29 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
                                                     : `Non ci sono transazioni registrate per ${periodLabel}. Aggiungi qualche spesa per vedere gli insights.`
                                             }
                                         />
-                                    </div>
+                                    </motion.div>
                                 ) : (
-                                    <div className="space-y-4">
+                                    <motion.div
+                                        key="list"
+                                        initial="hidden"
+                                        animate="visible"
+                                        variants={{
+                                            hidden: { opacity: 0 },
+                                            visible: {
+                                                opacity: 1,
+                                                transition: { staggerChildren: 0.1 }
+                                            }
+                                        }}
+                                        className="space-y-4 py-2"
+                                    >
                                         {insights.map(insight => (
                                             <InsightCard key={insight.id} insight={insight} />
                                         ))}
-                                    </div>
+                                    </motion.div>
                                 )}
-                            </div>
+                            </AnimatePresence>
                         </div>
-                    </div>
+                    </MacroSection>
                 </div>
             </StaggerContainer>
         </div>

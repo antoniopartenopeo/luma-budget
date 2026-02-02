@@ -19,6 +19,7 @@ interface PremiumChartSectionProps {
     className?: string
     chartHeight?: number
     backgroundType?: 'radar' | 'cartesian'
+    status?: "default" | "warning" | "critical"
 }
 
 /**
@@ -35,7 +36,8 @@ export function PremiumChartSection({
     children,
     className,
     chartHeight = 560,
-    backgroundType = 'radar'
+    backgroundType = 'radar',
+    status = "default"
 }: PremiumChartSectionProps) {
     const { data: settings } = useSettings()
     const isDarkMode = settings?.theme === "dark" || (settings?.theme === "system" && typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches)
@@ -53,6 +55,7 @@ export function PremiumChartSection({
     return (
         <MacroSection
             variant="premium"
+            status={status}
             title={title}
             description={description}
             contentClassName="p-0 relative z-10"

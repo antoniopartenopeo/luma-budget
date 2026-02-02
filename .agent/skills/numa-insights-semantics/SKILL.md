@@ -34,7 +34,7 @@ Regole di esclusione per termini specifici in base allo stato finanziario.
 | **Trend in Miglioramento ma ancora in perdita** <br> `OldSavings < NewSavings < 0` | "Efficienza aumentata", "Guadagno", "Successo" | "Miglioramento", " Recupero", "Positivo" | "La situazione sta migliorando, le perdite sono diminuite." |
 | **Micro-Attivo** <br> `0 < Savings < 5% Income` (o `< €50`) | "Stabile", "Solido", "Sicuro" | "In equilibrio", "Bilanciato", "Marginale" | "Sei in equilibrio precario, con poco margine." |
 | **Micro-Review** <br> `Surplus < Soglia Relativa` | "Surplus", "Investimento", "Fondo Emergenza" | "Piccolo margine", "Avanzo" | "Hai un piccolo avanzo disponibile." |
-| **Budget Sforato** <br> `Expenses > Budget` | "Ottimo controllo", "Perfetto", "Gestione ideale", "Ottimo lavoro" | "Attenzione", "Revisione", "Fuori budget" | "Sei fuori budget, anche se hai speso meno del mese scorso." |
+| **Budget Sforato** <br> `Expenses > Budget` | "Ottimo controllo", "Perfetto", "Gestione ideale", "Ottimo lavoro" | "Attenzione", "Revisione", "Fuori Ritmo", "Accelerazione" | "Stai spendendo più del tuo ritmo abituale." |
 
 ---
 
@@ -77,5 +77,5 @@ Prima di approvare una PR su Insights, verificare:
 5.  [ ] **Eseguire `npm test src/domain/narration/__tests__/semantic-enforcement.test.ts` e verificare che passi.**
 ---
 
-**Versione**: 1.1.0  
-**Ultimo aggiornamento**: 2026-02-01
+**Versione**: 1.2.0  
+**Ultimo aggiornamento**: 2026-02-02

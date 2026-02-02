@@ -16,6 +16,9 @@ import { useRouter } from "next/navigation"
 import { MacroSection } from "@/components/patterns/macro-section"
 import { usePrivacyStore } from "@/features/privacy/privacy.store"
 import { getPrivacyClass } from "@/features/privacy/privacy-utils"
+import { motion } from "framer-motion"
+import { StaggerContainer } from "@/components/patterns/stagger-container"
+import { macroItemVariants } from "@/components/patterns/macro-section"
 
 interface RecentTransactionsProps {
     filter?: DashboardTimeFilter
@@ -102,9 +105,9 @@ export function RecentTransactions({ filter }: RecentTransactionsProps) {
                 </Button>
             }
         >
-            <div className="space-y-6">
+            <StaggerContainer className="space-y-6">
                 {displayedTransactions.map((transaction) => (
-                    <div key={transaction.id} className="flex items-center justify-between">
+                    <motion.div key={transaction.id} variants={macroItemVariants} className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                             <CategoryIcon
                                 categoryName={transaction.category}
@@ -120,9 +123,9 @@ export function RecentTransactions({ filter }: RecentTransactionsProps) {
                         <div className={cn("font-medium tabular-nums", transaction.type === "income" ? "text-emerald-600" : "text-foreground", getPrivacyClass(isPrivacyMode))}>
                             {formatSignedCents(getSignedCents(transaction), currency, locale)}
                         </div>
-                    </div>
+                    </motion.div>
                 ))}
-            </div>
+            </StaggerContainer>
         </MacroSection>
     )
 }

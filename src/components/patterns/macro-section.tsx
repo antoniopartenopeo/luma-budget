@@ -17,6 +17,16 @@ interface MacroSectionProps extends Omit<HTMLMotionProps<"div">, "title" | "chil
     background?: React.ReactNode
 }
 
+export const macroItemVariants: Variants = {
+    hidden: { opacity: 0, scale: 0.98, filter: "blur(8px)" },
+    visible: {
+        opacity: 1,
+        scale: 1,
+        filter: "blur(0px)",
+        transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+    }
+}
+
 /**
  * MacroSection: La primitiva strutturale universale Numa Premium.
  * Allineata al "Budget Surface Spec" (Gold Standard).
@@ -37,18 +47,9 @@ export function MacroSection({
     const isWarning = status === "warning"
     const isCritical = status === "critical"
 
-    const itemVariants: Variants = {
-        hidden: { opacity: 0, scale: 0.98 },
-        visible: {
-            opacity: 1,
-            scale: 1,
-            transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] }
-        }
-    }
-
     return (
         <motion.div
-            variants={itemVariants}
+            variants={macroItemVariants}
             initial="hidden"
             animate="visible"
             className={cn("w-full relative", className)}
@@ -77,9 +78,9 @@ export function MacroSection({
                 {(isPremium || isWarning || isCritical) && (
                     <div
                         className={cn(
-                            "absolute top-[-20%] right-[-20%] w-[400px] h-[400px] blur-[120px] rounded-full pointer-events-none opacity-60",
-                            isWarning && "bg-amber-500/10",
-                            isCritical && "bg-rose-500/10",
+                            "absolute top-[-20%] right-[-20%] w-[400px] h-[400px] blur-[120px] rounded-full pointer-events-none opacity-60 animate-pulse-soft",
+                            isWarning && "bg-amber-500/15",
+                            isCritical && "bg-rose-500/15",
                             isPremium && !isWarning && !isCritical && "bg-primary/10"
                         )}
                     />

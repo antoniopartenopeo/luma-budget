@@ -73,8 +73,8 @@ export function buildBudgetRiskInsight(
         id: `budget-risk-${period}`,
         kind: "budget-risk",
         severity,
-        title: "Budget a rischio",
-        summary: `A questo ritmo, spenderai ${formatCents(projectedCents)} entro fine ${periodLabel}, superando il budget di ${formatCents(deltaCents)} (+${deltaPct}%).`,
+        title: "Ritmo di spesa elevato",
+        summary: `A questo ritmo, la proiezione di spesa è di ${formatCents(projectedCents)} entro fine ${periodLabel}. Questo supera il tuo percorso ideale di ${formatCents(deltaCents)} (+${deltaPct}%).`,
         metrics: {
             currentCents: spentCents,
             baselineCents: budgetCents,
@@ -176,8 +176,8 @@ export function buildCategorySpikeInsights(
             id: `category-spike-${currentPeriod}-${spike.categoryId}`,
             kind: "category-spike" as const,
             severity,
-            title: `Spike in ${spike.label}`,
-            summary: `Hai speso ${formatCents(spike.currentCents)} in ${spike.label}, +${formatCents(spike.deltaCents)} (+${spike.deltaPct}%) rispetto alla media degli ultimi 3 mesi.`,
+            title: `Accelerazione in ${spike.label}`,
+            summary: `Hai speso ${formatCents(spike.currentCents)} in ${spike.label}, con un incremento di ${formatCents(spike.deltaCents)} (+${spike.deltaPct}%) rispetto al tuo ritmo abituale.`,
             metrics: {
                 currentCents: spike.currentCents,
                 baselineCents: spike.baselineCents,

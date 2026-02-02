@@ -1,8 +1,8 @@
 # Numa Motion Principles & Governance
 
 > **Stato:** Attivo e Vincolante
-> **Versione:** 1.1
-> **Fonte:** Motion Audit (Feb 2026)
+> **Versione:** 1.2
+> **Ultimo aggiornamento:** 2026-02-02
 
 Questo documento definisce le regole immutabili per l'uso dell'animazione (Motion) all'interno dell'applicazione Numa. Il Motion in Numa è un linguaggio funzionale, non una decorazione estetica.
 
@@ -64,9 +64,9 @@ Usare ESCLUSIVAMENTE queste 3 primitive definite a livello globale. Non inventar
 4.  **Empty States:** Micro-animazioni per invitare all'azione (es. "Inizia qui").
 
 ### ❌ Zone Vietate (Static-Only)
-1.  **Lista Transazioni:** Nessun movimento durante lo scroll, filtro o renderizzazione delle righe. La leggibilità è prioritaria.
+1.  **Lista Transazioni:** Consentito esclusivamente il Motion di "Entrata" (Staggered Entry/Living Effect) per preservare il contesto durante il caricamento o i filtri. Durante lo scroll o la modifica dei dati, la leggibilità è prioritaria: nessun movimento che distragga dalla lettura dei numeri.
 2.  **Dati Finanziari Critici:** Il Saldo Finale e i totali di bilancio NON devono usare "rolling numbers" (slot machine effect). Devono essere solidi e stabili.
-3.  **Tabelle Dense:** Nessuna animazione di riga/colonna.
+3.  **Tabelle Dense:** Nessun'animazione di colonna o movimento laterale.
 
 ---
 

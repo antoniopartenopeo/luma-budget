@@ -30,6 +30,8 @@ import { generateAIMonitorMessage, getAIMonitorStyles } from "@/features/goals/u
 import { queryKeys } from "@/lib/query-keys"
 import { KpiCard } from "@/components/patterns/kpi-card"
 import { StateMessage } from "@/components/ui/state-message"
+import { StaggerContainer } from "@/components/patterns/stagger-container"
+import { macroItemVariants } from "@/components/patterns/macro-section"
 
 export default function SimulatorPage() {
     const queryClient = useQueryClient()
@@ -205,76 +207,77 @@ export default function SimulatorPage() {
     const projection = currentScenario?.projection
 
     return (
-        <div className="space-y-8 pb-24 md:pb-12 w-full">
-            <PageHeader
-                title="Financial Lab"
-                description="Crea obiettivi di risparmio e genera piani d'azione personalizzati per raggiungerli."
-            />
+        <StaggerContainer className="space-y-8 pb-24 md:pb-12 w-full">
+            <motion.div variants={macroItemVariants}>
+                <PageHeader
+                    title="Financial Lab"
+                    description="Crea obiettivi di risparmio e genera piani d'azione personalizzati per raggiungerli."
+                />
+            </motion.div>
 
             {/* MONOLITHIC COMMAND CENTER (UBI) */}
             {!activeGoal ? (
                 /* EMPTY STATE - Start Flow */
-                <MacroSection
-                    variant="default"
-                    className="animate-enter-up"
-                    title={null}
-                >
-                    <div className="flex flex-col items-center justify-center py-24 text-center space-y-10 max-w-2xl mx-auto">
-                        <div className="relative">
-                            <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 animate-pulse-soft" />
-                            <div className="relative h-32 w-32 rounded-[3.5rem] bg-white dark:bg-slate-900 flex items-center justify-center shadow-2xl ring-1 ring-primary/20">
-                                <Target className="h-16 w-16 text-primary animate-pulse-soft" />
+                <motion.div variants={macroItemVariants}>
+                    <MacroSection
+                        variant="default"
+                        title={null}
+                    >
+                        <div className="flex flex-col items-center justify-center py-24 text-center space-y-10 max-w-2xl mx-auto">
+                            <div className="relative">
+                                <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 animate-pulse-soft" />
+                                <div className="relative h-32 w-32 rounded-[3.5rem] bg-white dark:bg-slate-900 flex items-center justify-center shadow-2xl ring-1 ring-primary/20">
+                                    <Target className="h-16 w-16 text-primary animate-pulse-soft" />
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="space-y-4">
-                            <h2 className="text-4xl font-black text-foreground tracking-tight leading-tight">
-                                Il tuo Financial Lab è pronto
-                            </h2>
-                            <p className="text-xl text-muted-foreground leading-relaxed font-medium">
-                                Inizia definendo il tuo primo obiettivo. Ti aiuteremo a scoprire il ritmo giusto per raggiungerlo in modo sostenibile.
-                            </p>
-                        </div>
+                            <div className="space-y-4">
+                                <h2 className="text-4xl font-black text-foreground tracking-tight leading-tight">
+                                    Il tuo Financial Lab è pronto
+                                </h2>
+                                <p className="text-xl text-muted-foreground leading-relaxed font-medium">
+                                    Inizia definendo il tuo primo obiettivo. Ti aiuteremo a scoprire il ritmo giusto per raggiungerlo in modo sostenibile.
+                                </p>
+                            </div>
 
-                        <Button
-                            size="lg"
-                            disabled={isCreatingGoal}
-                            className="rounded-full px-16 h-16 text-xl font-black tracking-tight shadow-2xl shadow-primary/30 hover:scale-105 transition-all active:scale-95 group relative overflow-hidden"
-                            onClick={async () => {
-                                setIsCreatingGoal(true)
-                                try {
-                                    await addGoal("Nuovo Obiettivo", 0)
-                                    toast.success("Laboratorio attivato!")
-                                } catch (e) {
-                                    toast.error("Errore durante l'attivazione.")
-                                    setIsCreatingGoal(false)
-                                }
-                            }}
-                        >
-                            <span className="relative z-10 flex items-center gap-2">
-                                {isCreatingGoal ? (
-                                    <>
-                                        <RefreshCw className="h-5 w-5 animate-spin" />
-                                        Sto creando...
-                                    </>
-                                ) : (
-                                    "Crea Primo Obiettivo"
-                                )}
-                            </span>
-                        </Button>
-                    </div>
-                </MacroSection>
+                            <Button
+                                size="lg"
+                                disabled={isCreatingGoal}
+                                className="rounded-full px-16 h-16 text-xl font-black tracking-tight shadow-2xl shadow-primary/30 hover:scale-105 transition-all active:scale-95 group relative overflow-hidden"
+                                onClick={async () => {
+                                    setIsCreatingGoal(true)
+                                    try {
+                                        await addGoal("Nuovo Obiettivo", 0)
+                                        toast.success("Laboratorio attivato!")
+                                    } catch (e) {
+                                        toast.error("Errore durante l'attivazione.")
+                                        setIsCreatingGoal(false)
+                                    }
+                                }}
+                            >
+                                <span className="relative z-10 flex items-center gap-2">
+                                    {isCreatingGoal ? (
+                                        <>
+                                            <RefreshCw className="h-5 w-5 animate-spin" />
+                                            Sto creando...
+                                        </>
+                                    ) : (
+                                        "Crea Primo Obiettivo"
+                                    )}
+                                </span>
+                            </Button>
+                        </div>
+                    </MacroSection>
+                </motion.div>
             ) : (
                 /* ACTIVE SIMULATION v3 */
                 <motion.div
-                    layout
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                    variants={macroItemVariants}
                 >
                     <MacroSection
                         variant="premium"
                         className="overflow-visible"
+                        status={currentScenario?.sustainability.status === "unsafe" ? "critical" : currentScenario?.sustainability.status === "fragile" ? "warning" : "default"}
                         title={
                             <div>
                                 <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">Command Center</h2>
@@ -326,84 +329,92 @@ export default function SimulatorPage() {
 
                         {/* 3. PROJECTION & RESULTS (The Output) */}
                         {currentScenario && (
-                            <div className="pt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150 relative z-10">
+                            <StaggerContainer className="pt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
                                 {/* METRIC 1: VELOCITY */}
-                                <KpiCard
-                                    title="Risparmio Mensile"
-                                    value={formatCents(simulatedSurplus, currency, locale)}
-                                    change={extraSavings > 0 ? `+${formatCents(extraSavings, currency, locale)}` : undefined}
-                                    trend={extraSavings > 0 ? "up" : "neutral"}
-                                    comparisonLabel={extraSavings > 0 ? "boost" : undefined}
-                                    icon={Calculator}
-                                    tone="neutral"
-                                    className="h-full hover:bg-white/60 transition-colors"
-                                />
+                                <motion.div variants={macroItemVariants}>
+                                    <KpiCard
+                                        title="Risparmio Mensile"
+                                        value={formatCents(simulatedSurplus, currency, locale)}
+                                        change={extraSavings > 0 ? `+${formatCents(extraSavings, currency, locale)}` : undefined}
+                                        trend={extraSavings > 0 ? "up" : "neutral"}
+                                        comparisonLabel={extraSavings > 0 ? "boost" : undefined}
+                                        icon={Calculator}
+                                        tone="neutral"
+                                        className="h-full hover:bg-white/60 transition-colors"
+                                    />
+                                </motion.div>
 
                                 {/* METRIC 2: HORIZON */}
-                                <KpiCard
-                                    title="Tempo Stimato"
-                                    value={!projection?.canReach
-                                        ? "—"
-                                        : projection?.likelyDate
-                                            ? new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' })
-                                                .format(new Date(projection.likelyDate))
-                                                .replace(/^\w/, c => c.toUpperCase())
-                                            : "—"
-                                    }
-                                    change={projection?.canReach && projection?.likelyMonths > 0 ? `${projection.likelyMonths} mesi` : undefined}
-                                    description={!projection?.canReach
-                                        ? "Aumenta il risparmio per proiettare"
-                                        : `Range: ${projection.minMonths}-${projection.maxMonths} mesi`
-                                    }
-                                    icon={Target}
-                                    tone={projection?.canReach ? "positive" : "neutral"}
-                                    className={cn(
-                                        "h-full transition-all duration-500",
-                                        projection?.canReach ? "bg-indigo-50/40 dark:bg-indigo-950/20" : "bg-rose-50/40 dark:bg-rose-950/10"
-                                    )}
-                                />
+                                <motion.div variants={macroItemVariants}>
+                                    <KpiCard
+                                        title="Tempo Stimato"
+                                        value={!projection?.canReach
+                                            ? "—"
+                                            : projection?.likelyDate
+                                                ? new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' })
+                                                    .format(new Date(projection.likelyDate))
+                                                    .replace(/^\w/, c => c.toUpperCase())
+                                                : "—"
+                                        }
+                                        change={projection?.canReach && projection?.likelyMonths > 0 ? `${projection.likelyMonths} mesi` : undefined}
+                                        description={!projection?.canReach
+                                            ? "Aumenta il risparmio per proiettare"
+                                            : `Range: ${projection.minMonths}-${projection.maxMonths} mesi`
+                                        }
+                                        icon={Target}
+                                        tone={projection?.canReach ? "positive" : "neutral"}
+                                        className={cn(
+                                            "h-full transition-all duration-500",
+                                            projection?.canReach ? "bg-indigo-50/40 dark:bg-indigo-950/20" : "bg-rose-50/40 dark:bg-rose-950/10"
+                                        )}
+                                    />
+                                </motion.div>
 
                                 {/* METRIC 3: SUSTAINABILITY */}
-                                <KpiCard
-                                    title="Sostenibilità"
-                                    value={(() => {
-                                        const status = currentScenario.sustainability.status
-                                        if (status === "secure") return "Sicuro"
-                                        if (status === "sustainable") return "Sostenibile"
-                                        if (status === "fragile") return "Fragile"
-                                        return "A Rischio"
-                                    })()}
-                                    description={currentScenario.sustainability.reason || "Assetto verificato"}
-                                    icon={RefreshCw}
-                                    tone={(() => {
-                                        const status = currentScenario.sustainability.status
-                                        if (status === "secure" || status === "sustainable") return "positive"
-                                        if (status === "fragile") return "warning"
-                                        return "negative"
-                                    })()}
-                                    className="h-full"
-                                />
+                                <motion.div variants={macroItemVariants}>
+                                    <KpiCard
+                                        title="Sostenibilità"
+                                        value={(() => {
+                                            const status = currentScenario.sustainability.status
+                                            if (status === "secure") return "Sicuro"
+                                            if (status === "sustainable") return "Sostenibile"
+                                            if (status === "fragile") return "Fragile"
+                                            return "A Rischio"
+                                        })()}
+                                        description={currentScenario.sustainability.reason || "Assetto verificato"}
+                                        icon={RefreshCw}
+                                        tone={(() => {
+                                            const status = currentScenario.sustainability.status
+                                            if (status === "secure" || status === "sustainable") return "positive"
+                                            if (status === "fragile") return "warning"
+                                            return "negative"
+                                        })()}
+                                        className="h-full"
+                                    />
+                                </motion.div>
 
                                 {/* METRIC 4: AI ADVISOR */}
-                                {(() => {
-                                    const aiMonitor = generateAIMonitorMessage({
-                                        scenario: currentScenario,
-                                        savingsPercent,
-                                        baselineExpenses: baselineMetrics?.averageMonthlyExpenses || 0
-                                    })
-                                    const styles = getAIMonitorStyles(aiMonitor.tone)
-                                    return (
-                                        <KpiCard
-                                            title="AI Monitor"
-                                            value={`"${aiMonitor.message}"`}
-                                            icon={Sparkles}
-                                            tone={aiMonitor.tone === "thriving" ? "positive" : (aiMonitor.tone === "stable" || aiMonitor.tone === "strained") ? "warning" : "negative"}
-                                            valueClassName="text-sm sm:text-sm lg:text-sm font-medium leading-relaxed italic !tracking-normal !font-sans opacity-80"
-                                            className={cn("h-full", styles.containerClass, "bg-opacity-40 hover:bg-opacity-60")}
-                                        />
-                                    )
-                                })()}
-                            </div>
+                                <motion.div variants={macroItemVariants}>
+                                    {(() => {
+                                        const aiMonitor = generateAIMonitorMessage({
+                                            scenario: currentScenario,
+                                            savingsPercent,
+                                            baselineExpenses: baselineMetrics?.averageMonthlyExpenses || 0
+                                        })
+                                        const styles = getAIMonitorStyles(aiMonitor.tone)
+                                        return (
+                                            <KpiCard
+                                                title="AI Monitor"
+                                                value={`"${aiMonitor.message}"`}
+                                                icon={Sparkles}
+                                                tone={aiMonitor.tone === "thriving" ? "positive" : (aiMonitor.tone === "stable" || aiMonitor.tone === "strained") ? "warning" : "negative"}
+                                                valueClassName="text-sm sm:text-sm lg:text-sm font-medium leading-relaxed italic !tracking-normal !font-sans opacity-80"
+                                                className={cn("h-full", styles.containerClass, "bg-opacity-40 hover:bg-opacity-60")}
+                                            />
+                                        )
+                                    })()}
+                                </motion.div>
+                            </StaggerContainer>
                         )}
                     </MacroSection>
                 </motion.div>
@@ -419,6 +430,6 @@ export default function SimulatorPage() {
                     onApply={handleCustomApply}
                 />
             )}
-        </div>
+        </StaggerContainer>
     )
 }

@@ -19,7 +19,9 @@ import { PageHeader } from "@/components/ui/page-header"
 import { StateMessage } from "@/components/ui/state-message"
 import { Skeleton } from "@/components/ui/skeleton"
 import { TransactionsActions } from "@/features/transactions/components/transactions-actions"
-import { MacroSection } from "@/components/patterns/macro-section"
+import { MacroSection, macroItemVariants } from "@/components/patterns/macro-section"
+import { StaggerContainer } from "@/components/patterns/stagger-container"
+import { motion } from "framer-motion"
 
 const PAGE_SIZE = 15
 
@@ -103,20 +105,22 @@ function TransactionsPageContent() {
     }
 
     return (
-        <div className="space-y-8 animate-enter-up">
+        <StaggerContainer className="space-y-8">
             {/* Header: PageHeader component preferred */}
-            <PageHeader
-                title="Transazioni"
-                description="Analisi dettagliata del tuo flusso di cassa."
-                actions={
-                    <TransactionsActions
-                        onExportView={() => handleExport(false)}
-                        onExportAll={() => handleExport(true)}
-                        isExporting={isExporting}
-                        hasResults={filteredList.length > 0}
-                    />
-                }
-            />
+            <motion.div variants={macroItemVariants}>
+                <PageHeader
+                    title="Transazioni"
+                    description="Analisi dettagliata del tuo flusso di cassa."
+                    actions={
+                        <TransactionsActions
+                            onExportView={() => handleExport(false)}
+                            onExportAll={() => handleExport(true)}
+                            isExporting={isExporting}
+                            hasResults={filteredList.length > 0}
+                        />
+                    }
+                />
+            </motion.div>
 
             {/* MacroSection for Main Content */}
             <MacroSection
@@ -220,7 +224,7 @@ function TransactionsPageContent() {
                 isLoading={isDeleting}
                 variant="destructive"
             />
-        </div>
+        </StaggerContainer>
     )
 }
 

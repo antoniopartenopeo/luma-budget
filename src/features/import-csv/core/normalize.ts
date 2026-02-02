@@ -50,20 +50,27 @@ export function normalizeRows(rows: RawRow[]): { valid: ParsedRow[]; errors: Par
 
 /**
  * Date Parsing Logic
+ * Supports European, Italian, German, and US date formats.
  */
 function parseDate(raw: string): Date | null {
     if (!raw) return null;
     const cleaned = raw.trim();
 
-    // Common Formats
+    // Try 2-digit year conversion first
+    const twoDigitYearDate = tryParseTwoDigitYear(cleaned);
+    if (twoDigitYearDate) return twoDigitYearDate;
+
+    // Common 4-digit year formats
     const formats = [
-        "yyyy-MM-dd",
-        "dd/MM/yyyy",
-        "dd-MM-yyyy",
-        "d/M/yyyy",
-        "yyyy/MM/dd",
-        "dd.MM.yyyy",
-        "MM/dd/yyyy", // US fallback
+        "yyyy-MM-dd",       // ISO
+        "dd/MM/yyyy",       // Italian, French
+        "dd-MM-yyyy",       // European alternative
+        "d/M/yyyy",         // Italian short
+        "yyyy/MM/dd",       // Asian-style ISO
+        "dd.MM.yyyy",       // German, Swiss
+        "d.M.yyyy",         // German short
+        "MM/dd/yyyy",       // US fallback
+        "M/d/yyyy",         // US short
     ];
 
     for (const fmt of formats) {
@@ -75,9 +82,49 @@ function parseDate(raw: string): Date | null {
         }
     }
 
+    // Native Date fallback for ISO strings like "2026-01-15T00:00:00"
     const native = new Date(cleaned);
     if (isValid(native) && native.getFullYear() > 2000) {
         return startOfDay(native);
+    }
+
+    return null;
+}
+
+/**
+ * Try to parse dates with 2-digit years (e.g., 15/01/26, 15.01.26, 15-01-26)
+ * European style: day first (DD/MM/YY, DD.MM.YY, DD-MM-YY)
+ * Assumes years 00-50 are 2000s, 51-99 are 1900s (for financial data relevance)
+ */
+function tryParseTwoDigitYear(cleaned: string): Date | null {
+    // 2-digit year formats - European style (day first only, to avoid ambiguity)
+    const twoDigitFormats = [
+        /^(\d{1,2})\/(\d{1,2})\/(\d{2})$/,  // DD/MM/YY or D/M/YY
+        /^(\d{1,2})\.(\d{1,2})\.(\d{2})$/,  // DD.MM.YY (German)
+        /^(\d{1,2})-(\d{1,2})-(\d{2})$/,    // DD-MM-YY
+    ];
+
+    for (const pattern of twoDigitFormats) {
+        const match = cleaned.match(pattern);
+        if (match) {
+            const day = parseInt(match[1], 10);
+            const month = parseInt(match[2], 10);
+            const year2 = parseInt(match[3], 10);
+
+            // Convert 2-digit year to 4-digit
+            // Financial data: 00-50 → 2000-2050, 51-99 → 1951-1999
+            const year4 = year2 <= 50 ? 2000 + year2 : 1900 + year2;
+
+            // Validate ranges
+            if (month < 1 || month > 12) continue;
+            if (day < 1 || day > 31) continue;
+            if (year4 < 2000 || year4 > 2100) continue;
+
+            const d = new Date(year4, month - 1, day);
+            if (isValid(d) && d.getDate() === day) {
+                return startOfDay(d);
+            }
+        }
     }
 
     return null;

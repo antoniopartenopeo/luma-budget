@@ -3,6 +3,7 @@
  */
 
 export const PAYMENT_RAILS = [
+    // Digital wallets
     "APPLE PAY",
     "GOOGLE PAY",
     "PAYPAL",
@@ -18,6 +19,17 @@ export const PAYMENT_RAILS = [
     "MOONEY",
     "POSTEPAY",
     "BANCOMAT PAY",
+    // Card networks (should be stripped, not extracted as merchant)
+    "MASTERCARD NFC",
+    "MASTERCARD E-COMMERCE",
+    "MASTERCARD",
+    "VISA NFC",
+    "VISA",
+    "MAESTRO",
+    "AMERICAN EXPRESS",
+    "AMEX",
+    "NFC",
+    "E-COMMERCE",
     // Generic rails that often appear as prefixes/suffixes
     "POS",
     "CARTA",
@@ -46,32 +58,41 @@ export interface PaymentRailResult {
 
 /**
  * Extracts the payment rail and returns the remainder of the text.
- * The rail is REMOVED from the text to prevent it from competing as a merchant.
+ * The rails are REMOVED from the text to prevent them from competing as merchants.
+ * v2: Now removes ALL matching rails, not just the first one.
  */
 export function extractPaymentRail(normalizedText: string): PaymentRailResult {
-    let bestRail: string | null = null;
+    const foundRails: string[] = [];
     let remainder = normalizedText;
 
     // Check for rails - longest match first
     const sortedRails = [...PAYMENT_RAILS].sort((a, b) => b.length - a.length);
 
-    for (const rail of sortedRails) {
-        // We look for the rail as a distinct word (surrounded by bounds or start/end)
-        // Note: normalizedText is expected to be uppercase and trimmed
-        const regex = new RegExp(`(^|\\s|\\*)${rail}($|\\s|\\*)`);
+    // Keep removing rails until no more are found
+    let changed = true;
+    while (changed) {
+        changed = false;
+        for (const rail of sortedRails) {
+            // Escape special regex characters in rail name
+            const escapedRail = rail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            // We look for the rail as a distinct word
+            const regex = new RegExp(`(^|\\s|\\*)${escapedRail}($|\\s|\\*)`, "gi");
 
-        if (regex.test(remainder)) {
-            bestRail = rail;
-            // Remove the rail from the text, replacing with space to maintain separation
-            remainder = remainder.replace(rail, " ").trim();
-            // Clean up potential double spaces or leading/trailing separators created by removal
-            remainder = remainder.replace(/\s+/g, " ").replace(/^\*|\*$/g, "").trim();
-            break; // Stop after first rail found (usually the most significant one due to sorting)
+            if (regex.test(remainder)) {
+                if (!foundRails.includes(rail)) {
+                    foundRails.push(rail);
+                }
+                // Remove ALL occurrences of this rail
+                remainder = remainder.replace(new RegExp(`(^|\\s)${escapedRail}(\\s|$)`, "gi"), " ");
+                // Clean up potential double spaces
+                remainder = remainder.replace(/\s+/g, " ").replace(/^\*|\*$/g, "").trim();
+                changed = true;
+            }
         }
     }
 
     return {
-        paymentRail: bestRail,
+        paymentRail: foundRails.length > 0 ? foundRails[0] : null, // Return first for compatibility
         remainder: remainder
     };
 }

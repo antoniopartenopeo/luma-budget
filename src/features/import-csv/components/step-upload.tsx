@@ -150,7 +150,7 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
                 {/* 3. Drop Zone / Tabs */}
                 <MacroSection className="w-full max-w-3xl" contentClassName="p-0">
                     <Tabs defaultValue="upload" className="w-full flex flex-col">
-                        <TabsList className="w-full grid grid-cols-2 rounded-none border-b bg-muted/30 p-0 h-11">
+                        <TabsList className="w-full grid grid-cols-2 rounded-t-[2.25rem] border-b bg-muted/30 p-0 h-11 overflow-hidden">
                             <TabsTrigger value="upload" className="h-full rounded-none data-[state=active]:bg-card data-[state=active]:shadow-none border-r border-transparent data-[state=active]:border-border/50 transition-all gap-2 text-base">
                                 <FileUp className="h-4 w-4" /> Upload File
                             </TabsTrigger>
@@ -159,7 +159,7 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
                             </TabsTrigger>
                         </TabsList>
 
-                        <div className="p-6 bg-gradient-to-b from-card to-muted/20">
+                        <div className="p-6 bg-gradient-to-b from-card to-muted/20 rounded-b-[2.25rem] overflow-hidden">
                             <TabsContent value="upload" className="mt-0 outline-none">
                                 <div
                                     className={cn(
@@ -229,7 +229,7 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
                                 <div className="mt-8 p-4 rounded-xl bg-destructive/5 text-destructive border border-destructive/10 text-sm flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
                                     <AlertCircle className="h-5 w-5 mt-0.5 shrink-0" />
                                     <div className="space-y-1">
-                                        <p className="font-semibold">Si è verificato un problema</p>
+                                        <p className="font-bold">Si è verificato un problema</p>
                                         <p>{error}</p>
                                     </div>
                                 </div>

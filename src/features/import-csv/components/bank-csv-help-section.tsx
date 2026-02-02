@@ -16,7 +16,7 @@ export function BankCsvHelpSection() {
                                 <HelpCircle className="h-4 w-4" />
                             </div>
                             <div className="text-left">
-                                <span className="text-sm font-semibold text-foreground flex items-center gap-2">
+                                <span className="text-sm font-bold text-foreground flex items-center gap-2">
                                     Come ottenere il file CSV
                                 </span>
                                 <p className="text-xs text-muted-foreground font-normal mt-0.5">

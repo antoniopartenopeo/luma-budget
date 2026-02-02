@@ -8,7 +8,6 @@ const STOPWORDS = new Set([
     // Articles and prepositions
     "DI", "IL", "LA", "LO", "LE", "GLI", "UN", "UNA", "DA", "IN", "SU", "PER", "CON", "TRA", "FRA", "DEL", "DELLA", "DELLO", "DEI", "DEGLI", "DELLE", "AL", "ALLA", "ALLO", "AI", "AGLI", "ALLE",
     // Countries/regions
-    // Countries/regions
     "IT", "ITA", "ITALIA", "ITALY",
     // Legal suffixes
     "SRL", "S.R.L.", "SPA", "S.P.A.", "SRLS", "SNC", "SAS", "LTD", "GMBH", "LLC", "INC", "CORP", "AG", "SA", "BV", "NV",
@@ -49,12 +48,31 @@ const BANK_PATTERNS = [
 ];
 
 // Patterns to remove
-const NOISE_PATTERNS = [
-    /\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}/g,  // Dates
-    /\d{8,}/g,                                   // Long IDs
-    /[\*X]{4,}\d{0,4}/g,                        // Masked cards
-    /\d{6,}/g,                                   // 6+ digit sequences
-    /[.,;:!?()'"\[\]{}@#$%\^&+=/]/g            // Punctuation (removed *)
+const NOISE_PATTERNS: RegExp[] = [
+    // Italian date prefix: "del 31/01/2026" or "DEL 31.01.26"
+    /\bDEL\s+\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}\b/gi,
+    // Malformed bank date: "del 17/0CARTA" or "del 24/1CARTA" (date merged with CARTA)
+    /\bDEL\s+\d{1,2}[\/\-\.]\d?CARTA\b/gi,
+    // Partial date prefix: "del 17/" or "del 24"
+    /\bDEL\s+\d{1,2}[\/\-\.]?\s*/gi,
+    // Standard dates
+    /\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}/g,
+    // Malformed CARTA patterns: "0CARTA", "1CARTA" (digit stuck to CARTA)
+    /\b\d?CARTA\b/gi,
+    // Card number with amount: "*7298 DI EUR 25,04"
+    /\*\d{4,}\s+DI\s+EUR\s+\d+[,.]\d{2}/gi,
+    // Card number pattern alone
+    /\*\d{4,}/g,
+    // DI EUR amount (standalone)
+    /\bDI\s+EUR\s+\d+[,.]\d{2}\b/gi,
+    // Long IDs (8+ digits)
+    /\d{8,}/g,
+    // Masked cards
+    /[\*X]{4,}\d{0,4}/g,
+    // 6+ digit sequences
+    /\d{6,}/g,
+    // Punctuation (keep *)
+    /[.,;:!?()'"\[\]{}@#$%\^&+=/]/g,
 ];
 
 /**

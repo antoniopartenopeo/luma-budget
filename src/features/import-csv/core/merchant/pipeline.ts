@@ -10,6 +10,7 @@ import { extractSubMerchantFromRemainder } from "./sub-merchant";
 import { getTopTokens, SCORING_BLACKLIST } from "./token-scorer";
 import { extractPaymentRail } from "./payment-rails";
 import { getOverride } from "./overrides";
+import { fuzzyMatch } from "./fuzzy-matcher";
 
 /**
  * Main pipeline function
@@ -42,6 +43,8 @@ export function extractMerchantKey(description: string): string {
     // - Remove positional noise (Cities, Countries at end)
     text = cleanNoise(text);
     text = stripPositionalNoise(text);
+    // Clean any remaining asterisks at start/end
+    text = text.replace(/^\*+|\*+$/g, "").trim();
 
     // If practically empty after cleaning (and stripping rail), evaluate fallback
     if (text.length < 2) {
@@ -115,8 +118,23 @@ export function extractMerchantKey(description: string): string {
         if (BRAND_DICT[token]) return BRAND_DICT[token];
     }
 
-    // 5b. Scoring (Winner takes all)
-    // If no direct match, ask the scorer for the best candidates
+    // 5b: Fuzzy Match (NEW - for typos/variations)
+    // Try to find approximate match in brand dictionary
+    const brandKeys = Object.keys(BRAND_DICT);
+    for (const token of tokens) {
+        if (token.length >= 4) { // Only fuzzy match tokens with 4+ chars
+            const fuzzyResult = fuzzyMatch(token, brandKeys, { threshold: 0.85 });
+            if (fuzzyResult) return BRAND_DICT[fuzzyResult];
+        }
+    }
+    // Also try the assembled text
+    if (text.length >= 5) {
+        const fuzzyResult = fuzzyMatch(text, brandKeys, { threshold: 0.85 });
+        if (fuzzyResult) return BRAND_DICT[fuzzyResult];
+    }
+
+    // 5c. Scoring (Winner takes all)
+    // If no direct or fuzzy match, ask the scorer for the best candidates
     const topTokens = getTopTokens(tokens, 2);
 
     if (topTokens.length > 0) {

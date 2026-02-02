@@ -560,20 +560,178 @@ export const EXPENSE_GROUP_ORDER: CategoryGroupKey[] = [
 // =====================
 
 export const CATEGORY_ENRICHMENT_RULES: Array<[string[], string]> = [
-    [["netflix", "spotify", "disney", "youtube", "apple music", "prime video", "dazn"], CategoryIds.ABBONAMENTI],
-    [["esselunga", "coop", "carrefour", "lidl", "conad", "unes", "aldi", "eurospin", "penny", "md", "supermercato"], CategoryIds.CIBO],
-    [["enel", "a2a", "iren", "hera", "sorgenia", "acea", "eni gas"], CategoryIds.UTENZE],
-    [["trenitalia", "italo", "flixbus", "uber", "taxi", "atm", "atac", "metro", "bus"], CategoryIds.TRASPORTI],
-    [["paypal", "ebay", "zalando", "asos", "zara", "h&m"], CategoryIds.SHOPPING],
-    [["farmacia", "medico", "ospedale", "ticket", "sanitario", "clinica"], CategoryIds.SALUTE_FARMACIA],
-    [["deliveroo", "just eat", "glovo", "ristorante", "pizzeria", "trattoria", "sushi", "osteria"], CategoryIds.RISTORANTI],
-    [["distributore", "q8", "esso", "ip", "eni", "tamoil", "benzina", "diesel", "carburante"], CategoryIds.AUTO_CARBURANTE],
-    [["palestra", "fitness", "gym", "sport", "calcetto", "tennis"], CategoryIds.HOBBY_SPORT],
-    [["assicurazione", "polizza", "generali", "allianz", "unipol", "unipolsai"], CategoryIds.ASSICURAZIONI],
-    [["tim", "vodafone", "iliad", "fastweb", "windtre", "wind tre", "ho. mobile"], CategoryIds.TELEFONIA_INTERNET],
-    [["bar", "caffe", "caffetteria", "pasticceria", "starbucks"], CategoryIds.BAR_CAFFE],
-    [["amazon", "mediaworld", "apple", "unieuro", "eprice"], CategoryIds.TECNOLOGIA],
-    [["mcdonald", "burger king", "kfc", "eats"], CategoryIds.FAST_FOOD],
-    [["tabac", "iqos", "vapour", "smoke"], CategoryIds.TABACCO_VAPE],
-    [["ikea", "maison du monde", "leroy merlin", "brico"], CategoryIds.CASA_ARREDO],
+    // =====================================================
+    // STREAMING & SUBSCRIPTIONS
+    // =====================================================
+    [["netflix", "spotify", "disney", "youtube", "apple music", "prime video", "dazn", "hbo", "paramount", "now tv", "timvision", "sky", "audible", "kindle", "twitch"], CategoryIds.ABBONAMENTI],
+
+    // =====================================================
+    // SUPERMARKETS & GROCERY
+    // =====================================================
+    [["esselunga", "coop", "carrefour", "lidl", "conad", "unes", "aldi", "eurospin", "penny", "md", "supermercato", "pam", "bennet", "famila", "despar", "sigma", "tigros", "gigante", "iper", "naturasi", "todis"], CategoryIds.CIBO],
+
+    // =====================================================
+    // UTILITIES
+    // =====================================================
+    [["enel", "a2a", "iren", "hera", "sorgenia", "acea", "eni gas", "edison", "plenitude", "engie", "bolletta", "luce", "gas", "acqua"], CategoryIds.UTENZE],
+
+    // =====================================================
+    // PUBLIC TRANSPORT
+    // =====================================================
+    [["trenitalia", "italo", "flixbus", "uber", "taxi", "atm", "atac", "metro", "bus", "trenord", "gtt", "anm", "cotral", "bolt", "freenow", "blablacar"], CategoryIds.TRASPORTI],
+
+    // =====================================================
+    // SHOPPING & CLOTHING
+    // =====================================================
+    [["zalando", "asos", "zara", "h&m", "primark", "bershka", "stradivarius", "mango", "intimissimi", "calzedonia", "ovs", "benetton", "uniqlo", "pull&bear", "massimo dutti", "coin", "rinascente", "nike", "adidas", "footlocker", "snipes", "vinted"], CategoryIds.SHOPPING],
+
+    // =====================================================
+    // HEALTH & PHARMACY
+    // =====================================================
+    [["farmacia", "medico", "ospedale", "ticket", "sanitario", "clinica", "ambulatorio", "dottore", "visita", "esame", "laboratorio", "synlab", "affidea", "parafarmacia"], CategoryIds.SALUTE_FARMACIA],
+
+    // =====================================================
+    // RESTAURANTS
+    // =====================================================
+    [["deliveroo", "just eat", "glovo", "ristorante", "pizzeria", "trattoria", "sushi", "osteria", "poke house", "wagamama", "rossopomodoro", "alice pizza", "spontini", "eataly", "uber eats"], CategoryIds.RISTORANTI],
+
+    // =====================================================
+    // FUEL & CHARGING
+    // =====================================================
+    [["distributore", "q8", "esso", "ip", "eni", "tamoil", "benzina", "diesel", "carburante", "shell", "total", "agip", "repsol", "api", "erg", "ricarica auto", "enel x", "ionity"], CategoryIds.AUTO_CARBURANTE],
+
+    // =====================================================
+    // SPORTS & FITNESS
+    // =====================================================
+    [["palestra", "fitness", "gym", "sport", "calcetto", "tennis", "virgin active", "mcfit", "decathlon", "cisalfa", "technogym", "piscina", "yoga", "pilates", "crossfit"], CategoryIds.HOBBY_SPORT],
+
+    // =====================================================
+    // INSURANCE
+    // =====================================================
+    [["assicurazione", "polizza", "generali", "allianz", "unipol", "unipolsai", "axa", "zurich", "reale mutua", "prima", "verti", "quixa", "linear", "direct line"], CategoryIds.ASSICURAZIONI],
+
+    // =====================================================
+    // TELECOM & INTERNET
+    // =====================================================
+    [["tim", "vodafone", "iliad", "fastweb", "windtre", "wind tre", "ho. mobile", "kena", "very mobile", "coopvoce", "poste mobile", "tiscali"], CategoryIds.TELEFONIA_INTERNET],
+
+    // =====================================================
+    // COFFEE & BARS
+    // =====================================================
+    [["bar", "caffe", "caffetteria", "pasticceria", "starbucks", "costa coffee", "mccafe", "lavazza", "grom", "venchi", "amorino"], CategoryIds.BAR_CAFFE],
+
+    // =====================================================
+    // TECHNOLOGY & ELECTRONICS
+    // =====================================================
+    [["amazon", "mediaworld", "apple", "unieuro", "euronics", "trony", "expert", "samsung", "huawei", "xiaomi", "gamestop", "mondadori", "feltrinelli"], CategoryIds.TECNOLOGIA],
+
+    // =====================================================
+    // FAST FOOD
+    // =====================================================
+    [["mcdonald", "burger king", "kfc", "subway", "domino", "pizza hut", "five guys", "old wild west", "roadhouse", "autogrill", "chef express"], CategoryIds.FAST_FOOD],
+
+    // =====================================================
+    // TOBACCO & VAPE
+    // =====================================================
+    [["tabac", "iqos", "vapour", "smoke", "sigarette", "vape", "tabaccheria"], CategoryIds.TABACCO_VAPE],
+
+    // =====================================================
+    // HOME & FURNITURE
+    // =====================================================
+    [["ikea", "maison du monde", "leroy merlin", "brico", "obi", "mondo convenienza", "poltronesofà", "kasanova", "flying tiger", "zara home", "conforama"], CategoryIds.CASA_ARREDO],
+
+    // =====================================================
+    // TRAVEL & HOTELS
+    // =====================================================
+    [["booking", "expedia", "airbnb", "hotel", "hilton", "marriott", "ibis", "novotel", "best western", "ryanair", "easyjet", "vueling", "wizzair", "lufthansa", "alitalia", "ita airways", "lastminute", "edreams", "volagratis", "trivago"], CategoryIds.VIAGGI],
+
+    // =====================================================
+    // BEAUTY & PERSONAL CARE
+    // =====================================================
+    [["sephora", "douglas", "kiko", "lush", "body shop", "yves rocher", "bottega verde", "acqua e sapone", "tigotà", "rituals", "parrucchiere", "estetista", "barbiere", "manicure"], CategoryIds.BENESSERE],
+
+    // =====================================================
+    // PETS
+    // =====================================================
+    [["veterinario", "pet", "animali", "cane", "gatto", "arcaplanet", "zooplus", "maxi zoo"], CategoryIds.ANIMALI],
+
+    // =====================================================
+    // BOOKS & CULTURE
+    // =====================================================
+    [["libreria", "libro", "cinema", "teatro", "museo", "concerto", "ticketone", "vivaticket", "feltrinelli", "mondadori store"], CategoryIds.LIBRI_CULTURA],
+
+    // =====================================================
+    // GIFTS & PARTIES
+    // =====================================================
+    [["regalo", "fiori", "fiorista", "party", "compleanno", "matrimonio", "battesimo"], CategoryIds.REGALI],
+
+    // =====================================================
+    // AUTO MAINTENANCE
+    // =====================================================
+    [["officina", "meccanico", "gomme", "pneumatici", "revisione", "norauto", "midas", "carglass", "euromaster", "driver center", "autolavaggio", "carrozzeria"], CategoryIds.AUTO_MANUTENZIONE],
+
+    // =====================================================
+    // GAMBLING & BETTING
+    // =====================================================
+    [["scommesse", "bet365", "snai", "sisal", "goldbet", "eurobet", "betfair", "pokerstars", "888", "william hill", "lottomatica"], CategoryIds.GIOCHI_SCOMMESSE],
+
+    // =====================================================
+    // LOTTERY
+    // =====================================================
+    [["gratta", "lotto", "superenalotto", "win for life", "10elotto"], CategoryIds.LOTTERIE],
+
+    // =====================================================
+    // RENT & MORTGAGE
+    // =====================================================
+    [["affitto", "mutuo", "rata mutuo", "canone locazione"], CategoryIds.AFFITTO_MUTUO],
+
+    // =====================================================
+    // TAXES
+    // =====================================================
+    [["tasse", "f24", "agenzia entrate", "tributi", "imu", "tari", "bollo auto"], CategoryIds.TASSE],
+
+    // =====================================================
+    // EDUCATION
+    // =====================================================
+    [["scuola", "università", "corso", "lezione", "formazione", "master", "udemy", "coursera", "skillshare"], CategoryIds.ISTRUZIONE],
+
+    // =====================================================
+    // LOANS & INSTALLMENTS
+    // =====================================================
+    [["prestito", "finanziamento", "rata", "findomestic", "agos", "compass", "cofidis"], CategoryIds.RATE_PRESTITI],
+
+    // =====================================================
+    // INCOME: SALARY
+    // =====================================================
+    [["stipendio", "salary", "compenso", "bonifico stipendio", "emolumenti"], CategoryIds.STIPENDIO],
+
+    // =====================================================
+    // INCOME: PENSION
+    // =====================================================
+    [["pensione", "inps", "accredito pensione"], CategoryIds.PENSIONE],
+
+    // =====================================================
+    // INCOME: REFUNDS
+    // =====================================================
+    [["rimborso", "nota spese", "restituzione", "accredito", "storno"], CategoryIds.RIMBORSI],
+
+    // =====================================================
+    // INCOME: CASHBACK
+    // =====================================================
+    [["cashback", "punti", "rewards", "fidelity"], CategoryIds.CASHBACK_PUNTI],
+
+    // =====================================================
+    // ENTERTAINMENT & NIGHTLIFE
+    // =====================================================
+    [["discoteca", "club", "pub", "aperitivo", "happy hour", "dj", "nightclub"], CategoryIds.SVAGO_EXTRA],
+
+    // =====================================================
+    // DIGITAL PURCHASES
+    // =====================================================
+    [["app store", "google play", "in-app", "playstation store", "xbox store", "steam", "epic games", "twitch bits"], CategoryIds.MICRO_DIGITALI],
+
+    // =====================================================
+    // ALCOHOL
+    // =====================================================
+    [["enoteca", "vino", "birra", "liquori", "whisky", "cocktail bar"], CategoryIds.ALCOOL_EXTRA],
 ];

@@ -85,7 +85,7 @@ export function ImportStepSummary({
                 </div>
                 <h2 className="text-3xl font-bold tracking-tight mb-2">Importazione Completata!</h2>
                 <p className="text-muted-foreground text-lg max-w-md mx-auto mb-8">
-                    Hai aggiunto <span className="text-foreground font-semibold">{stats?.count} transazioni</span> alla tua storia.
+                    Hai aggiunto <span className="text-foreground font-bold">{stats?.count} transazioni</span> alla tua storia.
                     <br />
                     <span className="font-medium text-primary">Il vero viaggio inizia ora.</span>
                 </p>

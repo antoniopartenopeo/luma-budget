@@ -57,13 +57,14 @@ export function MacroSection({
             <Card
                 data-testid="macro-card"
                 className={cn(
-                    "relative border-none p-1 rounded-[2.5rem] bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl transition-all duration-500",
-                    "shadow-xl dark:border-white/5",
+                    "relative border-none p-1 rounded-[2.5rem] bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl transition-all duration-500 overflow-hidden",
+                    "shadow-xl dark:shadow-2xl dark:shadow-primary/5",
+                    "dark:ring-1 dark:ring-white/[0.08]",
                     isWarning && "shadow-[0_0_40px_-10px_rgba(251,191,36,0.2)] ring-1 ring-amber-500/20",
                     isCritical && "shadow-[0_0_40px_-10px_rgba(244,63,94,0.3)] ring-1 ring-rose-500/20"
                 )}>
-                {/* Visual Glass Reflection Accent */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/40 dark:from-white/5 to-transparent pointer-events-none" />
+                {/* Visual Glass Reflection Accent - enhanced for dark mode */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/40 dark:from-white/[0.08] via-transparent to-transparent pointer-events-none" />
 
                 {/* Integrated Background Slot (Radar, Grids, etc) */}
                 {background && (

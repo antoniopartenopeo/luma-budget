@@ -1,24 +1,31 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { ArrowLeft, ArrowRight, Info, CheckCircle2, HelpCircle, Tags, Store, Filter } from "lucide-react"
+import { ArrowLeft, ArrowRight, Store, Tags, Filter } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Accordion } from "@/components/ui/accordion"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Slider } from "@/components/ui/slider"
 import { ImportState, Override, Group, Subgroup, EnrichedRow } from "../core/types"
 import { resolveCategory } from "../core/overrides"
-import { getIncludedGroups, THRESHOLD_MAX_CENTS, THRESHOLD_STEP_CENTS } from "../core/filters"
+import { getIncludedGroups } from "../core/filters"
 import { getCategoryById } from "@/features/categories/config"
-import { CategoryPicker } from "@/features/categories/components/category-picker"
 import { useCategories } from "@/features/categories/api/use-categories"
 import { cn } from "@/lib/utils"
-import { formatCents } from "@/domain/money"
 import { ReviewResult } from "./csv-import-wizard"
 import { WizardShell } from "./wizard-shell"
 import { MacroSection } from "@/components/patterns/macro-section"
+
+// Sub-components
+import {
+    ReviewAdvice,
+    ThresholdSlider,
+    MerchantGroupCard,
+    CategoryGroupList
+} from "./review"
+
+// ============================================
+// Types
+// ============================================
 
 interface ImportStepReviewProps {
     initialState: ImportState
@@ -28,6 +35,19 @@ interface ImportStepReviewProps {
     onBack: () => void
     onContinue: (result: ReviewResult) => void
 }
+
+interface CategoryGroup {
+    id: string
+    label: string
+    color: string
+    amount: number
+    count: number
+    rowIds: string[]
+}
+
+// ============================================
+// Main Component
+// ============================================
 
 export function ImportStepReview({
     initialState,
@@ -55,7 +75,10 @@ export function ImportStepReview({
 
     const hiddenGroupsCount = excludedGroupIds.length
 
-    // Override handlers
+    // ============================================
+    // Override Handlers
+    // ============================================
+
     const setGroupCategory = (groupId: string, categoryId: string) => {
         setOverrides(prev => {
             const others = prev.filter(o => !(o.targetId === groupId && o.level === "group"))
@@ -70,7 +93,10 @@ export function ImportStepReview({
         })
     }
 
-    // Resolve helpers
+    // ============================================
+    // Category Resolution Helpers
+    // ============================================
+
     const getGroupEffectiveCategory = (group: Group) => {
         const groupOverride = overrides.find(o => o.targetId === group.id && o.level === "group")
         if (groupOverride) return groupOverride.categoryId
@@ -80,23 +106,18 @@ export function ImportStepReview({
     const getSubgroupEffectiveCategory = (subgroup: Subgroup, group: Group) => {
         const subgroupOverride = overrides.find(o => o.targetId === subgroup.id && o.level === "subgroup")
         if (subgroupOverride) return subgroupOverride.categoryId
-        // Fall back to group category
         return getGroupEffectiveCategory(group) || subgroup.categoryId
     }
 
-    // Calculate Stats & Category Breakdown (Memoized) - uses filtered groups
+    // ============================================
+    // Stats & Category Breakdown (Memoized)
+    // ============================================
+
     const { stats, categoryGroups } = useMemo(() => {
         let assigned = 0
         let total = 0
 
-        const catMap = new Map<string, {
-            id: string,
-            label: string,
-            color: string,
-            amount: number,
-            count: number,
-            rowIds: string[]
-        }>()
+        const catMap = new Map<string, CategoryGroup>()
 
         catMap.set("unassigned", {
             id: "unassigned",
@@ -159,6 +180,10 @@ export function ImportStepReview({
     // Rows lookup helper
     const getRowById = (id: string): EnrichedRow | undefined => rows.find(r => r.id === id)
 
+    // ============================================
+    // Render Helpers
+    // ============================================
+
     const footer = (
         <div className="flex w-full justify-between items-center gap-4">
             <Button variant="ghost" onClick={onBack} className="gap-1.5 text-sm">
@@ -195,40 +220,21 @@ export function ImportStepReview({
     )
 
     const topBar = (
-        <div className="px-4 md:px-8 py-4 flex flex-col gap-3">
-            <div className="flex items-center gap-3">
-                <Filter className="h-4 w-4 text-muted-foreground shrink-0" />
-                <span className="text-sm font-medium">Soglia rilevanza</span>
-                <Badge variant="outline" className="ml-auto font-mono text-xs">
-                    {isDragging ? formatCents(visualThreshold) : formatCents(thresholdCents)}
-                </Badge>
-                {hiddenGroupsCount > 0 && (
-                    <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-800 border-amber-200">
-                        {hiddenGroupsCount} nascosti
-                    </Badge>
-                )}
-            </div>
-            <Slider
-                value={[isDragging ? visualThreshold : thresholdCents]}
-                min={0}
-                max={THRESHOLD_MAX_CENTS}
-                step={THRESHOLD_STEP_CENTS}
-                onValueChange={([v]) => {
-                    setVisualThreshold(v)
-                    setIsDragging(true)
-                }}
-                onValueCommit={([v]) => {
-                    onThresholdChange(v)
-                    setIsDragging(false)
-                }}
-                className="w-full"
-            />
-            <div className="flex justify-between text-[10px] text-muted-foreground">
-                <span>Tutti</span>
-                <span>Solo grandi importi</span>
-            </div>
-        </div>
+        <ThresholdSlider
+            thresholdCents={thresholdCents}
+            visualThreshold={visualThreshold}
+            isDragging={isDragging}
+            hiddenGroupsCount={hiddenGroupsCount}
+            onVisualChange={setVisualThreshold}
+            onCommit={onThresholdChange}
+            onDragStart={() => setIsDragging(true)}
+            onDragEnd={() => setIsDragging(false)}
+        />
     )
+
+    // ============================================
+    // Main Render
+    // ============================================
 
     return (
         <WizardShell
@@ -241,36 +247,12 @@ export function ImportStepReview({
         >
             <div className="space-y-6">
 
-                {/* Consultant Advice - collapsed by default on mobile */}
+                {/* Consultant Advice */}
                 <div className="shrink-0">
-                    {completionPercent < 50 ? (
-                        <Alert className="bg-primary/5 border-primary/20 text-primary [&>svg]:text-primary">
-                            <Info className="h-4 w-4" />
-                            <AlertTitle className="text-sm">Consiglio Rapido</AlertTitle>
-                            <AlertDescription className="text-xs">
-                                Non devi classificare tutto ora. Le voci non assegnate andranno in &quot;Altro&quot;.
-                            </AlertDescription>
-                        </Alert>
-                    ) : completionPercent < 90 ? (
-                        <Alert className="bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 [&>svg]:text-emerald-500">
-                            <CheckCircle2 className="h-4 w-4" />
-                            <AlertTitle className="text-sm">Ottimo lavoro!</AlertTitle>
-                            <AlertDescription className="text-xs">
-                                Hai coperto la maggior parte delle transazioni.
-                            </AlertDescription>
-                        </Alert>
-                    ) : (
-                        <Alert className="bg-muted/50 border-muted text-muted-foreground">
-                            <HelpCircle className="h-4 w-4" />
-                            <AlertTitle className="text-sm">Quasi perfetto</AlertTitle>
-                            <AlertDescription className="text-xs">
-                                Potrai sempre modificare le categorie anche dopo l&apos;import.
-                            </AlertDescription>
-                        </Alert>
-                    )}
+                    <ReviewAdvice completionPercent={completionPercent} />
                 </div>
 
-                {/* Content Area with Tabs - scrollable */}
+                {/* Content Area with Tabs */}
                 <MacroSection contentClassName="p-0">
                     <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "merchant" | "category")} className="flex-1 flex flex-col min-h-0">
                         <div className="pb-4 shrink-0">
@@ -284,7 +266,7 @@ export function ImportStepReview({
                             </TabsList>
                         </div>
 
-                        {/* View: Merchants - Accordion-based with subgroups */}
+                        {/* View: Merchants */}
                         <TabsContent value="merchant" className="flex-1 min-h-0 data-[state=inactive]:hidden mt-0">
                             {filteredGroups.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -300,186 +282,36 @@ export function ImportStepReview({
                                         const effectiveCatId = getGroupEffectiveCategory(group) ||
                                             group.subgroups[0]?.categoryId ||
                                             rows.find(r => r.merchantKey === group.merchantKey)?.suggestedCategoryId
-                                        const isHighImpact = index < Math.ceil(filteredGroups.length * 0.2) // Top 20%
-                                        const hasMultipleSubgroups = group.subgroups.length > 1
 
                                         return (
-                                            <AccordionItem
+                                            <MerchantGroupCard
                                                 key={group.id}
-                                                value={group.id}
-                                                className={cn(
-                                                    "bg-card border rounded-xl shadow-sm overflow-hidden",
-                                                    isHighImpact && "border-primary/30 ring-1 ring-primary/10"
-                                                )}
-                                            >
-                                                <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-muted/30 transition-colors">
-                                                    <div className="flex items-center justify-between w-full gap-3 pr-2">
-                                                        <div className="flex-1 min-w-0 text-left">
-                                                            <div className="flex items-center gap-2 mb-0.5">
-                                                                <h3 className="font-bold text-sm md:text-base truncate">
-                                                                    {group.label}
-                                                                </h3>
-                                                                {isHighImpact && (
-                                                                    <Badge className="bg-primary/10 text-primary border-primary/20 text-[9px] uppercase tracking-wider shrink-0">
-                                                                        Top
-                                                                    </Badge>
-                                                                )}
-                                                            </div>
-                                                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                                                <span className="font-semibold text-foreground">
-                                                                    {formatCents(Math.abs(group.totalCents))}
-                                                                </span>
-                                                                <span className="w-1 h-1 rounded-full bg-border" />
-                                                                <span>{group.rowCount} tx</span>
-                                                                {hasMultipleSubgroups && (
-                                                                    <>
-                                                                        <span className="w-1 h-1 rounded-full bg-border" />
-                                                                        <span>{group.subgroups.length} pattern</span>
-                                                                    </>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                        <div className="shrink-0 w-32 md:w-40" onClick={e => e.stopPropagation()}>
-                                                            <CategoryPicker
-                                                                value={effectiveCatId || ""}
-                                                                onChange={(val) => setGroupCategory(group.id, val)}
-                                                                type="all"
-                                                                compact
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </AccordionTrigger>
-                                                <AccordionContent className="px-4 pb-4 pt-0">
-                                                    {hasMultipleSubgroups ? (
-                                                        // Nested subgroups accordion
-                                                        <Accordion type="multiple" className="space-y-1.5 mt-2">
-                                                            {group.subgroups.map(sg => {
-                                                                const sgCatId = getSubgroupEffectiveCategory(sg, group)
-                                                                const sgRows = sg.rowIds.map(getRowById).filter(Boolean) as EnrichedRow[]
-                                                                const sgTotal = sgRows.reduce((sum, r) => sum + r.amountCents, 0)
-
-                                                                return (
-                                                                    <AccordionItem
-                                                                        key={sg.id}
-                                                                        value={sg.id}
-                                                                        className="bg-muted/30 border rounded-lg"
-                                                                    >
-                                                                        <AccordionTrigger className="px-3 py-2 hover:no-underline text-sm">
-                                                                            <div className="flex items-center justify-between w-full gap-2 pr-2">
-                                                                                <div className="flex items-center gap-2 min-w-0">
-                                                                                    <span className="font-medium truncate">{sg.label}</span>
-                                                                                </div>
-                                                                                <div className="flex items-center gap-2 shrink-0">
-                                                                                    <span className="text-xs font-mono text-muted-foreground">
-                                                                                        {formatCents(Math.abs(sgTotal))}
-                                                                                    </span>
-                                                                                    <div onClick={e => e.stopPropagation()} className="w-28">
-                                                                                        <CategoryPicker
-                                                                                            value={sgCatId || ""}
-                                                                                            onChange={(val) => setSubgroupCategory(sg.id, val)}
-                                                                                            type="all"
-                                                                                            compact
-                                                                                            size="sm"
-                                                                                        />
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </AccordionTrigger>
-                                                                        <AccordionContent className="px-3 pb-3">
-                                                                            <RowsList rows={sgRows} />
-                                                                        </AccordionContent>
-                                                                    </AccordionItem>
-                                                                )
-                                                            })}
-                                                        </Accordion>
-                                                    ) : (
-                                                        // Single subgroup - show rows directly
-                                                        <div className="mt-2">
-                                                            <RowsList
-                                                                rows={group.subgroups[0]?.rowIds.map(getRowById).filter(Boolean) as EnrichedRow[] || []}
-                                                            />
-                                                        </div>
-                                                    )}
-                                                </AccordionContent>
-                                            </AccordionItem>
+                                                group={group}
+                                                index={index}
+                                                totalGroups={filteredGroups.length}
+                                                effectiveCategoryId={effectiveCatId || null}
+                                                rows={rows}
+                                                onGroupCategoryChange={setGroupCategory}
+                                                onSubgroupCategoryChange={setSubgroupCategory}
+                                                getSubgroupEffectiveCategory={(sg) => getSubgroupEffectiveCategory(sg, group)}
+                                                getRowById={getRowById}
+                                            />
                                         )
                                     })}
                                 </Accordion>
                             )}
                         </TabsContent>
 
-                        {/* View: Categories (Drill-down) */}
+                        {/* View: Categories */}
                         <TabsContent value="category" className="flex-1 min-h-0 data-[state=inactive]:hidden mt-0">
-                            <div className="space-y-2">
-                                <Accordion type="multiple" className="w-full space-y-2">
-                                    {categoryGroups.map((cg) => (
-                                        <AccordionItem key={cg.id} value={cg.id} className="bg-card border rounded-xl px-4 shadow-sm">
-                                            <AccordionTrigger className="hover:no-underline py-3">
-                                                <div className="flex items-center justify-between w-full pr-4">
-                                                    <div className="flex items-center gap-2">
-                                                        {cg.id !== 'unassigned' && (
-                                                            <div className={cn("w-2.5 h-2.5 rounded-full", cg.color.split(" ")[1])} />
-                                                        )}
-                                                        <span className="font-bold text-sm md:text-base">{cg.label}</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-3 text-xs md:text-sm">
-                                                        <Badge variant="outline" className="font-mono">{cg.count}</Badge>
-                                                        <span className="font-mono font-medium">
-                                                            {formatCents(Math.abs(cg.amount))}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </AccordionTrigger>
-                                            <AccordionContent className="pt-0 pb-4">
-                                                <RowsList
-                                                    rows={cg.rowIds.slice(0, 50).map(getRowById).filter(Boolean) as EnrichedRow[]}
-                                                    showMore={cg.rowIds.length > 50 ? cg.rowIds.length - 50 : 0}
-                                                />
-                                            </AccordionContent>
-                                        </AccordionItem>
-                                    ))}
-                                </Accordion>
-                            </div>
+                            <CategoryGroupList
+                                categoryGroups={categoryGroups}
+                                getRowById={getRowById}
+                            />
                         </TabsContent>
                     </Tabs>
                 </MacroSection>
             </div>
         </WizardShell>
-    )
-}
-
-// ================================================
-// Sub-components
-// ================================================
-
-// RowsList sub-component
-
-function RowsList({ rows, showMore = 0 }: { rows: EnrichedRow[], showMore?: number }) {
-    if (rows.length === 0) {
-        return <p className="text-xs text-muted-foreground text-center py-2">Nessuna transazione</p>
-    }
-
-    return (
-        <div className="rounded-lg border bg-background divide-y">
-            {rows.map(r => (
-                <div key={r.id} className="flex justify-between items-center p-2.5 text-xs">
-                    <div className="flex flex-col min-w-0 flex-1">
-                        <span className="font-medium truncate">{r.description}</span>
-                        <span className="text-[10px] text-muted-foreground">{r.date}</span>
-                    </div>
-                    <div className={cn(
-                        "font-mono font-medium shrink-0 ml-2",
-                        r.amountCents >= 0 ? "text-emerald-600" : "text-rose-600"
-                    )}>
-                        {formatCents(r.amountCents)}
-                    </div>
-                </div>
-            ))}
-            {showMore > 0 && (
-                <div className="p-2 text-center text-[10px] text-muted-foreground bg-muted/30">
-                    ...e altri {showMore}
-                </div>
-            )}
-        </div>
     )
 }

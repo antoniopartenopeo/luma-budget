@@ -28,7 +28,7 @@ Le regole finanziarie e di sicurezza NON sono negoziabili.
 | 4 | **MAI** usare `useMediaQuery` o `if (isMobile)` per render | CSS-only responsiveness |
 | 5 | **MAI** simulare logica di produzione nei test | Importa le utility reali. Nessuna logica UI simulata. |
 | 6 | **MAI** salvare date in formati diversi da ISO-8601 | `YYYY-MM-DD` o timestamp ISO |
-| 7 | **MAI** usare radius inferiori a 2rem per macro-card | Coerenza Numa Premium (2.5rem standard) |
+| 7 | **MAI** usare design "Flat" (`shadow-none`) su elementi strutturali KPI | Coerenza Numa Premium 3D |
 | 8 | **MAI** usare layout multi-colonna persistenti | Favorire il flusso narrativo verticale |
 
 ---
@@ -95,5 +95,5 @@ Per procedure dettagliate, attiva la skill appropriata:
 
 ---
 
-**Versione**: 1.2.0  
-**Ultimo aggiornamento**: 2026-01-27
+**Versione**: 2.0.0  
+**Ultimo aggiornamento**: 2026-02-01

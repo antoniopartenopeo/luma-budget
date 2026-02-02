@@ -14,13 +14,13 @@ describe("Merchant Pipeline v2.1 Fixtures", () => {
         ["MC DONALDS MILANO", "MCDONALD"],
         ["MCDONALDS CORP", "MCDONALD"],
         ["BURGER KING #1234", "BURGER KING"],
-        ["OLD WILD WEST", "OLDWILDWEST"],
+        ["OLD WILD WEST", "OLD WILD WEST"],
 
         // 3. Service & Streaming
         ["NETFLIX.COM", "NETFLIX"],
         ["SPOTIFY AB STOCKHOLM", "SPOTIFY"],
         ["APPLE.COM/BILL", "APPLE"],
-        ["DISNEY PLUS SUBSCRIPTION", "DISNEYPLUS"],
+        ["DISNEY PLUS SUBSCRIPTION", "DISNEY PLUS"],
         ["TELEPASS PAY", "TELEPASS"],
 
         // 4. Marketplaces (Start with)

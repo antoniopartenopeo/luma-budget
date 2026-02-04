@@ -1,7 +1,7 @@
 import { EnrichedRow } from "./types";
 import { Transaction } from "../../transactions/api/types";
 import { extractMerchantKey } from "./merchant/pipeline";
-import { CategoryIds, CATEGORY_ENRICHMENT_RULES } from "@/domain/categories";
+import { CATEGORY_ENRICHMENT_RULES } from "@/domain/categories";
 
 // Use centralized rules from domain
 const PATTERN_RULES = CATEGORY_ENRICHMENT_RULES;

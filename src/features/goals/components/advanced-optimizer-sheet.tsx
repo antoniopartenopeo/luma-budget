@@ -8,7 +8,7 @@ import { Slider } from "@/components/ui/slider"
 import { Badge } from "@/components/ui/badge"
 import { Settings2, Sparkles, ShieldCheck, ShieldAlert, Shield } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
-import { GoalScenarioResult } from "@/VAULT/goals/types"
+
 import { formatCents } from "@/domain/money"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { BaselineMetrics } from "@/VAULT/goals/logic/financial-baseline"
@@ -20,7 +20,6 @@ import { Category } from "@/features/categories/config"
 interface AdvancedOptimizerSheetProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    currentResult: GoalScenarioResult
     onApply: (savings: { superfluous: number; comfort: number }) => void
     // Data for real-time preview
     baselineMetrics: BaselineMetrics | null
@@ -69,7 +68,6 @@ function buildScenarioInputs(
 export function AdvancedOptimizerSheet({
     open,
     onOpenChange,
-    currentResult,
     onApply,
     baselineMetrics,
     categories,
@@ -85,8 +83,11 @@ export function AdvancedOptimizerSheet({
     // Sync state when opening with current values from parent
     useEffect(() => {
         if (open) {
-            setSuperfluous(initialSavings.superfluous)
-            setComfort(initialSavings.comfort)
+            const t = setTimeout(() => {
+                setSuperfluous(initialSavings.superfluous)
+                setComfort(initialSavings.comfort)
+            }, 0)
+            return () => clearTimeout(t)
         }
     }, [open, initialSavings])
 
@@ -212,7 +213,7 @@ export function AdvancedOptimizerSheet({
                     <div className="rounded-xl bg-primary/[0.03] p-5 border border-primary/10 space-y-4">
                         <div className="flex items-center gap-2">
                             <Sparkles className="h-4 w-4 text-primary" />
-                            <span className="text-xs font-black uppercase tracking-widest text-primary">Anteprima Live</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Anteprima Live</span>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
@@ -224,7 +225,7 @@ export function AdvancedOptimizerSheet({
                                     {preview ? formatCents(preview.surplus, currency, locale) : "—"}
                                 </p>
                                 {preview && preview.extraSavings > 0 && (
-                                    <p className="text-xs font-bold text-emerald-500">
+                                    <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">
                                         +{formatCents(preview.extraSavings, currency, locale)} boost
                                     </p>
                                 )}
@@ -238,7 +239,7 @@ export function AdvancedOptimizerSheet({
                                     {preview?.canReach && preview.months > 0 ? `~${preview.months} mesi` : "—"}
                                 </p>
                                 {!preview?.canReach && (
-                                    <p className="text-xs font-medium text-muted-foreground">
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                                         Aumenta il risparmio
                                     </p>
                                 )}

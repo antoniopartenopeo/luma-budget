@@ -1,7 +1,4 @@
-
 import { Transaction } from "@/features/transactions/api/types"
-import { calculateDateRange } from "@/lib/date-ranges"
-import { SpendingNature } from "@/features/categories/config"
 import { Category } from "@/features/categories/config"
 
 export interface BaselineMetrics {
@@ -17,9 +14,7 @@ export interface BaselineMetrics {
 /**
  * Validates if the date string is in YYYY-MM format
  */
-function isValidDateStr(dateStr: string): boolean {
-    return /^\d{4}-\d{2}$/.test(dateStr);
-}
+
 
 /**
  * Calculates financial baseline metrics including variability (Standard Deviation).
@@ -36,11 +31,9 @@ export function calculateBaselineMetrics(
     const previousMonthDate = new Date(now)
     previousMonthDate.setDate(0)
 
-    const pivotYear = previousMonthDate.getFullYear()
-    const pivotMonth = previousMonthDate.getMonth() + 1
-    const pivotStr = `${pivotYear}-${pivotMonth.toString().padStart(2, '0')}`
+    // const pivotYear = previousMonthDate.getFullYear()
+    // const pivotMonth = previousMonthDate.getMonth() + 1
 
-    const { startDate, endDate } = calculateDateRange(pivotStr, periodMonths)
 
     // 2. Group by Month (YYYY-MM)
     const monthlyStats: Record<string, {

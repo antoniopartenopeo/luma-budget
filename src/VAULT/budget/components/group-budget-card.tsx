@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { Pencil, Check, X, AlertTriangle, Home, Sparkles, Target, LucideIcon } from "lucide-react"
-import { motion, Variants } from "framer-motion"
 import { CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -61,7 +60,7 @@ export function GroupBudgetCard({ groupId, budgetCents, spentCents, isLoading, o
     const [editValue, setEditValue] = useState("")
 
     const remainingCents = budgetCents - spentCents
-    const isOverBudget = budgetCents > 0 && spentCents > budgetCents
+
     const label = BUDGET_GROUP_LABELS[groupId]
     const Icon = GROUP_ICONS[groupId]
 

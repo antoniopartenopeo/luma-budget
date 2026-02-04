@@ -1,7 +1,7 @@
 "use client"
 
 import { ReactNode } from "react"
-import { Upload, Filter, CheckCircle2, ArrowRight, Download } from "lucide-react"
+import { Upload, Filter, CheckCircle2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface WizardShellProps {
@@ -57,7 +57,7 @@ export function WizardShell({
 
                 {/* Visual Stepper */}
                 <div className="mx-auto w-full max-w-xl grid grid-cols-3 gap-4">
-                    {steps.map((s, i) => (
+                    {steps.map((s) => (
                         <div
                             key={s.id}
                             className={cn(

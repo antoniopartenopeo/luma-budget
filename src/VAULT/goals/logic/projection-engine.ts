@@ -56,7 +56,7 @@ export function projectGoalReachability(input: ProjectionInput): ProjectionResul
         return createUnreachableResult("L'obiettivo richiede oltre 10 anni al ritmo attuale.")
     }
 
-    const today = input.startDate || new Date()
+
     const baseDate = input.startDate || new Date()
 
     return {

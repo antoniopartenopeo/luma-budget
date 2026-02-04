@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useQueryClient } from "@tanstack/react-query"
-import { Trash2, Database, CheckCircle2, AlertCircle, Loader2, Info, Copy, AlertTriangle, Wrench } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Trash2, Database, CheckCircle2, AlertCircle, Loader2, Copy, AlertTriangle, Wrench } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {

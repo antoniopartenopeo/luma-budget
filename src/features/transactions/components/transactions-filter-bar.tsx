@@ -1,4 +1,4 @@
-import { Search, Calendar, Filter, X } from "lucide-react"
+import { Search, X } from "lucide-react"
 import { getGroupedCategories } from "@/features/categories/config"
 import { useCategories } from "@/features/categories/api/use-categories"
 import { CategoryIcon } from "@/features/categories/components/category-icon"

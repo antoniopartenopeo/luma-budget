@@ -5,7 +5,6 @@ import { MacroSection } from "@/components/patterns/macro-section"
 import { EChartsWrapper } from "./echarts-wrapper"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StateMessage } from "@/components/ui/state-message"
-import { useSettings } from "@/features/settings/api/use-settings"
 import type { EChartsOption } from "echarts"
 
 interface PremiumChartSectionProps {
@@ -39,8 +38,6 @@ export function PremiumChartSection({
     backgroundType = 'radar',
     status = "default"
 }: PremiumChartSectionProps) {
-    const { data: settings } = useSettings()
-    const isDarkMode = settings?.theme === "dark" || (settings?.theme === "system" && typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches)
 
     if (isLoading) {
         return (

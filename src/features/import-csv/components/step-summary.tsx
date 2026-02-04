@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { CheckCircle2, ArrowRight, Wallet, TrendingUp, TrendingDown, Loader2, AlertCircle } from "lucide-react"
+import { CheckCircle2, Wallet, TrendingUp, TrendingDown, Loader2, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ImportState, Override } from "../core/types"
 import { generatePayload } from "../core/pipeline"
@@ -23,12 +23,11 @@ interface ImportStepSummaryProps {
 export function ImportStepSummary({
     importState,
     overrides,
-    thresholdCents,
     excludedGroupIds,
     onBack,
     onClose
 }: ImportStepSummaryProps) {
-    const { mutateAsync: createBatch, isPending, isError: isSaveError, error: saveError } = useCreateBatchTransactions()
+    const { mutateAsync: createBatch, isPending, isError: isSaveError } = useCreateBatchTransactions()
     const { data: categories = [] } = useCategories()
     const [isSuccess, setIsSuccess] = useState(false)
 

@@ -1,8 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Wallet, Pencil, Check, X, AlertTriangle, TrendingUp, CheckCircle2, Sparkles } from "lucide-react"
-import { motion, Variants } from "framer-motion"
+import { Wallet, Pencil, Check, AlertTriangle, TrendingUp, CheckCircle2, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"

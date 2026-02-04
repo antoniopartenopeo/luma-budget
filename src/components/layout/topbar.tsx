@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Menu, Plus, X, RotateCw, Eye, EyeOff } from "lucide-react"
+import { Menu, Eye, EyeOff } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"

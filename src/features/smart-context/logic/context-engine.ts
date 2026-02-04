@@ -1,6 +1,6 @@
 
 import { DashboardSummary } from "@/features/dashboard/api/types"
-import { ContextMessage, SmartContextMap } from "./types"
+import { SmartContextMap } from "./types"
 
 interface ContextEngineInput {
     summary: DashboardSummary
@@ -29,8 +29,8 @@ export function generateSmartContext(input: ContextEngineInput): SmartContextMap
 
     const spent = summary.totalSpent
     const day = currentDate.getDate()
-    const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()
-    const progressMonth = day / daysInMonth // 0.0 - 1.0
+
+
 
     // --- RULE 1: LIQUIDITY PARADOX (The "Cash vs FLow" issue) ---
     // Trigger: Budget Remaining is much higher than actual Cash Balance.

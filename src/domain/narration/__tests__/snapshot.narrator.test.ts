@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { narrateSnapshot } from "../snapshot.narrator"
 import { deriveSnapshotState } from "../derive-state"
-import { SnapshotFacts, SnapshotState } from "../types"
+import { SnapshotFacts } from "../types"
 
 /**
  * Test suite for Snapshot Narrator

@@ -4,7 +4,7 @@ import { useState, useRef } from "react"
 import { Upload, FileUp, X, CheckCircle2, FileText, AlertCircle, ArrowRight, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Card } from "@/components/ui/card"
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { processCSV } from "../core/pipeline"
 import { ImportState } from "../core/types"
@@ -72,7 +72,7 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
             }
 
             onContinue(state)
-        } catch (e: unknown) {
+        } catch {
             setError("Qualcosa è andato storto. Riprova o controlla il formato.")
         }
     }

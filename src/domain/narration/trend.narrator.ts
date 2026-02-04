@@ -31,7 +31,7 @@ export function narrateTrend(
             return narrateVolatile(facts)
         case "neutral":
         default:
-            return narrateNeutral(facts)
+            return narrateNeutral()
     }
 }
 
@@ -113,6 +113,6 @@ function narrateVolatile(facts: TrendFacts): NarrationResult {
     return { text: `Forte variabilità rilevata (${absChange}%). La gestione finanziaria richiede maggiore attenzione ai flussi irregolari.` }
 }
 
-function narrateNeutral(_facts: TrendFacts): NarrationResult {
+function narrateNeutral(): NarrationResult {
     return { text: "Dati insufficienti per identificare un trend consolidato negli ultimi mesi." }
 }

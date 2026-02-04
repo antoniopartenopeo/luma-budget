@@ -1,8 +1,7 @@
 import { ScenarioConfig, ActiveGoalCommitment } from "../types"
 import { BaselineMetrics } from "./financial-baseline"
-import { Category } from "@/features/categories/config"
 import { upsertBudget } from "@/VAULT/budget/api/repository"
-import { BudgetPlan, BudgetGroupId } from "@/VAULT/budget/api/types"
+import { BudgetGroupId } from "@/VAULT/budget/api/types"
 import { getPortfolio, savePortfolio } from "../api/goal-repository"
 import { format } from "date-fns"
 import { RHYTHMS } from "../config/rhythms"
@@ -12,7 +11,6 @@ interface ActivateRhythmInput {
     goalTargetCents: number
     scenario: ScenarioConfig
     baseline: BaselineMetrics
-    categories: Category[]
     goalId?: string // Optional: targeting a specific goal in the portfolio
     goalTitle?: string
 }
@@ -27,7 +25,6 @@ export async function activateRhythm({
     goalTargetCents,
     scenario,
     baseline,
-    categories,
     goalId,
     goalTitle
 }: ActivateRhythmInput): Promise<ActiveGoalCommitment> {
@@ -108,39 +105,11 @@ export async function activateRhythm({
     // This is the "artifact" used by the rest of the system for pacing.
     const currentPeriod = format(new Date(), "yyyy-MM")
 
-    // Calculate internal budget based on scenario savings map applied to historical averages
-    // Note: We don't expose these numbers to the user in the Lab, but they drive the Dashboard.
-    const groupBudgets: Record<BudgetGroupId, number> = {
-        essential: 0,
-        comfort: 0,
-        superfluous: 0
-    }
+    // Logic is now purely based on aggregates in MVP phase.
+    // In future versions we will use per-category averages.
 
-    // Accumulate total projected spending
-    const totalProjectedSpending = 0
-
-    // Map categories to Nature clusters
-    categories.forEach(cat => {
-        const catId = cat.id
-        const nature = (cat.spendingNature as BudgetGroupId) || 'comfort'
-
-        // Find historical average for this category? 
-        // Wait, BaselineMetrics only has aggregates. We need per-category averages.
-        // But the ScenarioConfig has savingsMap (categoryId -> % reduction).
-        // For simplicity in this Phase, we apply the intensity/rhythm logic to clusters
-        // OR we need to fetch individual averages. 
-        // Let's assume we use the cluster logic since the scenario generator is nature-based.
-    })
-
-
-    // Translate clusters to cents
-    const essentialBudget = baseline.averageEssentialExpenses // Essential is usually untouched (0% cut)
-
-    // For Comfort and Superfluous, we need their specific baselines. 
-    // Since BaselineMetrics doesn't have them separately, we derive them.
-    // In a real refined engine, we'd have exact per-category averages here.
-    // Applying the rhythm to the non-essential total (simplified for MVP orchestrator)
-    // In the future, we'll use per-category averages from simulator.
+    // Calculate real benefit based on granular historical averages
+    // We already calculated appliedRhythmBenefit above.
 
     const globalBudgetAmountCents = baseline.averageMonthlyExpenses - appliedRhythmBenefit
 
@@ -165,15 +134,4 @@ function calculateAggregateIntensity(scenario: ScenarioConfig): number {
     return config?.intensity || 0
 }
 
-/**
- * Mocking a balance logic for MVP. 
- */
-function balanceRhythmAcrossGroups(nonEssentialTotal: number, natureAppliedIntensity: Record<BudgetGroupId, number>): number {
-    const comfortBasis = nonEssentialTotal * 0.7 // Assumptions for demo
-    const superfluousBasis = nonEssentialTotal * 0.3
 
-    const comfortReduction = (comfortBasis * (natureAppliedIntensity.comfort || 0)) / 100
-    const superfluousReduction = (superfluousBasis * (natureAppliedIntensity.superfluous || 0)) / 100
-
-    return Math.round(comfortReduction + superfluousReduction)
-}

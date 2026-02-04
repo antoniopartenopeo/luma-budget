@@ -2,10 +2,9 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, LineChart, Settings, Divide, FlaskConical, Receipt, Target } from "lucide-react"
+import { LayoutDashboard, LineChart, Settings, FlaskConical, Receipt } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { useSettings } from "@/features/settings/api/use-settings"
 import { BrandLogo } from "@/components/ui/brand-logo"
 
 const sidebarItems = [
@@ -24,9 +23,8 @@ interface SidebarProps {
 
 export function Sidebar({ className, onNavigate }: SidebarProps) {
   const pathname = usePathname()
-  const { data: settings } = useSettings()
-  const displayName = settings?.profile?.displayName || "Account locale"
-  const initial = displayName.charAt(0).toUpperCase()
+
+
 
   return (
     <aside className={cn(

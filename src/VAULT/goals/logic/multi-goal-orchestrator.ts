@@ -1,5 +1,5 @@
 
-import { NUMAGoal, GoalPortfolio, ProjectionResult, ProjectionInput } from "../types"
+import { GoalPortfolio, ProjectionResult, ProjectionInput } from "../types"
 import { projectGoalReachability } from "./projection-engine"
 import { addMonths } from "date-fns"
 

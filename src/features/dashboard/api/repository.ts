@@ -7,7 +7,7 @@ import { getCategoryById } from "@/features/categories/config"
 import { getCategories } from "@/features/categories/api/repository"
 import { calculateSuperfluousMetrics } from "../../transactions/utils/transactions-logic"
 
-import { sumExpensesInCents, sumIncomeInCents, calculateSharePct } from "@/domain/money"
+import { sumExpensesInCents, sumIncomeInCents } from "@/domain/money"
 
 const DEFAULT_USER_ID = "user-1"
 
@@ -79,11 +79,10 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
 
     // 8. Calculate Superfluous Spending (Range-based)
     const {
-        superfluousSpentCents: uselessSpentCents,
         percentage: uselessSpendPercent
     } = calculateSuperfluousMetrics(rangeTransactions)
 
-    const uselessSpent = uselessSpentCents / 100
+
 
     // 9. Monthly Data for Charts
     const monthlyExpenses = []

@@ -1,6 +1,6 @@
 "use client"
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
 import { getGroupedCategories, getCategoryById, CategoryKind } from "@/features/categories/config"
 import { useCategories } from "@/features/categories/api/use-categories"
 import { CategoryIcon } from "./category-icon"

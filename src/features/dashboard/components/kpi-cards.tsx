@@ -6,7 +6,7 @@ import { useCurrency } from "@/features/settings/api/use-currency"
 import { formatEuroNumber } from "@/domain/money"
 import { DashboardTimeFilter } from "../api/types"
 import { useSettings } from "@/features/settings/api/use-settings"
-import { KpiCard, KpiTone } from "@/components/patterns/kpi-card"
+import { KpiTone } from "@/components/patterns/kpi-card"
 import { narrateKPI, deriveKPIState, KPIFacts } from "@/domain/narration"
 import { MacroSection } from "@/components/patterns/macro-section"
 import { getBalanceTone, getBudgetTone, getSuperfluousTone } from "../utils/kpi-logic"
@@ -134,10 +134,12 @@ export function DashboardKpiGrid({
                 key={filter?.period || "default"}
                 className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4 pt-4"
             >
-                <motion.div variants={macroItemVariants}>
+                <motion.div variants={macroItemVariants} className="h-full">
                     <SmartKpiCard
                         title="Saldo"
                         value={isLoading ? 0 : formatValue(netBalance || 0)}
+                        animatedValue={netBalance || 0}
+                        formatFn={formatValue}
                         valueClassName={getPrivacyClass(isPrivacyMode)}
                         comparisonLabel="Totale storico"
                         tone={saldoTone}
@@ -147,10 +149,12 @@ export function DashboardKpiGrid({
                         context={smartContext['netBalance']}
                     />
                 </motion.div>
-                <motion.div variants={macroItemVariants}>
+                <motion.div variants={macroItemVariants} className="h-full">
                     <SmartKpiCard
                         title="Spesa"
                         value={isLoading ? 0 : formatValue(totalSpent || 0)}
+                        animatedValue={totalSpent || 0}
+                        formatFn={formatValue}
                         valueClassName={getPrivacyClass(isPrivacyMode)}
                         icon={Wallet}
                         isLoading={isLoading}
@@ -159,10 +163,12 @@ export function DashboardKpiGrid({
                         context={smartContext['totalSpent']}
                     />
                 </motion.div>
-                <motion.div variants={macroItemVariants}>
+                <motion.div variants={macroItemVariants} className="h-full">
                     <SmartKpiCard
                         title="Budget Rimanente"
                         value={isLoading ? 0 : (isMonthlyView ? formatValue(budgetRemaining || 0) : "—")}
+                        animatedValue={isMonthlyView ? (budgetRemaining || 0) : undefined}
+                        formatFn={formatValue}
                         valueClassName={getPrivacyClass(isPrivacyMode)}
                         change={isLoading ? "" : (isMonthlyView && hasBudget ? `${budgetPercent}%` : "")}
                         trend={!isMonthlyView || !hasBudget ? "neutral" : (budgetTone === "positive" ? "up" : "down")}
@@ -175,10 +181,12 @@ export function DashboardKpiGrid({
                         context={smartContext['budgetRemaining']}
                     />
                 </motion.div>
-                <motion.div variants={macroItemVariants}>
+                <motion.div variants={macroItemVariants} className="h-full">
                     <SmartKpiCard
                         title="Spese Superflue"
                         value={isLoading ? 0 : (uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—")}
+                        animatedValue={uselessSpendPercent ?? undefined}
+                        formatFn={(v) => `${Math.round(v)}%`}
                         change={`Target ${superfluousTarget}%`}
                         trend={superflueTone === "positive" ? "up" : superflueTone === "negative" ? "down" : "neutral"}
                         tone={superflueTone}

@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { createTransaction, updateTransaction, __resetTransactionsCache } from '../repository'
-import { Transaction } from '../types'
-import { parseCurrencyToCents } from '@/domain/money'
+
 import { CategoryIds } from '@/domain/categories'
 
 describe('Transaction Repository Logic (amountCents)', () => {

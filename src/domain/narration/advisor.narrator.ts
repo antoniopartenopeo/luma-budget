@@ -23,7 +23,7 @@ export function narrateAdvisor(
             return narratePositiveBalance(facts)
         case "neutral":
         default:
-            return narrateNeutral(facts)
+            return narrateNeutral()
     }
 }
 
@@ -64,7 +64,7 @@ function narratePositiveBalance(facts: AdvisorFacts): NarrationResult {
     }
 }
 
-function narrateNeutral(_facts: AdvisorFacts): NarrationResult {
+function narrateNeutral(): NarrationResult {
     return {
         text: "Analisi in corso. Continua a tracciare le tue spese per ricevere suggerimenti personalizzati."
     }

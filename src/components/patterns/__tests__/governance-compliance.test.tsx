@@ -39,7 +39,7 @@ describe('UI Governance Compliance (Premium 3D)', () => {
             render(<KpiCard title="Test KPI" value="€100" icon={Calculator} />)
             // KpiCard renders a Card. We can search for the title and go up, or add testid.
             // Using title search:
-            const title = screen.getByText('Test KPI')
+            // const title = screen.getByText('Test KPI')
             // The Card is a parent.
             // Let's rely on class "glass-card" which should be present.
             // Or look for any element with glass-card.

@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { formatCents } from "@/domain/money/currency"
 import { PremiumChartSection } from "./premium-chart-section"
@@ -37,7 +37,7 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
     const isLoading = isExternalLoading || isCategoriesLoading
     const { isPrivacyMode } = usePrivacyStore()
 
-    const [highlightedCategory, setHighlightedCategory] = useState<string | null>(null)
+
 
     const chartData = useMemo(() => {
         if (!transactions || transactions.length === 0) return []
@@ -243,10 +243,6 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
             option={option}
             isLoading={isLoading}
             hasData={chartData.length > 0}
-            onEvents={{
-                'mouseover': (params: unknown) => setHighlightedCategory((params as EChartsPieParam).data.id),
-                'mouseout': () => setHighlightedCategory(null)
-            }}
         >
             <div className="mt-4 flex flex-wrap justify-center gap-12">
                 {chartData.slice(0, 3).map((item, idx) => (

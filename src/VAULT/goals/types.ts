@@ -1,5 +1,5 @@
 
-import { CategoryAverage } from "@/features/simulator/utils"
+
 
 export type SustainabilityStatus = "secure" | "sustainable" | "fragile" | "unsafe"
 

@@ -18,12 +18,9 @@ export function extractSubMerchant(normalizedText: string): SubMerchantResult {
 
     // 2. Scan first 3 tokens for marketplace prefix
     let marketplace: string | null = null;
-    let marketplaceIndex = -1;
-
     for (let i = 0; i < Math.min(tokens.length, 3); i++) {
         if (MARKETPLACE_PREFIXES.includes(tokens[i])) {
             marketplace = tokens[i];
-            marketplaceIndex = i;
             break;
         }
     }

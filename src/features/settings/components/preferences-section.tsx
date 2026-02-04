@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Settings2, CheckCircle2, AlertCircle, Loader2, User, Palette, Coins, Target, Zap } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
 import { Label } from "@/components/ui/label"

@@ -3,13 +3,11 @@
 import { useMemo } from "react"
 import { PremiumChartSection } from "@/features/dashboard/components/charts/premium-chart-section"
 import { useSettings } from "@/features/settings/api/use-settings"
-import { EChartsWrapper } from "@/features/dashboard/components/charts/echarts-wrapper"
 import { useTrendData } from "../use-trend-data"
 import { useOrchestratedInsights } from "../use-orchestrated-insights"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { formatEuroNumber } from "@/domain/money"
 import { narrateTrend, deriveTrendState, type TrendFacts } from "@/domain/narration"
-import { BarChart3 } from "lucide-react"
 import type { EChartsOption } from "echarts"
 
 

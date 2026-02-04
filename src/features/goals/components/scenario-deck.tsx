@@ -1,11 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { ExpandableCard } from "@/components/patterns/expandable-card"
+
 import { SubSectionCard } from "@/components/patterns/sub-section-card"
 import { cn } from "@/lib/utils"
 import { Compass, Target, CheckCircle2, Sparkles, ShieldCheck, Info, ChevronDown, ChevronUp, Activity, BarChart3, Lock } from "lucide-react"
-import { GoalScenarioResult, ScenarioKey, CalibrationMetadata } from "@/VAULT/goals/types"
+import { GoalScenarioResult, ScenarioKey } from "@/VAULT/goals/types"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { formatCents } from "@/domain/money"
@@ -80,18 +80,18 @@ export function ScenarioDeck({
                                     isActive ? "border-primary/50 shadow-lg bg-primary/5" : "border-transparent opacity-80 hover:opacity-100 hover:bg-slate-50 dark:hover:bg-slate-800"
                                 )}
                             >
-                                <div className="space-y-4">
-                                    <p className="text-xs text-muted-foreground font-medium min-h-[40px] leading-snug">
+                                <div className="space-y-4 flex-1 flex flex-col">
+                                    <p className="text-sm text-muted-foreground font-medium leading-relaxed">
                                         {scenario.config.description}
                                     </p>
 
                                     {/* Primary Metric: Time to Goal + Date */}
-                                    <div className="pt-2 border-t border-border/40">
+                                    <div className="pt-2 border-t border-border/40 mt-auto">
                                         <div className="flex justify-between items-end">
                                             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Tempo Stimato</span>
                                             <div className="text-right">
                                                 <span className={cn(
-                                                    "text-xl sm:text-2xl font-black tabular-nums tracking-tighter block leading-none mb-1",
+                                                    "text-2xl sm:text-3xl lg:text-4xl font-black tabular-nums tracking-tighter block leading-none mb-1",
                                                     !scenario.projection.canReach ? "text-muted-foreground text-sm font-bold" : (isActive ? "text-primary" : "text-foreground")
                                                 )}>
                                                     {timeLabel}
@@ -139,12 +139,12 @@ export function ScenarioDeck({
                                 : "border-border/60 hover:border-amber-500/30 hover:bg-amber-50/50 dark:hover:bg-amber-900/10"
                         )}
                     >
-                        <div className="space-y-4">
-                            <p className="text-xs text-muted-foreground font-medium min-h-[40px] leading-snug">
+                        <div className="space-y-4 flex-1 flex flex-col">
+                            <p className="text-sm text-muted-foreground font-medium leading-relaxed">
                                 Configura manualmente il tuo mix di risparmio ideale.
                             </p>
 
-                            <div className="pt-2 border-t border-border/40 flex items-center justify-between h-[42px]">
+                            <div className="pt-2 border-t border-border/40 flex items-center justify-between h-[42px] mt-auto">
                                 {/* h-[42px] aligns with visual height of other cards' metrics */}
                                 <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider group-hover:text-amber-600 transition-colors">
                                     Clicca per Configurare
@@ -171,7 +171,7 @@ export function ScenarioDeck({
                 <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-6">
                         <div className="h-1 w-8 bg-primary rounded-full" />
-                        <h4 className="text-sm font-black uppercase tracking-widest text-foreground/80">Il Metodo Numa</h4>
+                        <h4 className="text-[10px] font-bold uppercase tracking-widest text-foreground/80">Il Metodo Numa</h4>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 relative">
@@ -181,7 +181,7 @@ export function ScenarioDeck({
                                 <CheckCircle2 className="h-5 w-5" />
                             </div>
                             <p className="text-[10px] font-black uppercase tracking-wider text-primary dark:text-primary">1. Passato Reale</p>
-                            <p className="text-xs font-bold text-foreground leading-tight">Analisi transazioni</p>
+                            <p className="text-sm font-bold text-foreground leading-tight">Analisi transazioni</p>
                             <p className="text-[10px] text-muted-foreground leading-relaxed">
                                 Numa scansiona la tua storia vera per capire quanto guadagni e spendi realmente ogni mese.
                             </p>
@@ -196,9 +196,9 @@ export function ScenarioDeck({
                                 <Sparkles className="h-5 w-5" />
                             </div>
                             <p className="text-[10px] font-black uppercase tracking-wider text-amber-600/80 dark:text-amber-400/80">2. Calibrazione Adattiva</p>
-                            <p className="text-xs font-bold text-foreground leading-tight">Il tuo Ritmo</p>
+                            <p className="text-sm font-bold text-foreground leading-tight">Il tuo Ritmo</p>
                             <p className="text-[10px] text-muted-foreground leading-relaxed">
-                                Numa calibra l'intensità del taglio sulla tua "elasticità": se hai margine spinge di più, se sei al limite ti protegge.
+                                Numa calibra l&apos;intensità del taglio sulla tua &quot;elasticità&quot;: se hai margine spinge di più, se sei al limite ti protegge.
                             </p>
                         </div>
 
@@ -211,9 +211,9 @@ export function ScenarioDeck({
                                 <Target className="h-5 w-5" />
                             </div>
                             <p className="text-[10px] font-black uppercase tracking-wider text-emerald-600/80 dark:text-emerald-400/80">3. Futuro Stimato</p>
-                            <p className="text-xs font-bold text-foreground leading-tight">La Proiezione</p>
+                            <p className="text-sm font-bold text-foreground leading-tight">La Proiezione</p>
                             <p className="text-[10px] text-muted-foreground leading-relaxed">
-                                Numa calcola quanta strada puoi fare con quel carburante. Più lontano è l'obiettivo, più tempo servirà.
+                                Numa calcola quanta strada puoi fare con quel carburante. Più lontano è l&apos;obiettivo, più tempo servirà.
                             </p>
                         </div>
                     </div>
@@ -226,8 +226,8 @@ export function ScenarioDeck({
                             <ShieldCheck className="h-5 w-5" />
                         </div>
                         <div className="text-left">
-                            <p className="text-xs font-black uppercase tracking-widest text-foreground">Certificazione Adaptive Core</p>
-                            <p className="text-[10px] text-muted-foreground font-medium">Ogni calcolo è verificato in locale sulla tua storia creditizia reale.</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-foreground">Certificazione Adaptive Core</p>
+                            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Ogni calcolo è verificato in locale sulla tua storia creditizia reale.</p>
                         </div>
                     </div>
 
@@ -252,7 +252,7 @@ export function ScenarioDeck({
                                     <Activity className="h-3 w-3" />
                                     <span className="text-[10px] font-black uppercase tracking-tighter">Profondità Audit</span>
                                 </div>
-                                <p className="text-lg font-black text-foreground tabular-nums">Ultimi 6 Mesi</p>
+                                <p className="text-xl font-black text-foreground tabular-nums tracking-tighter">Ultimi 6 Mesi</p>
                                 <p className="text-[10px] text-muted-foreground leading-tight italic font-medium">
                                     Scansione integrale di {activeScenario.config.label === "Nessun Ritmo" ? "tutte le" : "ogni singola"} transazione precedente.
                                 </p>
@@ -264,7 +264,7 @@ export function ScenarioDeck({
                                     <BarChart3 className="h-3 w-3" />
                                     <span className="text-[10px] font-black uppercase tracking-tighter">Stabilità Rilevata</span>
                                 </div>
-                                <p className="text-lg font-black text-foreground tabular-nums">{(calibration.stabilityFactor * 100).toFixed(1)}%</p>
+                                <p className="text-xl font-black text-foreground tabular-nums tracking-tighter">{(calibration.stabilityFactor * 100).toFixed(1)}%</p>
                                 <p className="text-[10px] text-muted-foreground leading-tight italic font-medium">
                                     Basato su una volatilità di {formatCents(calibration.volatilityCents, currency, locale)}/mese.
                                 </p>
@@ -276,9 +276,9 @@ export function ScenarioDeck({
                                     <Sparkles className="h-3 w-3" />
                                     <span className="text-[10px] font-black uppercase tracking-tighter">Elasticità (Extra)</span>
                                 </div>
-                                <p className="text-lg font-black text-foreground tabular-nums">{(calibration.elasticityIndex * 100).toFixed(1)}%</p>
+                                <p className="text-xl font-black text-foreground tabular-nums tracking-tighter">{(calibration.elasticityIndex * 100).toFixed(1)}%</p>
                                 <p className="text-[10px] text-muted-foreground leading-tight italic font-medium">
-                                    Quota di spese "non essenziali" che il Core può manovrare in sicurezza.
+                                    Quota di spese &quot;non essenziali&quot; che il Core può manovrare in sicurezza.
                                 </p>
                             </div>
 
@@ -288,7 +288,7 @@ export function ScenarioDeck({
                                     <Lock className="h-3 w-3" />
                                     <span className="text-[10px] font-black uppercase tracking-tighter">Calibrazione Finale</span>
                                 </div>
-                                <p className="text-lg font-black text-foreground tabular-nums">{activeScenario.config.savingsMap.superfluous}%</p>
+                                <p className="text-xl font-black text-foreground tabular-nums tracking-tighter">{activeScenario.config.savingsMap.superfluous}%</p>
                                 <p className="text-[10px] text-muted-foreground leading-tight italic font-medium">
                                     Risparmio massimo suggerito per proteggere il tuo cuscino finanziario.
                                 </p>
@@ -298,7 +298,7 @@ export function ScenarioDeck({
                         <div className="mt-6 flex items-start gap-2 p-3 rounded-xl bg-white/40 dark:bg-black/20 border border-primary/5">
                             <Info className="h-3 w-3 text-primary shrink-0 mt-0.5" />
                             <p className="text-[10px] text-muted-foreground italic leading-relaxed font-medium">
-                                <strong>Nota di Trasparenza:</strong> Numa non applica mai regole generiche. Questo piano è l'adattamento unico della tua storia reale: abbiamo calibrato l'intensità del Ritmo sulla tua stabilità e sui tuoi margini effettivi, per proteggere sempre la tua tranquillità finanziaria.
+                                <strong>Nota di Trasparenza:</strong> Numa non applica mai regole generiche. Questo piano è l&apos;adattamento unico della tua storia reale: abbiamo calibrato l&apos;intensità del Ritmo sulla tua stabilità e sui tuoi margini effettivi, per proteggere sempre la tua tranquillità finanziaria.
                             </p>
                         </div>
                     </div>

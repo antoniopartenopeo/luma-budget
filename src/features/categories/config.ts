@@ -1,7 +1,7 @@
 import { LucideIcon } from "lucide-react"
 import { getIconByName } from "./icon-registry"
 import { getCategoryById } from "@/domain/categories"
-import { Category, CATEGORIES } from "@/domain/categories"
+import { Category } from "@/domain/categories"
 
 // Re-export everything from domain
 export * from "@/domain/categories"

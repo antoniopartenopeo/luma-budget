@@ -36,7 +36,6 @@ import { SortField, SortOrder } from "../utils/transactions-logic"
 import { usePrivacyStore } from "@/features/privacy/privacy.store"
 import { getPrivacyClass } from "@/features/privacy/privacy-utils"
 import { motion, AnimatePresence } from "framer-motion"
-import { StaggerContainer } from "@/components/patterns/stagger-container"
 import { macroItemVariants } from "@/components/patterns/macro-section"
 
 const MotionTableRow = motion(TableRow)

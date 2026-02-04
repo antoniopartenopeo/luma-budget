@@ -1,8 +1,6 @@
 import { Transaction, CreateTransactionDTO } from "./types"
 import { storage } from "@/lib/storage-utils"
-import { getCategoryById } from "../../categories/config"
 import { getCategories } from "../../categories/api/repository"
-import { parseCurrencyToCents } from "@/domain/money"
 import { normalizeTransactionAmount, calculateSuperfluousStatus } from "@/domain/transactions"
 
 
@@ -222,7 +220,7 @@ export const updateTransaction = async (id: string, data: Partial<CreateTransact
     }
 
     const currentTransaction = txs[index]
-    const nextType = data.type !== undefined ? data.type : currentTransaction.type
+
     // const isIncome = nextType === "income"
 
     // Recalculate amounts if needed

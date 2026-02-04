@@ -12,7 +12,7 @@ import { DashboardTimeFilter } from "@/features/dashboard/api/types"
 import { PageHeader } from "@/components/ui/page-header"
 
 import { StaggerContainer } from "@/components/patterns/stagger-container"
-import { MacroSection } from "@/components/patterns/macro-section"
+
 
 export default function DashboardPage() {
   const [filter, setFilter] = useState<DashboardTimeFilter>({

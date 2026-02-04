@@ -9,7 +9,7 @@ import { FlashSummaryView } from "./flash-summary-view"
 import { Button } from "@/components/ui/button"
 import { Sparkles } from "lucide-react"
 import { useState } from "react"
-import { cn } from "@/lib/utils"
+
 
 interface FlashOverlayProps {
     trigger?: React.ReactNode

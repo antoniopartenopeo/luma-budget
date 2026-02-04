@@ -6,7 +6,7 @@ import { ScenarioConfig } from "../../types"
 import { Category } from "@/features/categories/config"
 import * as goalRepo from "../../api/goal-repository"
 import * as budgetRepo from "@/VAULT/budget/api/repository"
-import { BudgetPlan } from "@/VAULT/budget/api/types"
+
 
 vi.mock("../../api/goal-repository")
 vi.mock("@/VAULT/budget/api/repository")

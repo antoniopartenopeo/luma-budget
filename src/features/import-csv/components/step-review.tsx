@@ -290,7 +290,7 @@ export function ImportStepReview({
                                                 index={index}
                                                 totalGroups={filteredGroups.length}
                                                 effectiveCategoryId={effectiveCatId || null}
-                                                rows={rows}
+
                                                 onGroupCategoryChange={setGroupCategory}
                                                 onSubgroupCategoryChange={setSubgroupCategory}
                                                 getSubgroupEffectiveCategory={(sg) => getSubgroupEffectiveCategory(sg, group)}

@@ -23,7 +23,7 @@ import { MacroSection, macroItemVariants } from "@/components/patterns/macro-sec
 import { StaggerContainer } from "@/components/patterns/stagger-container"
 import { motion } from "framer-motion"
 
-const PAGE_SIZE = 15
+
 
 function TransactionsPageContent() {
     const { data: transactions = [], isLoading, isError, refetch } = useTransactions()

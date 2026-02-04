@@ -34,9 +34,13 @@ export function useInsights({ period }: UseInsightsOptions): UseInsightsResult {
 
     useEffect(() => {
         if (!transactionsLoading && !categoriesLoading && !budgetLoading && !settingsLoading) {
-            setIsThinking(true)
-            const timer = setTimeout(() => setIsThinking(false), 1500)
-            return () => clearTimeout(timer)
+            // Wrap in setTimeout to avoid synchronous setState during render cycle
+            const startTimer = setTimeout(() => {
+                setIsThinking(true)
+                const endTimer = setTimeout(() => setIsThinking(false), 1500)
+                return () => clearTimeout(endTimer)
+            }, 0)
+            return () => clearTimeout(startTimer)
         }
     }, [transactionsLoading, categoriesLoading, budgetLoading, settingsLoading, period])
 

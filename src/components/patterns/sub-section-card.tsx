@@ -35,12 +35,12 @@ export function SubSectionCard({
 
     return (
         <div className={cn(
-            "relative group rounded-xl p-6 transition-all duration-300",
+            "relative group rounded-xl p-6 transition-all duration-300 flex flex-col",
             variants[variant],
             className
         )}>
             {(label || icon || extra) && (
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-4 shrink-0">
                     <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
                         {icon && <span className="opacity-70">{icon}</span>}
                         {label && <span>{label}</span>}
@@ -48,7 +48,7 @@ export function SubSectionCard({
                     {extra && <div className="flex items-center gap-2">{extra}</div>}
                 </div>
             )}
-            <div className="relative z-10">
+            <div className="relative z-10 flex-1 flex flex-col">
                 {children}
             </div>
         </div>

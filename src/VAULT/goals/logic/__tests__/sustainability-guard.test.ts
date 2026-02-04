@@ -1,6 +1,6 @@
 
 import { checkScenarioSustainability } from "../sustainability-guard"
-import { SustainabilityResult } from "../../types"
+
 import { describe, test, expect } from "vitest"
 
 describe("Sustainability Guard Logic (Granular)", () => {

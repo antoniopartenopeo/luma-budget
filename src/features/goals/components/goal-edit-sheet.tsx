@@ -131,7 +131,7 @@ export function GoalEditSheet({
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm font-bold text-rose-700 dark:text-rose-400">Elimina Obiettivo</p>
-                                    <p className="text-xs text-muted-foreground">Questa azione è irreversibile.</p>
+                                    <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Questa azione è irreversibile.</p>
                                 </div>
                                 <Button
                                     variant="ghost"

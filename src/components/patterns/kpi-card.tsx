@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from "react"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -23,8 +23,14 @@ export interface KpiCardProps {
     className?: string
     valueClassName?: string
     description?: string
+    /**
+     * If provided, the card will animate the value transition.
+     */
+    animatedValue?: number
+    formatFn?: (value: number) => string
 }
 
+import { AnimatedNumber } from "@/components/ui/animated-number"
 
 export function KpiCard({
     title,
@@ -39,19 +45,11 @@ export function KpiCard({
     onClick,
     className,
     valueClassName,
-    description
+    description,
+    animatedValue,
+    formatFn
 }: KpiCardProps) {
-    const [flash, setFlash] = useState(false)
-    const prevValue = useRef(value)
 
-    useEffect(() => {
-        if (value !== prevValue.current) {
-            setFlash(true)
-            const timer = setTimeout(() => setFlash(false), 800)
-            prevValue.current = value
-            return () => clearTimeout(timer)
-        }
-    }, [value])
 
     if (isLoading) {
         return (
@@ -78,7 +76,7 @@ export function KpiCard({
             <Card
                 className={cn(
                     "rounded-xl h-full glass-card",
-                    flash && "animate-flash-green",
+
                     onClick && "cursor-pointer active:scale-[0.98] ring-primary/5 hover:ring-2",
                     className
                 )}
@@ -86,10 +84,10 @@ export function KpiCard({
             >
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <div>
-                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                        <CardTitle className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                             {title}
                         </CardTitle>
-                        {subtitle && <p className="text-xs text-muted-foreground/70 mt-0.5">{subtitle}</p>}
+                        {subtitle && <p className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider mt-0.5">{subtitle}</p>}
                     </div>
                     <div className={cn(
                         "h-8 w-8 rounded-full flex items-center justify-center transition-colors duration-300",
@@ -101,33 +99,46 @@ export function KpiCard({
                         <Icon className="h-4 w-4" />
                     </div>
                 </CardHeader>
-                <CardContent>
-                    <div className={cn("text-xl sm:text-2xl lg:text-3xl font-black tracking-tighter tabular-nums break-words", valueClassName)}>{value}</div>
-                    {(change || comparisonLabel) && (
-                        <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                            {change && (
-                                <span
-                                    className={cn(
-                                        "flex items-center font-bold",
-                                        trend === "up" ? "text-success" :
-                                            trend === "down" ? "text-destructive" :
-                                                trend === "warning" ? "text-warning" :
-                                                    "text-muted-foreground"
-                                    )}
-                                >
-                                    {trend === "up" ? <ArrowUpIcon className="h-3 w-3 mr-0.5" /> :
-                                        trend === "down" ? <ArrowDownIcon className="h-3 w-3 mr-0.5" /> : null}
-                                    {change}
-                                </span>
-                            )}
-                            <span className="text-muted-foreground/60">{comparisonLabel}</span>
-                        </p>
-                    )}
-                    {description && (
-                        <p className="text-[10px] text-muted-foreground/50 mt-2 italic leading-tight">
-                            {description}
-                        </p>
-                    )}
+                <CardContent className="flex-1 flex flex-col">
+                    <div className={cn("text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter tabular-nums break-words", valueClassName)}>
+                        {typeof animatedValue === 'number' ? (
+                            <AnimatedNumber
+                                value={animatedValue}
+                                formatFn={formatFn}
+                                className="block" // ensure block to maintain layout
+                            />
+                        ) : (
+                            value
+                        )}
+                    </div>
+
+                    <div className="mt-auto pt-4">
+                        {(change || comparisonLabel) && (
+                            <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                {change && (
+                                    <span
+                                        className={cn(
+                                            "flex items-center font-bold",
+                                            trend === "up" ? "text-success" :
+                                                trend === "down" ? "text-destructive" :
+                                                    trend === "warning" ? "text-warning" :
+                                                        "text-muted-foreground"
+                                        )}
+                                    >
+                                        {trend === "up" ? <ArrowUpIcon className="h-3 w-3 mr-0.5" /> :
+                                            trend === "down" ? <ArrowDownIcon className="h-3 w-3 mr-0.5" /> : null}
+                                        {change}
+                                    </span>
+                                )}
+                                <span className="text-muted-foreground/60">{comparisonLabel}</span>
+                            </p>
+                        )}
+                        {description && (
+                            <p className="text-[10px] text-muted-foreground/50 mt-1 italic leading-tight">
+                                {description}
+                            </p>
+                        )}
+                    </div>
                 </CardContent>
             </Card>
         </motion.div>

@@ -1,10 +1,8 @@
 "use client"
 
-import { useState } from "react"
 import Link from "next/link"
-import { ChevronDown, AlertTriangle, TrendingUp, Zap, ExternalLink, Activity } from "lucide-react"
-import { motion, AnimatePresence, Variants } from "framer-motion"
-import { Card } from "@/components/ui/card"
+import { AlertTriangle, TrendingUp, Zap, ExternalLink, Activity } from "lucide-react"
+import { motion, Variants } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"

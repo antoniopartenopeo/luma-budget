@@ -13,7 +13,6 @@ interface MerchantGroupCardProps {
     index: number
     totalGroups: number
     effectiveCategoryId: string | null
-    rows: EnrichedRow[]
     onGroupCategoryChange: (groupId: string, categoryId: string) => void
     onSubgroupCategoryChange: (subgroupId: string, categoryId: string) => void
     getSubgroupEffectiveCategory: (subgroup: Subgroup) => string | null
@@ -29,7 +28,7 @@ export function MerchantGroupCard({
     index,
     totalGroups,
     effectiveCategoryId,
-    rows,
+
     onGroupCategoryChange,
     onSubgroupCategoryChange,
     getSubgroupEffectiveCategory,

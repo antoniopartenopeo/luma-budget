@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { fetchDashboardSummary } from '../repository'
-import { createBatchTransactions, __resetTransactionsCache, createTransaction } from '@/features/transactions/api/repository'
-import { BudgetPlan } from "@/VAULT/budget/api/types"
+import { createBatchTransactions, __resetTransactionsCache } from '@/features/transactions/api/repository'
 
 // Mock dependencies
 vi.mock('@/lib/delay', () => ({

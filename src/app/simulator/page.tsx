@@ -5,8 +5,7 @@ import { useState, useMemo, useEffect } from "react"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ExpandableCard } from "@/components/patterns/expandable-card"
-import { Calculator, RefreshCw, Sparkles, Target, Save } from "lucide-react"
+import { Calculator, RefreshCw, Sparkles, Target } from "lucide-react"
 import { motion } from "framer-motion"
 import { useMonthlyAverages } from "@/features/simulator/hooks"
 import { SimulationPeriod } from "@/features/simulator/utils"
@@ -20,7 +19,6 @@ import { toast } from "sonner"
 import { activateRhythm } from "@/VAULT/goals/logic/rhythm-orchestrator"
 import { useQueryClient } from "@tanstack/react-query"
 import { useGoalScenarios } from "@/VAULT/goals/logic/use-goal-scenarios"
-import { Sheet } from "@/components/ui/sheet"
 import { ScenarioKey } from "@/VAULT/goals/types"
 import { ScenarioDeck } from "@/features/goals/components/scenario-deck"
 import { AdvancedOptimizerSheet } from "@/features/goals/components/advanced-optimizer-sheet"
@@ -29,7 +27,6 @@ import { GoalContextRibbon } from "@/features/goals/components/goal-context-ribb
 import { generateAIMonitorMessage, getAIMonitorStyles } from "@/features/goals/utils/ai-monitor-copy"
 import { queryKeys } from "@/lib/query-keys"
 import { KpiCard } from "@/components/patterns/kpi-card"
-import { StateMessage } from "@/components/ui/state-message"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
 import { macroItemVariants } from "@/components/patterns/macro-section"
 
@@ -79,10 +76,10 @@ export default function SimulatorPage() {
             setGoalTargetCents(prev => prev === 0 ? activeGoal.targetCents : prev)
             setGoalTitle(prev => prev === "" ? activeGoal.title : prev)
         }
-    }, [activeGoal?.id]) // ONLY depend on ID
+    }, [activeGoal?.id, activeGoal?.targetCents, activeGoal?.title])
 
     // 2. Simulator Config State
-    const [period, setPeriod] = useState<SimulationPeriod>(6)
+    const [period] = useState<SimulationPeriod>(6)
     const [activeScenarioKey, setActiveScenarioKey] = useState<ScenarioKey>("baseline")
     const [isAdvancedSheetOpen, setIsAdvancedSheetOpen] = useState(false)
 
@@ -191,8 +188,7 @@ export default function SimulatorPage() {
                     averageComfortExpenses: baselineMetrics?.averageComfortExpenses || 0,
                     expensesStdDev: baselineMetrics?.expensesStdDev || 0,
                     monthsAnalyzed: period
-                },
-                categories: categoriesList || []
+                }
             })
 
             // Invalidate caches BEFORE showing success toast (reliable feedback)
@@ -202,7 +198,7 @@ export default function SimulatorPage() {
             toast.success("Piano salvato con successo", {
                 description: "Il tuo nuovo piano operativo è ora attivo sulla Dashboard."
             })
-        } catch (error) {
+        } catch {
             toast.error("Errore durante il salvataggio")
         }
     }
@@ -269,10 +265,10 @@ export default function SimulatorPage() {
                             </div>
 
                             <div className="space-y-6">
-                                <h2 className="text-4xl md:text-5xl font-black text-foreground tracking-tight leading-none bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/60">
+                                <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight leading-none bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/60">
                                     Il tuo Financial Lab è pronto
                                 </h2>
-                                <p className="text-xl text-muted-foreground leading-relaxed font-medium max-w-lg mx-auto">
+                                <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed font-medium max-w-lg mx-auto">
                                     Inizia definendo il tuo primo obiettivo. Ti aiuteremo a scoprire il ritmo giusto per raggiungerlo in modo sostenibile.
                                 </p>
                             </div>
@@ -280,13 +276,13 @@ export default function SimulatorPage() {
                             <Button
                                 size="lg"
                                 disabled={isCreatingGoal}
-                                className="rounded-full px-16 h-16 text-xl font-black tracking-tight shadow-2xl shadow-primary/30 hover:scale-105 transition-all active:scale-95 group relative overflow-hidden"
+                                className="rounded-full px-16 h-16 text-lg font-bold tracking-tight shadow-2xl shadow-primary/30 hover:scale-105 transition-all active:scale-95 group relative overflow-hidden"
                                 onClick={async () => {
                                     setIsCreatingGoal(true)
                                     try {
                                         await addGoal("Nuovo Obiettivo", 0)
                                         toast.success("Laboratorio attivato!")
-                                    } catch (e) {
+                                    } catch {
                                         toast.error("Errore durante l'attivazione.")
                                     } finally {
                                         setIsCreatingGoal(false)
@@ -316,33 +312,10 @@ export default function SimulatorPage() {
                         variant="premium"
                         className="overflow-visible"
                         status={currentScenario?.sustainability.status === "unsafe" ? "critical" : currentScenario?.sustainability.status === "fragile" ? "warning" : "default"}
-                        title={
-                            <div>
-                                <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">Command Center</h2>
-                                <p className="text-sm font-medium text-muted-foreground">Simulazione e Ottimizzazione</p>
-                            </div>
-                        }
-                        headerActions={
-                            <div className="flex items-center gap-3">
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={handleReset}
-                                    className="h-9 rounded-full px-4 text-xs font-bold text-muted-foreground hover:text-foreground hover:bg-slate-100 dark:hover:bg-slate-800"
-                                >
-                                    <RefreshCw className="mr-2 h-3 w-3" /> Reset
-                                </Button>
-                                <Button
-                                    size="sm"
-                                    onClick={handleSavePlan}
-                                    className="h-10 rounded-xl px-6 text-xs font-bold shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 text-primary-foreground"
-                                >
-                                    <Save className="mr-2 h-4 w-4" /> Salva Piano
-                                </Button>
-                            </div>
-                        }
+                        title={null}
+                        headerActions={null}
                     >
-                        {/* 1. CONTEXT RIBBON (Goal Management) */}
+                        {/* 1. CONTEXT RIBBON (Goal Management + Actions) */}
                         <div className="mb-8">
                             <GoalContextRibbon
                                 portfolio={portfolio}
@@ -352,6 +325,8 @@ export default function SimulatorPage() {
                                 onAddGoal={() => addGoal("Nuovo Obiettivo", 0)}
                                 onUpdateGoal={updateGoal}
                                 onRemoveGoal={removeGoal}
+                                onReset={handleReset}
+                                onSave={handleSavePlan}
                             />
                         </div>
 
@@ -376,6 +351,8 @@ export default function SimulatorPage() {
                                             title="Quanto mettere da parte"
                                             subtitle="Potenziale mensile"
                                             value={formatCents(simulatedSurplus, currency, locale)}
+                                            animatedValue={simulatedSurplus}
+                                            formatFn={(v) => formatCents(v, currency, locale)}
                                             change={extraSavings > 0 ? `+${formatCents(extraSavings, currency, locale)}` : undefined}
                                             trend={extraSavings > 0 ? "up" : "neutral"}
                                             comparisonLabel={extraSavings > 0 ? "boost" : undefined}
@@ -483,14 +460,14 @@ export default function SimulatorPage() {
                                                         <Sparkles className={cn("h-6 w-6", styles.iconClass)} />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-2">
+                                                        <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
                                                             AI Monitor
                                                         </h4>
                                                         <p className={cn(
-                                                            "text-lg font-medium leading-relaxed",
+                                                            "text-sm font-medium leading-relaxed",
                                                             styles.textClass
                                                         )}>
-                                                            "{aiMonitor.message}"
+                                                            &quot;{aiMonitor.message}&quot;
                                                         </p>
 
                                                         {/* SACRIFICE BADGES (Awareness Layer) */}
@@ -530,7 +507,6 @@ export default function SimulatorPage() {
                 <AdvancedOptimizerSheet
                     open={isAdvancedSheetOpen}
                     onOpenChange={setIsAdvancedSheetOpen}
-                    currentResult={currentScenario}
                     onApply={handleCustomApply}
                     baselineMetrics={baselineMetrics}
                     categories={categoriesList || []}

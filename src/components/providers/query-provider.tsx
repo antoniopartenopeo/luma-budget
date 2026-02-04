@@ -7,7 +7,7 @@ import { __resetBudgetsCache } from "@/VAULT/budget/api/repository"
 // import { useBudget } from "@/VAULT/budget/api/use-budget" // Logic only now?
 // If this was prefetching, we might want to keep it or remove it if no UI needs it immediately.
 // Let's assume we keep it for data readiness.
-import { useBudget } from "@/VAULT/budget/api/use-budget"
+
 import { __resetCategoriesCache, CATEGORIES_STORAGE_KEY } from "@/features/categories/api/repository"
 import { queryKeys } from "@/lib/query-keys"
 

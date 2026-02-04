@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { narrateTrend } from "../trend.narrator"
-import { TrendFacts } from "../types"
+
 
 describe("trend.narrator (Semantic Rules)", () => {
 

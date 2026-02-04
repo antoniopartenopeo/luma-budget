@@ -90,6 +90,7 @@ Tutti i componenti principali devono seguire questi standard visuali:
 - **Glass Overlay (Sheet/Dialog)**: DEVE usare lo stesso materiale della Top Bar: `bg-white/60` (non 80/90) `backdrop-blur-xl` per garantire coerenza visiva.
 - **Background**: `bg-[#F8F9FA]` (light) / `bg-black` (dark) + Ambient Mesh Gradients.
 - **Card**: `rounded-[2.5rem]` (Macro) o `rounded-xl` (Micro).
+- **Brand Color**: `primary` (Numa Teal - oklch(0.6 0.16 200)). **VIETATO** l'uso di `indigo` per stati attivi.
 - **Shadows**: `shadow-xl` + **Ambient Glows** (gradienti radiali sfocati) per stati critici.
 
 ### 2. Motion System (Premium Standard)
@@ -311,5 +312,5 @@ Il mancato rispetto anche di un solo punto della checklist tecnica automatizzabi
 
 ---
 
-**Versione**: 1.3.1  
-**Ultimo aggiornamento**: 2026-02-01
+**Versione**: 1.4.0  
+**Ultimo aggiornamento**: 2026-02-04

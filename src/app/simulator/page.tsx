@@ -33,32 +33,53 @@ import { StateMessage } from "@/components/ui/state-message"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
 import { macroItemVariants } from "@/components/patterns/macro-section"
 
+/**
+ * Premium background for the Empty State.
+ * Simulates a high-tech lab scanning/searching effect.
+ */
+function RadarBackground() {
+    return (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20 dark:opacity-30">
+            {/* Concentric Scan Rings */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px]">
+                <div className="absolute inset-0 rounded-full border border-primary/20 animate-ping-slow" />
+                <div className="absolute inset-x-20 inset-y-20 rounded-full border border-primary/10 animate-ping-slow animation-delay-500" />
+                <div className="absolute inset-x-40 inset-y-40 rounded-full border border-primary/5 animate-ping-slow animation-delay-1000" />
+            </div>
+
+            {/* Vertical/Horizontal Scan Lines */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+        </div>
+    )
+}
+
 export default function SimulatorPage() {
     const queryClient = useQueryClient()
     const { currency, locale } = useCurrency()
     const [isCreatingGoal, setIsCreatingGoal] = useState(false)
 
     // 1. Goal & Rhythm State (from VAULT)
+    const projectionSettings = useMemo(() => ({
+        currentFreeCashFlow: 0,
+        historicalVariability: 0.1
+    }), [])
+
     const { portfolio, isLoading: isPortfolioLoading, addGoal, setMainGoal, updateGoal, removeGoal } = useGoalPortfolio({
-        globalProjectionInput: {
-            currentFreeCashFlow: 0,
-            historicalVariability: 0.1
-        }
+        globalProjectionInput: projectionSettings
     })
 
     const activeGoal = portfolio?.goals.find(g => g.id === portfolio.mainGoalId)
     const [goalTargetCents, setGoalTargetCents] = useState<number>(activeGoal?.targetCents || 0)
     const [goalTitle, setGoalTitle] = useState<string>(activeGoal?.title || "")
 
-    // Sync local goal state with portfolio only when id changes to avoid loop
+    // Sync local goal state with portfolio only when id changes
+    // This is the "Data hydration" step when moving from Empty State -> Active State
     useEffect(() => {
-        if (activeGoal) {
-            Promise.resolve().then(() => {
-                setGoalTargetCents(activeGoal.targetCents)
-                setGoalTitle(activeGoal.title)
-            })
+        if (activeGoal?.id) {
+            setGoalTargetCents(prev => prev === 0 ? activeGoal.targetCents : prev)
+            setGoalTitle(prev => prev === "" ? activeGoal.title : prev)
         }
-    }, [activeGoal?.id, activeGoal]) // Only when goal itself changes
+    }, [activeGoal?.id]) // ONLY depend on ID
 
     // 2. Simulator Config State
     const [period, setPeriod] = useState<SimulationPeriod>(6)
@@ -166,6 +187,8 @@ export default function SimulatorPage() {
                     averageMonthlyIncome: baselineMetrics?.averageMonthlyIncome || 0,
                     averageMonthlyExpenses: baselineMetrics?.averageMonthlyExpenses || 0,
                     averageEssentialExpenses: baselineMetrics?.averageEssentialExpenses || 0,
+                    averageSuperfluousExpenses: baselineMetrics?.averageSuperfluousExpenses || 0,
+                    averageComfortExpenses: baselineMetrics?.averageComfortExpenses || 0,
                     expensesStdDev: baselineMetrics?.expensesStdDev || 0,
                     monthsAnalyzed: period
                 },
@@ -222,20 +245,34 @@ export default function SimulatorPage() {
                     <MacroSection
                         variant="default"
                         title={null}
+                        background={<RadarBackground />}
                     >
-                        <div className="flex flex-col items-center justify-center py-24 text-center space-y-10 max-w-2xl mx-auto">
+                        <div className="flex flex-col items-center justify-center py-24 text-center space-y-12 max-w-2xl mx-auto relative z-10">
                             <div className="relative">
-                                <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 animate-pulse-soft" />
-                                <div className="relative h-32 w-32 rounded-[3.5rem] bg-white dark:bg-slate-900 flex items-center justify-center shadow-2xl ring-1 ring-primary/20">
-                                    <Target className="h-16 w-16 text-primary animate-pulse-soft" />
-                                </div>
+                                {/* Ambient Glow */}
+                                <div className="absolute inset-0 bg-primary/25 blur-[100px] rounded-full scale-110 animate-pulse-soft" />
+
+                                <motion.div
+                                    className="relative h-40 w-40 rounded-[3.5rem] bg-white/40 dark:bg-slate-900/60 backdrop-blur-3xl flex items-center justify-center shadow-2xl ring-1 ring-white/20 dark:ring-white/[0.08]"
+                                    whileHover={{ scale: 1.05 }}
+                                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                                >
+                                    <Target className={cn(
+                                        "h-20 w-20 text-primary transition-all duration-700",
+                                        isCreatingGoal ? "animate-spin-slow opacity-50" : "animate-pulse-soft"
+                                    )} />
+
+                                    {/* Small orbital sparkles */}
+                                    <div className="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-emerald-500/20 blur-lg animate-pulse" />
+                                    <div className="absolute -bottom-4 -left-4 h-12 w-12 rounded-full bg-primary/10 blur-xl animate-pulse animation-delay-1000" />
+                                </motion.div>
                             </div>
 
-                            <div className="space-y-4">
-                                <h2 className="text-4xl font-black text-foreground tracking-tight leading-tight">
+                            <div className="space-y-6">
+                                <h2 className="text-4xl md:text-5xl font-black text-foreground tracking-tight leading-none bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/60">
                                     Il tuo Financial Lab è pronto
                                 </h2>
-                                <p className="text-xl text-muted-foreground leading-relaxed font-medium">
+                                <p className="text-xl text-muted-foreground leading-relaxed font-medium max-w-lg mx-auto">
                                     Inizia definendo il tuo primo obiettivo. Ti aiuteremo a scoprire il ritmo giusto per raggiungerlo in modo sostenibile.
                                 </p>
                             </div>
@@ -251,6 +288,7 @@ export default function SimulatorPage() {
                                         toast.success("Laboratorio attivato!")
                                     } catch (e) {
                                         toast.error("Errore durante l'attivazione.")
+                                    } finally {
                                         setIsCreatingGoal(false)
                                     }
                                 }}
@@ -329,92 +367,158 @@ export default function SimulatorPage() {
 
                         {/* 3. PROJECTION & RESULTS (The Output) */}
                         {currentScenario && (
-                            <StaggerContainer className="pt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
-                                {/* METRIC 1: VELOCITY */}
-                                <motion.div variants={macroItemVariants}>
-                                    <KpiCard
-                                        title="Risparmio Mensile"
-                                        value={formatCents(simulatedSurplus, currency, locale)}
-                                        change={extraSavings > 0 ? `+${formatCents(extraSavings, currency, locale)}` : undefined}
-                                        trend={extraSavings > 0 ? "up" : "neutral"}
-                                        comparisonLabel={extraSavings > 0 ? "boost" : undefined}
-                                        icon={Calculator}
-                                        tone="neutral"
-                                        className="h-full hover:bg-white/60 transition-colors"
-                                    />
-                                </motion.div>
+                            <div className="pt-8 space-y-6 relative z-10">
+                                {/* Top Row: 3 KPI Cards */}
+                                <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+                                    {/* METRIC 1: VELOCITY */}
+                                    <motion.div variants={macroItemVariants} className="h-full">
+                                        <KpiCard
+                                            title="Quanto mettere da parte"
+                                            subtitle="Potenziale mensile"
+                                            value={formatCents(simulatedSurplus, currency, locale)}
+                                            change={extraSavings > 0 ? `+${formatCents(extraSavings, currency, locale)}` : undefined}
+                                            trend={extraSavings > 0 ? "up" : "neutral"}
+                                            comparisonLabel={extraSavings > 0 ? "boost" : undefined}
+                                            description={extraSavings > 0 ? "Risparmio generato dalle tue scelte di stile di vita" : "Il tuo ritmo naturale senza tagli"}
+                                            icon={Calculator}
+                                            tone={extraSavings > 0 ? "positive" : "neutral"}
+                                            className={cn(
+                                                "h-full min-h-[180px] transition-all duration-300",
+                                                extraSavings > 50000 ? "bg-emerald-500/5 dark:bg-emerald-500/10 shadow-[0_0_20px_-12px_rgba(16,185,129,0.3)]" : "hover:bg-white/60"
+                                            )}
+                                        />
+                                    </motion.div>
 
-                                {/* METRIC 2: HORIZON */}
-                                <motion.div variants={macroItemVariants}>
-                                    <KpiCard
-                                        title="Tempo Stimato"
-                                        value={!projection?.canReach
-                                            ? "—"
-                                            : projection?.likelyDate
-                                                ? new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' })
-                                                    .format(new Date(projection.likelyDate))
-                                                    .replace(/^\w/, c => c.toUpperCase())
-                                                : "—"
-                                        }
-                                        change={projection?.canReach && projection?.likelyMonths > 0 ? `${projection.likelyMonths} mesi` : undefined}
-                                        description={!projection?.canReach
-                                            ? "Aumenta il risparmio per proiettare"
-                                            : `Range: ${projection.minMonths}-${projection.maxMonths} mesi`
-                                        }
-                                        icon={Target}
-                                        tone={projection?.canReach ? "positive" : "neutral"}
-                                        className={cn(
-                                            "h-full transition-all duration-500",
-                                            projection?.canReach ? "bg-indigo-50/40 dark:bg-indigo-950/20" : "bg-rose-50/40 dark:bg-rose-950/10"
-                                        )}
-                                    />
-                                </motion.div>
+                                    {/* METRIC 2: HORIZON */}
+                                    <motion.div variants={macroItemVariants} className="h-full">
+                                        <KpiCard
+                                            title="Quando arrivi"
+                                            subtitle="In base al ritmo attuale"
+                                            value={!projection?.canReach
+                                                ? "—"
+                                                : projection?.likelyDate
+                                                    ? new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' })
+                                                        .format(new Date(projection.likelyDate))
+                                                        .replace(/^\w/, c => c.toUpperCase())
+                                                    : "—"
+                                            }
+                                            change={projection?.canReach && projection?.likelyMonths > 0 ? `${projection.likelyMonths} mesi` : undefined}
+                                            description={!projection?.canReach
+                                                ? "Aumenta il risparmio per proiettare"
+                                                : `Varianza statistica: ${projection.minMonths}-${projection.maxMonths} mesi`
+                                            }
+                                            icon={Target}
+                                            tone={projection?.canReach ? "positive" : "neutral"}
+                                            className={cn(
+                                                "h-full min-h-[180px] transition-all duration-500",
+                                                projection?.canReach ? "bg-indigo-50/40 dark:bg-indigo-950/20" : "bg-rose-50/40 dark:bg-rose-950/10"
+                                            )}
+                                        />
+                                    </motion.div>
 
-                                {/* METRIC 3: SUSTAINABILITY */}
-                                <motion.div variants={macroItemVariants}>
-                                    <KpiCard
-                                        title="Sostenibilità"
-                                        value={(() => {
-                                            const status = currentScenario.sustainability.status
-                                            if (status === "secure") return "Sicuro"
-                                            if (status === "sustainable") return "Sostenibile"
-                                            if (status === "fragile") return "Fragile"
-                                            return "A Rischio"
-                                        })()}
-                                        description={currentScenario.sustainability.reason || "Assetto verificato"}
-                                        icon={RefreshCw}
-                                        tone={(() => {
-                                            const status = currentScenario.sustainability.status
-                                            if (status === "secure" || status === "sustainable") return "positive"
-                                            if (status === "fragile") return "warning"
-                                            return "negative"
-                                        })()}
-                                        className="h-full"
-                                    />
-                                </motion.div>
+                                    {/* METRIC 3: SUSTAINABILITY */}
+                                    <motion.div variants={macroItemVariants} className="h-full">
+                                        <KpiCard
+                                            title="Ce la fai davvero?"
+                                            subtitle="Analisi stabilità"
+                                            value={(() => {
+                                                const status = currentScenario.sustainability.status
+                                                if (status === "secure") return "Puoi star tranquillo"
+                                                if (status === "sustainable") return "È sostenibile"
+                                                if (status === "fragile") return "Attento agli imprevisti"
+                                                return "A Rischio"
+                                            })()}
+                                            description={currentScenario.sustainability.reason || "Assetto verificato dal sistema"}
+                                            icon={RefreshCw}
+                                            tone={(() => {
+                                                const status = currentScenario.sustainability.status
+                                                if (status === "secure" || status === "sustainable") return "positive"
+                                                if (status === "fragile") return "warning"
+                                                return "negative"
+                                            })()}
+                                            className="h-full min-h-[180px]"
+                                        />
+                                    </motion.div>
+                                </StaggerContainer>
 
-                                {/* METRIC 4: AI ADVISOR */}
-                                <motion.div variants={macroItemVariants}>
+                                {/* Bottom Row: AI Monitor (Full Width) */}
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.98 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{
+                                        delay: 0.3,
+                                        duration: 0.5,
+                                        ease: [0.16, 1, 0.3, 1] // Apple-like friction
+                                    }}
+                                >
                                     {(() => {
+                                        const targetDateStr = projection?.likelyDate
+                                            ? new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' })
+                                                .format(new Date(projection.likelyDate))
+                                                .replace(/^\w/, c => c.toUpperCase())
+                                            : null
+
                                         const aiMonitor = generateAIMonitorMessage({
                                             scenario: currentScenario,
                                             savingsPercent,
-                                            baselineExpenses: baselineMetrics?.averageMonthlyExpenses || 0
+                                            monthlySavingsFormatted: formatCents(simulatedSurplus, currency, locale),
+                                            monthsToGoal: projection?.likelyMonths || null,
+                                            targetDateFormatted: targetDateStr
                                         })
                                         const styles = getAIMonitorStyles(aiMonitor.tone)
                                         return (
-                                            <KpiCard
-                                                title="AI Monitor"
-                                                value={`"${aiMonitor.message}"`}
-                                                icon={Sparkles}
-                                                tone={aiMonitor.tone === "thriving" ? "positive" : (aiMonitor.tone === "stable" || aiMonitor.tone === "strained") ? "warning" : "negative"}
-                                                valueClassName="text-sm sm:text-sm lg:text-sm font-medium leading-relaxed italic !tracking-normal !font-sans opacity-80"
-                                                className={cn("h-full", styles.containerClass, "bg-opacity-40 hover:bg-opacity-60")}
-                                            />
+                                            <div className={cn(
+                                                "glass-card rounded-2xl p-6 border transition-all duration-300",
+                                                styles.containerClass,
+                                                "hover:shadow-lg"
+                                            )}>
+                                                <div className="flex items-start gap-4">
+                                                    <div className={cn(
+                                                        "h-12 w-12 rounded-xl flex items-center justify-center shrink-0",
+                                                        aiMonitor.tone === "thriving" ? "bg-emerald-500/10" :
+                                                            aiMonitor.tone === "stable" ? "bg-indigo-500/10" :
+                                                                aiMonitor.tone === "strained" ? "bg-amber-500/10" :
+                                                                    "bg-rose-500/10"
+                                                    )}>
+                                                        <Sparkles className={cn("h-6 w-6", styles.iconClass)} />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-2">
+                                                            AI Monitor
+                                                        </h4>
+                                                        <p className={cn(
+                                                            "text-lg font-medium leading-relaxed",
+                                                            styles.textClass
+                                                        )}>
+                                                            "{aiMonitor.message}"
+                                                        </p>
+
+                                                        {/* SACRIFICE BADGES (Awareness Layer) */}
+                                                        {aiMonitor.sacrifices.length > 0 && (
+                                                            <div className="mt-4 flex flex-wrap gap-2">
+                                                                {aiMonitor.sacrifices.map((s) => (
+                                                                    <Badge
+                                                                        key={s.id}
+                                                                        variant="outline"
+                                                                        className={cn(
+                                                                            "bg-white/40 dark:bg-white/5 border-white/20 px-2 py-1 text-[10px] font-bold uppercase tracking-wider",
+                                                                            s.intensity === 'high' ? "text-rose-500 border-rose-500/20" :
+                                                                                s.intensity === 'medium' ? "text-amber-500 border-amber-500/20" :
+                                                                                    "text-indigo-500 border-indigo-500/20"
+                                                                        )}
+                                                                    >
+                                                                        {s.label}
+                                                                    </Badge>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         )
                                     })()}
                                 </motion.div>
-                            </StaggerContainer>
+                            </div>
                         )}
                     </MacroSection>
                 </motion.div>
@@ -428,6 +532,10 @@ export default function SimulatorPage() {
                     onOpenChange={setIsAdvancedSheetOpen}
                     currentResult={currentScenario}
                     onApply={handleCustomApply}
+                    baselineMetrics={baselineMetrics}
+                    categories={categoriesList || []}
+                    goalTargetCents={goalTargetCents}
+                    initialSavings={customSavings}
                 />
             )}
         </StaggerContainer>

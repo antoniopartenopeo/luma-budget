@@ -1,4 +1,5 @@
 
+import { useState, useEffect, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -40,6 +41,18 @@ export function KpiCard({
     valueClassName,
     description
 }: KpiCardProps) {
+    const [flash, setFlash] = useState(false)
+    const prevValue = useRef(value)
+
+    useEffect(() => {
+        if (value !== prevValue.current) {
+            setFlash(true)
+            const timer = setTimeout(() => setFlash(false), 800)
+            prevValue.current = value
+            return () => clearTimeout(timer)
+        }
+    }, [value])
+
     if (isLoading) {
         return (
             <Card className={cn("rounded-xl shadow-sm", className)}>
@@ -65,6 +78,7 @@ export function KpiCard({
             <Card
                 className={cn(
                     "rounded-xl h-full glass-card",
+                    flash && "animate-flash-green",
                     onClick && "cursor-pointer active:scale-[0.98] ring-primary/5 hover:ring-2",
                     className
                 )}

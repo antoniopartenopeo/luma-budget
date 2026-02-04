@@ -101,6 +101,21 @@ const pct = calculateUtilizationPct(spentCents, budgetCents)
 
 ---
 
+## Proiezioni & Ritmi Adattivi
+
+### 1. Adaptive Calibration (LOCKED)
+Numa non utilizza percentuali fisse per i risparmi. Ogni proiezione deve essere calibrata su due fattori di dominio:
+
+| Fattore | Descrizione | Calcolo Base |
+|:--- | :--- | :--- |
+| **Elasticità** | Capacità di tagliare spese non essenziali | `(Superfluo + Benessere) / Entrate` |
+| **Stabilità** | Rischio basato sulla variabilità storica | `1 - (StdDev / Mensile Medio)` |
+
+### 2. Regola del Ritmo
+Il moltiplicatore finale applicato alle spese deve essere un prodotto di `Elasticità * Stabilità * Intensità (0.1 - 1.0)`. Questo garantisce che il risparmio sia sempre sostenibile e mai arbitrario.
+
+---
+
 ## Formattazione
 
 ```typescript
@@ -222,5 +237,5 @@ L'analisi deve seguire questo ordine gerarchico:
 
 ---
 
-**Versione**: 1.2.0  
-**Ultimo aggiornamento**: 2026-02-01
+**Versione**: 1.3.0  
+**Ultimo aggiornamento**: 2026-02-04

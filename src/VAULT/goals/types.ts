@@ -14,12 +14,20 @@ export interface SustainabilityResult {
 export type ScenarioType = "baseline" | "balanced" | "aggressive" | "manual"
 export type ScenarioKey = "baseline" | "balanced" | "aggressive" | "custom"
 
+export interface CalibrationMetadata {
+    elasticityIndex: number
+    stabilityFactor: number
+    lowConfidence?: boolean
+    volatilityCents: number
+}
+
 export interface ScenarioConfig {
     type: ScenarioType
     label: string
     description: string
     applicationMap: Record<string, number> // categoryId -> % of rhythm application (reduction)
     savingsMap: { superfluous: number; comfort: number } // Abstract config percentages for UI display
+    calibration?: CalibrationMetadata
 }
 
 

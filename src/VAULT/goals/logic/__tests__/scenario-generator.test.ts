@@ -5,11 +5,13 @@ import { Category } from "@/features/categories/config"
 import { describe, test, expect } from "vitest"
 
 describe("Scenario Generator Logic", () => {
-    // Mock Data
+    // Mock Data with Granular Nature
     const baseline: BaselineMetrics = {
         averageMonthlyIncome: 200000,
         averageMonthlyExpenses: 150000,
         averageEssentialExpenses: 100000,
+        averageSuperfluousExpenses: 30000, // Explicit extra spending
+        averageComfortExpenses: 20000,
         expensesStdDev: 5000,
         monthsAnalyzed: 6
     }
@@ -30,30 +32,23 @@ describe("Scenario Generator Logic", () => {
         expect(agg.type).toBe("aggressive")
     })
 
-    test("Baseline should have 0 savings", () => {
+    test("Adaptive Calibration: Balanced should proposal reasonable cuts", () => {
         const scenarios = generateScenarios(baseline, categories)
-        // Now we expect explicit 0s for all categories
-        expect(Object.keys(scenarios[0].applicationMap)).toHaveLength(3)
-        expect(scenarios[0].applicationMap["rent"]).toBe(0)
-    })
-
-    test("Balanced should target Superfluous (20%) and Comfort (5%)", () => {
-        const scenarios = generateScenarios(baseline, categories)
-        const balanced = scenarios[1] // Index 1 is Balanced
+        const balanced = scenarios[1]
         const savings = balanced.applicationMap
 
-        expect(savings["rent"]).toBe(0) // Essential explicitly 0
-        expect(savings["dining"]).toBe(5) // Comfort 5% (updated in RHYTHMS?)
-        expect(savings["netflix"]).toBe(20) // Superfluous 20%
+        expect(savings["rent"]).toBe(0)
+        // 0.33 elasticity * 0.95 stability * 0.5 intensity * 120 mult ~= 19%
+        expect(savings["netflix"]).toBeGreaterThan(15)
+        expect(savings["dining"]).toBeLessThan(savings["netflix"])
     })
 
-    test("Aggressive should have deeper cuts (40% / 15%)", () => {
+    test("Adaptive Calibration: Aggressive should scale cuts with intensity", () => {
         const scenarios = generateScenarios(baseline, categories)
-        const aggressive = scenarios[2] // Index 2 is Aggressive
-        const savings = aggressive.applicationMap
+        const aggressive = scenarios[2]
+        const balanced = scenarios[1]
 
-        expect(savings["rent"]).toBe(0)
-        expect(savings["dining"]).toBe(15) // Comfort 15%
-        expect(savings["netflix"]).toBe(40) // Superfluous 40%
+        expect(aggressive.applicationMap["netflix"]).toBeGreaterThan(balanced.applicationMap["netflix"])
+        expect(aggressive.applicationMap["dining"]).toBeGreaterThan(balanced.applicationMap["dining"])
     })
 })

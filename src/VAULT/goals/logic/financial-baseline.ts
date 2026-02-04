@@ -8,6 +8,8 @@ export interface BaselineMetrics {
     averageMonthlyIncome: number
     averageMonthlyExpenses: number
     averageEssentialExpenses: number
+    averageSuperfluousExpenses: number
+    averageComfortExpenses: number
     expensesStdDev: number
     monthsAnalyzed: number
 }
@@ -41,7 +43,13 @@ export function calculateBaselineMetrics(
     const { startDate, endDate } = calculateDateRange(pivotStr, periodMonths)
 
     // 2. Group by Month (YYYY-MM)
-    const monthlyStats: Record<string, { income: number; expenses: number; essential: number }> = {}
+    const monthlyStats: Record<string, {
+        income: number;
+        expenses: number;
+        essential: number;
+        superfluous: number;
+        comfort: number;
+    }> = {}
 
     // Initialize exactly 'periodMonths' keys, counting backward from pivot (previous month)
     const pivotDate = new Date(now)
@@ -53,7 +61,7 @@ export function calculateBaselineMetrics(
         // Use Day 1 to avoid "31st -> 1st next month" rollover issues
         const d = new Date(pivotDate.getFullYear(), pivotDate.getMonth() - i, 1)
         const mStr = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`
-        monthlyStats[mStr] = { income: 0, expenses: 0, essential: 0 }
+        monthlyStats[mStr] = { income: 0, expenses: 0, essential: 0, superfluous: 0, comfort: 0 }
     }
 
     // Map Categories for fast lookup
@@ -79,8 +87,14 @@ export function calculateBaselineMetrics(
             monthlyStats[mStr].expenses += amount
 
             const cat = catMap.get(t.categoryId || "")
-            if (cat && cat.spendingNature === 'essential') {
-                monthlyStats[mStr].essential += amount
+            if (cat) {
+                if (cat.spendingNature === 'essential') {
+                    monthlyStats[mStr].essential += amount
+                } else if (cat.spendingNature === 'superfluous') {
+                    monthlyStats[mStr].superfluous += amount
+                } else if (cat.spendingNature === 'comfort') {
+                    monthlyStats[mStr].comfort += amount
+                }
             }
         }
     })
@@ -99,10 +113,14 @@ export function calculateBaselineMetrics(
     const totalIncome = months.reduce((sum, m) => sum + m.income, 0)
     const totalExpenses = months.reduce((sum, m) => sum + m.expenses, 0)
     const totalEssential = months.reduce((sum, m) => sum + m.essential, 0)
+    const totalSuperfluous = months.reduce((sum, m) => sum + m.superfluous, 0)
+    const totalComfort = months.reduce((sum, m) => sum + m.comfort, 0)
 
     const avgIncome = Math.round(totalIncome / divisor)
     const avgExpenses = Math.round(totalExpenses / divisor)
     const avgEssential = Math.round(totalEssential / divisor)
+    const avgSuperfluous = Math.round(totalSuperfluous / divisor)
+    const avgComfort = Math.round(totalComfort / divisor)
 
     // StdDev of Expenses
     const squaredDiffs = months.map(m => Math.pow(m.expenses - avgExpenses, 2))
@@ -114,6 +132,8 @@ export function calculateBaselineMetrics(
         averageMonthlyIncome: avgIncome,
         averageMonthlyExpenses: avgExpenses,
         averageEssentialExpenses: avgEssential,
+        averageSuperfluousExpenses: avgSuperfluous,
+        averageComfortExpenses: avgComfort,
         expensesStdDev: stdDev,
         monthsAnalyzed: count
     }

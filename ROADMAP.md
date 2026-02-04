@@ -111,11 +111,13 @@ Items: Chat query dati ("Quanto ho speso in pizza?")
 - Global Sheet Refactor (Standardized Layout)
 - UI/UX Premium Polish (Typography & Icons)
 - Legacy Simulator (REMOVED)
+- Adaptive Genius Core (Elasticity & Stability Analysis)
+- Technical Audit Panel (Transparency Layer)
 
 **Automation Without Betrayal**
 - Trend Analysis
 - [x] AI Advisor Card (Labor Illusion & Dynamic Atmospheres)
-- Laboratorio Budget (Core Logic Vault)
+- Laboratorio Budget (Adaptive Core & UI Standards)
 
 ### In corso
 - **Paginazione Server-Side** (Transactions)

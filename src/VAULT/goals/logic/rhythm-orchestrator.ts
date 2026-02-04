@@ -57,16 +57,15 @@ export async function activateRhythm({
         superfluous: 0
     }
 
-    // Use the values from the provided scenario or Fallback to RHYTHMS config
-    const rhythmConfig = RHYTHMS.find(r => r.type === scenario.type)
+    // Logic is now ADAPTIVE: we use the savingsMap directly from the scenario
+    // as it was already calibrated by the Core (ScenarioGenerator).
+    natureAppliedIntensity.superfluous = scenario.savingsMap.superfluous
+    natureAppliedIntensity.comfort = scenario.savingsMap.comfort
 
-    if (rhythmConfig) {
-        natureAppliedIntensity.superfluous = rhythmConfig.savings.superfluous
-        natureAppliedIntensity.comfort = rhythmConfig.savings.comfort
-    }
-
-    const nonEssentialTotal = baseline.averageMonthlyExpenses - baseline.averageEssentialExpenses
-    const appliedRhythmBenefit = balanceRhythmAcrossGroups(nonEssentialTotal, natureAppliedIntensity)
+    // Calculate real benefit based on granular historical averages
+    const superfluousBenefit = (baseline.averageSuperfluousExpenses * natureAppliedIntensity.superfluous) / 100
+    const comfortBenefit = (baseline.averageComfortExpenses * natureAppliedIntensity.comfort) / 100
+    const appliedRhythmBenefit = Math.round(superfluousBenefit + comfortBenefit)
 
     // Update active rhythm
     portfolio.activeRhythm = {
@@ -150,8 +149,8 @@ export async function activateRhythm({
         globalBudgetAmountCents,
         groupBudgets: [
             { groupId: 'essential', label: "Essenziali", amountCents: baseline.averageEssentialExpenses },
-            { groupId: 'comfort', label: "Benessere", amountCents: Math.round((nonEssentialTotal * 0.7) * (1 - natureAppliedIntensity.comfort / 100)) },
-            { groupId: 'superfluous', label: "Extra", amountCents: Math.round((nonEssentialTotal * 0.3) * (1 - natureAppliedIntensity.superfluous / 100)) }
+            { groupId: 'comfort', label: "Benessere", amountCents: Math.round(baseline.averageComfortExpenses * (1 - natureAppliedIntensity.comfort / 100)) },
+            { groupId: 'superfluous', label: "Extra", amountCents: Math.round(baseline.averageSuperfluousExpenses * (1 - natureAppliedIntensity.superfluous / 100)) }
         ]
     })
 

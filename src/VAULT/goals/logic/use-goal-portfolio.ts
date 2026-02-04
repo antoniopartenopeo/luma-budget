@@ -45,9 +45,10 @@ export function useGoalPortfolio({ globalProjectionInput }: UseGoalPortfolioProp
 
         let updated: GoalPortfolio
 
-        if (!portfolio) {
-            // First goal creation
+        if (!portfolio || portfolio.goals.length === 0 || !portfolio.mainGoalId) {
+            // First goal creation or recovery from empty state
             updated = {
+                ...portfolio,
                 mainGoalId: newGoal.id,
                 goals: [newGoal]
             }

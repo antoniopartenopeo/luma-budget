@@ -55,6 +55,8 @@
   --animate-enter-up: enter-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   --animate-pulse-soft: pulse-soft 3s ease-in-out infinite;
   --animate-flash-green: flash-green 0.8s ease-out forwards;
+  --animate-ping-slow: ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-spin-slow: spin-slow 8s linear infinite;
 
   @keyframes enter-up {
     from {
@@ -93,6 +95,18 @@
       background-color: transparent;
       box-shadow: none;
     }
+  }
+
+  @keyframes ping-slow {
+    75%, 100% {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+  }
+
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
 
   /* Existing Shimmer */

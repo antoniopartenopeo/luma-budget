@@ -29,13 +29,13 @@ export function SubSectionCard({
 }: SubSectionCardProps) {
     const variants = {
         default: "glass-card hover:bg-white/70 dark:hover:bg-white/10",
-        premium: "bg-gradient-to-br from-primary/5 to-indigo-500/5 border border-primary/10 shadow-inner",
-        accent: "bg-gradient-to-br from-indigo-500/5 to-purple-500/5 border border-indigo-500/10 shadow-inner"
+        premium: "bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 shadow-inner",
+        accent: "bg-gradient-to-br from-primary/10 to-indigo-500/5 border border-primary/20 shadow-inner"
     }
 
     return (
         <div className={cn(
-            "relative group rounded-2xl p-6 transition-all duration-300",
+            "relative group rounded-xl p-6 transition-all duration-300",
             variants[variant],
             className
         )}>

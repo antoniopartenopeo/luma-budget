@@ -29,6 +29,7 @@ src/
 ### The Logic Vault (`src/VAULT`)
 A specialized directory for high-value, high-complexity domain logic that is being protected from UI coupling.
 *   **Current Resident**: `goals` (Post-Nuclear Reset).
+*   **Adaptive Core**: Implementa la logica di calibrazione dinamica basata su **Elasticità** e **Stabilità** dello storico.
 *   **Rules**: NO imports from `src/components`, `src/app`, or React UI libraries. purely `ts` logic and hooks.
 
 ### Domain Isolation (`src/domain`)

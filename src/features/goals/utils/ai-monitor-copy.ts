@@ -1,80 +1,136 @@
 "use client"
 
-import { GoalScenarioResult, ProjectionResult } from "@/VAULT/goals/types"
+import { GoalScenarioResult } from "@/VAULT/goals/types"
 
 export type AIMonitorTone = "thriving" | "stable" | "strained" | "critical"
 
 interface AIMonitorInput {
     scenario: GoalScenarioResult | null
     savingsPercent: number
-    baselineExpenses: number
+    // NEW: Dynamic data for contextual messages
+    monthlySavingsFormatted: string
+    monthsToGoal: number | null
+    targetDateFormatted: string | null
+}
+
+export interface Sacrifice {
+    id: string
+    label: string
+    intensity: "low" | "medium" | "high"
 }
 
 interface AIMonitorOutput {
     tone: AIMonitorTone
     message: string
+    sacrifices: Sacrifice[]
 }
 
 /**
- * Generates contextual AI Monitor messages based on scenario analysis.
- * 
- * Tones:
- * - thriving: Excellent savings + goal reachable in good time
- * - stable: Decent savings + goal achievable
- * - strained: Low savings + long timeline
- * - critical: Goal not reachable
+ * Generates DYNAMIC contextual AI Monitor messages based on scenario analysis.
+ * Messages now include actual values for a personalized experience.
  */
 export function generateAIMonitorMessage({
     scenario,
     savingsPercent,
-    baselineExpenses
+    monthlySavingsFormatted,
+    monthsToGoal,
+    targetDateFormatted
 }: AIMonitorInput): AIMonitorOutput {
     // Fallback for no scenario
     if (!scenario) {
         return {
             tone: "stable",
-            message: "Seleziona uno scenario per vedere l'analisi."
+            message: "Seleziona uno scenario per vedere l'analisi.",
+            sacrifices: []
         }
     }
 
     const projection = scenario.projection
 
-    // Critical: Goal unreachable
-    if (!projection.canReach) {
+    // Critical: Goal unreachable or unsafe sustainability
+    if (!projection.canReach || scenario.sustainability.status === "unsafe") {
+        const reason = scenario.sustainability.reason ? ` ${scenario.sustainability.reason}` : "";
         return {
             tone: "critical",
-            message: "Con il ritmo attuale l'obiettivo non è raggiungibile. Prova uno scenario più intenso o riduci il target."
+            message: `Con questo ritmo non ci arrivi.${reason} Prova a tagliare qualcosa in più dal superfluo.`,
+            sacrifices: []
         }
     }
+
+    let result: { tone: AIMonitorTone, message: string }
 
     // Thriving: High savings (>15%) and short timeline (<12 months)
     if (savingsPercent > 15 && projection.likelyMonths <= 12) {
-        return {
+        result = {
             tone: "thriving",
-            message: "Configurazione eccellente! Stai massimizzando il risparmio mantenendo un traguardo molto vicino."
+            message: `Metti da parte ${monthlySavingsFormatted} al mese. A questo ritmo arrivi a ${targetDateFormatted} con margine.`
         }
     }
-
     // Stable: Decent savings (5-15%) or medium timeline
-    if (savingsPercent >= 5 && projection.likelyMonths <= 24) {
-        return {
-            tone: "stable",
-            message: "Equilibrio ottimale tra risparmio e qualità della vita. Il tuo piano è sostenibile nel tempo."
+    else if (savingsPercent >= 5 && projection.likelyMonths <= 24) {
+        if (monthsToGoal && monthsToGoal > 12) {
+            result = {
+                tone: "stable",
+                message: `Con ${monthlySavingsFormatted} al mese ci vogliono circa ${monthsToGoal} mesi. Sostenibile, ma potresti accelerare.`
+            }
+        } else {
+            result = {
+                tone: "stable",
+                message: `${monthlySavingsFormatted} al mese ti portano a ${targetDateFormatted}. Un buon equilibrio.`
+            }
         }
     }
-
     // Strained: Low savings or long timeline
-    if (savingsPercent < 5 || projection.likelyMonths > 24) {
-        return {
+    else if (savingsPercent < 5 || projection.likelyMonths > 24) {
+        const years = Math.ceil((monthsToGoal || 36) / 12)
+        result = {
             tone: "strained",
-            message: "Il ritmo è lento. Prova ad aumentare il risparmio del 5-10% per ridurre drasticamente l'attesa."
+            message: `${monthlySavingsFormatted} al mese è poco. Ti servirebbero circa ${years} anni. Prova a tagliare il superfluo.`
+        }
+    } else {
+        result = {
+            tone: "stable",
+            message: `Il piano è attivo: ${monthlySavingsFormatted} al mese verso ${targetDateFormatted}.`
         }
     }
 
-    // Default stable
+    // For non-critical but non-secure cases, append the sustainability reason if available
+    if (scenario.sustainability.status === "fragile" && scenario.sustainability.reason) {
+        result.message += ` Nota: ${scenario.sustainability.reason}`
+    }
+
+    // Extract sacrifices based on savingsMap
+    const sacrifices: Sacrifice[] = []
+    const savingsMap = scenario.config.savingsMap || { superfluous: 0, comfort: 0 }
+
+    if (savingsMap.superfluous > 0) {
+        sacrifices.push({
+            id: "superfluous",
+            label: savingsMap.superfluous >= 70 ? "Zero Superfluo" :
+                savingsMap.superfluous >= 30 ? "Taglio Svago" : "Meno extra",
+            intensity: savingsMap.superfluous >= 70 ? "high" :
+                savingsMap.superfluous >= 30 ? "medium" : "low"
+        })
+    }
+
+    if (savingsMap.comfort > 0) {
+        sacrifices.push({
+            id: "comfort",
+            label: savingsMap.comfort >= 70 ? "Zero Shopping/Ristoranti" :
+                savingsMap.comfort >= 30 ? "Meno Comfort" : "Limata al benessere",
+            intensity: savingsMap.comfort >= 70 ? "high" :
+                savingsMap.comfort >= 30 ? "medium" : "low"
+        })
+    }
+
+    const behaviorOrigin = scenario.config.type === "manual"
+        ? "le tue impostazioni"
+        : `il ritmo ${scenario.config.label}`
+
     return {
-        tone: "stable",
-        message: "Il piano è attivo. Monitora i progressi dalla Dashboard."
+        ...result,
+        message: `${result.message} Questo risparmio si basa sulle tue abitudini (${behaviorOrigin}) e non cambia in base al costo dell'obiettivo.`,
+        sacrifices
     }
 }
 

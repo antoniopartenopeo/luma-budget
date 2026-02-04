@@ -87,22 +87,22 @@ function narrateStrained(facts: SnapshotFacts): NarrationResult {
     if (superfluousPercent !== undefined && superfluousTargetPercent !== undefined &&
         superfluousPercent > superfluousTargetPercent) {
         return {
-            text: `Le spese superflue sono al ${superfluousPercent}%, oltre il target del ${superfluousTargetPercent}%. Valuta un piccolo taglio per migliorare il margine.`,
-            shortText: `Superflue: ${superfluousPercent}%`
+            text: `Le spese extra sono al ${superfluousPercent}%, oltre il target del ${superfluousTargetPercent}%. Valuta un piccolo taglio per migliorare il margine.`,
+            shortText: `Extra: ${superfluousPercent}%`
         }
     }
 
     // Secondary: budget strained
     if (utilizationPercent !== undefined && utilizationPercent > 90) {
         return {
-            text: `Attenzione: hai utilizzato il ${utilizationPercent}% del budget disponibile. Resta poco margine per i prossimi giorni.`,
-            shortText: `Budget: ${utilizationPercent}%`
+            text: `Attenzione: hai utilizzato il ${utilizationPercent}% della programmazione disponibile. Resta poco margine per i prossimi giorni.`,
+            shortText: `Pacing: ${utilizationPercent}%`
         }
     }
 
     // Fallback
     return {
-        text: "Alcuni indicatori suggeriscono cautela nella gestione delle prossime spese.",
+        text: "Alcuni indicatori suggeriscono cautela nella gestione del ritmo di spesa.",
         shortText: "Da monitorare"
     }
 }
@@ -112,20 +112,20 @@ function narrateAtRisk(facts: SnapshotFacts): NarrationResult {
 
     if (isProjectedOverrun) {
         return {
-            text: "Il ritmo di spesa attuale indica una proiezione superiore al budget mensile. Valuta se regolare alcune uscite nei prossimi giorni.",
-            shortText: "Proiezione: oltre il budget"
+            text: "Il ritmo di spesa attuale indica una proiezione superiore alla pianificazione mensile. Valuta se regolare alcune uscite.",
+            shortText: "Proiezione: fuori ritmo"
         }
     }
 
     if (utilizationPercent !== undefined) {
         return {
-            text: `La spesa (${utilizationPercent}%) è superiore alla proiezione temporale. Considera un monitoraggio più attento per restare nei piani.`,
+            text: `La spesa (${utilizationPercent}%) è superiore alla proiezione temporale ottimale per restare nei piani.`,
             shortText: "Ritmo spesa elevato"
         }
     }
 
     return {
-        text: "Rilevata una velocità di spesa superiore alla media. Possibile pressione sul budget.",
+        text: "Rilevata una velocità di spesa superiore alla media. Possibile pressione sulla sostenibilità del traguardo.",
         shortText: "Andamento a rischio"
     }
 }
@@ -142,13 +142,13 @@ function narrateCritical(facts: SnapshotFacts): NarrationResult {
 
     if (balanceCents < 0 && utilizationPercent !== undefined && utilizationPercent > 100) {
         return {
-            text: `Il budget è stato superato (${utilizationPercent}%) ed il saldo attuale è in negativo. Si consiglia una revisione degli impegni di spesa.`,
-            shortText: "Budget oltre limite"
+            text: `Il limite di pacing è stato superato (${utilizationPercent}%) e il saldo attuale è in negativo. Si consiglia una revisione degli impegni.`,
+            shortText: "Ritmo oltre limite"
         }
     }
 
     return {
-        text: `Indicatori fuori soglia: budget al ${utilizationPercent ?? "?"}% e spese superflue al ${superfluousPercent ?? "?"}%. È necessaria attenzione per rientrare nei piani.`,
+        text: `Indicatori fuori soglia: andamento al ${utilizationPercent ?? "?"}% e spese extra al ${superfluousPercent ?? "?"}%. È necessaria attenzione per rientrare nei piani.`,
         shortText: "Attenzione necessaria"
     }
 }

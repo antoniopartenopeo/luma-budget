@@ -28,8 +28,9 @@ Le regole finanziarie e di sicurezza NON sono negoziabili.
 | 4 | **MAI** usare `useMediaQuery` o `if (isMobile)` per render | CSS-only responsiveness |
 | 5 | **MAI** simulare logica di produzione nei test | Importa le utility reali. Nessuna logica UI simulata. |
 | 6 | **MAI** salvare date in formati diversi da ISO-8601 | `YYYY-MM-DD` o timestamp ISO |
-| 7 | **MAI** usare design "Flat" (`shadow-none`) su elementi strutturali KPI | Coerenza Numa Premium 3D |
+| 7 | **MAI** usare design "Flat" (`shadow-none`) on elementi strutturali KPI | Coerenza Numa Premium 3D |
 | 8 | **MAI** usare layout multi-colonna persistenti | Favorire il flusso narrativo verticale |
+| 9 | **MAI** usare stringhe narrative inline nei componenti | Usare il Narration Layer deterministico |
 
 ---
 
@@ -46,6 +47,7 @@ Le regole finanziarie e di sicurezza NON sono negoziabili.
 | 7 | **SEMPRE** passare la **[Checklist UI/UX](file:///.agent/rules/ui-regression-checklist.md)** prima di chiudere un task | DoD Obbligatorio |
 | 8 | **SEMPRE** usare `font-medium` per descriptions e body text | Leggibilità su Glass |
 | 9 | **SEMPRE** usare icone `h-3 w-3` per sub-header e meta-info | Standard Proporzioni |
+| 10| **SEMPRE** aderire alle Skill Semantiche (`numa-*-semantics`) | Determinismo Narrativo |
 
 ---
 
@@ -95,5 +97,5 @@ Per procedure dettagliate, attiva la skill appropriata:
 
 ---
 
-**Versione**: 2.0.0  
-**Ultimo aggiornamento**: 2026-02-01
+**Versione**: 2.1.0  
+**Ultimo aggiornamento**: 2026-02-04

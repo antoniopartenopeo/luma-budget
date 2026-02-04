@@ -181,12 +181,7 @@ export function AdvancedSection() {
                 <div className="space-y-6">
                     {/* Diagnostics */}
                     <MacroSection
-                        title={
-                            <div className="flex items-center gap-2 text-2xl font-bold tracking-tight">
-                                <Wrench className="h-6 w-6" />
-                                About & Diagnostics
-                            </div>
-                        }
+                        title="About & Diagnostics"
                         description="Informazioni tecniche sulla versione e sullo stato dei dati locali."
                     >
                         {diagnostics ? (
@@ -288,12 +283,7 @@ export function AdvancedSection() {
                     {/* Danger Zone */}
                     <MacroSection
                         status="critical"
-                        title={
-                            <div className="flex items-center gap-2 text-2xl font-bold tracking-tight text-destructive">
-                                <Trash2 className="h-6 w-6" />
-                                Gestione Dati e Ripristino
-                            </div>
-                        }
+                        title="Gestione Dati e Ripristino"
                         description="Azioni distruttive per rimuovere i dati dall'applicazione."
                     >
                         {status && (

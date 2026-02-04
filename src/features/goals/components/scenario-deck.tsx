@@ -3,11 +3,12 @@
 import * as React from "react"
 
 import { SubSectionCard } from "@/components/patterns/sub-section-card"
+import { NumaEngineCard } from "@/components/patterns/numa-engine-card"
 import { cn } from "@/lib/utils"
-import { Compass, Target, CheckCircle2, Sparkles, ShieldCheck, Info, ChevronDown, ChevronUp, Activity, BarChart3, Lock } from "lucide-react"
+import { Compass, Target, CheckCircle2, Sparkles, Activity, BarChart3, Lock } from "lucide-react"
 import { GoalScenarioResult, ScenarioKey } from "@/VAULT/goals/types"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+
 import { formatCents } from "@/domain/money"
 import { useCurrency } from "@/features/settings/api/use-currency"
 
@@ -26,7 +27,6 @@ export function ScenarioDeck({
     onCustomConfigClick,
     className
 }: ScenarioDeckProps) {
-    const [showAudit, setShowAudit] = React.useState(false)
     const { currency, locale } = useCurrency()
 
     // Find active scenario for audit
@@ -162,147 +162,63 @@ export function ScenarioDeck({
 
             </div>
 
-            {/* The Numa Engine - Visual Logic Legend */}
-            <div className="mt-12 relative overflow-hidden glass-panel rounded-[2.5rem] p-8 sm:p-10 mb-8 border-none">
-                <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
-                    <Compass className="h-32 w-32 text-primary" />
-                </div>
-
-                <div className="relative z-10">
-                    <div className="flex items-center gap-2 mb-6">
-                        <div className="h-1 w-8 bg-primary rounded-full" />
-                        <h4 className="text-[10px] font-bold uppercase tracking-widest text-foreground/80">Il Metodo Numa</h4>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 relative">
-                        {/* Step 1: Real Data */}
-                        <div className="space-y-3 relative group">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform">
-                                <CheckCircle2 className="h-5 w-5" />
-                            </div>
-                            <p className="text-[10px] font-black uppercase tracking-wider text-primary dark:text-primary">1. Passato Reale</p>
-                            <p className="text-sm font-bold text-foreground leading-tight">Analisi transazioni</p>
-                            <p className="text-[10px] text-muted-foreground leading-relaxed">
-                                Numa scansiona la tua storia vera per capire quanto guadagni e spendi realmente ogni mese.
-                            </p>
-                        </div>
-
-                        {/* Arrows for Desktop */}
-                        <div className="hidden sm:block absolute left-[31%] top-5 w-[2%] h-[1px] bg-slate-200 dark:bg-white/10" />
-
-                        {/* Step 2: Behavior Choice */}
-                        <div className="space-y-3 relative group">
-                            <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 mb-4 group-hover:scale-110 transition-transform">
-                                <Sparkles className="h-5 w-5" />
-                            </div>
-                            <p className="text-[10px] font-black uppercase tracking-wider text-amber-600/80 dark:text-amber-400/80">2. Calibrazione Adattiva</p>
-                            <p className="text-sm font-bold text-foreground leading-tight">Il tuo Ritmo</p>
-                            <p className="text-[10px] text-muted-foreground leading-relaxed">
-                                Numa calibra l&apos;intensità del taglio sulla tua &quot;elasticità&quot;: se hai margine spinge di più, se sei al limite ti protegge.
-                            </p>
-                        </div>
-
-                        {/* Arrows for Desktop */}
-                        <div className="hidden sm:block absolute left-[64%] top-5 w-[2%] h-[1px] bg-slate-200 dark:bg-white/10" />
-
-                        {/* Step 3: Math Result */}
-                        <div className="space-y-3 relative group">
-                            <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 mb-4 group-hover:scale-110 transition-transform">
-                                <Target className="h-5 w-5" />
-                            </div>
-                            <p className="text-[10px] font-black uppercase tracking-wider text-emerald-600/80 dark:text-emerald-400/80">3. Futuro Stimato</p>
-                            <p className="text-sm font-bold text-foreground leading-tight">La Proiezione</p>
-                            <p className="text-[10px] text-muted-foreground leading-relaxed">
-                                Numa calcola quanta strada puoi fare con quel carburante. Più lontano è l&apos;obiettivo, più tempo servirà.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Audit Toggle Button */}
-                <div className="mt-10 pt-8 border-t border-slate-200 dark:border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
-                            <ShieldCheck className="h-5 w-5" />
-                        </div>
-                        <div className="text-left">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-foreground">Certificazione Adaptive Core</p>
-                            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Ogni calcolo è verificato in locale sulla tua storia creditizia reale.</p>
-                        </div>
-                    </div>
-
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setShowAudit(!showAudit)}
-                        className="w-full sm:w-auto text-[10px] font-black uppercase tracking-widest h-8 rounded-full border-primary/20 hover:bg-primary/5 transition-all group"
-                    >
-                        {showAudit ? <ChevronUp className="mr-2 h-3 w-3" /> : <ChevronDown className="mr-2 h-3 w-3" />}
-                        {showAudit ? "Chiudi Audit" : "Vedi Audit Tecnico"}
-                    </Button>
-                </div>
-
-                {/* Audit Details Area */}
-                {showAudit && calibration && (
-                    <div className="mt-6 p-6 rounded-2xl bg-primary/[0.03] border border-primary/10 animate-in fade-in slide-in-from-top-4 duration-500">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {/* Metric 1: Analysis Depth */}
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-2 text-primary mb-2">
-                                    <Activity className="h-3 w-3" />
-                                    <span className="text-[10px] font-black uppercase tracking-tighter">Profondità Audit</span>
-                                </div>
-                                <p className="text-xl font-black text-foreground tabular-nums tracking-tighter">Ultimi 6 Mesi</p>
-                                <p className="text-[10px] text-muted-foreground leading-tight italic font-medium">
-                                    Scansione integrale di {activeScenario.config.label === "Nessun Ritmo" ? "tutte le" : "ogni singola"} transazione precedente.
-                                </p>
-                            </div>
-
-                            {/* Metric 2: Stability */}
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-2 text-primary mb-2">
-                                    <BarChart3 className="h-3 w-3" />
-                                    <span className="text-[10px] font-black uppercase tracking-tighter">Stabilità Rilevata</span>
-                                </div>
-                                <p className="text-xl font-black text-foreground tabular-nums tracking-tighter">{(calibration.stabilityFactor * 100).toFixed(1)}%</p>
-                                <p className="text-[10px] text-muted-foreground leading-tight italic font-medium">
-                                    Basato su una volatilità di {formatCents(calibration.volatilityCents, currency, locale)}/mese.
-                                </p>
-                            </div>
-
-                            {/* Metric 3: Elasticity */}
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-2 text-primary mb-2">
-                                    <Sparkles className="h-3 w-3" />
-                                    <span className="text-[10px] font-black uppercase tracking-tighter">Elasticità (Extra)</span>
-                                </div>
-                                <p className="text-xl font-black text-foreground tabular-nums tracking-tighter">{(calibration.elasticityIndex * 100).toFixed(1)}%</p>
-                                <p className="text-[10px] text-muted-foreground leading-tight italic font-medium">
-                                    Quota di spese &quot;non essenziali&quot; che il Core può manovrare in sicurezza.
-                                </p>
-                            </div>
-
-                            {/* Metric 4: Final Power */}
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-2 text-primary mb-2">
-                                    <Lock className="h-3 w-3" />
-                                    <span className="text-[10px] font-black uppercase tracking-tighter">Calibrazione Finale</span>
-                                </div>
-                                <p className="text-xl font-black text-foreground tabular-nums tracking-tighter">{activeScenario.config.savingsMap.superfluous}%</p>
-                                <p className="text-[10px] text-muted-foreground leading-tight italic font-medium">
-                                    Risparmio massimo suggerito per proteggere il tuo cuscino finanziario.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="mt-6 flex items-start gap-2 p-3 rounded-xl bg-white/40 dark:bg-black/20 border border-primary/5">
-                            <Info className="h-3 w-3 text-primary shrink-0 mt-0.5" />
-                            <p className="text-[10px] text-muted-foreground italic leading-relaxed font-medium">
-                                <strong>Nota di Trasparenza:</strong> Numa non applica mai regole generiche. Questo piano è l&apos;adattamento unico della tua storia reale: abbiamo calibrato l&apos;intensità del Ritmo sulla tua stabilità e sui tuoi margini effettivi, per proteggere sempre la tua tranquillità finanziaria.
-                            </p>
-                        </div>
-                    </div>
-                )}
+            {/* The Numa Engine - Visual Logic Legend (Centralized) */}
+            <div className="mt-12 mb-8">
+                <NumaEngineCard
+                    title="Il Metodo Numa"
+                    icon={Compass}
+                    steps={[
+                        {
+                            icon: CheckCircle2,
+                            colorClass: "text-primary",
+                            bgClass: "bg-primary/10",
+                            stepLabel: "1. Passato Reale",
+                            title: "Analisi Transazioni",
+                            description: "Numa scansiona la tua storia vera per capire quanto guadagni e spendi realmente ogni mese."
+                        },
+                        {
+                            icon: Sparkles,
+                            colorClass: "text-amber-500",
+                            bgClass: "bg-amber-500/10",
+                            stepLabel: "2. Calibrazione Adattiva",
+                            title: "Il tuo Ritmo",
+                            description: "Numa calibra l'intensità del taglio sulla tua \"elasticità\": se hai margine spinge di più, se sei al limite ti protegge."
+                        },
+                        {
+                            icon: Target,
+                            colorClass: "text-emerald-500",
+                            bgClass: "bg-emerald-500/10",
+                            stepLabel: "3. Futuro Stimato",
+                            title: "La Proiezione",
+                            description: "Numa calcola quanta strada puoi fare con quel carburante. Più lontano è l'obiettivo, più tempo servirà."
+                        }
+                    ]}
+                    certificationTitle="Certificazione Adaptive Core"
+                    certificationSubtitle="Ogni calcolo è verificato in locale sulla tua storia creditizia reale."
+                    transparencyNote="Numa non applica mai regole generiche. Questo piano è l'adattamento unico della tua storia reale: abbiamo calibrato l'intensità del Ritmo sulla tua stabilità e sui tuoi margini effettivi, per proteggere sempre la tua tranquillità finanziaria."
+                    auditStats={calibration ? [
+                        {
+                            label: "Profondità Audit",
+                            value: "Ultimi 6 Mesi",
+                            subValue: `Scansione integrale di ${activeScenario?.config.label === "Nessun Ritmo" ? "tutte le" : "ogni singola"} transazione precedente.`
+                        },
+                        {
+                            label: "Stabilità Rilevata",
+                            value: `${(calibration.stabilityFactor * 100).toFixed(1)}%`,
+                            subValue: `Basato su una volatilità di ${formatCents(calibration.volatilityCents, currency, locale)}/mese.`
+                        },
+                        {
+                            label: "Elasticità (Extra)",
+                            value: `${(calibration.elasticityIndex * 100).toFixed(1)}%`,
+                            subValue: "Quota di spese \"non essenziali\" che il Core può manovrare in sicurezza."
+                        },
+                        {
+                            label: "Calibrazione Finale",
+                            value: `${activeScenario?.config.savingsMap.superfluous}%`,
+                            subValue: "Risparmio massimo suggerito per proteggere il tuo cuscino finanziario."
+                        }
+                    ] : undefined}
+                />
             </div>
 
             {/* Contextual Warning if needed */}

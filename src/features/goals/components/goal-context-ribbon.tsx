@@ -73,76 +73,76 @@ export function GoalContextRibbon({
 
                 {/* 1. GOAL SELECTION & TARGET (Left Group) */}
                 <div className="flex items-center gap-3 w-full md:w-auto">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
+                    {/* Visual Pill Container (UBI Standard) */}
+                    <div className="flex items-center h-12 rounded-xl bg-white/40 dark:bg-white/5 backdrop-blur-xl border border-white/20 shadow-sm focus-within:ring-2 ring-primary/20 transition-all md:min-w-[280px]">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <button
+                                    className="flex items-center gap-3 px-3 h-full hover:bg-white/90 dark:hover:bg-slate-800/90 transition-all flex-1 min-w-0 rounded-l-xl group border-r border-border/20"
+                                >
+                                    <div className="flex items-center gap-3 text-left min-w-0">
+                                        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 flex items-center justify-center group-hover:from-emerald-500/30 group-hover:to-emerald-600/20 transition-all shrink-0">
+                                            <Target className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                                        </div>
+                                        <div className="flex flex-col min-w-0">
+                                            <span className="text-[9px] uppercase font-bold text-muted-foreground/70 tracking-widest leading-none mb-0.5">Obiettivo</span>
+                                            <span className="text-sm font-bold truncate text-foreground">
+                                                {activeGoal ? activeGoal.title : "Seleziona..."}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <ChevronDown className="h-4 w-4 ml-auto text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
+                                </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" className="w-[280px] p-2 space-y-1">
+                                <DropdownMenuLabel className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider px-2">I tuoi Obiettivi</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                {portfolio.goals.map(g => (
+                                    <DropdownMenuItem
+                                        key={g.id}
+                                        onClick={() => onSelectGoal(g.id)}
+                                        className={cn(
+                                            "flex items-center gap-3 p-3 rounded-lg cursor-pointer",
+                                            activeGoal?.id === g.id ? "bg-emerald-50 dark:bg-emerald-900/20" : ""
+                                        )}
+                                    >
+                                        <div className={cn(
+                                            "h-2 w-2 rounded-full",
+                                            activeGoal?.id === g.id ? "bg-emerald-500" : "bg-muted-foreground/30"
+                                        )} />
+                                        <div className="flex flex-col flex-1">
+                                            <span className={cn("font-bold", activeGoal?.id === g.id ? "text-emerald-700 dark:text-emerald-400" : "")}>{g.title}</span>
+                                            <span className="text-[10px] font-bold text-muted-foreground/60 tabular-nums uppercase tracking-wider">{formatCents(g.targetCents, currency, locale)}</span>
+                                        </div>
+                                        {activeGoal?.id === g.id && <Check className="h-4 w-4 text-emerald-500" />}
+                                    </DropdownMenuItem>
+                                ))}
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                    onClick={() => {
+                                        onAddGoal()
+                                        setTimeout(() => setIsEditSheetOpen(true), 100)
+                                    }}
+                                    className="p-3 font-bold text-indigo-600 dark:text-indigo-400 cursor-pointer justify-center hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
+                                >
+                                    <Plus className="h-4 w-4 mr-2" /> Nuovo Obiettivo
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
+                        {/* Dedicated Edit Button */}
+                        {activeGoal && (
                             <Button
                                 variant="ghost"
-                                className="h-12 rounded-xl px-3 flex items-center gap-3 bg-white/60 dark:bg-slate-900/60 hover:bg-white/90 dark:hover:bg-slate-800/90 border border-border/30 hover:border-border/60 transition-all flex-1 md:flex-none md:min-w-[260px] justify-between group shadow-sm"
+                                size="icon"
+                                onClick={() => setIsEditSheetOpen(true)}
+                                className="h-full w-10 rounded-l-none rounded-r-xl hover:bg-white/90 dark:hover:bg-slate-800/90 text-muted-foreground hover:text-foreground transition-colors"
+                                title="Modifica obiettivo"
                             >
-                                <div className="flex items-center gap-3 text-left">
-                                    <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 flex items-center justify-center group-hover:from-emerald-500/30 group-hover:to-emerald-600/20 transition-all shrink-0">
-                                        <Target className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                                    </div>
-                                    <div className="flex flex-col min-w-0">
-                                        <span className="text-[9px] uppercase font-bold text-muted-foreground/70 tracking-widest">Obiettivo</span>
-                                        <span className="text-sm font-bold truncate max-w-[140px] text-foreground">
-                                            {activeGoal ? activeGoal.title : "Seleziona..."}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    {activeGoal && (
-                                        <div
-                                            role="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                setIsEditSheetOpen(true)
-                                            }}
-                                            className="h-6 w-6 rounded-md hover:bg-black/5 dark:hover:bg-white/10 flex items-center justify-center transition-colors"
-                                        >
-                                            <Pencil className="h-3 w-3 text-muted-foreground" />
-                                        </div>
-                                    )}
-                                    <ChevronDown className="h-4 w-4 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
-                                </div>
+                                <Pencil className="h-3.5 w-3.5" />
                             </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-[280px] p-2 space-y-1">
-                            <DropdownMenuLabel className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider px-2">I tuoi Obiettivi</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            {portfolio.goals.map(g => (
-                                <DropdownMenuItem
-                                    key={g.id}
-                                    onClick={() => onSelectGoal(g.id)}
-                                    className={cn(
-                                        "flex items-center gap-3 p-3 rounded-lg cursor-pointer",
-                                        activeGoal?.id === g.id ? "bg-emerald-50 dark:bg-emerald-900/20" : ""
-                                    )}
-                                >
-                                    <div className={cn(
-                                        "h-2 w-2 rounded-full",
-                                        activeGoal?.id === g.id ? "bg-emerald-500" : "bg-muted-foreground/30"
-                                    )} />
-                                    <div className="flex flex-col flex-1">
-                                        <span className={cn("font-bold", activeGoal?.id === g.id ? "text-emerald-700 dark:text-emerald-400" : "")}>{g.title}</span>
-                                        <span className="text-[10px] font-bold text-muted-foreground/60 tabular-nums uppercase tracking-wider">{formatCents(g.targetCents, currency, locale)}</span>
-                                    </div>
-                                    {activeGoal?.id === g.id && <Check className="h-4 w-4 text-emerald-500" />}
-                                </DropdownMenuItem>
-                            ))}
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                                onClick={() => {
-                                    onAddGoal()
-                                    setTimeout(() => setIsEditSheetOpen(true), 100)
-                                }}
-                                className="p-3 font-bold text-indigo-600 dark:text-indigo-400 cursor-pointer justify-center hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
-                            >
-                                <Plus className="h-4 w-4 mr-2" /> Nuovo Obiettivo
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-
+                        )}
+                    </div>
                     {activeGoal && (
                         <>
                             <div className="h-8 w-px bg-border/40 hidden md:block mx-2" />

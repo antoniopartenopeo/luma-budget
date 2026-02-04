@@ -152,7 +152,7 @@ export function AdvancedOptimizerSheet({
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent className="sm:max-w-lg p-0 overflow-hidden flex flex-col border-none glass-chrome">
-                <SheetHeader className="p-6 pb-4 border-b border-white/20 shrink-0">
+                <SheetHeader className="p-6 pb-4 border-b border-white/20 shrink-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl">
                     <div className="flex items-center gap-4">
                         <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
                             <Settings2 className="h-6 w-6 text-primary" />
@@ -259,7 +259,7 @@ export function AdvancedOptimizerSheet({
                     </div>
                 </div>
 
-                <div className="shrink-0 p-6 bg-white/40 dark:bg-white/5 border-t border-white/20 backdrop-blur-md">
+                <div className="shrink-0 p-6 bg-white/60 dark:bg-slate-900/60 border-t border-white/20 backdrop-blur-xl">
                     <Button onClick={handleApply} className="w-full h-12 font-bold rounded-xl shadow-lg shadow-primary/20">
                         Applica Scenario
                     </Button>

@@ -58,9 +58,7 @@ export function MacroSection({
             <Card
                 data-testid="macro-card"
                 className={cn(
-                    "relative border-none p-1 rounded-[2.5rem] bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl transition-all duration-500 overflow-hidden",
-                    "shadow-xl dark:shadow-2xl dark:shadow-primary/5",
-                    "dark:ring-1 dark:ring-white/[0.08]",
+                    "relative border-none p-1 rounded-[2.5rem] glass-panel transition-all duration-500 overflow-hidden",
                     isWarning && "shadow-[0_0_40px_-10px_rgba(251,191,36,0.2)] ring-1 ring-amber-500/20",
                     isCritical && "shadow-[0_0_40px_-10px_rgba(244,63,94,0.3)] ring-1 ring-rose-500/20"
                 )}>
@@ -74,17 +72,8 @@ export function MacroSection({
                     </div>
                 )}
 
-                {/* Ambient Glows */}
-                {(isPremium || isWarning || isCritical) && (
-                    <div
-                        className={cn(
-                            "absolute top-[-20%] right-[-20%] w-[400px] h-[400px] blur-[120px] rounded-full pointer-events-none opacity-60 animate-pulse-soft",
-                            isWarning && "bg-amber-500/15",
-                            isCritical && "bg-rose-500/15",
-                            isPremium && !isWarning && !isCritical && "bg-primary/10"
-                        )}
-                    />
-                )}
+                {/* Background Slot (Radar, Grids, etc) removed for cleaner dark mode or kept for premium? */}
+                {/* User wants zero 'macchie', removing Ambient Glows */}
 
                 {(title || description || headerActions) && (
                     <CardHeader className="relative z-10 px-4 sm:px-8 pt-6 sm:pt-8 pb-2">

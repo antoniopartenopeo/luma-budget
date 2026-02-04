@@ -12,9 +12,10 @@ import Link from "next/link"
 
 interface SmartKpiCardProps extends KpiCardProps {
     context?: ContextMessage
+    badge?: React.ReactNode
 }
 
-export function SmartKpiCard({ context, ...props }: SmartKpiCardProps) {
+export function SmartKpiCard({ context, badge, ...props }: SmartKpiCardProps) {
     const [isOpen, setIsOpen] = useState(false)
 
     // Determine Sparkle Color based on level
@@ -39,7 +40,7 @@ export function SmartKpiCard({ context, ...props }: SmartKpiCardProps) {
 
     return (
         <div className="relative h-full group">
-            <KpiCard {...props} />
+            <KpiCard badge={badge} {...props} />
 
             {/* SPARKLE TRIGGER */}
             {context && !isOpen && (

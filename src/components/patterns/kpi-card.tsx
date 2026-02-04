@@ -12,6 +12,7 @@ export type KpiTone = "positive" | "negative" | "neutral" | "warning"
 export interface KpiCardProps {
     title: string
     subtitle?: string
+    badge?: React.ReactNode
     value: string | number
     change?: string
     trend?: "up" | "down" | "neutral" | "warning"
@@ -35,6 +36,7 @@ import { AnimatedNumber } from "@/components/ui/animated-number"
 export function KpiCard({
     title,
     subtitle,
+    badge,
     value,
     change,
     trend,
@@ -83,11 +85,16 @@ export function KpiCard({
                 onClick={onClick}
             >
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <div>
+                    <div className="flex flex-col gap-1.5">
                         <CardTitle className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                             {title}
                         </CardTitle>
-                        {subtitle && <p className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider mt-0.5">{subtitle}</p>}
+                        {badge && (
+                            <div className="flex">
+                                {badge}
+                            </div>
+                        )}
+                        {subtitle && <p className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">{subtitle}</p>}
                     </div>
                     <div className={cn(
                         "h-8 w-8 rounded-full flex items-center justify-center transition-colors duration-300",

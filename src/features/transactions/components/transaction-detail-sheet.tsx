@@ -117,9 +117,9 @@ function TransactionDetailSheetContent({
                         setShowCloseConfirm(true);
                     }
                 }}
-                className="sm:max-w-md p-0 overflow-hidden flex flex-col border-none bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl shadow-2xl"
+                className="sm:max-w-md p-0 overflow-hidden flex flex-col border-none glass-chrome shadow-2xl"
             >
-                <SheetHeader className="p-6 pb-4 border-b border-white/20 shrink-0">
+                <SheetHeader className="p-6 pb-4 border-b border-white/20 shrink-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl">
                     <div className="flex items-center gap-4">
                         {isEditing ? (
                             <Button
@@ -227,7 +227,7 @@ function TransactionDetailSheetContent({
                 </div>
 
                 {!isEditing && (
-                    <div className="shrink-0 p-6 bg-white/40 dark:bg-white/5 border-t border-white/20 backdrop-blur-md">
+                    <div className="shrink-0 p-6 bg-white/60 dark:bg-slate-900/60 border-t border-white/20 backdrop-blur-xl">
                         <div className="grid grid-cols-2 gap-3">
                             <Button
                                 variant="outline"

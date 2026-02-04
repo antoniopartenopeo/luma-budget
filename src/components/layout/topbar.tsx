@@ -76,7 +76,7 @@ export function TopBar() {
                             </Button>
                         )}
 
-                        <div className="flex items-center bg-white/40 dark:bg-white/5 rounded-full p-1 border border-white/20 dark:border-white/10 backdrop-blur-sm shadow-sm hover:bg-white/60 dark:hover:bg-white/10 transition-all">
+                        <div className="flex items-center glass-card rounded-full p-1 bg-white/40 dark:bg-white/5 transition-all">
                             <Button
                                 variant="ghost"
                                 size="icon"

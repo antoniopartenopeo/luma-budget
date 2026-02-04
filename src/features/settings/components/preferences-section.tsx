@@ -79,12 +79,7 @@ export function PreferencesSection() {
 
     return (
         <MacroSection
-            title={
-                <div className="flex items-center gap-2 text-2xl font-bold tracking-tight">
-                    <Settings2 className="h-6 w-6" />
-                    Preferenze
-                </div>
-            }
+            title="Preferenze"
             description="Personalizza aspetto e comportamento dell'applicazione."
             headerActions={
                 <div className="text-sm font-normal">

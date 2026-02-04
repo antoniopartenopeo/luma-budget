@@ -93,7 +93,7 @@ export function InsightCard({ insight }: InsightCardProps) {
                         {insight.metrics && (
                             <div className="grid grid-cols-2 xs:grid-cols-3 gap-3">
                                 {insight.metrics.currentCents !== undefined && (
-                                    <div className="p-3 rounded-xl bg-muted/30 border border-border/50 space-y-1">
+                                    <div className="p-3 rounded-xl glass-card bg-white/40 dark:bg-white/5 space-y-1">
                                         <span className="text-[10px] uppercase font-bold text-muted-foreground/70 tracking-wider">Attuale</span>
                                         <div className="font-mono text-sm sm:text-base font-black tracking-tighter tabular-nums">
                                             {formatCents(insight.metrics.currentCents)}
@@ -101,7 +101,7 @@ export function InsightCard({ insight }: InsightCardProps) {
                                     </div>
                                 )}
                                 {insight.metrics.baselineCents !== undefined && insight.metrics.baselineCents > 0 && (
-                                    <div className="p-3 rounded-xl bg-muted/30 border border-border/50 space-y-1">
+                                    <div className="p-3 rounded-xl glass-card bg-white/40 dark:bg-white/5 space-y-1">
                                         <span className="text-[10px] uppercase font-bold text-muted-foreground/70 tracking-wider">Media</span>
                                         <div className="font-mono text-sm sm:text-base font-black tracking-tighter tabular-nums text-muted-foreground">
                                             {formatCents(insight.metrics.baselineCents)}
@@ -110,8 +110,8 @@ export function InsightCard({ insight }: InsightCardProps) {
                                 )}
                                 {insight.metrics.deltaCents !== undefined && (
                                     <div className={cn(
-                                        "p-3 rounded-xl border border-border/50 space-y-1",
-                                        insight.metrics.deltaCents > 0 ? "bg-rose-500/5" : "bg-emerald-500/5"
+                                        "p-3 rounded-xl glass-card border-none space-y-1",
+                                        insight.metrics.deltaCents > 0 ? "bg-rose-500/5 ring-1 ring-rose-500/20" : "bg-emerald-500/5 ring-1 ring-emerald-500/20"
                                     )}>
                                         <span className="text-[10px] uppercase font-bold text-muted-foreground/70 tracking-wider">Variazione</span>
                                         <div className={cn(
@@ -136,7 +136,7 @@ export function InsightCard({ insight }: InsightCardProps) {
                                         const impactPct = (driver.amountCents / maxAmount) * 100
 
                                         return (
-                                            <div key={driver.id} className="group/driver relative overflow-hidden p-3 rounded-2xl bg-muted/20 hover:bg-muted/40 transition-all duration-300">
+                                            <div key={driver.id} className="group/driver relative overflow-hidden p-3 rounded-2xl glass-card border-white/10 hover:bg-white/60 dark:hover:bg-white/10 transition-all duration-300">
                                                 {/* Impact Bar Background */}
                                                 <div
                                                     className={cn(

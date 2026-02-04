@@ -44,12 +44,19 @@ Each feature contains its own:
 *   `config/`: Constants and definitions.
 *   `hooks/`: React state logic.
 
-## 3. Data Flow
+### Narration & Orchestration Layer (`src/domain/narration`)
+The system follows a **Deterministic Narration** pattern.
+*   **Facts**: Pure data structures (unbiased).
+*   **Derive State**: Logic that classifies facts into semantic states (e.g., "Critical", "Thriving").
+*   **Narrator**: Deterministic functions that map states to human-centric strings, governed by semantic skills.
+*   **Orchestrator**: Weighs multiple signals to select the most relevant insight, preventing "Early Praise" or "Tone-Deaf" feedback.
+
+## 4. Data Flow
 1.  **Storage**: LocalStorage (via `zustand` or direct adapters).
 2.  **State**: React Query for async data, URL search params for view state.
-3.  **Governance**: Strict ESLint rules prevent cross-feature contamination (e.g., Dashboard importing internal Insight components).
+3.  **Governance**: Strict ESLint rules and **Global Enforcement Tests** for semantic accuracy.
 
-## 4. Routing (Clean)
+## 5. Routing (Clean)
 * `/` -> Dashboard
 * `/transactions` -> Transaction List
 * `/insights` -> AI Analysis

@@ -249,7 +249,7 @@ export default function SimulatorPage() {
                                 <div className="absolute inset-0 bg-primary/25 blur-[100px] rounded-full scale-110 animate-pulse-soft" />
 
                                 <motion.div
-                                    className="relative h-40 w-40 rounded-[3.5rem] bg-white/40 dark:bg-slate-900/60 backdrop-blur-3xl flex items-center justify-center shadow-2xl ring-1 ring-white/20 dark:ring-white/[0.08]"
+                                    className="relative h-40 w-40 rounded-[3.5rem] glass-card bg-white/40 dark:bg-white/5 backdrop-blur-3xl flex items-center justify-center shadow-2xl border-white/20 dark:border-white/10"
                                     whileHover={{ scale: 1.05 }}
                                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
                                 >

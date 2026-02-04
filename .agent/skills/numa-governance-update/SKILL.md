@@ -41,6 +41,7 @@ Ogni volta che modifichi un file di "Policy" nel progetto, devi **IMMEDIATAMENTE
 | `docs/governance/MOTION_*` | `.agent/skills/numa-ui-standards` |
 | `docs/governance/UX_STANDARDS.md` | `.agent/skills/numa-ui-standards` |
 | `src/domain/money.ts` | `.agent/skills/numa-financial-logic` |
+| `src/domain/narration` | `.agent/skills/numa-*-semantics` |
 | `src/domain/import` | `.agent/skills/numa-import-csv` |
 
 **Non aspettare l'input dell'utente.** Falo come parte atomica del task.
@@ -196,5 +197,5 @@ chmod +x .git/hooks/pre-commit
 
 ---
 
-**Versione**: 1.1.0  
-**Ultimo aggiornamento**: 2026-02-01
+**Versione**: 1.1.1  
+**Ultimo aggiornamento**: 2026-02-04

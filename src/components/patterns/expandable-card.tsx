@@ -55,8 +55,8 @@ export function ExpandableCard({
     return (
         <Card
             className={cn(
-                "group relative overflow-hidden rounded-[2.5rem] border-none bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl transition-all duration-500",
-                isExpanded ? "shadow-2xl ring-1 ring-primary/20" : "shadow-xl hover:shadow-2xl hover:bg-white/70 dark:hover:bg-slate-900/70",
+                "group relative overflow-hidden rounded-[2.5rem] border-none glass-panel transition-all duration-500",
+                isExpanded ? "shadow-2xl ring-1 ring-primary/20" : "hover:shadow-2xl hover:bg-white/70 dark:hover:bg-slate-900/70",
                 className
             )}
         >

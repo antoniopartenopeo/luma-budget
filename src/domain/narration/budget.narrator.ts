@@ -28,33 +28,33 @@ export function narrateBudget(
     switch (state) {
         case "early_uncertain":
             return {
-                text: "Il mese è appena iniziato. I dati attuali non sono ancora sufficienti per una proiezione affidabile dell'andamento.",
+                text: "Il mese è appena iniziato. I dati attuali non sono ancora sufficienti per una proiezione affidabile del ritmo di spesa.",
                 shortText: "Analisi in corso"
             }
 
         case "at_risk":
             return {
-                text: "Il ritmo di spesa attuale suggerisce cautela: continuando così, potresti superare il budget entro fine mese.",
+                text: "Il ritmo di spesa attuale suggerisce cautela: continuando così, il traguardo potrebbe richiedere più tempo del previsto.",
                 shortText: "Ritmo elevato"
             }
 
         case "over_budget":
             const overrunAmount = facts.spentCents - facts.limitCents
             return {
-                text: `Hai superato il budget di ${formatCurrency(overrunAmount)}. Questo periodo è oltre il limite impostato.`,
-                shortText: "Budget superato"
+                text: `Hai superato il ritmo pianificato di ${formatCurrency(overrunAmount)}. Questo andamento è oltre la soglia ottimale.`,
+                shortText: "Fuori ritmo"
             }
 
         case "on_track":
             return {
-                text: "Le spese sono in linea con la programmazione temporale del mese. Stai rispettando il ritmo pianificato.",
+                text: "Le spese sono in linea con la programmazione temporale del mese. Stai rispettando il ritmo di crocierà.",
                 shortText: "In linea"
             }
 
         case "calm":
         default:
             return {
-                text: "Non ci sono segnali significativi o mancano dati sufficienti per elaborare un'analisi del budget al momento.",
+                text: "Non ci sono segnali significativi o mancano dati sufficienti per elaborare un'analisi del ritmo al momento.",
                 shortText: "Nessun segnale"
             }
     }

@@ -221,12 +221,7 @@ export function CategoriesSection() {
         <>
 
             <MacroSection
-                title={
-                    <div className="flex items-center gap-2 text-2xl font-bold tracking-tight">
-                        <Database className="h-6 w-6" />
-                        Categorie
-                    </div>
-                }
+                title="Categorie"
                 description="Organizza le tue entrate e uscite"
                 headerActions={
                     <Button onClick={handleCreateClick} size="sm" className="w-full sm:w-auto gap-2 rounded-full font-bold shadow-lg shadow-primary/20">

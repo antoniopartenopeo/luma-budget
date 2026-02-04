@@ -1,6 +1,6 @@
 import * as React from "react"
 import { motion, Variants } from "framer-motion"
-import { Sparkles, TrendingUp, Lightbulb, ArrowRight, Wallet } from "lucide-react"
+import { Sparkles, TrendingUp, Lightbulb, ArrowRight, Wallet, BrainCircuit, LineChart, Search, Lock } from "lucide-react"
 import { MacroSection } from "@/components/patterns/macro-section"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -10,9 +10,10 @@ import { useAIAdvisor } from "../use-ai-advisor"
 import { useOrchestratedInsights } from "../use-orchestrated-insights"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { SubSectionCard } from "@/components/patterns/sub-section-card"
+import { NumaEngineCard } from "@/components/patterns/numa-engine-card"
 
 export function AIAdvisorCard() {
-    const { forecast, subscriptions, isLoading: aiLoading } = useAIAdvisor()
+    const { forecast, facts, subscriptions, isLoading: aiLoading } = useAIAdvisor()
     const { orchestration, isLoading: orchestratorLoading } = useOrchestratedInsights()
     const { currency, locale } = useCurrency()
 
@@ -86,28 +87,8 @@ export function AIAdvisorCard() {
         <MacroSection
             variant="premium"
             status={advisorStatus}
-            title={
-                <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-2xl bg-background/80 dark:bg-slate-800 border border-border/50 flex items-center justify-center shadow-sm relative group overflow-hidden">
-                        <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <Sparkles className="h-6 w-6 text-primary fill-primary/20 relative z-10" />
-                    </div>
-                    <div className="flex items-center gap-3">
-                        Numa AI Advisor
-                        <Badge
-                            variant="secondary"
-                            className="bg-primary/10 text-primary border-primary/20 text-[10px] px-2 h-6 font-bold uppercase animate-pulse-soft"
-                        >
-                            BETA
-                        </Badge>
-                    </div>
-                </div>
-            }
-            description={
-                <span className="text-muted-foreground text-sm font-bold uppercase tracking-widest block mt-1">
-                    Financial Intelligence
-                </span>
-            }
+            title="Numa AI Advisor"
+            description="Financial Intelligence"
         >
             <motion.div
                 variants={containerVariants}
@@ -171,6 +152,65 @@ export function AIAdvisorCard() {
                         </SubSectionCard>
                     </motion.div>
                 )}
+
+                {/* NEW: Numa Engine Card (Centralized) */}
+                <motion.div variants={itemVariants}>
+                    <NumaEngineCard
+                        title="Il Motore Numa AI"
+                        icon={BrainCircuit}
+                        className="rounded-[2.5rem]"
+                        steps={[
+                            {
+                                icon: LineChart,
+                                colorClass: "text-indigo-500",
+                                bgClass: "bg-indigo-500/10",
+                                stepLabel: "1. Previsione Ponderata",
+                                title: "Algoritmo Adattivo",
+                                description: "Diamo peso 50/30/20 ai mesi recenti per anticipare i tuoi cambiamenti di vita."
+                            },
+                            {
+                                icon: Search,
+                                colorClass: "text-emerald-500",
+                                bgClass: "bg-emerald-500/10",
+                                stepLabel: "2. Scansione Pattern",
+                                title: "Rilevamento Servizi",
+                                description: "Identifichiamo abbonamenti e rincari (>5%) analizzando la ricorrenza esatta."
+                            },
+                            {
+                                icon: Lock,
+                                colorClass: "text-slate-500",
+                                bgClass: "bg-slate-500/10",
+                                stepLabel: "3. Privacy Totale",
+                                title: "Analisi Locale",
+                                description: "I tuoi dati non lasciano mai il dispositivo. L'intelligenza gira 'on-edge'."
+                            }
+                        ]}
+                        auditLabel="Vedi Audit Tecnico"
+                        transparencyNote="I tuoi dati finanziari vengono analizzati esclusivamente sul dispositivo. Nessuna informazione personale viene inviata ai server cloud per questa analisi."
+                        auditStats={[
+                            {
+                                label: "Pesatura Algoritmo",
+                                value: "50% • 30% • 20%",
+                                subValue: "Distribuzione del peso sui 3 mesi più recenti."
+                            },
+                            {
+                                label: "Precisione Cronologica",
+                                value: "±1 Giorno",
+                                subValue: "Tolleranza per il rilevamento ricorrenze mensili."
+                            },
+                            {
+                                label: "Compute Layer",
+                                value: "On-Device",
+                                subValue: "Esecuzione locale isolata senza chiamate API esterne."
+                            },
+                            ...(facts ? [{
+                                label: "Data Points",
+                                value: `${facts.historicalMonthsCount} Mesi`,
+                                subValue: "Profondità storica utilizzata per la proiezione attuale."
+                            }] : [])
+                        ]}
+                    />
+                </motion.div>
 
                 {/* 3. Smart Tip (Orchestrated) */}
                 {primary && (

@@ -132,12 +132,7 @@ export function BackupSection() {
         <>
 
             <MacroSection
-                title={
-                    <div className="flex items-center gap-2 text-2xl font-bold tracking-tight">
-                        <Download className="h-6 w-6" />
-                        Backup & Ripristino
-                    </div>
-                }
+                title="Backup & Ripristino"
                 description={
                     <>
                         Esporta i tuoi dati in un file JSON o importa un backup esistente.

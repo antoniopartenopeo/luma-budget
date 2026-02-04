@@ -83,7 +83,7 @@ export function useAIAdvisor() {
             }
         })
 
-        // 2. Forecasting Logic
+        // 2. Forecasting Logic (Weighted Moving Average)
         const last3Months = []
         const now = new Date()
         for (let i = 1; i <= 3; i++) {
@@ -106,9 +106,54 @@ export function useAIAdvisor() {
         const historicalMonthsWithData = monthlyStats.filter(m => m.hasData).length
         let facts: AdvisorFacts | null = null
 
+        // Price Hike Detection (Subscription Analysis)
+        const priceHikes: { name: string, diff: number, percent: number }[] = []
+        detectedSubscriptions.forEach(sub => {
+            // Heuristic: Check if the LATEST transaction for this sub is significantly higher (>5%) than the average of previous ones
+            // We need raw transactions for this sub.
+            const subKeyPart = sub.description.toLowerCase() // Simple match
+            // Note: In a real app we would use exact ID matching or more robust correlation. 
+            // Here we re-scan expenses for this description.
+            const subTx = expenses.filter(t => t.description.toLowerCase().includes(subKeyPart)).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+
+            if (subTx.length >= 2) {
+                const latestAmount = Math.abs(subTx[0].amountCents)
+                const previousAmounts = subTx.slice(1).map(t => Math.abs(t.amountCents))
+                const avgPrevious = previousAmounts.reduce((a, b) => a + b, 0) / previousAmounts.length
+
+                if (latestAmount > avgPrevious * 1.05 && (latestAmount - avgPrevious) > 100) { // > 5% AND > €1.00
+                    priceHikes.push({
+                        name: sub.description,
+                        diff: (latestAmount - avgPrevious),
+                        percent: ((latestAmount - avgPrevious) / avgPrevious) * 100
+                    })
+                }
+            }
+        })
+
         if (historicalMonthsWithData > 0) {
-            const avgIncomeCents = Math.round(monthlyStats.reduce((s, m) => s + m.income, 0) / historicalMonthsWithData)
-            const avgExpensesCents = Math.round(monthlyStats.reduce((s, m) => s + m.expenses, 0) / historicalMonthsWithData)
+            // WEIGHTED AVERAGE LOGIC
+            // Weigh recent months more heavily: 
+            // M-1 (Last Month): 50%
+            // M-2: 30%
+            // M-3: 20%
+            // If missing data, fallback to simple average.
+
+            let avgIncomeCents = 0
+            let avgExpensesCents = 0
+
+            if (historicalMonthsWithData === 3) {
+                // Month 0 is M-1 (most recent in our reversed array construction? No, wait. 
+                // last3Months construction: i=1 is M-1.
+                // monthlyStats[0] corresponds to M-1.
+                avgIncomeCents = Math.round(monthlyStats[0].income * 0.5 + monthlyStats[1].income * 0.3 + monthlyStats[2].income * 0.2)
+                avgExpensesCents = Math.round(monthlyStats[0].expenses * 0.5 + monthlyStats[1].expenses * 0.3 + monthlyStats[2].expenses * 0.2)
+            } else {
+                // Simple Average fallback
+                avgIncomeCents = Math.round(monthlyStats.reduce((s, m) => s + m.income, 0) / historicalMonthsWithData)
+                avgExpensesCents = Math.round(monthlyStats.reduce((s, m) => s + m.expenses, 0) / historicalMonthsWithData)
+            }
+
             const predictedSavingsCents = avgIncomeCents - avgExpensesCents
 
             facts = {
@@ -117,7 +162,9 @@ export function useAIAdvisor() {
                 deltaCents: predictedSavingsCents,
                 historicalMonthsCount: historicalMonthsWithData,
                 subscriptionCount: detectedSubscriptions.length,
-                subscriptionTotalYearlyCents
+                subscriptionTotalYearlyCents,
+                // @ts-ignore - extending type implicitly for internal use if needed, or we rely on Orchestrator to recalculate
+                priceHikesCount: priceHikes.length
             }
         } else {
             // Cold Start: Use current month
@@ -155,7 +202,8 @@ export function useAIAdvisor() {
         return {
             facts,
             forecast,
-            subscriptions: detectedSubscriptions
+            subscriptions: detectedSubscriptions,
+            priceHikes
         }
     }, [transactions, isDataLoading])
 
@@ -166,6 +214,7 @@ export function useAIAdvisor() {
             facts: null,
             forecast: null,
             subscriptions: [],
+            priceHikes: [],
             isLoading: true
         }
     }

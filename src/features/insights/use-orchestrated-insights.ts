@@ -16,7 +16,8 @@ import {
 import { getCurrentPeriod } from "./utils"
 
 export function useOrchestratedInsights(period: string = getCurrentPeriod()) {
-    const { facts: advisorFacts, subscriptions, isLoading: aiLoading } = useAIAdvisor()
+    // @ts-ignore - implicit return extension
+    const { facts: advisorFacts, subscriptions, priceHikes = [], isLoading: aiLoading } = useAIAdvisor()
     const { insights, isLoading: insightsLoading } = useInsights({ period })
     const { data: trendData, isLoading: trendLoading } = useTrendData()
 
@@ -41,14 +42,25 @@ export function useOrchestratedInsights(period: string = getCurrentPeriod()) {
             })
         }
 
-        // 2. Map Subscriptions (from useAIAdvisor)
-        // Subscription text is now handled by advisor narrator if relevant, OR we can keep a separate signal.
-        // The original logic had a specific subscription tip.
-        // Let's create a specific subscription signal if impact is high.
-        if (subscriptions.length > 0 && advisorFacts && advisorFacts.subscriptionTotalYearlyCents > 50000) { // > €500
-            // We can use a simple static narration for now or add to advisor narrator. 
-            // The prompt asked to MIGRATE logic. The old logic checked: totalYearly > 500 -> Add Tip.
-            // We'll generate a candidate for this.
+        // 2a. Map Price Hikes (New High Priority)
+        // @ts-ignore
+        const hikes = priceHikes || []
+
+        hikes.forEach((hike: any) => {
+            const diffFormatted = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(hike.diff / 100)
+            candidates.push({
+                id: `hike-${hike.name}`,
+                source: "subscription",
+                scope: "current_period",
+                severity: "high", // High priority!
+                narration: {
+                    text: `Attenzione: rilevato aumento prezzo per ${hike.name}. Paghi ${diffFormatted} in più rispetto alla tua media.`
+                }
+            })
+        })
+
+        // 2b. Map Subscriptions (Standard)
+        if (subscriptions.length > 0 && advisorFacts && advisorFacts.subscriptionTotalYearlyCents > 50000) {
             const totalFormatted = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(advisorFacts.subscriptionTotalYearlyCents / 100)
 
             candidates.push({
@@ -61,6 +73,7 @@ export function useOrchestratedInsights(period: string = getCurrentPeriod()) {
                 }
             })
         }
+
 
         // 3. Map Insights (Budget Risk & Category Spikes)
         insights.forEach(insight => {

@@ -20,6 +20,9 @@ import { macroItemVariants } from "@/components/patterns/macro-section"
 import { generateSmartContext } from "@/features/smart-context/logic/context-engine"
 import { SmartKpiCard } from "@/features/smart-context/components/smart-kpi-card"
 
+import { NumaEngineCard } from "@/components/patterns/numa-engine-card"
+import { Sparkles, BrainCircuit, ShieldCheck, Hourglass, TrendingUp, PiggyBank, Zap } from "lucide-react"
+
 interface DashboardKpiGridProps {
     totalSpent?: number
     netBalance?: number
@@ -29,6 +32,11 @@ interface DashboardKpiGridProps {
     isLoading?: boolean
     filter?: DashboardTimeFilter
     headerActions?: React.ReactNode
+    activeRhythm?: {
+        type: string
+        label: string
+        intensity: number
+    }
 }
 
 export function DashboardKpiGrid({
@@ -39,7 +47,8 @@ export function DashboardKpiGrid({
     uselessSpendPercent,
     isLoading,
     filter,
-    headerActions
+    headerActions,
+    activeRhythm
 }: DashboardKpiGridProps) {
     const router = useRouter()
     const { currency, locale } = useCurrency()
@@ -125,7 +134,7 @@ export function DashboardKpiGrid({
     return (
         <MacroSection
             title="Overview Performance"
-            description={contextText}
+            description={isLoading ? undefined : contextText}
             headerActions={headerActions}
             className="w-full"
         >
@@ -165,25 +174,34 @@ export function DashboardKpiGrid({
                 </motion.div>
                 <motion.div variants={macroItemVariants} className="h-full">
                     <SmartKpiCard
-                        title="Budget Rimanente"
+                        title="Pacing Temporale"
                         value={isLoading ? 0 : (isMonthlyView ? formatValue(budgetRemaining || 0) : "—")}
                         animatedValue={isMonthlyView ? (budgetRemaining || 0) : undefined}
                         formatFn={formatValue}
                         valueClassName={getPrivacyClass(isPrivacyMode)}
                         change={isLoading ? "" : (isMonthlyView && hasBudget ? `${budgetPercent}%` : "")}
                         trend={!isMonthlyView || !hasBudget ? "neutral" : (budgetTone === "positive" ? "up" : "down")}
-                        comparisonLabel={!isMonthlyView ? "Solo in vista Mensile" : (hasBudget ? "Rimanenti nel periodo" : "Imposta un budget")}
+                        comparisonLabel={!isMonthlyView ? "Solo in vista Mensile" : (hasBudget ? "Rimanente nel periodo" : "Imposta un ritmo")}
                         tone={budgetTone}
                         icon={DollarSign}
                         isLoading={isLoading}
                         onClick={isMonthlyView && !hasBudget ? () => router.push("/goals/lab") : undefined}
                         description={isLoading ? undefined : buildNarration("budget", budgetRemaining || 0, budgetTone, budgetPercent)}
                         context={smartContext['budgetRemaining']}
+                        badge={activeRhythm && (
+                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                                <span className="relative flex h-1.5 w-1.5">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                                </span>
+                                {activeRhythm.label}
+                            </span>
+                        )}
                     />
                 </motion.div>
                 <motion.div variants={macroItemVariants} className="h-full">
                     <SmartKpiCard
-                        title="Spese Superflue"
+                        title="Spese Extra"
                         value={isLoading ? 0 : (uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—")}
                         animatedValue={uselessSpendPercent ?? undefined}
                         formatFn={(v) => `${Math.round(v)}%`}
@@ -198,6 +216,51 @@ export function DashboardKpiGrid({
                     />
                 </motion.div>
             </StaggerContainer>
+
+            {/* NUMA ENGINE (Transparency Context) */}
+            <div className="mt-8">
+                <NumaEngineCard
+                    title="Logica Finanziaria Attiva"
+                    icon={BrainCircuit}
+                    className="w-full"
+                    steps={[
+                        {
+                            icon: DollarSign,
+                            colorClass: "text-emerald-500",
+                            bgClass: "bg-emerald-500/10",
+                            stepLabel: "Il Ritmo",
+                            title: "Pacing Dinamico",
+                            description: `La disponibilità mostrata in "Pacing Temporale" non è un limite statico: deriva direttamente dal Piano ${activeRhythm?.label || "Attivo"} scelto nel Laboratorio.`
+                        },
+                        {
+                            icon: PiggyBank,
+                            colorClass: "text-amber-500",
+                            bgClass: "bg-amber-500/10",
+                            stepLabel: "Il Silenzio",
+                            title: "Rilevamento Implicito",
+                            description: "Non serve accantonare fondi manualmente. Se l'andamento delle Spese Extra rallenta, il margine residuo accelera automaticamente il tuo traguardo."
+                        },
+                        {
+                            icon: Hourglass,
+                            colorClass: "text-indigo-500",
+                            bgClass: "bg-indigo-500/10",
+                            stepLabel: "La Proiezione",
+                            title: "Velocità Reale",
+                            description: "La data traguardo non è fissa: si ricalcola ogni giorno in base alla tua reale velocità di crociera e sostenibilità attuale."
+                        }
+                    ]}
+                    auditStats={[
+                        { label: "Piano Attivo", value: activeRhythm?.label || "Standard", subValue: "Configurazione attuale del pacing.", icon: TrendingUp },
+                        { label: "Logica Core", value: "Matematica", subValue: "Algoritmo v2.4 (Deterministico).", icon: BrainCircuit },
+                        { label: "Privacy", value: "Shield On", subValue: "Analisi locale al 100%.", icon: ShieldCheck },
+                        { label: "Analisi", value: "Real-Time", subValue: "Ricalcolo dinamico sui movimenti.", icon: Zap },
+                    ]}
+                    transparencyNote="Numa non utilizza logiche di 'risparmio' punitivo. Osserva il tuo andamento: meno spendi in 'Extra', più la tua velocità aumenta e il traguardo si avvicina in modo naturale."
+                    auditLabel="Dettagli Logica"
+                    certificationTitle="Motore Deterministico"
+                    certificationSubtitle="Analisi basata su Matematica e Privacy"
+                />
+            </div>
         </MacroSection>
     )
 }

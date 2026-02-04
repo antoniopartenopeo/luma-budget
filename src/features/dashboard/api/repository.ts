@@ -8,6 +8,7 @@ import { getCategories } from "@/features/categories/api/repository"
 import { calculateSuperfluousMetrics } from "../../transactions/utils/transactions-logic"
 
 import { sumExpensesInCents, sumIncomeInCents } from "@/domain/money"
+import { getPortfolio } from "@/VAULT/goals/api/goal-repository"
 
 const DEFAULT_USER_ID = "user-1"
 
@@ -23,11 +24,12 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
 
     // 2. Fetch all data
     // In a real app, we would filter in the query, but here we fetch all and filter in memory
-    const [transactions, budgetPlan, categories] = await Promise.all([
+    const [transactions, budgetPlan, categories, portfolio] = await Promise.all([
         fetchTransactions(),
         // Budget logic: always fetch for the "pivot" period (filter.period)
         fetchBudget(DEFAULT_USER_ID, filter.period),
-        getCategories()
+        getCategories(),
+        getPortfolio()
     ])
 
     // 3. Calculate All-Time Net Balance (Global, unfiltered)
@@ -129,6 +131,11 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
             useful: finalUselessPercent !== null ? 100 - finalUselessPercent : 100,
             useless: finalUselessPercent !== null ? finalUselessPercent : 0
         },
-        monthlyExpenses
+        monthlyExpenses,
+        activeRhythm: portfolio?.activeRhythm ? {
+            type: portfolio.activeRhythm.type,
+            label: portfolio.activeRhythm.label,
+            intensity: portfolio.activeRhythm.intensity
+        } : undefined
     }
 }

@@ -41,6 +41,7 @@ export default function DashboardPage() {
           isLoading={isLoading}
           filter={filter}
           headerActions={<DashboardFilterBar filter={filter} onFilterChange={setFilter} />}
+          activeRhythm={data?.activeRhythm}
         />
 
         {/* SUBORDINATE CONTENT */}

@@ -193,6 +193,7 @@ export function AIAdvisorCard() {
                     <NumaEngineCard
                         title="Il Motore Numa AI"
                         icon={BrainCircuit}
+                        audienceHint="Per tester avanzati"
                         className="rounded-[2.5rem]"
                         steps={[
                             {

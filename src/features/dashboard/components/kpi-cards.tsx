@@ -193,6 +193,7 @@ export function DashboardKpiGrid({
                 <NumaEngineCard
                     title="Logica Finanziaria Attiva"
                     icon={BrainCircuit}
+                    audienceHint="Per tester avanzati"
                     className="w-full"
                     steps={[
                         {

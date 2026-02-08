@@ -230,7 +230,14 @@ export default function SimulatorPage() {
             <motion.div variants={macroItemVariants}>
                 <PageHeader
                     title="Financial Lab"
-                    description="Crea obiettivi di risparmio e genera piani d'azione personalizzati per raggiungerli."
+                    description={
+                        <>
+                            Crea obiettivi di risparmio e genera piani d&apos;azione personalizzati per raggiungerli.
+                            <span className="block mt-1 text-[11px] uppercase tracking-wide font-semibold text-amber-700 dark:text-amber-400">
+                                Area laboratorio per tester avanzati
+                            </span>
+                        </>
+                    }
                 />
             </motion.div>
 

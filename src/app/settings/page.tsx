@@ -53,9 +53,9 @@ function SettingsContent() {
                     <Download className="h-4 w-4 hidden xs:block" aria-hidden="true" />
                     <span>Backup</span>
                 </TabsTrigger>
-                <TabsTrigger value="advanced" className="flex-1 gap-2 min-w-[100px] sm:min-w-0" aria-label="Avanzate">
+                <TabsTrigger value="advanced" className="flex-1 gap-2 min-w-[100px] sm:min-w-0" aria-label="Avanzate (sezione tecnica)">
                     <Wrench className="h-4 w-4 hidden xs:block" aria-hidden="true" />
-                    <span>Avanzate</span>
+                    <span>Avanzate (Tech)</span>
                 </TabsTrigger>
             </TabsList>
 

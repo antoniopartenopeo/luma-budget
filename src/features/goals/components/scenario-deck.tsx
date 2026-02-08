@@ -167,6 +167,7 @@ export function ScenarioDeck({
                 <NumaEngineCard
                     title="Il Metodo Numa"
                     icon={Compass}
+                    audienceHint="Per tester avanzati"
                     steps={[
                         {
                             icon: CheckCircle2,

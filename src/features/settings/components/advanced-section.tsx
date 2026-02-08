@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useQueryClient } from "@tanstack/react-query"
-import { Trash2, Database, CheckCircle2, AlertCircle, Loader2, Copy, AlertTriangle } from "lucide-react"
+import { Trash2, Database, CheckCircle2, AlertCircle, Loader2, Copy, AlertTriangle, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
@@ -179,6 +179,14 @@ export function AdvancedSection() {
         <>
             <div className="space-y-6">
                 <div className="space-y-6">
+                    <Alert className="border-amber-500/20 bg-amber-500/5 text-amber-700 dark:text-amber-300">
+                        <Info className="h-4 w-4" />
+                        <AlertTitle>Sezione tecnica</AlertTitle>
+                        <AlertDescription>
+                            Queste opzioni sono pensate per developer e tester avanzati. Se usi NUMA normalmente, non è necessario intervenire qui.
+                        </AlertDescription>
+                    </Alert>
+
                     {/* Diagnostics */}
                     <MacroSection
                         title="About & Diagnostics"
@@ -190,6 +198,10 @@ export function AdvancedSection() {
                                     <div className="flex items-center gap-2">
                                         <span className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Versione:</span>
                                         <span className="font-mono bg-muted px-1.5 py-0.5 rounded text-xs">{diagnostics.app.version}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Build:</span>
+                                        <span className="font-mono bg-muted px-1.5 py-0.5 rounded text-xs">{diagnostics.app.gitSha}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <span className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Ambiente:</span>
@@ -207,6 +219,9 @@ export function AdvancedSection() {
                                             }
                                         </span>
                                     </div>
+                                </div>
+                                <div className="text-[10px] text-muted-foreground">
+                                    Build time: {diagnostics.app.buildTime}
                                 </div>
 
                                 <div className="rounded-md border">

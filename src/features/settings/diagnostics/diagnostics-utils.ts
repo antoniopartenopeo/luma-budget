@@ -1,11 +1,15 @@
 
 import { STORAGE_KEYS_REGISTRY } from "@/lib/storage-keys"
 
+const APP_STORAGE_PREFIXES = ["luma_", "numa_", "insights_"] as const
+
 export type DiagnosticsSnapshot = {
     generatedAt: string
     app: {
         version: string
         env: string
+        buildTime: string
+        gitSha: string
     }
     storage: Array<{
         key: string
@@ -20,7 +24,15 @@ export type DiagnosticsSnapshot = {
 }
 
 export function getAppVersion(): string {
-    return process.env.NEXT_PUBLIC_APP_VERSION ?? "0.1.1"
+    return process.env.NEXT_PUBLIC_APP_VERSION ?? "unknown"
+}
+
+export function getBuildTime(): string {
+    return process.env.NEXT_PUBLIC_BUILD_TIME ?? "unknown"
+}
+
+export function getGitSha(): string {
+    return process.env.NEXT_PUBLIC_GIT_SHA ?? "unknown"
 }
 
 export function safeGetItem(key: string): string | null {
@@ -76,19 +88,24 @@ export function buildDiagnosticsSnapshot(): DiagnosticsSnapshot {
 
     // Detect unregistered technical keys
     if (typeof window !== "undefined") {
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i)
-            if (key?.startsWith("luma_") && !STORAGE_KEYS_REGISTRY.some(c => c.key === key)) {
-                const rawString = localStorage.getItem(key)
-                storageReport.push({
-                    key,
-                    label: "Unregistered",
-                    present: true,
-                    approxBytes: estimateBytes(rawString),
-                    summary: "Unregistered storage key",
-                    isUnregistered: true
-                })
+        try {
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i)
+                const isAppKey = !!key && APP_STORAGE_PREFIXES.some(prefix => key.startsWith(prefix))
+                if (isAppKey && !STORAGE_KEYS_REGISTRY.some(c => c.key === key)) {
+                    const rawString = localStorage.getItem(key)
+                    storageReport.push({
+                        key,
+                        label: "Unregistered",
+                        present: true,
+                        approxBytes: estimateBytes(rawString),
+                        summary: "Unregistered storage key",
+                        isUnregistered: true
+                    })
+                }
             }
+        } catch {
+            // localStorage can throw in restricted/privacy contexts
         }
     }
 
@@ -99,6 +116,8 @@ export function buildDiagnosticsSnapshot(): DiagnosticsSnapshot {
         app: {
             version: getAppVersion(),
             env: process.env.NODE_ENV || "unknown",
+            buildTime: getBuildTime(),
+            gitSha: getGitSha(),
         },
         storage: storageReport,
         totalApproxBytes,

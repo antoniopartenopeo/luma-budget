@@ -46,6 +46,18 @@ function countCategories(raw: unknown): number {
     return 0
 }
 
+function countGoalsInPortfolio(raw: unknown): number {
+    if (!raw || typeof raw !== "object") return 0
+    const obj = raw as Record<string, unknown>
+    if (Array.isArray(obj.goals)) return obj.goals.length
+    return 0
+}
+
+function countLegacyGoal(raw: unknown): number {
+    if (!raw || typeof raw !== "object") return 0
+    return 1
+}
+
 export const STORAGE_KEYS_REGISTRY: StorageKeyConfig[] = [
     {
         key: "luma_transactions_v1",
@@ -69,6 +81,20 @@ export const STORAGE_KEYS_REGISTRY: StorageKeyConfig[] = [
         key: "luma_settings_v1",
         label: "Impostazioni",
         invalidatesQueries: ["settings", "dashboard-summary"],
+    },
+    {
+        key: "numa_goal_portfolio_v1",
+        label: "Portfolio Obiettivi",
+        countFn: countGoalsInPortfolio,
+    },
+    {
+        key: "numa_active_goal_v1",
+        label: "Goal Attivo (Legacy)",
+        countFn: countLegacyGoal,
+    },
+    {
+        key: "insights_smart_advice_signature_v1",
+        label: "Firma Insight AI",
     },
 ]
 

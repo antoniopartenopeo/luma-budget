@@ -107,11 +107,19 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
         }
     }
 
+    const handleDropZoneKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (fileName) return
+        if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault()
+            fileInputRef.current?.click()
+        }
+    }
+
     const footer = (
         <div className="flex w-full justify-between items-center">
             <Button
                 variant="ghost"
-                className="text-muted-foreground hover:text-foreground"
+                className="h-12 px-5 text-muted-foreground hover:text-foreground"
                 onClick={onClose}
             >
                 <ArrowLeft className="h-4 w-4 mr-2" />
@@ -127,9 +135,8 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
             <Button
                 onClick={handleProcess}
                 disabled={!csvContent.trim() || isLoading}
-                size="lg"
                 className={cn(
-                    "gap-2 rounded-full px-8 shadow-lg transition-all duration-300",
+                    "h-12 gap-2 rounded-full px-8 shadow-lg transition-all duration-300",
                     csvContent.trim() ? "shadow-primary/25 hover:shadow-primary/40 translate-y-0 opacity-100" : "opacity-80 translate-y-1"
                 )}
             >
@@ -148,7 +155,7 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
         >
             <div className="flex flex-col items-center justify-center space-y-5 min-h-[30vh] animate-enter-up">
                 {/* 3. Drop Zone / Tabs */}
-                <MacroSection className="w-full max-w-3xl" contentClassName="p-0">
+                <MacroSection className="w-full" contentClassName="p-0">
                     <Tabs defaultValue="upload" className="w-full flex flex-col">
                         <TabsList className="w-full grid grid-cols-2 rounded-t-[2.25rem] border-b bg-muted/30 p-0 h-11 overflow-hidden">
                             <TabsTrigger value="upload" className="h-full rounded-none data-[state=active]:bg-card data-[state=active]:shadow-none border-r border-transparent data-[state=active]:border-border/50 transition-all gap-2 text-base">
@@ -167,9 +174,13 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
                                         isDragging ? "border-primary bg-primary/5 scale-[0.99]" : "border-muted-foreground/20 hover:border-primary/50 hover:bg-muted/30",
                                         fileName ? "border-emerald-500/50 bg-emerald-500/5" : ""
                                     )}
+                                    role="button"
+                                    tabIndex={fileName ? -1 : 0}
+                                    aria-label="Carica file CSV o TXT"
                                     onDragOver={handleDragOver}
                                     onDragLeave={handleDragLeave}
                                     onDrop={handleDrop}
+                                    onKeyDown={handleDropZoneKeyDown}
                                     onClick={() => !fileName && fileInputRef.current?.click()}
                                 >
                                     <input
@@ -181,7 +192,7 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
                                     />
 
                                     {fileName ? (
-                                        <div className="animate-in zoom-in-50 duration-300 flex flex-row items-center gap-4">
+                                        <div className="animate-enter-up flex flex-row items-center gap-4">
                                             <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-lg shadow-emerald-500/10">
                                                 <CheckCircle2 className="h-6 w-6" />
                                             </div>
@@ -226,7 +237,7 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
 
                             {/* Error Message */}
                             {error && (
-                                <div className="mt-8 p-4 rounded-xl bg-destructive/5 text-destructive border border-destructive/10 text-sm flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+                                <div className="mt-8 p-4 rounded-xl bg-destructive/5 text-destructive border border-destructive/10 text-sm flex items-start gap-3 animate-enter-up">
                                     <AlertCircle className="h-5 w-5 mt-0.5 shrink-0" />
                                     <div className="space-y-1">
                                         <p className="font-bold">Si è verificato un problema</p>

@@ -16,6 +16,7 @@ const SCORING = {
     DATE_TOLERANCE: 15,
     EXACT_AMOUNT: 40,
     AMOUNT_TOLERANCE: 20,
+    TYPE_MATCH: 20,
     MERCHANT_MATCH: 30,
     DESC_SIMILARITY: 20,
 };
@@ -40,19 +41,22 @@ function calculateScore(row: ParsedRow, tx: Transaction, rowMerchantKey: string)
         // If >1 day, score 0 for date, but maybe overall score prevents false positive.
     }
 
-    // 2. Amount Check
-    // tx usually has amount string or cents? 
-    // Transaction type: amountCents (number)
-    const txCents = tx.amountCents;
-    // Note: tx.amountCents is signed. row.amountCents is signed.
-    // "Same absolute amount" says spec.
-    // Actually, usually income matches income.
-    // But let's follow spec: "Same absolute amount".
-    // If signs differ, is it a match? Usually no. (Refund vs Purchase)
+    // 2. Type Check
+    // Stored transactions use absolute amountCents + explicit type.
+    const rowType = row.amountCents > 0 ? "income" : "expense";
+    if (tx.type !== rowType) return 0;
+    score += SCORING.TYPE_MATCH;
 
-    if (row.amountCents === txCents) {
+    // 3. Amount Check (absolute)
+    const rowAbsCents = Math.abs(row.amountCents);
+    const txAbsCents = Math.abs(tx.amountCents);
+
+    if (rowAbsCents === txAbsCents) {
         score += SCORING.EXACT_AMOUNT;
-    } else if (Math.abs(row.amountCents - txCents) < Math.abs(row.amountCents) * 0.01) {
+    } else if (
+        rowAbsCents > 0 &&
+        Math.abs(rowAbsCents - txAbsCents) <= Math.max(1, Math.round(rowAbsCents * 0.01))
+    ) {
         // Within 1%
         score += SCORING.AMOUNT_TOLERANCE;
     } else {
@@ -60,13 +64,13 @@ function calculateScore(row: ParsedRow, tx: Transaction, rowMerchantKey: string)
         return 0; // Optimization: amount mismatch = no duplicate usually
     }
 
-    // 3. Merchant Check
+    // 4. Merchant Check
     const txMerchantKey = extractMerchantKey(tx.description);
     if (rowMerchantKey && txMerchantKey && rowMerchantKey === txMerchantKey) {
         score += SCORING.MERCHANT_MATCH;
     }
 
-    // 4. Description Similarity (Levenshtein or simple inclusion)
+    // 5. Description Similarity (Levenshtein or simple inclusion)
     // Simple check: do they share significant words?
     // Let's use simple string inclusion for now or simple intersection
     // Spec says "> 80% similarity", let's be simpler for MVP logic without heavier lib
@@ -81,30 +85,15 @@ export function detectDuplicates(
     parsedRows: ParsedRow[],
     existingTransactions: Transaction[]
 ): EnrichedRow[] {
-    // Optimization: index existing transactions by amount?
-    // For small datasets O(N*M) is fine. For larger, map by amount for O(1) lookup.
-    const txsByAmount = new Map<number, Transaction[]>();
-    for (const tx of existingTransactions) {
-        const amt = tx.amountCents;
-        if (!txsByAmount.has(amt)) txsByAmount.set(amt, []);
-        txsByAmount.get(amt)!.push(tx);
-    }
-
     return parsedRows.map(row => {
         let bestScore = 0;
         let bestMatchId: string | undefined = undefined;
         const rowMerchantKey = extractMerchantKey(row.description);
+        const rowType = row.amountCents > 0 ? "income" : "expense";
 
-        // Candidates: only look at transactions with same amount +/- 5% to limit search space?
-        // Or just all?
-        // With hash map, looking up EXACT amount is fast.
-        // What if fuzzy amount?
-        // Let's iterate all for correctness as per strict spec, or optimize slightly.
-        // Iterating all might be slow if 10k transactions.
-        // Let's filter by date range first (±5 days)
-
-        // Simplest robust approach: Filter candidates by date window (±3 days)
+        // Candidate pre-filter: same type + temporal proximity
         const candidates = existingTransactions.filter(tx => {
+            if (tx.type !== rowType) return false;
             const days = Math.abs(differenceInCalendarDays(new Date(row.timestamp), new Date(tx.timestamp)));
             return days <= 3;
         });

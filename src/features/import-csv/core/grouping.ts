@@ -3,20 +3,34 @@ import { format } from "date-fns";
 import { computeSubgroups } from "./subgrouping";
 
 export function groupRowsByMerchant(rows: EnrichedRow[]): Group[] {
-    const map = new Map<string, EnrichedRow[]>();
+    const map = new Map<string, { merchantKey: string; direction: "income" | "expense" | null; rows: EnrichedRow[] }>();
 
     // 1. Cluster by merchantKey
     for (const row of rows) {
-        const key = row.merchantKey || "UNCATEGORIZED"; // fallback if empty
-        if (!map.has(key)) map.set(key, []);
-        map.get(key)!.push(row);
+        const merchantKey = row.merchantKey || "UNCATEGORIZED"; // fallback if empty
+        const direction = row.amountCents > 0 ? "income" : "expense";
+        const shouldSplitByDirection = merchantKey === "UNRESOLVED" || merchantKey === "ALTRO";
+        const clusterKey = shouldSplitByDirection ? `${merchantKey}::${direction}` : merchantKey;
+
+        if (!map.has(clusterKey)) {
+            map.set(clusterKey, {
+                merchantKey,
+                direction: shouldSplitByDirection ? direction : null,
+                rows: []
+            });
+        }
+        map.get(clusterKey)!.rows.push(row);
     }
 
     // 2. Build Group objects
     const groups: Group[] = [];
 
-    for (const [key, groupRows] of map.entries()) {
+    for (const { merchantKey, direction, rows: groupRows } of map.values()) {
         const totalCents = groupRows.reduce((sum, r) => sum + r.amountCents, 0);
+        const label =
+            direction === null
+                ? merchantKey
+                : `${merchantKey} • ${direction === "income" ? "Entrate" : "Uscite"}`;
 
         // Calculate Date Range
         const timestamps = groupRows.map(r => r.timestamp);
@@ -29,8 +43,8 @@ export function groupRowsByMerchant(rows: EnrichedRow[]): Group[] {
         // Create partial group to pass to subgrouping
         const partialGroup: Group = {
             id: crypto.randomUUID(),
-            merchantKey: key,
-            label: key, // Could be prettified
+            merchantKey,
+            label,
             rowCount: groupRows.length,
             totalCents,
             dateRange: { from, to },

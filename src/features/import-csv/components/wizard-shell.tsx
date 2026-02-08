@@ -53,55 +53,63 @@ export function WizardShell({
     return (
         <div className="flex flex-col h-full bg-background animate-enter-up">
             {/* 1. Shell Header (Sticky Top) */}
-            <div className="shrink-0 pt-6 pb-4 px-6 md:px-8 border-b bg-card/80 backdrop-blur-xl z-20 flex flex-col gap-6 shadow-sm">
-
-                {/* Visual Stepper */}
-                <div className="mx-auto w-full max-w-xl grid grid-cols-3 gap-4">
-                    {steps.map((s) => (
-                        <div
-                            key={s.id}
-                            className={cn(
-                                "flex flex-col items-center p-3 rounded-xl border transition-all duration-300",
-                                s.active
-                                    ? "bg-card shadow-md ring-1 ring-primary/20 scale-105 border-primary/20"
-                                    : "bg-muted/30 border-transparent opacity-60 grayscale-[0.5]"
-                            )}
-                        >
-                            <div className={cn(
-                                "w-8 h-8 rounded-full flex items-center justify-center mb-2 transition-colors",
-                                s.active
-                                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                                    : s.completed
-                                        ? "bg-primary/20 text-primary"
-                                        : "bg-muted text-muted-foreground"
-                            )}>
-                                <s.icon className="h-4 w-4" />
-                            </div>
-                            <span className={cn(
-                                "text-xs font-medium tracking-tight",
-                                s.active ? "text-foreground font-bold" : "text-muted-foreground"
-                            )}>
-                                {s.label}
-                            </span>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="flex items-end justify-between gap-4 max-w-5xl mx-auto w-full">
-                    <div className="min-w-0 space-y-1">
-                        <h2 className="text-2xl font-bold tracking-tight bg-gradient-to-br from-foreground to-muted-foreground bg-clip-text text-transparent">
+            <div className="shrink-0 py-2 px-3 md:px-4 border-b bg-card/80 backdrop-blur-xl z-20">
+                <div className="flex md:hidden items-center justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                        <h2 className="text-base font-bold tracking-tight bg-gradient-to-br from-foreground to-muted-foreground bg-clip-text text-transparent truncate">
                             {title}
                         </h2>
-                        <p className="text-muted-foreground text-sm truncate max-w-md">
+                        <p className="text-muted-foreground text-xs truncate">
                             {subtitle}
                         </p>
                     </div>
 
-                    {headerExtra && (
-                        <div className="shrink-0">
-                            {headerExtra}
-                        </div>
-                    )}
+                    {headerExtra && <div className="shrink-0">{headerExtra}</div>}
+                </div>
+
+                <div className="hidden md:grid grid-cols-[minmax(0,1fr)_minmax(0,28rem)_minmax(0,1fr)] items-center gap-3">
+                    <div className="min-w-0">
+                        <h2 className="text-lg font-bold tracking-tight bg-gradient-to-br from-foreground to-muted-foreground bg-clip-text text-transparent truncate">
+                            {title}
+                        </h2>
+                        <p className="text-muted-foreground text-xs truncate">
+                            {subtitle}
+                        </p>
+                    </div>
+
+                    {/* Visual Stepper (centered) */}
+                    <div className="grid w-full grid-cols-3 gap-1.5 justify-self-center">
+                        {steps.map((s) => (
+                            <div
+                                key={s.id}
+                                className={cn(
+                                    "flex flex-col items-center px-1.5 py-1 rounded-lg border transition-all duration-300",
+                                    s.active
+                                        ? "bg-card shadow-sm ring-1 ring-primary/20 border-primary/20"
+                                        : "bg-muted/30 border-transparent opacity-60 grayscale-[0.5]"
+                                )}
+                            >
+                                <div className={cn(
+                                    "w-5 h-5 rounded-full flex items-center justify-center mb-1 transition-colors",
+                                    s.active
+                                        ? "bg-primary text-primary-foreground"
+                                        : s.completed
+                                            ? "bg-primary/20 text-primary"
+                                            : "bg-muted text-muted-foreground"
+                                )}>
+                                    <s.icon className="h-3 w-3" />
+                                </div>
+                                <span className={cn(
+                                    "text-[10px] font-medium tracking-tight leading-none",
+                                    s.active ? "text-foreground font-bold" : "text-muted-foreground"
+                                )}>
+                                    {s.label}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="justify-self-end">{headerExtra ?? null}</div>
                 </div>
             </div>
 
@@ -118,14 +126,14 @@ export function WizardShell({
                 "bg-background",
                 className
             )}>
-                <div className="w-full h-full max-w-5xl mx-auto p-4 md:p-8">
+                <div className="w-full h-full p-2 md:p-4">
                     {children}
                 </div>
             </div>
 
             {/* 3. Shell Footer (Sticky Bottom) */}
-            <div className="shrink-0 p-4 md:p-6 border-t bg-card/80 backdrop-blur-xl z-20 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)]">
-                <div className="max-w-5xl mx-auto flex items-center justify-between">
+            <div className="shrink-0 p-2 md:p-3 border-t bg-card/80 backdrop-blur-xl z-20">
+                <div className="w-full flex items-center justify-between">
                     {footer}
                 </div>
             </div>

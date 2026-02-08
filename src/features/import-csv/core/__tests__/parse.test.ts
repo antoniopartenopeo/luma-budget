@@ -53,4 +53,37 @@ describe("parseCSV", () => {
         expect(result.rows).toHaveLength(1);
         expect(result.rows[0].raw.date).toBe("2024-01-01");
     });
+
+    it("builds signed amount from debit/credit columns", () => {
+        const csv = `Data;Dare;Avere;Descrizione
+2024-01-01;12,50;;Pagamento carta
+2024-01-02;;100,00;Bonifico`;
+
+        const result = parseCSV(csv);
+        expect(result.errors).toHaveLength(0);
+        expect(result.rows).toHaveLength(2);
+        expect(result.rows[0].raw.amount).toBe("-12,50");
+        expect(result.rows[1].raw.amount).toBe("100,00");
+    });
+
+    it("flags rows where both debit and credit are filled", () => {
+        const csv = `Data;Dare;Avere;Descrizione
+2024-01-01;10,00;4,00;Rettifica`;
+
+        const result = parseCSV(csv);
+        expect(result.rows).toHaveLength(1);
+        expect(result.errors.length).toBeGreaterThan(0);
+        expect(result.errors[0].message).toContain("Both debit and credit");
+        expect(result.rows[0].raw.amount).toBe("-6.00");
+    });
+
+    it("rejects row when required amount cell is missing", () => {
+        const csv = `Data,Importo
+2024-01-01`;
+
+        const result = parseCSV(csv);
+        expect(result.rows).toHaveLength(0);
+        expect(result.errors.length).toBeGreaterThan(0);
+        expect(result.errors[0].message).toContain("insufficient columns");
+    });
 });

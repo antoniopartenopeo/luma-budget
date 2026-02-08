@@ -28,7 +28,7 @@ export function ImportStepSummary({
     onClose
 }: ImportStepSummaryProps) {
     const { mutateAsync: createBatch, isPending, isError: isSaveError } = useCreateBatchTransactions()
-    const { data: categories = [] } = useCategories()
+    const { data: categories = [], isLoading: isCategoriesLoading } = useCategories()
     const [isSuccess, setIsSuccess] = useState(false)
 
     // Filter groups using the explicit list from the previous step
@@ -41,13 +41,14 @@ export function ImportStepSummary({
 
     // Compute Final Stats using ONLY included groups
     const payload = useMemo(() => {
+        if (isCategoriesLoading) return null
         try {
             return generatePayload(includedGroups, importState.rows, overrides, categories)
         } catch (e) {
             console.error("Payload gen error", e)
             return null
         }
-    }, [includedGroups, importState.rows, overrides, categories])
+    }, [includedGroups, importState.rows, overrides, categories, isCategoriesLoading])
 
     const stats = useMemo(() => {
         if (!payload) return null
@@ -78,12 +79,12 @@ export function ImportStepSummary({
 
     if (isSuccess) {
         return (
-            <div className="flex flex-col h-full items-center justify-center p-8 bg-background animate-in zoom-in-95 duration-500 text-center">
+            <div className="flex flex-col h-full items-center justify-center p-8 bg-background animate-enter-up text-center">
                 <div className="w-24 h-24 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-6 text-emerald-600 dark:text-emerald-400 animate-bounce cursor-default shadow-lg shadow-emerald-500/20">
                     <CheckCircle2 className="h-12 w-12" />
                 </div>
                 <h2 className="text-3xl font-bold tracking-tight mb-2">Importazione Completata!</h2>
-                <p className="text-muted-foreground text-lg max-w-md mx-auto mb-8">
+                <p className="text-muted-foreground text-lg w-full mx-auto mb-8">
                     Hai aggiunto <span className="text-foreground font-bold">{stats?.count} transazioni</span> alla tua storia.
                     <br />
                     <span className="font-medium text-primary">Il vero viaggio inizia ora.</span>
@@ -92,6 +93,16 @@ export function ImportStepSummary({
                     Torna alle Transazioni
                 </Button>
             </div>
+        )
+    }
+
+    if (isCategoriesLoading) {
+        return (
+            <StateMessage
+                title="Preparazione riepilogo"
+                description="Sto caricando le categorie, attendi un momento."
+                variant="empty"
+            />
         )
     }
 
@@ -107,7 +118,7 @@ export function ImportStepSummary({
 
     const footer = (
         <div className="flex w-full justify-between items-center">
-            <Button variant="ghost" onClick={isPending ? undefined : onBack} disabled={isPending} className="text-muted-foreground hover:text-foreground">
+            <Button variant="ghost" onClick={isPending ? undefined : onBack} disabled={isPending} className="h-12 px-5 text-muted-foreground hover:text-foreground">
                 Indietro
             </Button>
             <Button onClick={handleConfirm} disabled={isPending} className="gap-2 rounded-full px-10 h-12 shadow-lg hover:shadow-primary/25 text-lg transition-all">
@@ -125,7 +136,7 @@ export function ImportStepSummary({
         >
             <div className="flex-1 p-6 md:p-12 animate-enter-up">
                 <MacroSection>
-                    <div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6">
                         {/* KPI Cards */}
                         <div className="bg-emerald-500/5 p-6 rounded-2xl border border-emerald-500/20 flex flex-col justify-center items-center text-emerald-700 dark:text-emerald-400">
                             <TrendingUp className="h-8 w-8 mb-2 opacity-50" />
@@ -152,7 +163,7 @@ export function ImportStepSummary({
                         </div>
                     </div>
 
-                    <div className="max-w-xl mx-auto mt-12 text-center space-y-6">
+                    <div className="w-full mt-12 text-center space-y-6">
                         <p className="text-muted-foreground">
                             Premendo conferma, queste <strong className="text-foreground">{stats.count} transazioni</strong> diventeranno parte del tuo storico.
                             Potrai sempre modificarle, cancellarle o riorganizzarle in seguito.

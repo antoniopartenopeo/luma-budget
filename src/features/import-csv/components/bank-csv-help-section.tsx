@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 
 export function BankCsvHelpSection() {
     return (
-        <div className="w-full mt-2 animate-in slide-in-from-bottom-2 duration-500 delay-150">
+        <div className="w-full mt-2 animate-enter-up">
             <Accordion type="single" collapsible className="w-full bg-muted/20 border rounded-xl overflow-hidden shadow-sm">
                 <AccordionItem value="help" className="border-none px-1">
                     <AccordionTrigger className="px-4 py-2 hover:no-underline hover:bg-muted/50 transition-colors group">

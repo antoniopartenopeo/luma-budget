@@ -5,13 +5,13 @@ import { enrichRows, extractMerchantKey } from "../enrich";
 import { ParsedRow, EnrichedRow } from "../types";
 import { Transaction } from "../../../transactions/api/types";
 import { CategoryIds } from "@/domain/categories";
+import { groupRowsByMerchant } from "../grouping";
 
 describe("dedupe & enrich", () => {
     const baseTx: Transaction = {
         id: "tx-1",
         date: "2024-01-01",
-        amount: "-50.00",
-        amountCents: -5000,
+        amountCents: 5000,
         description: "POS MARKET",
         category: "Cibo",
         categoryId: "cibo",
@@ -53,6 +53,23 @@ describe("dedupe & enrich", () => {
         expect(result[0].isSelected).toBe(false);
     });
 
+    it("does not mark duplicate when type differs", () => {
+        const rows: ParsedRow[] = [{
+            lineNumber: 1,
+            date: "2024-01-01",
+            timestamp: new Date("2024-01-01").getTime(),
+            amountCents: 5000, // income
+            description: "POS MARKET",
+            originalDescription: "POS MARKET",
+            rawRow: {}
+        }];
+
+        const result = detectDuplicates(rows, [baseTx]);
+        expect(result[0].duplicateStatus).toBe("unique");
+        expect(result[0].duplicateOf).toBeUndefined();
+        expect(result[0].isSelected).toBe(true);
+    });
+
     it("detects approximate duplicate", () => {
         const rows: ParsedRow[] = [{
             lineNumber: 1,
@@ -82,9 +99,32 @@ describe("dedupe & enrich", () => {
 
     it("prioritizes history", () => {
         const rows = [createRow({ description: "ESSELUNGA", merchantKey: "ESSELUNGA" })];
-        const existing: Transaction[] = [{ ...baseTx, description: "ESSELUNGA", categoryId: CategoryIds.SVAGO_EXTRA, amountCents: -5000 }];
+        const existing: Transaction[] = [{ ...baseTx, description: "ESSELUNGA", categoryId: CategoryIds.SVAGO_EXTRA, amountCents: 5000 }];
 
         const enriched = enrichRows(rows, existing);
         expect(enriched[0].suggestedCategoryId).toBe(CategoryIds.SVAGO_EXTRA);
+    });
+
+    it("splits UNRESOLVED into separate income/expense groups", () => {
+        const incomeRow = createRow({
+            id: "r-income",
+            amountCents: 250000,
+            merchantKey: "UNRESOLVED"
+        });
+
+        const expenseRow = createRow({
+            id: "r-expense",
+            amountCents: -4990,
+            merchantKey: "UNRESOLVED"
+        });
+
+        const groups = groupRowsByMerchant([incomeRow, expenseRow]);
+        const unresolvedGroups = groups.filter(g => g.merchantKey === "UNRESOLVED");
+
+        expect(unresolvedGroups).toHaveLength(2);
+        expect(unresolvedGroups.map(g => g.label)).toEqual(
+            expect.arrayContaining(["UNRESOLVED • Entrate", "UNRESOLVED • Uscite"])
+        );
+        expect(unresolvedGroups.every(g => g.rowCount === 1)).toBe(true);
     });
 });

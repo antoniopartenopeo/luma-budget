@@ -32,7 +32,7 @@ export function ThresholdSlider({
     onDragEnd
 }: ThresholdSliderProps) {
     return (
-        <div className="px-4 md:px-8 py-4 flex flex-col gap-3">
+        <div className="px-3 md:px-6 py-2.5 flex flex-col gap-2">
             <div className="flex items-center gap-3">
                 <Filter className="h-4 w-4 text-muted-foreground shrink-0" />
                 <span className="text-sm font-medium">Soglia rilevanza</span>

@@ -83,7 +83,7 @@ export function CsvImportWizard() {
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="w-full h-full max-w-full max-h-full sm:max-w-4xl sm:max-h-[90vh] sm:h-[90vh] flex flex-col p-0 gap-0 outline-none overflow-hidden sm:rounded-2xl rounded-none">
+            <DialogContent className="w-full h-full max-w-full max-h-full sm:max-w-7xl sm:max-h-[90vh] sm:h-[90vh] flex flex-col p-0 gap-0 outline-none overflow-hidden sm:rounded-2xl rounded-none">
                 {step === "upload" && (
                     <ImportStepUpload
                         onContinue={handleUploadComplete}

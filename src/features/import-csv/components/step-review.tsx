@@ -1,15 +1,12 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { ArrowLeft, ArrowRight, Store, Tags, Filter } from "lucide-react"
+import { ArrowLeft, ArrowRight, Filter, AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Accordion } from "@/components/ui/accordion"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ImportState, Override, Group, Subgroup, EnrichedRow } from "../core/types"
+import { ImportState, Override, Group, Subgroup } from "../core/types"
 import { resolveCategory } from "../core/overrides"
 import { getIncludedGroups } from "../core/filters"
-import { getCategoryById } from "@/features/categories/config"
-import { useCategories } from "@/features/categories/api/use-categories"
 import { cn } from "@/lib/utils"
 import { ReviewResult } from "./csv-import-wizard"
 import { WizardShell } from "./wizard-shell"
@@ -19,8 +16,7 @@ import { MacroSection } from "@/components/patterns/macro-section"
 import {
     ReviewAdvice,
     ThresholdSlider,
-    MerchantGroupCard,
-    CategoryGroupList
+    MerchantGroupCard
 } from "./review"
 
 // ============================================
@@ -36,15 +32,6 @@ interface ImportStepReviewProps {
     onContinue: (result: ReviewResult) => void
 }
 
-interface CategoryGroup {
-    id: string
-    label: string
-    color: string
-    amount: number
-    count: number
-    rowIds: string[]
-}
-
 // ============================================
 // Main Component
 // ============================================
@@ -57,9 +44,7 @@ export function ImportStepReview({
     onBack,
     onContinue
 }: ImportStepReviewProps) {
-    const { data: categories = [] } = useCategories()
     const [overrides, setOverrides] = useState<Override[]>(initialOverrides)
-    const [viewMode, setViewMode] = useState<"merchant" | "category">("merchant")
 
     // Visual threshold for slider drag (committed value comes from props)
     const [visualThreshold, setVisualThreshold] = useState(thresholdCents)
@@ -74,6 +59,35 @@ export function ImportStepReview({
     )
 
     const hiddenGroupsCount = excludedGroupIds.length
+    const parseErrorsCount = initialState.errors.length
+
+    const groupsByDirection = useMemo(() => {
+        const expenses: Group[] = []
+        const incomes: Group[] = []
+        const mixed: Group[] = []
+
+        filteredGroups.forEach((group) => {
+            let hasIncome = false
+            let hasExpense = false
+
+            for (const subgroup of group.subgroups) {
+                for (const rowId of subgroup.rowIds) {
+                    const row = rows.find(r => r.id === rowId)
+                    if (!row) continue
+                    if (row.amountCents > 0) hasIncome = true
+                    if (row.amountCents < 0) hasExpense = true
+                    if (hasIncome && hasExpense) break
+                }
+                if (hasIncome && hasExpense) break
+            }
+
+            if (hasIncome && hasExpense) mixed.push(group)
+            else if (hasIncome) incomes.push(group)
+            else expenses.push(group)
+        })
+
+        return { expenses, incomes, mixed }
+    }, [filteredGroups, rows])
 
     // ============================================
     // Override Handlers
@@ -110,23 +124,12 @@ export function ImportStepReview({
     }
 
     // ============================================
-    // Stats & Category Breakdown (Memoized)
+    // Stats (Memoized)
     // ============================================
 
-    const { stats, categoryGroups } = useMemo(() => {
+    const stats = useMemo(() => {
         let assigned = 0
         let total = 0
-
-        const catMap = new Map<string, CategoryGroup>()
-
-        catMap.set("unassigned", {
-            id: "unassigned",
-            label: "Non Categorizzato",
-            color: "bg-muted text-muted-foreground",
-            amount: 0,
-            count: 0,
-            rowIds: []
-        })
 
         filteredGroups.forEach((g: Group) => {
             g.subgroups.forEach((sg: Subgroup) => {
@@ -138,47 +141,17 @@ export function ImportStepReview({
 
                         if (catId) {
                             assigned++
-                            const def = getCategoryById(catId, categories)
-                            if (!catMap.has(catId) && def) {
-                                catMap.set(catId, {
-                                    id: catId,
-                                    label: def.label,
-                                    color: def.color,
-                                    amount: 0,
-                                    count: 0,
-                                    rowIds: []
-                                })
-                            }
-
-                            const target = catMap.get(catId)!
-                            target.amount += row.amountCents
-                            target.count++
-                            target.rowIds.push(row.id)
-                        } else {
-                            const target = catMap.get("unassigned")!
-                            target.amount += row.amountCents
-                            target.count++
-                            target.rowIds.push(row.id)
                         }
                     }
                 })
             })
         })
 
-        if (catMap.get("unassigned")!.count === 0) {
-            catMap.delete("unassigned")
-        }
-
-        return {
-            stats: { assigned, total },
-            categoryGroups: Array.from(catMap.values()).sort((a, b) => b.amount - a.amount)
-        }
-    }, [filteredGroups, rows, overrides, categories])
+        return { assigned, total }
+    }, [filteredGroups, rows, overrides])
 
     const completionPercent = stats.total > 0 ? (stats.assigned / stats.total) * 100 : 0
-
-    // Rows lookup helper
-    const getRowById = (id: string): EnrichedRow | undefined => rows.find(r => r.id === id)
+    const getRowById = (id: string) => rows.find(r => r.id === id)
 
     // ============================================
     // Render Helpers
@@ -186,7 +159,7 @@ export function ImportStepReview({
 
     const footer = (
         <div className="flex w-full justify-between items-center gap-4">
-            <Button variant="ghost" onClick={onBack} className="gap-1.5 text-sm">
+            <Button variant="ghost" onClick={onBack} className="h-12 px-5 gap-1.5 text-sm">
                 <ArrowLeft className="h-4 w-4" /> Indietro
             </Button>
             <div className="flex items-center gap-3">
@@ -198,7 +171,7 @@ export function ImportStepReview({
                 <Button
                     onClick={() => onContinue({ overrides, excludedGroupIds })}
                     className={cn(
-                        "gap-1.5 rounded-xl px-6 h-11 shadow-lg hover:translate-y-[-1px] transition-all text-sm",
+                        "gap-1.5 rounded-xl px-6 h-12 shadow-lg hover:translate-y-[-1px] transition-all text-sm",
                         stats.total > stats.assigned && "border-amber-200 bg-amber-50 text-amber-900 hover:bg-amber-100 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-200"
                     )}
                     variant={stats.total > stats.assigned ? "outline" : "default"}
@@ -252,64 +225,133 @@ export function ImportStepReview({
                     <ReviewAdvice completionPercent={completionPercent} />
                 </div>
 
-                {/* Content Area with Tabs */}
-                <MacroSection contentClassName="p-0">
-                    <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "merchant" | "category")} className="flex-1 flex flex-col min-h-0">
-                        <div className="pb-4 shrink-0">
-                            <TabsList className="grid w-full grid-cols-2 h-9">
-                                <TabsTrigger value="merchant" className="gap-1.5 text-xs md:text-sm">
-                                    <Store className="h-3.5 w-3.5" /> Per Esercente
-                                </TabsTrigger>
-                                <TabsTrigger value="category" className="gap-1.5 text-xs md:text-sm">
-                                    <Tags className="h-3.5 w-3.5" /> Per Categoria
-                                </TabsTrigger>
-                            </TabsList>
+                {parseErrorsCount > 0 && (
+                    <div className="rounded-xl border border-amber-300/50 bg-amber-50/60 dark:bg-amber-950/20 p-3 text-amber-900 dark:text-amber-200">
+                        <div className="flex items-start gap-2">
+                            <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+                            <div className="text-xs md:text-sm">
+                                Ho rilevato <strong>{parseErrorsCount}</strong> righe non importabili nel CSV.
+                                Le transazioni valide sono già pronte qui sotto.
+                            </div>
                         </div>
+                    </div>
+                )}
 
-                        {/* View: Merchants */}
-                        <TabsContent value="merchant" className="flex-1 min-h-0 data-[state=inactive]:hidden mt-0">
-                            {filteredGroups.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center py-12 text-center">
-                                    <Filter className="h-10 w-10 text-muted-foreground/50 mb-3" />
-                                    <p className="text-muted-foreground text-sm">Nessun gruppo sopra la soglia selezionata</p>
-                                    <Button variant="ghost" size="sm" className="mt-2" onClick={() => onThresholdChange(0)}>
-                                        Mostra tutti
-                                    </Button>
+                {/* Content Area */}
+                <MacroSection contentClassName="p-0">
+                    {filteredGroups.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-12 text-center">
+                            <Filter className="h-10 w-10 text-muted-foreground/50 mb-3" />
+                            <p className="text-muted-foreground text-sm">Nessun gruppo sopra la soglia selezionata</p>
+                            <Button variant="ghost" size="sm" className="mt-2" onClick={() => onThresholdChange(0)}>
+                                Mostra tutti
+                            </Button>
+                        </div>
+                    ) : (
+                        <div className="space-y-5">
+                            {groupsByDirection.expenses.length > 0 && (
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-xs md:text-sm font-bold uppercase tracking-wider text-rose-700 dark:text-rose-300">
+                                            Uscite
+                                        </h4>
+                                        <span className="text-xs text-muted-foreground">{groupsByDirection.expenses.length} gruppi</span>
+                                    </div>
+                                    <Accordion type="multiple" className="space-y-2">
+                                        {groupsByDirection.expenses.map((group, index) => {
+                                            const firstGroupRowId = group.subgroups[0]?.rowIds[0]
+                                            const firstGroupRow = firstGroupRowId ? rows.find(r => r.id === firstGroupRowId) : undefined
+                                            const effectiveCatId = getGroupEffectiveCategory(group) ||
+                                                group.subgroups[0]?.categoryId ||
+                                                firstGroupRow?.suggestedCategoryId
+
+                                            return (
+                                                <MerchantGroupCard
+                                                    key={group.id}
+                                                    group={group}
+                                                    index={index}
+                                                    totalGroups={groupsByDirection.expenses.length}
+                                                    effectiveCategoryId={effectiveCatId || null}
+                                                    onGroupCategoryChange={setGroupCategory}
+                                                    onSubgroupCategoryChange={setSubgroupCategory}
+                                                    getSubgroupEffectiveCategory={(sg) => getSubgroupEffectiveCategory(sg, group)}
+                                                    getRowById={getRowById}
+                                                />
+                                            )
+                                        })}
+                                    </Accordion>
                                 </div>
-                            ) : (
-                                <Accordion type="multiple" className="space-y-2">
-                                    {filteredGroups.map((group, index) => {
-                                        const effectiveCatId = getGroupEffectiveCategory(group) ||
-                                            group.subgroups[0]?.categoryId ||
-                                            rows.find(r => r.merchantKey === group.merchantKey)?.suggestedCategoryId
-
-                                        return (
-                                            <MerchantGroupCard
-                                                key={group.id}
-                                                group={group}
-                                                index={index}
-                                                totalGroups={filteredGroups.length}
-                                                effectiveCategoryId={effectiveCatId || null}
-
-                                                onGroupCategoryChange={setGroupCategory}
-                                                onSubgroupCategoryChange={setSubgroupCategory}
-                                                getSubgroupEffectiveCategory={(sg) => getSubgroupEffectiveCategory(sg, group)}
-                                                getRowById={getRowById}
-                                            />
-                                        )
-                                    })}
-                                </Accordion>
                             )}
-                        </TabsContent>
 
-                        {/* View: Categories */}
-                        <TabsContent value="category" className="flex-1 min-h-0 data-[state=inactive]:hidden mt-0">
-                            <CategoryGroupList
-                                categoryGroups={categoryGroups}
-                                getRowById={getRowById}
-                            />
-                        </TabsContent>
-                    </Tabs>
+                            {groupsByDirection.incomes.length > 0 && (
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-xs md:text-sm font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                                            Entrate
+                                        </h4>
+                                        <span className="text-xs text-muted-foreground">{groupsByDirection.incomes.length} gruppi</span>
+                                    </div>
+                                    <Accordion type="multiple" className="space-y-2">
+                                        {groupsByDirection.incomes.map((group, index) => {
+                                            const firstGroupRowId = group.subgroups[0]?.rowIds[0]
+                                            const firstGroupRow = firstGroupRowId ? rows.find(r => r.id === firstGroupRowId) : undefined
+                                            const effectiveCatId = getGroupEffectiveCategory(group) ||
+                                                group.subgroups[0]?.categoryId ||
+                                                firstGroupRow?.suggestedCategoryId
+
+                                            return (
+                                                <MerchantGroupCard
+                                                    key={group.id}
+                                                    group={group}
+                                                    index={index}
+                                                    totalGroups={groupsByDirection.incomes.length}
+                                                    effectiveCategoryId={effectiveCatId || null}
+                                                    onGroupCategoryChange={setGroupCategory}
+                                                    onSubgroupCategoryChange={setSubgroupCategory}
+                                                    getSubgroupEffectiveCategory={(sg) => getSubgroupEffectiveCategory(sg, group)}
+                                                    getRowById={getRowById}
+                                                />
+                                            )
+                                        })}
+                                    </Accordion>
+                                </div>
+                            )}
+
+                            {groupsByDirection.mixed.length > 0 && (
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-xs md:text-sm font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300">
+                                            Misti
+                                        </h4>
+                                        <span className="text-xs text-muted-foreground">{groupsByDirection.mixed.length} gruppi</span>
+                                    </div>
+                                    <Accordion type="multiple" className="space-y-2">
+                                        {groupsByDirection.mixed.map((group, index) => {
+                                            const firstGroupRowId = group.subgroups[0]?.rowIds[0]
+                                            const firstGroupRow = firstGroupRowId ? rows.find(r => r.id === firstGroupRowId) : undefined
+                                            const effectiveCatId = getGroupEffectiveCategory(group) ||
+                                                group.subgroups[0]?.categoryId ||
+                                                firstGroupRow?.suggestedCategoryId
+
+                                            return (
+                                                <MerchantGroupCard
+                                                    key={group.id}
+                                                    group={group}
+                                                    index={index}
+                                                    totalGroups={groupsByDirection.mixed.length}
+                                                    effectiveCategoryId={effectiveCatId || null}
+                                                    onGroupCategoryChange={setGroupCategory}
+                                                    onSubgroupCategoryChange={setSubgroupCategory}
+                                                    getSubgroupEffectiveCategory={(sg) => getSubgroupEffectiveCategory(sg, group)}
+                                                    getRowById={getRowById}
+                                                />
+                                            )
+                                        })}
+                                    </Accordion>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </MacroSection>
             </div>
         </WizardShell>

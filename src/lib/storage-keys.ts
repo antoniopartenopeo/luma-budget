@@ -67,7 +67,7 @@ export const STORAGE_KEYS_REGISTRY: StorageKeyConfig[] = [
     },
     {
         key: "luma_budget_plans_v1",
-        label: "Piani Budget",
+        label: "Piani Ritmo",
         countFn: countBudgetPlans,
         invalidatesQueries: ["budgets", "dashboard-summary"],
     },

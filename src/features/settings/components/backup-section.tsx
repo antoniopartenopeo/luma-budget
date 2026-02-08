@@ -214,7 +214,7 @@ export function BackupSection() {
                                     <span className="text-muted-foreground">Transazioni:</span>
                                     <span className="font-medium">{pendingBackup.summary.txCount}</span>
 
-                                    <span className="text-muted-foreground">Piani Budget:</span>
+                                    <span className="text-muted-foreground">Piani Ritmo:</span>
                                     <span className="font-medium">{pendingBackup.summary.budgetCount}</span>
                                 </div>
                                 <div className="pt-1">

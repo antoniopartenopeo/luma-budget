@@ -100,7 +100,7 @@ export function AdvancedSection() {
                         queryClient.invalidateQueries({ queryKey: queryKeys.budget.all }),
                         queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
                     ])
-                    setStatus({ type: "success", message: "Tutti i budget sono stati eliminati." })
+                    setStatus({ type: "success", message: "Tutti i piani ritmo sono stati eliminati." })
                     break
                 }
                 case "settings": {
@@ -155,8 +155,8 @@ export function AdvancedSection() {
                 }
             case "budgets":
                 return {
-                    title: "Elimina Budget",
-                    description: "Sei sicuro di voler eliminare TUTTI i piani di budget? Questa azione è irreversibile."
+                    title: "Elimina Piani Ritmo",
+                    description: "Sei sicuro di voler eliminare TUTTI i piani ritmo? Questa azione è irreversibile."
                 }
             case "settings":
                 return {
@@ -166,7 +166,7 @@ export function AdvancedSection() {
             case "all":
                 return {
                     title: "Reset Totale",
-                    description: "Vuoi davvero eliminare tutti i dati? Questa azione cancellerà permanentemente tutte le transazioni, i piani di budget e le impostazioni. Questa azione è irreversibile."
+                    description: "Vuoi davvero eliminare tutti i dati? Questa azione cancellerà permanentemente tutte le transazioni, i piani ritmo e le impostazioni. Questa azione è irreversibile."
                 }
             default:
                 return { title: "", description: "" }
@@ -332,7 +332,7 @@ export function AdvancedSection() {
                                         className="justify-start text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/20"
                                     >
                                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
-                                        Elimina solo budget
+                                        Elimina solo piani ritmo
                                     </Button>
 
                                     <Button

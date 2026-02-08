@@ -95,7 +95,7 @@ function narrateStrained(facts: SnapshotFacts): NarrationResult {
     // Secondary: budget strained
     if (utilizationPercent !== undefined && utilizationPercent > 90) {
         return {
-            text: `Attenzione: hai utilizzato il ${utilizationPercent}% del budget disponibile. Resta poco margine per i prossimi giorni.`,
+            text: `Attenzione: hai utilizzato il ${utilizationPercent}% del ritmo disponibile. Resta poco margine per i prossimi giorni.`,
             shortText: `Pacing: ${utilizationPercent}%`
         }
     }
@@ -143,7 +143,7 @@ function narrateCritical(facts: SnapshotFacts): NarrationResult {
     if (balanceCents < 0 && utilizationPercent !== undefined && utilizationPercent > 100) {
         return {
             text: `Il limite di pacing è stato superato (${utilizationPercent}%) e il saldo attuale è in negativo. Si consiglia una revisione degli impegni.`,
-            shortText: "Budget oltre limite"
+            shortText: "Ritmo oltre limite"
         }
     }
 

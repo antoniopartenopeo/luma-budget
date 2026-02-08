@@ -158,7 +158,7 @@ export function DashboardKpiGrid({
                         tone={budgetTone}
                         icon={DollarSign}
                         isLoading={isLoading}
-                        onClick={isMonthlyView && !hasBudget ? () => router.push("/goals/lab") : undefined}
+                        onClick={isMonthlyView && !hasBudget ? () => router.push("/simulator") : undefined}
                         description={isLoading ? undefined : buildNarration("budget", budgetRemaining || 0, budgetTone, budgetPercent)}
                         badge={activeRhythm && (
                             <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">

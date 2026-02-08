@@ -189,11 +189,11 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                         </div>
                     </motion.div>
 
-                    {/* Budget & Goal - Half width */}
+                    {/* Ritmo & Goal - Half width */}
                     <motion.div variants={itemVariants} className="glass-card rounded-2xl p-4">
                         <div className="flex items-center justify-between mb-3">
                             <PiggyBank className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Budget</span>
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Ritmo</span>
                         </div>
                         <div className={cn("text-lg font-bold text-foreground", blurClass)}>{budgetUsedPct}%</div>
                         <div className="h-1.5 bg-muted rounded-full overflow-hidden mt-2">

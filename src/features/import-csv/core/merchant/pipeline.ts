@@ -7,8 +7,8 @@
 import { BRAND_DICT } from "./brand-dict";
 import { normalize, cleanNoise, tokenize, stripPositionalNoise, stripPrefixes } from "./normalizers";
 import { extractSubMerchantFromRemainder } from "./sub-merchant";
-import { getTopTokens, SCORING_BLACKLIST } from "./token-scorer";
-import { extractPaymentRail } from "./payment-rails";
+import { getTopTokenCandidates, SCORING_BLACKLIST } from "./token-scorer";
+import { extractPaymentRail, MARKETPLACE_RAILS } from "./payment-rails";
 import { getOverride } from "./overrides";
 import { fuzzyMatch } from "./fuzzy-matcher";
 
@@ -33,6 +33,7 @@ export function extractMerchantKey(description: string): string {
     // Step 2: Extract Payment Rail
     // Critical: Rail is REMOVED from the text to avoid competition
     const { paymentRail, remainder: railFreeText } = extractPaymentRail(normalized);
+    const isMarketplaceRail = !!paymentRail && MARKETPLACE_RAILS.includes(paymentRail);
 
     // Step 2: Strip prefixes (explicitly)
     // Helps with "Op.", "Disposizione", etc that might not be in Payment Rails
@@ -86,12 +87,16 @@ export function extractMerchantKey(description: string): string {
         else if (BRAND_DICT[subTokens[0]]) candidateKey = BRAND_DICT[subTokens[0]];
         else {
             // If not in dict, use the extracted sub-merchant string directly
-            // But ensure it's not generic noise
-            const isGeneric = SCORING_BLACKLIST.has(subTokens[0]) || /^\d+$/.test(subTokens[0]);
-            if (!isGeneric) {
+            // But ensure it's not generic noise. This avoids outputs like "DD PER FATTURA".
+            const meaningfulTokens = subTokens.filter((token) =>
+                token.length >= 2 &&
+                !SCORING_BLACKLIST.has(token) &&
+                !/^\d+$/.test(token)
+            );
+            if ((primary || !paymentRail || isMarketplaceRail) && meaningfulTokens.length > 0) {
                 // v3 assumption: if we have a clear sub-merchant structure using separators or bridge tokens,
                 // we trust it more. Return up to 3 tokens to capture "BAR DA GINO".
-                candidateKey = subTokens.slice(0, 3).join(" ");
+                candidateKey = meaningfulTokens.slice(0, 3).join(" ");
             }
         }
     }
@@ -113,15 +118,18 @@ export function extractMerchantKey(description: string): string {
         const bigram = `${tokens[i]} ${tokens[i + 1]}`;
         if (BRAND_DICT[bigram]) return BRAND_DICT[bigram];
     }
-    // Unigram
-    for (const token of tokens) {
+    // Unigram (including split variants for hyphenated/noisy tokens)
+    const expandedTokens = Array.from(
+        new Set(tokens.flatMap((token) => token.split(/[^A-Z0-9]+/).filter(Boolean)))
+    );
+    for (const token of expandedTokens) {
         if (BRAND_DICT[token]) return BRAND_DICT[token];
     }
 
     // 5b: Fuzzy Match (NEW - for typos/variations)
     // Try to find approximate match in brand dictionary
     const brandKeys = Object.keys(BRAND_DICT);
-    for (const token of tokens) {
+    for (const token of expandedTokens) {
         if (token.length >= 4) { // Only fuzzy match tokens with 4+ chars
             const fuzzyResult = fuzzyMatch(token, brandKeys, { threshold: 0.85 });
             if (fuzzyResult) return BRAND_DICT[fuzzyResult];
@@ -135,9 +143,16 @@ export function extractMerchantKey(description: string): string {
 
     // 5c. Scoring (Winner takes all)
     // If no direct or fuzzy match, ask the scorer for the best candidates
-    const topTokens = getTopTokens(tokens, 2);
+    const topCandidates = getTopTokenCandidates(tokens, 2);
+    const topTokens = topCandidates.map((candidate) => candidate.token);
+    const bestScore = topCandidates[0]?.score ?? -Infinity;
 
     if (topTokens.length > 0) {
+        // Low-confidence fallback: prefer unresolved over noisy pseudo-merchants.
+        if (bestScore < 140 && !isMarketplaceRail) {
+            return paymentRail ? "UNRESOLVED" : "ALTRO";
+        }
+
         const assembledKey = topTokens.join(" ");
 
         // Final check if assembled key is in dict
@@ -158,4 +173,3 @@ export function extractMerchantKey(description: string): string {
 
 // Re-export for backward compatibility
 export { BRAND_DICT } from "./brand-dict";
-

@@ -9,10 +9,12 @@
     "lint": "eslint",
     "test": "vitest",
     "test:run": "vitest run",
+    "governance:quick-check": "bash scripts/audit/governance-quick-check.sh",
+    "governance:enforce": "bash scripts/audit/governance-enforce.sh",
     "goals:validate": "vitest run src/features/goals/validation/",
     "goals:report": "vitest run src/features/goals/validation/ --reporter=verbose",
     "validate": "./.agent/skills/numa-governance-update/scripts/validate.sh",
-    "doe:verify": "npm run test:run && npm run lint && npm run validate"
+    "doe:verify": "npm run governance:enforce && npm run test:run && npm run lint && npm run validate && npm run build"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",

@@ -1,9 +1,7 @@
 import * as React from "react"
 import { motion, Variants } from "framer-motion"
-import { Sparkles, TrendingUp, Lightbulb, ArrowRight, Wallet, BrainCircuit, LineChart, Search, Lock } from "lucide-react"
+import { Sparkles, TrendingUp, Lightbulb, Wallet, BrainCircuit, LineChart, Search, Lock } from "lucide-react"
 import { MacroSection } from "@/components/patterns/macro-section"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { formatEuroNumber } from "@/domain/money"
 import { useAIAdvisor } from "../use-ai-advisor"
@@ -12,12 +10,17 @@ import { useCurrency } from "@/features/settings/api/use-currency"
 import { SubSectionCard } from "@/components/patterns/sub-section-card"
 import { NumaEngineCard } from "@/components/patterns/numa-engine-card"
 
+const SMART_ADVICE_SIGNATURE_KEY = "insights_smart_advice_signature_v1"
+
 export function AIAdvisorCard() {
     const { forecast, facts, subscriptions, isLoading: aiLoading } = useAIAdvisor()
     const { orchestration, isLoading: orchestratorLoading } = useOrchestratedInsights()
     const { currency, locale } = useCurrency()
 
     const isLoading = aiLoading || orchestratorLoading
+    const visibleSubscriptions = subscriptions.slice(0, 3)
+    const hiddenSubscriptionsCount = Math.max(0, subscriptions.length - visibleSubscriptions.length)
+    const [adviceFreshness, setAdviceFreshness] = React.useState<"new" | "same" | null>(null)
 
     // 1. DYNAMIC ATMOSPHERE: Calculate status based on financial health
     const advisorStatus = React.useMemo(() => {
@@ -46,6 +49,26 @@ export function AIAdvisorCard() {
             transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
         }
     }
+    const primary = orchestration?.primary
+    const secondary = orchestration?.secondary
+
+    const whyChips = primary ? [
+        `Fonte: ${primary.source.replace("_", " ")}`,
+        `Priorità: ${primary.severity}`,
+        primary.scope === "current_period" ? "Periodo: corrente" : "Periodo: lungo termine"
+    ] : []
+
+    React.useEffect(() => {
+        if (!primary) return
+        const signature = `${primary.id}|${primary.narration.text}`
+        try {
+            const prevSignature = localStorage.getItem(SMART_ADVICE_SIGNATURE_KEY)
+            setAdviceFreshness(prevSignature === signature ? "same" : "new")
+            localStorage.setItem(SMART_ADVICE_SIGNATURE_KEY, signature)
+        } catch {
+            setAdviceFreshness(null)
+        }
+    }, [primary])
 
     if (isLoading) {
         return (
@@ -65,7 +88,7 @@ export function AIAdvisorCard() {
         )
     }
 
-    if (!forecast && (!orchestration || !orchestration.primary)) {
+    if (!forecast && !primary) {
         return (
             <MacroSection className="opacity-80">
                 <div className="flex flex-col items-center justify-center text-center py-6 gap-4">
@@ -80,8 +103,6 @@ export function AIAdvisorCard() {
             </MacroSection>
         )
     }
-
-    const { primary, secondary } = orchestration || {}
 
     return (
         <MacroSection
@@ -142,11 +163,25 @@ export function AIAdvisorCard() {
                                 </div>
 
                                 <div className="flex flex-wrap gap-2">
-                                    {subscriptions.slice(0, 3).map((sub, i) => (
-                                        <div key={i} className="px-3 py-1.5 rounded-xl bg-background/80 dark:bg-slate-800 border border-border/50 text-xs font-bold text-muted-foreground shadow-sm">
-                                            Servizio #{i + 1}
+                                    {visibleSubscriptions.map((sub) => (
+                                        <div
+                                            key={sub.id}
+                                            className="max-w-full md:max-w-[34rem] px-3 py-1.5 rounded-xl bg-background/80 dark:bg-slate-800 border border-border/50 text-xs font-bold text-muted-foreground shadow-sm"
+                                            title={`${sub.description} · ${formatEuroNumber(sub.amount, currency, locale)}/mese`}
+                                        >
+                                            <span className="inline-flex max-w-full items-center gap-2">
+                                                <span className="truncate">{sub.description}</span>
+                                                <span className="shrink-0 text-foreground/80">
+                                                    {formatEuroNumber(sub.amount, currency, locale)}/mese
+                                                </span>
+                                            </span>
                                         </div>
                                     ))}
+                                    {hiddenSubscriptionsCount > 0 && (
+                                        <div className="px-3 py-1.5 rounded-xl bg-muted/50 border border-border/50 text-xs font-bold text-muted-foreground shadow-sm">
+                                            +{hiddenSubscriptionsCount} altri
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </SubSectionCard>
@@ -229,6 +264,24 @@ export function AIAdvisorCard() {
                                     &quot;{primary.narration.text}&quot;
                                 </p>
 
+                                <div className="flex flex-wrap gap-2">
+                                    {adviceFreshness === "same" && (
+                                        <span className="px-2 py-1 rounded-lg bg-muted/60 border border-border/50 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                                            Nessuna novità
+                                        </span>
+                                    )}
+                                    {adviceFreshness === "new" && (
+                                        <span className="px-2 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
+                                            Nuovo insight
+                                        </span>
+                                    )}
+                                    {whyChips.map((chip, idx) => (
+                                        <span key={idx} className="px-2 py-1 rounded-lg bg-background/70 border border-border/50 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                                            {chip}
+                                        </span>
+                                    ))}
+                                </div>
+
                                 {secondary && secondary.length > 0 && (
                                     <div className="space-y-2 pt-4 border-t border-indigo-500/10">
                                         {secondary.map((s, idx) => (
@@ -241,11 +294,6 @@ export function AIAdvisorCard() {
                                 )}
                             </div>
 
-                            <div className="mt-6 flex justify-end relative z-10">
-                                <Button variant="ghost" size="sm" className="h-9 rounded-xl text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/10 group">
-                                    Approfondisci <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                                </Button>
-                            </div>
                         </SubSectionCard>
                     </motion.div>
                 )}

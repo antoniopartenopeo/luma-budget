@@ -3,7 +3,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest"
 import { activateRhythm } from "../rhythm-orchestrator"
 import { BaselineMetrics } from "../financial-baseline"
 import { ScenarioConfig } from "../../types"
-import { Category } from "@/features/categories/config"
 import * as goalRepo from "../../api/goal-repository"
 import * as budgetRepo from "@/VAULT/budget/api/repository"
 
@@ -16,21 +15,18 @@ describe("Rhythm Orchestrator (Phase 3)", () => {
         averageMonthlyIncome: 300000,
         averageMonthlyExpenses: 200000,
         averageEssentialExpenses: 120000,
+        averageSuperfluousExpenses: 50000,
+        averageComfortExpenses: 30000,
         expensesStdDev: 10000,
         monthsAnalyzed: 6
     }
-
-    const mockCategories: Category[] = [
-        { id: "cat1", label: "Rent", spendingNature: "essential", kind: "expense", iconName: "home", color: "#000", hexColor: "#ffffff" },
-        { id: "cat2", label: "Gym", spendingNature: "comfort", kind: "expense", iconName: "activity", color: "#000", hexColor: "#ffffff" },
-        { id: "cat3", label: "Netflix", spendingNature: "superfluous", kind: "expense", iconName: "tv", color: "#000", hexColor: "#ffffff" }
-    ]
 
     const mockScenario: ScenarioConfig = {
         type: "balanced",
         label: "Passo Svelto",
         description: "Ottimizza il percorso",
-        applicationMap: { "cat2": 5, "cat3": 20 }
+        applicationMap: { "cat2": 5, "cat3": 20 },
+        savingsMap: { superfluous: 20, comfort: 5 }
     }
 
     beforeEach(() => {
@@ -42,8 +38,7 @@ describe("Rhythm Orchestrator (Phase 3)", () => {
             userId: "user1",
             goalTargetCents: 100000,
             scenario: mockScenario,
-            baseline: mockBaseline,
-            categories: mockCategories
+            baseline: mockBaseline
         })
 
         expect(commitment.rhythmType).toBe("balanced")
@@ -63,8 +58,7 @@ describe("Rhythm Orchestrator (Phase 3)", () => {
             userId: "user1",
             goalTargetCents: 100000,
             scenario: mockScenario,
-            baseline: mockBaseline,
-            categories: mockCategories
+            baseline: mockBaseline
         })
 
         // Verify budgetRepo.upsertBudget was called with derived values
@@ -83,8 +77,7 @@ describe("Rhythm Orchestrator (Phase 3)", () => {
             userId: "user1",
             goalTargetCents: 100000,
             scenario: mockScenario,
-            baseline: mockBaseline,
-            categories: mockCategories
+            baseline: mockBaseline
         })
 
         const secondScenario: ScenarioConfig = { ...mockScenario, type: "aggressive", label: "Sprint" }
@@ -92,8 +85,7 @@ describe("Rhythm Orchestrator (Phase 3)", () => {
             userId: "user1",
             goalTargetCents: 100000,
             scenario: secondScenario,
-            baseline: mockBaseline,
-            categories: mockCategories
+            baseline: mockBaseline
         })
 
         expect(goalRepo.savePortfolio).toHaveBeenCalledTimes(2)
@@ -109,8 +101,7 @@ describe("Rhythm Orchestrator (Phase 3)", () => {
             userId: "user1",
             goalTargetCents: LARGE_GOAL,
             scenario: mockScenario,
-            baseline: mockBaseline,
-            categories: mockCategories
+            baseline: mockBaseline
         })
 
         // 2. Simulate a projection engine run using the derived configuration
@@ -135,8 +126,7 @@ describe("Rhythm Orchestrator (Phase 3)", () => {
             userId: "user1",
             goalTargetCents: 100000,
             scenario: mockScenario,
-            baseline: mockBaseline,
-            categories: mockCategories
+            baseline: mockBaseline
         })
 
         // The commitment object itself must NOT contain 'budget', 'limit', or 'category' breakdowns
@@ -149,5 +139,21 @@ describe("Rhythm Orchestrator (Phase 3)", () => {
         // Output for user should be purely rhythmic/temporal
         expect(commitment).toHaveProperty("rhythmLabel")
         expect(commitment).toHaveProperty("activatedAt")
+    })
+
+    it("should not crash when savingsMap is missing (legacy scenario payload)", async () => {
+        const legacyScenario = {
+            ...mockScenario,
+            savingsMap: undefined
+        } as unknown as ScenarioConfig
+
+        await expect(
+            activateRhythm({
+                userId: "user1",
+                goalTargetCents: 100000,
+                scenario: legacyScenario,
+                baseline: mockBaseline
+            })
+        ).resolves.toBeDefined()
     })
 })

@@ -75,17 +75,17 @@ export function extractPaymentRail(normalizedText: string): PaymentRailResult {
         for (const rail of sortedRails) {
             // Escape special regex characters in rail name
             const escapedRail = rail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            // We look for the rail as a distinct word
-            const regex = new RegExp(`(^|\\s|\\*)${escapedRail}($|\\s|\\*)`, "gi");
+            // We look for the rail as a distinct token, allowing spaces or '*' around it.
+            const railRegex = new RegExp(`(^|\\s|\\*)${escapedRail}($|\\s|\\*)`, "gi");
+            const updated = remainder
+                .replace(railRegex, " ")
+                .replace(/\s+/g, " ")
+                .replace(/^\*+|\*+$/g, "")
+                .trim();
 
-            if (regex.test(remainder)) {
-                if (!foundRails.includes(rail)) {
-                    foundRails.push(rail);
-                }
-                // Remove ALL occurrences of this rail
-                remainder = remainder.replace(new RegExp(`(^|\\s)${escapedRail}(\\s|$)`, "gi"), " ");
-                // Clean up potential double spaces
-                remainder = remainder.replace(/\s+/g, " ").replace(/^\*|\*$/g, "").trim();
+            if (updated !== remainder) {
+                if (!foundRails.includes(rail)) foundRails.push(rail);
+                remainder = updated;
                 changed = true;
             }
         }

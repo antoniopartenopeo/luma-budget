@@ -34,7 +34,7 @@ export function narrateBudget(
 
         case "at_risk":
             return {
-                text: "Il ritmo di spesa attuale suggerisce cautela: continuando così, il traguardo potrebbe richiedere più tempo del previsto.",
+                text: "Il ritmo di spesa attuale suggerisce cautela: continuando così, potresti superare il ritmo pianificato del mese.",
                 shortText: "Ritmo elevato"
             }
 
@@ -47,7 +47,7 @@ export function narrateBudget(
 
         case "on_track":
             return {
-                text: "Le spese sono in linea con la programmazione temporale del mese. Stai rispettando il ritmo di crocierà.",
+                text: "Le spese sono in linea con la programmazione temporale del mese. Stai rispettando il ritmo pianificato.",
                 shortText: "In linea"
             }
 

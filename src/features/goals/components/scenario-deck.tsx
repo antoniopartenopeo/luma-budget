@@ -5,7 +5,7 @@ import * as React from "react"
 import { SubSectionCard } from "@/components/patterns/sub-section-card"
 import { NumaEngineCard } from "@/components/patterns/numa-engine-card"
 import { cn } from "@/lib/utils"
-import { Compass, Target, CheckCircle2, Sparkles, Activity, BarChart3, Lock } from "lucide-react"
+import { Compass, Target, CheckCircle2, Sparkles } from "lucide-react"
 import { GoalScenarioResult, ScenarioKey } from "@/VAULT/goals/types"
 import { Badge } from "@/components/ui/badge"
 

@@ -65,6 +65,15 @@ describe("Merchant Extraction v3 - Golden Fixtures", () => {
         // 8. Bridge Tokens
         { desc: "PAYPAL *Mktp TEST", expected: "TEST" },
         { desc: "PAYPAL *IE *TEST", expected: "TEST" },
+
+        // 9. Bank/SEPA noisy descriptions
+        {
+            desc: "Addebito sepa dd per fattura a vostro carico incasso fmitpmt-69437859 sdd da it46zzz0000013970161009 iliad mandato nr. iliad-ad823o-2",
+            expected: "ILIAD"
+        },
+
+        // 10. No-space rail separators
+        { desc: "PAYPAL*NETFLIX", expected: "NETFLIX" },
     ];
 
     test.each(GOLDEN_FIXTURES)("['$desc'] -> '$expected'", ({ desc, expected }) => {

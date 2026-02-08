@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Database, RotateCcw, Search, MoreHorizontal, Archive, RefreshCw } from "lucide-react"
+import { RotateCcw, Search, MoreHorizontal, Archive, RefreshCw } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

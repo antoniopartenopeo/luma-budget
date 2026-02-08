@@ -10,9 +10,18 @@ echo ""
 
 # Install git hooks
 echo "📌 Installing git hooks..."
-cp .agent/skills/numa-governance-update/scripts/pre-commit .git/hooks/pre-commit
-chmod +x .git/hooks/pre-commit
-echo "✅ Pre-commit hook installed"
+git config core.hooksPath .githooks
+
+if [ -f ".agent/skills/numa-governance-update/scripts/pre-commit" ]; then
+  cp .agent/skills/numa-governance-update/scripts/pre-commit .githooks/pre-commit
+  chmod +x .githooks/pre-commit
+  echo "✅ Pre-commit hook installed"
+fi
+
+if [ -f ".githooks/pre-push" ]; then
+  chmod +x .githooks/pre-push
+  echo "✅ Pre-push hook installed"
+fi
 
 echo ""
 echo "🎉 Setup complete!"

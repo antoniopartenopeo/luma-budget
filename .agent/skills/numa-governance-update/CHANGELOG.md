@@ -4,6 +4,22 @@ Storico consolidato di tutte le modifiche a regole, skill, e standard di svilupp
 
 ---
 
+## [2.8.1] - 2026-02-08
+
+### Fixed
+- **Runtime Hardening (Goals Rhythm)**:
+  - Aggiunta normalizzazione difensiva per `savingsMap` in `rhythm-orchestrator` con fallback su preset `RHYTHMS` e fallback safe finale.
+  - Eliminato rischio crash su payload legacy senza `savingsMap`.
+- **Semantic Contract Recovery (Narration Layer)**:
+  - Riallineate le frasi dei narrator (`budget`, `kpi`, `snapshot`) agli invarianti e ai test semantici correnti.
+- **UI Governance Compliance**:
+  - Ripristinato `backdrop-blur-xl` su `MacroSection` per coerenza `glass-panel` della checklist premium.
+
+### Changed
+- **Lint Reliability**:
+  - Rimossi `@ts-ignore` e `any` nei flow Insights tramite typing esplicito.
+  - Pulizia import inutilizzati su componenti dashboard/goals/settings/insights.
+
 ## [2.8.0] - 2026-02-02
 
 ### Added

@@ -15,6 +15,15 @@ interface ActivateRhythmInput {
     goalTitle?: string
 }
 
+interface SavingsMap {
+    superfluous: number
+    comfort: number
+}
+
+type ScenarioWithOptionalSavings = Pick<ScenarioConfig, "type"> & {
+    savingsMap?: SavingsMap
+}
+
 /**
  * Orchestrates the "Conscious Commitment" process for a portfolio of goals.
  * 1. Persists the Rhythm choice as the global active rhythm in the portfolio.
@@ -54,10 +63,9 @@ export async function activateRhythm({
         superfluous: 0
     }
 
-    // Logic is now ADAPTIVE: we use the savingsMap directly from the scenario
-    // as it was already calibrated by the Core (ScenarioGenerator).
-    natureAppliedIntensity.superfluous = scenario.savingsMap.superfluous
-    natureAppliedIntensity.comfort = scenario.savingsMap.comfort
+    const normalizedSavingsMap = normalizeSavingsMap(scenario)
+    natureAppliedIntensity.superfluous = normalizedSavingsMap.superfluous
+    natureAppliedIntensity.comfort = normalizedSavingsMap.comfort
 
     // Calculate real benefit based on granular historical averages
     const superfluousBenefit = (baseline.averageSuperfluousExpenses * natureAppliedIntensity.superfluous) / 100
@@ -134,4 +142,16 @@ function calculateAggregateIntensity(scenario: ScenarioConfig): number {
     return config?.intensity || 0
 }
 
+function normalizeSavingsMap(scenario: ScenarioWithOptionalSavings): SavingsMap {
+    if (scenario.savingsMap) {
+        return scenario.savingsMap
+    }
+
+    const fallbackFromPreset = RHYTHMS.find((preset) => preset.type === scenario.type)?.savings
+    if (fallbackFromPreset) {
+        return fallbackFromPreset
+    }
+
+    return { superfluous: 0, comfort: 0 }
+}
 

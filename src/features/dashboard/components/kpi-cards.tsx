@@ -21,7 +21,7 @@ import { generateSmartContext } from "@/features/smart-context/logic/context-eng
 import { SmartKpiCard } from "@/features/smart-context/components/smart-kpi-card"
 
 import { NumaEngineCard } from "@/components/patterns/numa-engine-card"
-import { Sparkles, BrainCircuit, ShieldCheck, Hourglass, TrendingUp, PiggyBank, Zap } from "lucide-react"
+import { BrainCircuit, ShieldCheck, Hourglass, TrendingUp, PiggyBank, Zap } from "lucide-react"
 
 interface DashboardKpiGridProps {
     totalSpent?: number

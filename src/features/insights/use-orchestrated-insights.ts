@@ -1,6 +1,5 @@
 "use client"
 
-import { useMemo } from "react"
 import { useAIAdvisor } from "./use-ai-advisor"
 import { useInsights } from "./use-insights"
 import { useTrendData } from "./use-trend-data"
@@ -16,14 +15,13 @@ import {
 import { getCurrentPeriod } from "./utils"
 
 export function useOrchestratedInsights(period: string = getCurrentPeriod()) {
-    // @ts-ignore - implicit return extension
-    const { facts: advisorFacts, subscriptions, priceHikes = [], isLoading: aiLoading } = useAIAdvisor()
+    const { facts: advisorFacts, subscriptions, priceHikes, isLoading: aiLoading } = useAIAdvisor()
     const { insights, isLoading: insightsLoading } = useInsights({ period })
     const { data: trendData, isLoading: trendLoading } = useTrendData()
 
     const isLoading = aiLoading || insightsLoading || trendLoading
 
-    const orchestration = useMemo(() => {
+    const orchestration = (() => {
         if (isLoading) return null
 
         const candidates: NarrationCandidate[] = []
@@ -43,10 +41,7 @@ export function useOrchestratedInsights(period: string = getCurrentPeriod()) {
         }
 
         // 2a. Map Price Hikes (New High Priority)
-        // @ts-ignore
-        const hikes = priceHikes || []
-
-        hikes.forEach((hike: any) => {
+        priceHikes.forEach((hike) => {
             const diffFormatted = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(hike.diff / 100)
             candidates.push({
                 id: `hike-${hike.name}`,
@@ -112,7 +107,7 @@ export function useOrchestratedInsights(period: string = getCurrentPeriod()) {
         }
 
         return orchestrateNarration(candidates)
-    }, [advisorFacts, subscriptions, insights, trendData, isLoading])
+    })()
 
     return {
         orchestration,

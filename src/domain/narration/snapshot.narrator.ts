@@ -87,15 +87,15 @@ function narrateStrained(facts: SnapshotFacts): NarrationResult {
     if (superfluousPercent !== undefined && superfluousTargetPercent !== undefined &&
         superfluousPercent > superfluousTargetPercent) {
         return {
-            text: `Le spese extra sono al ${superfluousPercent}%, oltre il target del ${superfluousTargetPercent}%. Valuta un piccolo taglio per migliorare il margine.`,
-            shortText: `Extra: ${superfluousPercent}%`
+            text: `Le spese superflue sono al ${superfluousPercent}%, oltre il target del ${superfluousTargetPercent}%. Valuta un piccolo taglio per migliorare il margine.`,
+            shortText: `Superflue: ${superfluousPercent}%`
         }
     }
 
     // Secondary: budget strained
     if (utilizationPercent !== undefined && utilizationPercent > 90) {
         return {
-            text: `Attenzione: hai utilizzato il ${utilizationPercent}% della programmazione disponibile. Resta poco margine per i prossimi giorni.`,
+            text: `Attenzione: hai utilizzato il ${utilizationPercent}% del budget disponibile. Resta poco margine per i prossimi giorni.`,
             shortText: `Pacing: ${utilizationPercent}%`
         }
     }
@@ -143,7 +143,7 @@ function narrateCritical(facts: SnapshotFacts): NarrationResult {
     if (balanceCents < 0 && utilizationPercent !== undefined && utilizationPercent > 100) {
         return {
             text: `Il limite di pacing è stato superato (${utilizationPercent}%) e il saldo attuale è in negativo. Si consiglia una revisione degli impegni.`,
-            shortText: "Ritmo oltre limite"
+            shortText: "Budget oltre limite"
         }
     }
 

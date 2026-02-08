@@ -1,6 +1,6 @@
 import { BRAND_DICT } from "./brand-dict";
 
-interface ScoredToken {
+export interface ScoredToken {
     token: string;
     score: number;
     originalIndex: number;
@@ -10,7 +10,9 @@ interface ScoredToken {
 export const SCORING_BLACKLIST = new Set([
     "PAGAMENTO", "TRANSAZIONE", "OPERAZIONE", "CARTA", "BANCOMAT",
     "MOVIMENTO", "ACQUISTO", "PRELIEVO", "AUTORIZZAZIONE", "COMMISSIONE",
-    "GIROCONTO", "DISPOSIZIONE", "SEPA", "ATM", "POS"
+    "GIROCONTO", "DISPOSIZIONE", "SEPA", "ATM", "POS",
+    // SEPA/bank boilerplate tokens
+    "DD", "SDD", "MANDATO", "FATTURA", "INCASSO", "NR", "N", "CARICO", "VOSTRO"
 ]);
 
 // Known brand fragments for partial matching
@@ -96,6 +98,10 @@ export function scoreTokens(tokens: string[]): ScoredToken[] {
  * v2.1: Deterministic tie-break
  */
 export function getTopTokens(tokens: string[], count: number = 2): string[] {
+    return getTopTokenCandidates(tokens, count).map(t => t.token);
+}
+
+export function getTopTokenCandidates(tokens: string[], count: number = 2): ScoredToken[] {
     const scored = scoreTokens(tokens);
 
     return scored
@@ -108,6 +114,5 @@ export function getTopTokens(tokens: string[], count: number = 2): string[] {
             return a.originalIndex - b.originalIndex;
         })
         .slice(0, count)
-        .sort((a, b) => a.originalIndex - b.originalIndex) // Back to natural order
-        .map(t => t.token);
+        .sort((a, b) => a.originalIndex - b.originalIndex); // Back to natural order
 }

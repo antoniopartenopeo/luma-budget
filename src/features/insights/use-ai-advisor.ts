@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect } from "react"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
 import { sumExpensesInCents, sumIncomeInCents } from "@/domain/money"
 import { AdvisorFacts } from "@/domain/narration"
+import { extractMerchantKey } from "@/features/import-csv/core/merchant/pipeline"
 
 export interface AISubscription {
     id: string
@@ -17,11 +18,36 @@ export interface AIForecast {
     confidence: "high" | "medium" | "low"
 }
 
+export interface AIPriceHike {
+    name: string
+    diff: number
+    percent: number
+}
+
 export interface AIAdvisorResult {
     facts: AdvisorFacts | null
     forecast: AIForecast | null
     subscriptions: AISubscription[]
+    priceHikes: AIPriceHike[]
     isLoading: boolean
+}
+
+function isMonthlySubscriptionPattern(sortedDates: number[]): boolean {
+    if (sortedDates.length < 2) return false
+    const diffsInDays: number[] = []
+    for (let i = 1; i < sortedDates.length; i++) {
+        diffsInDays.push((sortedDates[i] - sortedDates[i - 1]) / (1000 * 60 * 60 * 24))
+    }
+
+    const monthlyMatches = diffsInDays.filter((diffDays) => diffDays >= 25 && diffDays <= 35).length
+    const cadenceRatio = monthlyMatches / diffsInDays.length
+
+    return monthlyMatches >= 1 && cadenceRatio >= 0.5
+}
+
+function isRecentlyActive(latestTimestamp: number, now: Date): boolean {
+    const diffDays = (now.getTime() - latestTimestamp) / (1000 * 60 * 60 * 24)
+    return diffDays <= 45
 }
 
 export function useAIAdvisor() {
@@ -38,54 +64,61 @@ export function useAIAdvisor() {
 
     const computation = useMemo(() => {
         if (isDataLoading || transactions.length < 2) {
-            return { facts: null, forecast: null, subscriptions: [] }
+            return { facts: null, forecast: null, subscriptions: [], priceHikes: [] as AIPriceHike[] }
         }
 
         const expenses = transactions.filter(t => t.type === "expense")
 
-        // 1. Subscription Detection Logic
-        const patternMap = new Map<string, number[]>()
+        // 1. Subscription Detection Logic (merchant-centric, one active subscription per merchant)
+        const patternMap = new Map<string, { dates: number[]; samples: Array<{ timestamp: number; amountCents: number }> }>()
         expenses.forEach(t => {
-            const key = `${t.description.toLowerCase()}_${Math.abs(t.amountCents)}`
-            const dates = patternMap.get(key) || []
-            dates.push(new Date(t.timestamp).getTime())
-            patternMap.set(key, dates)
+            const merchantKey = extractMerchantKey(t.description)
+            const key = merchantKey
+            const timestamp = new Date(t.timestamp).getTime()
+            const record = patternMap.get(key) || { dates: [], samples: [] }
+            record.dates.push(timestamp)
+            record.samples.push({ timestamp, amountCents: Math.abs(t.amountCents) })
+            patternMap.set(key, record)
         })
 
         const detectedSubscriptions: AISubscription[] = []
         let subscriptionTotalYearlyCents = 0
+        const now = new Date()
 
-        patternMap.forEach((dates, key) => {
-            if (dates.length >= 2) {
-                dates.sort((a, b) => a - b)
-                let isMonthly = false
-                for (let i = 1; i < dates.length; i++) {
-                    const diffDays = (dates[i] - dates[i - 1]) / (1000 * 60 * 60 * 24)
-                    if (diffDays >= 25 && diffDays <= 35) isMonthly = true
-                }
+        patternMap.forEach((record, merchantKey) => {
+            if (merchantKey === "ALTRO" || merchantKey === "UNRESOLVED") return
+            if (record.dates.length < 2) return
 
-                if (isMonthly) {
-                    const [desc, amountCentsStr] = key.split("_")
-                    const amountCents = parseInt(amountCentsStr)
-                    const amount = amountCents / 100
+            const sortedDates = [...record.dates].sort((a, b) => a - b)
+            const latestTimestamp = sortedDates[sortedDates.length - 1]
+            if (!isRecentlyActive(latestTimestamp, now)) return
+            if (!isMonthlySubscriptionPattern(sortedDates)) return
 
-                    // Noise Gate: Ignore subscriptions under €5
-                    if (Math.abs(amount) >= 5) {
-                        detectedSubscriptions.push({
-                            id: key,
-                            description: desc.charAt(0).toUpperCase() + desc.slice(1),
-                            amount: amount,
-                            frequency: "monthly"
-                        })
-                        subscriptionTotalYearlyCents += (Math.abs(amountCents) * 12)
-                    }
-                }
-            }
+            const latestAmountCents =
+                record.samples
+                    .slice()
+                    .sort((a, b) => b.timestamp - a.timestamp)[0]?.amountCents ?? 0
+            const amount = latestAmountCents / 100
+
+            // Noise Gate: Ignore subscriptions under €5
+            if (Math.abs(amount) < 5) return
+
+            detectedSubscriptions.push({
+                id: merchantKey,
+                description: merchantKey,
+                amount: amount,
+                frequency: "monthly"
+            })
+            subscriptionTotalYearlyCents += (Math.abs(latestAmountCents) * 12)
+        })
+
+        detectedSubscriptions.sort((a, b) => {
+            if (b.amount !== a.amount) return b.amount - a.amount
+            return a.description.localeCompare(b.description)
         })
 
         // 2. Forecasting Logic (Weighted Moving Average)
         const last3Months = []
-        const now = new Date()
         for (let i = 1; i <= 3; i++) {
             const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
             last3Months.push({ y: d.getFullYear(), m: d.getMonth() })
@@ -107,14 +140,12 @@ export function useAIAdvisor() {
         let facts: AdvisorFacts | null = null
 
         // Price Hike Detection (Subscription Analysis)
-        const priceHikes: { name: string, diff: number, percent: number }[] = []
+        const priceHikes: AIPriceHike[] = []
         detectedSubscriptions.forEach(sub => {
-            // Heuristic: Check if the LATEST transaction for this sub is significantly higher (>5%) than the average of previous ones
-            // We need raw transactions for this sub.
-            const subKeyPart = sub.description.toLowerCase() // Simple match
-            // Note: In a real app we would use exact ID matching or more robust correlation. 
-            // Here we re-scan expenses for this description.
-            const subTx = expenses.filter(t => t.description.toLowerCase().includes(subKeyPart)).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+            // Heuristic: compare latest merchant amount vs historical average for the same merchant.
+            const subTx = expenses
+                .filter((t) => extractMerchantKey(t.description) === sub.description)
+                .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
 
             if (subTx.length >= 2) {
                 const latestAmount = Math.abs(subTx[0].amountCents)
@@ -162,9 +193,7 @@ export function useAIAdvisor() {
                 deltaCents: predictedSavingsCents,
                 historicalMonthsCount: historicalMonthsWithData,
                 subscriptionCount: detectedSubscriptions.length,
-                subscriptionTotalYearlyCents,
-                // @ts-ignore - extending type implicitly for internal use if needed, or we rely on Orchestrator to recalculate
-                priceHikesCount: priceHikes.length
+                subscriptionTotalYearlyCents
             }
         } else {
             // Cold Start: Use current month

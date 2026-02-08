@@ -58,7 +58,7 @@ export function MacroSection({
             <Card
                 data-testid="macro-card"
                 className={cn(
-                    "relative border-none p-1 rounded-[2.5rem] glass-panel transition-all duration-500 overflow-hidden",
+                    "relative border-none p-1 rounded-[2.5rem] glass-panel backdrop-blur-xl transition-all duration-500 overflow-hidden",
                     isWarning && "shadow-[0_0_40px_-10px_rgba(251,191,36,0.2)] ring-1 ring-amber-500/20",
                     isCritical && "shadow-[0_0_40px_-10px_rgba(244,63,94,0.3)] ring-1 ring-rose-500/20"
                 )}>

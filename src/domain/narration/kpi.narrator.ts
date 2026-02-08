@@ -87,7 +87,7 @@ function narrateNeutral(facts: KPIFacts): NarrationResult {
 
     switch (kpiId) {
         case "budget":
-            return { text: "Imposta un ritmo di spesa per avere un'analisi più precisa." }
+            return { text: "Pianifica un budget per avere un'analisi più precisa." }
         case "superfluous":
             return { text: "I dati sulle spese extra sono ancora limitati." }
         default:

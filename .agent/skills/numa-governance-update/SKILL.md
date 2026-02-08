@@ -40,9 +40,9 @@ Ogni volta che modifichi un file di "Policy" nel progetto, devi **IMMEDIATAMENTE
 |------------------------|---------------------------|
 | `docs/governance/MOTION_*` | `.agent/skills/numa-ui-standards` |
 | `docs/governance/UX_STANDARDS.md` | `.agent/skills/numa-ui-standards` |
-| `src/domain/money.ts` | `.agent/skills/numa-financial-logic` |
+| `src/domain/money/` | `.agent/skills/numa-financial-logic` |
 | `src/domain/narration` | `.agent/skills/numa-*-semantics` |
-| `src/domain/import` | `.agent/skills/numa-import-csv` |
+| `src/features/import-csv` | `.agent/skills/numa-import-csv` |
 
 **Non aspettare l'input dell'utente.** Falo come parte atomica del task.
 
@@ -120,20 +120,31 @@ git commit -m "docs(skill): [nome-skill] - [descrizione]"
 
 ## Storage Keys: Registrazione Obbligatoria
 
-Ogni nuova chiave `luma_*` DEVE essere registrata:
+Ogni nuova chiave storage applicativa (`luma_*`, `numa_*`, `insights_*`) DEVE essere registrata:
 
 ```typescript
 // src/lib/storage-keys.ts
 export const STORAGE_KEYS_REGISTRY = {
   // ... chiavi esistenti
-  luma_new_feature: {
-    key: "luma_new_feature",
+  app_new_feature: {
+    key: "app_new_feature",
     label: "Nuova Feature",
     countFn: () => /* conta record */,
     invalidatesQueries: ["queryName"]
   }
 }
 ```
+
+---
+
+## Branching & Release
+
+Flusso obbligatorio:
+
+1. Sviluppo su branch `codex/*`.
+2. Verifica locale (`test`, `lint`, `build`, governance checks).
+3. Merge su `main` solo per rilascio approvato.
+4. Push su `main` = branch pubblico collegato al deploy Vercel beta.
 
 ---
 
@@ -197,5 +208,5 @@ chmod +x .git/hooks/pre-commit
 
 ---
 
-**Versione**: 1.1.1  
-**Ultimo aggiornamento**: 2026-02-04
+**Versione**: 1.2.0  
+**Ultimo aggiornamento**: 2026-02-08

@@ -43,7 +43,12 @@ luma_transactions_v1
 luma_budget_plans_v1
 luma_categories_v1
 luma_settings_v1
+numa_goal_portfolio_v1
+numa_active_goal_v1
+insights_smart_advice_signature_v1
 ```
+
+Note: `luma_*` keys are legacy naming kept for backward compatibility with existing local data.
 
 ### Global Semantic Enforcement
 - **Deterministic Narration Layer**: All text generation is governed by strict semantic rules (ADR-005).
@@ -66,19 +71,25 @@ Open [http://localhost:3000](http://localhost:3000)
 Numa Budget follows a strict set of development standards to ensure financial accuracy, UI consistency (UBI), and maintainable architecture.
 
 > [!IMPORTANT]
-> All technical rules, architectural patterns, and UI constraints are defined in the **[Numa Core Rules](file:///.agent/rules/numa-core-rules.md)**.
+> All technical rules, architectural patterns, and UI constraints are defined in the **[Numa Core Rules](./.agent/rules/numa-core-rules.md)**.
 > 
-> Before contributing, ensure you have read the **[Numa Core Rules](file:///.agent/rules/numa-core-rules.md)**.
+> Before contributing, ensure you have read the **[Numa Core Rules](./.agent/rules/numa-core-rules.md)**.
 
 ## 📁 Documentation
 
-- **[Numa Core Rules](file:///.agent/rules/numa-core-rules.md)**: Core development standards and constraints.
-- **[UI Standards](file:///.agent/skills/numa-ui-standards/SKILL.md)**: Design system and UBI rules.
-- **[Financial Logic](file:///.agent/skills/numa-financial-logic/SKILL.md)**: Monetary domain rules.
+- **[Numa Core Rules](./.agent/rules/numa-core-rules.md)**: Core development standards and constraints.
+- **[UI Standards](./.agent/skills/numa-ui-standards/SKILL.md)**: Design system and UBI rules.
+- **[Financial Logic](./.agent/skills/numa-financial-logic/SKILL.md)**: Monetary domain rules.
+- **[Governance Update Skill](./.agent/skills/numa-governance-update/SKILL.md)**: Governance and release process.
 
 ## 🚀 Deploy
 
 Standard Next.js deployment on Vercel.
+
+Release flow:
+- Work branches: `codex/*`
+- Public beta deploy branch: `main`
+- Merge to `main` only when a release is approved
 
 ---
 

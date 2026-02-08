@@ -41,13 +41,14 @@ Le regole finanziarie e di sicurezza NON sono negoziabili.
 | 1 | **SEMPRE** usare `amountCents` (integer) per importi. Rimosso campo `amount` deprecato. | `@/domain/money` |
 | 2 | **SEMPRE** usare signed cents per aggregazioni multi-transazione | `getSignedCents()` |
 | 3 | **SEMPRE** usare `filterByRange()` per filtri temporali | `@/lib/date-ranges.ts` |
-| 4 | **SEMPRE** registrare nuove chiavi `luma_*` in `STORAGE_KEYS_REGISTRY` | `@/lib/storage-keys.ts` |
+| 4 | **SEMPRE** registrare nuove storage key app (`luma_*`, `numa_*`, `insights_*`) in `STORAGE_KEYS_REGISTRY` | `@/lib/storage-keys.ts` |
 | 5 | **SEMPRE** allineare `getAppVersion()` con `package.json` | Prima di ogni release |
-| 6 | **SEMPRE** usare `Sheet` per edit/detail, `Dialog` per wizard. | [Unified Sheet Layout Pattern](file:///.agent/skills/numa-ui-standards/SKILL.md#layout-sheet-standardizzato) |
-| 7 | **SEMPRE** passare la **[Checklist UI/UX](file:///.agent/rules/ui-regression-checklist.md)** prima di chiudere un task | DoD Obbligatorio |
+| 6 | **SEMPRE** usare `Sheet` per edit/detail, `Dialog` per wizard. | [Unified Sheet Layout Pattern](../skills/numa-ui-standards/SKILL.md#layout-sheet-standardizzato) |
+| 7 | **SEMPRE** passare la **[Checklist UI/UX](./ui-regression-checklist.md)** prima di chiudere un task | DoD Obbligatorio |
 | 8 | **SEMPRE** usare `font-medium` per descriptions e body text | Leggibilità su Glass |
 | 9 | **SEMPRE** usare icone `h-3 w-3` per sub-header e meta-info | Standard Proporzioni |
 | 10| **SEMPRE** aderire alle Skill Semantiche (`numa-*-semantics`) | Determinismo Narrativo |
+| 11| **SEMPRE** sviluppare su branch `codex/*` e promuovere su `main` solo al momento del rilascio approvato | Flusso release beta su Vercel |
 
 ---
 
@@ -97,5 +98,5 @@ Per procedure dettagliate, attiva la skill appropriata:
 
 ---
 
-**Versione**: 2.1.0  
-**Ultimo aggiornamento**: 2026-02-04
+**Versione**: 2.2.0  
+**Ultimo aggiornamento**: 2026-02-08

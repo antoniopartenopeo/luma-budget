@@ -4,6 +4,16 @@ Storico consolidato di tutte le modifiche a regole, skill, e standard di svilupp
 
 ---
 
+## [2.8.2] - 2026-02-08
+
+### Changed
+- **Governance Release Policy**:
+  - Formalizzato il flusso branch/release: sviluppo su `codex/*`, promozione su `main` solo con approvazione rilascio.
+- **Storage Key Policy**:
+  - Estesa la regola di registrazione da sole chiavi `luma_*` a chiavi applicative `luma_*`, `numa_*`, `insights_*`.
+- **Path Alignment**:
+  - Aggiornati riferimenti obsoleti nella skill governance (`src/domain/money/`, `src/features/import-csv`).
+
 ## [2.8.1] - 2026-02-08
 
 ### Fixed

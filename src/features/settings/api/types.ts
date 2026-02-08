@@ -9,6 +9,8 @@ export type AppSettingsV1 = {
     superfluousTargetPercent: number
     insightsSensitivity: InsightsSensitivity
     profile?: {
+        firstName?: string
+        lastName?: string
         displayName?: string
     }
 }
@@ -20,6 +22,8 @@ export const DEFAULT_SETTINGS_V1: AppSettingsV1 = {
     superfluousTargetPercent: 10,
     insightsSensitivity: "medium",
     profile: {
+        firstName: "",
+        lastName: "",
         displayName: ""
     }
 }

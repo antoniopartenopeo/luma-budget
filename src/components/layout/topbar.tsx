@@ -1,16 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { Menu, Eye, EyeOff } from "lucide-react"
+import { Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { QuickExpenseInput } from "@/features/transactions/components/quick-expense-input"
-import { usePrivacyStore } from "@/features/privacy/privacy.store"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Sidebar } from "./sidebar"
-import { useSettings } from "@/features/settings/api/use-settings"
-import { FlashOverlay } from "@/features/flash/components/flash-overlay"
+import { TopbarActionCluster } from "./topbar-action-cluster"
 
 /**
  * TopBar: Streamlined for actions. 
@@ -21,11 +19,6 @@ export function TopBar() {
     const isSettingsPage = pathname === "/settings"
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [isQuickAddOpen, setIsQuickAddOpen] = useState(false)
-    const { isPrivacyMode, togglePrivacy } = usePrivacyStore()
-    const { data: settings } = useSettings()
-
-    const displayName = settings?.profile?.displayName || "Account locale"
-    const initial = displayName.charAt(0).toUpperCase()
 
     return (
         <header className="sticky top-0 z-30 glass-chrome lg:pl-64">
@@ -76,31 +69,7 @@ export function TopBar() {
                             </Button>
                         )}
 
-                        <div className="flex items-center glass-card rounded-full p-1 bg-white/40 dark:bg-white/5 transition-all">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={togglePrivacy}
-                                className="h-8 w-8 rounded-full text-muted-foreground hover:text-foreground"
-                                title={isPrivacyMode ? "Mostra importi" : "Nascondi importi"}
-                            >
-                                {isPrivacyMode ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-                            </Button>
-
-                            <div className="h-4 w-px bg-border/50 mx-1" />
-
-                            <div className="flex items-center gap-2 pl-1 pr-2 cursor-default">
-                                <div className="h-7 w-7 rounded-full bg-primary/20 flex items-center justify-center text-primary text-[10px] font-black shadow-sm border border-primary/20">
-                                    {initial}
-                                </div>
-                                <div className="hidden sm:flex flex-col">
-                                    <span className="text-[11px] font-bold tracking-tight leading-none truncate max-w-[80px]">{displayName}</span>
-                                    <span className="text-[8px] uppercase tracking-wider text-muted-foreground/60 font-bold leading-none">Locale</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <FlashOverlay />
+                        <TopbarActionCluster />
                     </div>
                 </div>
 

@@ -17,4 +17,8 @@ export const queryKeys = {
         all: () => ['categories'] as const,
         active: () => ['categories', 'active'] as const,
     },
+    notifications: {
+        feed: ["notifications", "feed"] as const,
+        state: ["notifications", "state"] as const,
+    },
 } as const

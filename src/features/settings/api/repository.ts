@@ -3,6 +3,11 @@ import { AppSettingsV1, DEFAULT_SETTINGS_V1, ThemePreference, CurrencyCode, Insi
 
 const SETTINGS_KEY = "luma_settings_v1"
 
+function normalizeName(value: unknown): string {
+    if (typeof value !== "string") return ""
+    return value.trim().slice(0, 50)
+}
+
 function validateSettings(data: unknown): AppSettingsV1 {
     if (!data || typeof data !== "object") {
         return DEFAULT_SETTINGS_V1
@@ -52,11 +57,16 @@ function validateSettings(data: unknown): AppSettingsV1 {
         insightsSensitivity = candidate.insightsSensitivity
     }
 
-    // Validate profile
+    // Validate profile. Keep backward compatibility with legacy displayName.
+    const legacyDisplayName = normalizeName(candidate.profile?.displayName)
+    const legacyTokens = legacyDisplayName.split(/\s+/).filter(Boolean)
+    const legacyFirstName = legacyTokens[0] ?? ""
+    const legacyLastName = legacyTokens.length > 1 ? legacyTokens.slice(1).join(" ") : ""
+
     const profile = {
-        displayName: typeof candidate.profile?.displayName === "string"
-            ? candidate.profile.displayName.slice(0, 50)
-            : ""
+        firstName: normalizeName(candidate.profile?.firstName) || legacyFirstName,
+        lastName: normalizeName(candidate.profile?.lastName) || legacyLastName,
+        displayName: legacyDisplayName,
     }
 
     return {

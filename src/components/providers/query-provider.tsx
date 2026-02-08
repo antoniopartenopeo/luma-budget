@@ -10,6 +10,7 @@ import { __resetBudgetsCache } from "@/VAULT/budget/api/repository"
 
 import { __resetCategoriesCache, CATEGORIES_STORAGE_KEY } from "@/features/categories/api/repository"
 import { queryKeys } from "@/lib/query-keys"
+import { NOTIFICATIONS_STATE_STORAGE_KEY } from "@/features/notifications/api/repository"
 
 export function QueryProvider({ children }: { children: React.ReactNode }) {
     const [queryClient] = useState(() => new QueryClient({
@@ -52,6 +53,10 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
                 // Also invalidating things that might depend on category labels/icons
                 queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
                 queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all })
+            }
+
+            if (e.key === NOTIFICATIONS_STATE_STORAGE_KEY) {
+                queryClient.invalidateQueries({ queryKey: queryKeys.notifications.state })
             }
         }
 

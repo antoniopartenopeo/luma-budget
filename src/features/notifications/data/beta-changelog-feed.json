@@ -1,0 +1,12 @@
+[
+  {
+    "id": "welcome-beta-2026-02",
+    "version": "0.1.1",
+    "kind": "improvement",
+    "audience": "beta",
+    "title": "Benvenuto nel programma Beta NUMA",
+    "body": "Grazie per testare NUMA Budget. Da ora useremo questa area notifiche per condividere fix e nuove implementazioni.",
+    "publishedAt": "2026-02-08T00:00:00.000Z"
+  }
+]
+

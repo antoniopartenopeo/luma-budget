@@ -96,6 +96,11 @@ export const STORAGE_KEYS_REGISTRY: StorageKeyConfig[] = [
         key: "insights_smart_advice_signature_v1",
         label: "Firma Insight AI",
     },
+    {
+        key: "numa_notifications_state_v1",
+        label: "Notifiche Beta",
+        invalidatesQueries: ["notifications"],
+    },
 ]
 
 /** Helper to get all storage keys as string array */

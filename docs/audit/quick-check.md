@@ -1,6 +1,6 @@
 # Governance Quick Check
 
-Generated at (UTC): 2026-02-08T20:07:33Z
+Generated at (UTC): 2026-02-08T20:45:05Z
 
 Scope:
 - Repository: numa-budget
@@ -155,7 +155,7 @@ Inline style hits (first 80):
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/premium-chart-section.tsx:91:                <div style={{ height: chartHeight }} className="flex items-center justify-center relative z-10">
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/premium-chart-section.tsx:100:                    <div className="w-full relative text-foreground" style={{ height: chartHeight }}>
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/spending-composition-card.tsx:258:                            style={{
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/components/patterns/numa-engine-card.tsx:104:                                    style={{ left: `${(idx + 1) * 33 - 2}%` }}
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/components/patterns/numa-engine-card.tsx:113:                                    style={{ left: `${(idx + 1) * 33 - 2}%` }}
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/VAULT/budget/components/budget-progress-bar.tsx:64:                    style={{ width: `${clampedPercentage}%` }}
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/VAULT/budget/components/budget-progress-bar.tsx:71:                        style={{ width: `${pacingLeft}%` }}
 

@@ -129,26 +129,44 @@ export function PreferencesSection() {
                             <span>Identità e Interfaccia</span>
                         </div>
                         <div className="grid gap-6 md:grid-cols-2">
-                            {/* Profile Name */}
-                            <div className="space-y-2 col-span-2 md:col-span-2">
-                                <Label htmlFor="displayName" className="flex items-center gap-2">
-                                    Nome Profilo
+                            <div className="space-y-2">
+                                <Label htmlFor="firstName" className="flex items-center gap-2">
+                                    Nome
                                 </Label>
                                 <div className="relative">
                                     <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                                     <Input
-                                        id="displayName"
-                                        placeholder="Il tuo nome (es. Mario)"
-                                        value={settings?.profile?.displayName || ""}
+                                        id="firstName"
+                                        placeholder="Es. Mario"
+                                        value={settings?.profile?.firstName || ""}
                                         onChange={(e) => upsertSettings.mutate({
-                                            profile: { ...settings?.profile, displayName: e.target.value }
+                                            profile: { ...settings?.profile, firstName: e.target.value }
+                                        })}
+                                        disabled={upsertSettings.isPending}
+                                        className="pl-9"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="lastName" className="flex items-center gap-2">
+                                    Cognome
+                                </Label>
+                                <div className="relative">
+                                    <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                                    <Input
+                                        id="lastName"
+                                        placeholder="Es. Rossi"
+                                        value={settings?.profile?.lastName || ""}
+                                        onChange={(e) => upsertSettings.mutate({
+                                            profile: { ...settings?.profile, lastName: e.target.value }
                                         })}
                                         disabled={upsertSettings.isPending}
                                         className="pl-9"
                                     />
                                 </div>
                                 <p className="text-[10px] text-muted-foreground">
-                                    Visualizzato nella barra laterale.
+                                    L&apos;avatar in topbar mostrerà le iniziali Nome + Cognome.
                                 </p>
                             </div>
 

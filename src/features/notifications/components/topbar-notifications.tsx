@@ -62,15 +62,15 @@ export function TopbarNotifications({ triggerClassName }: TopbarNotificationsPro
                     data-testid="topbar-notifications-trigger"
                     aria-label="Notifiche changelog beta"
                     className={cn(
-                        "group/notify relative h-10 w-10 rounded-full border border-primary/20 bg-primary/10 text-primary transition-all duration-300 hover:bg-primary/20 hover:shadow-md hover:-translate-y-[1px] motion-reduce:transform-none",
+                        "group relative h-10 w-10 rounded-full border border-primary/20 bg-primary/10 text-primary transition-all duration-300 hover:bg-primary/20 hover:shadow-md hover:-translate-y-[1px] motion-reduce:transform-none",
                         triggerClassName
                     )}
                 >
-                    <Bell className="h-5 w-5 transition-transform duration-300 group-hover/notify:scale-110 motion-reduce:transform-none" />
+                    <Bell className="h-5 w-5 transition-transform duration-300 group-hover:scale-110 group-active:scale-110 motion-reduce:transform-none" />
                     {hasUnread && (
                         <span
                             data-testid="topbar-notifications-badge"
-                            className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-black flex items-center justify-center motion-safe:group-hover/notify:animate-pulse-soft motion-reduce:animate-none"
+                            className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-black flex items-center justify-center motion-safe:group-hover:animate-pulse-soft motion-safe:group-active:animate-pulse-soft motion-reduce:animate-none"
                         >
                             {unreadBadgeText}
                         </span>

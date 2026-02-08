@@ -6,7 +6,7 @@ import { useCurrency } from "@/features/settings/api/use-currency"
 import { formatEuroNumber } from "@/domain/money"
 import { DashboardTimeFilter } from "../api/types"
 import { useSettings } from "@/features/settings/api/use-settings"
-import { KpiTone } from "@/components/patterns/kpi-card"
+import { KpiCard, KpiTone } from "@/components/patterns/kpi-card"
 import { narrateKPI, deriveKPIState, KPIFacts } from "@/domain/narration"
 import { MacroSection } from "@/components/patterns/macro-section"
 import { getBalanceTone, getBudgetTone, getSuperfluousTone } from "../utils/kpi-logic"
@@ -15,10 +15,6 @@ import { getPrivacyClass } from "@/features/privacy/privacy-utils"
 import { motion } from "framer-motion"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
 import { macroItemVariants } from "@/components/patterns/macro-section"
-
-// Smart Context Integration
-import { generateSmartContext } from "@/features/smart-context/logic/context-engine"
-import { SmartKpiCard } from "@/features/smart-context/components/smart-kpi-card"
 
 import { NumaEngineCard } from "@/components/patterns/numa-engine-card"
 import { BrainCircuit, ShieldCheck, Hourglass, TrendingUp, PiggyBank, Zap } from "lucide-react"
@@ -110,27 +106,6 @@ export function DashboardKpiGrid({
         return narrateKPI(facts, state).text
     }
 
-    // --- SMART CONTEXT GENERATION ---
-    // We reconstruct a partial summary object for the engine logic
-    const smartContext = generateSmartContext({
-        summary: {
-            // These properties must match DashboardSummary structure roughly or what the engine expects
-            // The engine expects: netBalance, budgetRemaining, budgetTotal, totalSpent, uselessSpendPercent
-            // We pass 0 or defaults for missing non-critical ones, but here we have everything needed.
-            netBalance: netBalance || 0,
-            budgetRemaining: budgetRemaining || 0,
-            budgetTotal: budgetTotal || 0,
-            totalSpent: totalSpent || 0,
-            uselessSpendPercent: uselessSpendPercent || null,
-            // Mocking the rest as they are not used by current rules
-            totalIncome: 0,
-            totalExpenses: totalSpent || 0,
-            categoriesSummary: [],
-            usefulVsUseless: { useful: 0, useless: 0 },
-            monthlyExpenses: []
-        }
-    })
-
     return (
         <MacroSection
             title="Overview Performance"
@@ -144,7 +119,7 @@ export function DashboardKpiGrid({
                 className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4 pt-4"
             >
                 <motion.div variants={macroItemVariants} className="h-full">
-                    <SmartKpiCard
+                    <KpiCard
                         title="Saldo"
                         value={isLoading ? 0 : formatValue(netBalance || 0)}
                         animatedValue={netBalance || 0}
@@ -155,11 +130,10 @@ export function DashboardKpiGrid({
                         icon={CreditCard}
                         isLoading={isLoading}
                         description={isLoading ? undefined : buildNarration("balance", netBalance || 0, saldoTone)}
-                        context={smartContext['netBalance']}
                     />
                 </motion.div>
                 <motion.div variants={macroItemVariants} className="h-full">
-                    <SmartKpiCard
+                    <KpiCard
                         title="Spesa"
                         value={isLoading ? 0 : formatValue(totalSpent || 0)}
                         animatedValue={totalSpent || 0}
@@ -169,11 +143,10 @@ export function DashboardKpiGrid({
                         isLoading={isLoading}
                         onClick={() => router.push("/transactions")}
                         description={isLoading ? undefined : buildNarration("expenses", totalSpent || 0, spesaTone)}
-                        context={smartContext['totalSpent']}
                     />
                 </motion.div>
                 <motion.div variants={macroItemVariants} className="h-full">
-                    <SmartKpiCard
+                    <KpiCard
                         title="Pacing Temporale"
                         value={isLoading ? 0 : (isMonthlyView ? formatValue(budgetRemaining || 0) : "—")}
                         animatedValue={isMonthlyView ? (budgetRemaining || 0) : undefined}
@@ -187,7 +160,6 @@ export function DashboardKpiGrid({
                         isLoading={isLoading}
                         onClick={isMonthlyView && !hasBudget ? () => router.push("/goals/lab") : undefined}
                         description={isLoading ? undefined : buildNarration("budget", budgetRemaining || 0, budgetTone, budgetPercent)}
-                        context={smartContext['budgetRemaining']}
                         badge={activeRhythm && (
                             <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                                 <span className="relative flex h-1.5 w-1.5">
@@ -200,7 +172,7 @@ export function DashboardKpiGrid({
                     />
                 </motion.div>
                 <motion.div variants={macroItemVariants} className="h-full">
-                    <SmartKpiCard
+                    <KpiCard
                         title="Spese Extra"
                         value={isLoading ? 0 : (uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—")}
                         animatedValue={uselessSpendPercent ?? undefined}
@@ -212,7 +184,6 @@ export function DashboardKpiGrid({
                         isLoading={isLoading}
                         onClick={() => router.push("/transactions?filter=wants")}
                         description={isLoading ? undefined : buildNarration("superfluous", uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—", superflueTone, uselessSpendPercent ?? undefined)}
-                        context={smartContext['uselessSpendPercent']}
                     />
                 </motion.div>
             </StaggerContainer>

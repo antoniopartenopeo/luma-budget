@@ -110,8 +110,8 @@ This document outlines the technical path for building **Numa Neuro Core**, a ze
 - [ ] `useNumaBrain()`: React hook exposing prediction state.
 - [ ] `BrainProvider`: Context to hold the singleton brain instance.
 
-### 4.2 Smart Context Connection
-- [ ] Inject predictions into `generateSmartContext`.
+### 4.2 Dashboard Connection
+- [ ] Inject predictions into dashboard insight surfaces.
 - [ ] **New Rule**: "Anomaly Guard" - alert if spending deviates > 2σ from predicted.
 
 ---

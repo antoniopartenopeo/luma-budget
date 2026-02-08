@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { DashboardKpiGrid } from "@/features/dashboard/components/kpi-cards"
-import { SpendingCompositionCard } from "@/features/dashboard/components/spending-composition-card"
+import { SpendingCompositionCard } from "@/features/dashboard/components/charts/spending-composition-card"
 import { RecentTransactions } from "@/features/dashboard/components/recent-transactions"
 import { useDashboardSummary } from "@/features/dashboard/api/use-dashboard"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
@@ -10,6 +10,9 @@ import { DashboardFilterBar } from "@/features/dashboard/components/dashboard-fi
 import { DashboardTimeFilter } from "@/features/dashboard/api/types"
 
 import { PageHeader } from "@/components/ui/page-header"
+
+import { StaggerContainer } from "@/components/patterns/stagger-container"
+
 
 export default function DashboardPage() {
   const [filter, setFilter] = useState<DashboardTimeFilter>({
@@ -21,33 +24,37 @@ export default function DashboardPage() {
   const { data: transactions, isLoading: isLoadingTransactions } = useTransactions()
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-8 w-full">
       <PageHeader
         title="Dashboard"
         description="Panoramica delle tue finanze"
       />
 
-      <DashboardFilterBar filter={filter} onFilterChange={setFilter} />
+      <StaggerContainer>
+        {/* HERO SECTION: Financial Overview & KPIs */}
+        <DashboardKpiGrid
+          totalSpent={data?.totalSpent}
+          netBalance={data?.netBalance}
+          budgetTotal={data?.budgetTotal}
+          budgetRemaining={data?.budgetRemaining}
+          uselessSpendPercent={data?.uselessSpendPercent}
+          isLoading={isLoading}
+          filter={filter}
+          headerActions={<DashboardFilterBar filter={filter} onFilterChange={setFilter} />}
+          activeRhythm={data?.activeRhythm}
+        />
 
-      <DashboardKpiGrid
-        totalSpent={data?.totalSpent}
-        netBalance={data?.netBalance}
-        budgetTotal={data?.budgetTotal}
-        budgetRemaining={data?.budgetRemaining}
-        uselessSpendPercent={data?.uselessSpendPercent}
-        isLoading={isLoading}
-        filter={filter}
-      />
+        {/* SUBORDINATE CONTENT */}
+        <div className="space-y-6">
+          <SpendingCompositionCard
+            transactions={transactions || []}
+            filter={filter}
+            isLoading={isLoading || isLoadingTransactions}
+          />
 
-      <SpendingCompositionCard
-        transactions={transactions || []}
-        filter={filter}
-        isLoading={isLoading || isLoadingTransactions}
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <RecentTransactions filter={filter} />
-      </div>
+          <RecentTransactions filter={filter} />
+        </div>
+      </StaggerContainer>
     </div>
   )
 }

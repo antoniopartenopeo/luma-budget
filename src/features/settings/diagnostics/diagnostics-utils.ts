@@ -13,12 +13,14 @@ export type DiagnosticsSnapshot = {
         present: boolean
         approxBytes: number
         summary: string
+        isUnregistered?: boolean
     }>
+    totalApproxBytes: number
     notes: string[]
 }
 
 export function getAppVersion(): string {
-    return process.env.NEXT_PUBLIC_APP_VERSION ?? "v1.1.0"
+    return process.env.NEXT_PUBLIC_APP_VERSION ?? "0.1.1"
 }
 
 export function safeGetItem(key: string): string | null {
@@ -43,7 +45,7 @@ export function estimateBytes(str: string | null): number {
 }
 
 export function buildDiagnosticsSnapshot(): DiagnosticsSnapshot {
-    const storageReport = STORAGE_KEYS_REGISTRY.map((config) => {
+    const storageReport: DiagnosticsSnapshot["storage"] = STORAGE_KEYS_REGISTRY.map((config) => {
         const rawString = safeGetItem(config.key)
         const present = rawString !== null
         const approxBytes = estimateBytes(rawString)
@@ -72,6 +74,26 @@ export function buildDiagnosticsSnapshot(): DiagnosticsSnapshot {
         }
     })
 
+    // Detect unregistered technical keys
+    if (typeof window !== "undefined") {
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i)
+            if (key?.startsWith("luma_") && !STORAGE_KEYS_REGISTRY.some(c => c.key === key)) {
+                const rawString = localStorage.getItem(key)
+                storageReport.push({
+                    key,
+                    label: "Unregistered",
+                    present: true,
+                    approxBytes: estimateBytes(rawString),
+                    summary: "Unregistered storage key",
+                    isUnregistered: true
+                })
+            }
+        }
+    }
+
+    const totalApproxBytes = storageReport.reduce((acc, curr) => acc + curr.approxBytes, 0)
+
     return {
         generatedAt: new Date().toISOString(),
         app: {
@@ -79,6 +101,7 @@ export function buildDiagnosticsSnapshot(): DiagnosticsSnapshot {
             env: process.env.NODE_ENV || "unknown",
         },
         storage: storageReport,
+        totalApproxBytes,
         notes: ["Cross-tab sync: enabled via storage event listener (best-effort info)"],
     }
 }

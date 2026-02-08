@@ -1,8 +1,8 @@
 import { Transaction, CreateTransactionDTO } from "./types"
 import { storage } from "@/lib/storage-utils"
-import { CATEGORIES } from "../../categories/config"
-import { parseCurrencyToCents, normalizeTransactionAmount, euroToCents, formatCentsSignedFromType } from "@/lib/currency-utils"
-import { delay } from "@/lib/delay"
+import { getCategories } from "../../categories/api/repository"
+import { normalizeTransactionAmount, calculateSuperfluousStatus } from "@/domain/transactions"
+
 
 // =====================
 // STORAGE SYSTEM
@@ -11,123 +11,10 @@ import { delay } from "@/lib/delay"
 const STORAGE_KEY = "luma_transactions_v1"
 const DEFAULT_USER_ID = "user-1"
 
-/**
- * Initial mock data for development and demo purposes.
- */
-export const INITIAL_SEED_TRANSACTIONS: Transaction[] = [
-    {
-        id: "1",
-        amount: "-€85.00",
-        amountCents: 8500,
-        date: "Oggi, 14:30",
-        description: "Spesa Supermercato",
-        category: "Cibo",
-        categoryId: "cibo",
-        icon: "🛒",
-        type: "expense",
-        timestamp: Date.now(),
-        isSuperfluous: false,
-        classificationSource: "ruleBased"
-    },
-    {
-        id: "2",
-        amount: "-€24.90",
-        amountCents: 2490,
-        date: "Ieri, 19:15",
-        description: "Netflix Subscription",
-        category: "Svago",
-        categoryId: "svago",
-        icon: "🎬",
-        type: "expense",
-        timestamp: Date.now() - 86400000,
-        isSuperfluous: true,
-        classificationSource: "ruleBased"
-    },
-    {
-        id: "3",
-        amount: "+€1,250.00",
-        amountCents: 125000,
-        date: "28 Nov, 09:00",
-        description: "Stipendio Mensile",
-        category: "Entrate",
-        categoryId: "altro",
-        icon: "💰",
-        type: "income",
-        timestamp: Date.now() - 86400000 * 3,
-        isSuperfluous: false,
-        classificationSource: "ruleBased"
-    },
-    {
-        id: "4",
-        amount: "-€45.00",
-        amountCents: 4500,
-        date: "27 Nov, 18:30",
-        description: "Benzina",
-        category: "Trasporti",
-        categoryId: "trasporti",
-        icon: "⛽",
-        type: "expense",
-        timestamp: Date.now() - 86400000 * 4,
-        isSuperfluous: false,
-        classificationSource: "ruleBased"
-    },
-    {
-        id: "5",
-        amount: "-€120.00",
-        amountCents: 12000,
-        date: "25 Nov, 20:00",
-        description: "Cena Ristorante",
-        category: "Cibo",
-        categoryId: "cibo",
-        icon: "🍽️",
-        type: "expense",
-        timestamp: Date.now() - 86400000 * 6,
-        isSuperfluous: false,
-        classificationSource: "ruleBased"
-    },
-    {
-        id: "6",
-        amount: "-€300.00",
-        amountCents: 30000,
-        date: "15 Ago, 10:00",
-        description: "Hotel Vacanze",
-        category: "Viaggi",
-        categoryId: "viaggi",
-        icon: "🏨",
-        type: "expense",
-        timestamp: Date.now() - 86400000 * 115,
-        isSuperfluous: false,
-        classificationSource: "ruleBased"
-    },
-    {
-        id: "7",
-        amount: "-€50.00",
-        amountCents: 5000,
-        date: "10 Apr, 12:00",
-        description: "Regalo",
-        category: "Shopping",
-        categoryId: "shopping",
-        icon: "🎁",
-        type: "expense",
-        timestamp: Date.now() - 86400000 * 240,
-        isSuperfluous: false,
-        classificationSource: "ruleBased"
-    },
-    {
-        id: "8",
-        amount: "-€150.00",
-        amountCents: 15000,
-        date: "5 Gen, 09:00",
-        description: "Abbonamento Palestra Annuale",
-        category: "Salute",
-        categoryId: "salute",
-        icon: "💪",
-        type: "expense",
-        timestamp: Date.now() - 86400000 * 330,
-        isSuperfluous: false,
-        classificationSource: "ruleBased"
-    },
-]
+import { INITIAL_SEED_TRANSACTIONS } from "./seed-data"
+
+
+
 
 // Private cache to avoid frequent localStorage reads
 let _transactionsCache: Transaction[] | null = null
@@ -156,39 +43,9 @@ function ensureCache(): Transaction[] {
         // BACKFILL: Normalize on read and detect if persistence is needed
         // Robust handling of legacy formats (number, string, missing cents)
         const normalized = userTransactions.map(t => {
-            const raw = t as Transaction & { amount?: number | string }
-
-            // 1. Check if already migrated
-            if (raw.amountCents !== undefined && typeof raw.amountCents === 'number') {
-                return raw as Transaction
-            }
-
-            // 2. Resolve amountCents from any legacy source
-            let absCents: number
-            if (raw.amount !== undefined) {
-                if (typeof raw.amount === 'number') {
-                    // Legacy float: format 12.34
-                    absCents = Math.abs(Math.round(raw.amount * 100))
-                } else if (typeof raw.amount === 'string') {
-                    // Legacy string: format "€ 10.50"
-                    absCents = Math.abs(parseCurrencyToCents(raw.amount))
-                } else {
-                    absCents = 0
-                }
-            } else {
-                absCents = 0
-            }
-
-            didChange = true
-
-            // Normalize to full Transaction structure
-            const normalizedT: Transaction = {
-                ...raw,
-                amountCents: absCents,
-                // Regenerate amount string only if it was a number before or missing
-                amount: (typeof raw.amount === 'string' && raw.amount.includes('€'))
-                    ? raw.amount
-                    : formatCentsSignedFromType(absCents, raw.type)
+            const normalizedT = normalizeTransactionAmount(t as unknown as Record<string, unknown>)
+            if (normalizedT.amountCents !== (t as unknown as Record<string, unknown>).amountCents) {
+                didChange = true
             }
             return normalizedT
         })
@@ -223,7 +80,7 @@ export const __resetTransactionsCache = () => {
  * Can be called from Settings or DevTools.
  */
 export function seedTransactions() {
-    _transactionsCache = [...INITIAL_SEED_TRANSACTIONS].map(t => normalizeTransactionAmount(t))
+    _transactionsCache = [...INITIAL_SEED_TRANSACTIONS].map(t => normalizeTransactionAmount(t as unknown as Record<string, unknown>))
     const allData = loadAllFromStorage()
     allData[DEFAULT_USER_ID] = _transactionsCache
     saveToStorage(allData)
@@ -233,12 +90,7 @@ export function seedTransactions() {
 // UTILS
 // =====================
 
-// Helper to check rule-based superfluous status
-const isSuperfluousRule = (categoryId: string, type: "income" | "expense"): boolean => {
-    if (type === "income") return false
-    const cat = CATEGORIES.find(c => c.id === categoryId)
-    return cat?.spendingNature === "superfluous"
-}
+// Migrated to domain/transactions/utils.ts
 
 
 // =====================
@@ -247,14 +99,14 @@ const isSuperfluousRule = (categoryId: string, type: "income" | "expense"): bool
 
 export const fetchRecentTransactions = async (): Promise<Transaction[]> => {
     // Simulate network delay
-    await delay(800)
+
     const txs = ensureCache()
     // Return sorted by timestamp desc
     return [...txs].sort((a, b) => b.timestamp - a.timestamp)
 }
 
 export const fetchTransactions = async (): Promise<Transaction[]> => {
-    await delay(800)
+
     const txs = ensureCache()
     return [...txs].sort((a, b) => b.timestamp - a.timestamp)
 }
@@ -272,39 +124,35 @@ function generateTransactionId(): string {
 }
 
 export const createTransaction = async (data: CreateTransactionDTO): Promise<Transaction> => {
-    await delay(1000)
 
-    const isIncome = data.type === "income"
+
+    // const isIncome = data.type === "income"
     // Source of truth: Cents. Prioritize amountCents from DTO.
     // For new records, we strictly use amountCents.
     const amountCents = Math.abs(Math.round(data.amountCents || 0))
-
-    // Derived string for display only - we won't strictly depend on it for logic
-    const formattedAmount = formatCentsSignedFromType(amountCents, data.type)
 
     // Determine superfluous status
     let isSuperfluous = false
     let classificationSource: "ruleBased" | "manual" = "ruleBased"
 
+    const categories = await getCategories()
     if (data.classificationSource === "manual" && data.isSuperfluous !== undefined) {
         isSuperfluous = data.isSuperfluous
         classificationSource = "manual"
     } else {
-        isSuperfluous = isSuperfluousRule(data.categoryId, data.type)
+        isSuperfluous = calculateSuperfluousStatus(data.categoryId, data.type, categories)
         classificationSource = "ruleBased"
     }
 
     const newTransaction: Transaction = {
         id: generateTransactionId(),
-        amount: formattedAmount,
         amountCents: amountCents, // Persist integer cents
-        date: "Adesso",
+        date: data.date ? new Date(data.date).toISOString() : new Date().toISOString(), // Use provided date or now
         description: data.description,
         category: data.category,
         categoryId: data.categoryId,
-        icon: isIncome ? "💰" : "🆕",
         type: data.type,
-        timestamp: Date.now(),
+        timestamp: data.date ? new Date(data.date).getTime() : Date.now(),
         isSuperfluous,
         classificationSource
     }
@@ -316,8 +164,54 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
     return newTransaction
 }
 
+export const createBatchTransactions = async (dataList: CreateTransactionDTO[]): Promise<Transaction[]> => {
+    const categories = await getCategories()
+
+
+    const newTransactions: Transaction[] = dataList.map(data => {
+        // const isIncome = data.type === "income"
+        const amountCents = Math.abs(Math.round(data.amountCents || 0))
+
+        // Superfluous logic
+        let isSuperfluous = false
+        let classificationSource: "ruleBased" | "manual" = "ruleBased"
+
+        if (data.classificationSource === "manual" && data.isSuperfluous !== undefined) {
+            isSuperfluous = data.isSuperfluous
+            classificationSource = "manual"
+        } else {
+            // NOTE: In a real batch, we should probably fetch categories once outside the loop.
+            // But getCategories() has a cache, so it's fine. 
+            // However, to be cleaner, we should have fetched it once.
+            // Let's optimize: fetch once outside the map.
+            isSuperfluous = calculateSuperfluousStatus(data.categoryId, data.type, categories)
+            classificationSource = "ruleBased"
+        }
+
+        return {
+            id: generateTransactionId(),
+            amountCents,
+            date: data.date ? new Date(data.date).toISOString() : new Date().toISOString(),
+            description: data.description,
+            category: data.category,
+            categoryId: data.categoryId,
+            type: data.type,
+            timestamp: data.date ? new Date(data.date).getTime() : Date.now(),
+            isSuperfluous,
+            classificationSource
+        }
+    })
+
+    const txs = ensureCache()
+    // Prepend all new transactions
+    txs.unshift(...newTransactions)
+    syncStorage()
+
+    return newTransactions
+}
+
 export const updateTransaction = async (id: string, data: Partial<CreateTransactionDTO>): Promise<Transaction> => {
-    await delay(800)
+
 
     const txs = ensureCache()
     const index = txs.findIndex((t) => t.id === id)
@@ -326,20 +220,15 @@ export const updateTransaction = async (id: string, data: Partial<CreateTransact
     }
 
     const currentTransaction = txs[index]
-    const nextType = data.type !== undefined ? data.type : currentTransaction.type
-    const isIncome = nextType === "income"
+
+    // const isIncome = nextType === "income"
 
     // Recalculate amounts if needed
     let amountCents = currentTransaction.amountCents
 
     if (data.amountCents !== undefined) {
         amountCents = Math.abs(Math.round(data.amountCents))
-    } else if (data.amount !== undefined && typeof data.amount === 'number') {
-        // Fallback for partial updates if legacy code still sends float 'amount'
-        amountCents = euroToCents(Math.abs(data.amount))
     }
-
-    const formattedAmount = formatCentsSignedFromType(amountCents, nextType)
 
     // Determine superflous logic update
     let isSuperfluous = currentTransaction.isSuperfluous
@@ -351,21 +240,23 @@ export const updateTransaction = async (id: string, data: Partial<CreateTransact
     }
     else if ((data.categoryId && data.categoryId !== currentTransaction.categoryId) || (data.type && data.type !== currentTransaction.type)) {
         if (classificationSource === "ruleBased") {
+            const categories = await getCategories()
             const newCatId = data.categoryId || currentTransaction.categoryId
             const newType = (data.type || currentTransaction.type) as "income" | "expense"
-            isSuperfluous = isSuperfluousRule(newCatId, newType)
+            isSuperfluous = calculateSuperfluousStatus(newCatId, newType, categories)
         }
     }
 
     const updatedTransaction: Transaction = {
         ...currentTransaction,
         ...data,
-        amount: formattedAmount,
+        // Update date/timestamp only if new date provided
+        date: data.date ? new Date(data.date).toISOString() : currentTransaction.date,
+        timestamp: data.date ? new Date(data.date).getTime() : currentTransaction.timestamp,
         amountCents: amountCents, // Persist updated cents
-        icon: isIncome ? "💰" : "🆕",
         isSuperfluous,
         classificationSource
-    }
+    } as Transaction
 
     txs[index] = updatedTransaction
     syncStorage()
@@ -374,7 +265,7 @@ export const updateTransaction = async (id: string, data: Partial<CreateTransact
 }
 
 export const deleteTransaction = async (id: string): Promise<void> => {
-    await delay(800)
+
 
     const txs = ensureCache()
     const index = txs.findIndex((t) => t.id === id)

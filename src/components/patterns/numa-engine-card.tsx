@@ -1,0 +1,168 @@
+"use client"
+
+import * as React from "react"
+import { cn } from "@/lib/utils"
+import { LucideIcon, ChevronDown, ChevronUp, ShieldCheck, Sparkles } from "lucide-react"
+import { Button } from "@/components/ui/button"
+
+export interface EngineStep {
+    icon: LucideIcon
+    colorClass: string // e.g. "text-primary", "text-amber-500"
+    bgClass: string // e.g. "bg-primary/10"
+    stepLabel: string
+    title: string
+    description: string
+}
+
+export interface AuditStat {
+    icon?: LucideIcon
+    label: string
+    value: string
+    subValue: string
+}
+
+interface NumaEngineCardProps {
+    title: string
+    icon: LucideIcon
+    steps: EngineStep[]
+    auditStats?: AuditStat[]
+    transparencyNote?: string
+    auditLabel?: string // Label for the button e.g. "Vedi Audit Tecnico"
+    certificationTitle?: string
+    certificationSubtitle?: string
+    className?: string
+}
+
+/**
+ * NumaEngineCard
+ * ==============
+ * The canonical representation of the "Numa Method" or "Numa AI Engine".
+ * Features:
+ * 1. Glass Panel Styling
+ * 2. 3-Step Visual Process (Always Visible)
+ * 3. Expandable "Audit" Section (Footer) with strict Grid Layout
+ */
+export function NumaEngineCard({
+    title,
+    icon: BackgroundIcon,
+    steps,
+    auditStats,
+    transparencyNote,
+    auditLabel = "Vedi Audit Tecnico",
+    certificationTitle = "Certificazione Privacy",
+    certificationSubtitle = "Analisi 100% Locale e Verificata.",
+    className
+}: NumaEngineCardProps) {
+    const [isExpanded, setIsExpanded] = React.useState(false)
+
+    // Helper to render stats
+    const hasAudit = auditStats && auditStats.length > 0
+
+    return (
+        <div className={cn(
+            "relative overflow-hidden glass-card backdrop-blur-2xl rounded-[2.5rem] p-8 sm:p-10",
+            className
+        )}>
+            {/* Background Decor */}
+            <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
+                <BackgroundIcon className="h-32 w-32 text-primary" />
+            </div>
+
+            {/* Header */}
+            <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-8">
+                    <div className="h-1 w-8 bg-primary rounded-full" />
+                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-foreground/80">{title}</h4>
+                </div>
+
+                {/* 3 Visual Steps */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 relative">
+                    {steps.map((step, idx) => (
+                        <React.Fragment key={idx}>
+                            <div className="space-y-3 relative group">
+                                <div className={cn(
+                                    "h-10 w-10 rounded-xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110",
+                                    step.bgClass,
+                                    step.colorClass
+                                )}>
+                                    <step.icon className="h-5 w-5" />
+                                </div>
+                                <p className={cn("text-[10px] font-black uppercase tracking-wider opacity-80", step.colorClass)}>
+                                    {step.stepLabel}
+                                </p>
+                                <p className="text-sm font-bold text-foreground leading-tight">
+                                    {step.title}
+                                </p>
+                                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                                    {step.description}
+                                </p>
+                            </div>
+
+                            {/* Arrow for Desktop (between steps) */}
+                            {idx < steps.length - 1 && (
+                                <div className="hidden sm:block absolute top-5 w-[2%] h-[1px] bg-slate-200 dark:bg-white/10"
+                                    style={{ left: `${(idx + 1) * 33 - 2}%` }}
+                                />
+                            )}
+                        </React.Fragment>
+                    ))}
+                </div>
+            </div>
+
+            {/* Expandable Footer (Audit) */}
+            <div className="mt-10 pt-8 border-t border-slate-200 dark:border-white/5 relative z-10">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="h-10 w-10 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
+                            <ShieldCheck className="h-5 w-5" />
+                        </div>
+                        <div className="text-left">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-foreground">{certificationTitle}</p>
+                            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{certificationSubtitle}</p>
+                        </div>
+                    </div>
+
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className="w-full sm:w-auto text-[10px] font-black uppercase tracking-widest h-8 rounded-full border-primary/20 hover:bg-primary/5 transition-all group"
+                        disabled={!hasAudit}
+                    >
+                        {isExpanded ? <ChevronUp className="mr-2 h-3 w-3" /> : <ChevronDown className="mr-2 h-3 w-3" />}
+                        {isExpanded ? "Chiudi dettagli" : auditLabel}
+                    </Button>
+                </div>
+
+                {/* Expanded Content */}
+                {isExpanded && hasAudit && (
+                    <div className="mt-6 p-6 rounded-2xl bg-primary/[0.03] border border-primary/10 animate-in fade-in slide-in-from-top-4 duration-500">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {auditStats.map((stat, idx) => (
+                                <div key={idx} className="space-y-1">
+                                    <div className="flex items-center gap-2 text-primary mb-2">
+                                        {stat.icon ? <stat.icon className="h-3 w-3" /> : <div className="h-1.5 w-1.5 rounded-full bg-primary" />}
+                                        <span className="text-[10px] font-black uppercase tracking-tighter">{stat.label}</span>
+                                    </div>
+                                    <p className="text-xl font-black text-foreground tabular-nums tracking-tighter">{stat.value}</p>
+                                    <p className="text-[10px] text-muted-foreground leading-tight italic font-medium">
+                                        {stat.subValue}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+
+                        {transparencyNote && (
+                            <div className="mt-6 flex items-start gap-2 p-3 rounded-xl bg-white/40 dark:bg-black/20 border border-primary/5">
+                                <Sparkles className="h-3 w-3 text-primary shrink-0 mt-0.5" />
+                                <p className="text-[10px] text-muted-foreground italic leading-relaxed font-medium">
+                                    <strong>Nota di Trasparenza:</strong> {transparencyNote}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+        </div>
+    )
+}

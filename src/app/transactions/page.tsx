@@ -1,116 +1,48 @@
 "use client"
 
-import { useState, useMemo, Suspense } from "react"
+import { useState, Suspense } from "react"
 import { ArrowUpRight } from "lucide-react"
-import { useSearchParams, useRouter } from "next/navigation"
+
 import { Button } from "@/components/ui/button"
 import { TransactionsTable } from "@/features/transactions/components/transactions-table"
-import { TransactionsFilterBar, PeriodPreset } from "@/features/transactions/components/transactions-filter-bar"
+import { TransactionsFilterBar } from "@/features/transactions/components/transactions-filter-bar"
 import { TransactionsSummaryBar } from "@/features/transactions/components/transactions-summary-bar"
 import { TransactionDetailSheet } from "@/features/transactions/components/transaction-detail-sheet"
-import { useTransactions } from "@/features/transactions/api/use-transactions"
+import { ConfirmDialog } from "@/components/patterns/confirm-dialog"
+import { useTransactions, useDeleteTransaction } from "@/features/transactions/api/use-transactions"
+import { useCategories } from "@/features/categories/api/use-categories"
+import { useTransactionsView } from "@/features/transactions/hooks/use-transactions-view"
 import { exportTransactionsToCSV } from "@/features/transactions/utils/export-transactions"
-import {
-    applyFilters,
-    applySorting,
-    computeSummary,
-    paginateData,
-    SortField,
-    SortOrder,
-    TransactionFilters
-} from "@/features/transactions/utils/transactions-logic"
 import { Transaction } from "@/features/transactions/api/types"
 import { PageHeader } from "@/components/ui/page-header"
 
 import { StateMessage } from "@/components/ui/state-message"
 import { Skeleton } from "@/components/ui/skeleton"
+import { TransactionsActions } from "@/features/transactions/components/transactions-actions"
+import { MacroSection, macroItemVariants } from "@/components/patterns/macro-section"
+import { StaggerContainer } from "@/components/patterns/stagger-container"
+import { motion } from "framer-motion"
 
-const PAGE_SIZE = 15
+
 
 function TransactionsPageContent() {
-    const router = useRouter()
-    const searchParams = useSearchParams()
-
     const { data: transactions = [], isLoading, isError, refetch } = useTransactions()
-
-    // --- Filter / Sorting / Pagination State (from URL) ---
-    const search = searchParams.get("q") || ""
-    const type = (searchParams.get("type") || "all") as "all" | "income" | "expense"
-    const categoryId = searchParams.get("cat") || "all"
-    const isSuperfluous = searchParams.get("waste") === "true"
-    const period = (searchParams.get("period") || "all") as PeriodPreset
-    const fromDate = searchParams.get("from") || ""
-    const toDate = searchParams.get("to") || ""
-
-    const sort = (searchParams.get("sort") || "date") as SortField
-    const order = (searchParams.get("order") || "desc") as SortOrder
-    const page = parseInt(searchParams.get("p") || "1", 10)
+    const {
+        search, type, categoryId, period, fromDate, toDate,
+        sort, order, page,
+        filteredList, sortedList, paginatedList, summary, totalPages,
+        updateParams, resetFilters, handleSortChange, filters
+    } = useTransactionsView(transactions)
 
     // --- Local UI State for Detail Sheet ---
     const [selectedDetail, setSelectedDetail] = useState<Transaction | null>(null)
     const [detailMode, setDetailMode] = useState<"view" | "edit">("view")
     const [isExporting, setIsExporting] = useState(false)
+    const [exportError, setExportError] = useState<string | null>(null)
+    const [transactionToDelete, setTransactionToDelete] = useState<Transaction | null>(null)
 
-    // --- Derived Filters Object ---
-    const filters = useMemo((): TransactionFilters => {
-        const dateRange: { from?: Date; to?: Date } = {}
-
-        if (period === "custom") {
-            if (fromDate) dateRange.from = new Date(fromDate)
-            if (toDate) dateRange.to = new Date(toDate)
-        } else if (period !== "all") {
-            const now = new Date()
-            dateRange.to = now
-            const from = new Date()
-            if (period === "1m") from.setMonth(now.getMonth() - 1)
-            else if (period === "3m") from.setMonth(now.getMonth() - 3)
-            else if (period === "6m") from.setMonth(now.getMonth() - 6)
-            else if (period === "1y") from.setFullYear(now.getFullYear() - 1)
-            dateRange.from = from
-        }
-
-        return {
-            search,
-            type,
-            categoryId,
-            isSuperfluous,
-            dateRange
-        }
-    }, [search, type, categoryId, isSuperfluous, period, fromDate, toDate])
-
-    // --- Computed Data ---
-    const { filteredList, sortedList, paginatedList, summary, totalPages } = useMemo(() => {
-        const filtered = applyFilters(transactions, filters)
-        const sorted = applySorting(filtered, sort, order)
-        const paginated = paginateData(sorted, page, PAGE_SIZE)
-        const summ = computeSummary(filtered)
-        const totalP = Math.ceil(filtered.length / PAGE_SIZE)
-
-        return {
-            filteredList: filtered,
-            sortedList: sorted,
-            paginatedList: paginated,
-            summary: summ,
-            totalPages: totalP
-        }
-    }, [transactions, filters, sort, order, page])
-
-    // --- URL Update Helpers ---
-    const updateParams = (updates: Record<string, string | null>) => {
-        const params = new URLSearchParams(searchParams.toString())
-        Object.entries(updates).forEach(([key, value]) => {
-            if (value === null || value === "" || value === "all" || (key === "p" && value === "1")) {
-                params.delete(key)
-            } else {
-                params.set(key, value)
-            }
-        })
-        router.push(`/transactions?${params.toString()}`)
-    }
-
-    const resetFilters = () => {
-        router.push("/transactions")
-    }
+    const { mutate: deleteTx, isPending: isDeleting } = useDeleteTransaction()
+    const { data: categories = [] } = useCategories()
 
     // --- Actions ---
     const handleEdit = (transaction: Transaction) => {
@@ -121,12 +53,15 @@ function TransactionsPageContent() {
     const handleDelete = (id: string) => {
         const transaction = transactions.find(t => t.id === id)
         if (transaction) {
-            setSelectedDetail(transaction)
-            setDetailMode("view")
-            // The sheet will be opened, and the user can click 'Delete' there.
-            // Or we could have a 'delete' mode that shows the confirm immediately.
-            // Given the requirement "Delete confirms...", opening the sheet is correct.
+            setTransactionToDelete(transaction)
         }
+    }
+
+    const confirmDelete = () => {
+        if (!transactionToDelete) return
+        deleteTx(transactionToDelete.id, {
+            onSuccess: () => setTransactionToDelete(null)
+        })
     }
 
     const handleExport = async (all: boolean = false) => {
@@ -139,6 +74,7 @@ function TransactionsPageContent() {
         const exportList = all ? transactions : sortedList
         const result = exportTransactionsToCSV({
             transactions: exportList,
+            categories: categories,
             dateRange: filters.dateRange.from && filters.dateRange.to
                 ? { start: filters.dateRange.from.toISOString(), end: filters.dateRange.to.toISOString() }
                 : undefined
@@ -146,13 +82,8 @@ function TransactionsPageContent() {
 
         setIsExporting(false)
         if (!result.success) {
-            alert(result.error || "Si è verificato un errore durante l'esportazione.")
+            setExportError(result.error || "Si è verificato un errore durante l'esportazione.")
         }
-    }
-
-    const handleSortChange = (field: SortField) => {
-        const newOrder = sort === field && order === "desc" ? "asc" : "desc"
-        updateParams({ sort: field, order: newOrder, p: "1" })
     }
 
     if (isError) {
@@ -174,79 +105,93 @@ function TransactionsPageContent() {
     }
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
-            {/* Header */}
-            <PageHeader
-                title="Transazioni"
-                description="Analisi dettagliata del tuo flusso di cassa."
-            />
-
-            {/* Summary KPI Bar */}
-            <TransactionsSummaryBar summary={summary} isLoading={isLoading} />
-
-            {/* Filters Section */}
-            <div className="p-4 bg-card/30 border border-muted-foreground/10 rounded-2xl shadow-sm backdrop-blur-md">
-                <TransactionsFilterBar
-                    searchValue={search}
-                    onSearchChange={(v) => updateParams({ q: v, p: "1" })}
-                    typeValue={type}
-                    onTypeChange={(v) => updateParams({ type: v, p: "1" })}
-                    categoryValue={categoryId}
-                    onCategoryChange={(v) => updateParams({ cat: v, p: "1" })}
-                    periodValue={period}
-                    onPeriodChange={(v) => updateParams({ period: v, p: "1", from: null, to: null })}
-                    dateRange={{ from: fromDate, to: toDate }}
-                    onDateRangeChange={(range) => updateParams({ from: range.from || null, to: range.to || null, p: "1" })}
-                    isSuperfluousOnly={isSuperfluous}
-                    onSuperfluousChange={(v) => updateParams({ waste: v ? "true" : null, p: "1" })}
-                    onResetFilters={resetFilters}
-                    onExportView={() => handleExport(false)}
-                    onExportAll={() => handleExport(true)}
-                    isExporting={isExporting}
-                    hasResults={filteredList.length > 0}
+        <StaggerContainer className="space-y-8">
+            {/* Header: PageHeader component preferred */}
+            <motion.div variants={macroItemVariants}>
+                <PageHeader
+                    title="Transazioni"
+                    description="Analisi dettagliata del tuo flusso di cassa."
+                    actions={
+                        <TransactionsActions
+                            onExportView={() => handleExport(false)}
+                            onExportAll={() => handleExport(true)}
+                            isExporting={isExporting}
+                            hasResults={filteredList.length > 0}
+                        />
+                    }
                 />
-            </div>
+            </motion.div>
 
-            {/* Main Content: Table or Empty State */}
-            {isLoading ? (
-                <div className="space-y-4">
-                    <Skeleton className="h-20 w-full rounded-2xl" />
-                    <Skeleton className="h-64 w-full rounded-3xl" />
+            {/* MacroSection for Main Content */}
+            <MacroSection
+                title="Elenco Movimenti"
+                description="Tutte le transazioni del periodo"
+                headerActions={
+                    <TransactionsFilterBar
+                        searchValue={search}
+                        onSearchChange={(v) => updateParams({ q: v, p: "1" })}
+                        typeValue={type}
+                        onTypeChange={(v) => updateParams({ type: v, p: "1" })}
+                        categoryValue={categoryId}
+                        onCategoryChange={(v) => updateParams({ cat: v, p: "1" })}
+                        periodValue={period}
+                        onPeriodChange={(v) => updateParams({ period: v, p: "1", from: null, to: null })}
+                        dateRange={{ from: fromDate, to: toDate }}
+                        onDateRangeChange={(range) => updateParams({ from: range.from || null, to: range.to || null, p: "1" })}
+                        isSuperfluousOnly={type === "superfluous"}
+                        onResetFilters={resetFilters}
+                    />
+                }
+                className="h-full"
+            >
+
+                {/* Summary KPI Bar */}
+                <div className="mb-8">
+                    <TransactionsSummaryBar summary={summary} isLoading={isLoading} />
                 </div>
-            ) : filteredList.length > 0 ? (
-                <TransactionsTable
-                    transactions={paginatedList}
-                    onEditTransaction={handleEdit}
-                    onDeleteTransaction={handleDelete}
-                    onRowClick={(t) => {
-                        setSelectedDetail(t)
-                        setDetailMode("view")
-                    }}
-                    sortField={sort}
-                    sortOrder={order}
-                    onSortChange={handleSortChange}
-                    currentPage={page}
-                    totalPages={totalPages}
-                    onPageChange={(p) => updateParams({ p: p.toString() })}
-                />
-            ) : (
-                <div className="py-20 flex flex-col items-center justify-center text-center max-w-md mx-auto">
-                    <div className="w-20 h-20 rounded-full bg-muted/50 flex items-center justify-center mb-6">
-                        <ArrowUpRight className="h-10 w-10 text-muted-foreground/50" />
+
+                {/* Main Content: Table or Empty State */}
+                {isLoading ? (
+                    <div className="space-y-4">
+                        <Skeleton className="h-20 w-full rounded-2xl" />
+                        <Skeleton className="h-64 w-full rounded-3xl" />
                     </div>
-                    <h3 className="text-xl font-bold tracking-tight mb-2">Nessun risultato</h3>
-                    <p className="text-muted-foreground font-medium mb-8">
-                        Non abbiamo trovato transazioni che corrispondano ai criteri selezionati.
-                    </p>
-                    <Button
-                        onClick={resetFilters}
-                        variant="secondary"
-                        className="rounded-xl font-bold px-8"
-                    >
-                        Azzera tutti i filtri
-                    </Button>
-                </div>
-            )}
+                ) : filteredList.length > 0 ? (
+                    <TransactionsTable
+                        transactions={paginatedList}
+                        onEditTransaction={handleEdit}
+                        onDeleteTransaction={handleDelete}
+                        onRowClick={(t) => {
+                            setSelectedDetail(t)
+                            setDetailMode("view")
+                        }}
+                        sortField={sort}
+                        sortOrder={order}
+                        onSortChange={handleSortChange}
+                        currentPage={page}
+                        totalPages={totalPages}
+                        onPageChange={(p) => updateParams({ p: p.toString() })}
+                    />
+                ) : (
+                    <div className="py-20 flex flex-col items-center justify-center text-center max-w-md mx-auto">
+                        <div className="w-20 h-20 rounded-full bg-muted/50 flex items-center justify-center mb-6">
+                            <ArrowUpRight className="h-10 w-10 text-muted-foreground/50" />
+                        </div>
+                        <h3 className="text-xl font-bold tracking-tight mb-2 text-foreground">Nessun risultato</h3>
+                        <p className="text-muted-foreground font-medium mb-8 leading-relaxed">
+                            Non abbiamo trovato transazioni che corrispondano ai criteri selezionati.
+                        </p>
+                        <Button
+                            onClick={resetFilters}
+                            variant="secondary"
+                            className="rounded-xl font-bold px-8"
+                        >
+                            Azzera tutti i filtri
+                        </Button>
+                    </div>
+                )}
+
+            </MacroSection>
 
             {/* Detail Sidebar */}
             <TransactionDetailSheet
@@ -255,7 +200,31 @@ function TransactionsPageContent() {
                 onOpenChange={(open) => !open && setSelectedDetail(null)}
                 mode={detailMode}
             />
-        </div>
+
+            {/* Export Error Dialog */}
+            <ConfirmDialog
+                open={!!exportError}
+                onOpenChange={(open) => !open && setExportError(null)}
+                title="Errore di Esportazione"
+                description={exportError}
+                confirmLabel="OK"
+                cancelLabel="Chiudi"
+                onConfirm={() => setExportError(null)}
+            />
+
+            {/* Direct Deletion Confirmation */}
+            <ConfirmDialog
+                open={!!transactionToDelete}
+                onOpenChange={(open) => !open && setTransactionToDelete(null)}
+                title="Conferma eliminazione"
+                description={`Sei sicuro di voler eliminare la transazione "${transactionToDelete?.description}"? Questa azione non può essere annullata.`}
+                confirmLabel="Elimina"
+                cancelLabel="Annulla"
+                onConfirm={confirmDelete}
+                isLoading={isDeleting}
+                variant="destructive"
+            />
+        </StaggerContainer>
     )
 }
 

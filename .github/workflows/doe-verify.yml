@@ -16,3 +16,9 @@ jobs:
         run: npm ci
       - name: Run DOE Verification
         run: npm run doe:verify
+      - name: Upload Governance Quick Check
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: governance-quick-check
+          path: docs/audit/quick-check.md

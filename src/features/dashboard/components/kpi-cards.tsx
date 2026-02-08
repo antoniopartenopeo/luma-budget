@@ -1,99 +1,27 @@
+"use client"
+
 import { useRouter } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowDownIcon, ArrowUpIcon, DollarSign, Wallet, CreditCard, AlertTriangle } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Skeleton } from "@/components/ui/skeleton"
-import { motion } from "framer-motion"
+import { DollarSign, Wallet, CreditCard, AlertTriangle } from "lucide-react"
 import { useCurrency } from "@/features/settings/api/use-currency"
-import { formatEuroNumber } from "@/lib/currency-utils"
+import { formatEuroNumber } from "@/domain/money"
 import { DashboardTimeFilter } from "../api/types"
 import { useSettings } from "@/features/settings/api/use-settings"
+import { KpiTone } from "@/components/patterns/kpi-card"
+import { narrateKPI, deriveKPIState, KPIFacts } from "@/domain/narration"
+import { MacroSection } from "@/components/patterns/macro-section"
+import { getBalanceTone, getBudgetTone, getSuperfluousTone } from "../utils/kpi-logic"
+import { usePrivacyStore } from "@/features/privacy/privacy.store"
+import { getPrivacyClass } from "@/features/privacy/privacy-utils"
+import { motion } from "framer-motion"
+import { StaggerContainer } from "@/components/patterns/stagger-container"
+import { macroItemVariants } from "@/components/patterns/macro-section"
 
-export type KpiTone = "positive" | "negative" | "neutral" | "warning"
+// Smart Context Integration
+import { generateSmartContext } from "@/features/smart-context/logic/context-engine"
+import { SmartKpiCard } from "@/features/smart-context/components/smart-kpi-card"
 
-interface KpiCardProps {
-    title: string
-    subtitle?: string
-    value: string | number
-    change?: string
-    trend?: "up" | "down" | "neutral"
-    comparisonLabel?: string
-    icon: React.ElementType
-    isLoading?: boolean
-    tone?: KpiTone
-    onClick?: () => void
-}
-
-export function KpiCard({ title, subtitle, value, change, trend, comparisonLabel, icon: Icon, isLoading, tone = "neutral", onClick }: KpiCardProps) {
-    if (isLoading) {
-        return (
-            <Card className="rounded-xl shadow-sm">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <Skeleton className="h-4 w-[100px]" />
-                    <Skeleton className="h-8 w-8 rounded-full" />
-                </CardHeader>
-                <CardContent>
-                    <Skeleton className="h-8 w-[120px] mb-2" />
-                    <Skeleton className="h-3 w-[150px]" />
-                </CardContent>
-            </Card>
-        )
-    }
-
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="h-full"
-        >
-            <Card
-                className={cn(
-                    "rounded-xl shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-300 h-full",
-                    onClick && "cursor-pointer active:scale-[0.98] ring-primary/5 hover:ring-2"
-                )}
-                onClick={onClick}
-            >
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <div>
-                        <CardTitle className="text-sm font-medium text-muted-foreground">
-                            {title}
-                        </CardTitle>
-                        {subtitle && <p className="text-xs text-muted-foreground/70 mt-0.5">{subtitle}</p>}
-                    </div>
-                    <div className={cn(
-                        "h-8 w-8 rounded-full flex items-center justify-center transition-colors duration-300",
-                        tone === "positive" && "bg-emerald-500/10 text-emerald-500 dark:text-emerald-400",
-                        tone === "negative" && "bg-rose-500/10 text-rose-500 dark:text-rose-400",
-                        tone === "warning" && "bg-amber-500/10 text-amber-500 dark:text-amber-400",
-                        tone === "neutral" && "bg-muted text-muted-foreground"
-                    )}>
-                        <Icon className="h-4 w-4" />
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <div className="text-2xl font-bold">{value}</div>
-                    {(change || comparisonLabel) && (
-                        <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                            {change && (
-                                <span
-                                    className={cn(
-                                        "flex items-center font-medium",
-                                        trend === "up" ? "text-emerald-600" : trend === "down" ? "text-rose-600" : "text-muted-foreground"
-                                    )}
-                                >
-                                    {trend === "up" ? <ArrowUpIcon className="h-3 w-3 mr-0.5" /> : trend === "down" ? <ArrowDownIcon className="h-3 w-3 mr-0.5" /> : null}
-                                    {change}
-                                </span>
-                            )}
-                            <span className="text-muted-foreground/60">{comparisonLabel}</span>
-                        </p>
-                    )}
-                </CardContent>
-            </Card>
-        </motion.div>
-    )
-}
+import { NumaEngineCard } from "@/components/patterns/numa-engine-card"
+import { BrainCircuit, ShieldCheck, Hourglass, TrendingUp, PiggyBank, Zap } from "lucide-react"
 
 interface DashboardKpiGridProps {
     totalSpent?: number
@@ -103,12 +31,29 @@ interface DashboardKpiGridProps {
     uselessSpendPercent?: number | null
     isLoading?: boolean
     filter?: DashboardTimeFilter
+    headerActions?: React.ReactNode
+    activeRhythm?: {
+        type: string
+        label: string
+        intensity: number
+    }
 }
 
-export function DashboardKpiGrid({ totalSpent, netBalance, budgetTotal, budgetRemaining, uselessSpendPercent, isLoading, filter }: DashboardKpiGridProps) {
+export function DashboardKpiGrid({
+    totalSpent,
+    netBalance,
+    budgetTotal,
+    budgetRemaining,
+    uselessSpendPercent,
+    isLoading,
+    filter,
+    headerActions,
+    activeRhythm
+}: DashboardKpiGridProps) {
     const router = useRouter()
     const { currency, locale } = useCurrency()
     const { data: settings } = useSettings()
+    const { isPrivacyMode } = usePrivacyStore()
 
     const superfluousTarget = settings?.superfluousTargetPercent ?? 10
 
@@ -135,71 +80,187 @@ export function DashboardKpiGrid({ totalSpent, netBalance, budgetTotal, budgetRe
         : `Periodo: ultimi ${filter?.months || 3} mesi · Confronto: ${filter?.months || 3} mesi precedenti`
 
     // Semantica dei toni:
-    // Saldo: >0 positivo, <0 negativo, 0 neutro
-    const saldoTone: KpiTone = netBalance && netBalance > 0 ? "positive" : netBalance && netBalance < 0 ? "negative" : "neutral"
-
-    // Spesa: SEMPRE neutral (metrica descrittiva)
+    const saldoTone = getBalanceTone(netBalance || 0)
     const spesaTone: KpiTone = "neutral"
 
-    // Budget: piano non configurato -> neutro, >=0 positivo, <0 negativo
-    const hasBudget = budgetTotal && budgetTotal > 0
+    const hasBudget = !!(budgetTotal && budgetTotal > 0)
     const isMonthlyView = filter?.mode === "month"
-    const budgetTone: KpiTone = (!hasBudget || !isMonthlyView) ? "neutral" : ((budgetRemaining || 0) >= 0 ? "positive" : "negative")
+    const budgetTone = (!isMonthlyView) ? "neutral" : getBudgetTone(budgetRemaining || 0, hasBudget)
 
-    // Superflue: <=target positivo, >target negativo
-    const superflueTone: KpiTone = (uselessSpendPercent !== undefined && uselessSpendPercent !== null)
-        ? (uselessSpendPercent <= superfluousTarget ? "positive" : "negative")
-        : "neutral"
+    const superflueTone = getSuperfluousTone(uselessSpendPercent ?? null, superfluousTarget)
+
+    const buildNarration = (kpiId: KPIFacts["kpiId"], value: number | string, tone: KpiTone, percent?: number) => {
+        let bufferRatio: number | undefined = undefined
+        if (kpiId === "balance" && typeof value === "number" && totalSpent !== undefined) {
+            const derivedIncome = value + totalSpent
+            if (derivedIncome > 0) {
+                bufferRatio = value / derivedIncome
+            }
+        }
+
+        const facts: KPIFacts = {
+            kpiId,
+            valueFormatted: typeof value === "number" ? formatValue(value) : value,
+            tone,
+            percent: percent ?? undefined,
+            targetPercent: kpiId === "superfluous" ? superfluousTarget : undefined,
+            bufferRatio
+        }
+        const state = deriveKPIState(facts)
+        return narrateKPI(facts, state).text
+    }
+
+    // --- SMART CONTEXT GENERATION ---
+    // We reconstruct a partial summary object for the engine logic
+    const smartContext = generateSmartContext({
+        summary: {
+            // These properties must match DashboardSummary structure roughly or what the engine expects
+            // The engine expects: netBalance, budgetRemaining, budgetTotal, totalSpent, uselessSpendPercent
+            // We pass 0 or defaults for missing non-critical ones, but here we have everything needed.
+            netBalance: netBalance || 0,
+            budgetRemaining: budgetRemaining || 0,
+            budgetTotal: budgetTotal || 0,
+            totalSpent: totalSpent || 0,
+            uselessSpendPercent: uselessSpendPercent || null,
+            // Mocking the rest as they are not used by current rules
+            totalIncome: 0,
+            totalExpenses: totalSpent || 0,
+            categoriesSummary: [],
+            usefulVsUseless: { useful: 0, useless: 0 },
+            monthlyExpenses: []
+        }
+    })
 
     return (
-        <div className="space-y-4">
-            <div className="px-1">
-                <p className="text-xs text-muted-foreground/80 font-medium">
-                    {contextText}
-                </p>
-            </div>
+        <MacroSection
+            title="Overview Performance"
+            description={isLoading ? undefined : contextText}
+            headerActions={headerActions}
+            className="w-full"
+        >
+            {/* Animated Grid Container for Soft Transitions */}
+            <StaggerContainer
+                key={filter?.period || "default"}
+                className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4 pt-4"
+            >
+                <motion.div variants={macroItemVariants} className="h-full">
+                    <SmartKpiCard
+                        title="Saldo"
+                        value={isLoading ? 0 : formatValue(netBalance || 0)}
+                        animatedValue={netBalance || 0}
+                        formatFn={formatValue}
+                        valueClassName={getPrivacyClass(isPrivacyMode)}
+                        comparisonLabel="Totale storico"
+                        tone={saldoTone}
+                        icon={CreditCard}
+                        isLoading={isLoading}
+                        description={isLoading ? undefined : buildNarration("balance", netBalance || 0, saldoTone)}
+                        context={smartContext['netBalance']}
+                    />
+                </motion.div>
+                <motion.div variants={macroItemVariants} className="h-full">
+                    <SmartKpiCard
+                        title="Spesa"
+                        value={isLoading ? 0 : formatValue(totalSpent || 0)}
+                        animatedValue={totalSpent || 0}
+                        formatFn={formatValue}
+                        valueClassName={getPrivacyClass(isPrivacyMode)}
+                        icon={Wallet}
+                        isLoading={isLoading}
+                        onClick={() => router.push("/transactions")}
+                        description={isLoading ? undefined : buildNarration("expenses", totalSpent || 0, spesaTone)}
+                        context={smartContext['totalSpent']}
+                    />
+                </motion.div>
+                <motion.div variants={macroItemVariants} className="h-full">
+                    <SmartKpiCard
+                        title="Pacing Temporale"
+                        value={isLoading ? 0 : (isMonthlyView ? formatValue(budgetRemaining || 0) : "—")}
+                        animatedValue={isMonthlyView ? (budgetRemaining || 0) : undefined}
+                        formatFn={formatValue}
+                        valueClassName={getPrivacyClass(isPrivacyMode)}
+                        change={isLoading ? "" : (isMonthlyView && hasBudget ? `${budgetPercent}%` : "")}
+                        trend={!isMonthlyView || !hasBudget ? "neutral" : (budgetTone === "positive" ? "up" : "down")}
+                        comparisonLabel={!isMonthlyView ? "Solo in vista Mensile" : (hasBudget ? "Rimanente nel periodo" : "Imposta un ritmo")}
+                        tone={budgetTone}
+                        icon={DollarSign}
+                        isLoading={isLoading}
+                        onClick={isMonthlyView && !hasBudget ? () => router.push("/goals/lab") : undefined}
+                        description={isLoading ? undefined : buildNarration("budget", budgetRemaining || 0, budgetTone, budgetPercent)}
+                        context={smartContext['budgetRemaining']}
+                        badge={activeRhythm && (
+                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                                <span className="relative flex h-1.5 w-1.5">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                                </span>
+                                {activeRhythm.label}
+                            </span>
+                        )}
+                    />
+                </motion.div>
+                <motion.div variants={macroItemVariants} className="h-full">
+                    <SmartKpiCard
+                        title="Spese Extra"
+                        value={isLoading ? 0 : (uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—")}
+                        animatedValue={uselessSpendPercent ?? undefined}
+                        formatFn={(v) => `${Math.round(v)}%`}
+                        change={`Target ${superfluousTarget}%`}
+                        trend={superflueTone === "positive" ? "up" : superflueTone === "negative" ? "down" : "neutral"}
+                        tone={superflueTone}
+                        icon={AlertTriangle}
+                        isLoading={isLoading}
+                        onClick={() => router.push("/transactions?filter=wants")}
+                        description={isLoading ? undefined : buildNarration("superfluous", uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—", superflueTone, uselessSpendPercent ?? undefined)}
+                        context={smartContext['uselessSpendPercent']}
+                    />
+                </motion.div>
+            </StaggerContainer>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <KpiCard
-                    title="Saldo"
-                    value={isLoading ? 0 : formatValue(netBalance || 0)}
-                    comparisonLabel="Totale storico"
-                    tone={saldoTone}
-                    icon={CreditCard}
-                    isLoading={isLoading}
-                />
-                <KpiCard
-                    title="Spesa"
-                    value={isLoading ? 0 : formatValue(totalSpent || 0)}
-                    change="Uscite"
-                    trend="neutral"
-                    tone={spesaTone}
-                    icon={Wallet}
-                    isLoading={isLoading}
-                    onClick={() => router.push("/transactions")}
-                />
-                <KpiCard
-                    title="Budget Rimanente"
-                    value={isLoading ? 0 : (isMonthlyView ? formatValue(budgetRemaining || 0) : "—")}
-                    change={isLoading ? "" : (isMonthlyView && hasBudget ? `${budgetPercent}%` : "")}
-                    trend={!isMonthlyView || !hasBudget ? "neutral" : (budgetTone === "positive" ? "up" : "down")}
-                    comparisonLabel={!isMonthlyView ? "Solo in vista Mensile" : (hasBudget ? "Rimanenti nel periodo" : "Imposta un budget")}
-                    tone={budgetTone}
-                    icon={DollarSign}
-                    isLoading={isLoading}
-                    onClick={isMonthlyView && !hasBudget ? () => router.push("/budget") : undefined}
-                />
-                <KpiCard
-                    title="Spese Superflue"
-                    value={isLoading ? 0 : (uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—")}
-                    change={`Target ${superfluousTarget}%`}
-                    trend={superflueTone === "positive" ? "up" : superflueTone === "negative" ? "down" : "neutral"}
-                    tone={superflueTone}
-                    icon={AlertTriangle}
-                    isLoading={isLoading}
-                    onClick={() => router.push("/transactions?filter=wants")}
+            {/* NUMA ENGINE (Transparency Context) */}
+            <div className="mt-8">
+                <NumaEngineCard
+                    title="Logica Finanziaria Attiva"
+                    icon={BrainCircuit}
+                    className="w-full"
+                    steps={[
+                        {
+                            icon: DollarSign,
+                            colorClass: "text-emerald-500",
+                            bgClass: "bg-emerald-500/10",
+                            stepLabel: "Il Ritmo",
+                            title: "Pacing Dinamico",
+                            description: `La disponibilità mostrata in "Pacing Temporale" non è un limite statico: deriva direttamente dal Piano ${activeRhythm?.label || "Attivo"} scelto nel Laboratorio.`
+                        },
+                        {
+                            icon: PiggyBank,
+                            colorClass: "text-amber-500",
+                            bgClass: "bg-amber-500/10",
+                            stepLabel: "Il Silenzio",
+                            title: "Rilevamento Implicito",
+                            description: "Non serve accantonare fondi manualmente. Se l'andamento delle Spese Extra rallenta, il margine residuo accelera automaticamente il tuo traguardo."
+                        },
+                        {
+                            icon: Hourglass,
+                            colorClass: "text-indigo-500",
+                            bgClass: "bg-indigo-500/10",
+                            stepLabel: "La Proiezione",
+                            title: "Velocità Reale",
+                            description: "La data traguardo non è fissa: si ricalcola ogni giorno in base alla tua reale velocità di crociera e sostenibilità attuale."
+                        }
+                    ]}
+                    auditStats={[
+                        { label: "Piano Attivo", value: activeRhythm?.label || "Standard", subValue: "Configurazione attuale del pacing.", icon: TrendingUp },
+                        { label: "Logica Core", value: "Matematica", subValue: "Algoritmo v2.4 (Deterministico).", icon: BrainCircuit },
+                        { label: "Privacy", value: "Shield On", subValue: "Analisi locale al 100%.", icon: ShieldCheck },
+                        { label: "Analisi", value: "Real-Time", subValue: "Ricalcolo dinamico sui movimenti.", icon: Zap },
+                    ]}
+                    transparencyNote="Numa non utilizza logiche di 'risparmio' punitivo. Osserva il tuo andamento: meno spendi in 'Extra', più la tua velocità aumenta e il traguardo si avvicina in modo naturale."
+                    auditLabel="Dettagli Logica"
+                    certificationTitle="Motore Deterministico"
+                    certificationSubtitle="Analisi basata su Matematica e Privacy"
                 />
             </div>
-        </div>
+        </MacroSection>
     )
 }

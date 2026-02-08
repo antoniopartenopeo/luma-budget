@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { fetchDashboardSummary } from '../repository'
 import { __resetTransactionsCache, createTransaction } from '../../../transactions/api/repository'
-import { getCurrentPeriod } from '../../../budget/utils/calculate-budget'
-import { upsertBudget, __resetBudgetsCache } from '../../../budget/api/repository'
+import { getCurrentPeriod } from "@/VAULT/budget/utils/calculate-budget"
+import { upsertBudget, __resetBudgetsCache } from "@/VAULT/budget/api/repository"
 import { __resetCategoriesCache } from '../../../categories/api/repository'
+import { CategoryIds } from '@/domain/categories'
 
 const DEFAULT_USER_ID = 'user-1'
 
@@ -42,7 +43,7 @@ describe('Dashboard Summary (Real Wiring)', () => {
         // 1. Setup real budget (1000€) via Repository
         await upsertBudget(DEFAULT_USER_ID, currentPeriod, {
             period: currentPeriod,
-            globalBudgetAmount: 1000,
+            globalBudgetAmountCents: 100000,
             groupBudgets: []
         })
 
@@ -53,7 +54,7 @@ describe('Dashboard Summary (Real Wiring)', () => {
             amount: 250.00,
             amountCents: 25000,
             type: 'expense',
-            categoryId: 'cibo',
+            categoryId: CategoryIds.CIBO,
             category: 'Cibo',
             isSuperfluous: false,
             classificationSource: 'manual'
@@ -64,23 +65,20 @@ describe('Dashboard Summary (Real Wiring)', () => {
             amount: 100.00,
             amountCents: 10000,
             type: 'income',
-            categoryId: 'altro',
+            categoryId: CategoryIds.ENTRATE_OCCASIONALI,
             category: 'Altro',
             isSuperfluous: false,
             classificationSource: 'manual'
         })
 
         // April 2025 (Previous)
-        // We need to set time temporarily to create transaction in past, 
-        // OR rely on the fact createTransaction uses Date.now().
-        // Let's jump back 1 month to create the old transaction.
         vi.setSystemTime(new Date(2025, 3, 15)) // April 15
         await createTransaction({
             description: 'Expense prev month',
             amount: 500.00,
             amountCents: 50000,
             type: 'expense',
-            categoryId: 'cibo',
+            categoryId: CategoryIds.CIBO,
             category: 'Cibo',
             isSuperfluous: false,
             classificationSource: 'manual'
@@ -108,8 +106,6 @@ describe('Dashboard Summary (Real Wiring)', () => {
 
     it('should handle missing budget plan gracefully (budgetTotal = 0)', async () => {
         const currentPeriod = getCurrentPeriod()
-        // No transactions, no budget
-
         const summary = await fetchDashboardSummary({ mode: 'month', period: currentPeriod })
 
         expect(summary.budgetTotal).toBe(0)
@@ -125,9 +121,10 @@ describe('Dashboard Summary (Real Wiring)', () => {
             amount: 100.00,
             amountCents: 10000,
             type: 'expense',
-            categoryId: 'cibo',
+            categoryId: CategoryIds.CIBO,
             category: 'Cibo',
-            isSuperfluous: false
+            isSuperfluous: false,
+            classificationSource: 'manual'
         })
 
         await createTransaction({
@@ -135,9 +132,10 @@ describe('Dashboard Summary (Real Wiring)', () => {
             amount: 100.00,
             amountCents: 10000,
             type: 'expense',
-            categoryId: 'svago',
+            categoryId: CategoryIds.SVAGO_EXTRA,
             category: 'Svago',
-            isSuperfluous: true
+            isSuperfluous: true,
+            classificationSource: 'manual'
         })
 
         const summary = await fetchDashboardSummary({ mode: 'month', period: currentPeriod })

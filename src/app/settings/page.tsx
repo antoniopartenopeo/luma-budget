@@ -4,10 +4,10 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { useCallback, Suspense } from "react"
 import { Settings2, Database, Download, Wrench, Loader2 } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { PreferencesSection } from "./_components/preferences-section"
-import { CategoriesSection } from "./_components/categories-section"
-import { BackupSection } from "./_components/backup-section"
-import { AdvancedSection } from "./_components/advanced-section"
+import { PreferencesSection } from "@/features/settings/components/preferences-section"
+import { CategoriesSection } from "@/features/settings/components/categories-section"
+import { BackupSection } from "@/features/settings/components/backup-section"
+import { AdvancedSection } from "@/features/settings/components/advanced-section"
 import { PageHeader } from "@/components/ui/page-header"
 
 const VALID_TABS = ["preferences", "categories", "backup", "advanced"] as const
@@ -90,7 +90,7 @@ function SettingsLoading() {
 
 export default function SettingsPage() {
     return (
-        <div className="container mx-auto py-6 px-4 max-w-4xl">
+        <div className="space-y-6">
             <div className="mb-8">
                 <PageHeader
                     title={

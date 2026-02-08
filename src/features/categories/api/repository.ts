@@ -1,5 +1,6 @@
 import { storage } from "@/lib/storage-utils"
 import { Category, CATEGORIES } from "../config"
+import { migrateCategoryId } from "@/domain/categories/migration"
 
 export const CATEGORIES_STORAGE_KEY = "luma_categories_v1"
 
@@ -33,19 +34,54 @@ export async function ensureCategoriesCache(): Promise<Category[]> {
         // SEED: Empty storage
         finalCategories = [...CATEGORIES]
         needsSync = true
-    } else if (Array.isArray(stored)) {
-        // MIGRATION: Old format (just array)
-        finalCategories = stored.map(c => ({
-            ...c,
-            archived: (c as Partial<Category>).archived ?? false,
-            iconName: (c as Partial<Category>).iconName || "helpCircle"
-        }) as Category)
-        needsSync = true
-    } else if (stored.version === 1) {
-        // CURRENT: Version 1
-        finalCategories = stored.categories
+    } else {
+        let rawCategories: Category[] = []
+        if (Array.isArray(stored)) {
+            rawCategories = stored
+            needsSync = true
+        } else if (stored.version === 1) {
+            rawCategories = stored.categories
+        }
 
-        // Check for missing default categories (safety)
+        // Migrate IDs and Sync Metadata with Deduplication
+        const migratedMap = new Map<string, Category>()
+
+        rawCategories.forEach(c => {
+            const migratedId = migrateCategoryId(c.id)
+            if (migratedId !== c.id) needsSync = true
+
+            // Find in current defaults to sync metadata (labels, colors, icons)
+            const defaultCat = CATEGORIES.find(d => d.id === migratedId)
+
+            let finalCat: Category
+            if (defaultCat) {
+                // If it was a system category, ensure it has latest metadata
+                finalCat = {
+                    ...c,
+                    ...defaultCat,
+                    id: migratedId,
+                    archived: c.archived ?? defaultCat.archived
+                }
+            } else {
+                finalCat = {
+                    ...c,
+                    id: migratedId,
+                    archived: c.archived ?? false,
+                    iconName: c.iconName || "helpCircle"
+                }
+            }
+
+            // Deduplication: If multiple legacy IDs map to same new ID, we keep one.
+            // We give priority to non-archived versions if they exist.
+            const existing = migratedMap.get(migratedId)
+            if (!existing || (existing.archived && !finalCat.archived)) {
+                migratedMap.set(migratedId, finalCat)
+            }
+        })
+
+        finalCategories = Array.from(migratedMap.values())
+
+        // Add missing default categories
         const existingIds = new Set(finalCategories.map(c => c.id))
         const missingDefaults = CATEGORIES.filter(c => !existingIds.has(c.id))
 
@@ -53,10 +89,6 @@ export async function ensureCategoriesCache(): Promise<Category[]> {
             finalCategories = [...finalCategories, ...missingDefaults]
             needsSync = true
         }
-    } else {
-        // UNKNOWN VERSION: Fallback to seed
-        finalCategories = [...CATEGORIES]
-        needsSync = true
     }
 
     categoriesCache = finalCategories

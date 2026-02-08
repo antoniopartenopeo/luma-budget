@@ -2,15 +2,17 @@
 
 import { useState, useMemo } from "react"
 import { Loader2, CheckCircle2, AlertCircle, TrendingUp, TrendingDown } from "lucide-react"
-import { parseCurrencyToCents } from "@/lib/currency-utils"
+import { parseCurrencyToCents } from "@/domain/money"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { DatePicker } from "@/components/ui/date-picker"
 import { cn } from "@/lib/utils"
+
 import { useCreateTransaction } from "@/features/transactions/api/use-transactions"
 import { Transaction } from "@/features/transactions/api/types"
-
-import { getGroupedCategories } from "@/features/categories/config"
+import { getGroupedCategories, getCategoryById } from "@/features/categories/config"
 import { useCategories } from "@/features/categories/api/use-categories"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 
@@ -22,7 +24,9 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
     const [description, setDescription] = useState("")
     const [amount, setAmount] = useState("")
     const [category, setCategory] = useState("")
+    const [date, setDate] = useState<Date>(new Date())
     const [type, setType] = useState<"expense" | "income">("expense")
+
     const { data: categories = [] } = useCategories()
     const [isFocused, setIsFocused] = useState(false)
     const [validationError, setValidationError] = useState<string | null>(null)
@@ -34,14 +38,14 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
     const { mutate: create, isPending, isSuccess, isError } = useCreateTransaction()
 
     // Get grouped categories based on current transaction type
-    const groupedCategories = getGroupedCategories(type, categories)
+    const groupedCategories = getGroupedCategories(categories, type)
 
     // Derive isSuperfluous based on category (rule-based), unless manually overridden
     const isSuperfluous = useMemo(() => {
         if (type !== "expense") return false
         if (isManualOverride) return isSuperfluousManual
 
-        const cat = categories.find(c => c.id === category)
+        const cat = getCategoryById(category, categories)
         return cat?.spendingNature === "superfluous"
         // eslint-disable-next-line react-hooks/preserve-manual-memoization
     }, [category, isManualOverride, isSuperfluousManual, type, categories])
@@ -77,17 +81,19 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
             {
                 description,
                 amountCents, // Send absolute integer cents
-                category: categories.find(c => c.id === category)?.label || category,
+                category: getCategoryById(category, categories)?.label || category,
                 categoryId: category,
                 type,
                 isSuperfluous: type === "expense" ? isSuperfluous : false,
                 classificationSource: isManualOverride ? "manual" : "ruleBased",
+                date: date.toISOString()
             },
             {
                 onSuccess: (data) => {
                     setDescription("")
                     setAmount("")
                     setCategory("")
+                    setDate(new Date()) // Reset to today
                     setIsSuperfluousManual(null)
                     // Keep type as is for convenience
                     if (onExpenseCreated) {
@@ -110,12 +116,13 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
             <form
                 onSubmit={handleSubmit}
                 className={cn(
-                    "flex flex-col sm:flex-row items-stretch sm:items-center gap-2 rounded-2xl sm:rounded-full bg-background p-2 sm:p-1 shadow-sm transition-all border border-input",
-                    isFocused && "shadow-md ring-2 ring-primary/10",
+                    "flex flex-col sm:flex-row items-stretch sm:items-center gap-2 rounded-2xl h-auto sm:h-12 p-2 sm:p-1 transition-all glass-card",
+                    isFocused && "ring-2 ring-primary/20 bg-background/60 dark:bg-black/40 shadow-lg",
                     hasError && "border-destructive/50 shadow-destructive/10"
                 )}
                 onFocus={() => setIsFocused(true)}
                 onBlur={(e) => {
+                    // Check if focus moved inside the popover or other elements
                     if (!e.currentTarget.contains(e.relatedTarget)) {
                         setIsFocused(false)
                     }
@@ -133,6 +140,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                                 type === "expense" ? "bg-background text-red-500 shadow-sm" : "text-muted-foreground hover:text-foreground"
                             )}
                             title="Uscita"
+                            aria-label="Registra come Uscita"
                         >
                             <TrendingDown className="h-4 w-4" />
                         </button>
@@ -144,6 +152,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                                 type === "income" ? "bg-background text-green-500 shadow-sm" : "text-muted-foreground hover:text-foreground"
                             )}
                             title="Entrata"
+                            aria-label="Registra come Entrata"
                         >
                             <TrendingUp className="h-4 w-4" />
                         </button>
@@ -169,7 +178,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                 <div className="h-px w-full bg-border/50 sm:hidden" />
                 <div className="h-6 w-px bg-border/50 hidden sm:block" />
 
-                {/* Mobile: Row 2 (Amount + Category + Action) | Desktop: Horizontal flow */}
+                {/* Mobile: Row 2 (Amount + Date + Category + Action) | Desktop: Horizontal flow */}
                 <div className="flex items-center gap-1">
                     {/* Amount */}
                     <div className="relative flex items-center shrink-0 w-24 sm:w-auto">
@@ -184,13 +193,22 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                             }}
                             disabled={isPending}
                             className={cn(
-                                "h-9 w-full sm:w-24 border-0 bg-transparent pl-4 md:pl-6 pr-1 md:pr-2 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70 text-right font-medium text-sm md:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+                                "h-9 w-full sm:w-24 border-0 bg-transparent pl-4 md:pl-6 pr-1 md:pr-2 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70 text-right font-black tabular-nums tracking-tighter text-sm md:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
                                 validationError && (!amount || Math.abs(parseCurrencyToCents(amount)) <= 0) && "placeholder:text-destructive/50 text-destructive"
                             )}
                         />
                     </div>
 
                     <div className="h-6 w-px bg-border/50 hidden md:block" />
+
+                    {/* Date Picker (Compact Icon) */}
+                    <DatePicker
+                        value={date}
+                        onChange={(d) => d && setDate(d)}
+                        variant="icon"
+                        align="end"
+                        disabled={isPending}
+                    />
 
                     {/* Category */}
                     <Select
@@ -273,7 +291,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
 
             {/* Error Message */}
             {hasError && (
-                <div className="absolute -bottom-8 left-4 flex items-center gap-2 text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1">
+                <div className="absolute -bottom-8 left-4 flex items-center gap-2 text-xs font-medium text-destructive animate-enter-up">
                     <AlertCircle className="h-3 w-3" />
                     {validationError || "Errore durante il salvataggio. Riprova."}
                 </div>
@@ -281,3 +299,4 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
         </div>
     )
 }
+

@@ -28,4 +28,9 @@ export interface DashboardSummary {
         name: string
         total: number
     }[]
+    activeRhythm?: {
+        type: string
+        label: string
+        intensity: number
+    }
 }

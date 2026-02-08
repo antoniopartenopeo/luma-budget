@@ -25,6 +25,9 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -37,85 +40,203 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+
+  /* NUMA PREMIUM FOUNDATION */
+  --radius-xl: var(--radius);
+  /* 2.5rem / 40px - Macro surfaces */
+  --radius-lg: 1rem;
+  /* 16px - Large cards (legacy ref) */
+  --radius-md: 0.75rem;
+  /* 12px - Controls (Buttons, Inputs) */
+  --radius-sm: 0.5rem;
+  /* 8px - Small elements */
+
+  /* Custom Premium Animations */
+  --animate-enter-up: enter-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-pulse-soft: pulse-soft 3s ease-in-out infinite;
+  --animate-flash-green: flash-green 0.8s ease-out forwards;
+  --animate-ping-slow: ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-spin-slow: spin-slow 8s linear infinite;
+
+  @keyframes enter-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes pulse-soft {
+
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    50% {
+      opacity: 0.85;
+      transform: scale(1.02);
+    }
+  }
+
+  @keyframes flash-green {
+    0% {
+      background-color: oklch(0.6 0.16 160 / 0.3);
+      /* Emerald 600 equivalent with opacity */
+      box-shadow: 0 0 20px oklch(0.6 0.16 160 / 0.5);
+    }
+
+    100% {
+      background-color: transparent;
+      box-shadow: none;
+    }
+  }
+
+  @keyframes ping-slow {
+
+    75%,
+    100% {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+  }
+
+  @keyframes spin-slow {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Existing Shimmer */
+  --animate-shimmer: shimmer 3s infinite linear;
+
+  @keyframes shimmer {
+    from {
+      transform: translateX(-100%);
+    }
+
+    to {
+      transform: translateX(200%);
+    }
+  }
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 2.5rem;
+  /* Standard Numa Premium Macro Radius */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.769 0.188 150.08); /* Lime Green */
-  --primary-foreground: oklch(0.2 0.05 140);
+  --primary: oklch(0.6 0.16 200);
+  /* NUMA Teal */
+  --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
+  --accent: oklch(0.95 0.05 200);
+  /* Cyan tint */
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
+  --success: oklch(0.6 0.16 160);
+  /* Emerald-600 equivalent */
+  --warning: oklch(0.75 0.18 70);
+  /* Amber-500 equivalent */
+  --info: oklch(0.6 0.16 250);
+  /* Blue-500 equivalent */
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.769 0.188 150.08 / 0.3);
-  --chart-1: oklch(0.769 0.188 150.08); /* Lime Green */
-  --chart-2: oklch(0.85 0.18 85); /* Brand Yellow */
+  --ring: oklch(0.6 0.16 200 / 0.3);
+  --chart-1: oklch(0.6 0.16 200);
+  /* Teal */
+  --chart-2: oklch(0.7 0.15 180);
+  /* Cyan */
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
+  /* Conserved Lime as decorative */
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.769 0.188 150.08);
+  --sidebar-primary: oklch(0.6 0.16 200);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.769 0.188 150.08 / 0.1);
+  --sidebar-accent: oklch(0.6 0.16 200 / 0.1);
   --sidebar-accent-foreground: oklch(0.2 0.05 140);
   --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.769 0.188 150.08 / 0.3);
+  --sidebar-ring: oklch(0.6 0.16 200 / 0.3);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  --background: oklch(0 0 0);
+  /* Nero OLED */
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
+  --card: oklch(0.12 0.01 265.755);
+  /* Very subtle depth for cards */
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
+  --popover: oklch(0.12 0.01 265.755);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.769 0.188 150.08);
-  --primary-foreground: oklch(0.145 0 0);
-  --secondary: oklch(0.269 0 0);
+  --primary: oklch(0.6 0.16 200);
+  /* NUMA Teal */
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.208 0.042 265.755);
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
+  --muted: oklch(0.208 0.042 265.755);
   --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
+  --accent: oklch(0.208 0.042 265.755);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.769 0.188 150.08 / 0.3);
-  --chart-1: oklch(0.769 0.188 150.08);
-  --chart-2: oklch(0.85 0.18 85);
-  --chart-3: oklch(0.769 0.188 70.08);
+  --success: oklch(0.6 0.16 160);
+  --warning: oklch(0.75 0.18 70);
+  --info: oklch(0.6 0.16 250);
+  --border: oklch(1 0 0 / 15%);
+  --input: oklch(1 0 0 / 18%);
+  --ring: oklch(0.6 0.16 200 / 0.3);
+  --chart-1: oklch(0.6 0.16 200);
+  --chart-2: oklch(0.7 0.15 180);
+  --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
+  --sidebar: oklch(0 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.769 0.188 150.08);
+  --sidebar-primary: oklch(0.6 0.16 200);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.769 0.188 150.08 / 0.2);
+  --sidebar-accent: oklch(0.6 0.16 200 / 0.15);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.769 0.188 150.08 / 0.3);
+  --sidebar-border: oklch(1 0 0 / 15%);
+  --sidebar-ring: oklch(0.6 0.16 200 / 0.3);
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-white/60 dark:bg-black/60 border border-white/40 dark:border-white/10 backdrop-blur-xl shadow-xl;
+  }
+
+  .glass-card {
+    @apply bg-white/50 dark:bg-white/5 border border-white/40 dark:border-white/10 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300;
+  }
+
+  .glass-chrome {
+    @apply bg-white/60 dark:bg-black/60 backdrop-blur-2xl backdrop-saturate-[180%];
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+  }
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }

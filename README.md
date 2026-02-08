@@ -1,48 +1,85 @@
-# LumaBudget
+# NumaBudget
 
-Personal Finance Management built with Next.js 16, React 19, and Tailwind CSS.
-Focuses on simplicity, local-only persistence (for now), and rich insights.
+Personal Finance Management built with **Next.js 16**, **React 19**, and **Tailwind CSS**.  
+Local-first persistence with rich analytics and insights.
 
-## Project Structure
-- `src/features`: Domain logic (Transactions, Budget, Insights).
-- `src/components`: Shared UI (Shadcn/Primitive).
-- `src/lib`: Utilities (Currency, Storage, dates).
-- `docs/doe`: **Directive, Orchestration, Execution** system.
+## ✨ Features
 
-## getting Started
+| Module | Status | Description |
+|--------|--------|-------------|
+| **Dashboard** | Stable | KPIs, charts, and financial atmosphere |
+| **Transactions** | Stable | CRUD, filters, CSV import/export with Motion |
+| **Financial Lab**| **v2.0** | Adaptive Genius Core & Technical Audit Panel |
+| **Categories** | Stable | Full CRUD with custom icons |
+| **Insights** | **v2.0** | Rhythm-based analysis, Labor Illusion & AI Advisor |
+| **UI/UX** | **Premium v1.1**| Glassmorphism, Living Effect & Staggered Motion |
+| **Settings** | Stable v1.3 | Preferences, backup/restore, themes |
 
-First, run the development server:
+## 🏗 Architecture
+
+```
+src/
+├── app/              # Next.js routing
+├── features/         # Domain modules
+│   ├── transactions/ # api/, components/, utils/
+│   ├── budget/
+│   ├── dashboard/
+│   ├── insights/
+│   ├── categories/
+│   ├── settings/
+│   └── simulator/
+├── components/       # Shared UI (Shadcn/Radix)
+└── lib/              # Utilities (currency, dates, storage)
+```
+
+### Data Flow
+- **Repositories** → Read/write to `localStorage`
+- **React Query** → Caching and UI reactivity
+- **Cross-tab sync** → Storage event listener
+
+### Persistence Keys
+```
+luma_transactions_v1
+luma_budget_plans_v1
+luma_categories_v1
+luma_settings_v1
+```
+
+### Global Semantic Enforcement
+- **Deterministic Narration Layer**: All text generation is governed by strict semantic rules (ADR-005).
+- **Rhythm over Budget**: Focus on financial "Path" and "Acceleration" rather than fixed limits.
+- **Labor Illusion**: AI interactions are paced (1.5s delay) to ensure perceived intelligence and trust.
+- **Global Enforcement Tests**: Automated tests (`semantic-enforcement.test.ts`) ensure no "tone-deaf" or mathematically incorrect statements are generated.
+- **No Inline Strings**: UI components are forbidden from generating logic-based narrative strings internally.
+
+## 🚀 Getting Started
 
 ```bash
+npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser.
+Open [http://localhost:3000](http://localhost:3000)
 
-## DOE System (Development & Operations)
+## 📜 Development Standards
 
-This project uses a strict governance system for code quality and consistency.
+Numa Budget follows a strict set of development standards to ensure financial accuracy, UI consistency (UBI), and maintainable architecture.
 
-### 📚 Directives
-Read the rules before contributing:
-- [Core Principles](docs/doe/directives/00-core-principles.md)
-- [UX Standards](docs/doe/directives/ux-standards.md)
-- [Legacy Registry](docs/doe/legacy-registry.md) (Known issues)
+> [!IMPORTANT]
+> All technical rules, architectural patterns, and UI constraints are defined in the **[Numa Core Rules](file:///.agent/rules/numa-core-rules.md)**.
+> 
+> Before contributing, ensure you have read the **[Numa Core Rules](file:///.agent/rules/numa-core-rules.md)**.
 
-### 🛠 Verification
-Before committing, you **MUST** run the verification protocol:
+## 📁 Documentation
 
-```bash
-npm run doe:verify
-```
+- **[Numa Core Rules](file:///.agent/rules/numa-core-rules.md)**: Core development standards and constraints.
+- **[UI Standards](file:///.agent/skills/numa-ui-standards/SKILL.md)**: Design system and UBI rules.
+- **[Financial Logic](file:///.agent/skills/numa-financial-logic/SKILL.md)**: Monetary domain rules.
 
-This script performs:
-1. Linting (`eslint`)
-2. Unit Testing (`vitest`)
-3. Static Analysis for prohibited patterns (e.g. `parseFloat` for currency).
+## 🚀 Deploy
 
-### 🧪 Regression Testing
-Check [Regression Map](docs/doe/regression-map.md) for critical manual test scenarios.
+Standard Next.js deployment on Vercel.
 
-## Deploy on Vercel
-Standard Next.js deployment.
+---
+
+Made with 💜 by Numa Team

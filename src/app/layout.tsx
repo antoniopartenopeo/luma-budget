@@ -4,6 +4,7 @@ import "./globals.css";
 import { AppShell } from "@/components/layout/app-shell";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { ThemeApplier } from "@/components/providers/theme-applier";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,8 +22,11 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "LumaBudget",
+  title: "NUMA Budget",
   description: "Gestisci le tue finanze con semplicità",
+  icons: {
+    icon: "/brand/numa-logo-smart.png",
+  },
 };
 
 export default function RootLayout({
@@ -59,6 +63,7 @@ export default function RootLayout({
         <QueryProvider>
           <ThemeApplier />
           <AppShell>{children}</AppShell>
+          <Toaster />
         </QueryProvider>
       </body>
     </html>

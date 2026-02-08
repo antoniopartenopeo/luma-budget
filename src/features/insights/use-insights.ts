@@ -1,13 +1,7 @@
-"use client"
-
-// useInsights Hook
-// ================
-// Composes transactions, categories, and budget data to generate insights
-
-import { useMemo } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
 import { useCategories } from "@/features/categories/api/use-categories"
-import { useBudget } from "@/features/budget/api/use-budget"
+import { useBudget } from "@/VAULT/budget/api/use-budget"
 import { Insight } from "./types"
 import {
     buildBudgetRiskInsight,
@@ -24,6 +18,7 @@ interface UseInsightsOptions {
 interface UseInsightsResult {
     insights: Insight[]
     isLoading: boolean
+    isThinking: boolean
     isEmpty: boolean
     hasTransactions: boolean
 }
@@ -34,10 +29,25 @@ export function useInsights({ period }: UseInsightsOptions): UseInsightsResult {
     const { data: budgetPlan, isLoading: budgetLoading } = useBudget(period)
     const { data: settings, isLoading: settingsLoading } = useSettings()
 
+    // 4. Trust Semantics (Labor Illusion)
+    const [isThinking, setIsThinking] = useState(false)
+
+    useEffect(() => {
+        if (!transactionsLoading && !categoriesLoading && !budgetLoading && !settingsLoading) {
+            // Wrap in setTimeout to avoid synchronous setState during render cycle
+            const startTimer = setTimeout(() => {
+                setIsThinking(true)
+                const endTimer = setTimeout(() => setIsThinking(false), 1500)
+                return () => clearTimeout(endTimer)
+            }, 0)
+            return () => clearTimeout(startTimer)
+        }
+    }, [transactionsLoading, categoriesLoading, budgetLoading, settingsLoading, period])
+
     const isLoading = transactionsLoading || categoriesLoading || budgetLoading || settingsLoading
 
     const result = useMemo(() => {
-        if (isLoading) {
+        if (isLoading || isThinking) {
             return { insights: [], isEmpty: true, hasTransactions: false }
         }
 
@@ -50,9 +60,7 @@ export function useInsights({ period }: UseInsightsOptions): UseInsightsResult {
         )
 
         const currentDate = new Date()
-        const budgetCents = budgetPlan?.globalBudgetAmount
-            ? Math.round(budgetPlan.globalBudgetAmount * 100)
-            : null
+        const budgetCents = budgetPlan?.globalBudgetAmountCents ?? null
 
         const insights: Insight[] = []
 
@@ -97,10 +105,11 @@ export function useInsights({ period }: UseInsightsOptions): UseInsightsResult {
             isEmpty: insights.length === 0,
             hasTransactions,
         }
-    }, [transactions, categories, budgetPlan, period, isLoading, settings?.insightsSensitivity])
+    }, [transactions, categories, budgetPlan, period, isLoading, isThinking, settings?.insightsSensitivity])
 
     return {
         ...result,
         isLoading,
+        isThinking,
     }
 }

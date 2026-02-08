@@ -1,17 +1,24 @@
-"use client"
+// Nessuna modifica necessaria qui, il componente eredita lo stile corretto da MacroSection.
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { cn } from "@/lib/utils"
+import { calculateDateRange, filterByRange } from "@/lib/date-ranges"
 import { useRecentTransactions } from "@/features/transactions/api/use-transactions"
 import { StateMessage } from "@/components/ui/state-message"
 import { Skeleton } from "@/components/ui/skeleton"
 import { DashboardTimeFilter } from "../api/types"
 import { useCurrency } from "@/features/settings/api/use-currency"
-import { formatSignedCents, getSignedCents } from "@/lib/currency-utils"
+import { formatSignedCents } from "@/domain/money"
+import { getSignedCents } from "@/domain/transactions"
 import { Button } from "@/components/ui/button"
 import { ChevronRight } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { MacroSection } from "@/components/patterns/macro-section"
+import { usePrivacyStore } from "@/features/privacy/privacy.store"
+import { getPrivacyClass } from "@/features/privacy/privacy-utils"
+import { motion } from "framer-motion"
+import { StaggerContainer } from "@/components/patterns/stagger-container"
+import { macroItemVariants } from "@/components/patterns/macro-section"
 
 interface RecentTransactionsProps {
     filter?: DashboardTimeFilter
@@ -20,69 +27,53 @@ interface RecentTransactionsProps {
 export function RecentTransactions({ filter }: RecentTransactionsProps) {
     const { data: transactions, isLoading, isError, refetch } = useRecentTransactions()
     const { currency, locale } = useCurrency()
+    const { isPrivacyMode } = usePrivacyStore()
     const router = useRouter()
 
     if (isLoading) {
+        // ... (rest of the logic remains same as my previous tool call for RecentTransactions body)
         return (
-            <Card className="col-span-3 rounded-xl shadow-sm">
-                <CardHeader>
-                    <CardTitle>Transazioni Recenti</CardTitle>
-                    <CardDescription>Caricamento...</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-6">
-                        {[...Array(5)].map((_, i) => (
-                            <div key={i} className="flex items-center justify-between">
-                                <div className="flex items-center gap-4">
-                                    <Skeleton className="h-10 w-10 rounded-full" />
-                                    <div className="space-y-2">
-                                        <Skeleton className="h-4 w-[150px]" />
-                                        <Skeleton className="h-3 w-[100px]" />
-                                    </div>
+            <MacroSection title="Transazioni Recenti" description="Caricamento..." className="col-span-3">
+                <div className="space-y-6">
+                    {[...Array(5)].map((_, i) => (
+                        <div key={i} className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <Skeleton className="h-10 w-10 rounded-full" />
+                                <div className="space-y-2">
+                                    <Skeleton className="h-4 w-[150px]" />
+                                    <Skeleton className="h-3 w-[100px]" />
                                 </div>
-                                <Skeleton className="h-4 w-[60px]" />
                             </div>
-                        ))}
-                    </div>
-                </CardContent>
-            </Card>
+                            <Skeleton className="h-4 w-[60px]" />
+                        </div>
+                    ))}
+                </div>
+            </MacroSection>
         )
     }
 
     if (isError) {
         return (
-            <Card className="col-span-3 rounded-xl shadow-sm">
-                <CardContent className="pt-6">
-                    <StateMessage
-                        variant="error"
-                        title="Errore caricamento transazioni"
-                        description="Non è stato possibile caricare le transazioni recenti."
-                        actionLabel="Riprova"
-                        onActionClick={() => refetch()}
-                    />
-                </CardContent>
-            </Card>
+            <MacroSection className="col-span-3">
+                <StateMessage
+                    variant="error"
+                    title="Errore caricamento transazioni"
+                    description="Non è stato possibile caricare le transazioni recenti."
+                    actionLabel="Riprova"
+                    onActionClick={() => refetch()}
+                />
+            </MacroSection>
         )
     }
 
     // Client-side Filtering
     let filteredTransactions = transactions || []
-
     if (filter) {
-        const endDate = new Date(filter.period + "-01")
-        endDate.setMonth(endDate.getMonth() + 1)
-        endDate.setDate(0) // End of month
-
-        const startDate = new Date(filter.period + "-01")
-        if (filter.mode === "range" && filter.months) {
-            startDate.setMonth(startDate.getMonth() - (filter.months - 1))
-        }
-        startDate.setDate(1) // Start of month
-
-        filteredTransactions = filteredTransactions.filter(t => {
-            const d = new Date(t.timestamp)
-            return d >= startDate && d <= endDate
-        })
+        const { startDate, endDate } = calculateDateRange(
+            filter.period,
+            (filter.mode === "range" && filter.months) ? filter.months : 1
+        )
+        filteredTransactions = filterByRange(filteredTransactions, startDate, endDate)
     }
 
     // Sort by date desc (assuming API does, but good to ensure) and take top 5
@@ -92,57 +83,49 @@ export function RecentTransactions({ filter }: RecentTransactionsProps) {
 
     if (displayedTransactions.length === 0) {
         return (
-            <Card className="col-span-3 rounded-xl shadow-sm">
-                <CardHeader>
-                    <CardTitle>Transazioni Recenti</CardTitle>
-                    <CardDescription>Nel periodo selezionato</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <StateMessage
-                        variant="empty"
-                        title="Nessuna transazione"
-                        description="Nessuna transazione trovata in questo periodo."
-                    />
-                </CardContent>
-            </Card>
+            <MacroSection title="Transazioni Recenti" description="Nel periodo selezionato" className="col-span-3">
+                <StateMessage
+                    variant="empty"
+                    title="Nessuna transazione"
+                    description="Nessuna transazione trovata in questo periodo."
+                />
+            </MacroSection>
         )
     }
 
     return (
-        <Card className="col-span-3 rounded-xl shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                    <CardTitle>Transazioni Recenti</CardTitle>
-                    <CardDescription>Ultime 5 transazioni del periodo</CardDescription>
-                </div>
+        <MacroSection
+            title="Transazioni Recenti"
+            description="Ultime 5 transazioni del periodo"
+            className="col-span-3"
+            headerActions={
                 <Button variant="ghost" size="sm" className="gap-1 text-primary" onClick={() => router.push("/transactions")}>
                     Vedi tutte
                     <ChevronRight className="h-4 w-4" />
                 </Button>
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-6">
-                    {displayedTransactions.map((transaction) => (
-                        <div key={transaction.id} className="flex items-center justify-between animate-in fade-in slide-in-from-bottom-2 duration-300">
-                            <div className="flex items-center gap-4">
-                                <CategoryIcon
-                                    categoryName={transaction.category}
-                                    size={20}
-                                    showBackground
-                                    className="border border-border/50"
-                                />
-                                <div className="space-y-1">
-                                    <p className="text-sm font-medium leading-none">{transaction.description}</p>
-                                    <p className="text-xs text-muted-foreground">{transaction.category} • {transaction.date}</p>
-                                </div>
-                            </div>
-                            <div className={cn("font-medium", transaction.type === "income" ? "text-emerald-600" : "text-foreground")}>
-                                {formatSignedCents(getSignedCents(transaction), currency, locale)}
+            }
+        >
+            <StaggerContainer className="space-y-6">
+                {displayedTransactions.map((transaction) => (
+                    <motion.div key={transaction.id} variants={macroItemVariants} className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <CategoryIcon
+                                categoryName={transaction.category}
+                                size={20}
+                                showBackground
+                                className="border border-border/50"
+                            />
+                            <div className="space-y-1">
+                                <p className="text-sm font-medium leading-none text-foreground">{transaction.description}</p>
+                                <p className="text-xs text-muted-foreground">{transaction.category} • {transaction.date}</p>
                             </div>
                         </div>
-                    ))}
-                </div>
-            </CardContent>
-        </Card>
+                        <div className={cn("font-medium tabular-nums", transaction.type === "income" ? "text-emerald-600" : "text-foreground", getPrivacyClass(isPrivacyMode))}>
+                            {formatSignedCents(getSignedCents(transaction), currency, locale)}
+                        </div>
+                    </motion.div>
+                ))}
+            </StaggerContainer>
+        </MacroSection>
     )
 }

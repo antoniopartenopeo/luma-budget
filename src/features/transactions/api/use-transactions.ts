@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { fetchTransactions, createTransaction, updateTransaction } from "./repository"
+import { fetchTransactions, createTransaction, updateTransaction, createBatchTransactions } from "./repository"
 import { queryKeys } from "@/lib/query-keys"
 import { CreateTransactionDTO } from "./types"
 
@@ -25,6 +25,19 @@ export function useCreateTransaction() {
 
     return useMutation({
         mutationFn: createTransaction,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.transactions.recent })
+            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
+            queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all })
+        },
+    })
+}
+
+export function useCreateBatchTransactions() {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: createBatchTransactions,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.transactions.recent })
             queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
@@ -59,4 +72,3 @@ export const useDeleteTransaction = () => {
         },
     })
 }
-

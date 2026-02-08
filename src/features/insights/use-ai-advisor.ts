@@ -1,7 +1,8 @@
-"use client"
-
-import { useMemo } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
+import { sumExpensesInCents, sumIncomeInCents } from "@/domain/money"
+import { AdvisorFacts } from "@/domain/narration"
+import { extractMerchantKey } from "@/features/import-csv/core/merchant/pipeline"
 
 export interface AISubscription {
     id: string
@@ -17,64 +18,107 @@ export interface AIForecast {
     confidence: "high" | "medium" | "low"
 }
 
+export interface AIPriceHike {
+    name: string
+    diff: number
+    percent: number
+}
+
 export interface AIAdvisorResult {
+    facts: AdvisorFacts | null
     forecast: AIForecast | null
     subscriptions: AISubscription[]
-    tips: string[]
+    priceHikes: AIPriceHike[]
     isLoading: boolean
 }
 
-export function useAIAdvisor() {
-    const { data: transactions = [], isLoading } = useTransactions()
+function isMonthlySubscriptionPattern(sortedDates: number[]): boolean {
+    if (sortedDates.length < 2) return false
+    const diffsInDays: number[] = []
+    for (let i = 1; i < sortedDates.length; i++) {
+        diffsInDays.push((sortedDates[i] - sortedDates[i - 1]) / (1000 * 60 * 60 * 24))
+    }
 
-    return useMemo((): AIAdvisorResult => {
-        if (isLoading || transactions.length < 2) {
-            return { forecast: null, subscriptions: [], tips: [], isLoading }
+    const monthlyMatches = diffsInDays.filter((diffDays) => diffDays >= 25 && diffDays <= 35).length
+    const cadenceRatio = monthlyMatches / diffsInDays.length
+
+    return monthlyMatches >= 1 && cadenceRatio >= 0.5
+}
+
+function isRecentlyActive(latestTimestamp: number, now: Date): boolean {
+    const diffDays = (now.getTime() - latestTimestamp) / (1000 * 60 * 60 * 24)
+    return diffDays <= 45
+}
+
+export function useAIAdvisor() {
+    const { data: transactions = [], isLoading: isDataLoading } = useTransactions()
+    const [isArtificialLoading, setIsArtificialLoading] = useState(true)
+
+    // Force "Thinking" time to allow user to appreciate the semantic animation
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsArtificialLoading(false)
+        }, 2000) // 2s "Thinking" time per user request
+        return () => clearTimeout(timer)
+    }, []) // Run once on mount
+
+    const computation = useMemo(() => {
+        if (isDataLoading || transactions.length < 2) {
+            return { facts: null, forecast: null, subscriptions: [], priceHikes: [] as AIPriceHike[] }
         }
 
         const expenses = transactions.filter(t => t.type === "expense")
 
-        // 1. Subscription Detection Logic
-        // group by description and amount (cents)
-        const patternMap = new Map<string, number[]>()
+        // 1. Subscription Detection Logic (merchant-centric, one active subscription per merchant)
+        const patternMap = new Map<string, { dates: number[]; samples: Array<{ timestamp: number; amountCents: number }> }>()
         expenses.forEach(t => {
-            const key = `${t.description.toLowerCase()}_${Math.abs(t.amountCents)}`
-            const dates = patternMap.get(key) || []
-            dates.push(new Date(t.timestamp).getTime())
-            patternMap.set(key, dates)
+            const merchantKey = extractMerchantKey(t.description)
+            const key = merchantKey
+            const timestamp = new Date(t.timestamp).getTime()
+            const record = patternMap.get(key) || { dates: [], samples: [] }
+            record.dates.push(timestamp)
+            record.samples.push({ timestamp, amountCents: Math.abs(t.amountCents) })
+            patternMap.set(key, record)
         })
 
         const detectedSubscriptions: AISubscription[] = []
-        patternMap.forEach((dates, key) => {
-            if (dates.length >= 2) {
-                // Simple check: are they roughly 25-35 days apart?
-                dates.sort((a, b) => a - b)
-                let isMonthly = false
-                for (let i = 1; i < dates.length; i++) {
-                    const diffDays = (dates[i] - dates[i - 1]) / (1000 * 60 * 60 * 24)
-                    if (diffDays >= 25 && diffDays <= 35) isMonthly = true
-                }
+        let subscriptionTotalYearlyCents = 0
+        const now = new Date()
 
-                if (isMonthly) {
-                    const [desc, amountCents] = key.split("_")
-                    const amount = parseInt(amountCents) / 100
+        patternMap.forEach((record, merchantKey) => {
+            if (merchantKey === "ALTRO" || merchantKey === "UNRESOLVED") return
+            if (record.dates.length < 2) return
 
-                    // Noise Gate: Ignore subscriptions under €5 to avoid coffee/snacks
-                    if (Math.abs(amount) >= 5) {
-                        detectedSubscriptions.push({
-                            id: key,
-                            description: desc.charAt(0).toUpperCase() + desc.slice(1),
-                            amount: amount,
-                            frequency: "monthly"
-                        })
-                    }
-                }
-            }
+            const sortedDates = [...record.dates].sort((a, b) => a - b)
+            const latestTimestamp = sortedDates[sortedDates.length - 1]
+            if (!isRecentlyActive(latestTimestamp, now)) return
+            if (!isMonthlySubscriptionPattern(sortedDates)) return
+
+            const latestAmountCents =
+                record.samples
+                    .slice()
+                    .sort((a, b) => b.timestamp - a.timestamp)[0]?.amountCents ?? 0
+            const amount = latestAmountCents / 100
+
+            // Noise Gate: Ignore subscriptions under €5
+            if (Math.abs(amount) < 5) return
+
+            detectedSubscriptions.push({
+                id: merchantKey,
+                description: merchantKey,
+                amount: amount,
+                frequency: "monthly"
+            })
+            subscriptionTotalYearlyCents += (Math.abs(latestAmountCents) * 12)
         })
 
-        // 2. Forecasting Logic (3-month moving average)
+        detectedSubscriptions.sort((a, b) => {
+            if (b.amount !== a.amount) return b.amount - a.amount
+            return a.description.localeCompare(b.description)
+        })
+
+        // 2. Forecasting Logic (Weighted Moving Average)
         const last3Months = []
-        const now = new Date()
         for (let i = 1; i <= 3; i++) {
             const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
             last3Months.push({ y: d.getFullYear(), m: d.getMonth() })
@@ -86,81 +130,126 @@ export function useAIAdvisor() {
                 return td.getFullYear() === y && td.getMonth() === m
             })
             return {
-                income: mTransactions.filter(t => t.type === "income").reduce((s, t) => s + t.amountCents, 0),
-                expenses: mTransactions.filter(t => t.type === "expense").reduce((s, t) => s + Math.abs(t.amountCents), 0),
+                income: sumIncomeInCents(mTransactions),
+                expenses: sumExpensesInCents(mTransactions),
                 hasData: mTransactions.length > 0
             }
         })
 
         const historicalMonthsWithData = monthlyStats.filter(m => m.hasData).length
-        let forecast: AIForecast | null = null
+        let facts: AdvisorFacts | null = null
+
+        // Price Hike Detection (Subscription Analysis)
+        const priceHikes: AIPriceHike[] = []
+        detectedSubscriptions.forEach(sub => {
+            // Heuristic: compare latest merchant amount vs historical average for the same merchant.
+            const subTx = expenses
+                .filter((t) => extractMerchantKey(t.description) === sub.description)
+                .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+
+            if (subTx.length >= 2) {
+                const latestAmount = Math.abs(subTx[0].amountCents)
+                const previousAmounts = subTx.slice(1).map(t => Math.abs(t.amountCents))
+                const avgPrevious = previousAmounts.reduce((a, b) => a + b, 0) / previousAmounts.length
+
+                if (latestAmount > avgPrevious * 1.05 && (latestAmount - avgPrevious) > 100) { // > 5% AND > €1.00
+                    priceHikes.push({
+                        name: sub.description,
+                        diff: (latestAmount - avgPrevious),
+                        percent: ((latestAmount - avgPrevious) / avgPrevious) * 100
+                    })
+                }
+            }
+        })
 
         if (historicalMonthsWithData > 0) {
-            // Standard Case: We have historical data
-            const avgIncome = monthlyStats.reduce((s, m) => s + m.income, 0) / historicalMonthsWithData / 100
-            const avgExpenses = monthlyStats.reduce((s, m) => s + m.expenses, 0) / historicalMonthsWithData / 100
-            const predictedSavings = avgIncome - avgExpenses
+            // WEIGHTED AVERAGE LOGIC
+            // Weigh recent months more heavily: 
+            // M-1 (Last Month): 50%
+            // M-2: 30%
+            // M-3: 20%
+            // If missing data, fallback to simple average.
 
-            forecast = {
-                predictedIncome: avgIncome,
-                predictedExpenses: avgExpenses,
-                predictedSavings,
-                confidence: historicalMonthsWithData >= 3 ? "high" : "medium"
+            let avgIncomeCents = 0
+            let avgExpensesCents = 0
+
+            if (historicalMonthsWithData === 3) {
+                // Month 0 is M-1 (most recent in our reversed array construction? No, wait. 
+                // last3Months construction: i=1 is M-1.
+                // monthlyStats[0] corresponds to M-1.
+                avgIncomeCents = Math.round(monthlyStats[0].income * 0.5 + monthlyStats[1].income * 0.3 + monthlyStats[2].income * 0.2)
+                avgExpensesCents = Math.round(monthlyStats[0].expenses * 0.5 + monthlyStats[1].expenses * 0.3 + monthlyStats[2].expenses * 0.2)
+            } else {
+                // Simple Average fallback
+                avgIncomeCents = Math.round(monthlyStats.reduce((s, m) => s + m.income, 0) / historicalMonthsWithData)
+                avgExpensesCents = Math.round(monthlyStats.reduce((s, m) => s + m.expenses, 0) / historicalMonthsWithData)
+            }
+
+            const predictedSavingsCents = avgIncomeCents - avgExpensesCents
+
+            facts = {
+                predictedIncomeCents: avgIncomeCents,
+                predictedExpensesCents: avgExpensesCents,
+                deltaCents: predictedSavingsCents,
+                historicalMonthsCount: historicalMonthsWithData,
+                subscriptionCount: detectedSubscriptions.length,
+                subscriptionTotalYearlyCents
             }
         } else {
-            // Cold Start Case: No historical data (Oct/Nov/Dec empty), check Current Month (Jan)
+            // Cold Start: Use current month
             const currentMonthTransactions = transactions.filter(t => {
                 const td = new Date(t.timestamp)
                 return td.getFullYear() === now.getFullYear() && td.getMonth() === now.getMonth()
             })
 
             if (currentMonthTransactions.length > 0) {
-                // Use current month actuals as best guess forecast
-                const currentIncome = currentMonthTransactions.filter(t => t.type === "income").reduce((s, t) => s + t.amountCents, 0) / 100
-                const currentExpenses = currentMonthTransactions.filter(t => t.type === "expense").reduce((s, t) => s + Math.abs(t.amountCents), 0) / 100
+                const currentIncomeCents = sumIncomeInCents(currentMonthTransactions)
+                const currentExpensesCents = sumExpensesInCents(currentMonthTransactions)
 
-                forecast = {
-                    predictedIncome: currentIncome,
-                    predictedExpenses: currentExpenses,
-                    predictedSavings: currentIncome - currentExpenses,
-                    confidence: "low" // It's just a snapshot of now, not a trend
+                facts = {
+                    predictedIncomeCents: currentIncomeCents,
+                    predictedExpensesCents: currentExpensesCents,
+                    deltaCents: currentIncomeCents - currentExpensesCents,
+                    historicalMonthsCount: 0,
+                    subscriptionCount: detectedSubscriptions.length,
+                    subscriptionTotalYearlyCents
                 }
-            } else {
-                // Absolute Zero: No history, no current data -> Calm Mode
-                forecast = null
             }
         }
 
-
-        // 3. Smart Tips
-        const tips = []
-        const formatMoney = (amount: number) => {
-            return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(amount)
-        }
-
-        if (forecast) {
-            const { predictedSavings, predictedIncome } = forecast
-
-            if (predictedSavings < 0) {
-                tips.push(`Attenzione: le proiezioni indicano un deficit di ${formatMoney(Math.abs(predictedSavings))}. Considera di tagliare le spese non essenziali.`)
-            } else if (predictedSavings > 100) {
-                const savingsRate = predictedIncome > 0 ? (predictedSavings / predictedIncome) * 100 : 0
-                tips.push(`Ottimo lavoro! Surplus stimato di ${formatMoney(predictedSavings)} (${savingsRate.toFixed(0)}% delle entrate). Potresti investirlo nel fondo emergenza.`)
-            }
-        }
-
-        if (detectedSubscriptions.length > 0) {
-            const totalYearly = detectedSubscriptions.reduce((s, sub) => s + sub.amount, 0) * 12
-            if (totalYearly > 500) {
-                tips.push(`Hai ${detectedSubscriptions.length} abbonamenti attivi (>€5) che pesano circa ${formatMoney(totalYearly)}/anno. Una revisione potrebbe farti risparmiare.`)
+        // Map facts to legacy Forecast object for UI
+        let forecast: AIForecast | null = null
+        if (facts) {
+            forecast = {
+                predictedIncome: facts.predictedIncomeCents / 100,
+                predictedExpenses: facts.predictedExpensesCents / 100,
+                predictedSavings: facts.deltaCents / 100,
+                confidence: facts.historicalMonthsCount >= 3 ? "high" : facts.historicalMonthsCount > 0 ? "medium" : "low"
             }
         }
 
         return {
+            facts,
             forecast,
             subscriptions: detectedSubscriptions,
-            tips,
-            isLoading: false
+            priceHikes
         }
-    }, [transactions, isLoading])
+    }, [transactions, isDataLoading])
+
+    const isLoading = isDataLoading || isArtificialLoading
+
+    if (isLoading) {
+        return {
+            facts: null,
+            forecast: null,
+            subscriptions: [],
+            priceHikes: [],
+            isLoading: true
+        }
+    }
+
+    return {
+        ...computation,
+        isLoading: false
+    }
 }

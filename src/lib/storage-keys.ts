@@ -1,6 +1,6 @@
 /**
  * Centralized Storage Keys Registry
- * Single source of truth for all localStorage keys used by LumaBudget.
+ * Single source of truth for all localStorage keys used by NUMA Budget.
  * Used by diagnostics, backup/restore, and cross-tab sync.
  */
 

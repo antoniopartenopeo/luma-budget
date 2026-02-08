@@ -1,5 +1,5 @@
 import { Transaction } from "../api/types";
-import { parseCurrencyToCents } from "@/lib/currency-utils";
+import { sumIncomeInCents, sumExpensesInCents, calculateSharePct } from "@/domain/money";
 
 export type SortField = "date" | "amount" | "category" | "description";
 export type SortOrder = "asc" | "desc";
@@ -35,8 +35,7 @@ export function applyFilters(
         // Search filter (description or amount string)
         const matchesSearch =
             filters.search === "" ||
-            t.description.toLowerCase().includes(filters.search.toLowerCase()) ||
-            t.amount.includes(filters.search);
+            t.description.toLowerCase().includes(filters.search.toLowerCase());
 
         if (!matchesSearch) return false;
 
@@ -81,9 +80,7 @@ export function applySorting(
                 comparison = a.timestamp - b.timestamp;
                 break;
             case "amount": {
-                const aCents = a.amountCents ?? parseCurrencyToCents(a.amount);
-                const bCents = b.amountCents ?? parseCurrencyToCents(b.amount);
-                comparison = aCents - bCents;
+                comparison = (a.amountCents || 0) - (b.amountCents || 0);
                 break;
             }
             case "category":
@@ -102,23 +99,15 @@ export function applySorting(
  * Calculate summary KPIs for a set of transactions
  */
 export function computeSummary(transactions: Transaction[]): TransactionSummary {
-    return transactions.reduce(
-        (acc, t) => {
-            const cents = t.amountCents ?? parseCurrencyToCents(t.amount);
+    const totalIncome = sumIncomeInCents(transactions);
+    const totalExpense = sumExpensesInCents(transactions);
 
-            if (t.type === "income") {
-                acc.totalIncome += cents;
-                acc.netBalance += cents;
-            } else {
-                acc.totalExpense += cents;
-                acc.netBalance -= cents;
-            }
-
-            acc.totalCount += 1;
-            return acc;
-        },
-        { totalCount: 0, totalIncome: 0, totalExpense: 0, netBalance: 0 }
-    );
+    return {
+        totalCount: transactions.length,
+        totalIncome,
+        totalExpense,
+        netBalance: totalIncome - totalExpense,
+    };
 }
 
 /**
@@ -127,4 +116,17 @@ export function computeSummary(transactions: Transaction[]): TransactionSummary 
 export function paginateData<T>(data: T[], page: number, pageSize: number): T[] {
     const start = (page - 1) * pageSize;
     return data.slice(start, start + pageSize);
+}
+/**
+ * Calculate superfluous expenditure metrics for a set of transactions
+ */
+export function calculateSuperfluousMetrics(transactions: Transaction[]) {
+    const totalSpentCents = sumExpensesInCents(transactions);
+    const superfluousSpentCents = sumExpensesInCents(transactions.filter(t => t.isSuperfluous));
+
+    return {
+        totalSpentCents,
+        superfluousSpentCents,
+        percentage: calculateSharePct(superfluousSpentCents, totalSpentCents)
+    };
 }

@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# ============================================
+# Pre-commit hook for Numa Budget
+# Runs governance validator before each commit
+# ============================================
+
+echo "🔒 Running Numa Governance Validator..."
+echo ""
+
+# Run the validator
+./.agent/skills/numa-governance-update/scripts/validate.sh
+
+# Check exit code
+if [ $? -ne 0 ]; then
+    echo ""
+    echo "❌ Commit blocked: Fix violations before committing"
+    echo "   Run 'npm run validate' to see details"
+    exit 1
+fi
+
+echo ""
+echo "✅ Validation passed - proceeding with commit"
+exit 0

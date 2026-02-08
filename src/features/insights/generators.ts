@@ -2,7 +2,8 @@
 // ===========================
 // Pure functions that generate Insight objects based on transaction data
 
-import { formatCents } from "@/lib/currency-utils"
+import { formatCents } from "@/domain/money"
+import { calculateGrowthPct, calculateSharePct, sumExpensesInCents } from "@/domain/money"
 import { INSIGHT_CONFIG } from "./constants"
 import {
     Insight,
@@ -15,7 +16,7 @@ import {
 } from "./types"
 import {
     filterTransactionsByMonth,
-    getTotalExpenseCents,
+
     getExpenseTotalsByCategoryCents,
     getPreviousMonths,
     getDaysElapsedInMonth,
@@ -40,7 +41,7 @@ export function buildBudgetRiskInsight(
     if (!budgetCents || budgetCents <= 0) return null
 
     const monthTransactions = filterTransactionsByMonth(transactions, period)
-    const spentCents = getTotalExpenseCents(monthTransactions)
+    const spentCents = sumExpensesInCents(monthTransactions)
 
     const daysElapsed = getDaysElapsedInMonth(period, currentDate)
     const daysInMonth = getDaysInMonth(period)
@@ -53,7 +54,7 @@ export function buildBudgetRiskInsight(
     const projectedCents = Math.round(burnRatePerDay * daysInMonth)
 
     const deltaCents = projectedCents - budgetCents
-    const deltaPct = Math.round((deltaCents / budgetCents) * 100)
+    const deltaPct = calculateSharePct(deltaCents, budgetCents)
 
     // No insight if below medium threshold for triggering
     if (deltaPct < thresholds.budgetMediumPct) return null
@@ -72,8 +73,8 @@ export function buildBudgetRiskInsight(
         id: `budget-risk-${period}`,
         kind: "budget-risk",
         severity,
-        title: "Budget a rischio",
-        summary: `A questo ritmo, spenderai ${formatCents(projectedCents)} entro fine ${periodLabel}, superando il budget di ${formatCents(deltaCents)} (+${deltaPct}%).`,
+        title: "Ritmo di spesa elevato",
+        summary: `A questo ritmo, la proiezione di spesa è di ${formatCents(projectedCents)} entro fine ${periodLabel}. Questo supera il tuo percorso ideale di ${formatCents(deltaCents)} (+${deltaPct}%).`,
         metrics: {
             currentCents: spentCents,
             baselineCents: budgetCents,
@@ -145,7 +146,7 @@ export function buildCategorySpikeInsights(
         if (deltaCents < thresholds.spikeMinDeltaCents) continue
 
         // Skip if below percentage threshold (avoid division by zero)
-        const deltaPct = baselineCents > 0 ? Math.round((deltaCents / baselineCents) * 100) : 100
+        const deltaPct = calculateGrowthPct(currentCents, baselineCents)
         if (deltaPct < thresholds.spikeMinDeltaPct) continue
 
         const category = categoriesMap.get(categoryId)
@@ -175,8 +176,8 @@ export function buildCategorySpikeInsights(
             id: `category-spike-${currentPeriod}-${spike.categoryId}`,
             kind: "category-spike" as const,
             severity,
-            title: `Spike in ${spike.label}`,
-            summary: `Hai speso ${formatCents(spike.currentCents)} in ${spike.label}, +${formatCents(spike.deltaCents)} (+${spike.deltaPct}%) rispetto alla media degli ultimi 3 mesi.`,
+            title: `Accelerazione in ${spike.label}`,
+            summary: `Hai speso ${formatCents(spike.currentCents)} in ${spike.label}, con un incremento di ${formatCents(spike.deltaCents)} (+${spike.deltaPct}%) rispetto al tuo ritmo abituale.`,
             metrics: {
                 currentCents: spike.currentCents,
                 baselineCents: spike.baselineCents,
@@ -223,8 +224,8 @@ export function buildTopDriversInsight(
     const prevPeriod = previousPeriods[0]
     const prevTransactions = filterTransactionsByMonth(transactions, prevPeriod)
 
-    const currentTotalCents = getTotalExpenseCents(currentTransactions)
-    const prevTotalCents = getTotalExpenseCents(prevTransactions)
+    const currentTotalCents = sumExpensesInCents(currentTransactions)
+    const prevTotalCents = sumExpensesInCents(prevTransactions)
 
     // Calculate month-over-month delta
     const deltaCents = currentTotalCents - prevTotalCents
@@ -265,7 +266,7 @@ export function buildTopDriversInsight(
             currentCents: currentTotalCents,
             baselineCents: prevTotalCents,
             deltaCents,
-            deltaPct: prevTotalCents > 0 ? Math.round((deltaCents / prevTotalCents) * 100) : 0,
+            deltaPct: calculateGrowthPct(currentTotalCents, prevTotalCents),
         },
         drivers,
         actions: [

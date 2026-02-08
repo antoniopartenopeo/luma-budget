@@ -1,6 +1,6 @@
 # Governance Quick Check
 
-Generated at (UTC): 2026-02-08T03:17:06Z
+Generated at (UTC): 2026-02-08T19:41:50Z
 
 Scope:
 - Repository: numa-budget
@@ -12,7 +12,7 @@ Scope:
 | Check | Status | Count |
 |---|---|---:|
 | parseFloat on monetary flows (excluding CSV normalize exception) | PASS | 0 |
-| Deprecated `amount` key / string amounts | WARN | key:49 string:22 legacy-files:11 |
+| Deprecated `amount` key / string amounts | WARN | key:44 string:21 legacy-files:9 |
 | Period filters without `filterByRange` | WARN | 6 |
 | Inline style in TSX | WARN | 11 |
 | Tests with formula-duplication heuristic | WARN | 6 |
@@ -33,8 +33,8 @@ Amount key occurrences (first 60):
 
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/use-ai-advisor.ts:10:    amount: number
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/use-ai-advisor.ts:109:                amount: amount,
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/parse.ts:8:    amount: ["importo", "amount", "ammontare", "entrate", "uscite", "dare", "avere", "saldo", "valore"],
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/parse.ts:86:    // Logic for amount: explicit amount or dare/avere?
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/parse.ts:9:    amount: ["importo", "amount", "ammontare", "entrate", "uscite", "dare", "avere", "saldo", "valore"],
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/parse.ts:86:        amount: -1,
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/subgrouping.ts:34:    const recurring: Array<{ amount: number; rows: EnrichedRow[] }> = [];
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/__tests__/parse.test.ts:17:            amount: "-50.00",
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/__tests__/normalize.test.ts:7:        const rows = [{ lineNumber: 1, raw: { date: "2024-01-15", amount: "-12.50", description: " Test " } }];
@@ -52,12 +52,7 @@ Amount key occurrences (first 60):
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/__tests__/normalize.test.ts:98:        const rows = [{ lineNumber: 1, raw: { date: "01/06/50", amount: "10", description: "2050" } }];
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/__tests__/normalize.test.ts:105:        const rows = [{ lineNumber: 1, raw: { date: "5/1/26", amount: "10", description: "Short" } }];
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/__tests__/normalize.test.ts:112:        const rows = [{ lineNumber: 1, raw: { date: "12/25/2024", amount: "10", description: "US" } }];
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/__tests__/logic.test.ts:13:        amount: "-50.00",
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/merchant/normalizers.ts:62:    // Card number with amount: "*7298 DI EUR 25,04"
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/components/step-review.tsx:43:    amount: number
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/components/step-review.tsx:126:            amount: 0,
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/components/step-review.tsx:147:                                    amount: 0,
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/components/review/category-group-list.tsx:14:    amount: number
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/__tests__/superfluous-kpi.test.ts:17:    amount: string,
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/__tests__/superfluous-kpi.test.ts:148:                amount: '-€100.00',
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/repository.ts:62:    const categoryMap = new Map<string, { label: string, amount: number, color: string }>()
@@ -99,7 +94,6 @@ String amount occurrences (first 60):
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/__tests__/normalize.test.ts:98:        const rows = [{ lineNumber: 1, raw: { date: "01/06/50", amount: "10", description: "2050" } }];
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/__tests__/normalize.test.ts:105:        const rows = [{ lineNumber: 1, raw: { date: "5/1/26", amount: "10", description: "Short" } }];
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/__tests__/normalize.test.ts:112:        const rows = [{ lineNumber: 1, raw: { date: "12/25/2024", amount: "10", description: "US" } }];
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/__tests__/logic.test.ts:13:        amount: "-50.00",
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/merchant/normalizers.ts:62:    // Card number with amount: "*7298 DI EUR 25,04"
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/__tests__/superfluous-kpi.test.ts:148:                amount: '-€100.00',
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/transactions/__tests__/transactions-logic.test.ts:14:        amount: "€100,00",
@@ -113,8 +107,6 @@ Files containing both `amount` and `amountCents` (first 40):
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/__tests__/superfluous-kpi.test.ts
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/__tests__/dashboard-summary.test.ts
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/repository.ts
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/components/step-review.tsx
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/__tests__/logic.test.ts
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/__tests__/normalize.test.ts
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/subgrouping.ts
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/use-ai-advisor.ts

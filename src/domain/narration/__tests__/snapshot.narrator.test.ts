@@ -110,7 +110,7 @@ describe("snapshot.narrator", () => {
             const result = narrateSnapshot(facts, "strained")
 
             expect(result.text).toContain("95%")
-            expect(result.text).toContain("budget")
+            expect(result.text).toContain("ritmo")
         })
 
         it("generates critical message for budget overrun with negative balance", () => {
@@ -132,7 +132,7 @@ describe("snapshot.narrator", () => {
             expect(result.text).toContain("superato")
             expect(result.text).toContain("negativo")
             expect(result.text).toContain("110%")
-            expect(result.shortText).toContain("Budget oltre limite")
+            expect(result.shortText).toContain("Ritmo oltre limite")
         })
 
         it("generates calm message for early month/insufficient data", () => {

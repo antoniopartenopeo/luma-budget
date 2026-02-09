@@ -12,6 +12,7 @@ if [ ! -f "$THRESHOLDS_FILE" ]; then
 fi
 
 bash "$ROOT_DIR/scripts/audit/governance-quick-check.sh"
+npm --prefix "$ROOT_DIR" run release:validate
 
 if [ ! -f "$SUMMARY_FILE" ]; then
     echo "[governance-enforce] Missing summary file: $SUMMARY_FILE"

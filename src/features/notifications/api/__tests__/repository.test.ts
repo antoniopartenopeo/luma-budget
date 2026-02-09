@@ -3,6 +3,7 @@ import { storage } from "@/lib/storage-utils"
 import {
     fetchChangelogNotifications,
     fetchNotificationsState,
+    LEGACY_NOTIFICATIONS_STATE_STORAGE_KEY,
     markAllNotificationsAsRead,
     markNotificationAsRead,
     NOTIFICATIONS_STATE_STORAGE_KEY,
@@ -17,6 +18,7 @@ vi.mock("../../data/beta-changelog-feed.json", () => ({
             audience: "beta",
             title: "Fix vecchio",
             body: "Dettaglio fix",
+            highlights: ["Fix vecchio"],
             publishedAt: "2026-02-01T10:00:00.000Z",
         },
         {
@@ -26,15 +28,18 @@ vi.mock("../../data/beta-changelog-feed.json", () => ({
             audience: "alpha",
             title: "Non deve apparire",
             body: "Audience non valida",
+            highlights: ["Non mostrare"],
             publishedAt: "2026-02-08T10:00:00.000Z",
         },
         {
             id: "beta-new",
             version: "0.1.2",
-            kind: "improvement",
+            kind: "breaking",
             audience: "beta",
-            title: "Miglioria recente",
-            body: "Dettaglio miglioramento",
+            title: "Breaking recente",
+            body: "Dettaglio breaking",
+            highlights: ["Breaking importante"],
+            isCritical: true,
             publishedAt: "2026-02-08T12:00:00.000Z",
         },
         {
@@ -44,6 +49,7 @@ vi.mock("../../data/beta-changelog-feed.json", () => ({
             audience: "beta",
             title: "Feature media",
             body: "Dettaglio feature",
+            highlights: ["Feature media"],
             publishedAt: "2026-02-05T09:00:00.000Z",
         },
     ],
@@ -67,30 +73,49 @@ describe("notifications repository", () => {
         expect(feed.map(item => item.id)).toEqual(["beta-new", "beta-mid", "beta-old"])
     })
 
-    it("ritorna stato di default quando storage e mancante", async () => {
+    it("ritorna stato V2 di default quando storage e mancante", async () => {
         vi.mocked(storage.get).mockReturnValue(null)
 
         const state = await fetchNotificationsState()
 
-        expect(state.version).toBe(1)
+        expect(state.version).toBe(2)
         expect(state.readIds).toEqual([])
+        expect(state.lastSeenVersion).toBeNull()
         expect(Number.isFinite(new Date(state.updatedAt).getTime())).toBe(true)
     })
 
-    it("fa fallback sicuro quando stato e corrotto", async () => {
-        vi.mocked(storage.get).mockReturnValue({ version: 999, readIds: ["beta-old"], updatedAt: "bad-date" })
+    it("migra stato V1 legacy a V2 preservando readIds", async () => {
+        vi.mocked(storage.get).mockImplementation((key: string) => {
+            if (key === NOTIFICATIONS_STATE_STORAGE_KEY) return null
+            if (key === LEGACY_NOTIFICATIONS_STATE_STORAGE_KEY) {
+                return {
+                    version: 1,
+                    readIds: ["beta-old"],
+                    updatedAt: "2026-02-08T00:00:00.000Z",
+                }
+            }
+            return null
+        })
 
         const state = await fetchNotificationsState()
 
-        expect(state.version).toBe(1)
-        expect(state.readIds).toEqual([])
-        expect(Number.isFinite(new Date(state.updatedAt).getTime())).toBe(true)
+        expect(state.version).toBe(2)
+        expect(state.readIds).toEqual(["beta-old"])
+        expect(state.lastSeenVersion).toBeNull()
+        expect(vi.mocked(storage.set)).toHaveBeenCalledWith(
+            NOTIFICATIONS_STATE_STORAGE_KEY,
+            expect.objectContaining({
+                version: 2,
+                readIds: ["beta-old"],
+            })
+        )
     })
 
-    it("markNotificationAsRead e idempotente", async () => {
+    it("markNotificationAsRead e idempotente e aggiorna lastSeenVersion", async () => {
         let storedState: unknown = {
-            version: 1,
+            version: 2,
             readIds: [],
+            lastSeenVersion: null,
             updatedAt: "2026-02-08T00:00:00.000Z",
         }
 
@@ -99,11 +124,12 @@ describe("notifications repository", () => {
             storedState = value
         })
 
-        const first = await markNotificationAsRead("beta-new")
-        const second = await markNotificationAsRead("beta-new")
+        const first = await markNotificationAsRead("beta-new", "0.1.2")
+        const second = await markNotificationAsRead("beta-new", "0.1.2")
 
         expect(first.readIds).toEqual(["beta-new"])
         expect(second.readIds).toEqual(["beta-new"])
+        expect(second.lastSeenVersion).toBe("0.1.2")
         expect(vi.mocked(storage.set)).toHaveBeenCalledTimes(2)
     })
 
@@ -111,14 +137,16 @@ describe("notifications repository", () => {
         const feed = await fetchChangelogNotifications()
         const ids = feed.map(item => item.id)
 
-        const state = await markAllNotificationsAsRead(ids)
+        const state = await markAllNotificationsAsRead(ids, "0.1.2")
 
         expect(state.readIds).toEqual(ids)
+        expect(state.lastSeenVersion).toBe("0.1.2")
         expect(vi.mocked(storage.set)).toHaveBeenCalledWith(
             NOTIFICATIONS_STATE_STORAGE_KEY,
             expect.objectContaining({
-                version: 1,
+                version: 2,
                 readIds: ids,
+                lastSeenVersion: "0.1.2",
             })
         )
     })

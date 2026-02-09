@@ -12,8 +12,8 @@ Codice qui dentro:
 ## Allowed Imports
 *   `@/domain/*`
 *   `@/lib/*`
-*   `@/features/goals/types`
-*   `@/features/goals/config`
+*   `@/VAULT/goals/types`
+*   `@/VAULT/goals/config/*`
 *   `@/features/transactions` (Data Source)
 
 ## Governance Rules

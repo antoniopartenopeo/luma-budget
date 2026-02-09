@@ -14,6 +14,8 @@ Local-first persistence with rich analytics and insights.
 | **Insights** | **v2.0** | Rhythm-based analysis, Labor Illusion & AI Advisor |
 | **UI/UX** | **Premium v1.1**| Glassmorphism, Living Effect & Staggered Motion |
 | **Settings** | Stable v1.3 | Preferences, backup/restore, themes |
+| **Notifications** | Stable | Topbar bell, unread badge, in-app beta changelog |
+| **Updates** | Stable | Dedicated `/updates` release history page |
 
 ## 🏗 Architecture
 
@@ -25,6 +27,7 @@ src/
 │   ├── budget/
 │   ├── dashboard/
 │   ├── insights/
+│   ├── notifications/
 │   ├── categories/
 │   ├── settings/
 │   └── simulator/
@@ -46,6 +49,7 @@ luma_settings_v1
 numa_goal_portfolio_v1
 numa_active_goal_v1
 insights_smart_advice_signature_v1
+numa_notifications_state_v2
 ```
 
 Note: `luma_*` keys are legacy naming kept for backward compatibility with existing local data.
@@ -65,6 +69,13 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000)
+
+Release helpers:
+
+```bash
+npm run release:sync
+npm run release:validate
+```
 
 ## 📜 Development Standards
 

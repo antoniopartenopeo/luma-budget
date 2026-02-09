@@ -61,6 +61,6 @@ The system follows a **Deterministic Narration** pattern.
 * `/transactions` -> Transaction List
 * `/insights` -> AI Analysis
 * `/simulator` -> Ottimizzatore Avanzato
-* `/goals` -> Financial Lab (Active)
 * `/settings` -> Settings
-* *(Legacy `/budget` -> Redirect to `/goals`)*
+* `/updates` -> Storico aggiornamenti (beta changelog)
+* *(Legacy `/budget` -> Redirect to `/`)*

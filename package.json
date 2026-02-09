@@ -1,6 +1,6 @@
 {
   "name": "numa-budget",
-  "version": "0.1.1",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -9,6 +9,8 @@
     "lint": "eslint",
     "test": "vitest",
     "test:run": "vitest run",
+    "release:sync": "node scripts/release/sync-beta-changelog.ts",
+    "release:validate": "node scripts/release/validate-release.ts",
     "governance:quick-check": "bash scripts/audit/governance-quick-check.sh",
     "governance:enforce": "bash scripts/audit/governance-enforce.sh",
     "goals:validate": "vitest run src/features/goals/validation/",

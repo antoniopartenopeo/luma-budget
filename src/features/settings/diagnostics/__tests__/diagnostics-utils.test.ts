@@ -102,7 +102,7 @@ describe("diagnostics-utils", () => {
 
             const budgets = snapshot.storage.find(s => s.key === "luma_budget_plans_v1")
             expect(budgets?.present).toBe(true)
-            expect(budgets?.summary).toContain("Piani Budget: 2")
+            expect(budgets?.summary).toContain("Piani Ritmo: 2")
 
             const settings = snapshot.storage.find(s => s.key === "luma_settings_v1")
             expect(settings?.present).toBe(true)

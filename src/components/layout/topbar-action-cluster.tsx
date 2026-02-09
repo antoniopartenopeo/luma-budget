@@ -40,7 +40,7 @@ export function TopbarActionCluster() {
     return (
         <div
             data-testid="topbar-action-cluster"
-            className="group/cluster relative overflow-visible rounded-full p-1 glass-card bg-white/45 dark:bg-white/[0.07] border-white/50 dark:border-white/15 transition-all duration-300 hover:-translate-y-[1px] hover:shadow-xl hover:ring-1 hover:ring-primary/25 motion-reduce:transform-none"
+            className="group relative overflow-visible rounded-full p-1 glass-card bg-white/45 dark:bg-white/[0.07] border-white/50 dark:border-white/15 transition-all duration-300 hover:-translate-y-[1px] hover:shadow-xl hover:ring-1 hover:ring-primary/25 motion-reduce:transform-none"
         >
             <div className="absolute inset-0 bg-gradient-to-br from-white/35 dark:from-white/[0.08] via-transparent to-transparent pointer-events-none" />
 

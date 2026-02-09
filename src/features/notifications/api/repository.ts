@@ -1,19 +1,26 @@
 import { storage } from "@/lib/storage-utils"
 import rawFeed from "../data/beta-changelog-feed.json"
-import { ChangelogNotification, NotificationKind, NotificationsStateV1 } from "../types"
+import {
+    ChangelogNotification,
+    NotificationKind,
+    NotificationsStateV1,
+    NotificationsStateV2
+} from "../types"
 
-export const NOTIFICATIONS_STATE_STORAGE_KEY = "numa_notifications_state_v1"
+export const LEGACY_NOTIFICATIONS_STATE_STORAGE_KEY = "numa_notifications_state_v1"
+export const NOTIFICATIONS_STATE_STORAGE_KEY = "numa_notifications_state_v2"
 
-const VALID_KINDS: NotificationKind[] = ["feature", "fix", "improvement"]
+const VALID_KINDS: NotificationKind[] = ["feature", "fix", "improvement", "breaking"]
 
-function nowIso() {
+function nowIso(): string {
     return new Date().toISOString()
 }
 
-function createDefaultState(): NotificationsStateV1 {
+function createDefaultState(): NotificationsStateV2 {
     return {
-        version: 1,
+        version: 2,
         readIds: [],
+        lastSeenVersion: null,
         updatedAt: nowIso(),
     }
 }
@@ -28,24 +35,46 @@ function sanitizeReadIds(value: unknown): string[] {
     return Array.from(new Set(ids))
 }
 
-function isValidNotification(value: unknown): value is ChangelogNotification {
-    if (!value || typeof value !== "object") return false
+function sanitizeHighlights(value: unknown): string[] {
+    if (!Array.isArray(value)) return []
+    return value
+        .filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+        .map(item => item.trim())
+}
+
+function normalizeNotification(value: unknown): ChangelogNotification | null {
+    if (!value || typeof value !== "object") return null
     const candidate = value as Partial<ChangelogNotification>
 
-    return (
-        typeof candidate.id === "string" &&
-        candidate.id.trim().length > 0 &&
-        typeof candidate.version === "string" &&
-        candidate.version.trim().length > 0 &&
-        isValidKind(candidate.kind) &&
-        candidate.audience === "beta" &&
-        typeof candidate.title === "string" &&
-        candidate.title.trim().length > 0 &&
-        typeof candidate.body === "string" &&
-        candidate.body.trim().length > 0 &&
-        typeof candidate.publishedAt === "string" &&
-        (candidate.link === undefined || typeof candidate.link === "string")
-    )
+    if (
+        typeof candidate.id !== "string" ||
+        candidate.id.trim().length === 0 ||
+        typeof candidate.version !== "string" ||
+        candidate.version.trim().length === 0 ||
+        !isValidKind(candidate.kind) ||
+        candidate.audience !== "beta" ||
+        typeof candidate.title !== "string" ||
+        candidate.title.trim().length === 0 ||
+        typeof candidate.body !== "string" ||
+        candidate.body.trim().length === 0 ||
+        typeof candidate.publishedAt !== "string" ||
+        (candidate.link !== undefined && typeof candidate.link !== "string")
+    ) {
+        return null
+    }
+
+    return {
+        id: candidate.id.trim(),
+        version: candidate.version.trim(),
+        kind: candidate.kind,
+        audience: "beta",
+        title: candidate.title.trim(),
+        body: candidate.body.trim(),
+        highlights: sanitizeHighlights(candidate.highlights),
+        isCritical: candidate.isCritical === true,
+        publishedAt: candidate.publishedAt,
+        link: candidate.link,
+    }
 }
 
 function toTimestamp(isoDate: string): number {
@@ -53,25 +82,21 @@ function toTimestamp(isoDate: string): number {
     return Number.isFinite(ts) ? ts : 0
 }
 
-export async function fetchChangelogNotifications(): Promise<ChangelogNotification[]> {
-    const feed = Array.isArray(rawFeed) ? rawFeed : []
-
-    return feed
-        .filter(isValidNotification)
-        .filter(notification => notification.audience === "beta")
-        .sort((a, b) => toTimestamp(b.publishedAt) - toTimestamp(a.publishedAt))
+function normalizeStateV2(candidate: Partial<NotificationsStateV2>): NotificationsStateV2 {
+    return {
+        version: 2,
+        readIds: sanitizeReadIds(candidate.readIds),
+        lastSeenVersion: typeof candidate.lastSeenVersion === "string" && candidate.lastSeenVersion.trim().length > 0
+            ? candidate.lastSeenVersion.trim()
+            : null,
+        updatedAt: typeof candidate.updatedAt === "string" ? candidate.updatedAt : nowIso(),
+    }
 }
 
-export async function fetchNotificationsState(): Promise<NotificationsStateV1> {
-    const raw = storage.get<unknown>(NOTIFICATIONS_STATE_STORAGE_KEY, null)
-    if (!raw || typeof raw !== "object") {
-        return createDefaultState()
-    }
-
+function parseLegacyStateV1(raw: unknown): NotificationsStateV1 | null {
+    if (!raw || typeof raw !== "object") return null
     const candidate = raw as Partial<NotificationsStateV1>
-    if (candidate.version !== 1) {
-        return createDefaultState()
-    }
+    if (candidate.version !== 1) return null
 
     return {
         version: 1,
@@ -80,13 +105,59 @@ export async function fetchNotificationsState(): Promise<NotificationsStateV1> {
     }
 }
 
-export async function markNotificationAsRead(id: string): Promise<NotificationsStateV1> {
-    const current = await fetchNotificationsState()
-    const readIds = sanitizeReadIds([...current.readIds, id])
+export async function fetchChangelogNotifications(): Promise<ChangelogNotification[]> {
+    const feed = Array.isArray(rawFeed) ? rawFeed : []
 
-    const next: NotificationsStateV1 = {
-        version: 1,
+    return feed
+        .map(normalizeNotification)
+        .filter((notification): notification is ChangelogNotification => notification !== null)
+        .filter(notification => notification.audience === "beta")
+        .sort((a, b) => toTimestamp(b.publishedAt) - toTimestamp(a.publishedAt))
+}
+
+export async function fetchNotificationsState(): Promise<NotificationsStateV2> {
+    const rawV2 = storage.get<unknown>(NOTIFICATIONS_STATE_STORAGE_KEY, null)
+    if (rawV2 && typeof rawV2 === "object") {
+        const candidate = rawV2 as Partial<NotificationsStateV2>
+        if (candidate.version === 2) {
+            const normalized = normalizeStateV2(candidate)
+            if (
+                normalized.readIds.length !== (Array.isArray(candidate.readIds) ? candidate.readIds.length : 0) ||
+                normalized.lastSeenVersion !== (typeof candidate.lastSeenVersion === "string" ? candidate.lastSeenVersion : null)
+            ) {
+                storage.set(NOTIFICATIONS_STATE_STORAGE_KEY, normalized)
+            }
+            return normalized
+        }
+    }
+
+    const rawV1 = storage.get<unknown>(LEGACY_NOTIFICATIONS_STATE_STORAGE_KEY, null)
+    const legacy = parseLegacyStateV1(rawV1)
+    if (legacy) {
+        const migrated: NotificationsStateV2 = {
+            version: 2,
+            readIds: legacy.readIds,
+            lastSeenVersion: null,
+            updatedAt: legacy.updatedAt || nowIso(),
+        }
+        storage.set(NOTIFICATIONS_STATE_STORAGE_KEY, migrated)
+        return migrated
+    }
+
+    return createDefaultState()
+}
+
+export async function markNotificationAsRead(id: string, lastSeenVersion?: string): Promise<NotificationsStateV2> {
+    const current = await fetchNotificationsState()
+    const safeId = id.trim()
+    const readIds = safeId ? sanitizeReadIds([...current.readIds, safeId]) : current.readIds
+
+    const next: NotificationsStateV2 = {
+        version: 2,
         readIds,
+        lastSeenVersion: typeof lastSeenVersion === "string" && lastSeenVersion.trim().length > 0
+            ? lastSeenVersion.trim()
+            : current.lastSeenVersion,
         updatedAt: nowIso(),
     }
 
@@ -94,10 +165,15 @@ export async function markNotificationAsRead(id: string): Promise<NotificationsS
     return next
 }
 
-export async function markAllNotificationsAsRead(ids: string[]): Promise<NotificationsStateV1> {
-    const next: NotificationsStateV1 = {
-        version: 1,
+export async function markAllNotificationsAsRead(ids: string[], lastSeenVersion?: string): Promise<NotificationsStateV2> {
+    const current = await fetchNotificationsState()
+
+    const next: NotificationsStateV2 = {
+        version: 2,
         readIds: sanitizeReadIds(ids),
+        lastSeenVersion: typeof lastSeenVersion === "string" && lastSeenVersion.trim().length > 0
+            ? lastSeenVersion.trim()
+            : current.lastSeenVersion,
         updatedAt: nowIso(),
     }
 
@@ -107,5 +183,5 @@ export async function markAllNotificationsAsRead(ids: string[]): Promise<Notific
 
 export function resetNotificationsState(): void {
     storage.remove(NOTIFICATIONS_STATE_STORAGE_KEY)
+    storage.remove(LEGACY_NOTIFICATIONS_STATE_STORAGE_KEY)
 }
-

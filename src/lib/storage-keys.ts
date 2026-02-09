@@ -97,7 +97,7 @@ export const STORAGE_KEYS_REGISTRY: StorageKeyConfig[] = [
         label: "Firma Insight AI",
     },
     {
-        key: "numa_notifications_state_v1",
+        key: "numa_notifications_state_v2",
         label: "Notifiche Beta",
         invalidatesQueries: ["notifications"],
     },

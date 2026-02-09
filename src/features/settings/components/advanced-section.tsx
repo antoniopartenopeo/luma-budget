@@ -15,11 +15,11 @@ import {
 } from "@/components/ui/table"
 import { ConfirmDialog } from "@/components/patterns/confirm-dialog"
 import { queryKeys } from "@/lib/query-keys"
-import { cn } from "@/lib/utils"
 import { seedTransactions, __resetTransactionsCache } from "@/features/transactions/api/repository"
 import { resetSettings } from "@/features/settings/api/repository"
 import { resetAllData } from "@/features/settings/backup/backup-utils"
 import { buildDiagnosticsSnapshot, DiagnosticsSnapshot } from "@/features/settings/diagnostics/diagnostics-utils"
+import { DiagnosticsMetaStrip } from "@/features/settings/diagnostics/components/diagnostics-meta-strip"
 import { MacroSection } from "@/components/patterns/macro-section"
 
 type ResetType = "transactions" | "budgets" | "settings" | "all" | null
@@ -194,35 +194,7 @@ export function AdvancedSection() {
                     >
                         {diagnostics ? (
                             <div className="space-y-4">
-                                <div className="flex flex-wrap items-center gap-x-8 gap-y-2 text-sm">
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Versione:</span>
-                                        <span className="font-mono bg-muted px-1.5 py-0.5 rounded text-xs">{diagnostics.app.version}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Build:</span>
-                                        <span className="font-mono bg-muted px-1.5 py-0.5 rounded text-xs">{diagnostics.app.gitSha}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Ambiente:</span>
-                                        <span className="font-mono bg-muted px-1.5 py-0.5 rounded text-xs">{diagnostics.app.env}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2 ml-auto">
-                                        <span className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Storage Totale:</span>
-                                        <span className={cn(
-                                            "font-mono font-bold text-xs",
-                                            diagnostics.totalApproxBytes > 1024 * 1024 ? "text-amber-600" : "text-primary"
-                                        )}>
-                                            {diagnostics.totalApproxBytes > 1024 * 50
-                                                ? `${(diagnostics.totalApproxBytes / 1024 / 1024).toFixed(2)} MB`
-                                                : `${(diagnostics.totalApproxBytes / 1024).toFixed(1)} KB`
-                                            }
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="text-[10px] text-muted-foreground">
-                                    Build time: {diagnostics.app.buildTime}
-                                </div>
+                                <DiagnosticsMetaStrip diagnostics={diagnostics} />
 
                                 <div className="rounded-md border">
                                     <Table>

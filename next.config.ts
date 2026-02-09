@@ -1,8 +1,10 @@
 import type { NextConfig } from "next";
+import packageJson from "./package.json";
 
 const nextConfig: NextConfig = {
   env: {
-    NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION ?? process.env.npm_package_version ?? "unknown",
+    // Single source of truth for app version exposed to client diagnostics.
+    NEXT_PUBLIC_APP_VERSION: packageJson.version ?? "unknown",
     NEXT_PUBLIC_BUILD_TIME: process.env.NEXT_PUBLIC_BUILD_TIME ?? new Date().toISOString(),
     NEXT_PUBLIC_GIT_SHA:
       process.env.NEXT_PUBLIC_GIT_SHA ??

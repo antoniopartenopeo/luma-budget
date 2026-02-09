@@ -1,16 +1,12 @@
 
 import { STORAGE_KEYS_REGISTRY } from "@/lib/storage-keys"
+import { AppBuildInfo, getAppBuildInfo } from "@/lib/app-build-info"
 
 const APP_STORAGE_PREFIXES = ["luma_", "numa_", "insights_"] as const
 
 export type DiagnosticsSnapshot = {
     generatedAt: string
-    app: {
-        version: string
-        env: string
-        buildTime: string
-        gitSha: string
-    }
+    app: AppBuildInfo
     storage: Array<{
         key: string
         label: string
@@ -24,15 +20,15 @@ export type DiagnosticsSnapshot = {
 }
 
 export function getAppVersion(): string {
-    return process.env.NEXT_PUBLIC_APP_VERSION ?? "unknown"
+    return getAppBuildInfo().version
 }
 
 export function getBuildTime(): string {
-    return process.env.NEXT_PUBLIC_BUILD_TIME ?? "unknown"
+    return getAppBuildInfo().buildTime
 }
 
 export function getGitSha(): string {
-    return process.env.NEXT_PUBLIC_GIT_SHA ?? "unknown"
+    return getAppBuildInfo().gitSha
 }
 
 export function safeGetItem(key: string): string | null {
@@ -113,12 +109,7 @@ export function buildDiagnosticsSnapshot(): DiagnosticsSnapshot {
 
     return {
         generatedAt: new Date().toISOString(),
-        app: {
-            version: getAppVersion(),
-            env: process.env.NODE_ENV || "unknown",
-            buildTime: getBuildTime(),
-            gitSha: getGitSha(),
-        },
+        app: getAppBuildInfo(),
         storage: storageReport,
         totalApproxBytes,
         notes: ["Cross-tab sync: enabled via storage event listener (best-effort info)"],

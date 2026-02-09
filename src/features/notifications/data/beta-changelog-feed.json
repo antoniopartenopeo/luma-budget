@@ -1,12 +1,166 @@
 [
   {
-    "id": "welcome-beta-2026-02",
-    "version": "0.1.1",
+    "id": "release-0.3.0-20260204-feature",
+    "version": "0.3.0",
+    "kind": "feature",
+    "audience": "beta",
+    "title": "v0.3.0 · Nuove funzionalita",
+    "body": "**Deterministic Narration Layer**: Migrazione integrale di advisor e insights sotto governance semantica centralizzata (`src/domain/narration`).",
+    "highlights": [
+      "**Deterministic Narration Layer**: Migrazione integrale di advisor e insights sotto governance semantica centralizzata (`src/domain/narration`).",
+      "**Adaptive Genius Core**: Nuovo motore di calibrazione che analizza Elasticità Finanziaria e Stabilità Storica.",
+      "**Technical Audit Panel**: Interfaccia di trasparenza nel Financial Lab per ispezionare Volatilità, Elasticità e Stabilità.",
+      "**Global Semantic Enforcement**: Test automatizzati (`semantic-enforcement.test.ts`) per la validazione dei messaggi IA."
+    ],
+    "isCritical": false,
+    "publishedAt": "2026-02-04T09:00:00.000Z",
+    "link": "/updates#v-0-3-0"
+  },
+  {
+    "id": "release-0.3.0-20260204-improvement",
+    "version": "0.3.0",
     "kind": "improvement",
     "audience": "beta",
-    "title": "Benvenuto nel programma Beta NUMA",
-    "body": "Grazie per testare NUMA Budget. Da ora useremo questa area notifiche per condividere fix e nuove implementazioni.",
-    "publishedAt": "2026-02-08T00:00:00.000Z"
+    "title": "v0.3.0 · Miglioramenti",
+    "body": "**No Inline Strings**: Mandato architetturale che vieta la generazione di testo logico all'interno dei componenti UI.",
+    "highlights": [
+      "**No Inline Strings**: Mandato architetturale che vieta la generazione di testo logico all'interno dei componenti UI.",
+      "**Core Rules Update**: Inserito l'obbligo di adesione alle skill semantiche (v2.1.0)."
+    ],
+    "isCritical": true,
+    "publishedAt": "2026-02-04T09:00:00.000Z",
+    "link": "/updates#v-0-3-0"
+  },
+  {
+    "id": "release-0.2.5-20260204-feature",
+    "version": "0.2.5",
+    "kind": "feature",
+    "audience": "beta",
+    "title": "v0.2.5 · Nuove funzionalita",
+    "body": "**Living Effect**: Animazioni staggerate e atmosfere dinamiche su tutte le superfici principali.",
+    "highlights": [
+      "**Living Effect**: Animazioni staggerate e atmosfere dinamiche su tutte le superfici principali.",
+      "**Core Facade**: Integrazione di `useGoalScenarios` per unificare l'accesso ai dati nel Simulator."
+    ],
+    "isCritical": false,
+    "publishedAt": "2026-02-04T09:00:00.000Z",
+    "link": "/updates#v-0-2-5"
+  },
+  {
+    "id": "release-0.2.5-20260204-improvement",
+    "version": "0.2.5",
+    "kind": "improvement",
+    "audience": "beta",
+    "title": "v0.2.5 · Miglioramenti",
+    "body": "**Brand Consistency**: Migrazione dell'identità visiva al **Numa Teal** (`primary`).",
+    "highlights": [
+      "**Brand Consistency**: Migrazione dell'identità visiva al **Numa Teal** (`primary`).",
+      "**Geometry Standards**: Definita la scala dei raggi (Macro: 40px, Micro: 16px)."
+    ],
+    "isCritical": false,
+    "publishedAt": "2026-02-04T09:00:00.000Z",
+    "link": "/updates#v-0-2-5"
+  },
+  {
+    "id": "release-0.2.0-20260201-feature",
+    "version": "0.2.0",
+    "kind": "feature",
+    "audience": "beta",
+    "title": "v0.2.0 · Nuove funzionalita",
+    "body": "**Financial Lab v3**: Redesign completo dell'interfaccia di gestione obiettivi e scenari.",
+    "highlights": [
+      "**Financial Lab v3**: Redesign completo dell'interfaccia di gestione obiettivi e scenari.",
+      "**Logic Vault**: Migrazione della logica Goals in `src/VAULT` per isolamento dal framework UI."
+    ],
+    "isCritical": false,
+    "publishedAt": "2026-02-01T09:00:00.000Z",
+    "link": "/updates#v-0-2-0"
+  },
+  {
+    "id": "release-0.2.0-20260201-improvement",
+    "version": "0.2.0",
+    "kind": "improvement",
+    "audience": "beta",
+    "title": "v0.2.0 · Miglioramenti",
+    "body": "**Amount Cents**: Migrazione globale a interi (cents) per tutti i calcoli monetari, eliminando `parseFloat`.",
+    "highlights": [
+      "**Amount Cents**: Migrazione globale a interi (cents) per tutti i calcoli monetari, eliminando `parseFloat`."
+    ],
+    "isCritical": false,
+    "publishedAt": "2026-02-01T09:00:00.000Z",
+    "link": "/updates#v-0-2-0"
+  },
+  {
+    "id": "release-0.1.5-20260128-feature",
+    "version": "0.1.5",
+    "kind": "feature",
+    "audience": "beta",
+    "title": "v0.1.5 · Nuove funzionalita",
+    "body": "**Privacy Shield**: Implementazione dell'effetto blur globale sensibile allo stato di privacy.",
+    "highlights": [
+      "**Privacy Shield**: Implementazione dell'effetto blur globale sensibile allo stato di privacy.",
+      "**Conscious Commitment**: Feedback immediato post-selezione del ritmo (Impegno Consapevole)."
+    ],
+    "isCritical": false,
+    "publishedAt": "2026-01-28T09:00:00.000Z",
+    "link": "/updates#v-0-1-5"
+  },
+  {
+    "id": "release-0.1.5-20260128-improvement",
+    "version": "0.1.5",
+    "kind": "improvement",
+    "audience": "beta",
+    "title": "v0.1.5 · Miglioramenti",
+    "body": "**Rhythm over Budget**: Transizione semantica verso il concetto di \"Percorso\" e \"Ritmo\".",
+    "highlights": [
+      "**Rhythm over Budget**: Transizione semantica verso il concetto di \"Percorso\" e \"Ritmo\"."
+    ],
+    "isCritical": false,
+    "publishedAt": "2026-01-28T09:00:00.000Z",
+    "link": "/updates#v-0-1-5"
+  },
+  {
+    "id": "release-0.1.2-20260127-feature",
+    "version": "0.1.2",
+    "kind": "feature",
+    "audience": "beta",
+    "title": "v0.1.2 · Nuove funzionalita",
+    "body": "**Typography System Lock**: Formalizzazione della scala tipografica e gerarchia Premium.",
+    "highlights": [
+      "**Typography System Lock**: Formalizzazione della scala tipografica e gerarchia Premium.",
+      "**Standardized Sheets**: Nuovo pattern unificato per gli overlay di dettaglio ed edit."
+    ],
+    "isCritical": false,
+    "publishedAt": "2026-01-27T09:00:00.000Z",
+    "link": "/updates#v-0-1-2"
+  },
+  {
+    "id": "release-0.1.2-20260127-improvement",
+    "version": "0.1.2",
+    "kind": "improvement",
+    "audience": "beta",
+    "title": "v0.1.2 · Miglioramenti",
+    "body": "**UI Standardization**: Allineamento di Insights e Dashboard agli standard \"Numa Premium\".",
+    "highlights": [
+      "**UI Standardization**: Allineamento di Insights e Dashboard agli standard \"Numa Premium\"."
+    ],
+    "isCritical": false,
+    "publishedAt": "2026-01-27T09:00:00.000Z",
+    "link": "/updates#v-0-1-2"
+  },
+  {
+    "id": "release-0.1.0-20260125-feature",
+    "version": "0.1.0",
+    "kind": "feature",
+    "audience": "beta",
+    "title": "v0.1.0 · Nuove funzionalita",
+    "body": "**Initial Release**: MVP funzionale con Import CSV, Dashboard KPI e Gestione Categorie.",
+    "highlights": [
+      "**Initial Release**: MVP funzionale con Import CSV, Dashboard KPI e Gestione Categorie.",
+      "**Local-first Architecture**: Persistenza locale tramite repository e storage adapter dedicati."
+    ],
+    "isCritical": false,
+    "publishedAt": "2026-01-25T09:00:00.000Z",
+    "link": "/updates#v-0-1-0"
   }
 ]
-

@@ -97,7 +97,7 @@ describe("kpi.narrator", () => {
             }
             const state = deriveKPIState(facts)
             const result = narrateKPI(facts, state)
-            expect(result.text).toContain("Pianifica un budget")
+            expect(result.text).toContain("Definisci un ritmo")
         })
     })
 })

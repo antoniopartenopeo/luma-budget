@@ -1,8 +1,7 @@
 "use client"
 
-import Link from "next/link"
 import { useMemo } from "react"
-import { BellRing, AlertTriangle, ArrowUpRight } from "lucide-react"
+import { BellRing, AlertTriangle } from "lucide-react"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -155,14 +154,6 @@ export function UpdatesPageContent() {
                                         </ul>
                                     )}
 
-                                    {notification.link && (
-                                        <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-[10px] uppercase tracking-wider font-bold">
-                                            <Link href={notification.link}>
-                                                Apri dettaglio
-                                                <ArrowUpRight className="h-3 w-3 ml-1" />
-                                            </Link>
-                                        </Button>
-                                    )}
                                 </article>
                             )
                         })}

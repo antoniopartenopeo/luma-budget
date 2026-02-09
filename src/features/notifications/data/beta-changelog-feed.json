@@ -1,15 +1,60 @@
 [
   {
+    "id": "release-0.3.1-20260209-fix",
+    "version": "0.3.1",
+    "kind": "fix",
+    "audience": "beta",
+    "title": "v0.3.1 · Correzioni",
+    "body": "**Date di fine mese più affidabili**: i riepiloghi non si sfasano più nei passaggi critici tra mesi e fusi orari.",
+    "highlights": [
+      "**Filtri periodo più coerenti**: la vista movimenti ora segue la stessa logica in tutti i range.",
+      "**Messaggi più puliti**: eliminata una ripetizione nei testi generati dagli insight."
+    ],
+    "isCritical": false,
+    "publishedAt": "2026-02-09T09:00:00.000Z",
+    "link": "/updates#v-0-3-1"
+  },
+  {
+    "id": "release-0.3.1-20260209-improvement",
+    "version": "0.3.1",
+    "kind": "improvement",
+    "audience": "beta",
+    "title": "v0.3.1 · Miglioramenti",
+    "body": "**Importi trattati in modo più uniforme**: abbiamo rafforzato la gestione interna dei valori per ridurre ambiguità nei calcoli.",
+    "highlights": [
+      "**Confini del sistema più chiari**: separazione migliorata tra logica di dominio e logica legata all'interfaccia.",
+      "**Controlli qualità più severi**: audit con soglie più prudenti per intercettare derive prima.",
+      "**Esperienza visiva più consistente**: animazioni e stati grafici sono più allineati, con maggiore rispetto delle preferenze di riduzione movimento."
+    ],
+    "isCritical": false,
+    "publishedAt": "2026-02-09T09:00:00.000Z",
+    "link": "/updates#v-0-3-1"
+  },
+  {
+    "id": "release-0.3.1-20260209-improvement-2",
+    "version": "0.3.1",
+    "kind": "improvement",
+    "audience": "beta",
+    "title": "v0.3.1 · Miglioramenti",
+    "body": "**Codice non più utile**: rimosse parti non utilizzate in produzione.",
+    "highlights": [
+      "**Documenti fuori dal runtime**: spostati i materiali di roadmap nella documentazione, dove sono più facili da trovare."
+    ],
+    "isCritical": false,
+    "publishedAt": "2026-02-09T09:00:00.000Z",
+    "link": "/updates#v-0-3-1"
+  },
+  {
     "id": "release-0.3.0-20260204-feature",
     "version": "0.3.0",
     "kind": "feature",
     "audience": "beta",
     "title": "v0.3.0 · Nuove funzionalita",
-    "body": "**Deterministic Narration Layer**: Migrazione integrale di advisor e insights sotto governance semantica centralizzata (`src/domain/narration`).",
+    "body": "**Messaggi più coerenti**: advisor e insight ora seguono regole semantiche centralizzate.",
     "highlights": [
-      "**Adaptive Genius Core**: Nuovo motore di calibrazione che analizza Elasticità Finanziaria e Stabilità Storica.",
-      "**Technical Audit Panel**: Interfaccia di trasparenza nel Financial Lab per ispezionare Volatilità, Elasticità e Stabilità.",
-      "**Global Semantic Enforcement**: Test automatizzati (`semantic-enforcement.test.ts`) per la validazione dei messaggi IA."
+      "**Analisi più adattiva**: il sistema considera meglio la tua stabilità e la tua elasticità finanziaria.",
+      "**Nuovo pannello tecnico nel Financial Lab**: più trasparenza su come vengono lette le metriche.",
+      "**Controlli automatici sul linguaggio IA**: verifiche dedicate per evitare messaggi incoerenti o fuorvianti."
     ],
     "isCritical": false,
     "publishedAt": "2026-02-04T09:00:00.000Z",
@@ -21,11 +66,11 @@
     "kind": "improvement",
     "audience": "beta",
     "title": "v0.3.0 · Miglioramenti",
-    "body": "**No Inline Strings**: Mandato architetturale che vieta la generazione di testo logico all'interno dei componenti UI.",
+    "body": "**Testi meno dispersi nel codice**: la generazione dei messaggi è stata centralizzata.",
     "highlights": [
-      "**Core Rules Update**: Inserito l'obbligo di adesione alle skill semantiche (v2.1.0)."
+      "**Regole core aggiornate**: rafforzata l'adesione agli standard semantici di progetto."
     ],
-    "isCritical": true,
+    "isCritical": false,
     "publishedAt": "2026-02-04T09:00:00.000Z",
     "link": "/updates#v-0-3-0"
   },
@@ -35,9 +80,9 @@
     "kind": "feature",
     "audience": "beta",
     "title": "v0.2.5 · Nuove funzionalita",
-    "body": "**Living Effect**: Animazioni staggerate e atmosfere dinamiche su tutte le superfici principali.",
+    "body": "**Interfaccia più viva**: animazioni progressive sulle superfici principali.",
     "highlights": [
-      "**Core Facade**: Integrazione di `useGoalScenarios` per unificare l'accesso ai dati nel Simulator."
+      "**Simulator più lineare**: accesso ai dati scenario semplificato e unificato."
     ],
     "isCritical": false,
     "publishedAt": "2026-02-04T09:00:00.000Z",
@@ -49,9 +94,9 @@
     "kind": "improvement",
     "audience": "beta",
     "title": "v0.2.5 · Miglioramenti",
-    "body": "**Brand Consistency**: Migrazione dell'identità visiva al **Numa Teal** (`primary`).",
+    "body": "**Identità visiva allineata**: consolidato il colore guida Numa.",
     "highlights": [
-      "**Geometry Standards**: Definita la scala dei raggi (Macro: 40px, Micro: 16px)."
+      "**Geometrie standardizzate**: raggi e forme resi più consistenti tra le sezioni."
     ],
     "isCritical": false,
     "publishedAt": "2026-02-04T09:00:00.000Z",
@@ -63,9 +108,9 @@
     "kind": "feature",
     "audience": "beta",
     "title": "v0.2.0 · Nuove funzionalita",
-    "body": "**Financial Lab v3**: Redesign completo dell'interfaccia di gestione obiettivi e scenari.",
+    "body": "**Financial Lab v3**: nuova esperienza per obiettivi e scenari.",
     "highlights": [
-      "**Logic Vault**: Migrazione della logica Goals in `src/VAULT` per isolamento dal framework UI."
+      "**Logic Vault**: logica obiettivi separata dall'interfaccia per maggiore controllo."
     ],
     "isCritical": false,
     "publishedAt": "2026-02-01T09:00:00.000Z",
@@ -77,7 +122,7 @@
     "kind": "improvement",
     "audience": "beta",
     "title": "v0.2.0 · Miglioramenti",
-    "body": "**Amount Cents**: Migrazione globale a interi (cents) per tutti i calcoli monetari, eliminando `parseFloat`.",
+    "body": "**Calcoli monetari più stabili**: passaggio completo a una gestione numerica più robusta degli importi.",
     "highlights": [],
     "isCritical": false,
     "publishedAt": "2026-02-01T09:00:00.000Z",
@@ -89,9 +134,9 @@
     "kind": "feature",
     "audience": "beta",
     "title": "v0.1.5 · Nuove funzionalita",
-    "body": "**Privacy Shield**: Implementazione dell'effetto blur globale sensibile allo stato di privacy.",
+    "body": "**Privacy Shield**: blur globale quando attivi la privacy.",
     "highlights": [
-      "**Conscious Commitment**: Feedback immediato post-selezione del ritmo (Impegno Consapevole)."
+      "**Feedback immediato sul ritmo**: conferma più chiara dopo la selezione."
     ],
     "isCritical": false,
     "publishedAt": "2026-01-28T09:00:00.000Z",
@@ -103,7 +148,7 @@
     "kind": "improvement",
     "audience": "beta",
     "title": "v0.1.5 · Miglioramenti",
-    "body": "**Rhythm over Budget**: Transizione semantica verso il concetto di \"Percorso\" e \"Ritmo\".",
+    "body": "**Nuovo linguaggio di prodotto**: focus su percorso e ritmo, non su logiche statiche di budget.",
     "highlights": [],
     "isCritical": false,
     "publishedAt": "2026-01-28T09:00:00.000Z",
@@ -115,9 +160,9 @@
     "kind": "feature",
     "audience": "beta",
     "title": "v0.1.2 · Nuove funzionalita",
-    "body": "**Typography System Lock**: Formalizzazione della scala tipografica e gerarchia Premium.",
+    "body": "**Tipografia governata**: gerarchia testi più leggibile e uniforme.",
     "highlights": [
-      "**Standardized Sheets**: Nuovo pattern unificato per gli overlay di dettaglio ed edit."
+      "**Sheet standardizzati**: pattern unico per dettaglio e modifica."
     ],
     "isCritical": false,
     "publishedAt": "2026-01-27T09:00:00.000Z",
@@ -129,7 +174,7 @@
     "kind": "improvement",
     "audience": "beta",
     "title": "v0.1.2 · Miglioramenti",
-    "body": "**UI Standardization**: Allineamento di Insights e Dashboard agli standard \"Numa Premium\".",
+    "body": "**Esperienza più coerente**: Dashboard e Insights riallineati agli standard Numa Premium.",
     "highlights": [],
     "isCritical": false,
     "publishedAt": "2026-01-27T09:00:00.000Z",
@@ -141,9 +186,9 @@
     "kind": "feature",
     "audience": "beta",
     "title": "v0.1.0 · Nuove funzionalita",
-    "body": "**Initial Release**: MVP funzionale con Import CSV, Dashboard KPI e Gestione Categorie.",
+    "body": "**Prima release**: base operativa con import CSV, KPI e categorie.",
     "highlights": [
-      "**Local-first Architecture**: Persistenza locale tramite repository e storage adapter dedicati."
+      "**Approccio local-first**: i dati vengono gestiti localmente con persistenza dedicata."
     ],
     "isCritical": false,
     "publishedAt": "2026-01-25T09:00:00.000Z",

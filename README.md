@@ -89,10 +89,9 @@ Numa Budget follows a strict set of development standards to ensure financial ac
 
 ## 📁 Documentation
 
-- **[Numa Core Rules](./.agent/rules/numa-core-rules.md)**: Core development standards and constraints.
-- **[UI Standards](./.agent/skills/numa-ui-standards/SKILL.md)**: Design system and UBI rules.
-- **[Financial Logic](./.agent/skills/numa-financial-logic/SKILL.md)**: Monetary domain rules.
-- **[Governance Update Skill](./.agent/skills/numa-governance-update/SKILL.md)**: Governance and release process.
+- **[Documentation Hub](./docs/README.md)**: Single entrypoint (what/where/when/why).
+- **[Numa Core Rules](./.agent/rules/numa-core-rules.md)**: Always-on non-negotiable constraints.
+- **Governance Update Skill**: use global skill `$numa-governance-update` for rule/skill/changelog workflow.
 
 ## 🚀 Deploy
 

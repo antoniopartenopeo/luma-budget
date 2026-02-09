@@ -15,7 +15,7 @@
     "governance:enforce": "bash scripts/audit/governance-enforce.sh",
     "goals:validate": "vitest run src/features/goals/validation/",
     "goals:report": "vitest run src/features/goals/validation/ --reporter=verbose",
-    "validate": "./.agent/skills/numa-governance-update/scripts/validate.sh",
+    "validate": "npm run governance:quick-check",
     "doe:verify": "npm run governance:enforce && npm run test:run && npm run lint && npm run validate && npm run build"
   },
   "dependencies": {

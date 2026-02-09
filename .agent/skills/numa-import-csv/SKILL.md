@@ -112,7 +112,7 @@ assignCategory(merchantKey: string): CategoryId | null
 
 ## Riferimenti
 
-- Specifica completa: [docs/specs/WIZARD_LOGIC_SPEC.md](file:///docs/specs/WIZARD_LOGIC_SPEC.md)
+- Specifica completa: `docs/specs/WIZARD_LOGIC_SPEC.md`
 
 ---
 

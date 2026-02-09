@@ -266,7 +266,7 @@ Ogni testo deve appartenere a uno di questi livelli.
 
 ## Checklist di Verifica UI/UX (Obbligatoria)
 
-Ogni feature/componente deve passare la **[UI Regression Checklist](file:///.agent/rules/ui-regression-checklist.md)** prima di essere considerata **COMPLETA**.
+Ogni feature/componente deve passare la **UI Regression Checklist** (`.agent/rules/ui-regression-checklist.md`) prima di essere considerata **COMPLETA**.
 
 Il mancato rispetto anche di un solo punto della checklist tecnica automatizzabile è motivo di scarto della feature.
 
@@ -290,7 +290,6 @@ Il mancato rispetto anche di un solo punto della checklist tecnica automatizzabi
 - [ ] **Duration**: Durata fissa di `500ms`.
 - [ ] **Smoothness**: Le transizioni sono fluide e non scattose.
 
-### 5. Tone of Voice
 ### 5. Tone of Voice
 - [ ] **Advisor Style**: I testi (empty states, errori) hanno un tono proattivo e intelligente.
 

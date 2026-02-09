@@ -7,7 +7,9 @@ export interface ChangelogNotification {
     kind: NotificationKind
     audience: NotificationAudience
     title: string
+    // Summary line rendered before the highlights list.
     body: string
+    // Additional bullet points; must not repeat body and can be empty.
     highlights: string[]
     isCritical?: boolean
     publishedAt: string

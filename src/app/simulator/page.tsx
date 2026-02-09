@@ -29,6 +29,8 @@ import { queryKeys } from "@/lib/query-keys"
 import { KpiCard } from "@/components/patterns/kpi-card"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
 import { macroItemVariants } from "@/components/patterns/macro-section"
+import { buildNatureApplicationMap } from "@/domain/simulation"
+import { LOCAL_USER_ID } from "@/lib/runtime-user"
 
 /**
  * Premium background for the Empty State.
@@ -120,17 +122,8 @@ export default function SimulatorPage() {
         // Reconstruct application map from slider values
         // Note: In a real advanced implementation, we might want per-category overrides.
         // For now, we replicate "Rhythm-like" group application.
-        const customMap: Record<string, number> = {}
         const cats = categoriesList || []
-        cats.forEach(cat => {
-            if (cat.spendingNature === 'superfluous') {
-                customMap[cat.id] = customSavings.superfluous
-            } else if (cat.spendingNature === 'comfort') {
-                customMap[cat.id] = customSavings.comfort
-            } else {
-                customMap[cat.id] = 0 // Essential fixed at 0 for now
-            }
-        })
+        const customMap = buildNatureApplicationMap(cats, customSavings)
 
         return calculateScenario({
             key: "custom",
@@ -170,7 +163,7 @@ export default function SimulatorPage() {
             }
 
             await activateRhythm({
-                userId: "user-1",
+                userId: LOCAL_USER_ID,
                 goalTargetCents,
                 goalTitle: goalTitle || "Mio Obiettivo",
                 scenario: {

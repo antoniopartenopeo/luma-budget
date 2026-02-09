@@ -4,7 +4,7 @@
 
 import { InsightsSensitivity } from "@/features/settings/api/types"
 import { InsightThresholds } from "./types"
-import { getMonthBoundariesLocal, filterByRange } from "@/lib/date-ranges"
+import { getMonthBoundariesLocal, filterByRange, formatDateLocalISO } from "@/lib/date-ranges"
 
 // Re-export centralized date utilities
 export {
@@ -89,16 +89,9 @@ export function buildTransactionsUrl(params: {
 
     if (params.period) {
         const { start, end } = getMonthBoundariesLocal(params.period)
-        // Use local date parts to avoid timezone shift from toISOString()
-        const formatDate = (d: Date) => {
-            const y = d.getFullYear()
-            const m = (d.getMonth() + 1).toString().padStart(2, "0")
-            const day = d.getDate().toString().padStart(2, "0")
-            return `${y}-${m}-${day}`
-        }
         searchParams.set("period", "custom")
-        searchParams.set("from", formatDate(start))
-        searchParams.set("to", formatDate(end))
+        searchParams.set("from", formatDateLocalISO(start))
+        searchParams.set("to", formatDateLocalISO(end))
     }
 
     if (params.categoryId) {

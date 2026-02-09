@@ -11,15 +11,17 @@ import { useSettings } from "@/features/settings/api/use-settings"
 import { Transaction } from "@/features/transactions/api/types"
 import { DashboardTimeFilter } from "../../api/types"
 import { usePrivacyStore } from "@/features/privacy/privacy.store"
+import {
+    buildSpendingCompositionSlices,
+    DEFAULT_TOP_SPENDING_CATEGORIES,
+    SYNTHETIC_ALTRI_ID
+} from "../../utils/spending-composition"
 
 interface SpendingCompositionCardProps {
     transactions: Transaction[]
     filter: DashboardTimeFilter
     isLoading?: boolean
 }
-
-const TOP_N_CATEGORIES = 5
-const SYNTHETIC_ALTRI_ID = "altro-synthetic"
 
 interface EChartsPieParam {
     name: string
@@ -39,69 +41,43 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
 
 
 
-    const chartData = useMemo(() => {
-        if (!transactions || transactions.length === 0) return []
+    const chartSlices = useMemo(() => (
+        buildSpendingCompositionSlices(
+            transactions,
+            filter,
+            categories,
+            DEFAULT_TOP_SPENDING_CATEGORIES
+        )
+    ), [transactions, filter, categories])
 
-        const periodTransactions = transactions.filter(t => {
-            const date = new Date(t.timestamp)
-            const startDate = new Date(filter.period + "-01")
-            startDate.setDate(1)
-
-            const endDate = new Date(filter.period + "-01")
-            endDate.setMonth(endDate.getMonth() + 1)
-            endDate.setDate(0)
-
-            if (filter.mode === "range" && filter.months) {
-                startDate.setMonth(startDate.getMonth() - (filter.months - 1))
+    const chartData = useMemo(() => (
+        chartSlices.map(slice => {
+            if (slice.id === SYNTHETIC_ALTRI_ID) {
+                return {
+                    ...slice,
+                    itemStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: "#94a3b8" },
+                            { offset: 1, color: "#94a3b888" }
+                        ])
+                    }
+                }
             }
 
-            return t.type === "expense" && date >= startDate && date <= endDate
-        })
+            const config = getCategoryById(slice.id, categories)
+            const baseColor = config?.hexColor || "#6366f1"
 
-        const periodCategoryTotals: Record<string, number> = {}
-        periodTransactions.forEach(t => {
-            const val = Math.abs(t.amountCents)
-            periodCategoryTotals[t.categoryId] = (periodCategoryTotals[t.categoryId] || 0) + val
-        })
-
-        const sortedCategories = Object.entries(periodCategoryTotals)
-            .sort(([, a], [, b]) => b - a)
-
-        const topCats = sortedCategories.slice(0, TOP_N_CATEGORIES)
-        const othersSum = sortedCategories.slice(TOP_N_CATEGORIES)
-            .reduce((acc, [, val]) => acc + val, 0)
-
-        const data = topCats.map(([id, value]) => {
-            const config = getCategoryById(id, categories)
             return {
-                id,
-                name: config?.label || "Sconosciuta",
-                value,
+                ...slice,
                 itemStyle: {
                     color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                        { offset: 0, color: config?.hexColor || "#6366f1" },
-                        { offset: 1, color: (config?.hexColor || "#6366f1") + "88" }
+                        { offset: 0, color: baseColor },
+                        { offset: 1, color: `${baseColor}88` }
                     ])
                 }
             }
         })
-
-        if (othersSum > 0) {
-            data.push({
-                id: SYNTHETIC_ALTRI_ID,
-                name: "Altri",
-                value: othersSum,
-                itemStyle: {
-                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                        { offset: 0, color: "#94a3b8" },
-                        { offset: 1, color: "#94a3b888" }
-                    ])
-                }
-            })
-        }
-
-        return data
-    }, [transactions, filter, categories])
+    ), [chartSlices, categories])
 
     const option: echarts.EChartsOption = useMemo(() => {
         if (!chartData.length) return {}

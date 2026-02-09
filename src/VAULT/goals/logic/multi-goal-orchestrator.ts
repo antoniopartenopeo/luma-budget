@@ -1,7 +1,6 @@
 
 import { GoalPortfolio, ProjectionResult, ProjectionInput } from "../types"
 import { projectGoalReachability } from "./projection-engine"
-import { addMonths } from "date-fns"
 
 export interface PortfolioProjection {
     goalId: string
@@ -34,6 +33,7 @@ export function calculatePortfolioProjections(
     const projections: PortfolioProjection[] = []
     let currentStartDate = new Date()
     let totalMonths = 0
+    let isSequenceBlocked = false
 
     const rhythmBenefit = portfolio.activeRhythm?.benefitCents || 0
     const effectiveFCF = globalInput.currentFreeCashFlow + rhythmBenefit
@@ -54,6 +54,23 @@ export function calculatePortfolioProjections(
             continue
         }
 
+        if (isSequenceBlocked) {
+            projections.push({
+                goalId: goal.id,
+                projection: {
+                    minMonths: 0,
+                    likelyMonths: 0,
+                    maxMonths: 0,
+                    minDate: currentStartDate,
+                    likelyDate: currentStartDate,
+                    maxDate: currentStartDate,
+                    canReach: false,
+                    unreachableReason: "Obiettivo precedente non raggiungibile nel portafoglio corrente."
+                }
+            })
+            continue
+        }
+
         const result = projectGoalReachability({
             ...globalInput,
             currentFreeCashFlow: effectiveFCF, // Use rhythms-improved FCF
@@ -67,13 +84,12 @@ export function calculatePortfolioProjections(
         })
 
         // Cumulative time: the next goal starts when this one likely ends
-        if (result.canReach && result.likelyMonths !== Infinity) {
+        if (result.canReach) {
             currentStartDate = result.likelyDate
             totalMonths += result.likelyMonths
         } else {
-            // If one goal is unreachable, the following ones are also effectively pushed to infinity
-            currentStartDate = addMonths(currentStartDate, 1200) // +100 years
-            totalMonths = Infinity
+            // If one goal is unreachable, the following ones are blocked by sequence order.
+            isSequenceBlocked = true
         }
     }
 

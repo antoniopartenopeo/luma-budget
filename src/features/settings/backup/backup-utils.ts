@@ -1,17 +1,23 @@
-import { storage } from "@/lib/storage-utils"
+import { storage } from "@/lib/storage-utils";
+import { STORAGE_KEYS_REGISTRY } from "@/lib/storage-keys";
 
-export const BACKUP_VERSION = 1 as const;
+export const BACKUP_VERSION = 2 as const;
+export const BACKUP_LEGACY_VERSION = 1 as const;
 
 export const STORAGE_KEYS = {
     TRANSACTIONS: "luma_transactions_v1" as const,
     BUDGETS: "luma_budget_plans_v1" as const,
     CATEGORIES: "luma_categories_v1" as const,
     SETTINGS: "luma_settings_v1" as const,
+    PORTFOLIO: "numa_goal_portfolio_v1" as const,
+    NOTIFICATIONS: "numa_notifications_state_v2" as const,
+    PRIVACY: "numa-privacy-storage" as const,
+    INSIGHTS_SIGNATURE: "insights_smart_advice_signature_v1" as const,
 };
 
 export type BackupV1 = {
     version: 1;
-    exportedAt: string; // ISO
+    exportedAt: string;
     keys: {
         transactionsKey: typeof STORAGE_KEYS.TRANSACTIONS;
         budgetsKey: typeof STORAGE_KEYS.BUDGETS;
@@ -19,17 +25,44 @@ export type BackupV1 = {
         settingsKey: typeof STORAGE_KEYS.SETTINGS;
     };
     payload: {
-        transactions: unknown | null; // raw storage payload
-        budgets: unknown | null;      // raw storage payload
-        categories: unknown | null;   // raw storage payload
-        settings: unknown | null;     // raw storage payload
+        transactions: unknown | null;
+        budgets: unknown | null;
+        categories: unknown | null;
+        settings: unknown | null;
     };
 };
 
+export type BackupV2 = {
+    version: 2;
+    exportedAt: string;
+    keys: {
+        transactionsKey: typeof STORAGE_KEYS.TRANSACTIONS;
+        budgetsKey: typeof STORAGE_KEYS.BUDGETS;
+        categoriesKey: typeof STORAGE_KEYS.CATEGORIES;
+        settingsKey: typeof STORAGE_KEYS.SETTINGS;
+        portfolioKey: typeof STORAGE_KEYS.PORTFOLIO;
+        notificationsKey: typeof STORAGE_KEYS.NOTIFICATIONS;
+        privacyKey: typeof STORAGE_KEYS.PRIVACY;
+        insightsSignatureKey: typeof STORAGE_KEYS.INSIGHTS_SIGNATURE;
+    };
+    payload: {
+        transactions: unknown | null;
+        budgets: unknown | null;
+        categories: unknown | null;
+        settings: unknown | null;
+        portfolio: unknown | null;
+        notifications: unknown | null;
+        privacy: unknown | null;
+        insightsSignature: unknown | null;
+    };
+};
+
+export type BackupFile = BackupV1 | BackupV2;
+
 /**
- * Builds a BackupV1 object from current localStorage data.
+ * Builds a BackupV2 object from current localStorage data.
  */
-export const buildBackupV1 = (): BackupV1 => {
+export const buildBackupV2 = (): BackupV2 => {
     return {
         version: BACKUP_VERSION,
         exportedAt: new Date().toISOString(),
@@ -38,80 +71,155 @@ export const buildBackupV1 = (): BackupV1 => {
             budgetsKey: STORAGE_KEYS.BUDGETS,
             categoriesKey: STORAGE_KEYS.CATEGORIES,
             settingsKey: STORAGE_KEYS.SETTINGS,
+            portfolioKey: STORAGE_KEYS.PORTFOLIO,
+            notificationsKey: STORAGE_KEYS.NOTIFICATIONS,
+            privacyKey: STORAGE_KEYS.PRIVACY,
+            insightsSignatureKey: STORAGE_KEYS.INSIGHTS_SIGNATURE,
         },
         payload: {
             transactions: storage.get(STORAGE_KEYS.TRANSACTIONS, null),
             budgets: storage.get(STORAGE_KEYS.BUDGETS, null),
             categories: storage.get(STORAGE_KEYS.CATEGORIES, null),
             settings: storage.get(STORAGE_KEYS.SETTINGS, null),
+            portfolio: storage.get(STORAGE_KEYS.PORTFOLIO, null),
+            notifications: storage.get(STORAGE_KEYS.NOTIFICATIONS, null),
+            privacy: storage.get(STORAGE_KEYS.PRIVACY, null),
+            insightsSignature: storage.get(STORAGE_KEYS.INSIGHTS_SIGNATURE, null),
         },
     };
 };
 
 /**
+ * Backward-compatible alias used by existing call sites.
+ */
+export const buildBackupV1 = (): BackupV2 => buildBackupV2();
+
+/**
  * Serializes a backup object to a JSON string.
  */
-export const serializeBackup = (backup: BackupV1): string => {
+export const serializeBackup = (backup: BackupFile): string => {
     return JSON.stringify(backup, null, 2);
 };
 
-/**
- * Parses and performs light validation on a backup JSON string.
- */
-export const parseAndValidateBackup = (json: string): { ok: true; backup: BackupV1 } | { ok: false; error: string } => {
-    try {
-        const data = JSON.parse(json);
+function normalizeV1Backup(data: Record<string, unknown>): BackupV1 {
+    const payload = (data.payload ?? {}) as Record<string, unknown>;
 
-        if (!data || typeof data !== "object") {
+    return {
+        version: 1,
+        exportedAt: typeof data.exportedAt === "string" ? data.exportedAt : new Date().toISOString(),
+        keys: {
+            transactionsKey: STORAGE_KEYS.TRANSACTIONS,
+            budgetsKey: STORAGE_KEYS.BUDGETS,
+            categoriesKey: STORAGE_KEYS.CATEGORIES,
+            settingsKey: STORAGE_KEYS.SETTINGS,
+        },
+        payload: {
+            transactions: payload.transactions ?? null,
+            budgets: payload.budgets ?? null,
+            categories: payload.categories ?? null,
+            settings: payload.settings ?? null,
+        },
+    };
+}
+
+function normalizeV2Backup(data: Record<string, unknown>): BackupV2 {
+    const payload = (data.payload ?? {}) as Record<string, unknown>;
+
+    return {
+        version: 2,
+        exportedAt: typeof data.exportedAt === "string" ? data.exportedAt : new Date().toISOString(),
+        keys: {
+            transactionsKey: STORAGE_KEYS.TRANSACTIONS,
+            budgetsKey: STORAGE_KEYS.BUDGETS,
+            categoriesKey: STORAGE_KEYS.CATEGORIES,
+            settingsKey: STORAGE_KEYS.SETTINGS,
+            portfolioKey: STORAGE_KEYS.PORTFOLIO,
+            notificationsKey: STORAGE_KEYS.NOTIFICATIONS,
+            privacyKey: STORAGE_KEYS.PRIVACY,
+            insightsSignatureKey: STORAGE_KEYS.INSIGHTS_SIGNATURE,
+        },
+        payload: {
+            transactions: payload.transactions ?? null,
+            budgets: payload.budgets ?? null,
+            categories: payload.categories ?? null,
+            settings: payload.settings ?? null,
+            portfolio: payload.portfolio ?? null,
+            notifications: payload.notifications ?? null,
+            privacy: payload.privacy ?? null,
+            insightsSignature: payload.insightsSignature ?? null,
+        },
+    };
+}
+
+/**
+ * Parses and validates backup JSON. Supports legacy v1 and current v2.
+ */
+export const parseAndValidateBackup = (json: string): { ok: true; backup: BackupFile } | { ok: false; error: string } => {
+    try {
+        const parsed = JSON.parse(json);
+
+        if (!parsed || typeof parsed !== "object") {
             return { ok: false, error: "Dati non validi: il file non contiene un oggetto JSON." };
         }
 
-        if (data.version !== BACKUP_VERSION) {
-            return { ok: false, error: `Versione backup non supportata: trovata ${data.version}, attesa ${BACKUP_VERSION}.` };
-        }
-
+        const data = parsed as Record<string, unknown>;
         if (!data.payload || typeof data.payload !== "object") {
             return { ok: false, error: "Dati non validi: payload mancante o malformato." };
         }
 
-        // Light check on internals
-        if (!("transactions" in data.payload) || !("budgets" in data.payload)) {
+        const payload = data.payload as Record<string, unknown>;
+        if (!("transactions" in payload) || !("budgets" in payload)) {
             return { ok: false, error: "Dati non validi: chiavi di sistema mancanti nel payload." };
         }
 
-        return { ok: true, backup: data as BackupV1 };
+        if (data.version === BACKUP_LEGACY_VERSION) {
+            return { ok: true, backup: normalizeV1Backup(data) };
+        }
+
+        if (data.version === BACKUP_VERSION) {
+            return { ok: true, backup: normalizeV2Backup(data) };
+        }
+
+        return {
+            ok: false,
+            error: `Versione backup non supportata: trovata ${String(data.version)}, supportate ${BACKUP_LEGACY_VERSION} e ${BACKUP_VERSION}.`,
+        };
     } catch {
         return { ok: false, error: "Errore durante il parsing del JSON: il file potrebbe essere corrotto." };
     }
 };
 
+function applyStorageValue(key: string, value: unknown | null): void {
+    if (value === null || value === undefined) {
+        storage.remove(key);
+        return;
+    }
+
+    storage.set(key, value);
+}
+
 /**
  * Restores a backup by overwriting localStorage data.
  */
-export const applyBackupOverwrite = (backup: BackupV1): void => {
-    if (backup.payload.transactions === null) {
-        storage.remove(STORAGE_KEYS.TRANSACTIONS);
-    } else {
-        storage.set(STORAGE_KEYS.TRANSACTIONS, backup.payload.transactions);
+export const applyBackupOverwrite = (backup: BackupFile): void => {
+    applyStorageValue(STORAGE_KEYS.TRANSACTIONS, backup.payload.transactions);
+    applyStorageValue(STORAGE_KEYS.BUDGETS, backup.payload.budgets);
+    applyStorageValue(STORAGE_KEYS.CATEGORIES, backup.payload.categories);
+    applyStorageValue(STORAGE_KEYS.SETTINGS, backup.payload.settings);
+
+    if (backup.version === BACKUP_LEGACY_VERSION) {
+        // Legacy backups do not carry extended state. Clear it to keep overwrite deterministic.
+        applyStorageValue(STORAGE_KEYS.PORTFOLIO, null);
+        applyStorageValue(STORAGE_KEYS.NOTIFICATIONS, null);
+        applyStorageValue(STORAGE_KEYS.PRIVACY, null);
+        applyStorageValue(STORAGE_KEYS.INSIGHTS_SIGNATURE, null);
+        return;
     }
 
-    if (backup.payload.budgets === null) {
-        storage.remove(STORAGE_KEYS.BUDGETS);
-    } else {
-        storage.set(STORAGE_KEYS.BUDGETS, backup.payload.budgets);
-    }
-
-    if (backup.payload.categories === null) {
-        storage.remove(STORAGE_KEYS.CATEGORIES);
-    } else if (backup.payload.categories) {
-        storage.set(STORAGE_KEYS.CATEGORIES, backup.payload.categories);
-    }
-
-    if (backup.payload.settings === null) {
-        storage.remove(STORAGE_KEYS.SETTINGS);
-    } else if (backup.payload.settings) {
-        storage.set(STORAGE_KEYS.SETTINGS, backup.payload.settings);
-    }
+    applyStorageValue(STORAGE_KEYS.PORTFOLIO, backup.payload.portfolio);
+    applyStorageValue(STORAGE_KEYS.NOTIFICATIONS, backup.payload.notifications);
+    applyStorageValue(STORAGE_KEYS.PRIVACY, backup.payload.privacy);
+    applyStorageValue(STORAGE_KEYS.INSIGHTS_SIGNATURE, backup.payload.insightsSignature);
 };
 
 /**
@@ -132,13 +240,8 @@ export const resetBudgets = (): void => {
  * Completely clears all application data from localStorage.
  */
 export const resetAllData = (): void => {
-    storage.remove(STORAGE_KEYS.TRANSACTIONS);
-    storage.remove(STORAGE_KEYS.BUDGETS);
-    // Note: We don't import resetSettings from repository here to avoid circular depends,
-    // but the consumer (SettingsPage) should handle calling resetSettings provided by the hooks
-    // or we can add the key cancellation here if we make the key public.
-    // For now we add the key explicitly if needed or let the consumer handle it.
-    // Let's stick to the pattern: the consumer orchestrates the "reset all".
+    const keys = new Set(STORAGE_KEYS_REGISTRY.map(config => config.key));
+    keys.forEach(key => storage.remove(key));
 };
 
 export type BackupSummary = {
@@ -148,9 +251,9 @@ export type BackupSummary = {
 };
 
 /**
- * Computes a summary from a BackupV1 object for user information before import.
+ * Computes a summary from a backup object for user information before import.
  */
-export const getBackupSummary = (backup: BackupV1): BackupSummary => {
+export const getBackupSummary = (backup: BackupFile): BackupSummary => {
     let txCount = 0;
     let budgetCount = 0;
     const periodsSet = new Set<string>();
@@ -169,7 +272,9 @@ export const getBackupSummary = (backup: BackupV1): BackupSummary => {
         if (typeof item.timestamp === "number") {
             try {
                 return new Date(item.timestamp).toISOString().slice(0, 7);
-            } catch { return null; }
+            } catch {
+                return null;
+            }
         }
 
         if (typeof item.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(item.date)) {
@@ -225,6 +330,6 @@ export const getBackupSummary = (backup: BackupV1): BackupSummary => {
     return {
         txCount,
         budgetCount,
-        periods
+        periods,
     };
 };

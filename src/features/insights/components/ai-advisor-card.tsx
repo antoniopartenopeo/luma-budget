@@ -5,7 +5,7 @@ import { MacroSection } from "@/components/patterns/macro-section"
 import { cn } from "@/lib/utils"
 import { formatEuroNumber } from "@/domain/money"
 import { useAIAdvisor } from "../use-ai-advisor"
-import { useOrchestratedInsights } from "../use-orchestrated-insights"
+import { useOrchestratedInsightsFromData } from "../use-orchestrated-insights"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { SubSectionCard } from "@/components/patterns/sub-section-card"
 import { NumaEngineCard } from "@/components/patterns/numa-engine-card"
@@ -13,8 +13,13 @@ import { NumaEngineCard } from "@/components/patterns/numa-engine-card"
 const SMART_ADVICE_SIGNATURE_KEY = "insights_smart_advice_signature_v1"
 
 export function AIAdvisorCard() {
-    const { forecast, facts, subscriptions, isLoading: aiLoading } = useAIAdvisor()
-    const { orchestration, isLoading: orchestratorLoading } = useOrchestratedInsights()
+    const { forecast, facts, subscriptions, priceHikes, isLoading: aiLoading } = useAIAdvisor()
+    const { orchestration, isLoading: orchestratorLoading } = useOrchestratedInsightsFromData({
+        advisorFacts: facts,
+        subscriptions,
+        priceHikes,
+        advisorLoading: aiLoading
+    })
     const { currency, locale } = useCurrency()
 
     const isLoading = aiLoading || orchestratorLoading

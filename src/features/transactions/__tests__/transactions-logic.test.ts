@@ -100,6 +100,39 @@ describe("transactions-logic", () => {
             expect(result).toHaveLength(2);
             expect(result.map(r => r.id)).toEqual(["2", "3"]);
         });
+
+        it("should support open-ended range with only from date", () => {
+            const filters: TransactionFilters = {
+                ...defaultFilters,
+                dateRange: {
+                    from: new Date("2024-01-02")
+                }
+            }
+            const result = applyFilters(mockTransactions, filters)
+            expect(result.map(r => r.id)).toEqual(["2", "3"])
+        })
+
+        it("should support open-ended range with only to date", () => {
+            const filters: TransactionFilters = {
+                ...defaultFilters,
+                dateRange: {
+                    to: new Date("2024-01-02")
+                }
+            }
+            const result = applyFilters(mockTransactions, filters)
+            expect(result.map(r => r.id)).toEqual(["1", "2"])
+        })
+
+        it("should ignore invalid date boundaries", () => {
+            const filters: TransactionFilters = {
+                ...defaultFilters,
+                dateRange: {
+                    from: new Date("invalid-date")
+                }
+            }
+            const result = applyFilters(mockTransactions, filters)
+            expect(result).toHaveLength(3)
+        })
     });
 
     describe("applySorting", () => {

@@ -1,5 +1,6 @@
 import { Transaction } from "../api/types";
 import { sumIncomeInCents, sumExpensesInCents, calculateSharePct } from "@/domain/money";
+import { filterByRange } from "@/lib/date-ranges";
 
 export type SortField = "date" | "amount" | "category" | "description";
 export type SortOrder = "asc" | "desc";
@@ -31,37 +32,54 @@ export function applyFilters(
     transactions: Transaction[],
     filters: TransactionFilters
 ): Transaction[] {
-    return transactions.filter((t) => {
+    const normalizeEndOfDay = (date: Date) => {
+        const end = new Date(date)
+        end.setHours(23, 59, 59, 999)
+        return end
+    }
+
+    const hasValidFrom =
+        filters.dateRange.from instanceof Date &&
+        !Number.isNaN(filters.dateRange.from.getTime())
+    const hasValidTo =
+        filters.dateRange.to instanceof Date &&
+        !Number.isNaN(filters.dateRange.to.getTime())
+
+    let scopedTransactions = transactions
+
+    if (hasValidFrom && hasValidTo) {
+        scopedTransactions = filterByRange(
+            transactions,
+            new Date(filters.dateRange.from as Date),
+            normalizeEndOfDay(filters.dateRange.to as Date)
+        )
+    } else if (hasValidFrom) {
+        const fromTimestamp = (filters.dateRange.from as Date).getTime()
+        scopedTransactions = transactions.filter(t => t.timestamp >= fromTimestamp)
+    } else if (hasValidTo) {
+        const toTimestamp = normalizeEndOfDay(filters.dateRange.to as Date).getTime()
+        scopedTransactions = transactions.filter(t => t.timestamp <= toTimestamp)
+    }
+
+    return scopedTransactions.filter((t) => {
         // Search filter (description or amount string)
         const matchesSearch =
             filters.search === "" ||
-            t.description.toLowerCase().includes(filters.search.toLowerCase());
+            t.description.toLowerCase().includes(filters.search.toLowerCase())
 
-        if (!matchesSearch) return false;
+        if (!matchesSearch) return false
 
         // Type filter
-        if (filters.type !== "all" && t.type !== filters.type) return false;
+        if (filters.type !== "all" && t.type !== filters.type) return false
 
         // Category filter
-        if (filters.categoryId !== "all" && t.categoryId !== filters.categoryId) return false;
+        if (filters.categoryId !== "all" && t.categoryId !== filters.categoryId) return false
 
         // Superfluous filter
-        if (filters.isSuperfluous && !t.isSuperfluous) return false;
+        if (filters.isSuperfluous && !t.isSuperfluous) return false
 
-        // Date range filter
-        if (filters.dateRange.from || filters.dateRange.to) {
-            const txDate = new Date(t.timestamp);
-            if (filters.dateRange.from && txDate < filters.dateRange.from) return false;
-            // For 'to' date, we usually want to include the entire day
-            if (filters.dateRange.to) {
-                const endDate = new Date(filters.dateRange.to);
-                endDate.setHours(23, 59, 59, 999);
-                if (txDate > endDate) return false;
-            }
-        }
-
-        return true;
-    });
+        return true
+    })
 }
 
 /**

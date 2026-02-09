@@ -16,6 +16,8 @@ import {
 import { ConfirmDialog } from "@/components/patterns/confirm-dialog"
 import { queryKeys } from "@/lib/query-keys"
 import { seedTransactions, __resetTransactionsCache } from "@/features/transactions/api/repository"
+import { __resetBudgetsCache } from "@/VAULT/budget/api/repository"
+import { __resetCategoriesCache } from "@/features/categories/api/repository"
 import { resetSettings } from "@/features/settings/api/repository"
 import { resetAllData } from "@/features/settings/backup/backup-utils"
 import { buildDiagnosticsSnapshot, DiagnosticsSnapshot } from "@/features/settings/diagnostics/diagnostics-utils"
@@ -63,6 +65,8 @@ export function AdvancedSection() {
 
     const invalidateAll = async () => {
         __resetTransactionsCache()
+        __resetBudgetsCache()
+        __resetCategoriesCache()
         await Promise.all([
             queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all }),
             queryClient.invalidateQueries({ queryKey: queryKeys.transactions.recent }),
@@ -70,6 +74,8 @@ export function AdvancedSection() {
             queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all }),
             queryClient.invalidateQueries({ queryKey: queryKeys.categories.all() }),
             queryClient.invalidateQueries({ queryKey: queryKeys.categories.active() }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.settings() }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.notifications.state }),
         ])
     }
 
@@ -114,7 +120,7 @@ export function AdvancedSection() {
                     resetSettings()
                     await invalidateAll()
                     await queryClient.invalidateQueries({ queryKey: queryKeys.settings() })
-                    setStatus({ type: "success", message: "Tutti i dati sono stati eliminati con successo." })
+                    setStatus({ type: "success", message: "Tutti i dati locali registrati sono stati eliminati con successo." })
                     break
                 }
             }
@@ -166,7 +172,7 @@ export function AdvancedSection() {
             case "all":
                 return {
                     title: "Reset Totale",
-                    description: "Vuoi davvero eliminare tutti i dati? Questa azione cancellerà permanentemente tutte le transazioni, i piani ritmo e le impostazioni. Questa azione è irreversibile."
+                    description: "Vuoi davvero eliminare tutti i dati? Questa azione cancellerà permanentemente transazioni, piani ritmo, categorie, impostazioni, portfolio obiettivi, stato notifiche e preferenze privacy. Questa azione è irreversibile."
                 }
             default:
                 return { title: "", description: "" }

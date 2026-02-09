@@ -1,7 +1,8 @@
-import { Category } from "@/features/categories/config"
+import { Category } from "@/domain/categories"
 import { BaselineMetrics } from "./financial-baseline"
 import { ScenarioConfig } from "../types"
 import { RHYTHMS } from "../config/rhythms"
+import { buildNatureApplicationMap } from "@/domain/simulation"
 
 /**
  * Calibrates savings percentages based on financial elasticity.
@@ -63,18 +64,7 @@ export function generateScenarios(
         // Here is where the MAGIC happens: Adaptive Calibration
         // Numa learns the "weight" of the rhythm from the baseline
         const { savings, metadata } = calibrateAdaptiveSavings(baseline, rhythm.intensity)
-
-        const applicationMap: Record<string, number> = {}
-
-        categories.forEach(cat => {
-            if (cat.spendingNature === 'superfluous') {
-                applicationMap[cat.id] = savings.superfluous
-            } else if (cat.spendingNature === 'comfort') {
-                applicationMap[cat.id] = savings.comfort
-            } else {
-                applicationMap[cat.id] = 0
-            }
-        })
+        const applicationMap = buildNatureApplicationMap(categories, savings)
 
         return {
             type: rhythm.type,

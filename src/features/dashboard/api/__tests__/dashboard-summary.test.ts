@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { fetchDashboardSummary } from '../repository'
 import { __resetTransactionsCache, createTransaction } from '../../../transactions/api/repository'
-import { getCurrentPeriod } from "@/VAULT/budget/utils/calculate-budget"
+import { getCurrentPeriod, calculateDateRangeLocal } from "@/lib/date-ranges"
 import { upsertBudget, __resetBudgetsCache } from "@/VAULT/budget/api/repository"
 import { __resetCategoriesCache } from '../../../categories/api/repository'
 import { CategoryIds } from '@/domain/categories'
@@ -174,5 +174,37 @@ describe('Dashboard Summary (Real Wiring)', () => {
 
         // Net Balance is all time (100+200+300+500 = 1100 -> -1100)
         expect(summary.netBalance).toBe(-1100)
+    })
+
+    it('should apply local month boundaries consistently', async () => {
+        const currentPeriod = getCurrentPeriod() // 2025-05 with fake timer
+        const { startDate } = calculateDateRangeLocal(currentPeriod, 1)
+
+        // One transaction just before local month start, one exactly at local month start.
+        const beforeStart = new Date(startDate.getTime() - 1).toISOString()
+        const atStart = new Date(startDate.getTime()).toISOString()
+
+        await createTransaction({
+            description: 'Boundary outside',
+            amount: 111.00,
+            amountCents: 11100,
+            type: 'expense',
+            categoryId: CategoryIds.CIBO,
+            category: 'Cibo',
+            date: beforeStart,
+        })
+
+        await createTransaction({
+            description: 'Boundary inside',
+            amount: 222.00,
+            amountCents: 22200,
+            type: 'expense',
+            categoryId: CategoryIds.CIBO,
+            category: 'Cibo',
+            date: atStart,
+        })
+
+        const summary = await fetchDashboardSummary({ mode: 'month', period: currentPeriod })
+        expect(summary.totalSpent).toBe(222)
     })
 })

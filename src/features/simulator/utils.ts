@@ -1,9 +1,7 @@
-import { Transaction } from "@/features/transactions/api/types"
+import { Transaction } from "@/domain/transactions"
+import { Category, SpendingNature } from "@/domain/categories"
+import { type CategoryAverage } from "@/domain/simulation"
 import { calculateDateRange, filterByRange } from "@/lib/date-ranges"
-
-// If types are defined in this file (which they were previously), restore them or import them.
-// Looking at previous file content, CategoryAverage and SimulationResult were defined inline. 
-// I should restore them if they are not in ./types.
 
 /**
  * GOVERNANCE NOTE:
@@ -16,32 +14,14 @@ import { calculateDateRange, filterByRange } from "@/lib/date-ranges"
 
 export type SimulationPeriod = 3 | 6 | 12
 
-export interface CategoryAverage {
-    categoryId: string
-    averageAmount: number // in cents, integer
-    totalInPeriod: number
-    monthCount: number
-}
+export type { CategoryAverage, SimulationResult } from "@/domain/simulation"
 
 export interface MonthlyAveragesResult {
     categories: Record<string, CategoryAverage>
     incomeCents: number
 }
 
-export interface SimulationResult {
-    baselineTotal: number
-    simulatedTotal: number
-    savingsAmount: number
-    savingsPercent: number
-    categoryResults: Record<string, {
-        baseline: number
-        simulated: number
-        saving: number
-        percent: number
-    }>
-}
-
-// ... existing types export ...
+export { applySavings } from "@/domain/simulation"
 
 /**
  * Calcola la media mensile per categoria basandosi su una finestra temporale.
@@ -102,54 +82,9 @@ export function computeMonthlyAverages(
     }
 }
 
-/**
- * Applica le percentuali di risparmio alle medie baseline.
- * Lavora interamente con interi (centesimi).
- */
-export function applySavings(
-    averages: Record<string, CategoryAverage>,
-    applicationMap: Record<string, number> // categoryId -> reduction percent (0-100)
-): SimulationResult {
-    const categoryResults: SimulationResult['categoryResults'] = {}
-    let baselineTotal = 0
-    let simulatedTotal = 0
-
-    Object.values(averages).forEach(avg => {
-        const percent = Math.min(100, Math.max(0, applicationMap[avg.categoryId] || 0))
-        const baseline = avg.averageAmount
-
-        // Calcolo simulato: baseline * (1 - percent/100)
-        // Usiamo i centesimi, quindi round finale
-        const simulated = Math.round(baseline * (1 - percent / 100))
-        const saving = baseline - simulated
-
-        categoryResults[avg.categoryId] = {
-            baseline,
-            simulated,
-            saving,
-            percent
-        }
-
-        baselineTotal += baseline
-        simulatedTotal += simulated
-    })
-
-    return {
-        baselineTotal,
-        simulatedTotal,
-        savingsAmount: baselineTotal - simulatedTotal,
-        savingsPercent: baselineTotal > 0
-            ? Math.round(((baselineTotal - simulatedTotal) / baselineTotal) * 100)
-            : 0,
-        categoryResults
-    }
-}
-
 // ==========================================
 // NEW FEATURES: Group Expansion & Overrides
 // ==========================================
-
-import { Category, SpendingNature } from "@/features/categories/config"
 
 export type SuperfluousStatus = "OK" | "WARN" | "HIGH"
 

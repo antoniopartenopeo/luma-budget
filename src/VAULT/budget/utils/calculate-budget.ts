@@ -1,5 +1,5 @@
-import { Transaction } from "@/features/transactions/api/types"
-import { getCategoryById, Category } from "@/features/categories/config"
+import { Transaction } from "@/domain/transactions"
+import { getCategoryById, Category } from "@/domain/categories"
 import { BudgetSpending, BudgetGroupId, BUDGET_GROUP_LABELS } from "../api/types"
 import { getSignedCents, resolveBudgetGroupForTransaction } from "@/domain/transactions"
 import { calculateUtilizationPct, sumExpensesInCents } from "@/domain/money"

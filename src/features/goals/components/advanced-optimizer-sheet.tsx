@@ -16,6 +16,7 @@ import { CategoryAverage } from "@/features/simulator/utils"
 import { calculateScenario } from "@/VAULT/goals/logic/scenario-calculator"
 import { cn } from "@/lib/utils"
 import { Category } from "@/features/categories/config"
+import { buildNatureApplicationMap } from "@/domain/simulation"
 
 interface AdvancedOptimizerSheetProps {
     open: boolean
@@ -40,19 +41,10 @@ function buildScenarioInputs(
     applicationMap: Record<string, number>
     categoryAverages: Record<string, CategoryAverage>
 } {
-    const applicationMap: Record<string, number> = {}
+    const applicationMap = buildNatureApplicationMap(categories, { superfluous, comfort })
     const categoryAverages: Record<string, CategoryAverage> = {}
 
     categories.forEach(cat => {
-        // Build application map based on spending nature
-        if (cat.spendingNature === 'superfluous') {
-            applicationMap[cat.id] = superfluous
-        } else if (cat.spendingNature === 'comfort') {
-            applicationMap[cat.id] = comfort
-        } else {
-            applicationMap[cat.id] = 0 // Essential always 0
-        }
-
         // Build category averages for Core calculator
         categoryAverages[cat.id] = {
             categoryId: cat.id,

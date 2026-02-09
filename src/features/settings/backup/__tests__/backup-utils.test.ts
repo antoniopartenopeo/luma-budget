@@ -78,7 +78,7 @@ describe("Backup Utils", () => {
         });
 
         it("should fail for wrong version", () => {
-            const invalidBackup = { version: 99, payload: {}, keys: {} };
+            const invalidBackup = { version: 99, payload: { transactions: null, budgets: null }, keys: {} };
             const result = parseAndValidateBackup(JSON.stringify(invalidBackup));
             expect(result.ok).toBe(false);
             if (!result.ok) {

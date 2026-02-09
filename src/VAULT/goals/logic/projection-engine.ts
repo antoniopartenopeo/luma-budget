@@ -12,13 +12,13 @@ import { addMonths } from "date-fns" // Assuming date-fns is available or I'll u
  */
 export function projectGoalReachability(input: ProjectionInput): ProjectionResult {
     const { goalTarget, currentFreeCashFlow, historicalVariability } = input
+    const baseDate = input.startDate || new Date()
 
     // Edge Case: Goal already met
     if (goalTarget <= 0) {
-        const now = new Date()
         return {
             minMonths: 0, likelyMonths: 0, maxMonths: 0,
-            minDate: now, likelyDate: now, maxDate: now,
+            minDate: baseDate, likelyDate: baseDate, maxDate: baseDate,
             canReach: true
         }
     }
@@ -32,7 +32,7 @@ export function projectGoalReachability(input: ProjectionInput): ProjectionResul
     // 2. Check Feasibility (Likely scenario must be positive)
     if (likelyCapacity <= 0) {
         // Technically unreachable with current average habits
-        return createUnreachableResult("Il flusso di cassa medio attuale è nullo o negativo.")
+        return createUnreachableResult("Il flusso di cassa medio attuale è nullo o negativo.", baseDate)
     }
 
     // 3. Compute Months (Round up to full months)
@@ -53,11 +53,8 @@ export function projectGoalReachability(input: ProjectionInput): ProjectionResul
 
     // Safety Cap: If > 10 years, treat as unreachable for practical purposes
     if (likelyMonths > 120) {
-        return createUnreachableResult("L'obiettivo richiede oltre 10 anni al ritmo attuale.")
+        return createUnreachableResult("L'obiettivo richiede oltre 10 anni al ritmo attuale.", baseDate)
     }
-
-
-    const baseDate = input.startDate || new Date()
 
     return {
         minMonths: Math.max(0, minMonths),
@@ -70,20 +67,16 @@ export function projectGoalReachability(input: ProjectionInput): ProjectionResul
     }
 }
 
-function createUnreachableResult(reason: string): ProjectionResult {
-    const farFuture = new Date()
-    farFuture.setFullYear(farFuture.getFullYear() + 100)
-
+function createUnreachableResult(reason: string, baseDate: Date): ProjectionResult {
     return {
-        minMonths: Infinity,
-        likelyMonths: Infinity,
-        maxMonths: Infinity,
-        minDate: farFuture,
-        likelyDate: farFuture,
-        maxDate: farFuture,
+        minMonths: 0,
+        likelyMonths: 0,
+        maxMonths: 0,
+        minDate: baseDate,
+        likelyDate: baseDate,
+        maxDate: baseDate,
         canReach: false,
         unreachableReason: reason
     }
 }
-
 

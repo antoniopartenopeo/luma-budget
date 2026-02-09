@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { calculateSharePct, calculateGrowthPct, calculateUtilizationPct, sumExpensesInCents } from "../math"
-import { Transaction } from "@/features/transactions/api/types"
+import { Transaction } from "@/domain/transactions"
 
 describe("financial-math", () => {
     describe("calculateSharePct", () => {

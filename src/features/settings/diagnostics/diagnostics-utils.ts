@@ -2,7 +2,7 @@
 import { STORAGE_KEYS_REGISTRY } from "@/lib/storage-keys"
 import { AppBuildInfo, getAppBuildInfo } from "@/lib/app-build-info"
 
-const APP_STORAGE_PREFIXES = ["luma_", "numa_", "insights_"] as const
+const APP_STORAGE_PREFIXES = ["luma_", "numa_", "numa-", "insights_"] as const
 
 export type DiagnosticsSnapshot = {
     generatedAt: string

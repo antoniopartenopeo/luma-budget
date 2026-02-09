@@ -1,7 +1,7 @@
 
 import { generateScenarios } from "../scenario-generator"
 import { BaselineMetrics } from "../financial-baseline"
-import { Category } from "@/features/categories/config"
+import { Category } from "@/domain/categories"
 import { describe, test, expect } from "vitest"
 
 describe("Scenario Generator Logic", () => {

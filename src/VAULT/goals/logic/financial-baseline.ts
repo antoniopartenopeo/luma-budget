@@ -1,5 +1,5 @@
-import { Transaction } from "@/features/transactions/api/types"
-import { Category } from "@/features/categories/config"
+import { Transaction } from "@/domain/transactions"
+import { Category } from "@/domain/categories"
 
 export interface BaselineMetrics {
     averageMonthlyIncome: number

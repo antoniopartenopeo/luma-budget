@@ -87,4 +87,23 @@ describe("Multi-Goal Orchestrator", () => {
         expect(p2.projection.likelyMonths).toBe(5)
         expect(format(p2.projection.likelyDate, "yyyy-MM")).toBe(format(addMonths(new Date(), 5), "yyyy-MM"))
     })
+
+    it("should block downstream goals when the first active goal is unreachable", () => {
+        const blockedPortfolio: GoalPortfolio = {
+            ...portfolio,
+            goals: [
+                { ...portfolio.goals[0], targetCents: 10_000_000 },
+                portfolio.goals[1]
+            ]
+        }
+
+        const result = calculatePortfolioProjections(blockedPortfolio, mockBaseline)
+        const p1 = result.projections.find(p => p.goalId === "goal-1")!
+        const p2 = result.projections.find(p => p.goalId === "goal-2")!
+
+        expect(p1.projection.canReach).toBe(false)
+        expect(p2.projection.canReach).toBe(false)
+        expect(p2.projection.unreachableReason).toContain("precedente")
+        expect(result.totalMonths).toBe(0)
+    })
 })

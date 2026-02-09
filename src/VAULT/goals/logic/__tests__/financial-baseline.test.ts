@@ -1,7 +1,7 @@
 
 import { calculateBaselineMetrics } from "../financial-baseline"
-import { Transaction } from "@/features/transactions/api/types"
-import { Category } from "@/features/categories/config"
+import { Transaction } from "@/domain/transactions"
+import { Category } from "@/domain/categories"
 import { describe, test, expect } from "vitest"
 
 // Mock Data Builders

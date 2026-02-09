@@ -21,6 +21,22 @@ export function calculateDateRange(period: string, months: number = 1): { startD
 }
 
 /**
+ * Calculates start and end dates for a given period and range using Local Time.
+ * Preferred for user-facing period filters.
+ *
+ * @param period - The "pivot" month in YYYY-MM format.
+ * @param months - Number of months in the range (inclusive of the pivot month).
+ */
+export function calculateDateRangeLocal(period: string, months: number = 1): { startDate: Date, endDate: Date } {
+    const [year, month] = period.split("-").map(Number)
+    // End Date: The last millisecond of the pivot month in local time
+    const endDate = new Date(year, month, 0, 23, 59, 59, 999)
+    // Start Date: 1st of the starting month in local time
+    const startDate = new Date(year, month - months, 1, 0, 0, 0, 0)
+    return { startDate, endDate }
+}
+
+/**
  * Calculates start and end dates for a given period using Local Time.
  * Used for UI filtering where the user expects "midnight local time".
  */
@@ -48,6 +64,16 @@ export function formatPeriodLabel(period: string, locale: string = "it-IT"): str
     const date = new Date(year, month - 1, 1)
     const label = new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }).format(date)
     return label.charAt(0).toUpperCase() + label.slice(1)
+}
+
+/**
+ * Format a Date to local YYYY-MM-DD without UTC conversion side effects.
+ */
+export function formatDateLocalISO(date: Date): string {
+    const year = date.getFullYear()
+    const month = (date.getMonth() + 1).toString().padStart(2, "0")
+    const day = date.getDate().toString().padStart(2, "0")
+    return `${year}-${month}-${day}`
 }
 
 /**

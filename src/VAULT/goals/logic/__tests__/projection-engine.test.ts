@@ -38,9 +38,11 @@ describe("Projection Engine Logic", () => {
             currentFreeCashFlow: 0,
             historicalVariability: 0
         }
+        const result = projectGoalReachability(input)
         const res = getMonths(input)
         expect(res.reachable).toBe(false)
-        expect(res.likely).toBe(Infinity)
+        expect(res.likely).toBe(0)
+        expect(result.unreachableReason).toContain("nullo o negativo")
     })
 
     test("Unreachable if FCF is Negative", () => {

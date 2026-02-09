@@ -5,8 +5,7 @@ import { getPortfolio, savePortfolio } from "../api/goal-repository"
 import { calculatePortfolioProjections, PortfolioMetrics } from "./multi-goal-orchestrator"
 import { deleteBudget } from "@/VAULT/budget/api/repository"
 import { format } from "date-fns"
-
-const DEFAULT_USER_ID = "user-1"
+import { LOCAL_USER_ID } from "@/lib/runtime-user"
 
 interface UseGoalPortfolioProps {
     globalProjectionInput: Omit<ProjectionInput, "goalTarget" | "startDate">
@@ -96,7 +95,7 @@ export function useGoalPortfolio({ globalProjectionInput }: UseGoalPortfolioProp
 
             // Delete budget for current period to prevent stale Dashboard
             const currentPeriod = format(new Date(), "yyyy-MM")
-            await deleteBudget(DEFAULT_USER_ID, currentPeriod)
+            await deleteBudget(LOCAL_USER_ID, currentPeriod)
             return
         }
 

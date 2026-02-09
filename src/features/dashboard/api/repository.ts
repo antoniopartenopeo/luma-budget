@@ -2,22 +2,21 @@ import { DashboardSummary, DashboardTimeFilter } from "./types"
 import { fetchTransactions } from "../../transactions/api/repository"
 import { fetchBudget } from "@/VAULT/budget/api/repository"
 import { getSignedCents } from "@/domain/transactions"
-import { calculateDateRange, filterByRange, getMonthBoundariesLocal } from "@/lib/date-ranges"
+import { calculateDateRangeLocal, filterByRange, getMonthBoundariesLocal } from "@/lib/date-ranges"
 import { getCategoryById } from "@/features/categories/config"
 import { getCategories } from "@/features/categories/api/repository"
 import { calculateSuperfluousMetrics } from "../../transactions/utils/transactions-logic"
 
 import { sumExpensesInCents, sumIncomeInCents } from "@/domain/money"
 import { getPortfolio } from "@/VAULT/goals/api/goal-repository"
-
-const DEFAULT_USER_ID = "user-1"
+import { LOCAL_USER_ID } from "@/lib/runtime-user"
 
 export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promise<DashboardSummary> => {
     // Simulate network delay
 
 
     // 1. Determine date range for filtered metrics
-    const { startDate, endDate } = calculateDateRange(
+    const { startDate, endDate } = calculateDateRangeLocal(
         filter.period,
         (filter.mode === "range" && filter.months) ? filter.months : 1
     )
@@ -27,7 +26,7 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
     const [transactions, budgetPlan, categories, portfolio] = await Promise.all([
         fetchTransactions(),
         // Budget logic: always fetch for the "pivot" period (filter.period)
-        fetchBudget(DEFAULT_USER_ID, filter.period),
+        fetchBudget(LOCAL_USER_ID, filter.period),
         getCategories(),
         getPortfolio()
     ])

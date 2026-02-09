@@ -1,8 +1,6 @@
-// Nessuna modifica necessaria qui, il componente eredita lo stile corretto da MacroSection.
-
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 import { cn } from "@/lib/utils"
-import { calculateDateRange, filterByRange } from "@/lib/date-ranges"
+import { calculateDateRangeLocal, filterByRange } from "@/lib/date-ranges"
 import { useRecentTransactions } from "@/features/transactions/api/use-transactions"
 import { StateMessage } from "@/components/ui/state-message"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -69,7 +67,7 @@ export function RecentTransactions({ filter }: RecentTransactionsProps) {
     // Client-side Filtering
     let filteredTransactions = transactions || []
     if (filter) {
-        const { startDate, endDate } = calculateDateRange(
+        const { startDate, endDate } = calculateDateRangeLocal(
             filter.period,
             (filter.mode === "range" && filter.months) ? filter.months : 1
         )

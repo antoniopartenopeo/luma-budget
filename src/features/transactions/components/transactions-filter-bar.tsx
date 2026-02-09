@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { DatePicker } from "@/components/ui/date-picker"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { formatDateLocalISO } from "@/lib/date-ranges"
 import {
     Select,
     SelectContent,
@@ -176,7 +177,7 @@ export function TransactionsFilterBar({
                         <label className="text-[10px] uppercase font-bold text-muted-foreground/60 px-1">Dal</label>
                         <DatePicker
                             value={dateRange.from ? new Date(dateRange.from) : undefined}
-                            onChange={(d) => onDateRangeChange({ ...dateRange, from: d?.toISOString().split('T')[0] })}
+                            onChange={(d) => onDateRangeChange({ ...dateRange, from: d ? formatDateLocalISO(d) : undefined })}
                             placeholder="Data inizio"
                             dateFormat="dd/MM/yyyy"
                         />
@@ -185,7 +186,7 @@ export function TransactionsFilterBar({
                         <label className="text-[10px] uppercase font-bold text-muted-foreground/60 px-1">Al</label>
                         <DatePicker
                             value={dateRange.to ? new Date(dateRange.to) : undefined}
-                            onChange={(d) => onDateRangeChange({ ...dateRange, to: d?.toISOString().split('T')[0] })}
+                            onChange={(d) => onDateRangeChange({ ...dateRange, to: d ? formatDateLocalISO(d) : undefined })}
                             placeholder="Data fine"
                             dateFormat="dd/MM/yyyy"
                         />

@@ -6,6 +6,8 @@ import { parseChangelogMarkdown } from "../../src/features/notifications/release
 type FeedItem = {
     id: string
     version: string
+    body?: unknown
+    highlights?: unknown
 }
 
 const scriptDir = fileURLToPath(new URL(".", import.meta.url))
@@ -46,6 +48,42 @@ function main() {
             break
         }
         seen.add(item.id)
+
+        if (typeof item.body !== "string" || item.body.trim().length === 0) {
+            errors.push(`Body mancante o invalido per notifica: ${item.id}`)
+            continue
+        }
+
+        if (!Array.isArray(item.highlights)) {
+            errors.push(`Highlights mancanti o invalidi per notifica: ${item.id}`)
+            continue
+        }
+
+        const body = item.body.trim()
+        const highlightSeen = new Set<string>()
+        for (const rawHighlight of item.highlights) {
+            if (typeof rawHighlight !== "string") {
+                errors.push(`Highlight non testuale per notifica: ${item.id}`)
+                break
+            }
+
+            const highlight = rawHighlight.trim()
+            if (highlight.length === 0) {
+                errors.push(`Highlight vuoto per notifica: ${item.id}`)
+                break
+            }
+
+            if (highlight === body) {
+                errors.push(`Highlight duplicato del body per notifica: ${item.id}`)
+                break
+            }
+
+            if (highlightSeen.has(highlight)) {
+                errors.push(`Highlights duplicati per notifica: ${item.id}`)
+                break
+            }
+            highlightSeen.add(highlight)
+        }
     }
 
     for (const release of releases) {

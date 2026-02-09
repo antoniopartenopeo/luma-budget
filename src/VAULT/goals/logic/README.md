@@ -13,8 +13,12 @@ Codice qui dentro:
 *   `@/domain/*`
 *   `@/lib/*`
 *   `@/VAULT/goals/types`
-*   `@/VAULT/goals/config/*`
-*   `@/features/transactions` (Data Source)
+*   `@/VAULT/goals/config/rhythms`
+*   `@/VAULT/goals/api/*`
+*   `@/VAULT/budget/api/*`
+*   `@/features/transactions/api/use-transactions`
+*   `@/features/simulator/hooks` (baseline read model)
+*   `react`, `date-fns` (orchestrazione hook/date)
 
 ## Governance Rules
 
@@ -35,9 +39,13 @@ Ogni modifica al Core deve rispettare questa sequenza:
 *   ❌ `react-dom`, `framer-motion`: Mai importare animazioni o rendering.
 
 ## Logic Files (The Vault)
-*   `use-goal-scenarios.ts`: Orchestrator (Hooks-based controller for logic engines).
-*   `use-goal-portfolio.ts`: Persistence Manager.
-*   `use-labs-simulator.ts`: Bridge logic for manual rhythm simulation.
-*   `financial-baseline.ts`: Math engine.
+*   `use-goal-scenarios.ts`: Hook orchestrator per baseline/scenari/proiezioni.
+*   `use-goal-portfolio.ts`: Portfolio persistence manager.
+*   `financial-baseline.ts`: Baseline math engine.
+*   `scenario-generator.ts`: Costruzione configurazioni scenario.
+*   `scenario-calculator.ts`: Applicazione savings + sostenibilita + reachability.
 *   `sustainability-guard.ts`: Safety checks.
-*   `../config/scenarios.ts`: Configuration (extracted).
+*   `projection-engine.ts`: Proiezione singolo obiettivo.
+*   `multi-goal-orchestrator.ts`: Aggregazione portfolio multi-goal.
+*   `rhythm-orchestrator.ts`: Bridge per applicare ritmo su budget/portfolio.
+*   `../config/rhythms.ts`: Configurazioni ritmo disponibili.

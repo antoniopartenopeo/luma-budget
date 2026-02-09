@@ -11,8 +11,7 @@
  */
 
 import { NarrationResult, BudgetFacts, BudgetState } from "./types"
-// import { BudgetPlan, BudgetGroupId } from "@/VAULT/budget/api/types"
-import { formatCurrency } from "@/VAULT/budget/utils/calculate-budget"
+import { formatCents } from "@/domain/money"
 
 /**
  * Generates narrative text for the Budget section/card.
@@ -41,7 +40,7 @@ export function narrateBudget(
         case "over_budget":
             const overrunAmount = facts.spentCents - facts.limitCents
             return {
-                text: `Hai superato il ritmo pianificato di ${formatCurrency(overrunAmount)}. Questo andamento è oltre la soglia ottimale.`,
+                text: `Hai superato il ritmo pianificato di ${formatCents(overrunAmount)}. Questo andamento è oltre la soglia ottimale.`,
                 shortText: "Fuori ritmo"
             }
 

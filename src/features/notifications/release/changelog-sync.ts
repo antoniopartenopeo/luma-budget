@@ -20,6 +20,19 @@ function sanitizeHighlights(items: string[]): string[] {
     return items.map(item => item.trim()).filter(Boolean)
 }
 
+function dedupeHighlights(items: string[]): string[] {
+    const out: string[] = []
+    const seen = new Set<string>()
+
+    for (const item of items) {
+        if (seen.has(item)) continue
+        seen.add(item)
+        out.push(item)
+    }
+
+    return out
+}
+
 function sectionKind(title: string, highlights: string[]): NotificationKind {
     const lower = title.toLowerCase()
     const joined = highlights.join(" ").toLowerCase()
@@ -137,13 +150,14 @@ export function buildNotificationsFromReleases(releases: ParsedRelease[]): Chang
         }
 
         for (const section of releaseEntries) {
-            const highlights = sanitizeHighlights(section.items)
-            const kind = sectionKind(section.title, highlights)
+            const sectionHighlights = sanitizeHighlights(section.items)
+            const kind = sectionKind(section.title, sectionHighlights)
             const key = `${release.version}:${release.date}:${kind}`
             const sequence = (idCounter.get(key) ?? 0) + 1
             idCounter.set(key, sequence)
             const id = buildId(release.version, release.date, kind, sequence)
-            const body = highlights[0] ?? `Aggiornamento release v${release.version}`
+            const body = sectionHighlights[0] ?? `Aggiornamento release v${release.version}`
+            const highlights = dedupeHighlights(sectionHighlights.slice(1).filter(item => item !== body))
 
             out.push({
                 id,
@@ -153,7 +167,7 @@ export function buildNotificationsFromReleases(releases: ParsedRelease[]): Chang
                 title: `v${release.version} · ${kindTitle(kind)}`,
                 body,
                 highlights,
-                isCritical: inferCritical(kind, highlights),
+                isCritical: inferCritical(kind, [body, ...highlights]),
                 publishedAt,
                 link: `/updates#v-${release.version.replaceAll(".", "-")}`,
             })

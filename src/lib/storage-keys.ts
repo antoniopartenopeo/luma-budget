@@ -58,6 +58,11 @@ function countLegacyGoal(raw: unknown): number {
     return 1
 }
 
+function countPrivacyState(raw: unknown): number {
+    if (!raw || typeof raw !== "object") return 0
+    return 1
+}
+
 export const STORAGE_KEYS_REGISTRY: StorageKeyConfig[] = [
     {
         key: "luma_transactions_v1",
@@ -86,6 +91,7 @@ export const STORAGE_KEYS_REGISTRY: StorageKeyConfig[] = [
         key: "numa_goal_portfolio_v1",
         label: "Portfolio Obiettivi",
         countFn: countGoalsInPortfolio,
+        invalidatesQueries: ["dashboard-summary"],
     },
     {
         key: "numa_active_goal_v1",
@@ -100,6 +106,11 @@ export const STORAGE_KEYS_REGISTRY: StorageKeyConfig[] = [
         key: "numa_notifications_state_v2",
         label: "Notifiche Beta",
         invalidatesQueries: ["notifications"],
+    },
+    {
+        key: "numa-privacy-storage",
+        label: "Privacy Mode",
+        countFn: countPrivacyState,
     },
 ]
 

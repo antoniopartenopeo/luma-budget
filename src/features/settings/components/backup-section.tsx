@@ -17,14 +17,16 @@ import {
 } from "@/components/ui/alert-dialog"
 import { queryKeys } from "@/lib/query-keys"
 import { __resetTransactionsCache } from "@/features/transactions/api/repository"
+import { __resetBudgetsCache } from "@/VAULT/budget/api/repository"
+import { __resetCategoriesCache } from "@/features/categories/api/repository"
 import {
-    buildBackupV1,
+    buildBackupV2,
     serializeBackup,
     parseAndValidateBackup,
     applyBackupOverwrite,
     getBackupSummary,
     BackupSummary,
-    BackupV1
+    BackupFile
 } from "@/features/settings/backup/backup-utils"
 import { MacroSection } from "@/components/patterns/macro-section"
 
@@ -35,12 +37,14 @@ export function BackupSection() {
     const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null)
     const [isLoading, setIsLoading] = useState(false)
     const [showImportDialog, setShowImportDialog] = useState(false)
-    const [pendingBackup, setPendingBackup] = useState<{ backup: BackupV1; summary: BackupSummary } | null>(null)
+    const [pendingBackup, setPendingBackup] = useState<{ backup: BackupFile; summary: BackupSummary } | null>(null)
 
     const pad2 = (n: number) => n.toString().padStart(2, "0")
 
     const invalidateAll = async () => {
         __resetTransactionsCache()
+        __resetBudgetsCache()
+        __resetCategoriesCache()
         await Promise.all([
             queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all }),
             queryClient.invalidateQueries({ queryKey: queryKeys.transactions.recent }),
@@ -48,12 +52,14 @@ export function BackupSection() {
             queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all }),
             queryClient.invalidateQueries({ queryKey: queryKeys.categories.all() }),
             queryClient.invalidateQueries({ queryKey: queryKeys.categories.active() }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.settings() }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.notifications.state }),
         ])
     }
 
     const handleExport = () => {
         try {
-            const backup = buildBackupV1()
+            const backup = buildBackupV2()
             const json = serializeBackup(backup)
             const blob = new Blob([json], { type: "application/json" })
             const url = URL.createObjectURL(blob)
@@ -64,7 +70,7 @@ export function BackupSection() {
 
             const link = document.createElement("a")
             link.href = url
-            link.download = `numa-backup-v1-${dateStr}-${timeStr}.json`
+            link.download = `numa-backup-v2-${dateStr}-${timeStr}.json`
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)

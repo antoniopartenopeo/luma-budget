@@ -1,5 +1,5 @@
 import { BaselineMetrics } from "./financial-baseline"
-import { applySavings, CategoryAverage } from "@/features/simulator/utils"
+import { applySavings, CategoryAverage } from "@/domain/simulation"
 import { checkScenarioSustainability } from "./sustainability-guard"
 import { projectGoalReachability } from "./projection-engine"
 import { GoalScenarioResult, ScenarioConfig, ScenarioKey } from "../types"

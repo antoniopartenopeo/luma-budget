@@ -2,6 +2,7 @@ import { Transaction, CreateTransactionDTO } from "./types"
 import { storage } from "@/lib/storage-utils"
 import { getCategories } from "../../categories/api/repository"
 import { normalizeTransactionAmount, calculateSuperfluousStatus } from "@/domain/transactions"
+import { LOCAL_USER_ID } from "@/lib/runtime-user"
 
 
 // =====================
@@ -9,7 +10,6 @@ import { normalizeTransactionAmount, calculateSuperfluousStatus } from "@/domain
 // =====================
 
 const STORAGE_KEY = "luma_transactions_v1"
-const DEFAULT_USER_ID = "user-1"
 
 import { INITIAL_SEED_TRANSACTIONS } from "./seed-data"
 
@@ -36,7 +36,7 @@ function ensureCache(): Transaction[] {
     if (_transactionsCache !== null) return _transactionsCache
 
     const allData = loadAllFromStorage()
-    const userTransactions = allData[DEFAULT_USER_ID]
+    const userTransactions = allData[LOCAL_USER_ID]
 
     if (userTransactions && Array.isArray(userTransactions)) {
         let didChange = false
@@ -66,7 +66,7 @@ function ensureCache(): Transaction[] {
 function syncStorage() {
     if (_transactionsCache === null) return
     const allData = loadAllFromStorage()
-    allData[DEFAULT_USER_ID] = _transactionsCache
+    allData[LOCAL_USER_ID] = _transactionsCache
     saveToStorage(allData)
 }
 
@@ -82,7 +82,7 @@ export const __resetTransactionsCache = () => {
 export function seedTransactions() {
     _transactionsCache = [...INITIAL_SEED_TRANSACTIONS].map(t => normalizeTransactionAmount(t as unknown as Record<string, unknown>))
     const allData = loadAllFromStorage()
-    allData[DEFAULT_USER_ID] = _transactionsCache
+    allData[LOCAL_USER_ID] = _transactionsCache
     saveToStorage(allData)
 }
 

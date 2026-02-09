@@ -37,9 +37,19 @@ function sanitizeReadIds(value: unknown): string[] {
 
 function sanitizeHighlights(value: unknown): string[] {
     if (!Array.isArray(value)) return []
-    return value
-        .filter((item): item is string => typeof item === "string" && item.trim().length > 0)
-        .map(item => item.trim())
+
+    const out: string[] = []
+    const seen = new Set<string>()
+
+    for (const item of value) {
+        if (typeof item !== "string") continue
+        const normalized = item.trim()
+        if (!normalized || seen.has(normalized)) continue
+        seen.add(normalized)
+        out.push(normalized)
+    }
+
+    return out
 }
 
 function normalizeNotification(value: unknown): ChangelogNotification | null {
@@ -63,14 +73,17 @@ function normalizeNotification(value: unknown): ChangelogNotification | null {
         return null
     }
 
+    const body = candidate.body.trim()
+    const highlights = sanitizeHighlights(candidate.highlights).filter(item => item !== body)
+
     return {
         id: candidate.id.trim(),
         version: candidate.version.trim(),
         kind: candidate.kind,
         audience: "beta",
         title: candidate.title.trim(),
-        body: candidate.body.trim(),
-        highlights: sanitizeHighlights(candidate.highlights),
+        body,
+        highlights,
         isCritical: candidate.isCritical === true,
         publishedAt: candidate.publishedAt,
         link: candidate.link,

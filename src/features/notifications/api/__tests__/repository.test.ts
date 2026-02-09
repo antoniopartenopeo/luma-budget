@@ -52,6 +52,22 @@ vi.mock("../../data/beta-changelog-feed.json", () => ({
             highlights: ["Feature media"],
             publishedAt: "2026-02-05T09:00:00.000Z",
         },
+        {
+            id: "beta-legacy-dup",
+            version: "0.1.3",
+            kind: "feature",
+            audience: "beta",
+            title: "Legacy con duplicati",
+            body: "Feature legacy",
+            highlights: [
+                "Feature legacy",
+                "Feature legacy",
+                "Altro dettaglio",
+                "Altro dettaglio",
+                "  Altro dettaglio  ",
+            ],
+            publishedAt: "2026-02-08T13:00:00.000Z",
+        },
     ],
 }))
 
@@ -70,7 +86,16 @@ describe("notifications repository", () => {
 
     it("ordina il feed per publishedAt desc e filtra audience beta", async () => {
         const feed = await fetchChangelogNotifications()
-        expect(feed.map(item => item.id)).toEqual(["beta-new", "beta-mid", "beta-old"])
+        expect(feed.map(item => item.id)).toEqual(["beta-legacy-dup", "beta-new", "beta-mid", "beta-old"])
+    })
+
+    it("normalizza highlights legacy rimuovendo body duplicato e voci ripetute", async () => {
+        const feed = await fetchChangelogNotifications()
+        const legacy = feed.find(item => item.id === "beta-legacy-dup")
+
+        expect(legacy).toBeDefined()
+        expect(legacy?.body).toBe("Feature legacy")
+        expect(legacy?.highlights).toEqual(["Altro dettaglio"])
     })
 
     it("ritorna stato V2 di default quando storage e mancante", async () => {

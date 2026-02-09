@@ -41,7 +41,9 @@ describe("changelog-sync parser", () => {
             "release-0.3.0-20260204-improvement",
             "release-0.2.5-20260201-feature",
         ])
-        expect(feed.every(item => item.highlights.length > 0)).toBe(true)
+        expect(feed.every(item => !item.highlights.includes(item.body))).toBe(true)
+        expect(feed[0].body).toBe("Deterministic Narration Layer.")
+        expect(feed[0].highlights).toEqual(["Technical Audit Panel."])
         expect(feed[0].publishedAt >= feed[1].publishedAt).toBe(true)
     })
 
@@ -54,7 +56,6 @@ describe("changelog-sync parser", () => {
               "audience": "beta",
               "body": "Deterministic Narration Layer.",
               "highlights": [
-                "Deterministic Narration Layer.",
                 "Technical Audit Panel.",
               ],
               "id": "release-0.3.0-20260204-feature",
@@ -68,9 +69,7 @@ describe("changelog-sync parser", () => {
             {
               "audience": "beta",
               "body": "No Inline Strings mandate.",
-              "highlights": [
-                "No Inline Strings mandate.",
-              ],
+              "highlights": [],
               "id": "release-0.3.0-20260204-improvement",
               "isCritical": true,
               "kind": "improvement",
@@ -82,9 +81,7 @@ describe("changelog-sync parser", () => {
             {
               "audience": "beta",
               "body": "Living Effect.",
-              "highlights": [
-                "Living Effect.",
-              ],
+              "highlights": [],
               "id": "release-0.2.5-20260201-feature",
               "isCritical": false,
               "kind": "feature",

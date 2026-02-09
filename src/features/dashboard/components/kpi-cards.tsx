@@ -15,6 +15,7 @@ import { getPrivacyClass } from "@/features/privacy/privacy-utils"
 import { motion } from "framer-motion"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
 import { macroItemVariants } from "@/components/patterns/macro-section"
+import { formatPeriodLabel, getCurrentPeriod } from "@/lib/date-ranges"
 
 import { NumaEngineCard } from "@/components/patterns/numa-engine-card"
 import { BrainCircuit, ShieldCheck, Hourglass, TrendingUp, PiggyBank, Zap } from "lucide-react"
@@ -61,15 +62,14 @@ export function DashboardKpiGrid({
         ? Math.round(((budgetRemaining || 0) / budgetTotal) * 100)
         : 0
 
-    const currentDate = new Date((filter?.period || new Date().toISOString().slice(0, 7)) + "-01")
-    const periodLabel = new Intl.DateTimeFormat("it-IT", { month: "long", year: "numeric" }).format(currentDate)
-    const capitalizedLabel = periodLabel.charAt(0).toUpperCase() + periodLabel.slice(1)
+    const pivotPeriod = filter?.period || getCurrentPeriod()
+    const currentDate = new Date(`${pivotPeriod}-01`)
+    const capitalizedLabel = formatPeriodLabel(pivotPeriod, "it-IT")
 
     // Calculate previous month label
     const prevDate = new Date(currentDate)
     prevDate.setMonth(prevDate.getMonth() - 1)
-    const prevMonthLabel = new Intl.DateTimeFormat("it-IT", { month: "long", year: "numeric" }).format(prevDate)
-    const capitalizedPrevLabel = prevMonthLabel.charAt(0).toUpperCase() + prevMonthLabel.slice(1)
+    const capitalizedPrevLabel = formatPeriodLabel(getCurrentPeriod(prevDate), "it-IT")
 
     const contextText = filter?.mode === "month"
         ? `Periodo: ${capitalizedLabel} · Confronto: ${capitalizedPrevLabel}`

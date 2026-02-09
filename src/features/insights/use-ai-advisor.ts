@@ -7,11 +7,15 @@ import { extractMerchantKey } from "@/features/import-csv/core/merchant/pipeline
 export interface AISubscription {
     id: string
     description: string
+    amountCents: number
     amount: number
     frequency: "monthly" | "weekly"
 }
 
 export interface AIForecast {
+    predictedIncomeCents: number
+    predictedExpensesCents: number
+    predictedSavingsCents: number
     predictedIncome: number
     predictedExpenses: number
     predictedSavings: number
@@ -106,6 +110,7 @@ export function useAIAdvisor() {
             detectedSubscriptions.push({
                 id: merchantKey,
                 description: merchantKey,
+                amountCents: latestAmountCents,
                 amount: amount,
                 frequency: "monthly"
             })
@@ -221,6 +226,9 @@ export function useAIAdvisor() {
         let forecast: AIForecast | null = null
         if (facts) {
             forecast = {
+                predictedIncomeCents: facts.predictedIncomeCents,
+                predictedExpensesCents: facts.predictedExpensesCents,
+                predictedSavingsCents: facts.deltaCents,
                 predictedIncome: facts.predictedIncomeCents / 100,
                 predictedExpenses: facts.predictedExpensesCents / 100,
                 predictedSavings: facts.deltaCents / 100,

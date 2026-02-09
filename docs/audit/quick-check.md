@@ -1,6 +1,6 @@
 # Governance Quick Check
 
-Generated at (UTC): 2026-02-09T13:55:44Z
+Generated at (UTC): 2026-02-09T18:40:02Z
 
 Scope:
 - Repository: numa-budget
@@ -12,9 +12,9 @@ Scope:
 | Check | Status | Count |
 |---|---|---:|
 | parseFloat on monetary flows (excluding CSV normalize exception) | PASS | 0 |
-| Deprecated `amount` key / string amounts | WARN | key:46 string:21 legacy-files:9 |
+| Deprecated `amount` key / string amounts | WARN | key:41 string:21 legacy-files:7 |
 | Period filters without `filterByRange` | WARN | 4 |
-| Inline style in TSX | WARN | 9 |
+| Inline style in TSX | WARN | 8 |
 | Tests with formula-duplication heuristic | WARN | 3 |
 
 ## 1) parseFloat checks
@@ -31,8 +31,8 @@ Rule: transaction source of truth is `amountCents` integer.
 
 Amount key occurrences (first 60):
 
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/use-ai-advisor.ts:10:    amount: number
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/use-ai-advisor.ts:109:                amount: amount,
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/use-ai-advisor.ts:11:    amount: number
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/use-ai-advisor.ts:114:                amount: amount,
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/parse.ts:9:    amount: ["importo", "amount", "ammontare", "entrate", "uscite", "dare", "avere", "saldo", "valore"],
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/parse.ts:86:        amount: -1,
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/subgrouping.ts:34:    const recurring: Array<{ amount: number; rows: EnrichedRow[] }> = [];
@@ -55,9 +55,6 @@ Amount key occurrences (first 60):
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/merchant/normalizers.ts:62:    // Card number with amount: "*7298 DI EUR 25,04"
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/__tests__/superfluous-kpi.test.ts:17:    amount: string,
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/__tests__/superfluous-kpi.test.ts:148:                amount: '-€100.00',
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/repository.ts:61:    const categoryMap = new Map<string, { label: string, amount: number, color: string }>()
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/repository.ts:70:        const current = categoryMap.get(t.categoryId) || { label, amount: 0, color }
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/repository.ts:71:        categoryMap.set(t.categoryId, { label, amount: current.amount + (amountCents / 100), color })
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/__tests__/dashboard-summary.test.ts:54:            amount: 250.00,
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/__tests__/dashboard-summary.test.ts:65:            amount: 100.00,
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/__tests__/dashboard-summary.test.ts:78:            amount: 500.00,
@@ -75,8 +72,6 @@ Amount key occurrences (first 60):
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/transactions/api/__tests__/transactions-persistence.test.ts:55:            amount: 50.00,
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/domain/money/currency.ts:68:export function euroToCents(amount: number): number {
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/VAULT/goals/logic/__tests__/financial-baseline.test.ts:19:    amount: number,
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/VAULT/budget/utils/calculate-budget.ts:92:export function formatCurrency(amount: number): string {
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/VAULT/budget/utils/__tests__/calculate-budget.test.ts:10:    amount: string,
 
 String amount occurrences (first 60):
 
@@ -104,11 +99,9 @@ String amount occurrences (first 60):
 
 Files containing both `amount` and `amountCents` (first 40):
 
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/VAULT/budget/utils/__tests__/calculate-budget.test.ts
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/VAULT/goals/logic/__tests__/financial-baseline.test.ts
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/__tests__/superfluous-kpi.test.ts
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/__tests__/dashboard-summary.test.ts
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/repository.ts
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/__tests__/normalize.test.ts
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/subgrouping.ts
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/use-ai-advisor.ts
@@ -126,17 +119,14 @@ filterByRange usage (first 60):
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/utils/spending-composition.ts:33:    const periodTransactions = filterByRange(transactions, startDate, endDate)
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/recent-transactions.tsx:3:import { calculateDateRangeLocal, filterByRange } from "@/lib/date-ranges"
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/recent-transactions.tsx:74:        filteredTransactions = filterByRange(filteredTransactions, startDate, endDate)
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/repository.ts:5:import { calculateDateRangeLocal, filterByRange, getMonthBoundariesLocal } from "@/lib/date-ranges"
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/repository.ts:5:import { calculateDateRange, filterByRange } from "@/lib/date-ranges"
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/repository.ts:41:    const rangeTransactions = filterByRange(transactions, startDate, endDate)
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/repository.ts:53:    const targetMonthTransactions = filterByRange(transactions, pivotStart, pivotEnd)
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/transactions/utils/transactions-logic.ts:3:import { filterByRange } from "@/lib/date-ranges";
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/transactions/utils/transactions-logic.ts:51:        scopedTransactions = filterByRange(
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/transactions/utils/transactions-logic.ts:52:    const scopedTransactions = filterByRange(transactions, start, end)
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/simulator/utils.ts:4:import { calculateDateRange, filterByRange } from "@/lib/date-ranges"
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/simulator/utils.ts:54:    const inRangeTransactions = filterByRange(transactions, startDate, endDate)
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/lib/date-ranges.ts:133:export function filterByRange<T extends { timestamp: number }>(
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/VAULT/budget/utils/calculate-budget.ts:6:import { getMonthBoundariesLocal, getCurrentPeriod as getLibCurrentPeriod, formatPeriodLabel, filterByRange } from "@/lib/date-ranges"
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/VAULT/budget/utils/calculate-budget.ts:17:    const filtered = filterByRange(transactions, start, end)
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/VAULT/budget/utils/calculate-budget.ts:30:    const filtered = filterByRange(transactions, start, end)
 
 Candidate files with period logic and no `filterByRange` (first 40):
 
@@ -159,7 +149,6 @@ Inline style hits (first 80):
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/premium-chart-section.tsx:91:                <div style={{ height: chartHeight }} className="flex items-center justify-center relative z-10">
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/premium-chart-section.tsx:100:                    <div className="w-full relative text-foreground" style={{ height: chartHeight }}>
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/spending-composition-card.tsx:234:                            style={{
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/components/patterns/numa-engine-card.tsx:113:                                    style={{ left: `${(idx + 1) * 33 - 2}%` }}
 
 ## 5) Test formula duplication checks (heuristic)
 

@@ -73,8 +73,6 @@ export function orchestrateNarration(
 
     rulesTriggered.push(`R5: Selected 1 Primary and ${secondary.length} Secondary signals.`)
 
-    rulesTriggered.push(`R5: Selected 1 Primary and ${secondary.length} Secondary signals.`)
-
     // Context Computation for Flagging
     const hasHighSeverityCurrentIssue = primary.scope === "current_period" && (primary.severity === "high" || primary.severity === "critical")
 

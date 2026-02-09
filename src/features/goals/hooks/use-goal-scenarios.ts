@@ -1,11 +1,11 @@
 import { useMemo } from "react"
 import { useMonthlyAverages } from "@/features/simulator/hooks"
-import { calculateBaselineMetrics, BaselineMetrics } from "./financial-baseline"
-import { generateScenarios } from "./scenario-generator"
+import { calculateBaselineMetrics, BaselineMetrics } from "@/VAULT/goals/logic/financial-baseline"
+import { generateScenarios } from "@/VAULT/goals/logic/scenario-generator"
 import { Category } from "@/domain/categories"
-import { GoalScenarioResult, ScenarioKey } from "../types"
+import { GoalScenarioResult, ScenarioKey } from "@/VAULT/goals/types"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
-import { calculateScenario } from "./scenario-calculator"
+import { calculateScenario } from "@/VAULT/goals/logic/scenario-calculator"
 
 interface UseGoalScenariosProps {
     goalTargetCents: number

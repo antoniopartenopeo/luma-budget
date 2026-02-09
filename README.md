@@ -24,13 +24,14 @@ src/
 ├── app/              # Next.js routing
 ├── features/         # Domain modules
 │   ├── transactions/ # api/, components/, utils/
-│   ├── budget/
 │   ├── dashboard/
 │   ├── insights/
+│   ├── goals/
 │   ├── notifications/
 │   ├── categories/
 │   ├── settings/
 │   └── simulator/
+├── VAULT/            # Domain-safe logic/persistence (goals, budget)
 ├── components/       # Shared UI (Shadcn/Radix)
 └── lib/              # Utilities (currency, dates, storage)
 ```

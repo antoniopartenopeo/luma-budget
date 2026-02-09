@@ -1,8 +1,8 @@
 
 import { useState, useEffect, useMemo } from "react"
-import { GoalPortfolio, NUMAGoal, ProjectionInput } from "../types"
-import { getPortfolio, savePortfolio } from "../api/goal-repository"
-import { calculatePortfolioProjections, PortfolioMetrics } from "./multi-goal-orchestrator"
+import { GoalPortfolio, NUMAGoal, ProjectionInput } from "@/VAULT/goals/types"
+import { getPortfolio, savePortfolio } from "@/VAULT/goals/api/goal-repository"
+import { calculatePortfolioProjections, PortfolioMetrics } from "@/VAULT/goals/logic/multi-goal-orchestrator"
 import { deleteBudget } from "@/VAULT/budget/api/repository"
 import { format } from "date-fns"
 import { LOCAL_USER_ID } from "@/lib/runtime-user"

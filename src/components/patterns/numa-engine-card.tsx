@@ -109,9 +109,7 @@ export function NumaEngineCard({
 
                             {/* Arrow for Desktop (between steps) */}
                             {idx < steps.length - 1 && (
-                                <div className="hidden sm:block absolute top-5 w-[2%] h-[1px] bg-slate-200 dark:bg-white/10"
-                                    style={{ left: `${(idx + 1) * 33 - 2}%` }}
-                                />
+                                <div className="hidden sm:block absolute top-5 right-[-12px] w-6 h-[1px] bg-slate-200 dark:bg-white/10" />
                             )}
                         </React.Fragment>
                     ))}
@@ -145,7 +143,7 @@ export function NumaEngineCard({
 
                 {/* Expanded Content */}
                 {isExpanded && hasAudit && (
-                    <div className="mt-6 p-6 rounded-2xl bg-primary/[0.03] border border-primary/10 animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className="mt-6 p-6 rounded-2xl bg-primary/[0.03] border border-primary/10 animate-enter-up">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {auditStats.map((stat, idx) => (
                                 <div key={idx} className="space-y-1">

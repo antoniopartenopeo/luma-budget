@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation"
 import { DollarSign, Wallet, CreditCard, AlertTriangle } from "lucide-react"
 import { useCurrency } from "@/features/settings/api/use-currency"
-import { formatEuroNumber } from "@/domain/money"
+import { formatCents } from "@/domain/money"
 import { DashboardTimeFilter } from "../api/types"
 import { useSettings } from "@/features/settings/api/use-settings"
 import { KpiCard, KpiTone } from "@/components/patterns/kpi-card"
@@ -21,10 +21,10 @@ import { NumaEngineCard } from "@/components/patterns/numa-engine-card"
 import { BrainCircuit, ShieldCheck, Hourglass, TrendingUp, PiggyBank, Zap } from "lucide-react"
 
 interface DashboardKpiGridProps {
-    totalSpent?: number
-    netBalance?: number
-    budgetTotal?: number
-    budgetRemaining?: number
+    totalSpentCents?: number
+    netBalanceCents?: number
+    budgetTotalCents?: number
+    budgetRemainingCents?: number
     uselessSpendPercent?: number | null
     isLoading?: boolean
     filter?: DashboardTimeFilter
@@ -37,10 +37,10 @@ interface DashboardKpiGridProps {
 }
 
 export function DashboardKpiGrid({
-    totalSpent,
-    netBalance,
-    budgetTotal,
-    budgetRemaining,
+    totalSpentCents,
+    netBalanceCents,
+    budgetTotalCents,
+    budgetRemainingCents,
     uselessSpendPercent,
     isLoading,
     filter,
@@ -55,11 +55,11 @@ export function DashboardKpiGrid({
     const superfluousTarget = settings?.superfluousTargetPercent ?? 10
 
     const formatValue = (value: number) => {
-        return formatEuroNumber(value, currency, locale)
+        return formatCents(value, currency, locale)
     }
 
-    const budgetPercent = budgetTotal && budgetTotal > 0
-        ? Math.round(((budgetRemaining || 0) / budgetTotal) * 100)
+    const budgetPercent = budgetTotalCents && budgetTotalCents > 0
+        ? Math.round(((budgetRemainingCents || 0) / budgetTotalCents) * 100)
         : 0
 
     const pivotPeriod = filter?.period || getCurrentPeriod()
@@ -76,19 +76,19 @@ export function DashboardKpiGrid({
         : `Periodo: ultimi ${filter?.months || 3} mesi · Confronto: ${filter?.months || 3} mesi precedenti`
 
     // Semantica dei toni:
-    const saldoTone = getBalanceTone(netBalance || 0)
+    const saldoTone = getBalanceTone((netBalanceCents || 0) / 100)
     const spesaTone: KpiTone = "neutral"
 
-    const hasBudget = !!(budgetTotal && budgetTotal > 0)
+    const hasBudget = !!(budgetTotalCents && budgetTotalCents > 0)
     const isMonthlyView = filter?.mode === "month"
-    const budgetTone = (!isMonthlyView) ? "neutral" : getBudgetTone(budgetRemaining || 0, hasBudget)
+    const budgetTone = (!isMonthlyView) ? "neutral" : getBudgetTone((budgetRemainingCents || 0) / 100, hasBudget)
 
     const superflueTone = getSuperfluousTone(uselessSpendPercent ?? null, superfluousTarget)
 
     const buildNarration = (kpiId: KPIFacts["kpiId"], value: number | string, tone: KpiTone, percent?: number) => {
         let bufferRatio: number | undefined = undefined
-        if (kpiId === "balance" && typeof value === "number" && totalSpent !== undefined) {
-            const derivedIncome = value + totalSpent
+        if (kpiId === "balance" && typeof value === "number" && totalSpentCents !== undefined) {
+            const derivedIncome = value + totalSpentCents
             if (derivedIncome > 0) {
                 bufferRatio = value / derivedIncome
             }
@@ -121,35 +121,35 @@ export function DashboardKpiGrid({
                 <motion.div variants={macroItemVariants} className="h-full">
                     <KpiCard
                         title="Saldo"
-                        value={isLoading ? 0 : formatValue(netBalance || 0)}
-                        animatedValue={netBalance || 0}
+                        value={isLoading ? 0 : formatValue(netBalanceCents || 0)}
+                        animatedValue={netBalanceCents || 0}
                         formatFn={formatValue}
                         valueClassName={getPrivacyClass(isPrivacyMode)}
                         comparisonLabel="Totale storico"
                         tone={saldoTone}
                         icon={CreditCard}
                         isLoading={isLoading}
-                        description={isLoading ? undefined : buildNarration("balance", netBalance || 0, saldoTone)}
+                        description={isLoading ? undefined : buildNarration("balance", netBalanceCents || 0, saldoTone)}
                     />
                 </motion.div>
                 <motion.div variants={macroItemVariants} className="h-full">
                     <KpiCard
                         title="Spesa"
-                        value={isLoading ? 0 : formatValue(totalSpent || 0)}
-                        animatedValue={totalSpent || 0}
+                        value={isLoading ? 0 : formatValue(totalSpentCents || 0)}
+                        animatedValue={totalSpentCents || 0}
                         formatFn={formatValue}
                         valueClassName={getPrivacyClass(isPrivacyMode)}
                         icon={Wallet}
                         isLoading={isLoading}
                         onClick={() => router.push("/transactions")}
-                        description={isLoading ? undefined : buildNarration("expenses", totalSpent || 0, spesaTone)}
+                        description={isLoading ? undefined : buildNarration("expenses", totalSpentCents || 0, spesaTone)}
                     />
                 </motion.div>
                 <motion.div variants={macroItemVariants} className="h-full">
                     <KpiCard
                         title="Pacing Temporale"
-                        value={isLoading ? 0 : (isMonthlyView ? formatValue(budgetRemaining || 0) : "—")}
-                        animatedValue={isMonthlyView ? (budgetRemaining || 0) : undefined}
+                        value={isLoading ? 0 : (isMonthlyView ? formatValue(budgetRemainingCents || 0) : "—")}
+                        animatedValue={isMonthlyView ? (budgetRemainingCents || 0) : undefined}
                         formatFn={formatValue}
                         valueClassName={getPrivacyClass(isPrivacyMode)}
                         change={isLoading ? "" : (isMonthlyView && hasBudget ? `${budgetPercent}%` : "")}
@@ -159,7 +159,7 @@ export function DashboardKpiGrid({
                         icon={DollarSign}
                         isLoading={isLoading}
                         onClick={isMonthlyView && !hasBudget ? () => router.push("/simulator") : undefined}
-                        description={isLoading ? undefined : buildNarration("budget", budgetRemaining || 0, budgetTone, budgetPercent)}
+                        description={isLoading ? undefined : buildNarration("budget", budgetRemainingCents || 0, budgetTone, budgetPercent)}
                         badge={activeRhythm && (
                             <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                                 <span className="relative flex h-1.5 w-1.5">

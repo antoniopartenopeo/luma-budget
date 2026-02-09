@@ -231,7 +231,7 @@ function TransactionsPageContent() {
 export default function TransactionsPage() {
     return (
         <Suspense fallback={
-            <div className="space-y-8 animate-in fade-in duration-500">
+            <div className="space-y-8 animate-enter-up">
                 <div>
                     <Skeleton className="h-10 w-64 rounded-xl" />
                     <Skeleton className="h-4 w-48 mt-2 rounded-lg" />

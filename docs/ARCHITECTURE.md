@@ -15,22 +15,24 @@ src/
 │   ├── dashboard/       # Dashboard Logic & UI
 │   ├── transactions/    # Transaction Management
 │   ├── insights/        # AI Analysis & Charts
+│   ├── goals/           # Goal UI + orchestration hooks
 │   ├── settings/        # User Preferences
 │   └── simulator/       # "Ottimizzatore Avanzato" (Interactive projections)
 ├── domain/              # Pure Domain Logic (Framework Agnostic)
 │   ├── money/           # Currency math (Cents only)
 │   └── categories/      # Core Category logic
 └── VAULT/               # Logic Safes (Isolated Logic)
-    └── goals/           # Goals Logic (No UI, Strict Governance)
+    ├── goals/           # Goals Logic (Pure domain calculators + repository)
+    └── budget/          # Budget persistence and deterministic computations
 ```
 
 ## 2. Key Concepts
 
 ### The Logic Vault (`src/VAULT`)
 A specialized directory for high-value, high-complexity domain logic that is being protected from UI coupling.
-*   **Current Resident**: `goals` (Post-Nuclear Reset).
+*   **Current Residents**: `goals` and `budget`.
 *   **Adaptive Core**: Implementa la logica di calibrazione dinamica basata su **Elasticità** e **Stabilità** dello storico.
-*   **Rules**: NO imports from `src/components`, `src/app`, or React UI libraries. purely `ts` logic and hooks.
+*   **Rules**: NO imports from `src/components`, `src/app`, or React UI libraries. Hooks React vivono in `src/features/*/hooks`.
 
 ### Domain Isolation (`src/domain`)
 Contains the "Truth" of the application data structures.

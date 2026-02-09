@@ -1,9 +1,9 @@
-import { render, screen } from "@testing-library/react"
+import { act, render, screen } from "@testing-library/react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { describe, expect, it } from "vitest"
 import { TopbarActionCluster } from "../topbar-action-cluster"
 
-function renderWithQueryClient() {
+async function renderWithQueryClient() {
     const queryClient = new QueryClient({
         defaultOptions: {
             queries: { retry: false },
@@ -11,16 +11,19 @@ function renderWithQueryClient() {
         },
     })
 
-    return render(
-        <QueryClientProvider client={queryClient}>
-            <TopbarActionCluster />
-        </QueryClientProvider>
-    )
+    await act(async () => {
+        render(
+            <QueryClientProvider client={queryClient}>
+                <TopbarActionCluster />
+            </QueryClientProvider>
+        )
+        await Promise.resolve()
+    })
 }
 
 describe("TopbarActionCluster", () => {
-    it("renderizza cluster unico con ordine flash -> privacy -> campanella", () => {
-        renderWithQueryClient()
+    it("renderizza cluster unico con ordine flash -> privacy -> campanella", async () => {
+        await renderWithQueryClient()
 
         const cluster = screen.getByTestId("topbar-action-cluster")
         const flashButton = screen.getByRole("button", { name: "Apri Numa Flash" })

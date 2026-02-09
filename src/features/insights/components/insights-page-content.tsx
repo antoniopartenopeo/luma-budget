@@ -71,7 +71,7 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
 
                                 <div className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-xl bg-muted/50 min-w-[140px] md:min-w-[160px] justify-center">
                                     <CalendarDays className="h-3.5 w-3.5 md:h-4 md:w-4 text-muted-foreground hidden xs:block" />
-                                    <span className="font-semibold text-xs md:text-sm">{periodLabel}</span>
+                                    <span className="font-bold text-xs md:text-sm">{periodLabel}</span>
                                 </div>
 
                                 <Button

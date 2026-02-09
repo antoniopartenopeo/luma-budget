@@ -1,6 +1,7 @@
 export interface CategorySummary {
     name: string
     id: string
+    valueCents: number
     value: number
     color: string
 }
@@ -12,6 +13,12 @@ export type DashboardTimeFilter = {
 }
 
 export interface DashboardSummary {
+    totalSpentCents: number
+    totalIncomeCents: number
+    totalExpensesCents: number
+    netBalanceCents: number
+    budgetTotalCents: number
+    budgetRemainingCents: number
     totalSpent: number
     totalIncome: number
     totalExpenses: number
@@ -26,6 +33,7 @@ export interface DashboardSummary {
     }
     monthlyExpenses: {
         name: string
+        totalCents: number
         total: number
     }[]
     activeRhythm?: {

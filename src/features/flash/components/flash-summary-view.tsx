@@ -18,7 +18,7 @@ import { useDashboardSummary } from "@/features/dashboard/api/use-dashboard"
 import { useSettings } from "@/features/settings/api/use-settings"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { getCurrentPeriod, formatPeriodLabel } from "@/features/insights/utils"
-import { formatEuroNumber } from "@/domain/money"
+import { formatCents } from "@/domain/money"
 import { calculateUtilizationPct, calculateSharePct } from "@/domain/money"
 import { narrateSnapshot, deriveSnapshotState, SnapshotFacts } from "@/domain/narration"
 import { getDaysElapsedInMonth, getDaysInMonth } from "@/lib/date-ranges"
@@ -49,24 +49,23 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
     if (!data) return null
 
     const {
-        totalIncome,
-        totalExpenses,
-        netBalance,
-        budgetTotal,
-        budgetRemaining,
+        totalIncomeCents,
+        totalExpensesCents,
+        netBalanceCents,
+        budgetTotalCents,
+        budgetRemainingCents,
         uselessSpendPercent,
         categoriesSummary
     } = data
 
-    // Use centralized calculation (inputs in EUR units, convert to cents equivalent for ratio)
-    const budgetSpentUnits = budgetTotal - budgetRemaining
-    const budgetUsedPct = calculateUtilizationPct(budgetSpentUnits * 100, budgetTotal * 100)
+    const budgetSpentCents = budgetTotalCents - budgetRemainingCents
+    const budgetUsedPct = calculateUtilizationPct(budgetSpentCents, budgetTotalCents)
 
     // Core facts derived from data
-    const top3Categories = [...categoriesSummary].sort((a, b) => b.value - a.value).slice(0, 3)
+    const top3Categories = [...categoriesSummary].sort((a, b) => b.valueCents - a.valueCents).slice(0, 3)
     const isSuperfluousOver = (uselessSpendPercent ?? 0) > superfluousTarget
-    const savingsRatePercent = totalIncome > 0
-        ? calculateSharePct(netBalance * 100, totalIncome * 100)
+    const savingsRatePercent = totalIncomeCents > 0
+        ? calculateSharePct(netBalanceCents, totalIncomeCents)
         : undefined
 
     // Calculate pacing facts (BUDGET-2 Skill: B1-B6)
@@ -74,8 +73,8 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
     const daysInMonth = getDaysInMonth(period)
     const elapsedRatio = daysElapsed / daysInMonth
 
-    const projectedSpent = elapsedRatio > 0 ? (totalExpenses / elapsedRatio) : 0
-    const isProjectedOverrun = budgetTotal > 0 && projectedSpent > budgetTotal
+    const projectedSpentCents = elapsedRatio > 0 ? Math.round(totalExpensesCents / elapsedRatio) : 0
+    const isProjectedOverrun = budgetTotalCents > 0 && projectedSpentCents > budgetTotalCents
 
     // Rule B6: Data Integrity flag
     const isDataIncomplete = categoriesSummary.length === 0 && daysElapsed > 2
@@ -83,16 +82,16 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
     const snapshotFacts: SnapshotFacts = {
         snapshotId: `flash-${period}`,
         periodLabel: formatPeriodLabel(period),
-        incomeFormatted: formatEuroNumber(totalIncome, currency, locale),
-        expensesFormatted: formatEuroNumber(totalExpenses, currency, locale),
-        balanceFormatted: formatEuroNumber(netBalance, currency, locale),
-        balanceCents: Math.round(netBalance * 100),
-        budgetFormatted: budgetTotal > 0 ? formatEuroNumber(budgetTotal, currency, locale) : undefined,
-        utilizationPercent: budgetTotal > 0 ? budgetUsedPct : undefined,
+        incomeFormatted: formatCents(totalIncomeCents, currency, locale),
+        expensesFormatted: formatCents(totalExpensesCents, currency, locale),
+        balanceFormatted: formatCents(netBalanceCents, currency, locale),
+        balanceCents: netBalanceCents,
+        budgetFormatted: budgetTotalCents > 0 ? formatCents(budgetTotalCents, currency, locale) : undefined,
+        utilizationPercent: budgetTotalCents > 0 ? budgetUsedPct : undefined,
         superfluousPercent: uselessSpendPercent ?? undefined,
         superfluousTargetPercent: superfluousTarget,
         savingsRatePercent,
-        incomeCents: Math.round(totalIncome * 100),
+        incomeCents: totalIncomeCents,
         elapsedRatio,
         isProjectedOverrun,
         isDataIncomplete
@@ -165,8 +164,8 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                     <motion.div variants={itemVariants} className="col-span-2 glass-card rounded-2xl p-4 flex flex-col items-center justify-center text-center">
                         <span className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground mb-1">Saldo Netto</span>
                         <div className={cn("text-3xl font-extrabold text-foreground tracking-tight", blurClass)}>
-                            {netBalance >= 0 ? "+" : ""}
-                            {formatEuroNumber(netBalance, currency, locale).replace(",00", "")}
+                            {netBalanceCents >= 0 ? "+" : ""}
+                            {formatCents(netBalanceCents, currency, locale).replace(",00", "")}
                         </div>
                         <div className="flex items-center gap-4 mt-3 w-full justify-center">
                             <div className="flex items-center gap-1.5">
@@ -174,7 +173,7 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                                     <TrendingUp className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                                 </div>
                                 <span className={cn("text-xs font-semibold text-emerald-700 dark:text-emerald-400", blurClass)}>
-                                    {formatEuroNumber(totalIncome, currency, locale).replace(",00", "")}
+                                    {formatCents(totalIncomeCents, currency, locale).replace(",00", "")}
                                 </span>
                             </div>
                             <div className="w-px h-3 bg-border" />
@@ -183,7 +182,7 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                                     <TrendingDown className="h-3 w-3 text-rose-600 dark:text-rose-400" />
                                 </div>
                                 <span className={cn("text-xs font-semibold text-rose-700 dark:text-rose-400", blurClass)}>
-                                    {formatEuroNumber(totalExpenses, currency, locale).replace(",00", "")}
+                                    {formatCents(totalExpensesCents, currency, locale).replace(",00", "")}
                                 </span>
                             </div>
                         </div>
@@ -236,7 +235,7 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                                     <span className="text-xs font-semibold text-foreground/80">{cat.name}</span>
                                 </div>
                                 <div className={cn("text-xs font-bold text-foreground", blurClass)}>
-                                    {formatEuroNumber(cat.value, currency, locale).replace(",00", "")}
+                                    {formatCents(cat.valueCents, currency, locale).replace(",00", "")}
                                 </div>
                             </div>
                         ))}

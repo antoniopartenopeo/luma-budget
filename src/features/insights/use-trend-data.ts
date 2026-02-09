@@ -5,6 +5,8 @@ import { useTransactions } from "@/features/transactions/api/use-transactions"
 
 export interface TrendDataItem {
     month: string
+    incomeCents: number
+    expensesCents: number
     income: number
     expenses: number
     savingsRate: number
@@ -35,21 +37,23 @@ export function useTrendData() {
                 return tDate.getFullYear() === year && tDate.getMonth() === month
             })
 
-            const income = monthTransactions
+            const incomeCents = monthTransactions
                 .filter(t => t.type === "income")
-                .reduce((sum, t) => sum + (t.amountCents || 0) / 100, 0)
+                .reduce((sum, t) => sum + (t.amountCents || 0), 0)
 
-            const expenses = monthTransactions
+            const expensesCents = monthTransactions
                 .filter(t => t.type === "expense")
-                .reduce((sum, t) => sum + (t.amountCents || 0) / 100, 0)
+                .reduce((sum, t) => sum + (t.amountCents || 0), 0)
 
-            const savingsRes = income - expenses
-            const savingsRate = income > 0 ? (savingsRes / income) * 100 : 0
+            const savingsResCents = incomeCents - expensesCents
+            const savingsRate = incomeCents > 0 ? (savingsResCents / incomeCents) * 100 : 0
 
             months.push({
                 month: capitalizedLabel,
-                income,
-                expenses,
+                incomeCents,
+                expensesCents,
+                income: incomeCents / 100,
+                expenses: expensesCents / 100,
                 savingsRate,
                 savingsRateLabel: `${savingsRate.toFixed(1)}%`
             })

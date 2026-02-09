@@ -29,7 +29,7 @@ const KIND_LABEL: Record<NotificationKind, string> = {
 }
 
 const KIND_CLASS: Record<NotificationKind, string> = {
-    feature: "border-indigo-500/20 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300",
+    feature: "border-primary/20 bg-primary/10 text-primary dark:text-primary",
     fix: "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
     improvement: "border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-300",
     breaking: "border-rose-500/25 bg-rose-500/15 text-rose-700 dark:text-rose-300",

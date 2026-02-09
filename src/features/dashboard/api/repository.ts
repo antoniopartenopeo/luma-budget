@@ -2,7 +2,7 @@ import { DashboardSummary, DashboardTimeFilter } from "./types"
 import { fetchTransactions } from "../../transactions/api/repository"
 import { fetchBudget } from "@/VAULT/budget/api/repository"
 import { getSignedCents } from "@/domain/transactions"
-import { calculateDateRangeLocal, filterByRange, getMonthBoundariesLocal } from "@/lib/date-ranges"
+import { calculateDateRange, filterByRange } from "@/lib/date-ranges"
 import { getCategoryById } from "@/features/categories/config"
 import { getCategories } from "@/features/categories/api/repository"
 import { calculateSuperfluousMetrics } from "../../transactions/utils/transactions-logic"
@@ -16,7 +16,7 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
 
 
     // 1. Determine date range for filtered metrics
-    const { startDate, endDate } = calculateDateRangeLocal(
+    const { startDate, endDate } = calculateDateRange(
         filter.period,
         (filter.mode === "range" && filter.months) ? filter.months : 1
     )
@@ -35,7 +35,7 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
     const allTimeIncomeCents = sumIncomeInCents(transactions)
     const allTimeExpensesCents = sumExpensesInCents(transactions)
 
-    const netBalance = (allTimeIncomeCents - allTimeExpensesCents) / 100
+    const netBalanceCents = allTimeIncomeCents - allTimeExpensesCents
 
     // 4. Filter transactions for the selected range
     const rangeTransactions = filterByRange(transactions, startDate, endDate)
@@ -44,21 +44,20 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
     const totalExpensesCents = sumExpensesInCents(rangeTransactions)
     const totalIncomeCents = sumIncomeInCents(rangeTransactions)
 
-    const totalSpent = totalExpensesCents / 100
-    const totalIncome = totalIncomeCents / 100
+    const totalSpentCents = totalExpensesCents
+    const totalIncomeCentsSafe = totalIncomeCents
 
     // 6. Calculate Budget Remaining
     // Rule: mode="month" -> use period; mode="range" -> use end period (filter.period)
-    const { start: pivotStart, end: pivotEnd } = getMonthBoundariesLocal(filter.period)
+    const { startDate: pivotStart, endDate: pivotEnd } = calculateDateRange(filter.period, 1)
     const targetMonthTransactions = filterByRange(transactions, pivotStart, pivotEnd)
     const targetMonthExpensesCents = sumExpensesInCents(targetMonthTransactions)
 
     const budgetTotalCents = budgetPlan?.globalBudgetAmountCents || 0
-    const budgetTotal = budgetTotalCents / 100
-    const budgetRemaining = Math.max((budgetTotalCents - targetMonthExpensesCents) / 100, 0)
+    const budgetRemainingCents = Math.max(budgetTotalCents - targetMonthExpensesCents, 0)
 
     // 7. Calculate Category Distribution (Range-based)
-    const categoryMap = new Map<string, { label: string, amount: number, color: string }>()
+    const categoryMap = new Map<string, { label: string, amountCents: number, color: string }>()
     rangeTransactions.filter(t => t.type === 'expense').forEach(t => {
         const amountCents = Math.abs(getSignedCents(t))
         // Lookup category for consistent label and color
@@ -67,14 +66,15 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
         const color = categoryDef?.hexColor || "#94a3b8"
         const label = categoryDef?.label || t.category
 
-        const current = categoryMap.get(t.categoryId) || { label, amount: 0, color }
-        categoryMap.set(t.categoryId, { label, amount: current.amount + (amountCents / 100), color })
+        const current = categoryMap.get(t.categoryId) || { label, amountCents: 0, color }
+        categoryMap.set(t.categoryId, { label, amountCents: current.amountCents + amountCents, color })
     })
 
     const categoriesSummary = Array.from(categoryMap.entries()).map(([id, data]) => ({
         id,
         name: data.label,
-        value: data.amount,
+        valueCents: data.amountCents,
+        value: data.amountCents / 100,
         color: data.color
     }))
 
@@ -87,14 +87,14 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
 
     // 9. Monthly Data for Charts
     const monthlyExpenses = []
-    const startM = startDate.getMonth()
-    const startY = startDate.getFullYear()
+    const startM = startDate.getUTCMonth()
+    const startY = startDate.getUTCFullYear()
 
     // Iterate month by month from start to end
-    const iterDate = new Date(startY, startM, 1)
+    const iterDate = new Date(Date.UTC(startY, startM, 1))
     while (iterDate <= endDate) {
-        const iMonth = iterDate.getMonth()
-        const iYear = iterDate.getFullYear()
+        const iMonth = iterDate.getUTCMonth()
+        const iYear = iterDate.getUTCFullYear()
         // Italian short month name
         const monthName = new Intl.DateTimeFormat("it-IT", { month: "short" }).format(iterDate)
         // Capitalize
@@ -102,14 +102,14 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
 
         const monthTxs = rangeTransactions.filter(t => {
             const d = new Date(t.timestamp)
-            return d.getMonth() === iMonth && d.getFullYear() === iYear
+            return d.getUTCMonth() === iMonth && d.getUTCFullYear() === iYear
         })
         const mTotalCents = sumExpensesInCents(monthTxs)
 
-        monthlyExpenses.push({ name: Label, total: mTotalCents / 100 })
+        monthlyExpenses.push({ name: Label, totalCents: mTotalCents, total: mTotalCents / 100 })
 
         // Next month
-        iterDate.setMonth(iterDate.getMonth() + 1)
+        iterDate.setUTCMonth(iterDate.getUTCMonth() + 1)
     }
 
     // Since calculateSharePct returns 0 if total is 0, we need to handle "uselessSpendPercent" nullability if we want to preserve distinct "No Data" semantics vs "0%"
@@ -118,12 +118,18 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
     const finalUselessPercent = totalExpensesCents > 0 ? uselessSpendPercent : null
 
     return {
-        totalSpent,
-        totalIncome,
-        totalExpenses: totalSpent,
-        netBalance,
-        budgetTotal,
-        budgetRemaining,
+        totalSpentCents,
+        totalIncomeCents: totalIncomeCentsSafe,
+        totalExpensesCents: totalSpentCents,
+        netBalanceCents,
+        budgetTotalCents,
+        budgetRemainingCents,
+        totalSpent: totalSpentCents / 100,
+        totalIncome: totalIncomeCentsSafe / 100,
+        totalExpenses: totalSpentCents / 100,
+        netBalance: netBalanceCents / 100,
+        budgetTotal: budgetTotalCents / 100,
+        budgetRemaining: budgetRemainingCents / 100,
         uselessSpendPercent: finalUselessPercent,
         categoriesSummary,
         usefulVsUseless: {

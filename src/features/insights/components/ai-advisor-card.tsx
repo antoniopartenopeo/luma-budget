@@ -3,7 +3,7 @@ import { motion, Variants } from "framer-motion"
 import { Sparkles, TrendingUp, Lightbulb, Wallet, BrainCircuit, LineChart, Search, Lock } from "lucide-react"
 import { MacroSection } from "@/components/patterns/macro-section"
 import { cn } from "@/lib/utils"
-import { formatEuroNumber } from "@/domain/money"
+import { formatCents } from "@/domain/money"
 import { useAIAdvisor } from "../use-ai-advisor"
 import { useOrchestratedInsightsFromData } from "../use-orchestrated-insights"
 import { useCurrency } from "@/features/settings/api/use-currency"
@@ -30,8 +30,8 @@ export function AIAdvisorCard() {
     // 1. DYNAMIC ATMOSPHERE: Calculate status based on financial health
     const advisorStatus = React.useMemo(() => {
         if (!forecast) return "default"
-        if (forecast.predictedSavings < 0) return "critical"
-        if (forecast.predictedSavings < 100) return "warning"
+        if (forecast.predictedSavingsCents < 0) return "critical"
+        if (forecast.predictedSavingsCents < 10000) return "warning"
         return "default"
     }, [forecast])
 
@@ -142,9 +142,9 @@ export function AIAdvisorCard() {
                             <div className="space-y-1">
                                 <div className={cn(
                                     "text-4xl font-black tracking-tighter tabular-nums",
-                                    forecast.predictedSavings < 0 ? "text-rose-500" : "text-foreground"
+                                    forecast.predictedSavingsCents < 0 ? "text-rose-500" : "text-foreground"
                                 )}>
-                                    {formatEuroNumber(forecast.predictedSavings, currency, locale)}
+                                    {formatCents(forecast.predictedSavingsCents, currency, locale)}
                                 </div>
                                 <p className="text-xs text-muted-foreground font-medium">
                                     Risparmio stimato basato sui tuoi trend attuali di spesa.
@@ -172,12 +172,12 @@ export function AIAdvisorCard() {
                                         <div
                                             key={sub.id}
                                             className="max-w-full md:max-w-[34rem] px-3 py-1.5 rounded-xl bg-background/80 dark:bg-slate-800 border border-border/50 text-xs font-bold text-muted-foreground shadow-sm"
-                                            title={`${sub.description} · ${formatEuroNumber(sub.amount, currency, locale)}/mese`}
+                                            title={`${sub.description} · ${formatCents(sub.amountCents, currency, locale)}/mese`}
                                         >
                                             <span className="inline-flex max-w-full items-center gap-2">
                                                 <span className="truncate">{sub.description}</span>
                                                 <span className="shrink-0 text-foreground/80">
-                                                    {formatEuroNumber(sub.amount, currency, locale)}/mese
+                                                    {formatCents(sub.amountCents, currency, locale)}/mese
                                                 </span>
                                             </span>
                                         </div>

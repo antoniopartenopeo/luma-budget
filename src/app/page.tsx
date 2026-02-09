@@ -33,10 +33,10 @@ export default function DashboardPage() {
       <StaggerContainer>
         {/* HERO SECTION: Financial Overview & KPIs */}
         <DashboardKpiGrid
-          totalSpent={data?.totalSpent}
-          netBalance={data?.netBalance}
-          budgetTotal={data?.budgetTotal}
-          budgetRemaining={data?.budgetRemaining}
+          totalSpentCents={data?.totalSpentCents}
+          netBalanceCents={data?.netBalanceCents}
+          budgetTotalCents={data?.budgetTotalCents}
+          budgetRemainingCents={data?.budgetRemainingCents}
           uselessSpendPercent={data?.uselessSpendPercent}
           isLoading={isLoading}
           filter={filter}

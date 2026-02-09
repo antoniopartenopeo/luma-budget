@@ -45,21 +45,11 @@ export function applyFilters(
         filters.dateRange.to instanceof Date &&
         !Number.isNaN(filters.dateRange.to.getTime())
 
-    let scopedTransactions = transactions
-
-    if (hasValidFrom && hasValidTo) {
-        scopedTransactions = filterByRange(
-            transactions,
-            new Date(filters.dateRange.from as Date),
-            normalizeEndOfDay(filters.dateRange.to as Date)
-        )
-    } else if (hasValidFrom) {
-        const fromTimestamp = (filters.dateRange.from as Date).getTime()
-        scopedTransactions = transactions.filter(t => t.timestamp >= fromTimestamp)
-    } else if (hasValidTo) {
-        const toTimestamp = normalizeEndOfDay(filters.dateRange.to as Date).getTime()
-        scopedTransactions = transactions.filter(t => t.timestamp <= toTimestamp)
-    }
+    const MIN_DATE = new Date(-8640000000000000)
+    const MAX_DATE = new Date(8640000000000000)
+    const start = hasValidFrom ? new Date(filters.dateRange.from as Date) : MIN_DATE
+    const end = hasValidTo ? normalizeEndOfDay(filters.dateRange.to as Date) : MAX_DATE
+    const scopedTransactions = filterByRange(transactions, start, end)
 
     return scopedTransactions.filter((t) => {
         // Search filter (description or amount string)

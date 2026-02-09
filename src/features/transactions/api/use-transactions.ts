@@ -1,7 +1,22 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient, type QueryClient } from "@tanstack/react-query"
 import { fetchTransactions, createTransaction, updateTransaction, createBatchTransactions } from "./repository"
 import { queryKeys } from "@/lib/query-keys"
 import { CreateTransactionDTO } from "./types"
+
+const TRANSACTION_INVALIDATION_ROOTS = new Set<string>([
+    queryKeys.transactions.recent[0],
+    queryKeys.dashboard.all[0],
+    queryKeys.transactions.all[0],
+])
+
+function invalidateTransactionQueries(queryClient: QueryClient) {
+    return queryClient.invalidateQueries({
+        predicate: query => {
+            const root = query.queryKey[0]
+            return typeof root === "string" && TRANSACTION_INVALIDATION_ROOTS.has(root)
+        },
+    })
+}
 
 export function useRecentTransactions() {
     return useQuery({
@@ -26,9 +41,7 @@ export function useCreateTransaction() {
     return useMutation({
         mutationFn: createTransaction,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.transactions.recent })
-            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
-            queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all })
+            void invalidateTransactionQueries(queryClient)
         },
     })
 }
@@ -39,9 +52,7 @@ export function useCreateBatchTransactions() {
     return useMutation({
         mutationFn: createBatchTransactions,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.transactions.recent })
-            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
-            queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all })
+            void invalidateTransactionQueries(queryClient)
         },
     })
 }
@@ -52,9 +63,7 @@ export function useUpdateTransaction() {
     return useMutation({
         mutationFn: ({ id, data }: { id: string; data: Partial<CreateTransactionDTO> }) => updateTransaction(id, data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.transactions.recent })
-            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
-            queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all })
+            void invalidateTransactionQueries(queryClient)
         },
     })
 }
@@ -66,9 +75,7 @@ export const useDeleteTransaction = () => {
         mutationFn: (id: string) =>
             import("./repository").then(mod => mod.deleteTransaction(id)),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.transactions.recent })
-            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
-            queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all })
+            void invalidateTransactionQueries(queryClient)
         },
     })
 }

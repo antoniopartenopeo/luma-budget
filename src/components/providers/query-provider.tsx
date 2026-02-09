@@ -13,6 +13,15 @@ const CACHE_RESETTERS: Record<string, () => void> = {
     luma_categories_v1: __resetCategoriesCache,
 }
 
+const STORAGE_KEY_TO_QUERY_ROOTS: ReadonlyMap<string, ReadonlySet<string>> = new Map(
+    STORAGE_KEYS_REGISTRY.flatMap(config => {
+        if (!config.invalidatesQueries?.length) {
+            return []
+        }
+        return [[config.key, new Set(config.invalidatesQueries)] as const]
+    })
+)
+
 export function QueryProvider({ children }: { children: React.ReactNode }) {
     const [queryClient] = useState(() => new QueryClient({
         defaultOptions: {
@@ -24,20 +33,21 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         const handleStorageChange = (e: StorageEvent) => {
-            if (!e.key || e.storageArea !== window.localStorage) return
+            if (!e.key || e.storageArea !== window.localStorage || e.oldValue === e.newValue) return
 
             const resetCache = CACHE_RESETTERS[e.key]
             if (resetCache) {
                 resetCache()
             }
 
-            const config = STORAGE_KEYS_REGISTRY.find(item => item.key === e.key)
-            if (!config?.invalidatesQueries?.length) return
+            const queryRoots = STORAGE_KEY_TO_QUERY_ROOTS.get(e.key)
+            if (!queryRoots?.size) return
 
-            const queryRoots = new Set(config.invalidatesQueries)
-            queryRoots.forEach(root => {
-                // Query keys are rooted by the first segment (e.g. ["transactions"], ["dashboard-summary", ...])
-                queryClient.invalidateQueries({ queryKey: [root] })
+            void queryClient.invalidateQueries({
+                predicate: query => {
+                    const root = query.queryKey[0]
+                    return typeof root === "string" && queryRoots.has(root)
+                },
             })
         }
 

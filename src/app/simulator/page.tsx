@@ -71,13 +71,17 @@ export default function SimulatorPage() {
     const [goalTargetCents, setGoalTargetCents] = useState<number>(activeGoal?.targetCents || 0)
     const [goalTitle, setGoalTitle] = useState<string>(activeGoal?.title || "")
 
-    // Sync local goal state with portfolio only when id changes
-    // This is the "Data hydration" step when moving from Empty State -> Active State
+    // Keep local simulation inputs aligned with the currently selected goal.
+    // Without this sync, switching goal or editing target leaves stale values in projections.
     useEffect(() => {
         if (activeGoal?.id) {
-            setGoalTargetCents(prev => prev === 0 ? activeGoal.targetCents : prev)
-            setGoalTitle(prev => prev === "" ? activeGoal.title : prev)
+            setGoalTargetCents(activeGoal.targetCents)
+            setGoalTitle(activeGoal.title)
+            return
         }
+
+        setGoalTargetCents(0)
+        setGoalTitle("")
     }, [activeGoal?.id, activeGoal?.targetCents, activeGoal?.title])
 
     // 2. Simulator Config State

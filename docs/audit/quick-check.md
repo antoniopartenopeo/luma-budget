@@ -1,6 +1,6 @@
 # Governance Quick Check
 
-Generated at (UTC): 2026-02-11T21:45:21Z
+Generated at (UTC): 2026-02-11T22:42:35Z
 
 Scope:
 - Repository: numa-budget
@@ -14,7 +14,7 @@ Scope:
 | parseFloat on monetary flows (excluding CSV normalize exception) | PASS | 0 |
 | Deprecated `amount` key / string amounts | WARN | key:41 string:21 legacy-files:7 |
 | Period filters without `filterByRange` | WARN | 4 |
-| Inline style in TSX | WARN | 8 |
+| Inline style in TSX | WARN | 10 |
 | Tests with formula-duplication heuristic | WARN | 3 |
 
 ## 1) parseFloat checks
@@ -149,6 +149,8 @@ Inline style hits (first 80):
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/premium-chart-section.tsx:91:                <div style={{ height: chartHeight }} className="flex items-center justify-center relative z-10">
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/premium-chart-section.tsx:100:                    <div className="w-full relative text-foreground" style={{ height: chartHeight }}>
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/spending-composition-card.tsx:234:                            style={{
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/components/layout/topbar-action-cluster.tsx:220:                                style={{
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/components/layout/topbar-action-cluster.tsx:235:                                style={{
 
 ## 5) Test formula duplication checks (heuristic)
 

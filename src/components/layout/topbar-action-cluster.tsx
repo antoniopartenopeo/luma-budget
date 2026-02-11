@@ -205,11 +205,10 @@ export function TopbarActionCluster() {
                                 cx="20"
                                 cy="20"
                                 r="14"
-                                className="fill-none stroke-primary stroke-[2.2]"
+                                className="fill-none stroke-primary stroke-[2.2] transition-[stroke-dashoffset] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
                                 strokeLinecap="round"
                                 strokeDasharray={brainProgressCircumference}
                                 strokeDashoffset={brainProgressOffset}
-                                style={{ transition: "stroke-dashoffset 640ms cubic-bezier(0.22, 1, 0.36, 1)" }}
                             />
                         </svg>
                         <span

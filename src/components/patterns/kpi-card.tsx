@@ -29,6 +29,7 @@ export interface KpiCardProps {
      */
     animatedValue?: number
     formatFn?: (value: number) => string
+    compact?: boolean
 }
 
 import { AnimatedNumber } from "@/components/ui/animated-number"
@@ -49,7 +50,8 @@ export function KpiCard({
     valueClassName,
     description,
     animatedValue,
-    formatFn
+    formatFn,
+    compact = false,
 }: KpiCardProps) {
 
 
@@ -73,18 +75,22 @@ export function KpiCard({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="h-full"
+            className={compact ? undefined : "h-full"}
         >
             <Card
                 className={cn(
-                    "rounded-xl h-full glass-card",
+                    "rounded-xl glass-card",
+                    compact ? "py-3 gap-3" : "h-full",
 
                     onClick && "cursor-pointer active:scale-[0.98] ring-primary/5 hover:ring-2",
                     className
                 )}
                 onClick={onClick}
             >
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardHeader className={cn(
+                    "flex flex-row items-center justify-between space-y-0",
+                    compact ? "px-4 gap-1 pb-1" : "pb-2"
+                )}>
                     <div className="flex flex-col gap-1.5">
                         <CardTitle className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                             {title}
@@ -106,8 +112,13 @@ export function KpiCard({
                         <Icon className="h-4 w-4" />
                     </div>
                 </CardHeader>
-                <CardContent className="flex-1 flex flex-col">
-                    <div className={cn("text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter tabular-nums break-words", valueClassName)}>
+                <CardContent className={cn(
+                    compact ? "px-4" : "flex-1 flex flex-col"
+                )}>
+                    <div className={cn(
+                        "text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter tabular-nums break-words",
+                        valueClassName
+                    )}>
                         {typeof animatedValue === 'number' ? (
                             <AnimatedNumber
                                 value={animatedValue}
@@ -119,7 +130,7 @@ export function KpiCard({
                         )}
                     </div>
 
-                    <div className="mt-auto pt-4">
+                    <div className={cn(compact ? "pt-2" : "mt-auto pt-4")}>
                         {(change || comparisonLabel) && (
                             <p className="text-xs text-muted-foreground flex items-center gap-1">
                                 {change && (
@@ -141,7 +152,10 @@ export function KpiCard({
                             </p>
                         )}
                         {description && (
-                            <p className="text-[10px] text-muted-foreground/50 mt-1 italic leading-tight">
+                            <p className={cn(
+                                "text-[10px] text-muted-foreground/50 mt-1 leading-tight",
+                                compact ? "" : "italic"
+                            )}>
                                 {description}
                             </p>
                         )}

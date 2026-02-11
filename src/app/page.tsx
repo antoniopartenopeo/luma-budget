@@ -5,9 +5,9 @@ import { DashboardKpiGrid } from "@/features/dashboard/components/kpi-cards"
 import { SpendingCompositionCard } from "@/features/dashboard/components/charts/spending-composition-card"
 import { RecentTransactions } from "@/features/dashboard/components/recent-transactions"
 import { useDashboardSummary } from "@/features/dashboard/api/use-dashboard"
-import { useTransactions } from "@/features/transactions/api/use-transactions"
 import { DashboardFilterBar } from "@/features/dashboard/components/dashboard-filter-bar"
 import { DashboardTimeFilter } from "@/features/dashboard/api/types"
+import { formatPeriodLabel } from "@/lib/date-ranges"
 
 import { PageHeader } from "@/components/ui/page-header"
 
@@ -21,7 +21,6 @@ export default function DashboardPage() {
   })
 
   const { data, isLoading } = useDashboardSummary(filter)
-  const { data: transactions, isLoading: isLoadingTransactions } = useTransactions()
 
   return (
     <div className="space-y-8 w-full">
@@ -47,9 +46,9 @@ export default function DashboardPage() {
         {/* SUBORDINATE CONTENT */}
         <div className="space-y-6">
           <SpendingCompositionCard
-            transactions={transactions || []}
-            filter={filter}
-            isLoading={isLoading || isLoadingTransactions}
+            categoriesSummary={data?.categoriesSummary}
+            periodLabel={formatPeriodLabel(filter.period, "it-IT")}
+            isLoading={isLoading}
           />
 
           <RecentTransactions filter={filter} />

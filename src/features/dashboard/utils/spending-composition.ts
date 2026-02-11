@@ -1,6 +1,7 @@
 import { DashboardTimeFilter } from "../api/types"
 import { Transaction } from "@/features/transactions/api/types"
 import { calculateDateRangeLocal, filterByRange } from "@/lib/date-ranges"
+import type { CategorySummary } from "../api/types"
 
 export const SYNTHETIC_ALTRI_ID = "altro-synthetic"
 export const DEFAULT_TOP_SPENDING_CATEGORIES = 5
@@ -14,6 +15,13 @@ export interface SpendingSlice {
     id: string
     name: string
     value: number
+    color?: string
+}
+
+function sortByWeightAndName(a: SpendingSlice, b: SpendingSlice): number {
+    const delta = b.value - a.value
+    if (delta !== 0) return delta
+    return a.name.localeCompare(b.name, "it-IT")
 }
 
 /**
@@ -44,25 +52,66 @@ export function buildSpendingCompositionSlices(
     })
 
     const sortedCategories = Object.entries(totalsByCategory)
-        .sort(([, a], [, b]) => b - a)
-
-    const topSlices: SpendingSlice[] = sortedCategories
-        .slice(0, topN)
         .map(([id, value]) => ({
             id,
             name: categoryLabelMap.get(id) || "Sconosciuta",
             value
         }))
+        .sort(sortByWeightAndName)
+
+    const topSlices: SpendingSlice[] = sortedCategories
+        .slice(0, topN)
+        .map(({ id, name, value }) => ({ id, name, value }))
 
     const othersTotal = sortedCategories
         .slice(topN)
-        .reduce((acc, [, value]) => acc + value, 0)
+        .reduce((acc, item) => acc + item.value, 0)
 
     if (othersTotal > 0) {
         topSlices.push({
             id: SYNTHETIC_ALTRI_ID,
             name: "Altri",
             value: othersTotal
+        })
+    }
+
+    return topSlices
+}
+
+/**
+ * Builds chart-ready spending slices from dashboard summary categories.
+ * Source of truth is DashboardSummary.categoriesSummary.
+ */
+export function buildSpendingCompositionSlicesFromSummary(
+    categoriesSummary: CategorySummary[] | undefined,
+    topN: number = DEFAULT_TOP_SPENDING_CATEGORIES
+): SpendingSlice[] {
+    if (!categoriesSummary || categoriesSummary.length === 0) return []
+
+    const safeTopN = Math.max(1, topN)
+    const normalized: SpendingSlice[] = categoriesSummary
+        .filter(category => Math.abs(category.valueCents) > 0)
+        .map(category => ({
+            id: category.id,
+            name: category.name,
+            value: Math.abs(category.valueCents),
+            color: category.color || "#6366f1"
+        }))
+        .sort(sortByWeightAndName)
+
+    if (normalized.length === 0) return []
+
+    const topSlices = normalized.slice(0, safeTopN)
+    const othersTotal = normalized
+        .slice(safeTopN)
+        .reduce((acc, category) => acc + category.value, 0)
+
+    if (othersTotal > 0) {
+        topSlices.push({
+            id: SYNTHETIC_ALTRI_ID,
+            name: "Altri",
+            value: othersTotal,
+            color: "#94a3b8"
         })
     }
 

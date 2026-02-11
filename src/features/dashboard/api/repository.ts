@@ -2,7 +2,7 @@ import { DashboardSummary, DashboardTimeFilter } from "./types"
 import { fetchTransactions } from "../../transactions/api/repository"
 import { fetchBudget } from "@/VAULT/budget/api/repository"
 import { getSignedCents } from "@/domain/transactions"
-import { calculateDateRange, filterByRange } from "@/lib/date-ranges"
+import { calculateDateRangeLocal, filterByRange } from "@/lib/date-ranges"
 import { getCategoryById } from "@/features/categories/config"
 import { getCategories } from "@/features/categories/api/repository"
 import { calculateSuperfluousMetrics } from "../../transactions/utils/transactions-logic"
@@ -16,7 +16,7 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
 
 
     // 1. Determine date range for filtered metrics
-    const { startDate, endDate } = calculateDateRange(
+    const { startDate, endDate } = calculateDateRangeLocal(
         filter.period,
         (filter.mode === "range" && filter.months) ? filter.months : 1
     )
@@ -49,7 +49,7 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
 
     // 6. Calculate Budget Remaining
     // Rule: mode="month" -> use period; mode="range" -> use end period (filter.period)
-    const { startDate: pivotStart, endDate: pivotEnd } = calculateDateRange(filter.period, 1)
+    const { startDate: pivotStart, endDate: pivotEnd } = calculateDateRangeLocal(filter.period, 1)
     const targetMonthTransactions = filterByRange(transactions, pivotStart, pivotEnd)
     const targetMonthExpensesCents = sumExpensesInCents(targetMonthTransactions)
 
@@ -70,13 +70,19 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
         categoryMap.set(t.categoryId, { label, amountCents: current.amountCents + amountCents, color })
     })
 
-    const categoriesSummary = Array.from(categoryMap.entries()).map(([id, data]) => ({
-        id,
-        name: data.label,
-        valueCents: data.amountCents,
-        value: data.amountCents / 100,
-        color: data.color
-    }))
+    const categoriesSummary = Array.from(categoryMap.entries())
+        .map(([id, data]) => ({
+            id,
+            name: data.label,
+            valueCents: data.amountCents,
+            value: data.amountCents / 100,
+            color: data.color
+        }))
+        .sort((a, b) => {
+            const delta = b.valueCents - a.valueCents
+            if (delta !== 0) return delta
+            return a.name.localeCompare(b.name, "it-IT")
+        })
 
     // 8. Calculate Superfluous Spending (Range-based)
     const {
@@ -87,14 +93,14 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
 
     // 9. Monthly Data for Charts
     const monthlyExpenses = []
-    const startM = startDate.getUTCMonth()
-    const startY = startDate.getUTCFullYear()
+    const startM = startDate.getMonth()
+    const startY = startDate.getFullYear()
 
     // Iterate month by month from start to end
-    const iterDate = new Date(Date.UTC(startY, startM, 1))
+    const iterDate = new Date(startY, startM, 1)
     while (iterDate <= endDate) {
-        const iMonth = iterDate.getUTCMonth()
-        const iYear = iterDate.getUTCFullYear()
+        const iMonth = iterDate.getMonth()
+        const iYear = iterDate.getFullYear()
         // Italian short month name
         const monthName = new Intl.DateTimeFormat("it-IT", { month: "short" }).format(iterDate)
         // Capitalize
@@ -102,14 +108,14 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
 
         const monthTxs = rangeTransactions.filter(t => {
             const d = new Date(t.timestamp)
-            return d.getUTCMonth() === iMonth && d.getUTCFullYear() === iYear
+            return d.getMonth() === iMonth && d.getFullYear() === iYear
         })
         const mTotalCents = sumExpensesInCents(monthTxs)
 
         monthlyExpenses.push({ name: Label, totalCents: mTotalCents, total: mTotalCents / 100 })
 
         // Next month
-        iterDate.setUTCMonth(iterDate.getUTCMonth() + 1)
+        iterDate.setMonth(iterDate.getMonth() + 1)
     }
 
     // Since calculateSharePct returns 0 if total is 0, we need to handle "uselessSpendPercent" nullability if we want to preserve distinct "No Data" semantics vs "0%"

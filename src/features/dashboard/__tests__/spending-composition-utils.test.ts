@@ -3,8 +3,10 @@ import { Transaction } from "@/features/transactions/api/types"
 import { DashboardTimeFilter } from "@/features/dashboard/api/types"
 import {
     buildSpendingCompositionSlices,
+    buildSpendingCompositionSlicesFromSummary,
     SYNTHETIC_ALTRI_ID
 } from "../utils/spending-composition"
+import type { CategorySummary } from "@/features/dashboard/api/types"
 
 const mockCategories = [
     { id: "c1", label: "Alimentari" },
@@ -87,5 +89,48 @@ describe("spending-composition utils", () => {
         expect(result).toHaveLength(2)
         expect(result[0]).toEqual({ id: "c1", name: "Alimentari", value: 4000 })
         expect(result[1]).toEqual({ id: "c2", name: "Viaggi", value: 2000 })
+    })
+
+    it("builds slices from dashboard summary with deterministic ordering", () => {
+        const summary: CategorySummary[] = [
+            { id: "c-tech", name: "Tecnologia", valueCents: 3000, value: 30, color: "#6366f1" },
+            { id: "c-food", name: "Alimentari", valueCents: 3000, value: 30, color: "#ea580c" },
+            { id: "c-sub", name: "Abbonamenti", valueCents: 1000, value: 10, color: "#3b82f6" }
+        ]
+
+        const result = buildSpendingCompositionSlicesFromSummary(summary, 5)
+        expect(result).toHaveLength(3)
+        expect(result[0]).toMatchObject({ id: "c-food", name: "Alimentari", value: 3000, color: "#ea580c" })
+        expect(result[1]).toMatchObject({ id: "c-tech", name: "Tecnologia", value: 3000, color: "#6366f1" })
+        expect(result[2]).toMatchObject({ id: "c-sub", name: "Abbonamenti", value: 1000, color: "#3b82f6" })
+    })
+
+    it("aggregates overflow categories into synthetic 'Altri' from summary", () => {
+        const summary: CategorySummary[] = [
+            { id: "c1", name: "A", valueCents: 5000, value: 50, color: "#111111" },
+            { id: "c2", name: "B", valueCents: 4000, value: 40, color: "#222222" },
+            { id: "c3", name: "C", valueCents: 3000, value: 30, color: "#333333" },
+            { id: "c4", name: "D", valueCents: 2000, value: 20, color: "#444444" }
+        ]
+
+        const result = buildSpendingCompositionSlicesFromSummary(summary, 2)
+        expect(result).toHaveLength(3)
+        expect(result[0]).toMatchObject({ id: "c1", value: 5000 })
+        expect(result[1]).toMatchObject({ id: "c2", value: 4000 })
+        expect(result[2]).toEqual({
+            id: SYNTHETIC_ALTRI_ID,
+            name: "Altri",
+            value: 5000,
+            color: "#94a3b8"
+        })
+    })
+
+    it("returns empty when summary is missing or all values are zero", () => {
+        expect(buildSpendingCompositionSlicesFromSummary(undefined, 5)).toEqual([])
+
+        const zeroSummary: CategorySummary[] = [
+            { id: "z1", name: "Zero", valueCents: 0, value: 0, color: "#000000" }
+        ]
+        expect(buildSpendingCompositionSlicesFromSummary(zeroSummary, 5)).toEqual([])
     })
 })

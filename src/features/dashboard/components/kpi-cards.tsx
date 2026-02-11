@@ -12,6 +12,7 @@ import { MacroSection } from "@/components/patterns/macro-section"
 import { getBalanceTone, getBudgetTone, getSuperfluousTone } from "../utils/kpi-logic"
 import { usePrivacyStore } from "@/features/privacy/privacy.store"
 import { getPrivacyClass } from "@/features/privacy/privacy-utils"
+import { useAIAdvisor } from "@/features/insights/use-ai-advisor"
 import { motion } from "framer-motion"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
 import { macroItemVariants } from "@/components/patterns/macro-section"
@@ -36,6 +37,78 @@ interface DashboardKpiGridProps {
     }
 }
 
+interface BrainSignalDisplay {
+    value: string
+    message: string
+    trend: "up" | "warning" | "down" | "neutral"
+    tone: KpiTone
+    confidence: string
+    source: string
+}
+
+function resolveBrainSignalDisplay(advisorData: ReturnType<typeof useAIAdvisor>): BrainSignalDisplay {
+    if (advisorData.isLoading) {
+        return {
+            value: "Analizzo",
+            message: "Sto aggiornando il mese",
+            trend: "neutral",
+            tone: "neutral",
+            confidence: "N/D",
+            source: "Fonte: in aggiornamento",
+        }
+    }
+
+    if (!advisorData.forecast) {
+        return {
+            value: "In avvio",
+            message: "Servono più movimenti",
+            trend: "neutral",
+            tone: "warning",
+            confidence: "N/D",
+            source: "Fonte: storico parziale",
+        }
+    }
+
+    const isBrainSource = advisorData.forecast.primarySource === "brain"
+    const source = isBrainSource ? "Fonte: Neural Core" : "Fonte: storico"
+    const confidence = advisorData.forecast.confidence === "high"
+        ? "Alta"
+        : advisorData.forecast.confidence === "medium"
+            ? "Media"
+            : "Bassa"
+
+    if (advisorData.forecast.predictedTotalEstimatedBalanceCents < 0) {
+        return {
+            value: "Critico",
+            message: "Possibile saldo negativo",
+            trend: "down",
+            tone: "negative",
+            confidence,
+            source,
+        }
+    }
+
+    if (advisorData.forecast.predictedTotalEstimatedBalanceCents < 10000) {
+        return {
+            value: "Attenzione",
+            message: "Margine ridotto",
+            trend: "warning",
+            tone: "warning",
+            confidence,
+            source,
+        }
+    }
+
+    return {
+        value: "Stabile",
+        message: "Nessun allarme ora",
+        trend: "up",
+        tone: "positive",
+        confidence,
+        source,
+    }
+}
+
 export function DashboardKpiGrid({
     totalSpentCents,
     netBalanceCents,
@@ -51,8 +124,10 @@ export function DashboardKpiGrid({
     const { currency, locale } = useCurrency()
     const { data: settings } = useSettings()
     const { isPrivacyMode } = usePrivacyStore()
+    const advisorData = useAIAdvisor()
 
     const superfluousTarget = settings?.superfluousTargetPercent ?? 10
+    const brainSignal = resolveBrainSignalDisplay(advisorData)
 
     const formatValue = (value: number) => {
         return formatCents(value, currency, locale)
@@ -186,51 +261,65 @@ export function DashboardKpiGrid({
                         description={isLoading ? undefined : buildNarration("superfluous", uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—", superflueTone, uselessSpendPercent ?? undefined)}
                     />
                 </motion.div>
+                <motion.div variants={macroItemVariants} className="h-full md:col-span-2 lg:col-span-4">
+                    <KpiCard
+                        title="Segnale del mese"
+                        value={brainSignal.value}
+                        change={brainSignal.message}
+                        trend={brainSignal.trend}
+                        comparisonLabel={`${brainSignal.source} · Affidabilità ${brainSignal.confidence}`}
+                        tone={brainSignal.tone}
+                        icon={BrainCircuit}
+                        isLoading={false}
+                        onClick={() => router.push("/insights")}
+                        compact
+                    />
+                </motion.div>
             </StaggerContainer>
 
             {/* NUMA ENGINE (Transparency Context) */}
             <div className="mt-8">
                 <NumaEngineCard
-                    title="Logica Finanziaria Attiva"
+                    title="Come Funziona Davvero"
                     icon={BrainCircuit}
-                    audienceHint="In breve"
+                    audienceHint="Spiegazione semplice"
                     className="w-full"
                     steps={[
                         {
                             icon: DollarSign,
                             colorClass: "text-emerald-500",
                             bgClass: "bg-emerald-500/10",
-                            stepLabel: "Il Ritmo",
-                            title: "Pacing Dinamico",
-                            description: `La disponibilità mostrata in "Pacing Temporale" non è un limite statico: deriva direttamente dal Piano ${activeRhythm?.label || "Attivo"} scelto nel Laboratorio.`
+                            stepLabel: "Passo 1",
+                            title: "Quanto puoi spendere ora",
+                            description: `La card "Pacing Temporale" mostra il margine reale del mese, calcolato dal piano ${activeRhythm?.label || "attivo"}.`
                         },
                         {
                             icon: PiggyBank,
                             colorClass: "text-amber-500",
                             bgClass: "bg-amber-500/10",
-                            stepLabel: "Il Silenzio",
-                            title: "Rilevamento Implicito",
-                            description: "Non serve accantonare fondi manualmente. Se l'andamento delle Spese Extra rallenta, il margine residuo accelera automaticamente il tuo traguardo."
+                            stepLabel: "Passo 2",
+                            title: "Cosa fa migliorare il margine",
+                            description: "Se riduci le Spese Extra, il margine residuo migliora automaticamente."
                         },
                         {
                             icon: Hourglass,
                             colorClass: "text-indigo-500",
                             bgClass: "bg-indigo-500/10",
-                            stepLabel: "La Proiezione",
-                            title: "Velocità Reale",
-                            description: "La data traguardo non è fissa: si ricalcola ogni giorno in base alla tua reale velocità di crociera e sostenibilità attuale."
+                            stepLabel: "Passo 3",
+                            title: "Quando si aggiorna",
+                            description: "Ogni nuovo movimento aggiorna stima, velocità e direzione del mese."
                         }
                     ]}
                     auditStats={[
-                        { label: "Piano Attivo", value: activeRhythm?.label || "Standard", subValue: "Configurazione attuale del pacing.", icon: TrendingUp },
-                        { label: "Logica Core", value: "Matematica", subValue: "Algoritmo v2.4 (Deterministico).", icon: BrainCircuit },
-                        { label: "Privacy", value: "Shield On", subValue: "Analisi locale al 100%.", icon: ShieldCheck },
-                        { label: "Analisi", value: "Real-Time", subValue: "Ricalcolo dinamico sui movimenti.", icon: Zap },
+                        { label: "Piano", value: activeRhythm?.label || "Standard", subValue: "Base del calcolo mensile.", icon: TrendingUp },
+                        { label: "Aggiornamento", value: "Automatico", subValue: "Ricalcolo ad ogni nuovo movimento.", icon: Zap },
+                        { label: "Dati usati", value: "Transazioni reali", subValue: "Nessuna stima manuale richiesta.", icon: BrainCircuit },
+                        { label: "Privacy", value: "Locale", subValue: "I calcoli restano sul dispositivo.", icon: ShieldCheck },
                     ]}
-                    transparencyNote="Numa non utilizza logiche di 'risparmio' punitivo. Osserva il tuo andamento: meno spendi in 'Extra', più la tua velocità aumenta e il traguardo si avvicina in modo naturale."
-                    auditLabel="Dettagli Logica"
-                    certificationTitle="Motore Deterministico"
-                    certificationSubtitle="Analisi basata su Matematica e Privacy"
+                    transparencyNote="Questa card non inventa regole: mostra solo lo stato reale del mese usando i tuoi movimenti."
+                    auditLabel="Apri dettagli"
+                    certificationTitle="Controllo e trasparenza"
+                    certificationSubtitle="Logica chiara, dati reali, privacy locale"
                 />
             </div>
         </MacroSection>

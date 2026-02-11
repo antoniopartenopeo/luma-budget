@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { fetchDashboardSummary } from '../repository'
 import { __resetTransactionsCache, createTransaction } from '../../../transactions/api/repository'
-import { getCurrentPeriod, calculateDateRange } from "@/lib/date-ranges"
+import { getCurrentPeriod, calculateDateRangeLocal } from "@/lib/date-ranges"
 import { upsertBudget, __resetBudgetsCache } from "@/VAULT/budget/api/repository"
 import { __resetCategoriesCache } from '../../../categories/api/repository'
 import { CategoryIds } from '@/domain/categories'
@@ -176,11 +176,11 @@ describe('Dashboard Summary (Real Wiring)', () => {
         expect(summary.netBalance).toBe(-1100)
     })
 
-    it('should apply UTC month boundaries consistently', async () => {
+    it('should apply local month boundaries consistently', async () => {
         const currentPeriod = getCurrentPeriod() // 2025-05 with fake timer
-        const { startDate } = calculateDateRange(currentPeriod, 1)
+        const { startDate } = calculateDateRangeLocal(currentPeriod, 1)
 
-        // One transaction just before UTC month start, one exactly at UTC month start.
+        // One transaction just before local month start, one exactly at local month start.
         const beforeStart = new Date(startDate.getTime() - 1).toISOString()
         const atStart = new Date(startDate.getTime()).toISOString()
 

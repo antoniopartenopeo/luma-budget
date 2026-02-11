@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { fetchDashboardSummary } from '../repository'
 import { createBatchTransactions, __resetTransactionsCache } from '@/features/transactions/api/repository'
+import { calculateDateRangeLocal } from '@/lib/date-ranges'
 
 // Mock dependencies
 vi.mock('@/lib/delay', () => ({
@@ -30,39 +31,41 @@ describe('Dashboard Calculation Regression Test', () => {
         __resetTransactionsCache()
     })
 
-    it('should include transactions at the very edges of the month (UTC)', async () => {
-        // Test Period: Jan 2024 (2024-01)
-        // Range: 2024-01-01 00:00:00 UTC to 2024-01-31 23:59:59.999 UTC
+    it('should include transactions at local month boundaries and exclude outside values', async () => {
+        const { startDate, endDate } = calculateDateRangeLocal("2024-01", 1)
+        const atStart = new Date(startDate.getTime()).toISOString()
+        const atEnd = new Date(endDate.getTime()).toISOString()
+        const outOfRange = new Date(endDate.getTime() + 1).toISOString()
 
         const txs = [
-            // Start Boundary: Jan 1st 00:00:00 UTC
+            // Start boundary (inclusive)
             {
                 description: 'Start Boundary',
                 amountCents: 1000, // 10.00
                 type: 'income' as const,
                 category: 'Test',
                 categoryId: 'test',
-                date: '2024-01-01T00:00:00.000Z',
+                date: atStart,
                 classificationSource: 'manual' as const
             },
-            // End Boundary: Jan 31st 23:59:59 UTC
+            // End boundary (inclusive)
             {
                 description: 'End Boundary',
                 amountCents: 500, // 5.00
                 type: 'expense' as const,
                 category: 'Test',
                 categoryId: 'test',
-                date: '2024-01-31T23:59:59.000Z',
+                date: atEnd,
                 classificationSource: 'manual' as const
             },
-            // Out of Range: Feb 1st 00:00:01
+            // Out of range (exclusive)
             {
                 description: 'Out of Range',
                 amountCents: 9999,
                 type: 'expense' as const,
                 category: 'Test',
                 categoryId: 'test',
-                date: '2024-02-01T00:00:01.000Z',
+                date: outOfRange,
                 classificationSource: 'manual' as const
             }
         ]

@@ -19,6 +19,8 @@ interface PremiumChartSectionProps {
     chartHeight?: number
     backgroundType?: 'radar' | 'cartesian'
     status?: "default" | "warning" | "critical"
+    showChart?: boolean
+    showBackground?: boolean
 }
 
 /**
@@ -36,7 +38,9 @@ export function PremiumChartSection({
     className,
     chartHeight = 560,
     backgroundType = 'radar',
-    status = "default"
+    status = "default",
+    showChart = true,
+    showBackground = true
 }: PremiumChartSectionProps) {
 
     if (isLoading) {
@@ -58,12 +62,12 @@ export function PremiumChartSection({
             contentClassName="p-0 relative z-10"
             className={className}
             background={
-                !isLoading && hasData ? (
+                !isLoading && hasData && showChart && showBackground ? (
                     <div className="w-full h-full flex items-center justify-center opacity-40 dark:opacity-60">
                         {backgroundType === 'radar' && (
                             <>
-                                <div className="w-[80%] h-[80%] border-[3px] border-primary/30 rounded-full animate-[ping_2.5s_cubic-bezier(0,0,0.2,1)_infinite]" />
-                                <div className="absolute w-[80%] h-[80%] border border-primary/20 rounded-full animate-[ping_4s_cubic-bezier(0,0,0.2,1)_infinite]" />
+                                <div className="w-[80%] h-[80%] border-[3px] border-primary/30 rounded-full" />
+                                <div className="absolute w-[80%] h-[80%] border border-primary/20 rounded-full" />
                                 <div className="absolute w-[100%] h-[100%] border border-primary/10 rounded-full" />
                                 <div className="absolute w-[120%] h-[120%] border-t border-r border-primary/5 rounded-full" />
                             </>
@@ -78,9 +82,9 @@ export function PremiumChartSection({
                                 <div className="absolute inset-y-4 right-1/4 w-[1px] bg-primary/5" />
 
                                 {/* Rectangular Echoes (The "Radar" for Cartesian) */}
-                                <div className="absolute w-[60%] h-[50%] border-[3px] border-primary/20 rounded-3xl animate-[ping_3s_cubic-bezier(0,0,0.2,1)_infinite]" />
-                                <div className="absolute w-[70%] h-[60%] border border-primary/10 rounded-[2rem] animate-[ping_4s_cubic-bezier(0,0,0.2,1)_infinite]" style={{ animationDelay: '0.5s' }} />
-                                <div className="absolute w-[40%] h-[30%] border border-primary/5 rounded-2xl animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]" />
+                                <div className="absolute w-[60%] h-[50%] border-[3px] border-primary/20 rounded-3xl" />
+                                <div className="absolute w-[70%] h-[60%] border border-primary/10 rounded-[2rem]" />
+                                <div className="absolute w-[40%] h-[30%] border border-primary/5 rounded-2xl" />
                             </>
                         )}
                     </div>
@@ -97,13 +101,14 @@ export function PremiumChartSection({
                 </div>
             ) : (
                 <div className="flex flex-col items-center justify-center relative z-10">
-                    <div className="w-full relative text-foreground" style={{ height: chartHeight }}>
-
-                        <EChartsWrapper
-                            option={option}
-                            onEvents={onEvents}
-                        />
-                    </div>
+                    {showChart && (
+                        <div className="w-full relative text-foreground" style={{ height: chartHeight }}>
+                            <EChartsWrapper
+                                option={option}
+                                onEvents={onEvents}
+                            />
+                        </div>
+                    )}
 
                     {/* Additional UI (like floating stats) */}
                     {children}

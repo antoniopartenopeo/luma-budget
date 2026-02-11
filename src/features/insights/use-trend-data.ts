@@ -2,6 +2,7 @@
 
 import { useMemo } from "react"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
+import { useCurrency } from "@/features/settings/api/use-currency"
 
 export interface TrendDataItem {
     month: string
@@ -15,6 +16,7 @@ export interface TrendDataItem {
 
 export function useTrendData() {
     const { data: transactions = [], isLoading } = useTransactions()
+    const { locale } = useCurrency()
 
     const trendData = useMemo(() => {
         if (isLoading || !transactions.length) return []
@@ -28,7 +30,7 @@ export function useTrendData() {
             const year = d.getFullYear()
             const month = d.getMonth() // 0-indexed
 
-            const label = new Intl.DateTimeFormat("it-IT", { month: "short" }).format(d)
+            const label = new Intl.DateTimeFormat(locale, { month: "short" }).format(d)
             const capitalizedLabel = label.charAt(0).toUpperCase() + label.slice(1)
 
             // Filter transactions for this month
@@ -60,7 +62,7 @@ export function useTrendData() {
         }
 
         return months
-    }, [transactions, isLoading])
+    }, [transactions, isLoading, locale])
 
     return { data: trendData, isLoading }
 }

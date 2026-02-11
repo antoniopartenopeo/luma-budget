@@ -215,7 +215,7 @@ export function SpendingCompositionCard({ transactions, filter, isLoading: isExt
     return (
         <PremiumChartSection
             title="Composizione Spese"
-            description="Visualizzazione immersiva dell'andamento mensile"
+            description="Come si distribuiscono le spese nel periodo selezionato."
             option={option}
             isLoading={isLoading}
             hasData={chartData.length > 0}

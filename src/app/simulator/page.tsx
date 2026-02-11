@@ -151,7 +151,7 @@ export default function SimulatorPage() {
         return (
             <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
                 <RefreshCw className="h-8 w-8 text-primary animate-spin" />
-                <p className="text-sm font-medium text-muted-foreground">Inizializzazione Lab...</p>
+                <p className="text-sm font-medium text-muted-foreground">Sto preparando il simulatore...</p>
             </div>
         )
     }
@@ -192,11 +192,11 @@ export default function SimulatorPage() {
             await queryClient.invalidateQueries({ queryKey: queryKeys.budget.all })
             await queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
 
-            toast.success("Piano salvato con successo", {
-                description: "Il tuo nuovo piano operativo è ora attivo sulla Dashboard."
+            toast.success("Piano salvato", {
+                description: "Il piano e ora attivo nella Dashboard."
             })
         } catch {
-            toast.error("Errore durante il salvataggio")
+            toast.error("Non sono riuscito a salvare il piano")
         }
     }
 
@@ -208,7 +208,7 @@ export default function SimulatorPage() {
     const handleCustomApply = (newSavings: { superfluous: number; comfort: number }) => {
         setCustomSavings(newSavings)
         setActiveScenarioKey("custom")
-        toast.info("Scenario Personalizzato Applicato")
+        toast.info("Scenario personalizzato applicato")
     }
 
     // Display helpers
@@ -226,13 +226,10 @@ export default function SimulatorPage() {
         <StaggerContainer className="space-y-8 pb-24 md:pb-12 w-full">
             <motion.div variants={macroItemVariants}>
                 <PageHeader
-                    title="Financial Lab"
+                    title="Simulator"
                     description={
                         <>
-                            Crea obiettivi di risparmio e genera piani d&apos;azione personalizzati per raggiungerli.
-                            <span className="block mt-1 text-[11px] uppercase tracking-wide font-semibold text-amber-700 dark:text-amber-400">
-                                Area laboratorio per tester avanzati
-                            </span>
+                            Simula diversi ritmi di risparmio e scopri quando puoi raggiungere il tuo obiettivo.
                         </>
                     }
                 />
@@ -270,10 +267,10 @@ export default function SimulatorPage() {
 
                             <div className="space-y-6">
                                 <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight leading-none bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/60">
-                                    Il tuo Financial Lab è pronto
+                                    Pronto a creare il primo obiettivo
                                 </h2>
                                 <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed font-medium max-w-lg mx-auto">
-                                    Inizia definendo il tuo primo obiettivo. Ti aiuteremo a scoprire il ritmo giusto per raggiungerlo in modo sostenibile.
+                                    Imposta un obiettivo e vedi un piano realistico basato sulle tue spese reali.
                                 </p>
                             </div>
 
@@ -285,9 +282,9 @@ export default function SimulatorPage() {
                                     setIsCreatingGoal(true)
                                     try {
                                         await addGoal("Nuovo Obiettivo", 0)
-                                        toast.success("Laboratorio attivato!")
+                                        toast.success("Obiettivo creato")
                                     } catch {
-                                        toast.error("Errore durante l'attivazione.")
+                                        toast.error("Non sono riuscito a creare l'obiettivo. Riprova.")
                                     } finally {
                                         setIsCreatingGoal(false)
                                     }
@@ -353,14 +350,14 @@ export default function SimulatorPage() {
                                     <motion.div variants={macroItemVariants} className="h-full">
                                         <KpiCard
                                             title="Quanto mettere da parte"
-                                            subtitle="Potenziale mensile"
+                                            subtitle="Risparmio al mese"
                                             value={formatCents(simulatedSurplus, currency, locale)}
                                             animatedValue={simulatedSurplus}
                                             formatFn={(v) => formatCents(v, currency, locale)}
                                             change={extraSavings > 0 ? `+${formatCents(extraSavings, currency, locale)}` : undefined}
                                             trend={extraSavings > 0 ? "up" : "neutral"}
-                                            comparisonLabel={extraSavings > 0 ? "boost" : undefined}
-                                            description={extraSavings > 0 ? "Risparmio generato dalle tue scelte di stile di vita" : "Il tuo ritmo naturale senza tagli"}
+                                            comparisonLabel={extraSavings > 0 ? "in piu" : undefined}
+                                            description={extraSavings > 0 ? "Risparmio extra generato da questo scenario." : "Risparmio stimato con le abitudini attuali."}
                                             icon={Calculator}
                                             tone={extraSavings > 0 ? "positive" : "neutral"}
                                             className={cn(
@@ -374,7 +371,7 @@ export default function SimulatorPage() {
                                     <motion.div variants={macroItemVariants} className="h-full">
                                         <KpiCard
                                             title="Quando arrivi"
-                                            subtitle="In base al ritmo attuale"
+                                            subtitle="Con il ritmo attuale"
                                             value={!projection?.canReach
                                                 ? "—"
                                                 : projection?.likelyDate
@@ -385,8 +382,8 @@ export default function SimulatorPage() {
                                             }
                                             change={projection?.canReach && projection?.likelyMonths > 0 ? `${projection.likelyMonths} mesi` : undefined}
                                             description={!projection?.canReach
-                                                ? "Aumenta il risparmio per proiettare"
-                                                : `Varianza statistica: ${projection.minMonths}-${projection.maxMonths} mesi`
+                                                ? "Con questo ritmo non raggiungi ancora l'obiettivo."
+                                                : `Intervallo stimato: ${projection.minMonths}-${projection.maxMonths} mesi`
                                             }
                                             icon={Target}
                                             tone={projection?.canReach ? "positive" : "neutral"}
@@ -400,16 +397,16 @@ export default function SimulatorPage() {
                                     {/* METRIC 3: SUSTAINABILITY */}
                                     <motion.div variants={macroItemVariants} className="h-full">
                                         <KpiCard
-                                            title="Ce la fai davvero?"
-                                            subtitle="Analisi stabilità"
+                                            title="Sostenibilita"
+                                            subtitle="Tenuta del piano"
                                             value={(() => {
                                                 const status = currentScenario.sustainability.status
-                                                if (status === "secure") return "Puoi star tranquillo"
-                                                if (status === "sustainable") return "È sostenibile"
-                                                if (status === "fragile") return "Attento agli imprevisti"
-                                                return "A Rischio"
+                                                if (status === "secure") return "Molto solido"
+                                                if (status === "sustainable") return "Solido"
+                                                if (status === "fragile") return "Delicato"
+                                                return "A rischio"
                                             })()}
-                                            description={currentScenario.sustainability.reason || "Assetto verificato dal sistema"}
+                                            description={currentScenario.sustainability.reason || "Valutazione del sistema su stabilita e possibili imprevisti."}
                                             icon={RefreshCw}
                                             tone={(() => {
                                                 const status = currentScenario.sustainability.status
@@ -465,7 +462,7 @@ export default function SimulatorPage() {
                                                     </div>
                                                     <div className="flex-1 min-w-0">
                                                         <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
-                                                            AI Monitor
+                                                            Monitor piano
                                                         </h4>
                                                         <p className={cn(
                                                             "text-sm font-medium leading-relaxed",

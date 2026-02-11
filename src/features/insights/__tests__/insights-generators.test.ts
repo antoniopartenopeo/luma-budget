@@ -313,10 +313,6 @@ describe("buildCategorySpikeInsights", () => {
 
 describe("buildTopDriversInsight", () => {
     const currentPeriod = "2026-01"
-    const categoriesMap = new Map([
-        ["cibo", { label: "Cibo" }],
-        ["svago", { label: "Svago" }],
-    ])
 
     it("returns null when no expense transactions in period", () => {
         const transactions = [
@@ -325,7 +321,6 @@ describe("buildTopDriversInsight", () => {
 
         const result = buildTopDriversInsight({
             transactions,
-            categoriesMap,
             currentPeriod,
         }, DEFAULT_THRESHOLDS)
 
@@ -344,7 +339,6 @@ describe("buildTopDriversInsight", () => {
 
         const result = buildTopDriversInsight({
             transactions,
-            categoriesMap,
             currentPeriod,
         }, DEFAULT_THRESHOLDS)
 
@@ -363,7 +357,6 @@ describe("buildTopDriversInsight", () => {
 
         const result = buildTopDriversInsight({
             transactions,
-            categoriesMap,
             currentPeriod,
         }, DEFAULT_THRESHOLDS)
 
@@ -378,7 +371,6 @@ describe("buildTopDriversInsight", () => {
 
         const result = buildTopDriversInsight({
             transactions,
-            categoriesMap,
             currentPeriod,
         }, DEFAULT_THRESHOLDS)
 

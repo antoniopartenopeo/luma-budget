@@ -10,6 +10,7 @@ import { StaggerContainer } from "@/components/patterns/stagger-container"
 import { PageHeader } from "@/components/ui/page-header"
 import { StateMessage } from "@/components/ui/state-message"
 import { useInsights } from "../use-insights"
+import { useAIAdvisor } from "../use-ai-advisor"
 import { InsightCard } from "./insight-card"
 import { TrendAnalysisCard } from "./trend-analysis-card"
 import { AIAdvisorCard } from "./ai-advisor-card"
@@ -22,7 +23,9 @@ interface InsightsPageContentProps {
 export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps) {
     const [period, setPeriod] = useState(initialPeriod || getCurrentPeriod())
 
-    const { insights, isLoading, isThinking, isEmpty, hasTransactions } = useInsights({ period })
+    const { insights, isLoading, isEmpty, hasTransactions } = useInsights({ period })
+    const advisorData = useAIAdvisor()
+    const hasHighSeverityCurrentIssue = insights.some((insight) => insight.severity === "high")
 
     // Period navigation helpers
     const navigatePeriod = (direction: "prev" | "next") => {
@@ -41,23 +44,26 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
             {/* Header */}
             <PageHeader
                 title="Insights"
-                description="Analisi intelligente delle tue spese e suggerimenti personalizzati."
+                description="Una lettura chiara di come stai spendendo e dove puoi migliorare."
             />
 
             {/* Global Motion Orchestration */}
             <StaggerContainer>
                 {/* AI Advisor Section (HERO) */}
-                <AIAdvisorCard />
+                <AIAdvisorCard advisorData={advisorData} />
 
                 {/* Subordinate Content Container */}
                 <div className="space-y-6">
                     {/* Trends Section */}
-                    <TrendAnalysisCard />
+                    <TrendAnalysisCard
+                        hasHighSeverityCurrentIssue={hasHighSeverityCurrentIssue}
+                        advisorForecast={advisorData.forecast}
+                    />
 
                     {/* Periodic Analysis Section */}
                     <MacroSection
-                        title="Analisi Mensile"
-                        description={`Scomposizione analitica del tuo ritmo per ${periodLabel}.`}
+                        title="Analisi del mese"
+                        description={`Cosa sta succedendo nelle tue spese di ${periodLabel}.`}
                         headerActions={
                             <div className="flex items-center gap-2 md:gap-3">
                                 <Button
@@ -88,7 +94,7 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
                     >
                         <div className="min-h-[200px] relative">
                             <AnimatePresence mode="wait">
-                                {(isLoading || isThinking) ? (
+                                {isLoading ? (
                                     <motion.div
                                         key="loading"
                                         initial={{ opacity: 0 }}
@@ -96,28 +102,11 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
                                         exit={{ opacity: 0 }}
                                         className="space-y-4 py-8"
                                     >
-                                        {isThinking ? (
-                                            <div className="flex flex-col items-center justify-center py-12 gap-6">
-                                                <div className="relative">
-                                                    <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl animate-pulse" />
-                                                    <div className="h-10 w-10 rounded-full border-t-2 border-r-2 border-primary animate-spin" />
-                                                </div>
-                                                <div className="flex flex-col items-center gap-2 text-center">
-                                                    <p className="text-sm font-black uppercase tracking-[0.2em] text-primary/80">
-                                                        Analisi Intelligente
-                                                    </p>
-                                                    <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">
-                                                        Numa AI is processing...
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className="space-y-4">
-                                                {[1, 2].map(i => (
-                                                    <Skeleton key={i} className="h-32 w-full rounded-[2rem]" />
-                                                ))}
-                                            </div>
-                                        )}
+                                        <div className="space-y-4">
+                                            {[1, 2].map(i => (
+                                                <Skeleton key={i} className="h-32 w-full rounded-[2rem]" />
+                                            ))}
+                                        </div>
                                     </motion.div>
                                 ) : isEmpty ? (
                                     <motion.div
@@ -129,11 +118,11 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
                                     >
                                         <StateMessage
                                             variant="empty"
-                                            title={hasTransactions ? "Tutto nella norma!" : "Nessuna transazione"}
+                                            title={hasTransactions ? "Tutto regolare" : "Nessuna transazione"}
                                             description={
                                                 hasTransactions
-                                                    ? "Non ci sono anomalie significative nel periodo selezionato. Le tue spese sono allineate con le medie storiche."
-                                                    : `Non ci sono transazioni registrate per ${periodLabel}. Aggiungi qualche spesa per vedere gli insights.`
+                                                    ? "Nel periodo selezionato non vedo segnali importanti: il tuo andamento e in linea con il solito."
+                                                    : `Per ${periodLabel} non ci sono ancora movimenti. Aggiungi qualche spesa per attivare gli insight.`
                                             }
                                         />
                                     </motion.div>

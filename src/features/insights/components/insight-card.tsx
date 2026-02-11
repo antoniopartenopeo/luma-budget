@@ -23,7 +23,7 @@ const severityConfig: Record<InsightSeverity, {
         color: "text-rose-600 dark:text-rose-400",
         bgColor: "bg-rose-500/10",
         borderColor: "border-rose-500",
-        label: "ANALISI CRITICA",
+        label: "ALTA PRIORITA",
     },
     medium: {
         color: "text-amber-600 dark:text-amber-400",
@@ -35,7 +35,7 @@ const severityConfig: Record<InsightSeverity, {
         color: "text-blue-600 dark:text-blue-400",
         bgColor: "bg-blue-500/10",
         borderColor: "border-blue-500",
-        label: "DATO NOTEVOLE",
+        label: "INFO",
     },
 }
 
@@ -83,7 +83,7 @@ export function InsightCard({ insight }: InsightCardProps) {
                             {config.label}
                         </Badge>
                         <span className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest block">
-                            Insight Analysis
+                            Spiegazione
                         </span>
                     </div>
                 }
@@ -129,7 +129,7 @@ export function InsightCard({ insight }: InsightCardProps) {
                         {/* Drivers List */}
                         {insight.drivers && insight.drivers.length > 0 && (
                             <div className="space-y-2">
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 mb-3">Dettagli e Determinanti</h4>
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 mb-3">Voci principali</h4>
                                 <div className="space-y-2">
                                     {insight.drivers.map((driver) => {
                                         const maxAmount = Math.max(...(insight.drivers?.map(d => d.amountCents) || [1]))
@@ -150,7 +150,7 @@ export function InsightCard({ insight }: InsightCardProps) {
                                                     <div className="flex flex-col gap-0.5 min-w-0">
                                                         <span className="font-bold text-sm text-foreground/90 truncate">{driver.label}</span>
                                                         <span className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest">
-                                                            Pesi sul ritmo attuale
+                                                            Peso sul totale
                                                         </span>
                                                     </div>
 
@@ -203,4 +203,3 @@ export function InsightCard({ insight }: InsightCardProps) {
         </motion.div>
     )
 }
-

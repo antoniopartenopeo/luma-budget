@@ -22,8 +22,8 @@ interface PremiumChartSectionProps {
 }
 
 /**
- * Reusable layout for "Ultra-Tech" charts.
- * Provvidenza radar backgrounds, glassmorphism, and unified premium styling.
+ * Reusable layout for premium charts.
+ * Provides animated backgrounds and a consistent visual container.
  */
 export function PremiumChartSection({
     title,
@@ -92,7 +92,7 @@ export function PremiumChartSection({
                     <StateMessage
                         variant="empty"
                         title="Nessun dato"
-                        description="I dati appariranno qui in questa vista ultra-tecnologica"
+                        description="I dati appariranno qui quando saranno disponibili."
                     />
                 </div>
             ) : (

@@ -26,14 +26,29 @@ export function orchestrateNarration(
     const rulesTriggered: string[] = []
 
     // 1. Initial Filtering (R3 - Consistency)
-    // Rule: If there's a current_period critical signal (e.g. Deficit), 
-    // supress long_term positive signals (e.g. Surplus projected in 6 months) to avoid confusion.
+    // Rule A: If there's a current_period critical signal (e.g. Deficit),
+    // suppress long_term positive signals (e.g. Surplus projected in 6 months) to avoid confusion.
     const hasCurrentCritical = candidates.some(c => c.scope === "current_period" && c.severity === "critical")
     let workingSet = candidates
     if (hasCurrentCritical) {
         workingSet = candidates.filter(c => !(c.scope === "long_term" && (c.id.includes("surplus") || c.id.includes("improving"))))
         if (workingSet.length < candidates.length) {
             rulesTriggered.push("R3: Suppressed contradictory long-term positive signals due to current critical status.")
+        }
+    }
+
+    // Rule B: If there is any high/critical issue in current period,
+    // suppress low projection reassurance in the same horizon to avoid mixed signals.
+    const hasCurrentHighIssue = workingSet.some(
+        c => c.scope === "current_period" && (c.severity === "high" || c.severity === "critical")
+    )
+    if (hasCurrentHighIssue) {
+        const before = workingSet.length
+        workingSet = workingSet.filter(
+            c => !(c.id === "forecast-advisor" && c.scope === "current_period" && c.severity === "low")
+        )
+        if (workingSet.length < before) {
+            rulesTriggered.push("R3: Suppressed low projection reassurance while a high-priority current issue is active.")
         }
     }
 

@@ -36,7 +36,7 @@ export function ScenarioDeck({
         <div className={className}>
             <div className="flex items-center gap-2 mb-4">
                 <Compass className="h-5 w-5 text-primary" />
-                <h3 className="text-lg font-bold tracking-tight">Orientamento</h3>
+                <h3 className="text-lg font-bold tracking-tight">Scegli il piano</h3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -109,7 +109,7 @@ export function ScenarioDeck({
                                     <div className="min-h-[24px]">
                                         {!isBaseline && (
                                             <span className="text-[10px] text-muted-foreground/70 font-medium italic">
-                                                Approccio: {approachLabel}
+                                                Piano: {approachLabel}
                                             </span>
                                         )}
                                     </div>
@@ -141,13 +141,13 @@ export function ScenarioDeck({
                     >
                         <div className="space-y-4 flex-1 flex flex-col">
                             <p className="text-sm text-muted-foreground font-medium leading-relaxed">
-                                Configura manualmente il tuo mix di risparmio ideale.
+                                Decidi tu quanto ridurre le spese non essenziali.
                             </p>
 
                             <div className="pt-2 border-t border-border/40 flex items-center justify-between h-[42px] mt-auto">
                                 {/* h-[42px] aligns with visual height of other cards' metrics */}
                                 <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider group-hover:text-amber-600 transition-colors">
-                                    Clicca per Configurare
+                                    Apri configurazione
                                 </span>
                                 <div className="h-8 w-8 rounded-full bg-muted/50 flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
                                     <Sparkles className="h-4 w-4 text-muted-foreground group-hover:text-amber-600" />
@@ -165,43 +165,43 @@ export function ScenarioDeck({
             {/* The Numa Engine - Visual Logic Legend (Centralized) */}
             <div className="mt-12 mb-8">
                 <NumaEngineCard
-                    title="Il Metodo Numa"
+                    title="Come calcola Numa"
                     icon={Compass}
-                    audienceHint="Per tester avanzati"
+                    audienceHint="In breve"
                     steps={[
                         {
                             icon: CheckCircle2,
                             colorClass: "text-primary",
                             bgClass: "bg-primary/10",
                             stepLabel: "1. Passato Reale",
-                            title: "Analisi Transazioni",
-                            description: "Numa scansiona la tua storia vera per capire quanto guadagni e spendi realmente ogni mese."
+                            title: "Analisi transazioni",
+                            description: "Numa legge il tuo storico per capire entrate e uscite mese per mese."
                         },
                         {
                             icon: Sparkles,
                             colorClass: "text-amber-500",
                             bgClass: "bg-amber-500/10",
                             stepLabel: "2. Calibrazione Adattiva",
-                            title: "Il tuo Ritmo",
-                            description: "Numa calibra l'intensità del taglio sulla tua \"elasticità\": se hai margine spinge di più, se sei al limite ti protegge."
+                            title: "Calibrazione ritmo",
+                            description: "Numa regola il piano in base al tuo margine: accelera quando puo, protegge quando serve."
                         },
                         {
                             icon: Target,
                             colorClass: "text-emerald-500",
                             bgClass: "bg-emerald-500/10",
                             stepLabel: "3. Futuro Stimato",
-                            title: "La Proiezione",
-                            description: "Numa calcola quanta strada puoi fare con quel carburante. Più lontano è l'obiettivo, più tempo servirà."
+                            title: "Proiezione obiettivo",
+                            description: "Numa stima in quanto tempo puoi arrivare al traguardo con il ritmo scelto."
                         }
                     ]}
-                    certificationTitle="Certificazione Adaptive Core"
-                    certificationSubtitle="Ogni calcolo è verificato in locale sulla tua storia creditizia reale."
-                    transparencyNote="Numa non applica mai regole generiche. Questo piano è l'adattamento unico della tua storia reale: abbiamo calibrato l'intensità del Ritmo sulla tua stabilità e sui tuoi margini effettivi, per proteggere sempre la tua tranquillità finanziaria."
+                    certificationTitle="Controllo locale del calcolo"
+                    certificationSubtitle="Ogni stima viene eseguita sul dispositivo usando il tuo storico reale."
+                    transparencyNote="Numa non usa un piano uguale per tutti: il risultato si adatta alla tua situazione reale e ai tuoi margini."
                     auditStats={calibration ? [
                         {
                             label: "Profondità Audit",
                             value: "Ultimi 6 Mesi",
-                            subValue: `Scansione integrale di ${activeScenario?.config.label === "Nessun Ritmo" ? "tutte le" : "ogni singola"} transazione precedente.`
+                            subValue: `Analisi di ${activeScenario?.config.label === "Nessun Ritmo" ? "tutte le" : "ogni"} transazione nel periodo.`
                         },
                         {
                             label: "Stabilità Rilevata",
@@ -211,12 +211,12 @@ export function ScenarioDeck({
                         {
                             label: "Elasticità (Extra)",
                             value: `${(calibration.elasticityIndex * 100).toFixed(1)}%`,
-                            subValue: "Quota di spese \"non essenziali\" che il Core può manovrare in sicurezza."
+                            subValue: "Quota di spese non essenziali che il Core puo ridurre in sicurezza."
                         },
                         {
                             label: "Calibrazione Finale",
                             value: `${activeScenario?.config.savingsMap.superfluous}%`,
-                            subValue: "Risparmio massimo suggerito per proteggere il tuo cuscino finanziario."
+                            subValue: "Livello massimo di risparmio suggerito in modo sostenibile."
                         }
                     ] : undefined}
                 />

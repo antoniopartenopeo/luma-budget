@@ -1,37 +1,30 @@
 import * as React from "react"
 import { motion, Variants } from "framer-motion"
-import { Sparkles, TrendingUp, Lightbulb, Wallet, BrainCircuit, LineChart, Search, Lock } from "lucide-react"
+import { Sparkles, TrendingUp, Wallet, BrainCircuit, LineChart, Search, Lock } from "lucide-react"
 import { MacroSection } from "@/components/patterns/macro-section"
 import { cn } from "@/lib/utils"
 import { formatCents } from "@/domain/money"
-import { useAIAdvisor } from "../use-ai-advisor"
-import { useOrchestratedInsightsFromData } from "../use-orchestrated-insights"
+import { useAIAdvisor, type AIAdvisorResult } from "../use-ai-advisor"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { SubSectionCard } from "@/components/patterns/sub-section-card"
 import { NumaEngineCard } from "@/components/patterns/numa-engine-card"
 
-const SMART_ADVICE_SIGNATURE_KEY = "insights_smart_advice_signature_v1"
+interface AIAdvisorCardProps {
+    advisorData?: AIAdvisorResult
+}
 
-export function AIAdvisorCard() {
-    const { forecast, facts, subscriptions, priceHikes, isLoading: aiLoading } = useAIAdvisor()
-    const { orchestration, isLoading: orchestratorLoading } = useOrchestratedInsightsFromData({
-        advisorFacts: facts,
-        subscriptions,
-        priceHikes,
-        advisorLoading: aiLoading
-    })
+function AIAdvisorCardView({ forecast, facts, subscriptions, isLoading: aiLoading }: AIAdvisorResult) {
     const { currency, locale } = useCurrency()
 
-    const isLoading = aiLoading || orchestratorLoading
+    const isLoading = aiLoading
     const visibleSubscriptions = subscriptions.slice(0, 3)
     const hiddenSubscriptionsCount = Math.max(0, subscriptions.length - visibleSubscriptions.length)
-    const [adviceFreshness, setAdviceFreshness] = React.useState<"new" | "same" | null>(null)
 
     // 1. DYNAMIC ATMOSPHERE: Calculate status based on financial health
     const advisorStatus = React.useMemo(() => {
         if (!forecast) return "default"
-        if (forecast.predictedSavingsCents < 0) return "critical"
-        if (forecast.predictedSavingsCents < 10000) return "warning"
+        if (forecast.predictedTotalEstimatedBalanceCents < 0) return "critical"
+        if (forecast.predictedTotalEstimatedBalanceCents < 10000) return "warning"
         return "default"
     }, [forecast])
 
@@ -54,30 +47,10 @@ export function AIAdvisorCard() {
             transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
         }
     }
-    const primary = orchestration?.primary
-    const secondary = orchestration?.secondary
-
-    const whyChips = primary ? [
-        `Fonte: ${primary.source.replace("_", " ")}`,
-        `Priorità: ${primary.severity}`,
-        primary.scope === "current_period" ? "Periodo: corrente" : "Periodo: lungo termine"
-    ] : []
-
-    React.useEffect(() => {
-        if (!primary) return
-        const signature = `${primary.id}|${primary.narration.text}`
-        try {
-            const prevSignature = localStorage.getItem(SMART_ADVICE_SIGNATURE_KEY)
-            setAdviceFreshness(prevSignature === signature ? "same" : "new")
-            localStorage.setItem(SMART_ADVICE_SIGNATURE_KEY, signature)
-        } catch {
-            setAdviceFreshness(null)
-        }
-    }, [primary])
 
     if (isLoading) {
         return (
-            <MacroSection title="Numa AI Advisor" description="Analisi finanziaria in corso..." className="h-[auto] min-h-[240px]">
+            <MacroSection title="Numa Advisor" description="Sto analizzando i tuoi dati..." className="h-[auto] min-h-[240px]">
                 <div className="flex flex-col items-center justify-center py-12 gap-4">
                     <div className="relative">
                         <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
@@ -86,14 +59,14 @@ export function AIAdvisorCard() {
                         </div>
                     </div>
                     <p className="text-sm font-medium text-muted-foreground animate-pulse">
-                        Elaborazione insight...
+                        Sto preparando la stima...
                     </p>
                 </div>
             </MacroSection>
         )
     }
 
-    if (!forecast && !primary) {
+    if (!forecast) {
         return (
             <MacroSection className="opacity-80">
                 <div className="flex flex-col items-center justify-center text-center py-6 gap-4">
@@ -101,8 +74,8 @@ export function AIAdvisorCard() {
                         <Sparkles className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                        <h3 className="font-semibold text-lg">Tutto tranquillo</h3>
-                        <p className="text-sm text-muted-foreground max-w-[300px]">L&apos;IA non ha rilevato anomalie o suggerimenti urgenti per il momento.</p>
+                        <h3 className="font-semibold text-lg">Dati ancora insufficienti</h3>
+                        <p className="text-sm text-muted-foreground max-w-[300px]">Servono piu movimenti per stimare in modo affidabile il saldo totale del mese.</p>
                     </div>
                 </div>
             </MacroSection>
@@ -113,8 +86,8 @@ export function AIAdvisorCard() {
         <MacroSection
             variant="premium"
             status={advisorStatus}
-            title="Numa AI Advisor"
-            description="Financial Intelligence"
+            title="Numa Advisor"
+            description="Sintesi semplice dei tuoi dati recenti"
         >
             <motion.div
                 variants={containerVariants}
@@ -126,28 +99,44 @@ export function AIAdvisorCard() {
                 {forecast && (
                     <motion.div variants={itemVariants}>
                         <SubSectionCard
-                            label="Proiezione Mensile"
+                            label="Saldo totale stimato"
                             icon={<TrendingUp className="h-4 w-4 text-emerald-500" />}
                             extra={
-                                <div className={cn(
-                                    "px-4 py-2 rounded-xl text-xs font-black border",
-                                    forecast.confidence === "high"
-                                        ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                                        : "bg-amber-500/10 text-amber-600 border-amber-500/20"
-                                )}>
-                                    {forecast.confidence === "high" ? "ATTENDIBILITÀ ALTA" : "ATTENDIBILITÀ MEDIA"}
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <div className={cn(
+                                        "px-3 py-1.5 rounded-xl text-[11px] font-black border uppercase tracking-wide",
+                                        forecast.primarySource === "brain"
+                                            ? "bg-primary/10 text-primary border-primary/20"
+                                            : "bg-muted text-muted-foreground border-border"
+                                    )}>
+                                        {forecast.primarySource === "brain" ? "Fonte Brain" : "Fonte Storico"}
+                                    </div>
+                                    <div className={cn(
+                                        "px-3 py-1.5 rounded-xl text-[11px] font-black border uppercase tracking-wide",
+                                        forecast.confidence === "high"
+                                            ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                                            : forecast.confidence === "medium"
+                                                ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                                                : "bg-rose-500/10 text-rose-600 border-rose-500/20"
+                                    )}>
+                                        {forecast.confidence === "high"
+                                            ? "Affidabilita alta"
+                                            : forecast.confidence === "medium"
+                                                ? "Affidabilita media"
+                                                : "Affidabilita bassa"}
+                                    </div>
                                 </div>
                             }
                         >
                             <div className="space-y-1">
                                 <div className={cn(
                                     "text-4xl font-black tracking-tighter tabular-nums",
-                                    forecast.predictedSavingsCents < 0 ? "text-rose-500" : "text-foreground"
+                                    forecast.predictedTotalEstimatedBalanceCents < 0 ? "text-rose-500" : "text-foreground"
                                 )}>
-                                    {formatCents(forecast.predictedSavingsCents, currency, locale)}
+                                    {formatCents(forecast.predictedTotalEstimatedBalanceCents, currency, locale)}
                                 </div>
                                 <p className="text-xs text-muted-foreground font-medium">
-                                    Risparmio stimato basato sui tuoi trend attuali di spesa.
+                                    Saldo base totale meno spesa residua stimata del mese.
                                 </p>
                             </div>
                         </SubSectionCard>
@@ -158,13 +147,13 @@ export function AIAdvisorCard() {
                 {subscriptions.length > 0 && (
                     <motion.div variants={itemVariants}>
                         <SubSectionCard
-                            label="Abbonamenti Rilevati"
+                            label="Abbonamenti rilevati"
                             icon={<Wallet className="h-4 w-4 text-indigo-500" />}
                         >
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                                 <div className="flex items-baseline gap-3">
                                     <span className="text-4xl font-black text-foreground tabular-nums">{subscriptions.length}</span>
-                                    <span className="text-sm text-muted-foreground font-medium uppercase tracking-wider">Servizi attivi questo mese</span>
+                                    <span className="text-sm text-muted-foreground font-medium uppercase tracking-wider">Servizi attivi nel mese</span>
                                 </div>
 
                                 <div className="flex flex-wrap gap-2">
@@ -196,114 +185,78 @@ export function AIAdvisorCard() {
                 {/* NEW: Numa Engine Card (Centralized) */}
                 <motion.div variants={itemVariants}>
                     <NumaEngineCard
-                        title="Il Motore Numa AI"
+                        title="Come lavora Numa Advisor"
                         icon={BrainCircuit}
-                        audienceHint="Per tester avanzati"
+                        audienceHint="Versione semplice"
                         className="rounded-[2.5rem]"
                         steps={[
                             {
                                 icon: LineChart,
                                 colorClass: "text-indigo-500",
                                 bgClass: "bg-indigo-500/10",
-                                stepLabel: "1. Previsione Ponderata",
-                                title: "Algoritmo Adattivo",
-                                description: "Diamo peso 50/30/20 ai mesi recenti per anticipare i tuoi cambiamenti di vita."
+                                stepLabel: "1. Base + residuo",
+                                title: "Formula chiara",
+                                description: "Partiamo dal saldo base totale e sottraiamo la spesa residua stimata fino a fine mese."
                             },
                             {
                                 icon: Search,
                                 colorClass: "text-emerald-500",
                                 bgClass: "bg-emerald-500/10",
-                                stepLabel: "2. Scansione Pattern",
-                                title: "Rilevamento Servizi",
-                                description: "Identifichiamo abbonamenti e rincari (>5%) analizzando la ricorrenza esatta."
+                                stepLabel: "2. Fonte stima",
+                                title: "Brain quando pronto",
+                                description: "Se il Brain e pronto usiamo il nowcast reale; altrimenti usiamo una stima storica prudente."
                             },
                             {
                                 icon: Lock,
                                 colorClass: "text-slate-500",
                                 bgClass: "bg-slate-500/10",
-                                stepLabel: "3. Privacy Totale",
-                                title: "Analisi Locale",
-                                description: "I tuoi dati non lasciano mai il dispositivo. L'intelligenza gira 'on-edge'."
+                                stepLabel: "3. Segnali utili",
+                                title: "Abbonamenti e rincari",
+                                description: "Evidenziamo ricorrenze e possibili aumenti prezzo per aiutarti ad agire in anticipo."
                             }
                         ]}
-                        auditLabel="Vedi Audit Tecnico"
-                        transparencyNote="I tuoi dati finanziari vengono analizzati esclusivamente sul dispositivo. Nessuna informazione personale viene inviata ai server cloud per questa analisi."
+                        auditLabel="Dettagli tecnici"
+                        transparencyNote="I tuoi dati finanziari vengono analizzati solo sul dispositivo. Nessuna informazione personale viene inviata al cloud per questa funzione."
                         auditStats={[
                             {
-                                label: "Pesatura Algoritmo",
-                                value: "50% • 30% • 20%",
-                                subValue: "Distribuzione del peso sui 3 mesi più recenti."
+                                label: "Formula",
+                                value: "Saldo base - residuo",
+                                subValue: "Metrica principale della card."
                             },
                             {
-                                label: "Precisione Cronologica",
-                                value: "±1 Giorno",
-                                subValue: "Tolleranza per il rilevamento ricorrenze mensili."
+                                label: "Fonte attiva",
+                                value: forecast?.primarySource === "brain" ? "Brain" : "Storico",
+                                subValue: forecast?.primarySource === "brain"
+                                    ? "Nowcast del Core sul mese corrente."
+                                    : "Residuo storico (con backup run-rate)."
                             },
                             {
-                                label: "Compute Layer",
-                                value: "On-Device",
-                                subValue: "Esecuzione locale isolata senza chiamate API esterne."
+                                label: "Esecuzione",
+                                value: "Locale",
+                                subValue: "Calcolo fatto in locale, senza API esterne."
                             },
                             ...(facts ? [{
-                                label: "Data Points",
+                                label: "Mesi storici",
                                 value: `${facts.historicalMonthsCount} Mesi`,
-                                subValue: "Profondità storica utilizzata per la proiezione attuale."
+                                subValue: "Storico usato per la stima attuale."
                             }] : [])
                         ]}
                     />
                 </motion.div>
-
-                {/* 3. Smart Tip (Orchestrated) */}
-                {primary && (
-                    <motion.div variants={itemVariants}>
-                        <SubSectionCard
-                            variant="accent"
-                            label="SMART ADVICE"
-                            icon={<Lightbulb className="h-4 w-4 fill-current" />}
-                            className="overflow-hidden"
-                        >
-                            {/* Visual accent for Smart Advice */}
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-3xl rounded-full -mr-16 -mt-16" />
-
-                            <div className="space-y-4 relative z-10">
-                                <p className="text-sm font-medium leading-relaxed text-foreground/90">
-                                    &quot;{primary.narration.text}&quot;
-                                </p>
-
-                                <div className="flex flex-wrap gap-2">
-                                    {adviceFreshness === "same" && (
-                                        <span className="px-2 py-1 rounded-lg bg-muted/60 border border-border/50 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-                                            Nessuna novità
-                                        </span>
-                                    )}
-                                    {adviceFreshness === "new" && (
-                                        <span className="px-2 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
-                                            Nuovo insight
-                                        </span>
-                                    )}
-                                    {whyChips.map((chip, idx) => (
-                                        <span key={idx} className="px-2 py-1 rounded-lg bg-background/70 border border-border/50 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-                                            {chip}
-                                        </span>
-                                    ))}
-                                </div>
-
-                                {secondary && secondary.length > 0 && (
-                                    <div className="space-y-2 pt-4 border-t border-indigo-500/10">
-                                        {secondary.map((s, idx) => (
-                                            <p key={idx} className="text-xs leading-relaxed text-muted-foreground/80 font-medium italic">
-                                                <span className="font-bold uppercase not-italic mr-2 text-indigo-500/40 text-[10px] tracking-wider">Contesto:</span>
-                                                {s.narration.text}
-                                            </p>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-
-                        </SubSectionCard>
-                    </motion.div>
-                )}
             </motion.div>
         </MacroSection>
     )
+}
+
+function AIAdvisorCardFromHook() {
+    const advisorData = useAIAdvisor()
+    return <AIAdvisorCardView {...advisorData} />
+}
+
+export function AIAdvisorCard({ advisorData }: AIAdvisorCardProps) {
+    if (advisorData) {
+        return <AIAdvisorCardView {...advisorData} />
+    }
+
+    return <AIAdvisorCardFromHook />
 }

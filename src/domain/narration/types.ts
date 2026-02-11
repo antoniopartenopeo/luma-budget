@@ -231,14 +231,13 @@ export interface OrchestrationContext {
 // =====================
 
 export interface AdvisorFacts {
-    predictedIncomeCents: number
-    predictedExpensesCents: number
-    deltaCents: number
-    deltaPercent?: number
+    baseBalanceCents: number
+    predictedRemainingCurrentMonthExpensesCents: number
+    predictedTotalEstimatedBalanceCents: number
+    primarySource: "brain" | "fallback"
     historicalMonthsCount: number
     subscriptionCount: number
     subscriptionTotalYearlyCents: number
-    monthlyBudgetLimitCents?: number
 }
 
 export type AdvisorState = "deficit" | "positive_balance" | "neutral"

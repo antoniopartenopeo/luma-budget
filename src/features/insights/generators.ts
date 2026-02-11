@@ -35,7 +35,14 @@ export function buildBudgetRiskInsight(
     input: BudgetRiskInput,
     thresholds: InsightThresholds
 ): Insight | null {
-    const { transactions, budgetCents, period, currentDate } = input
+    const {
+        transactions,
+        budgetCents,
+        period,
+        currentDate,
+        currency = "EUR",
+        locale = "it-IT",
+    } = input
 
     // No insight if no budget set
     if (!budgetCents || budgetCents <= 0) return null
@@ -73,8 +80,8 @@ export function buildBudgetRiskInsight(
         id: `budget-risk-${period}`,
         kind: "budget-risk",
         severity,
-        title: "Ritmo di spesa elevato",
-        summary: `A questo ritmo, la proiezione di spesa è di ${formatCents(projectedCents)} entro fine ${periodLabel}. Questo supera il tuo percorso ideale di ${formatCents(deltaCents)} (+${deltaPct}%).`,
+        title: "Spesa sopra il budget",
+        summary: `Se continui cosi, a fine ${periodLabel} potresti arrivare a ${formatCents(projectedCents, currency, locale)}: circa ${formatCents(deltaCents, currency, locale)} in piu del budget (+${deltaPct}%).`,
         metrics: {
             currentCents: spentCents,
             baselineCents: budgetCents,
@@ -101,7 +108,13 @@ export function buildCategorySpikeInsights(
     input: CategorySpikeInput,
     thresholds: InsightThresholds
 ): Insight[] {
-    const { transactions, categoriesMap, currentPeriod } = input
+    const {
+        transactions,
+        categoriesMap,
+        currentPeriod,
+        currency = "EUR",
+        locale = "it-IT",
+    } = input
 
     // Get current month totals
     const currentTransactions = filterTransactionsByMonth(transactions, currentPeriod)
@@ -112,6 +125,7 @@ export function buildCategorySpikeInsights(
 
     // Calculate 3-month average per category
     const baselineAverages = new Map<string, number>()
+    const baselineCounts = new Map<string, number>()
 
     for (const prevPeriod of previousPeriods) {
         const prevTransactions = filterTransactionsByMonth(transactions, prevPeriod)
@@ -120,12 +134,15 @@ export function buildCategorySpikeInsights(
         for (const [catId, amount] of prevTotals) {
             const current = baselineAverages.get(catId) || 0
             baselineAverages.set(catId, current + amount)
+            const count = baselineCounts.get(catId) || 0
+            baselineCounts.set(catId, count + 1)
         }
     }
 
     // Convert sums to averages
     for (const [catId, total] of baselineAverages) {
-        baselineAverages.set(catId, Math.round(total / 3))
+        const samples = baselineCounts.get(catId) || 0
+        baselineAverages.set(catId, samples > 0 ? Math.round(total / samples) : 0)
     }
 
     // Find spikes
@@ -176,8 +193,8 @@ export function buildCategorySpikeInsights(
             id: `category-spike-${currentPeriod}-${spike.categoryId}`,
             kind: "category-spike" as const,
             severity,
-            title: `Accelerazione in ${spike.label}`,
-            summary: `Hai speso ${formatCents(spike.currentCents)} in ${spike.label}, con un incremento di ${formatCents(spike.deltaCents)} (+${spike.deltaPct}%) rispetto al tuo ritmo abituale.`,
+            title: `Spesa in aumento: ${spike.label}`,
+            summary: `In ${spike.label} hai speso ${formatCents(spike.currentCents, currency, locale)}, cioe ${formatCents(spike.deltaCents, currency, locale)} in piu rispetto alla tua media (+${spike.deltaPct}%).`,
             metrics: {
                 currentCents: spike.currentCents,
                 baselineCents: spike.baselineCents,
@@ -211,7 +228,7 @@ export function buildTopDriversInsight(
     input: TopDriversInput,
     thresholds: InsightThresholds
 ): Insight | null {
-    const { transactions, currentPeriod } = input
+    const { transactions, currentPeriod, currency = "EUR", locale = "it-IT" } = input
 
     // Get current month transactions
     const currentTransactions = filterTransactionsByMonth(transactions, currentPeriod)
@@ -251,17 +268,17 @@ export function buildTopDriversInsight(
 
     const periodLabel = formatPeriodLabel(currentPeriod)
     const deltaText = deltaCents > 0
-        ? `+${formatCents(deltaCents)} rispetto al mese scorso`
+        ? `${formatCents(deltaCents, currency, locale)} in piu rispetto al mese scorso`
         : deltaCents < 0
-            ? `${formatCents(deltaCents)} rispetto al mese scorso`
-            : "uguale al mese scorso"
+            ? `${formatCents(deltaCents, currency, locale)} in meno rispetto al mese scorso`
+            : "stesso livello del mese scorso"
 
     return {
         id: `top-drivers-${currentPeriod}`,
         kind: "top-drivers",
         severity: deltaCents > 0 ? "medium" : "low",
-        title: "Top spese del mese",
-        summary: `Le tue 5 transazioni più rilevanti di ${periodLabel} (${deltaText}).`,
+        title: "Spese principali del mese",
+        summary: `Le ${INSIGHT_CONFIG.TOP_DRIVERS_COUNT} spese che hanno pesato di piu in ${periodLabel} (${deltaText}).`,
         metrics: {
             currentCents: currentTotalCents,
             baselineCents: prevTotalCents,

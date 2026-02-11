@@ -52,12 +52,16 @@ export interface BudgetRiskInput {
     budgetCents: number | null
     period: string // YYYY-MM
     currentDate: Date
+    currency?: string
+    locale?: string
 }
 
 export interface CategorySpikeInput {
     transactions: { categoryId: string; amountCents: number; type: "income" | "expense"; timestamp: number }[]
     categoriesMap: Map<string, { label: string }>
     currentPeriod: string // YYYY-MM
+    currency?: string
+    locale?: string
 }
 
 export interface TopDriversInput {
@@ -69,6 +73,7 @@ export interface TopDriversInput {
         type: "income" | "expense"
         timestamp: number
     }[]
-    categoriesMap: Map<string, { label: string }>
     currentPeriod: string // YYYY-MM
+    currency?: string
+    locale?: string
 }

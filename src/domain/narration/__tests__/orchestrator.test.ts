@@ -127,4 +127,38 @@ describe("orchestrator", () => {
         expect(result?.primary.id).toBe("improving")
         expect(result?.secondary).toHaveLength(0)
     })
+
+    it("R3: suppresses low forecast reassurance if a high current issue exists", () => {
+        const candidates: NarrationCandidate[] = [
+            {
+                id: "hike-atm",
+                source: "subscription",
+                scope: "current_period",
+                severity: "high",
+                narration: { text: "Aumento prezzo ATM" }
+            },
+            {
+                id: "forecast-advisor",
+                source: "projection",
+                scope: "current_period",
+                severity: "low",
+                narration: { text: "Saldo totale stimato positivo." }
+            },
+            {
+                id: "category-spike",
+                source: "risk_spike",
+                scope: "current_period",
+                severity: "medium",
+                narration: { text: "Spesa in aumento categoria X." }
+            }
+        ]
+
+        const result = orchestrateNarration(candidates)
+
+        expect(result?.primary.id).toBe("hike-atm")
+        expect(result?.secondary.map(s => s.id)).toContain("category-spike")
+        expect(result?.secondary.map(s => s.id)).not.toContain("forecast-advisor")
+        expect(result?.suppressed.map(s => s.id)).toContain("forecast-advisor")
+        expect(result?.rationale.rulesTriggered.some(rule => rule.includes("R3"))).toBe(true)
+    })
 })

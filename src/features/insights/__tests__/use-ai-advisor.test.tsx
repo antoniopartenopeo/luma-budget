@@ -1,0 +1,201 @@
+import { useEffect } from "react"
+import { act, render } from "@testing-library/react"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { useAIAdvisor } from "../use-ai-advisor"
+
+const useTransactionsMock = vi.fn()
+const useCategoriesMock = vi.fn()
+const useDashboardSummaryMock = vi.fn()
+const initializeBrainMock = vi.fn()
+const evolveBrainFromHistoryMock = vi.fn()
+
+vi.mock("@/features/transactions/api/use-transactions", () => ({
+    useTransactions: () => useTransactionsMock(),
+}))
+
+vi.mock("@/features/categories/api/use-categories", () => ({
+    useCategories: () => useCategoriesMock(),
+}))
+
+vi.mock("@/features/dashboard/api/use-dashboard", () => ({
+    useDashboardSummary: () => useDashboardSummaryMock(),
+}))
+
+vi.mock("@/brain", () => ({
+    initializeBrain: (...args: unknown[]) => initializeBrainMock(...args),
+    evolveBrainFromHistory: (...args: unknown[]) => evolveBrainFromHistoryMock(...args),
+}))
+
+function ts(isoDate: string): number {
+    return new Date(isoDate).getTime()
+}
+
+type TestTransaction = {
+    id: string
+    type: "income" | "expense"
+    amountCents: number
+    categoryId: string
+    description: string
+    timestamp: number
+    isSuperfluous?: boolean
+}
+
+function HookHarness({ onValue }: { onValue: (value: ReturnType<typeof useAIAdvisor>) => void }) {
+    const value = useAIAdvisor()
+
+    useEffect(() => {
+        onValue(value)
+    }, [onValue, value])
+
+    return null
+}
+
+const transactionsFixture = [
+    { id: "t1", type: "income" as const, amountCents: 300000, categoryId: "income", description: "Stipendio", timestamp: ts("2025-12-03T09:00:00.000Z") },
+    { id: "t2", type: "expense" as const, amountCents: 170000, categoryId: "rent", description: "Affitto Casa", timestamp: ts("2025-12-05T09:00:00.000Z") },
+    { id: "t2b", type: "expense" as const, amountCents: 30000, categoryId: "food", description: "Spesa Fine Mese", timestamp: ts("2025-12-26T09:00:00.000Z") },
+    { id: "t3", type: "income" as const, amountCents: 305000, categoryId: "income", description: "Stipendio", timestamp: ts("2026-01-03T09:00:00.000Z") },
+    { id: "t4", type: "expense" as const, amountCents: 180000, categoryId: "rent", description: "Affitto Casa", timestamp: ts("2026-01-05T09:00:00.000Z") },
+    { id: "t4b", type: "expense" as const, amountCents: 40000, categoryId: "food", description: "Spesa Fine Mese", timestamp: ts("2026-01-24T09:00:00.000Z") },
+    { id: "t5", type: "income" as const, amountCents: 310000, categoryId: "income", description: "Stipendio", timestamp: ts("2026-02-03T09:00:00.000Z") },
+    { id: "t6", type: "expense" as const, amountCents: 50000, categoryId: "food", description: "Spesa Supermercato", timestamp: ts("2026-02-05T09:00:00.000Z") },
+    { id: "t7", type: "expense" as const, amountCents: 50000, categoryId: "food", description: "Spesa Supermercato", timestamp: ts("2026-02-10T09:00:00.000Z") },
+    { id: "t8", type: "expense" as const, amountCents: 50000, categoryId: "fun", description: "Tempo Libero", timestamp: ts("2026-02-14T09:00:00.000Z") },
+]
+
+const transactionsCategoryShiftFixture: TestTransaction[] = transactionsFixture.map((tx) =>
+    tx.id === "t6"
+        ? {
+            ...tx,
+            categoryId: "fun",
+            isSuperfluous: true,
+        }
+        : tx
+)
+
+const categoriesFixture = [
+    { id: "rent", spendingNature: "essential" as const },
+    { id: "food", spendingNature: "comfort" as const },
+    { id: "fun", spendingNature: "superfluous" as const },
+    { id: "income", spendingNature: "essential" as const },
+]
+
+function buildBrainResult(overrides: Record<string, unknown> = {}) {
+    return {
+        reason: "trained",
+        snapshot: null,
+        datasetFingerprint: "brain-v2-test",
+        didTrain: true,
+        epochsRun: 4,
+        sampleCount: 18,
+        monthsAnalyzed: 3,
+        averageLoss: 0.08,
+        prediction: null,
+        inferencePeriod: "2026-02",
+        currentIncomeCents: 310000,
+        currentExpensesCents: 150000,
+        predictedExpensesNextMonthCents: 170000,
+        predictedCurrentMonthRemainingExpensesCents: 120000,
+        currentMonthNowcastConfidence: 0.78,
+        currentMonthNowcastReady: true,
+        ...overrides,
+    }
+}
+
+describe("useAIAdvisor", () => {
+    beforeEach(() => {
+        vi.clearAllMocks()
+        vi.useFakeTimers()
+        vi.setSystemTime(new Date("2026-02-15T10:00:00.000Z"))
+
+        useTransactionsMock.mockReturnValue({
+            data: transactionsFixture,
+            isLoading: false,
+        })
+        useCategoriesMock.mockReturnValue({
+            data: categoriesFixture,
+            isLoading: false,
+        })
+        useDashboardSummaryMock.mockReturnValue({
+            data: { netBalanceCents: 500000 },
+            isLoading: false,
+        })
+        initializeBrainMock.mockImplementation(() => undefined)
+        evolveBrainFromHistoryMock.mockResolvedValue(buildBrainResult())
+    })
+
+    afterEach(() => {
+        vi.useRealTimers()
+    })
+
+    it("uses canonical dashboard balance and Brain nowcast when ready", async () => {
+        let latest: ReturnType<typeof useAIAdvisor> | null = null
+
+        render(<HookHarness onValue={(value) => { latest = value }} />)
+
+        await act(async () => {
+            await Promise.resolve()
+            await Promise.resolve()
+        })
+
+        expect(latest?.isLoading).toBe(false)
+        expect(evolveBrainFromHistoryMock).toHaveBeenCalledTimes(1)
+        expect(latest?.forecast?.primarySource).toBe("brain")
+        expect(latest?.forecast?.baseBalanceCents).toBe(500000)
+        expect(latest?.forecast?.predictedRemainingCurrentMonthExpensesCents).toBe(120000)
+        expect(latest?.forecast?.predictedTotalEstimatedBalanceCents).toBe(380000)
+    })
+
+    it("falls back to run-rate when Brain nowcast is not ready", async () => {
+        evolveBrainFromHistoryMock.mockResolvedValue(
+            buildBrainResult({
+                currentMonthNowcastReady: false,
+                predictedCurrentMonthRemainingExpensesCents: 999999,
+            })
+        )
+
+        let latest: ReturnType<typeof useAIAdvisor> | null = null
+
+        render(<HookHarness onValue={(value) => { latest = value }} />)
+
+        await act(async () => {
+            await Promise.resolve()
+            await Promise.resolve()
+        })
+
+        expect(latest?.isLoading).toBe(false)
+        expect(latest?.forecast?.primarySource).toBe("fallback")
+        expect(latest?.forecast?.predictedRemainingCurrentMonthExpensesCents).toBe(35000)
+        expect(latest?.forecast?.predictedTotalEstimatedBalanceCents).toBe(465000)
+    })
+
+    it("re-runs evolution when transaction classification changes", async () => {
+        let latest: ReturnType<typeof useAIAdvisor> | null = null
+        let currentTransactions: TestTransaction[] = transactionsFixture
+
+        useTransactionsMock.mockImplementation(() => ({
+            data: currentTransactions,
+            isLoading: false,
+        }))
+
+        const view = render(<HookHarness onValue={(value) => { latest = value }} />)
+
+        await act(async () => {
+            await Promise.resolve()
+            await Promise.resolve()
+        })
+
+        expect(latest?.isLoading).toBe(false)
+        expect(evolveBrainFromHistoryMock).toHaveBeenCalledTimes(1)
+
+        currentTransactions = transactionsCategoryShiftFixture
+        view.rerender(<HookHarness onValue={(value) => { latest = value }} />)
+
+        await act(async () => {
+            await Promise.resolve()
+            await Promise.resolve()
+        })
+
+        expect(evolveBrainFromHistoryMock).toHaveBeenCalledTimes(2)
+    })
+})

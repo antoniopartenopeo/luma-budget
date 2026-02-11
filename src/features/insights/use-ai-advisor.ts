@@ -1,39 +1,130 @@
-import { useMemo, useState, useEffect } from "react"
+import { useMemo, useState, useEffect, useRef } from "react"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
-import { sumExpensesInCents, sumIncomeInCents } from "@/domain/money"
+import { sumExpensesInCents } from "@/domain/money"
 import { AdvisorFacts } from "@/domain/narration"
 import { extractMerchantKey } from "@/features/import-csv/core/merchant/pipeline"
+import { useDashboardSummary } from "@/features/dashboard/api/use-dashboard"
+import { useCategories } from "@/features/categories/api/use-categories"
+import { evolveBrainFromHistory, initializeBrain, type BrainEvolutionResult } from "@/brain"
+import { getCurrentPeriod, getDaysElapsedInMonth, getDaysInMonth, getPreviousMonths } from "@/lib/date-ranges"
+import { filterTransactionsByMonth } from "./utils"
 
 export interface AISubscription {
     id: string
     description: string
     amountCents: number
     amount: number
-    frequency: "monthly" | "weekly"
+    frequency: "monthly"
 }
 
 export interface AIForecast {
-    predictedIncomeCents: number
-    predictedExpensesCents: number
-    predictedSavingsCents: number
-    predictedIncome: number
-    predictedExpenses: number
-    predictedSavings: number
+    baseBalanceCents: number
+    predictedRemainingCurrentMonthExpensesCents: number
+    predictedTotalEstimatedBalanceCents: number
+    primarySource: "brain" | "fallback"
     confidence: "high" | "medium" | "low"
-}
-
-export interface AIPriceHike {
-    name: string
-    diff: number
-    percent: number
 }
 
 export interface AIAdvisorResult {
     facts: AdvisorFacts | null
     forecast: AIForecast | null
     subscriptions: AISubscription[]
-    priceHikes: AIPriceHike[]
     isLoading: boolean
+}
+
+function computeBrainInputSignature(
+    transactions: Array<{
+        amountCents: number
+        timestamp: number
+        categoryId: string
+        type: "income" | "expense"
+        isSuperfluous?: boolean
+    }>,
+    categories: Array<{
+        id: string
+        spendingNature: "essential" | "comfort" | "superfluous"
+    }>,
+    period: string
+): string {
+    let h = 2166136261
+
+    for (const tx of transactions) {
+        h ^= tx.timestamp
+        h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)
+
+        h ^= tx.amountCents
+        h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)
+
+        h ^= tx.type === "income" ? 1 : 2
+        h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)
+
+        for (let i = 0; i < tx.categoryId.length; i++) {
+            h ^= tx.categoryId.charCodeAt(i)
+            h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)
+        }
+
+        h ^= tx.isSuperfluous === true ? 19 : tx.isSuperfluous === false ? 23 : 29
+        h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)
+    }
+
+    for (const category of categories) {
+        for (let i = 0; i < category.id.length; i++) {
+            h ^= category.id.charCodeAt(i)
+            h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)
+        }
+        h ^= category.spendingNature === "essential" ? 11 : category.spendingNature === "comfort" ? 13 : 17
+        h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)
+    }
+
+    return `${period}:${transactions.length}:${categories.length}:${(h >>> 0).toString(16)}`
+}
+
+function estimateRemainingExpensesFromHistory(
+    transactions: Array<{ timestamp: number; type: "income" | "expense"; amountCents: number }>,
+    currentPeriod: string,
+    now: Date = new Date()
+): number | null {
+    const dayOfMonth = now.getDate()
+    const recentPeriods = getPreviousMonths(currentPeriod, 3)
+
+    const remainingByPeriod: number[] = []
+
+    for (const period of recentPeriods) {
+        const monthExpenses = filterTransactionsByMonth(transactions, period).filter((transaction) => transaction.type === "expense")
+        if (monthExpenses.length === 0) continue
+
+        const totalExpensesCents = sumExpensesInCents(monthExpenses)
+        const cutoffDay = Math.min(dayOfMonth, getDaysInMonth(period))
+        const spentUntilCutoffCents = sumExpensesInCents(
+            monthExpenses.filter((transaction) => new Date(transaction.timestamp).getDate() <= cutoffDay)
+        )
+
+        remainingByPeriod.push(Math.max(totalExpensesCents - spentUntilCutoffCents, 0))
+    }
+
+    if (remainingByPeriod.length === 0) return null
+    if (remainingByPeriod.length >= 3) {
+        return Math.round(
+            remainingByPeriod[0] * 0.5
+            + remainingByPeriod[1] * 0.3
+            + remainingByPeriod[2] * 0.2
+        )
+    }
+
+    const total = remainingByPeriod.reduce((sum, value) => sum + value, 0)
+    return Math.round(total / remainingByPeriod.length)
+}
+
+function estimateRemainingExpensesRunRate(
+    currentMonthExpensesCents: number,
+    period: string,
+    now: Date = new Date()
+): number {
+    if (currentMonthExpensesCents <= 0) return 0
+    const daysElapsed = Math.max(1, getDaysElapsedInMonth(period, now))
+    const daysInMonth = Math.max(daysElapsed, getDaysInMonth(period))
+    const projectedTotalCents = Math.round((currentMonthExpensesCents / daysElapsed) * daysInMonth)
+    return Math.max(projectedTotalCents - currentMonthExpensesCents, 0)
 }
 
 function isMonthlySubscriptionPattern(sortedDates: number[]): boolean {
@@ -55,23 +146,93 @@ function isRecentlyActive(latestTimestamp: number, now: Date): boolean {
 }
 
 export function useAIAdvisor() {
-    const { data: transactions = [], isLoading: isDataLoading } = useTransactions()
-    const [isArtificialLoading, setIsArtificialLoading] = useState(true)
+    const currentPeriod = getCurrentPeriod()
+    const { data: transactions = [], isLoading: isTransactionsLoading } = useTransactions()
+    const { data: categories = [], isLoading: isCategoriesLoading } = useCategories({ includeArchived: true })
+    const { data: dashboardSummary, isLoading: isDashboardLoading } = useDashboardSummary({
+        mode: "month",
+        period: currentPeriod,
+    })
 
-    // Force "Thinking" time to allow user to appreciate the semantic animation
+    const [brainEvolution, setBrainEvolution] = useState<BrainEvolutionResult | null>(null)
+    const [brainEvolutionSignature, setBrainEvolutionSignature] = useState("")
+    const lastBrainSignatureRef = useRef("")
+
+    const brainInputSignature = useMemo(
+        () => computeBrainInputSignature(transactions, categories, currentPeriod),
+        [categories, currentPeriod, transactions]
+    )
+
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setIsArtificialLoading(false)
-        }, 2000) // 2s "Thinking" time per user request
-        return () => clearTimeout(timer)
-    }, []) // Run once on mount
+        if (isTransactionsLoading || isCategoriesLoading) return
+        if (transactions.length < 2 || categories.length === 0) return
+
+        if (lastBrainSignatureRef.current === brainInputSignature) return
+        lastBrainSignatureRef.current = brainInputSignature
+
+        const brainTransactions = transactions.map((tx) => ({
+            amountCents: Math.abs(tx.amountCents || 0),
+            type: tx.type,
+            timestamp: tx.timestamp,
+            categoryId: tx.categoryId,
+            isSuperfluous: tx.isSuperfluous,
+        }))
+        const brainCategories = categories.map((category) => ({
+            id: category.id,
+            spendingNature: category.spendingNature,
+        }))
+
+        let cancelled = false
+        initializeBrain()
+
+        void evolveBrainFromHistory(brainTransactions, brainCategories, { preferredPeriod: currentPeriod })
+            .then((result) => {
+                if (!cancelled) {
+                    setBrainEvolution(result)
+                    setBrainEvolutionSignature(brainInputSignature)
+                }
+            })
+            .catch(() => {
+                if (!cancelled) {
+                    setBrainEvolution(null)
+                    setBrainEvolutionSignature("")
+                }
+            })
+
+        return () => {
+            cancelled = true
+        }
+    }, [
+        brainInputSignature,
+        categories,
+        currentPeriod,
+        isCategoriesLoading,
+        isTransactionsLoading,
+        transactions,
+    ])
 
     const computation = useMemo(() => {
-        if (isDataLoading || transactions.length < 2) {
-            return { facts: null, forecast: null, subscriptions: [], priceHikes: [] as AIPriceHike[] }
+        if (isTransactionsLoading || transactions.length < 2) {
+            return { facts: null, forecast: null, subscriptions: [] }
         }
 
         const expenses = transactions.filter(t => t.type === "expense")
+        const currentMonthTransactions = filterTransactionsByMonth(transactions, currentPeriod)
+        const currentMonthExpensesCents = sumExpensesInCents(currentMonthTransactions)
+        const historicalRemainingCurrentMonthExpensesCents = estimateRemainingExpensesFromHistory(
+            transactions,
+            currentPeriod
+        )
+        const runRateRemainingCurrentMonthExpensesCents = estimateRemainingExpensesRunRate(currentMonthExpensesCents, currentPeriod)
+        const fallbackRemainingCurrentMonthExpensesCents = historicalRemainingCurrentMonthExpensesCents ?? runRateRemainingCurrentMonthExpensesCents
+        const baseBalanceCents = dashboardSummary?.netBalanceCents ?? 0
+        const brainResultIsCurrent = brainEvolutionSignature === brainInputSignature
+        const brainNowcastReady = brainResultIsCurrent && brainEvolution?.currentMonthNowcastReady === true
+        const predictedRemainingCurrentMonthExpensesCents = brainNowcastReady
+            ? Math.max(0, brainEvolution?.predictedCurrentMonthRemainingExpensesCents ?? 0)
+            : fallbackRemainingCurrentMonthExpensesCents
+        const primarySource: AIForecast["primarySource"] = brainNowcastReady ? "brain" : "fallback"
+        const predictedTotalEstimatedBalanceCents = baseBalanceCents - predictedRemainingCurrentMonthExpensesCents
 
         // 1. Subscription Detection Logic (merchant-centric, one active subscription per merchant)
         const patternMap = new Map<string, { dates: number[]; samples: Array<{ timestamp: number; amountCents: number }> }>()
@@ -122,7 +283,7 @@ export function useAIAdvisor() {
             return a.description.localeCompare(b.description)
         })
 
-        // 2. Forecasting Logic (Weighted Moving Average)
+        // 2. Historical coverage signal (used only for confidence level)
         const last3Months = []
         for (let i = 1; i <= 3; i++) {
             const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
@@ -135,103 +296,32 @@ export function useAIAdvisor() {
                 return td.getFullYear() === y && td.getMonth() === m
             })
             return {
-                income: sumIncomeInCents(mTransactions),
-                expenses: sumExpensesInCents(mTransactions),
                 hasData: mTransactions.length > 0
             }
         })
 
         const historicalMonthsWithData = monthlyStats.filter(m => m.hasData).length
-        let facts: AdvisorFacts | null = null
+        const hasCurrentMonthData = currentMonthTransactions.length > 0
+        const hasAnyAdvisorSignal = historicalMonthsWithData > 0 || hasCurrentMonthData || baseBalanceCents !== 0
 
-        // Price Hike Detection (Subscription Analysis)
-        const priceHikes: AIPriceHike[] = []
-        detectedSubscriptions.forEach(sub => {
-            // Heuristic: compare latest merchant amount vs historical average for the same merchant.
-            const subTx = expenses
-                .filter((t) => extractMerchantKey(t.description) === sub.description)
-                .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        const facts: AdvisorFacts | null = hasAnyAdvisorSignal ? {
+            baseBalanceCents,
+            predictedRemainingCurrentMonthExpensesCents,
+            predictedTotalEstimatedBalanceCents,
+            primarySource,
+            historicalMonthsCount: historicalMonthsWithData,
+            subscriptionCount: detectedSubscriptions.length,
+            subscriptionTotalYearlyCents
+        } : null
 
-            if (subTx.length >= 2) {
-                const latestAmount = Math.abs(subTx[0].amountCents)
-                const previousAmounts = subTx.slice(1).map(t => Math.abs(t.amountCents))
-                const avgPrevious = previousAmounts.reduce((a, b) => a + b, 0) / previousAmounts.length
-
-                if (latestAmount > avgPrevious * 1.05 && (latestAmount - avgPrevious) > 100) { // > 5% AND > €1.00
-                    priceHikes.push({
-                        name: sub.description,
-                        diff: (latestAmount - avgPrevious),
-                        percent: ((latestAmount - avgPrevious) / avgPrevious) * 100
-                    })
-                }
-            }
-        })
-
-        if (historicalMonthsWithData > 0) {
-            // WEIGHTED AVERAGE LOGIC
-            // Weigh recent months more heavily: 
-            // M-1 (Last Month): 50%
-            // M-2: 30%
-            // M-3: 20%
-            // If missing data, fallback to simple average.
-
-            let avgIncomeCents = 0
-            let avgExpensesCents = 0
-
-            if (historicalMonthsWithData === 3) {
-                // Month 0 is M-1 (most recent in our reversed array construction? No, wait. 
-                // last3Months construction: i=1 is M-1.
-                // monthlyStats[0] corresponds to M-1.
-                avgIncomeCents = Math.round(monthlyStats[0].income * 0.5 + monthlyStats[1].income * 0.3 + monthlyStats[2].income * 0.2)
-                avgExpensesCents = Math.round(monthlyStats[0].expenses * 0.5 + monthlyStats[1].expenses * 0.3 + monthlyStats[2].expenses * 0.2)
-            } else {
-                // Simple Average fallback
-                avgIncomeCents = Math.round(monthlyStats.reduce((s, m) => s + m.income, 0) / historicalMonthsWithData)
-                avgExpensesCents = Math.round(monthlyStats.reduce((s, m) => s + m.expenses, 0) / historicalMonthsWithData)
-            }
-
-            const predictedSavingsCents = avgIncomeCents - avgExpensesCents
-
-            facts = {
-                predictedIncomeCents: avgIncomeCents,
-                predictedExpensesCents: avgExpensesCents,
-                deltaCents: predictedSavingsCents,
-                historicalMonthsCount: historicalMonthsWithData,
-                subscriptionCount: detectedSubscriptions.length,
-                subscriptionTotalYearlyCents
-            }
-        } else {
-            // Cold Start: Use current month
-            const currentMonthTransactions = transactions.filter(t => {
-                const td = new Date(t.timestamp)
-                return td.getFullYear() === now.getFullYear() && td.getMonth() === now.getMonth()
-            })
-
-            if (currentMonthTransactions.length > 0) {
-                const currentIncomeCents = sumIncomeInCents(currentMonthTransactions)
-                const currentExpensesCents = sumExpensesInCents(currentMonthTransactions)
-
-                facts = {
-                    predictedIncomeCents: currentIncomeCents,
-                    predictedExpensesCents: currentExpensesCents,
-                    deltaCents: currentIncomeCents - currentExpensesCents,
-                    historicalMonthsCount: 0,
-                    subscriptionCount: detectedSubscriptions.length,
-                    subscriptionTotalYearlyCents
-                }
-            }
-        }
-
-        // Map facts to legacy Forecast object for UI
+        // Map facts to Advisor forecast object for UI
         let forecast: AIForecast | null = null
         if (facts) {
             forecast = {
-                predictedIncomeCents: facts.predictedIncomeCents,
-                predictedExpensesCents: facts.predictedExpensesCents,
-                predictedSavingsCents: facts.deltaCents,
-                predictedIncome: facts.predictedIncomeCents / 100,
-                predictedExpenses: facts.predictedExpensesCents / 100,
-                predictedSavings: facts.deltaCents / 100,
+                baseBalanceCents,
+                predictedRemainingCurrentMonthExpensesCents,
+                predictedTotalEstimatedBalanceCents,
+                primarySource,
                 confidence: facts.historicalMonthsCount >= 3 ? "high" : facts.historicalMonthsCount > 0 ? "medium" : "low"
             }
         }
@@ -240,18 +330,24 @@ export function useAIAdvisor() {
             facts,
             forecast,
             subscriptions: detectedSubscriptions,
-            priceHikes
         }
-    }, [transactions, isDataLoading])
+    }, [
+        brainEvolution,
+        brainEvolutionSignature,
+        brainInputSignature,
+        currentPeriod,
+        dashboardSummary?.netBalanceCents,
+        isTransactionsLoading,
+        transactions
+    ])
 
-    const isLoading = isDataLoading || isArtificialLoading
+    const isLoading = isTransactionsLoading || isCategoriesLoading || isDashboardLoading
 
     if (isLoading) {
         return {
             facts: null,
             forecast: null,
             subscriptions: [],
-            priceHikes: [],
             isLoading: true
         }
     }

@@ -40,7 +40,7 @@ export function generateAIMonitorMessage({
     if (!scenario) {
         return {
             tone: "stable",
-            message: "Seleziona uno scenario per vedere l'analisi.",
+            message: "Scegli uno scenario per vedere il risultato.",
             sacrifices: []
         }
     }
@@ -52,7 +52,7 @@ export function generateAIMonitorMessage({
         const reason = scenario.sustainability.reason ? ` ${scenario.sustainability.reason}` : "";
         return {
             tone: "critical",
-            message: `Con questo ritmo non ci arrivi.${reason} Prova a tagliare qualcosa in più dal superfluo.`,
+            message: `Con questo ritmo non arrivi al traguardo.${reason} Prova ad aumentare un po il risparmio.`,
             sacrifices: []
         }
     }
@@ -63,7 +63,7 @@ export function generateAIMonitorMessage({
     if (savingsPercent > 15 && projection.likelyMonths <= 12) {
         result = {
             tone: "thriving",
-            message: `Metti da parte ${monthlySavingsFormatted} al mese. A questo ritmo arrivi a ${targetDateFormatted} con margine.`
+            message: `Stai mettendo da parte ${monthlySavingsFormatted} al mese. Con questo passo arrivi a ${targetDateFormatted} con buon margine.`
         }
     }
     // Stable: Decent savings (5-15%) or medium timeline
@@ -71,7 +71,7 @@ export function generateAIMonitorMessage({
         if (monthsToGoal && monthsToGoal > 12) {
             result = {
                 tone: "stable",
-                message: `Con ${monthlySavingsFormatted} al mese ci vogliono circa ${monthsToGoal} mesi. Sostenibile, ma potresti accelerare.`
+                message: `Con ${monthlySavingsFormatted} al mese servono circa ${monthsToGoal} mesi. Il piano regge, ma puoi velocizzare.`
             }
         } else {
             result = {
@@ -85,12 +85,12 @@ export function generateAIMonitorMessage({
         const years = Math.ceil((monthsToGoal || 36) / 12)
         result = {
             tone: "strained",
-            message: `${monthlySavingsFormatted} al mese è poco. Ti servirebbero circa ${years} anni. Prova a tagliare il superfluo.`
+            message: `${monthlySavingsFormatted} al mese e poco. Ti servirebbero circa ${years} anni. Prova a liberare piu margine.`
         }
     } else {
         result = {
             tone: "stable",
-            message: `Il piano è attivo: ${monthlySavingsFormatted} al mese verso ${targetDateFormatted}.`
+            message: `Piano attivo: ${monthlySavingsFormatted} al mese verso ${targetDateFormatted}.`
         }
     }
 
@@ -129,7 +129,7 @@ export function generateAIMonitorMessage({
 
     return {
         ...result,
-        message: `${result.message} Questo risparmio si basa sulle tue abitudini (${behaviorOrigin}) e non cambia in base al costo dell'obiettivo.`,
+        message: `${result.message} Questo risultato usa le tue abitudini reali (${behaviorOrigin}) e non dipende dal costo totale dell'obiettivo.`,
         sacrifices
     }
 }

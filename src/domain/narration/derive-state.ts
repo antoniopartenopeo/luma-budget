@@ -185,18 +185,22 @@ export function deriveSnapshotState(facts: SnapshotFacts): SnapshotState {
  * Derives the AdvisorState from facts.
  */
 export function deriveAdvisorState(facts: AdvisorFacts): AdvisorState {
-    const { deltaCents, historicalMonthsCount } = facts
+    const {
+        predictedTotalEstimatedBalanceCents,
+        baseBalanceCents,
+        historicalMonthsCount,
+    } = facts
 
     // Neutral for cold start (insufficient history) or zero balance
-    if (historicalMonthsCount < 1 && deltaCents === 0) {
+    if (historicalMonthsCount < 1 && predictedTotalEstimatedBalanceCents === 0 && baseBalanceCents === 0) {
         return "neutral"
     }
 
-    if (deltaCents < 0) {
+    if (predictedTotalEstimatedBalanceCents < 0) {
         return "deficit"
     }
 
-    if (deltaCents > 0) {
+    if (predictedTotalEstimatedBalanceCents > 0) {
         return "positive_balance"
     }
 

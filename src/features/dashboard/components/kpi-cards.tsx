@@ -108,7 +108,7 @@ export function DashboardKpiGrid({
 
     return (
         <MacroSection
-            title="Overview Performance"
+            title="Panoramica del periodo"
             description={isLoading ? undefined : contextText}
             headerActions={headerActions}
             className="w-full"
@@ -193,7 +193,7 @@ export function DashboardKpiGrid({
                 <NumaEngineCard
                     title="Logica Finanziaria Attiva"
                     icon={BrainCircuit}
-                    audienceHint="Per tester avanzati"
+                    audienceHint="In breve"
                     className="w-full"
                     steps={[
                         {

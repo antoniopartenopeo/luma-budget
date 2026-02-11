@@ -19,10 +19,10 @@ describe("Global Semantic Anti-Regression", () => {
     // ==========================================
     describe("Scenario: DEFICIT (Income <= Expenses)", () => {
         const deficitFacts = {
-            predictedIncomeCents: 100000,
-            predictedExpensesCents: 120000,
-            deltaCents: -20000,
-            deltaPercent: -20,
+            baseBalanceCents: 5000,
+            predictedRemainingCurrentMonthExpensesCents: 25000,
+            predictedTotalEstimatedBalanceCents: -20000,
+            primarySource: "fallback" as const,
             historicalMonthsCount: 3,
             subscriptionCount: 0,
             subscriptionTotalYearlyCents: 0
@@ -36,7 +36,7 @@ describe("Global Semantic Anti-Regression", () => {
             BANNED_POSITIVE_TERMS.forEach(term => {
                 expect(text).not.toContain(term)
             })
-            expect(text).toContain("disavanzo")
+            expect(text).toContain("saldo totale stimato")
         })
     })
 

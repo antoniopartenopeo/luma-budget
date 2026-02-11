@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 import { motion } from "framer-motion"
 import {
+    BRAIN_MATURITY_SAMPLE_TARGET,
     BrainEvolutionResult,
     BrainTrainingProgress,
     NEURAL_BRAIN_VECTOR_SIZE,
@@ -39,7 +40,6 @@ import { EChartsWrapper } from "@/features/dashboard/components/charts/echarts-w
 import type { EChartsOption } from "echarts"
 import { cn } from "@/lib/utils"
 
-const MATURITY_SAMPLE_TARGET = 120
 const STABILITY_LOSS_TARGET = 0.12
 const POLL_INTERVAL_MS = 5000
 
@@ -420,7 +420,7 @@ export default function BrainPage() {
 
     const experienceProgress = useMemo(() => {
         const trainedSamples = snapshot?.trainedSamples ?? 0
-        return clampPercent((trainedSamples / MATURITY_SAMPLE_TARGET) * 100)
+        return clampPercent((trainedSamples / BRAIN_MATURITY_SAMPLE_TARGET) * 100)
     }, [snapshot?.trainedSamples])
 
     const liveLoss = training.isTraining ? training.currentLoss : (snapshot?.lossEma ?? 0)
@@ -674,7 +674,7 @@ export default function BrainPage() {
                                         <div className="rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5">
                                             <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Experience</p>
                                             <p className="mt-1 text-sm font-bold tabular-nums">{experienceProgress}%</p>
-                                            <p className="mt-1 text-[10px] text-muted-foreground">{snapshot?.trainedSamples ?? 0}/{MATURITY_SAMPLE_TARGET} campioni appresi.</p>
+                                            <p className="mt-1 text-[10px] text-muted-foreground">{snapshot?.trainedSamples ?? 0}/{BRAIN_MATURITY_SAMPLE_TARGET} campioni appresi.</p>
                                         </div>
                                         <div className="rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5">
                                             <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Stability</p>

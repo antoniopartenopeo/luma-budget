@@ -22,24 +22,28 @@ async function renderWithQueryClient() {
 }
 
 describe("TopbarActionCluster", () => {
-    it("renderizza cluster unico con ordine flash -> privacy -> campanella", async () => {
+    it("renderizza cluster unico con ordine flash -> privacy -> brain -> campanella", async () => {
         await renderWithQueryClient()
 
         const cluster = screen.getByTestId("topbar-action-cluster")
         const flashButton = screen.getByRole("button", { name: "Apri Numa Flash" })
         const privacyButton = screen.getByRole("button", { name: "Nascondi importi" })
+        const brainButton = screen.getByTestId("topbar-brain-trigger")
         const notificationButton = screen.getByTestId("topbar-notifications-trigger")
 
         expect(cluster).toContainElement(flashButton)
         expect(cluster).toContainElement(privacyButton)
+        expect(cluster).toContainElement(brainButton)
         expect(cluster).toContainElement(notificationButton)
 
-        const orderedButtons = Array.from(cluster.querySelectorAll("button"))
+        const orderedButtons = Array.from(cluster.querySelectorAll("button, a"))
         const flashIndex = orderedButtons.indexOf(flashButton)
         const privacyIndex = orderedButtons.indexOf(privacyButton)
+        const brainIndex = orderedButtons.indexOf(brainButton)
         const notificationIndex = orderedButtons.indexOf(notificationButton)
 
         expect(flashIndex).toBeLessThan(privacyIndex)
-        expect(privacyIndex).toBeLessThan(notificationIndex)
+        expect(privacyIndex).toBeLessThan(brainIndex)
+        expect(brainIndex).toBeLessThan(notificationIndex)
     })
 })

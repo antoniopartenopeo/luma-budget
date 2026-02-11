@@ -1,6 +1,7 @@
 export const NEURAL_BRAIN_VERSION = 2 as const
 export const FEATURE_SCHEMA_VERSION = 1 as const
 export const NEURAL_BRAIN_VECTOR_SIZE = 5 as const
+export const BRAIN_MATURITY_SAMPLE_TARGET = 120 as const
 
 export const BRAIN_FEATURE_NAMES = [
     "expense_income_ratio",

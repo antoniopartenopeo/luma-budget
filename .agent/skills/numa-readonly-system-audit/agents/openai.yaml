@@ -1,0 +1,4 @@
+interface:
+  display_name: "Numa Read-Only Audit"
+  short_description: "Audit sistemico completo Numa in modalità diagnostica read-only."
+  default_prompt: "Esegui un audit profondo e sistemico del progetto Numa in sola lettura, senza proporre soluzioni, con report strutturato per architettura, debito tecnico, scalabilità, UI/UX, tipografia, colori/materiali, motion e rischi strategici."

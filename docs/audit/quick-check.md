@@ -1,6 +1,6 @@
 # Governance Quick Check
 
-Generated at (UTC): 2026-02-11T20:17:03Z
+Generated at (UTC): 2026-02-11T21:43:34Z
 
 Scope:
 - Repository: numa-budget
@@ -32,7 +32,7 @@ Rule: transaction source of truth is `amountCents` integer.
 Amount key occurrences (first 60):
 
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/use-ai-advisor.ts:16:    amount: number
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/use-ai-advisor.ts:267:                amount: amount,
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/use-ai-advisor.ts:275:                amount: amount,
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/parse.ts:9:    amount: ["importo", "amount", "ammontare", "entrate", "uscite", "dare", "avere", "saldo", "valore"],
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/parse.ts:86:        amount: -1,
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/subgrouping.ts:34:    const recurring: Array<{ amount: number; rows: EnrichedRow[] }> = [];

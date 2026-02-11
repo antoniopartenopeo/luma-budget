@@ -1,6 +1,6 @@
 # Governance Quick Check
 
-Generated at (UTC): 2026-02-11T22:43:44Z
+Generated at (UTC): 2026-02-11T23:49:15Z
 
 Scope:
 - Repository: numa-budget
@@ -14,7 +14,7 @@ Scope:
 | parseFloat on monetary flows (excluding CSV normalize exception) | PASS | 0 |
 | Deprecated `amount` key / string amounts | WARN | key:41 string:21 legacy-files:7 |
 | Period filters without `filterByRange` | WARN | 4 |
-| Inline style in TSX | WARN | 10 |
+| Inline style in TSX | WARN | 9 |
 | Tests with formula-duplication heuristic | WARN | 3 |
 
 ## 1) parseFloat checks
@@ -116,10 +116,10 @@ filterByRange usage (first 60):
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/utils.ts:7:import { getMonthBoundariesLocal, filterByRange, formatDateLocalISO } from "@/lib/date-ranges"
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/utils.ts:60:    return filterByRange(transactions, start, end)
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/utils/spending-composition.ts:3:import { calculateDateRangeLocal, filterByRange } from "@/lib/date-ranges"
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/utils/spending-composition.ts:33:    const periodTransactions = filterByRange(transactions, startDate, endDate)
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/utils/spending-composition.ts:41:    const periodTransactions = filterByRange(transactions, startDate, endDate)
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/recent-transactions.tsx:3:import { calculateDateRangeLocal, filterByRange } from "@/lib/date-ranges"
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/recent-transactions.tsx:74:        filteredTransactions = filterByRange(filteredTransactions, startDate, endDate)
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/repository.ts:5:import { calculateDateRange, filterByRange } from "@/lib/date-ranges"
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/repository.ts:5:import { calculateDateRangeLocal, filterByRange } from "@/lib/date-ranges"
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/repository.ts:41:    const rangeTransactions = filterByRange(transactions, startDate, endDate)
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/repository.ts:53:    const targetMonthTransactions = filterByRange(transactions, pivotStart, pivotEnd)
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/transactions/utils/transactions-logic.ts:3:import { filterByRange } from "@/lib/date-ranges";
@@ -142,13 +142,12 @@ Rule: prefer Tailwind classes; inline styles only where technically unavoidable.
 Inline style hits (first 80):
 
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/components/insight-card.tsx:146:                                                    style={{ width: `${impactPct}%` }}
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/echarts-wrapper.tsx:32:        <div className={className} style={{ width: "100%", height: "100%", ...style }}>
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/echarts-wrapper.tsx:35:                style={{ height: "100%", width: "100%" }}
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/premium-chart-section.tsx:45:                <div style={{ height: chartHeight }}>
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/premium-chart-section.tsx:82:                                <div className="absolute w-[70%] h-[60%] border border-primary/10 rounded-[2rem] animate-[ping_4s_cubic-bezier(0,0,0.2,1)_infinite]" style={{ animationDelay: '0.5s' }} />
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/premium-chart-section.tsx:91:                <div style={{ height: chartHeight }} className="flex items-center justify-center relative z-10">
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/premium-chart-section.tsx:100:                    <div className="w-full relative text-foreground" style={{ height: chartHeight }}>
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/spending-composition-card.tsx:234:                            style={{
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/echarts-wrapper.tsx:67:        <div ref={containerRef} className={className} style={{ width: "100%", height: "100%", ...style }}>
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/echarts-wrapper.tsx:70:                style={{ height: "100%", width: "100%" }}
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/premium-chart-section.tsx:49:                <div style={{ height: chartHeight }}>
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/premium-chart-section.tsx:95:                <div style={{ height: chartHeight }} className="flex items-center justify-center relative z-10">
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/premium-chart-section.tsx:105:                        <div className="w-full relative text-foreground" style={{ height: chartHeight }}>
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/spending-composition-card.tsx:268:                                        style={{ backgroundColor: item.rawColor }}
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/components/layout/topbar-action-cluster.tsx:220:                                style={{
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/components/layout/topbar-action-cluster.tsx:235:                                style={{
 

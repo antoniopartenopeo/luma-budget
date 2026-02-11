@@ -102,7 +102,7 @@ Tutti i componenti principali devono seguire questi standard visuali:
 - **Divieti**: Vietato usare utility standard come `animate-in fade-in` o `animate-pulse`.
 
 ### 3. UX Patterns (Critical)
-- **Labor Illusion (AI)**: Ogni operazione "Intelligente" (es. Advisor) DEVE avere un ritardo artificiale di almeno **1.5s - 2.0s** per permettere all'utente di vedere l'animazione "Thinking".
+- **Real Processing Honesty (AI)**: Ogni operazione "Intelligente" (es. Advisor) deve usare stati di loading basati su lavoro reale. I ritardi artificiali (`setTimeout` solo per "simulare pensiero") sono vietati.
 - **Tactile Feedback**: Ogni slider o input che cambia valori monetari deve triggerare `animate-flash-green` sul risultato.
 
 ### 4. Ultra-Tech Premium Visuals (Command Center)
@@ -311,5 +311,5 @@ Il mancato rispetto anche di un solo punto della checklist tecnica automatizzabi
 
 ---
 
-**Versione**: 1.4.0  
-**Ultimo aggiornamento**: 2026-02-04
+**Versione**: 1.5.0  
+**Ultimo aggiornamento**: 2026-02-11

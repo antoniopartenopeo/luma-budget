@@ -1,7 +1,7 @@
 # Numa UX Standards & Patterns
 > **Stato:** Active
-> **Versione:** 1.0
-> **Ultimo aggiornamento:** 2026-02-04
+> **Versione:** 1.1
+> **Ultimo aggiornamento:** 2026-02-11
 
 Questo documento raccoglie i pattern UX di alto livello che definiscono l'esperienza d'uso di Numa, al di là della pura UI.
 
@@ -9,15 +9,15 @@ Questo documento raccoglie i pattern UX di alto livello che definiscono l'esperi
 
 ## 1. Trust & AI Interaction
 
-### A. Labor Illusion (Illusione dello Sforzo)
-Quando l'AI esegue compiti complessi (come esaminare mesi di transazioni per dare un consiglio), una risposta istantanea (<100ms) viene percepita paradossalmente come "meno intelligente" o "finta".
+### A. Real Processing Honesty (No Fake Delay)
+Numa deve comunicare in modo trasparente: lo stato "in analisi" va mostrato solo quando c'è lavoro reale in corso.
 
 **Regola:**
-Per le operazioni "Intelligenti" (AI Advisor, Smart Analysis), è **OBBLIGATORIO** introdurre un ritardo artificiale (Artificial Delay) se la risposta tecnica è troppo veloce.
+Per le operazioni "Intelligenti" (AI Advisor, Smart Analysis), è **VIETATO** introdurre ritardi artificiali solo per simulare intelligenza.
 
-*   **Durata Minima:** 1.5s
-*   **Stato Visivo:** Deve essere accompagnato da un'animazione semantica "Thinking" (`isThinking` state) e visual atmosphere specifica.
-*   **Obiettivo:** Permettere all'utente di percepire che il sistema "sta lavorando per lui" (Labor Illusion).
+*   **Fonte dello stato:** `loading` reale (query/calcolo effettivo), non timer forzati.
+*   **Stato Visivo:** lo stato di attesa deve riflettere il ciclo tecnico reale.
+*   **Obiettivo:** affidabilità percepita attraverso coerenza tra stato UI e stato computazionale.
 
 ---
 

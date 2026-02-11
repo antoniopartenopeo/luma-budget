@@ -1,89 +1,113 @@
 # CHANGELOG
 
-Qui trovi gli aggiornamenti più importanti di Numa in modo semplice: cosa cambia davvero per te e perché conta.
+Aggiornamenti pensati per chi usa Numa ogni giorno.
+
+Schema usato in tutte le release:
+- `Added (Novità per te)`: nuove funzioni che puoi usare subito.
+- `Changed (Miglioramenti per te)`: funzioni esistenti rese più chiare e utili.
+- `Fixed (Correzioni)`: problemi risolti.
+- `Removed (Semplificazioni)`: elementi tolti per ridurre confusione.
+
+---
+
+## [0.3.2] - 2026-02-11
+
+### Changed (Miglioramenti per te)
+- In Insights, la metrica principale è ora `Saldo totale stimato`: parte dal saldo totale e sottrae la spesa residua prevista nel mese corrente.
+- La provenienza della stima è più chiara: `Fonte Brain` quando il modello è pronto, `Fonte Storico` quando si usa il fallback.
+- Gli stati di caricamento compaiono solo quando serve davvero: niente attese artificiali.
+- La lettura dei trend è più lineare e coerente tra le card.
+
+### Fixed (Correzioni)
+- Quando i dati non bastano, Insights lo comunica in modo esplicito (senza messaggi ambigui).
+- L'analisi dei picchi categoria usa solo mesi storici validi, riducendo falsi segnali.
+
+### Removed (Semplificazioni)
+- Rimossa la card "Consiglio del momento" in Advisor per evitare duplicazioni con analisi già presenti.
+- Rimossa la pipeline legacy `use-orchestrated-insights` non più utilizzata.
 
 ---
 
 ## [0.3.1] - 2026-02-09
 
-### Fixed
-- **Date di fine mese più affidabili**: i riepiloghi non si sfasano più nei passaggi critici tra mesi e fusi orari.
-- **Filtri periodo più coerenti**: la vista movimenti ora segue la stessa logica in tutti i range.
-- **Messaggi più puliti**: eliminata una ripetizione nei testi generati dagli insight.
+### Changed (Miglioramenti per te)
+- Gestione importi più uniforme, con calcoli più stabili nelle viste principali.
+- Architettura più chiara tra logica finanziaria e interfaccia, per ridurre comportamenti incoerenti.
+- Controlli qualità più severi per intercettare regressioni prima del rilascio.
+- Animazioni e stati UI più consistenti, con maggiore rispetto delle preferenze di riduzione movimento.
 
-### Changed
-- **Importi trattati in modo più uniforme**: abbiamo rafforzato la gestione interna dei valori per ridurre ambiguità nei calcoli.
-- **Confini del sistema più chiari**: separazione migliorata tra logica di dominio e logica legata all'interfaccia.
-- **Controlli qualità più severi**: audit con soglie più prudenti per intercettare derive prima.
-- **Esperienza visiva più consistente**: animazioni e stati grafici sono più allineati, con maggiore rispetto delle preferenze di riduzione movimento.
+### Fixed (Correzioni)
+- Date di fine mese più affidabili nei passaggi tra mesi e fusi orari.
+- Filtri periodo più coerenti tra tutti i range nella vista movimenti.
+- Rimossa una ripetizione nei testi generati dagli insight.
 
-### Removed
-- **Codice non più utile**: rimosse parti non utilizzate in produzione.
-- **Documenti fuori dal runtime**: spostati i materiali di roadmap nella documentazione, dove sono più facili da trovare.
+### Removed (Semplificazioni)
+- Eliminato codice non più utile in produzione.
+- Spostati i materiali roadmap fuori dal runtime, nella documentazione.
 
 ---
 
 ## [0.3.0] - 2026-02-04
 
-### Added
-- **Messaggi più coerenti**: advisor e insight ora seguono regole semantiche centralizzate.
-- **Analisi più adattiva**: il sistema considera meglio la tua stabilità e la tua elasticità finanziaria.
-- **Nuovo pannello tecnico nel Financial Lab**: più trasparenza su come vengono lette le metriche.
-- **Controlli automatici sul linguaggio IA**: verifiche dedicate per evitare messaggi incoerenti o fuorvianti.
+### Added (Novità per te)
+- Insight e Advisor con messaggi più coerenti grazie a regole semantiche centralizzate.
+- Analisi più adattiva su stabilità ed elasticità finanziaria.
+- Nuovo pannello tecnico nel Financial Lab per capire meglio come vengono lette le metriche.
+- Controlli automatici sul linguaggio IA per ridurre messaggi incoerenti o fuorvianti.
 
-### Changed
-- **Testi meno dispersi nel codice**: la generazione dei messaggi è stata centralizzata.
-- **Regole core aggiornate**: rafforzata l'adesione agli standard semantici di progetto.
+### Changed (Miglioramenti per te)
+- Generazione testi centralizzata, con meno varianti non controllate.
+- Standard semantici di progetto rafforzati nelle principali sezioni.
 
 ---
 
 ## [0.2.5] - 2026-02-04
 
-### Added
-- **Interfaccia più viva**: animazioni progressive sulle superfici principali.
-- **Simulator più lineare**: accesso ai dati scenario semplificato e unificato.
+### Added (Novità per te)
+- Interfaccia più viva con animazioni progressive nelle superfici principali.
+- Simulator più lineare, con accesso scenario semplificato e unificato.
 
-### Changed
-- **Identità visiva allineata**: consolidato il colore guida Numa.
-- **Geometrie standardizzate**: raggi e forme resi più consistenti tra le sezioni.
+### Changed (Miglioramenti per te)
+- Identità visiva più allineata al brand Numa.
+- Geometrie (raggi e forme) più consistenti tra le sezioni.
 
 ---
 
 ## [0.2.0] - 2026-02-01
 
-### Added
-- **Financial Lab v3**: nuova esperienza per obiettivi e scenari.
-- **Logic Vault**: logica obiettivi separata dall'interfaccia per maggiore controllo.
+### Added (Novità per te)
+- Financial Lab v3 con nuova esperienza obiettivi e scenari.
+- Logic Vault per separare la logica obiettivi dall'interfaccia.
 
-### Changed
-- **Calcoli monetari più stabili**: passaggio completo a una gestione numerica più robusta degli importi.
+### Changed (Miglioramenti per te)
+- Calcoli monetari più stabili grazie a una gestione numerica più robusta degli importi.
 
 ---
 
 ## [0.1.5] - 2026-01-28
 
-### Added
-- **Privacy Shield**: blur globale quando attivi la privacy.
-- **Feedback immediato sul ritmo**: conferma più chiara dopo la selezione.
+### Added (Novità per te)
+- Privacy Shield: blur globale quando attivi la privacy.
+- Feedback immediato sul ritmo, con conferma più chiara dopo la selezione.
 
-### Changed
-- **Nuovo linguaggio di prodotto**: focus su percorso e ritmo, non su logiche statiche di budget.
+### Changed (Miglioramenti per te)
+- Nuovo linguaggio prodotto: focus su percorso e ritmo, non su logiche statiche di budget.
 
 ---
 
 ## [0.1.2] - 2026-01-27
 
-### Added
-- **Tipografia governata**: gerarchia testi più leggibile e uniforme.
-- **Sheet standardizzati**: pattern unico per dettaglio e modifica.
+### Added (Novità per te)
+- Tipografia governata con gerarchia testi più leggibile e uniforme.
+- Sheet standardizzati con pattern unico per dettaglio e modifica.
 
-### Changed
-- **Esperienza più coerente**: Dashboard e Insights riallineati agli standard Numa Premium.
+### Changed (Miglioramenti per te)
+- Dashboard e Insights riallineati agli standard Numa Premium.
 
 ---
 
 ## [0.1.0] - 2026-01-25
 
-### Added
-- **Prima release**: base operativa con import CSV, KPI e categorie.
-- **Approccio local-first**: i dati vengono gestiti localmente con persistenza dedicata.
+### Added (Novità per te)
+- Prima release con base operativa: import CSV, KPI e categorie.
+- Approccio local-first: i dati restano gestiti localmente con persistenza dedicata.

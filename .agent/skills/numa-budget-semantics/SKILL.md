@@ -41,7 +41,12 @@ Questo documento definisce le regole semantiche OBBLIGATORIE per tutta la sezion
 Questa skill è **vincolante** per:
 - **Goals Engine**: Calcolo delle proiezioni e messaggi di stato (`NUMAExperience`, `useGoalProjection`).
 - **Dashboard**: KPI Cards e grafici di andamento (collegati al Pacing).
-- **Insights**: Consigli finanziari (devono puntare al Ritmo, non al Budget).
+- **Insights**: segnali su ritmo/deviazioni (non devono confondere il Pacing con metriche di saldo stimato advisor).
+
+### 3.1 Separazione Semantica con Advisor
+- La card Advisor in Insights usa una metrica diversa: `Saldo Totale Stimato = saldo base totale - spesa residua stimata mese corrente`.
+- I messaggi di Pacing devono mantenere linguaggio di ritmo/traguardo e non ri-etichettare il saldo advisor come "Pacing".
+- In caso di conflitto, i segnali di deviazione ritmo/traguardo hanno priorità narrativa sui messaggi rassicuranti.
 
 ---
 
@@ -52,5 +57,5 @@ Questa skill è **vincolante** per:
 4. [ ] Il linguaggio è privo di giudizio morale (Regola B5)?
 ---
 
-**Versione**: 1.1.0  
-**Ultimo aggiornamento**: 2026-02-01
+**Versione**: 1.2.0  
+**Ultimo aggiornamento**: 2026-02-11

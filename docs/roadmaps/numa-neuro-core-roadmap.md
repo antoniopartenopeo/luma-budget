@@ -4,6 +4,10 @@ This document outlines the technical path for building **Numa Neuro Core**, a ze
 
 **Philosophy**: "Backend First." We build the brain in isolation, verify its intelligence with mathematical rigour, and only then connect it to the user interface.
 
+> **Implementation Note (2026-02-11)**  
+> The current production core is a lightweight adaptive engine in `src/brain/*` with local training, readiness gates, and current-month remaining-expense nowcast.  
+> The LSTM-specific phases below are to be considered **long-term research track**, not current runtime architecture.
+
 ## 🧭 Philosophy & Scope
 **"The Two-Brain Architecture"**
 

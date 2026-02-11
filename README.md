@@ -74,7 +74,6 @@ Open [http://localhost:3000](http://localhost:3000)
 Release helpers:
 
 ```bash
-npm run release:sync
 npm run release:validate
 ```
 

@@ -1,24 +1,22 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { afterAll, beforeEach, describe, expect, it, vi } from "vitest"
 import { TopbarNotifications } from "../topbar-notifications"
 import { NOTIFICATIONS_STATE_STORAGE_KEY } from "../../api/repository"
 
-vi.mock("../../data/beta-changelog-feed.json", () => ({
-    default: [
-        {
-            id: "release-0.3.0-20260204-feature",
-            version: "0.3.0",
-            kind: "feature",
-            audience: "beta",
-            title: "v0.3.0 · Nuove funzionalita",
-            body: "Deterministic Narration Layer.",
-            highlights: ["Deterministic Narration Layer."],
-            publishedAt: "2026-02-04T09:00:00.000Z",
-            link: "/updates#v-0-3-0",
-        },
-    ],
-}))
+const FEED_FIXTURE = [
+    {
+        id: "release-0.3.0-20260204-feature",
+        version: "0.3.0",
+        kind: "feature",
+        audience: "beta",
+        title: "v0.3.0 · Nuove funzionalita",
+        body: "Deterministic Narration Layer.",
+        highlights: ["Deterministic Narration Layer."],
+        publishedAt: "2026-02-04T09:00:00.000Z",
+        link: "/updates#v-0-3-0",
+    },
+]
 
 function renderWithQueryClient() {
     const queryClient = new QueryClient({
@@ -46,6 +44,14 @@ async function openNotificationsMenu() {
 describe("TopbarNotifications", () => {
     beforeEach(() => {
         localStorage.clear()
+        vi.stubGlobal("fetch", vi.fn(async () => ({
+            ok: true,
+            json: async () => FEED_FIXTURE,
+        })))
+    })
+
+    afterAll(() => {
+        vi.unstubAllGlobals()
     })
 
     it("mostra badge con conteggio non letti", async () => {

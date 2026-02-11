@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { afterAll, beforeEach, describe, expect, it, vi } from "vitest"
 import { storage } from "@/lib/storage-utils"
 import {
     fetchChangelogNotifications,
@@ -9,67 +9,65 @@ import {
     NOTIFICATIONS_STATE_STORAGE_KEY,
 } from "../repository"
 
-vi.mock("../../data/beta-changelog-feed.json", () => ({
-    default: [
-        {
-            id: "beta-old",
-            version: "0.1.0",
-            kind: "fix",
-            audience: "beta",
-            title: "Fix vecchio",
-            body: "Dettaglio fix",
-            highlights: ["Fix vecchio"],
-            publishedAt: "2026-02-01T10:00:00.000Z",
-        },
-        {
-            id: "alpha-hidden",
-            version: "0.1.1",
-            kind: "feature",
-            audience: "alpha",
-            title: "Non deve apparire",
-            body: "Audience non valida",
-            highlights: ["Non mostrare"],
-            publishedAt: "2026-02-08T10:00:00.000Z",
-        },
-        {
-            id: "beta-new",
-            version: "0.1.2",
-            kind: "breaking",
-            audience: "beta",
-            title: "Breaking recente",
-            body: "Dettaglio breaking",
-            highlights: ["Breaking importante"],
-            isCritical: true,
-            publishedAt: "2026-02-08T12:00:00.000Z",
-        },
-        {
-            id: "beta-mid",
-            version: "0.1.1",
-            kind: "feature",
-            audience: "beta",
-            title: "Feature media",
-            body: "Dettaglio feature",
-            highlights: ["Feature media"],
-            publishedAt: "2026-02-05T09:00:00.000Z",
-        },
-        {
-            id: "beta-legacy-dup",
-            version: "0.1.3",
-            kind: "feature",
-            audience: "beta",
-            title: "Legacy con duplicati",
-            body: "Feature legacy",
-            highlights: [
-                "Feature legacy",
-                "Feature legacy",
-                "Altro dettaglio",
-                "Altro dettaglio",
-                "  Altro dettaglio  ",
-            ],
-            publishedAt: "2026-02-08T13:00:00.000Z",
-        },
-    ],
-}))
+const FEED_FIXTURE = [
+    {
+        id: "beta-old",
+        version: "0.1.0",
+        kind: "fix",
+        audience: "beta",
+        title: "Fix vecchio",
+        body: "Dettaglio fix",
+        highlights: ["Fix vecchio"],
+        publishedAt: "2026-02-01T10:00:00.000Z",
+    },
+    {
+        id: "alpha-hidden",
+        version: "0.1.1",
+        kind: "feature",
+        audience: "alpha",
+        title: "Non deve apparire",
+        body: "Audience non valida",
+        highlights: ["Non mostrare"],
+        publishedAt: "2026-02-08T10:00:00.000Z",
+    },
+    {
+        id: "beta-new",
+        version: "0.1.2",
+        kind: "breaking",
+        audience: "beta",
+        title: "Breaking recente",
+        body: "Dettaglio breaking",
+        highlights: ["Breaking importante"],
+        isCritical: true,
+        publishedAt: "2026-02-08T12:00:00.000Z",
+    },
+    {
+        id: "beta-mid",
+        version: "0.1.1",
+        kind: "feature",
+        audience: "beta",
+        title: "Feature media",
+        body: "Dettaglio feature",
+        highlights: ["Feature media"],
+        publishedAt: "2026-02-05T09:00:00.000Z",
+    },
+    {
+        id: "beta-legacy-dup",
+        version: "0.1.3",
+        kind: "feature",
+        audience: "beta",
+        title: "Legacy con duplicati",
+        body: "Feature legacy",
+        highlights: [
+            "Feature legacy",
+            "Feature legacy",
+            "Altro dettaglio",
+            "Altro dettaglio",
+            "  Altro dettaglio  ",
+        ],
+        publishedAt: "2026-02-08T13:00:00.000Z",
+    },
+]
 
 vi.mock("@/lib/storage-utils", () => ({
     storage: {
@@ -82,6 +80,14 @@ vi.mock("@/lib/storage-utils", () => ({
 describe("notifications repository", () => {
     beforeEach(() => {
         vi.clearAllMocks()
+        vi.stubGlobal("fetch", vi.fn(async () => ({
+            ok: true,
+            json: async () => FEED_FIXTURE,
+        })))
+    })
+
+    afterAll(() => {
+        vi.unstubAllGlobals()
     })
 
     it("ordina il feed per publishedAt desc e filtra audience beta", async () => {
@@ -96,6 +102,16 @@ describe("notifications repository", () => {
         expect(legacy).toBeDefined()
         expect(legacy?.body).toBe("Feature legacy")
         expect(legacy?.highlights).toEqual(["Altro dettaglio"])
+    })
+
+    it("ritorna array vuoto quando la fetch del feed fallisce", async () => {
+        vi.stubGlobal("fetch", vi.fn(async () => ({
+            ok: false,
+            json: async () => FEED_FIXTURE,
+        })))
+
+        const feed = await fetchChangelogNotifications()
+        expect(feed).toEqual([])
     })
 
     it("ritorna stato V2 di default quando storage e mancante", async () => {

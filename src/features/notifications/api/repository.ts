@@ -1,5 +1,4 @@
 import { storage } from "@/lib/storage-utils"
-import rawFeed from "../data/beta-changelog-feed.json"
 import {
     ChangelogNotification,
     NotificationKind,
@@ -9,6 +8,7 @@ import {
 
 export const LEGACY_NOTIFICATIONS_STATE_STORAGE_KEY = "numa_notifications_state_v1"
 export const NOTIFICATIONS_STATE_STORAGE_KEY = "numa_notifications_state_v2"
+export const CHANGELOG_NOTIFICATIONS_API_PATH = "/api/notifications/changelog"
 
 const VALID_KINDS: NotificationKind[] = ["feature", "fix", "improvement", "breaking"]
 
@@ -119,9 +119,25 @@ function parseLegacyStateV1(raw: unknown): NotificationsStateV1 | null {
 }
 
 export async function fetchChangelogNotifications(): Promise<ChangelogNotification[]> {
-    const feed = Array.isArray(rawFeed) ? rawFeed : []
+    let feed: unknown = []
 
-    return feed
+    try {
+        const response = await fetch(CHANGELOG_NOTIFICATIONS_API_PATH, {
+            method: "GET",
+            headers: {
+                Accept: "application/json",
+            },
+            cache: "no-store",
+        })
+        if (!response.ok) return []
+        feed = await response.json()
+    } catch {
+        return []
+    }
+
+    const safeFeed = Array.isArray(feed) ? feed : []
+
+    return safeFeed
         .map(normalizeNotification)
         .filter((notification): notification is ChangelogNotification => notification !== null)
         .filter(notification => notification.audience === "beta")

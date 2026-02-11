@@ -9,7 +9,6 @@
     "lint": "eslint",
     "test": "vitest",
     "test:run": "vitest run",
-    "release:sync": "node scripts/release/sync-beta-changelog.ts",
     "release:validate": "node scripts/release/validate-release.ts",
     "governance:quick-check": "bash scripts/audit/governance-quick-check.sh",
     "governance:enforce": "bash scripts/audit/governance-enforce.sh",

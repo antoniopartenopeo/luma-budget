@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs"
 import { resolve } from "node:path"
 import { fileURLToPath } from "node:url"
-import { parseChangelogMarkdown } from "../../src/features/notifications/release/changelog-sync.ts"
+import { buildNotificationsFromReleases, parseChangelogMarkdown } from "../../src/features/notifications/release/changelog-sync.ts"
 
 type FeedItem = {
     id: string
@@ -14,7 +14,6 @@ const scriptDir = fileURLToPath(new URL(".", import.meta.url))
 const rootDir = resolve(scriptDir, "..", "..")
 const packageJsonPath = resolve(rootDir, "package.json")
 const changelogPath = resolve(rootDir, "CHANGELOG.md")
-const feedPath = resolve(rootDir, "src/features/notifications/data/beta-changelog-feed.json")
 
 function readJson<T>(path: string): T {
     return JSON.parse(readFileSync(path, "utf8")) as T
@@ -26,14 +25,14 @@ function main() {
     const pkg = readJson<{ version: string }>(packageJsonPath)
     const changelog = readFileSync(changelogPath, "utf8")
     const releases = parseChangelogMarkdown(changelog)
-    const feed = readJson<FeedItem[]>(feedPath)
+    const feed = buildNotificationsFromReleases(releases) as FeedItem[]
 
     if (releases.length === 0) {
         errors.push("CHANGELOG.md non contiene release valide")
     }
 
-    if (!Array.isArray(feed) || feed.length === 0) {
-        errors.push("Feed notifiche vuoto o invalido")
+    if (feed.length === 0) {
+        errors.push("Feed notifiche generato vuoto o invalido")
     }
 
     const topVersion = releases[0]?.version
@@ -86,13 +85,6 @@ function main() {
         }
     }
 
-    for (const release of releases) {
-        const hasEntry = feed.some(item => item.version === release.version)
-        if (!hasEntry) {
-            errors.push(`Release ${release.version} senza entry nel feed notifiche`)
-        }
-    }
-
     const hasCurrentVersionEntry = feed.some(item => item.version === pkg.version)
     if (!hasCurrentVersionEntry) {
         errors.push(`Nessuna entry notifiche per versione corrente ${pkg.version}`)
@@ -106,7 +98,7 @@ function main() {
         process.exit(1)
     }
 
-    console.log(`[release:validate] OK | package=${pkg.version} | releases=${releases.length} | feed=${feed.length}`)
+    console.log(`[release:validate] OK | package=${pkg.version} | releases=${releases.length} | notifications=${feed.length}`)
 }
 
 main()

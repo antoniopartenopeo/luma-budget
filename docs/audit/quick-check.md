@@ -1,6 +1,6 @@
 # Governance Quick Check
 
-Generated at (UTC): 2026-02-12T00:01:36Z
+Generated at (UTC): 2026-02-14T17:25:40Z
 
 Scope:
 - Repository: numa-budget
@@ -147,7 +147,7 @@ Inline style hits (first 80):
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/premium-chart-section.tsx:49:                <div style={{ height: chartHeight }}>
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/premium-chart-section.tsx:95:                <div style={{ height: chartHeight }} className="flex items-center justify-center relative z-10">
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/premium-chart-section.tsx:105:                        <div className="w-full relative text-foreground" style={{ height: chartHeight }}>
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/spending-composition-card.tsx:268:                                        style={{ backgroundColor: item.rawColor }}
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/spending-composition-card.tsx:478:                                        style={{ backgroundColor: item.rawColor }}
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/components/layout/topbar-action-cluster.tsx:220:                                style={{
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/components/layout/topbar-action-cluster.tsx:235:                                style={{
 

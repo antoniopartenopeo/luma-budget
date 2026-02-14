@@ -1,91 +1,87 @@
 # Numa Motion Principles & Governance
 
-> **Stato:** Attivo e Vincolante
-> **Versione:** 1.2
-> **Ultimo aggiornamento:** 2026-02-02
+> **Stato:** Attivo e vincolante
+> **Versione:** 1.3
+> **Ultimo aggiornamento:** 2026-02-11
 
-Questo documento definisce le regole immutabili per l'uso dell'animazione (Motion) all'interno dell'applicazione Numa. Il Motion in Numa è un linguaggio funzionale, non una decorazione estetica.
+Il motion in Numa comunica stato e priorità. Non è decorazione autonoma.
 
 ---
 
 ## 1. Scopo del Motion
-In Numa, l'animazione ha tre soli scopi legittimi:
-1.  **Comunicare Stato:** Segnalare che il sistema sta lavorando, ha finito, o richiede attenzione.
-2.  **Mantenere il Contesto:** Guidare l'occhio durante i cambi di dati per evitare "salti" cognitivi (Object Permanence).
-3.  **Migliorare l'Affordance:** Suggerire interattività (es. hover states) senza testo esplicito.
 
-**Regola d'Oro:** Se un'animazione non assolve a uno di questi scopi, va eliminata.
+In Numa l'animazione è ammessa solo per:
+1. Comunicare stato (loading, completamento, attenzione).
+2. Preservare contesto durante cambi di dati.
+3. Rafforzare affordance e focus interattivo.
+
+Se non copre uno di questi scopi, va rimossa.
 
 ---
 
 ## 2. Principi Fondamentali
 
-### A. Motion = Semantica
-Ogni movimento deve corrispondere a un evento logico del sistema.
-*   *Caricamento* -> Skeleton Shimmer / Pulse
-*   *Cambio Filtro* -> Crossfade
-*   *Azione Utente* -> Feedback fisico immediato
+### A. Motion = Evento Semantico
+- Stato di attesa reale -> `animate-pulse-soft`
+- Entrata contenuto -> `animate-enter-up`
+- Conferma modifica finanziaria -> `animate-flash-green`
+- Focus/energia su elementi di accento -> `animate-ping-slow`
+- Orbite/rotazioni continue di sistema -> `animate-spin-slow`
 
-### B. Legge del 5% (Micro-Interaction)
-Le animazioni continue (loop, bounce, pulse) non devono mai occupare più del **5%** dell'area visibile della viewport.
-*   ✅ Badge che pulsa, icona che ruota.
-*   ❌ Intera card che trema, sfondi animati a tutto schermo.
+### B. Sobrietà Fisica
+Preferire `opacity` e `transform` (scale/translate leggere). Evitare movimenti ampi che compromettano leggibilità di numeri e tabelle.
 
-### C. Sobrietà Fisica
-Preferiamo transizioni che non "spostano" troppi pixel.
-*   ✅ **Preferiti:** Opacity (Fade), Scale (Zoom leggero), Colors.
-*   ⚠️ **Con Cautela:** Slide (Spostamento spaziale), Rotation.
-*   ❌ **Vietati:** Flip 3D, Rimbalzi elastici esagerati.
+### C. Timing Standard
+- `animate-enter-up`: 0.6s, easing `cubic-bezier(0.16, 1, 0.3, 1)`
+- `animate-flash-green`: 0.8s decay
+- Loop continui (`pulse/ping/spin`): solo su elementi a basso peso visivo
 
-### D. Timing e Easing (Premium Standard)
-*   **Default Easing:** `cubic-bezier(0.16, 1, 0.3, 1)` (Apple-like friction). Mai usare `linear` o `ease-out` standard per le entrate UI.
-*   **Durata:** 
-    *   *Micro:* 200-300ms (Click, Hover)
-    *   *Macro:* 500-600ms (Page Entry, Grid Replace)
-    *   *Feedback:* 800ms (Decay lento per flash di successo)
-
-### E. Libreria Primitive (Globals.css)
-Usare ESCLUSIVAMENTE queste 3 primitive definite a livello globale. Non inventare keyframe custom nei componenti.
-
-| Nome | Easing | Uso Obbligatorio |
-| :--- | :--- | :--- |
-| `animate-enter-up` | Custom Bezier | Entrata di liste, griglie, card. Sostituisce `fade-in`. |
-| `animate-pulse-soft` | Ease-in-out | Stati di caricamento/attesa (Thinking). Sostituisce `pulse`. |
-| `animate-flash-green`| Ease-out decay | Feedback positivo immediato (es. Aggiornamento soldi). |
+### D. Legge del 5%
+Le animazioni continue non devono occupare più del 5% della viewport in modo dominante.
 
 ---
 
-## 3. Mappa delle Zone (Zoning)
+## 3. Primitive Consentite
 
-### ✅ Zone Consentite (Motion-Positive)
-1.  **Dashboard (Macro):** Transizioni morbide tra periodi temporali sui KPI.
-2.  **Insights (Intelligence):** Feedback visivo ("thinking") durante l'elaborazione AI.
-3.  **Simulatore (What-If):** Feedback immediato causa-effetto sugli slider.
-4.  **Empty States:** Micro-animazioni per invitare all'azione (es. "Inizia qui").
+### Global primitives (`src/app/globals.css`)
+- `animate-enter-up`
+- `animate-pulse-soft`
+- `animate-flash-green`
+- `animate-ping-slow`
+- `animate-spin-slow`
 
-### ❌ Zone Vietate (Static-Only)
-1.  **Lista Transazioni:** Consentito esclusivamente il Motion di "Entrata" (Staggered Entry/Living Effect) per preservare il contesto durante il caricamento o i filtri. Durante lo scroll o la modifica dei dati, la leggibilità è prioritaria: nessun movimento che distragga dalla lettura dei numeri.
-2.  **Dati Finanziari Critici:** Il Saldo Finale e i totali di bilancio NON devono usare "rolling numbers" (slot machine effect). Devono essere solidi e stabili.
-3.  **Tabelle Dense:** Nessun'animazione di colonna o movimento laterale.
+### Eccezione controllata: Radix/Shadcn state animations
+Per overlay Radix (`Dialog`, `Sheet`, `Popover`, `Dropdown`, `Select`) sono consentite classi `data-[state=*]:animate-*` e transition utility già presenti nei primitives UI.
 
 ---
 
-## 4. Accessibilità & Performance
+## 4. Zoning
 
-### Prefers-Reduced-Motion
-Tutte le animazioni devono rispettare la media query `prefers-reduced-motion: reduce`.
-In React/Framer Motion, usare hook condizionali o varianti CSS che azzerano la durata/spostamento.
+### Zone Motion-Positive
+- Dashboard: transizioni KPI/charts.
+- Insights: stati advisor/trend.
+- Simulator/Goals: feedback su scenario e attivazione ritmo.
+- Neural Core: progresso e stato evolutivo.
+
+### Zone Static-First
+- Tabelle dense e liste transazioni: motion minimo, orientato a entrata/focus, non a distrazione.
+- Totali finanziari critici: no effetti slot-machine o oscillazioni invasive.
+
+---
+
+## 5. Accessibilità & Performance
+
+### Prefers Reduced Motion
+`prefers-reduced-motion: reduce` deve disattivare animazioni e accorciare transizioni.
 
 ### Performance
-*   Animare solo proprietà composite: `transform` (translate, scale, rotate) e `opacity`.
-*   Mai animare: `width`, `height`, `margin`, `padding` (causano reflow).
+Animare solo proprietà composite (`transform`, `opacity`). Evitare animazioni su proprietà layout (`width`, `height`, `margin`, `padding`) salvo casi tecnici strettamente necessari.
 
 ---
 
-## 5. Regola di Estensione
-L'introduzione di qualsiasi NUOVA animazione non prevista in questo documento richiede:
-1.  Identificazione dello **Stato Semantico** che la giustifica.
-2.  Verifica della **Legge del 5%**.
-3.  Conferma che non ricada in una **Zona Vietata**.
+## 6. Regola di Estensione
 
-Senza questi requisiti, la PR deve essere rifiutata.
+Nuove animazioni sono ammesse solo se:
+1. hanno stato semantico esplicito;
+2. rispettano zoning e legge del 5%;
+3. non introducono regressioni di accessibilità/performance.

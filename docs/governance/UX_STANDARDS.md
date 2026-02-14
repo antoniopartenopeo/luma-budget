@@ -1,45 +1,66 @@
 # Numa UX Standards & Patterns
+
 > **Stato:** Active
-> **Versione:** 1.1
+> **Versione:** 1.2
 > **Ultimo aggiornamento:** 2026-02-11
 
-Questo documento raccoglie i pattern UX di alto livello che definiscono l'esperienza d'uso di Numa, al di là della pura UI.
+Linee guida UX ad alto livello per mantenere fiducia, chiarezza e coerenza cross-feature.
 
 ---
 
 ## 1. Trust & AI Interaction
 
 ### A. Real Processing Honesty (No Fake Delay)
-Numa deve comunicare in modo trasparente: lo stato "in analisi" va mostrato solo quando c'è lavoro reale in corso.
+Per Advisor/Insights e per ogni operazione dichiarata come "analisi", lo stato di attesa deve riflettere lavoro reale (query, calcolo, training, fetch).
 
-**Regola:**
-Per le operazioni "Intelligenti" (AI Advisor, Smart Analysis), è **VIETATO** introdurre ritardi artificiali solo per simulare intelligenza.
+**Regole:**
+- Vietato introdurre delay artificiali per simulare intelligenza.
+- Lo stato "in analisi" deve dipendere da `isLoading/isPending` reali.
+- In assenza di segnale dati sufficiente, usare copy esplicito di insufficienza dati (no rassicurazioni implicite).
 
-*   **Fonte dello stato:** `loading` reale (query/calcolo effettivo), non timer forzati.
-*   **Stato Visivo:** lo stato di attesa deve riflettere il ciclo tecnico reale.
-*   **Obiettivo:** affidabilità percepita attraverso coerenza tra stato UI e stato computazionale.
+### B. Forecast Source Transparency
+Quando viene mostrata una previsione in Insights/Advisor, la UI deve dichiarare la fonte:
+- `Fonte Brain` solo se il nowcast è realmente pronto.
+- `Fonte Storico` quando il Brain non è pronto o non è aggiornato.
+
+### C. Contradiction Suppression
+Se nel periodo corrente è presente un segnale `high/critical`, i messaggi rassicuranti a bassa severità nello stesso orizzonte vanno soppressi.
 
 ---
 
 ## 2. Feedback Loops
 
-### A. Risposta Tattile
-Ogni azione che modifica un valore finanziario (es. simulatore) deve restituire un feedback visivo immediato che confermi la relazione causa-effetto.
+### A. Causal Feedback on Financial Inputs
+Ogni interazione che modifica valori economici deve dare feedback visivo immediato e leggibile.
 
 **Standard:**
-*   Usa `animate-flash-green` sul contenitore del risultato.
-*   Il feedback deve partire *immediatamente* al rilascio dell'input.
+- Preferire `animate-flash-green` per confermare l'applicazione di una modifica monetaria.
+- Il feedback parte al commit dell'azione utente (non in ritardo decorativo).
+
+### B. Honest Progress on Long Tasks
+Per processi tecnici estesi (es. training locale Neural Core), mostrare progresso reale (percentuale/epoch/campioni), non stati fittizi.
 
 ---
 
 ## 3. Brand Identity & Geometry
 
-### A. Color Palette (LOCKED)
-Numa utilizza un'identità Premium basata sul Teal.
-*   **Primary State**: `primary` (Numa Teal - `oklch(0.6 0.16 200)`).
-*   **Banned**: Vietato l'uso di Indigo o colori generici Tailwind per stati attivi o call-to-action primarie.
+### A. Palette (Locked)
+- Primary state: `primary` (`oklch(0.6 0.16 200)`).
+- Vietato usare Indigo come colore principale per CTA/stati attivi.
 
 ### B. Geometry Scale
-La geometria segue una gerarchia di importanza:
-*   **Macro Surfaces**: `rounded-[2.5rem]` (40px) per container principali e MacroSections.
-*   **Micro Surfaces**: `rounded-xl` (16px) per card interne, sezioni di dettaglio e input.
+- Macro surfaces: `rounded-[2.5rem]` (40px).
+- Micro surfaces: `rounded-xl` (16px).
+
+### C. Material Consistency
+- Superfici principali: `glass-panel`.
+- Superfici secondarie: `glass-card`.
+- Overlay e chrome devono restare coerenti con la materialità della TopBar.
+
+---
+
+## 4. UX Invariants
+
+- Nessun branching di experience per device: un solo componente adattivo.
+- I flussi principali devono preservare orientamento verticale e leggibilità delle metriche.
+- Le etichette semantiche finanziarie devono rimanere non giudicanti e contestualizzate nel tempo.

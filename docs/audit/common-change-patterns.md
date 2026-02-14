@@ -52,7 +52,7 @@ Intento: nuova insight deterministic-driven in modulo insights.
 Passi minimi:
 1. Definisci criterio in `src/features/insights/generators.ts`.
 2. Aggiorna tipi in `src/features/insights/types.ts` se necessario.
-3. Aggiorna orchestrazione hook (`use-insights`, `use-orchestrated-insights`) solo per wiring.
+3. Aggiorna orchestrazione hook (`use-insights`, `use-ai-advisor`) solo per wiring.
 4. Aggiorna rendering in `src/features/insights/components/`.
 5. Aggiungi test in `src/features/insights/__tests__/insights-generators.test.ts`.
 

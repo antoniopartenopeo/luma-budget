@@ -5,126 +5,128 @@ description: Use when working on CSV import feature, transaction enrichment, mer
 
 # Import CSV e Data Enrichment
 
-Questa skill fornisce le procedure dettagliate per lavorare sulla feature di importazione CSV.
+Procedura operativa per lavorare sulla feature import CSV senza rompere i vincoli monetari e semantici.
 
 ---
 
 ## Guard di Attivazione
 
-Se questa skill non è chiaramente attiva, **FERMATI** e chiedi all'utente di invocarla esplicitamente per nome.
-Non procedere in modalità "best effort".
+Se la skill non e attiva esplicitamente, fermati e chiedi conferma.
 
 ---
 
-## Architettura Import
+## Architettura corrente
 
-```
+```text
 src/features/import-csv/
-├── core/           # Logica pura (no React)
-│   ├── normalize.ts    # Parsing e normalizzazione
-│   ├── group.ts        # Raggruppamento per merchant
-│   ├── enrich.ts       # Arricchimento categorie
-│   └── types.ts        # Tipi condivisi
-├── components/     # UI del wizard
-├── hooks/          # React hooks
-└── __tests__/      # Test
+├── components/
+│   ├── csv-import-wizard.tsx
+│   ├── wizard-shell.tsx
+│   ├── step-upload.tsx
+│   ├── step-review.tsx
+│   ├── step-summary.tsx
+│   └── review/*
+├── config/
+│   └── bank-links.ts
+└── core/
+    ├── parse.ts
+    ├── normalize.ts
+    ├── dedupe.ts
+    ├── enrich.ts
+    ├── grouping.ts
+    ├── subgrouping.ts
+    ├── payload.ts
+    ├── pipeline.ts
+    ├── overrides.ts
+    ├── filters.ts
+    ├── types.ts
+    └── merchant/
+        ├── pipeline.ts
+        ├── brand-dict.ts
+        ├── normalizers.ts
+        ├── payment-rails.ts
+        ├── sub-merchant.ts
+        ├── token-scorer.ts
+        ├── fuzzy-matcher.ts
+        └── overrides.ts
 ```
 
 ---
 
-## Normalizzazione Merchant
+## Pipeline ufficiale
 
-### Funzione Chiave
+Entry point: `processCSV()` in `core/pipeline.ts`
 
-```typescript
-extractMerchantKey(description: string): string
-```
-
-### Regole di Estrazione
-
-| Priorità | Regola | Esempio |
-|----------|--------|---------|
-| 1 | Rimuovi stop words | DI, IL, LA, POS, PAGAMENTO |
-| 2 | Rimuovi date | 12/01, 2024-01-15 |
-| 3 | Rimuovi ID/riferimenti | N. 12345, RIF:ABC |
-| 4 | Mantieni 2-3 parole significative | "AMAZON EU" da "Pagamento Amazon EU Sarl Milano" |
-
-### ⚠️ Eccezione `parseFloat`
-
-Il file `normalize.ts` è l'**UNICO** autorizzato a usare `parseFloat`:
-
-```typescript
-// ✅ PERMESSO SOLO QUI: parsing CSV grezzo
-const rawAmount = parseFloat(row.amount.replace(",", "."))
-const amountCents = Math.round(rawAmount * 100)
-```
-
-Questo perché il CSV è input esterno non strutturato.
+Ordine vincolante:
+1. `parseCSV` -> mappa colonne raw
+2. `normalizeRows` -> date/amount/description in formato canonico
+3. `detectDuplicates` -> confronto con transazioni esistenti
+4. `enrichRows` -> merchant key + categoria suggerita
+5. `groupRowsByMerchant` + `computeSubgroups`
+6. `generatePayload` -> `CreateTransactionDTO[]` pronto per persistenza
 
 ---
 
-## Strategia Subgrouping
+## Regole monetarie
 
-### Raggruppamento per Amount
-
-```typescript
-// Identifica abbonamenti ricorrenti
-groupByExactAmount(transactions): SubGroup[]
-```
-
-| Criterio | Logica |
-|----------|--------|
-| Stesso `merchantKey` | Raggruppa per merchant normalizzato |
-| Stesso `amountCents` | Sotto-raggruppa per importo esatto |
-| Ordinamento | Per magnitudine totale (descending) |
-
-### Use Case
-
-- Netflix €15,99/mese → subgroup "NETFLIX / €15,99"
-- Spotify €9,99/mese → subgroup "SPOTIFY / €9,99"
+- Lavorare in `amountCents` integer signed nel core import.
+- Parsing importi CSV via `parseCurrencyToCents()` (dominio money).
+- Nessun `parseFloat` nei flussi import correnti.
 
 ---
 
-## Arricchimento Categorie
+## Merchant normalization (v3)
 
-### Auto-Assignment
+Funzione chiave: `extractMerchantKey(description)` in `core/merchant/pipeline.ts`.
 
-```typescript
-assignCategory(merchantKey: string): CategoryId | null
-```
+Priorita:
+1. override espliciti (`merchant/overrides.ts`)
+2. estrazione payment rail e pulizia rumore
+3. lookup `BRAND_DICT`
+4. fuzzy match controllato
+5. scoring token
+6. fallback deterministico (`UNRESOLVED` / `ALTRO`)
 
-| Priorità | Fonte |
-|----------|-------|
-| 1 | Match esatto dallo storico utente |
-| 2 | Frequenza categoria per merchant |
-| 3 | `null` → richiede selezione manuale |
-
-### UI Override
-
-```tsx
-<CategoryPicker
-  value={currentCategory}
-  onChange={handleCategoryChange}
-/>
-```
+Guardrail:
+- output merchant key stabile e deterministico
+- no euristiche random o dipendenti da UI
 
 ---
 
-## Riferimenti
+## Subgrouping
 
-- Specifica completa: `docs/specs/WIZARD_LOGIC_SPEC.md`
-
----
-
-## Checklist Pre-Commit
-
-- [ ] `parseFloat` solo in `normalize.ts` per CSV grezzo
-- [ ] Merchant key normalizzata correttamente
-- [ ] Subgrouping per amount funzionante
-- [ ] Category assignment testato
-- [ ] Nessun calcolo monetario fuori da `@/domain/money`
+`computeSubgroups(group, rows)`:
+- cluster per `amountCents` esatto
+- pattern ricorrenti: >= 2 occorrenze
+- singoli aggregati in `Varie` quando esistono subgroup ricorrenti
+- fallback `Tutti` se non ci sono pattern
 
 ---
 
-**Versione**: 1.1.0  
-**Ultimo aggiornamento**: 2026-02-01
+## Category suggestion
+
+`enrichRows()` usa:
+- storico utente (priorita 1)
+- pattern rules da `@/domain/categories` (priorita 2)
+- `null` quando non c e certezza
+
+Override gerarchici (UI review step):
+- livello `row`
+- livello `subgroup`
+- livello `group`
+
+---
+
+## Checklist pre-commit
+
+- [ ] pipeline end-to-end invariata nell ordine ufficiale
+- [ ] importi in `amountCents` (signed) senza conversioni floating duplicate
+- [ ] merchant extraction deterministicamente testabile
+- [ ] subgrouping coerente con regole ricorrenza
+- [ ] payload finale compatibile con `CreateTransactionDTO`
+- [ ] test core import aggiornati (`core/__tests__/*`)
+
+---
+
+**Versione**: 1.2.0
+**Ultimo aggiornamento**: 2026-02-11

@@ -5,57 +5,59 @@ description: Regole semantiche vincolanti per la gestione del Pacing Temporale (
 
 # Pacing Temporale: Regole Semantiche e Invarianti
 
-Questo documento definisce le regole semantiche OBBLIGATORIE per tutta la sezione Pacing (generata dai Goals) e per i messaggi narrativi correlati.
+Regole obbligatorie per copy e stati legati a ritmo/budget.
 
-**Scopo**: Il "Budget" non esiste più come entità statica, ma come proiezione del "Ritmo" (Pacing). Il sistema deve comunicare in termini di *tempo* e *sostenibilità*, non di "limiti" o "risparmio".
+**Scopo**: comunicare sostenibilita nel tempo, non giudizi assoluti su "spendi troppo/poco".
 
 ---
 
-## 1. Nuove Definizioni Operative
+## 1. Definizioni operative
 
 | Termine | Definizione |
-| :--- | :--- |
-| **Pacing Plan** | Il piano di spesa derivato automaticamente dal `ActiveRhythm` dei Goals. |
-| **Cruise Speed** | La velocità di crociera ideale (baseline) per raggiungere il traguardo nel tempo previsto. |
-| **Survival Mode** | Quando il `ProjectedOverrun` minaccia la sostenibilità del traguardo principale. |
+|---|---|
+| Pacing Plan | Piano spesa derivato dal ritmo attivo (Goals/Scenari). |
+| Cruise Speed | Velocita sostenibile per rispettare il traguardo nel tempo. |
+| Survival Mode | Stato di rischio quando la proiezione compromette il traguardo. |
 
 ---
 
-## 2. Regole Vincolanti (B1 - B6)
+## 2. Regole vincolanti (B1 - B6)
 
-> [!IMPORTANT]
-> **Precedenza**: Il "Ritmo" (Goals) è la fonte di verità. Qualsiasi "Budget" visualizzato è solo una conseguenza del Ritmo scelto.
-
-| Regola | Condizione | Vietato 🚫 | Ammesso ✅ | Note |
-| :--- | :--- | :--- | :--- | :--- |
-| **REGOLA B1 — No Early Praise** | `elapsedRatio < 15%` | "In linea", "OK", "Sotto controllo", "Ottimo lavoro" | **Stati neutrali:** `early_uncertain`, "Dati iniziali", "Analisi in corso" | Evita di validare un comportamento di spesa troppo presto. |
-| **REGOLA B2 — Time Context** | Sempre | Giudizi assoluti ("Hai speso poco") | **Giudizi relativi:** "Hai speso poco *per questo momento del mese*" | Il valore assoluto non ha significato senza il tempo. |
-| **REGOLA B3 — Pacing > Saving** | Sotto il limite ma ritmo alto | "Risparmio", "Sotto budget" | "Ritmo accelerato", "Consumo rapido" | L'obiettivo è la costanza (Pacing), non il risparmio fine a se stesso. |
-| **REGOLA B4 — Goal Protection** | `projectedOverrun == true` | Rassicurazioni generiche | "Traguardo a rischio", "Deviazione dal percorso" | La priorità è proteggere il traguardo finale (Goal). |
-| **REGOLA B5 — Non-Judgmental Deviation** | Overrun confermato | Termini punitivi ("Disastro", "Male") o celebrativi ("Wow") | **Linguaggio descrittivo:** "Ritmo insostenibile", "Deviazione rilevata" | Il sistema segnala la deviazione come un dato di fatto per permettere la correzione. |
-| **REGOLA B6 — Data Integrity** | Dati incompleti | Stime di arrivo o proiezioni | "Dati insufficienti per la proiezione" | Mai inventare proiezioni senza dati solidi. |
+| Regola | Condizione | Vietato | Ammesso |
+|---|---|---|---|
+| B1 No Early Praise | `elapsedRatio < 15%` | lodi premature | stato neutro: "dati iniziali", "analisi in corso" |
+| B2 Time Context | sempre | giudizi assoluti senza tempo | giudizi relativi al momento del mese |
+| B3 Pacing > Saving | sotto limite ma ritmo alto | "risparmio" come esito automatico | "ritmo accelerato", "consumo rapido" |
+| B4 Goal Protection | proiezione overrun | rassicurazioni generiche | "traguardo a rischio", "deviazione" |
+| B5 Non-Judgmental | deviazione confermata | toni punitivi o celebrativi | linguaggio descrittivo e correttivo |
+| B6 Data Integrity | dati incompleti | proiezioni inventate | "dati insufficienti" |
 
 ---
 
-## 3. Applicazione
-Questa skill è **vincolante** per:
-- **Goals Engine**: Calcolo delle proiezioni e messaggi di stato (`NUMAExperience`, `useGoalProjection`).
-- **Dashboard**: KPI Cards e grafici di andamento (collegati al Pacing).
-- **Insights**: segnali su ritmo/deviazioni (non devono confondere il Pacing con metriche di saldo stimato advisor).
+## 3. Ambito applicazione
 
-### 3.1 Separazione Semantica con Advisor
-- La card Advisor in Insights usa una metrica diversa: `Saldo Totale Stimato = saldo base totale - spesa residua stimata mese corrente`.
-- I messaggi di Pacing devono mantenere linguaggio di ritmo/traguardo e non ri-etichettare il saldo advisor come "Pacing".
-- In caso di conflitto, i segnali di deviazione ritmo/traguardo hanno priorità narrativa sui messaggi rassicuranti.
+Vincolante per:
+- `src/domain/narration/derive-state.ts` (stati `BudgetState` / `SnapshotState`)
+- `src/domain/narration/budget.narrator.ts` e snapshot narrators
+- Dashboard e Insights quando mostrano segnali di ritmo/proiezione
+- Simulator/Goals quando attivano un ritmo (`src/VAULT/goals/logic/rhythm-orchestrator.ts`)
+
+### Separazione semantica con Advisor
+- Advisor in Insights usa la metrica `Saldo Totale Stimato`.
+- I messaggi pacing devono restare su ritmo/traguardo, non rietichettare la metrica Advisor.
+- Se c e conflitto, priorita ai segnali di rischio corrente.
 
 ---
 
-## 4. Checklist di Validazione
-1. [ ] I messaggi parlano di "Ritmo" o "Viaggio" invece di "Budget"?
-2. [ ] L'early praise è bloccato (Regola B1)?
-3. [ ] Le deviazioni sono notificate come rischi per il Traguardo (Regola B4)?
-4. [ ] Il linguaggio è privo di giudizio morale (Regola B5)?
+## 4. Checklist valida PR
+
+1. [ ] Linguaggio di ritmo/percorso, non di budget statico punitivo
+2. [ ] Early praise bloccato (B1)
+3. [ ] Rischio traguardo esplicitato (B4)
+4. [ ] Linguaggio non giudicante (B5)
+5. [ ] Nessuna proiezione senza base dati (B6)
+
 ---
 
-**Versione**: 1.2.0  
+**Versione**: 1.2.1
 **Ultimo aggiornamento**: 2026-02-11

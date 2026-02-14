@@ -1,106 +1,94 @@
 # NumaBudget
 
-Personal Finance Management built with **Next.js 16**, **React 19**, and **Tailwind CSS**.  
-Local-first persistence with rich analytics and insights.
+Personal finance app built with **Next.js 16**, **React 19**, and **Tailwind CSS 4**.
+Local-first persistence, deterministic narration, and rhythm-based planning.
 
-## ✨ Features
+## Features
 
 | Module | Status | Description |
-|--------|--------|-------------|
-| **Dashboard** | Stable | KPIs, charts, and financial atmosphere |
-| **Transactions** | Stable | CRUD, filters, CSV import/export with Motion |
-| **Financial Lab**| **v2.0** | Adaptive Genius Core & Technical Audit Panel |
-| **Categories** | Stable | Full CRUD with custom icons |
-| **Insights** | **v2.0** | Rhythm-based analysis, Labor Illusion & AI Advisor |
-| **UI/UX** | **Premium v1.1**| Glassmorphism, Living Effect & Staggered Motion |
-| **Settings** | Stable v1.3 | Preferences, backup/restore, themes |
-| **Notifications** | Stable | Topbar bell, unread badge, in-app beta changelog |
-| **Updates** | Stable | Dedicated `/updates` release history page |
+|---|---|---|
+| Dashboard | Stable | KPI finanziari, composizione spese, movimenti recenti, ritmo attivo |
+| Transactions | Stable | CRUD, filtri periodo/range, export CSV, quick add da TopBar |
+| Import CSV | Stable | Wizard multi-step con parse/normalize/dedupe/enrich/grouping merchant |
+| Insights | Stable | Trend analysis + AI Advisor con forecast trasparente (`Brain`/`Storico`) |
+| Financial Lab (`/simulator`) | Stable | Portfolio obiettivi, scenari baseline/balanced/aggressive/custom, attivazione ritmo |
+| Neural Core (`/brain`) | Active | Training locale del modello, nowcast mese corrente, timeline maturità |
+| Settings | Stable | Preferenze, categorie, backup/restore, diagnostica tecnica |
+| Notifications + Updates | Stable | Feed aggiornamenti in-app, badge unread, pagina `/updates` |
+| Privacy + Flash | Stable | Privacy mode globale e overlay snapshot rapido |
 
-## 🏗 Architecture
+## Architecture
 
-```
+```text
 src/
-├── app/              # Next.js routing
-├── features/         # Domain modules
-│   ├── transactions/ # api/, components/, utils/
-│   ├── dashboard/
-│   ├── insights/
-│   ├── goals/
-│   ├── notifications/
-│   ├── categories/
-│   ├── settings/
-│   └── simulator/
-├── VAULT/            # Domain-safe logic/persistence (goals, budget)
-├── components/       # Shared UI (Shadcn/Radix)
-└── lib/              # Utilities (currency, dates, storage)
+├── app/                  # Next.js App Router pages/layout
+├── components/           # Shared primitives + layout/patterns
+├── brain/                # Local neural core (dataset, training, prediction)
+├── domain/               # Pure domain logic (money, transactions, narration, categories)
+├── features/             # Feature modules (dashboard, insights, import-csv, ...)
+├── VAULT/                # Isolated high-value logic (goals, budget)
+└── lib/                  # Shared utilities (storage keys, date ranges, runtime metadata)
 ```
 
-### Data Flow
-- **Repositories** → Read/write to `localStorage`
-- **React Query** → Caching and UI reactivity
-- **Cross-tab sync** → Storage event listener
+### Runtime routes
+- `/` Dashboard
+- `/transactions`
+- `/insights`
+- `/simulator`
+- `/settings`
+- `/updates`
+- `/brain`
 
-### Persistence Keys
-```
-luma_transactions_v1
-luma_budget_plans_v1
-luma_categories_v1
-luma_settings_v1
-numa_goal_portfolio_v1
-numa_active_goal_v1
-insights_smart_advice_signature_v1
-numa_notifications_state_v2
-```
+Legacy redirects:
+- `/budget` -> `/`
+- `/goals/lab` -> `/`
 
-Note: `luma_*` keys are legacy naming kept for backward compatibility with existing local data.
+### Data flow
+- Repository layer -> `localStorage` persistence
+- React Query -> cache + invalidation
+- Cross-tab sync -> `storage` listeners on registered keys
+- Narration layer -> deterministic copy from domain facts/state
 
-### Global Semantic Enforcement
-- **Deterministic Narration Layer**: All text generation is governed by strict semantic rules (ADR-005).
-- **Rhythm over Budget**: Focus on financial "Path" and "Acceleration" rather than fixed limits.
-- **Labor Illusion**: AI interactions are paced (1.5s delay) to ensure perceived intelligence and trust.
-- **Global Enforcement Tests**: Automated tests (`semantic-enforcement.test.ts`) ensure no "tone-deaf" or mathematically incorrect statements are generated.
-- **No Inline Strings**: UI components are forbidden from generating logic-based narrative strings internally.
+### Persistence keys
+`src/lib/storage-keys.ts` is the registry source of truth for app-level keys:
+- `luma_transactions_v1`
+- `luma_budget_plans_v1`
+- `luma_categories_v1`
+- `luma_settings_v1`
+- `numa_goal_portfolio_v1`
+- `numa_active_goal_v1` (legacy)
+- `insights_smart_advice_signature_v1`
+- `numa_notifications_state_v2`
+- `numa-privacy-storage`
 
-## 🚀 Getting Started
+Neural core storage is managed separately in `src/brain/storage.ts`:
+- `numa_neural_core_v1`
+
+## Governance
+
+- Canonical runtime constraints: `/.agent/rules/numa-core-rules.md`
+- Canonical documentation hub: `/docs/README.md`
+- Governance update workflow: `$numa-governance-update`
+
+## Getting started
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
-
-Release helpers:
+Validation helpers:
 
 ```bash
+npm run validate
+npm run governance:quick-check
 npm run release:validate
 ```
 
-## 📜 Development Standards
+## Deploy
 
-Numa Budget follows a strict set of development standards to ensure financial accuracy, UI consistency (UBI), and maintainable architecture.
-
-> [!IMPORTANT]
-> All technical rules, architectural patterns, and UI constraints are defined in the **[Numa Core Rules](./.agent/rules/numa-core-rules.md)**.
-> 
-> Before contributing, ensure you have read the **[Numa Core Rules](./.agent/rules/numa-core-rules.md)**.
-
-## 📁 Documentation
-
-- **[Documentation Hub](./docs/README.md)**: Single entrypoint (what/where/when/why).
-- **[Numa Core Rules](./.agent/rules/numa-core-rules.md)**: Always-on non-negotiable constraints.
-- **Governance Update Skill**: use global skill `$numa-governance-update` for rule/skill/changelog workflow.
-
-## 🚀 Deploy
-
-Standard Next.js deployment on Vercel.
+Standard Next.js deployment (Vercel).
 
 Release flow:
 - Work branches: `codex/*`
-- Public beta deploy branch: `main`
-- Merge to `main` only when a release is approved
-
----
-
-Made with 💜 by Numa Team
+- Public beta/release branch: `main`

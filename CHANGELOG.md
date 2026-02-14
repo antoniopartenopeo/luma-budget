@@ -10,6 +10,20 @@ Schema usato in tutte le release:
 
 ---
 
+## [0.3.3] - 2026-02-12
+
+### Changed (Miglioramenti per te)
+- La card **Composizione Spese** in Dashboard ora usa direttamente il riepilogo categorie del backend dashboard come fonte unica, con ordinamento più stabile.
+- Su mobile, la Composizione Spese passa a una vista più leggibile a card/legenda (senza grafico a torta completo).
+- Aggiunta la KPI **Segnale del mese** in Dashboard, con stato sintetico e rimando rapido a Insights.
+- Aggiornata la responsività dei grafici ECharts con resize più affidabile.
+
+### Fixed (Correzioni)
+- Corretto il calcolo periodo mensile in Dashboard usando range locale, riducendo incoerenze nei passaggi di mese/fuso.
+- Sincronizzati i report audit di governance sul branch (`quick-check` + summary).
+
+---
+
 ## [0.3.2] - 2026-02-11
 
 ### Changed (Miglioramenti per te)

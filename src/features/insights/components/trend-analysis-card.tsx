@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
+import { useReducedMotion } from "framer-motion"
 import { PremiumChartSection } from "@/features/dashboard/components/charts/premium-chart-section"
 import { useSettings } from "@/features/settings/api/use-settings"
 import { useTrendData } from "../use-trend-data"
@@ -27,39 +28,39 @@ export function TrendAnalysisCard({
     advisorForecast = null,
 }: TrendAnalysisCardProps) {
     const { data, isLoading } = useTrendData()
+    const prefersReducedMotion = useReducedMotion()
     const { currency, locale } = useCurrency()
     const { data: settings } = useSettings()
     const isDarkMode = settings?.theme === "dark" || (settings?.theme === "system" && typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches)
-    // ATMOSPHERE: Calculate health status based on last 3 months
+    const activeData = useMemo(() => data.filter((item) => item.hasTransactions), [data])
+
     const chartStatus = useMemo(() => {
-        if (!data || data.length < 3) return "default"
-        const last3 = data.slice(-3)
+        if (activeData.length < 3) return "default"
+        const last3 = activeData.slice(-3)
         const avgSavingsRate = last3.reduce((sum, d) => sum + d.savingsRate, 0) / 3
 
         if (avgSavingsRate < 0) return "critical"
         if (avgSavingsRate < 10) return "warning"
         return "default"
-    }, [data])
+    }, [activeData])
 
-    // MILESTONES: Find the best month and negative months
     const milestones = useMemo(() => {
-        if (!data || data.length === 0) return { bestIndex: -1, negativeIndices: [] }
+        if (data.length === 0 || activeData.length === 0) return { bestIndex: -1 }
         let bestIdx = 0
-        const negatives: number[] = []
 
         data.forEach((d, i) => {
-            if (d.savingsRate > data[bestIdx].savingsRate) bestIdx = i
-            if (d.savingsRate < 0) negatives.push(i)
+            if (!d.hasTransactions) return
+            if (!data[bestIdx].hasTransactions || d.savingsRate > data[bestIdx].savingsRate) bestIdx = i
         })
 
-        return { bestIndex: bestIdx, negativeIndices: negatives }
-    }, [data])
+        return { bestIndex: bestIdx }
+    }, [activeData, data])
 
     const trendNarration = useMemo(() => {
-        if (!data || data.length < 2) return null
+        if (activeData.length < 2) return null
 
-        const current = data[data.length - 1]
-        const previous = data[data.length - 2]
+        const current = activeData[activeData.length - 1]
+        const previous = activeData[activeData.length - 2]
 
         const facts: TrendFacts = {
             metricType: "savings_rate",
@@ -77,10 +78,10 @@ export function TrendAnalysisCard({
             ? { hasHighSeverityCurrentIssue: true }
             : undefined
         return narrateTrend(facts, state, context).text
-    }, [data, hasHighSeverityCurrentIssue])
+    }, [activeData, hasHighSeverityCurrentIssue])
 
     const projection = useMemo<TrendProjectionState>(() => {
-        if (!advisorForecast || data.length === 0) {
+        if (!advisorForecast || activeData.length === 0) {
             return {
                 enabled: false,
                 sourceLabel: "Storico",
@@ -89,7 +90,7 @@ export function TrendAnalysisCard({
             }
         }
 
-        const currentMonth = data[data.length - 1]
+        const currentMonth = activeData[activeData.length - 1]
         const remainingExpenses = Math.max(0, advisorForecast.predictedRemainingCurrentMonthExpensesCents / 100)
         const projectedEndExpenses = Math.max(
             currentMonth.expenses,
@@ -102,16 +103,16 @@ export function TrendAnalysisCard({
             remainingExpenses,
             projectedEndExpenses,
         }
-    }, [advisorForecast, data])
+    }, [advisorForecast, activeData])
 
     const option: EChartsOption = useMemo(() => {
-        if (!data.length) return {}
+        if (!activeData.length) return {}
 
-        const baseMonths = data.map((d) => d.month)
+        const baseMonths = activeData.map((d) => d.month)
         const xAxisData = projection.enabled ? [...baseMonths, "Fine mese"] : baseMonths
 
-        const incomeSeriesData: Array<number | null> = data.map((d) => d.income)
-        const expensesSeriesData: Array<number | null> = data.map((d) => d.expenses)
+        const incomeSeriesData: Array<number | null> = activeData.map((d) => d.income)
+        const expensesSeriesData: Array<number | null> = activeData.map((d) => d.expenses)
         if (projection.enabled) {
             incomeSeriesData.push(null)
             expensesSeriesData.push(null)
@@ -119,7 +120,7 @@ export function TrendAnalysisCard({
 
         const projectionSeriesData: Array<number | null> = xAxisData.map(() => null)
         if (projection.enabled) {
-            projectionSeriesData[data.length - 1] = data[data.length - 1].expenses
+            projectionSeriesData[activeData.length - 1] = activeData[activeData.length - 1].expenses
             projectionSeriesData[xAxisData.length - 1] = projection.projectedEndExpenses
         }
 
@@ -129,8 +130,9 @@ export function TrendAnalysisCard({
 
         return {
             backgroundColor: "transparent",
-            animationDuration: 2000,
-            animationDurationUpdate: 1000,
+            animation: !prefersReducedMotion,
+            animationDuration: prefersReducedMotion ? 0 : 900,
+            animationDurationUpdate: prefersReducedMotion ? 0 : 400,
             animationEasing: "cubicOut",
             tooltip: {
                 trigger: "axis",
@@ -168,7 +170,8 @@ export function TrendAnalysisCard({
                     const index = rows[0].dataIndex
                     const title = rows[0].name || xAxisData[index] || "Periodo"
                     const isProjectionEnd = projection.enabled && index === xAxisData.length - 1
-                    const monthStats = index < data.length ? data[index] : null
+                    const monthStats = index < activeData.length ? activeData[index] : null
+                    const hasMonthTransactions = monthStats?.hasTransactions ?? false
 
                     const valueBySeries = new Map<string, number>()
                     for (const row of rows) {
@@ -202,7 +205,15 @@ export function TrendAnalysisCard({
                     const incomeValue = valueBySeries.get("Entrate") ?? 0
                     const expensesValue = valueBySeries.get("Uscite") ?? 0
                     const savingsRate = monthStats?.savingsRateLabel ?? "0.0%"
-                    const projectionNote = projection.enabled && index === data.length - 1
+                    if (!hasMonthTransactions) {
+                        return `
+            <div style="font-weight: 700; font-size: 14px; margin-bottom: 8px; border-bottom: 1px solid rgba(128,128,128,0.2); padding-bottom: 4px;">
+              ${title}
+            </div>
+            <div style="color: #94a3b8; font-size: 12px;">Nessun movimento registrato in questo mese.</div>
+          `
+                    }
+                    const projectionNote = projection.enabled && index === activeData.length - 1
                         ? `
               <div style="display: flex; justify-content: space-between; gap: 24px; margin-top: 4px; padding-top: 4px; border-top: 1px dashed rgba(128,128,128,0.2);">
                 <span style="color: #94a3b8; font-size: 12px;">Fine mese stimata</span>
@@ -288,7 +299,7 @@ export function TrendAnalysisCard({
                     showSymbol: false,
                     symbol: "circle",
                     symbolSize: 8,
-                    animationDelay: (idx) => idx * 50,
+                    animationDelay: prefersReducedMotion ? 0 : (idx) => idx * 25,
                     areaStyle: {
                         color: {
                             type: "linear",
@@ -301,10 +312,10 @@ export function TrendAnalysisCard({
                     },
                     itemStyle: { color: "#10b981" },
                     lineStyle: {
-                        width: 4,
-                        shadowBlur: 20,
-                        shadowColor: "rgba(16, 185, 129, 0.3)",
-                        shadowOffsetY: 8
+                        width: 3,
+                        shadowBlur: 12,
+                        shadowColor: "rgba(16, 185, 129, 0.22)",
+                        shadowOffsetY: 4
                     },
                     markPoint: {
                         data: milestones.bestIndex !== -1 ? [
@@ -333,9 +344,9 @@ export function TrendAnalysisCard({
                     type: "line",
                     smooth: 0.4,
                     showSymbol: false,
-                    symbol: "circle",
+                    symbol: "rect",
                     symbolSize: 8,
-                    animationDelay: (idx) => idx * 50 + 200,
+                    animationDelay: prefersReducedMotion ? 0 : (idx) => idx * 25 + 120,
                     areaStyle: {
                         color: {
                             type: "linear",
@@ -348,10 +359,10 @@ export function TrendAnalysisCard({
                     },
                     itemStyle: { color: "#f43f5e" },
                     lineStyle: {
-                        width: 4,
-                        shadowBlur: 20,
-                        shadowColor: "rgba(244, 63, 94, 0.3)",
-                        shadowOffsetY: 8
+                        width: 3,
+                        shadowBlur: 12,
+                        shadowColor: "rgba(244, 63, 94, 0.22)",
+                        shadowOffsetY: 4
                     },
                     markLine: {
                         silent: true,
@@ -379,7 +390,20 @@ export function TrendAnalysisCard({
                         lineStyle: {
                             width: 3,
                             type: "dashed" as const,
-                            color: "#f59e0b"
+                            color: "#f59e0b",
+                            shadowBlur: 10,
+                            shadowColor: "rgba(245, 158, 11, 0.2)",
+                            shadowOffsetY: 3
+                        },
+                        areaStyle: {
+                            color: {
+                                type: "linear",
+                                x: 0, y: 0, x2: 0, y2: 1,
+                                colorStops: [
+                                    { offset: 0, color: "rgba(245, 158, 11, 0.12)" },
+                                    { offset: 1, color: "rgba(245, 158, 11, 0)" }
+                                ]
+                            }
                         },
                         z: 6,
                         data: projectionSeriesData
@@ -387,22 +411,23 @@ export function TrendAnalysisCard({
                     : [])
             ]
         }
-    }, [data, currency, locale, isDarkMode, milestones, projection])
+    }, [activeData, currency, locale, isDarkMode, milestones, projection, prefersReducedMotion])
 
     return (
         <PremiumChartSection
             title={projection.enabled
                 ? "Andamento entrate, uscite e proiezione fine mese"
-                : "Andamento entrate e uscite (12 mesi)"}
+                : "Andamento entrate e uscite"}
             description={trendNarration
                 ? `${trendNarration}${projection.enabled ? ` Inclusa proiezione uscite a fine mese (${projection.sourceLabel}).` : ""}`
                 : "Confronto mese per mese tra entrate e uscite."}
             option={option}
             isLoading={isLoading}
-            status={chartStatus} // Dynamically update atmosphere
-            hasData={data.length > 0}
+            status={chartStatus}
+            hasData={activeData.length > 0}
             chartHeight={400}
             backgroundType="cartesian"
+            showBackground={false}
         />
     )
 }

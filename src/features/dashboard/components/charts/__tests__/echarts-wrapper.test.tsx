@@ -19,6 +19,7 @@ vi.mock("next/dynamic", () => ({
 describe("EChartsWrapper", () => {
     let observeSpy: ReturnType<typeof vi.fn>
     let disconnectSpy: ReturnType<typeof vi.fn>
+    let cancelAnimationFrameSpy: ReturnType<typeof vi.fn>
     let observerCallback: ResizeObserverCallback | null
 
     beforeEach(() => {
@@ -41,7 +42,8 @@ describe("EChartsWrapper", () => {
             cb(0)
             return 1
         })
-        vi.stubGlobal("cancelAnimationFrame", vi.fn())
+        cancelAnimationFrameSpy = vi.fn()
+        vi.stubGlobal("cancelAnimationFrame", cancelAnimationFrameSpy)
     })
 
     afterEach(() => {
@@ -59,6 +61,19 @@ describe("EChartsWrapper", () => {
         expect(resizeSpy).toHaveBeenCalled()
 
         unmount()
+        expect(cancelAnimationFrameSpy).toHaveBeenCalledWith(1)
         expect(disconnectSpy).toHaveBeenCalled()
+    })
+
+    it("renders safely when ResizeObserver is unavailable", () => {
+        vi.stubGlobal("ResizeObserver", undefined)
+
+        const { unmount } = render(<EChartsWrapper option={{}} />)
+
+        expect(screen.getByTestId("mock-echarts")).toBeInTheDocument()
+        expect(capturedProps?.autoResize).toBe(false)
+        expect(observeSpy).not.toHaveBeenCalled()
+        unmount()
+        expect(disconnectSpy).not.toHaveBeenCalled()
     })
 })

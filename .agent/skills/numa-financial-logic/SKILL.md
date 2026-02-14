@@ -5,237 +5,129 @@ description: Use when modifying transaction calculations, budget logic, KPI form
 
 # Logica Finanziaria di Numa Budget
 
-Questa skill fornisce le procedure dettagliate per lavorare con calcoli monetari, budget, e KPI.
+Skill operativa per calcoli monetari, KPI, ritmo budget e proiezioni.
 
 ---
 
 ## Guard di Attivazione
 
-Se questa skill non è chiaramente attiva, **FERMATI** e chiedi all'utente di invocarla esplicitamente per nome.
-Non procedere in modalità "best effort".
+Se la skill non e attiva esplicitamente, fermati e chiedi conferma.
 
 ---
 
 ## Principio Fondamentale
 
-> **Tutti i valori monetari sono memorizzati e calcolati in CENTESIMI (integer).**
-> Il campo deprecato `amount` è stato **RIMOSSO**. **NON USARE**. Usa solo `amountCents`.
-> Mai usare `parseFloat` su valori monetari.
+> Tutti gli importi applicativi sono in **centesimi integer** (`amountCents`).
+> `amount` legacy non e la source of truth.
+
+Regole hard:
+- niente `parseFloat` sui flussi monetari di prodotto
+- niente calcoli monetari duplicati nei componenti UI
 
 ---
 
-## Import Obbligatori
+## Import util obbligatori
 
-```typescript
-// Matematica e formattazione
-import { 
-  sumExpensesInCents, 
-  sumIncomeInCents, 
-  calculateSharePct, 
-  calculateUtilizationPct,
+```ts
+import {
   formatCents,
-  parseCurrencyToCents
+  formatSignedCents,
+  parseCurrencyToCents,
+  calculateSharePct,
+  calculateUtilizationPct,
+  sumExpensesInCents,
+  sumIncomeInCents,
 } from "@/domain/money"
 
-// Transazioni
-import { 
-  getSignedCents, 
-  normalizeTransactionAmount 
-} from "@/domain/transactions"
-
-// KPI e Toni colore
+import { getSignedCents, normalizeTransactionAmount } from "@/domain/transactions"
 import { getTone } from "@/features/dashboard/utils/kpi-logic"
 ```
 
 ---
 
-## Convenzione di Segno
-
-### Regola Base
+## Convenzione di segno
 
 | Tipo | `amountCents` | `getSignedCents()` |
-|------|---------------|-------------------|
-| Entrata | **positivo** | **positivo** |
-| Uscita | **positivo** | **negativo** |
+|---|---:|---:|
+| Entrata | positivo | positivo |
+| Uscita | positivo | negativo |
 
-### Quando Usare Cosa
-
-| Scenario | Usa |
-|----------|-----|
-| Calcolo bilancio totale | `getSignedCents()` |
-| Somma solo uscite | `sumExpensesInCents()` |
-| Somma solo entrate | `sumIncomeInCents()` |
-| Display "Speso: €X" | `Math.abs()` + `formatCents()` |
-| Confronto magnitudine | `Math.abs()` |
-
-### ⚠️ Errore Comune
-
-```typescript
-// ❌ SBAGLIATO: somma valori assoluti per bilancio
-const balance = transactions.reduce((sum, t) => sum + Math.abs(t.amountCents), 0)
-
-// ✅ CORRETTO: usa signed cents
-const balance = transactions.reduce((sum, t) => sum + getSignedCents(t), 0)
-```
+Uso corretto:
+- saldo/bilancio aggregato -> signed cents
+- "quanto hai speso" -> `Math.abs()` + formatter
 
 ---
 
-## Budget
+## Budget e ritmo
 
-### Campi
+Campi principali runtime:
+- `globalBudgetAmountCents`
+- budget per gruppo (`essential`, `comfort`, `superfluous`)
 
-| Campo | Tipo | Descrizione |
-|-------|------|-------------|
-| `globalBudgetAmountCents` | `number` | Budget globale mensile |
-| `amountCents` | `number` | Budget per gruppo/categoria |
-
-### Calcoli
-
-```typescript
-import { calculateUtilizationPct } from "@/domain/money"
-
-// Percentuale utilizzo budget
+Formula standard:
+```ts
 const pct = calculateUtilizationPct(spentCents, budgetCents)
-// Ritorna 0-100+, gestisce division by zero
+```
+
+Ritmo attivo:
+- derivato da Goals/Scenari (`src/VAULT/goals/*`)
+- applicato a budget operativo tramite `activateRhythm()`
+
+---
+
+## Parsing e formattazione
+
+Parsing input utente:
+```ts
+const cents = parseCurrencyToCents(input)
+```
+
+Formatting:
+```ts
+formatCents(cents, currency, locale)
+formatSignedCents(signedCents, currency, locale)
 ```
 
 ---
 
-## Proiezioni & Ritmi Adattivi
+## Errori comuni da evitare
 
-### 1. Adaptive Calibration (LOCKED)
-Numa non utilizza percentuali fisse per i risparmi. Ogni proiezione deve essere calibrata su due fattori di dominio:
+```ts
+// ❌ saldo sbagliato (somma assoluti)
+transactions.reduce((sum, t) => sum + Math.abs(t.amountCents), 0)
 
-| Fattore | Descrizione | Calcolo Base |
-|:--- | :--- | :--- |
-| **Elasticità** | Capacità di tagliare spese non essenziali | `(Superfluo + Benessere) / Entrate` |
-| **Stabilità** | Rischio basato sulla variabilità storica | `1 - (StdDev / Mensile Medio)` |
+// ✅ saldo corretto
+transactions.reduce((sum, t) => sum + getSignedCents(t), 0)
+```
 
-### 2. Regola del Ritmo
-Il moltiplicatore finale applicato alle spese deve essere un prodotto di `Elasticità * Stabilità * Intensità (0.1 - 1.0)`. Questo garantisce che il risparmio sia sempre sostenibile e mai arbitrario.
+```ts
+// ❌ conversione floating custom
+(amountCents / 100).toFixed(2)
 
----
-
-## Formattazione
-
-```typescript
-import { formatCents } from "@/domain/money"
-
-// ✅ Da cents a display
-formatCents(12345) // → "€123,45"
-
-// ❌ MAI fare questo
-(amountCents / 100).toFixed(2) // Errori di arrotondamento
+// ✅ formatter dominio
+formatCents(amountCents)
 ```
 
 ---
 
-## Parsing Input Utente
+## Narration e semantica
 
-```typescript
-import { parseCurrencyToCents } from "@/domain/money"
-
-// ✅ Da stringa a cents
-parseCurrencyToCents("123,45") // → 12345
-parseCurrencyToCents("€ 1.234,56") // → 123456
-
-// ❌ MAI usare parseFloat
-parseFloat(input.replace(/[€,]/g, '')) // VIETATO
-```
+- I narrator non fanno calcoli: ricevono facts gia derivati.
+- Stati/toni finanziari devono restare coerenti con `src/domain/narration/*`.
+- In caso di conflitto tra segnali, vale la priorita del periodo corrente ad alta severita.
 
 ---
 
-## KPI e Toni Colore
+## Checklist pre-commit
 
-```typescript
-import { getTone } from "@/features/dashboard/utils/kpi-logic"
-
-// Tono basato su percentuale
-const tone = getTone(utilizationPct)
-// → "success" | "warning" | "danger" | "neutral"
-```
-
----
-
-## Esempi Bad/Good
-
-### Calcolo Percentuale
-
-```typescript
-// ❌ SBAGLIATO: inline
-const percent = Math.round((spent / budget) * 100)
-
-// ✅ CORRETTO: centralizzato
-import { calculateUtilizationPct } from "@/domain/money"
-const percent = calculateUtilizationPct(spentCents, budgetCents)
-```
-
-### Parsing Valuta
-
-```typescript
-// ❌ SBAGLIATO: parseFloat
-const amount = parseFloat(input.replace(/[€,]/g, ''))
-
-// ✅ CORRETTO: utility centralizzata
-import { parseCurrencyToCents } from "@/domain/money"
-const amountCents = parseCurrencyToCents(input)
-```
-
-### Display Importo
-
-```typescript
-// ❌ SBAGLIATO: formatEuroNumber su cents
-formatEuroNumber(amountCents) // Mostra 100x il valore!
-
-// ✅ CORRETTO: formatCents
-import { formatCents } from "@/domain/money"
-formatCents(amountCents) // → "€123,45"
-```
+- [ ] Nessun `parseFloat` su flussi monetari applicativi
+- [ ] `amountCents` integer usato ovunque come base
+- [ ] Bilanci con signed cents
+- [ ] Formatting con util dominio
+- [ ] KPI/percentuali da util centralizzate
+- [ ] Nessuna formula business duplicata in componenti
 
 ---
 
-## Narration & Insights (Flash Summary)
-
-### Derivazione Stato (Invarianti)
-
-Se il saldo è negativo (`balanceCents < 0`), lo stato **NON PUÒ MAI** essere `thriving`, `stable` o `calm`. 
-
-### Priorità dei Segnali
-
-L'analisi deve seguire questo ordine gerarchico:
-1. **Saldo** (Deficit)
-2. **Budget** (Sforamento)
-3. **Spese Superflue** (Oltre target)
-4. **Composizione** (Top categories)
-
-### Toni di Voce
-
-- **Saldo Negativo**: Mai usare toni celebrativi o auto-assolutori.
-- **Stato Stable**: Deve essere descrittivo (equilibrio) e non di lode ("impeccabile").
-- **Stato Calm**: Riservato a dati insufficienti o inizio periodo.
-
----
-
-## Lessons Learned
-
-| Data | Problema | Causa | Prevenzione |
-|------|----------|-------|-------------|
-| 2026-01-17 | Simulatore mostra valori 100x | `formatEuroNumber` su cents | Usa `formatCents` per cents |
-| 2026-01-18 | Calcoli duplicati in Flash Summary | Formule inline | Usa sempre `financial-math.ts` |
-| 2026-01-25 | Narration elogia saldo negativo | Fallback errato su "Calm" | Invariante: saldo negativo != stable |
-| 2026-01-27 | Refactor `amountCents` broken metrics | Fallback su `amount` (stringa) rimosso | Rimosso ogni riferimento a `t.amount` |
-
----
-
-## Checklist Pre-Commit
-
-- [ ] Nessun `parseFloat` su valori monetari
-- [ ] Tutti gli importi in `amountCents` (integer)
-- [ ] Bilanci calcolati con `getSignedCents()`
-- [ ] Formattazione display con `formatCents()`
-- [ ] Percentuali con `calculateUtilizationPct()`
-
----
-
-**Versione**: 1.3.0  
-**Ultimo aggiornamento**: 2026-02-04
+**Versione**: 1.4.0
+**Ultimo aggiornamento**: 2026-02-11

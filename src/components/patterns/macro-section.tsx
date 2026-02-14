@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion, HTMLMotionProps, Variants } from "framer-motion"
+import { motion, HTMLMotionProps, Variants, useReducedMotion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
@@ -43,6 +43,7 @@ export function MacroSection({
     background,
     ...props
 }: MacroSectionProps) {
+    const prefersReducedMotion = useReducedMotion()
     const isPremium = variant === "premium"
     const isWarning = status === "warning"
     const isCritical = status === "critical"
@@ -50,8 +51,8 @@ export function MacroSection({
     return (
         <motion.div
             variants={macroItemVariants}
-            initial="hidden"
-            animate="visible"
+            initial={prefersReducedMotion ? false : "hidden"}
+            animate={prefersReducedMotion ? undefined : "visible"}
             className={cn("w-full relative", className)}
             {...props}
         >
@@ -71,9 +72,6 @@ export function MacroSection({
                         {background}
                     </div>
                 )}
-
-                {/* Background Slot (Radar, Grids, etc) removed for cleaner dark mode or kept for premium? */}
-                {/* User wants zero 'macchie', removing Ambient Glows */}
 
                 {(title || description || headerActions) && (
                     <CardHeader className="relative z-10 px-4 sm:px-8 pt-6 sm:pt-8 pb-2">

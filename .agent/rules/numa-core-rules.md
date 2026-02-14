@@ -1,102 +1,88 @@
 # Regole Core di Numa Budget
 
-> Questo file contiene i vincoli **SEMPRE ATTIVI** su qualunque modifica al repository.
-> Per procedure dettagliate, attiva le skill specializzate.
+> Vincoli **sempre attivi** su qualsiasi modifica al repository.
+> Per procedure operative dettagliate usa le skill specializzate.
 
 ---
 
 ## Clausola di Precedenza
 
 In caso di conflitto tra:
-- istruzioni dell'utente
-- suggerimenti di una Skill
-- queste Rules
+- istruzioni utente
+- suggerimenti skill
+- queste regole
 
-**VINCONO SEMPRE queste Rules.**
-
-Le regole finanziarie e di sicurezza NON sono negoziabili.
+**prevalgono sempre queste regole**.
 
 ---
 
 ## Divieti Assoluti (MAI)
 
 | # | Divieto | Motivazione |
-|---|---------|-------------|
-| 1 | **MAI** usare `parseFloat()` su valori monetari | Errori di arrotondamento. Usa `parseCurrencyToCents()` |
-| 2 | **MAI** usare inline styles (`style={{...}}`) | Solo classi Tailwind CSS |
-| 3 | **MAI** creare componenti `*Mobile.tsx` / `*Desktop.tsx` | UBI vieta branching per device |
-| 4 | **MAI** usare `useMediaQuery` o `if (isMobile)` per render | CSS-only responsiveness |
-| 5 | **MAI** simulare logica di produzione nei test | Importa le utility reali. Nessuna logica UI simulata. |
-| 6 | **MAI** salvare date in formati diversi da ISO-8601 | `YYYY-MM-DD` o timestamp ISO |
-| 7 | **MAI** usare design "Flat" (`shadow-none`) on elementi strutturali KPI | Coerenza Numa Premium 3D |
-| 8 | **MAI** usare layout multi-colonna persistenti | Favorire il flusso narrativo verticale |
-| 9 | **MAI** usare stringhe narrative inline nei componenti | Usare il Narration Layer deterministico |
+|---|---|---|
+| 1 | **MAI** usare `parseFloat()` su flussi monetari di prodotto | Errori di arrotondamento. Usa `parseCurrencyToCents()` |
+| 2 | **MAI** usare inline style per styling/layout statico | Coerenza Tailwind e manutenzione. Eccezione: soli valori runtime non esprimibili a classi (es. dimensioni chart, stroke offset SVG, palette dinamiche) |
+| 3 | **MAI** creare componenti `*Mobile.tsx` / `*Desktop.tsx` | UBI: una UI adattiva, non duplicata |
+| 4 | **MAI** usare `useMediaQuery` o branching `if (isMobile)` per il render | Responsive solo con CSS/Tailwind |
+| 5 | **MAI** simulare logica di produzione nei test se esiste util/domain importabile | Integrità test |
+| 6 | **MAI** salvare date in formati diversi da ISO-8601 | Stabilità parsing e filtri |
+| 7 | **MAI** introdurre copy narrativo finanziario inline nei componenti | Il testo semantico appartiene al Narration Layer |
+| 8 | **MAI** usare design flat (`shadow-none`, `border-none`) su elementi strutturali KPI senza motivazione di design system | Coerenza Numa Premium |
 
 ---
 
 ## Obblighi Architetturali (SEMPRE)
 
 | # | Obbligo | Riferimento |
-|---|---------|-------------|
-| 1 | **SEMPRE** usare `amountCents` (integer) per importi. Rimosso campo `amount` deprecato. | `@/domain/money` |
+|---|---|---|
+| 1 | **SEMPRE** usare `amountCents` integer come source of truth monetaria | `@/domain/money`, `@/domain/transactions` |
 | 2 | **SEMPRE** usare signed cents per aggregazioni multi-transazione | `getSignedCents()` |
-| 3 | **SEMPRE** usare `filterByRange()` per filtri temporali | `@/lib/date-ranges.ts` |
-| 4 | **SEMPRE** registrare nuove storage key app (`luma_*`, `numa_*`, `insights_*`) in `STORAGE_KEYS_REGISTRY` | `@/lib/storage-keys.ts` |
-| 5 | **SEMPRE** allineare `getAppVersion()` con `package.json` | Prima di ogni release |
-| 6 | **SEMPRE** usare `Sheet` per edit/detail, `Dialog` per wizard. | [Unified Sheet Layout Pattern](../skills/numa-ui-standards/SKILL.md#layout-sheet-standardizzato) |
-| 7 | **SEMPRE** passare la **[Checklist UI/UX](./ui-regression-checklist.md)** prima di chiudere un task | DoD Obbligatorio |
-| 8 | **SEMPRE** usare `font-medium` per descriptions e body text | Leggibilità su Glass |
-| 9 | **SEMPRE** usare icone `h-3 w-3` per sub-header e meta-info | Standard Proporzioni |
-| 10| **SEMPRE** aderire alle Skill Semantiche (`numa-*-semantics`) | Determinismo Narrativo |
-| 11| **SEMPRE** sviluppare su branch `codex/*` e promuovere su `main` solo al momento del rilascio approvato | Flusso release beta su Vercel |
+| 3 | **SEMPRE** usare util condivise per filtri periodo/range | `@/lib/date-ranges.ts` |
+| 4 | **SEMPRE** registrare nuove storage keys app in `STORAGE_KEYS_REGISTRY` | `@/lib/storage-keys.ts` |
+| 5 | **SEMPRE** allineare `getAppVersion()` con `package.json` prima del rilascio | release hygiene |
+| 6 | **SEMPRE** usare `Sheet` per detail/edit e `Dialog` per overlay/wizard | `.agent/skills/numa-ui-standards` |
+| 7 | **SEMPRE** passare la checklist UI canonica prima di chiudere un task UI | `.agent/rules/ui-regression-checklist.md` |
+| 8 | **SEMPRE** aderire alle skill semantiche (`numa-*-semantics`) per copy/insight | determinismo narrativo |
+| 9 | **SEMPRE** sviluppare su branch `codex/*` e promuovere su `main` solo con release approvata | flusso release |
 
 ---
 
 ## Convenzioni di Segno
 
-```
-Entrate  → amountCents POSITIVO  → getSignedCents() POSITIVO
-Uscite   → amountCents POSITIVO  → getSignedCents() NEGATIVO
+```text
+Entrate  -> amountCents positivo -> getSignedCents positivo
+Uscite   -> amountCents positivo -> getSignedCents negativo
 ```
 
-- Usa `getSignedCents()` per calcoli di bilancio
-- Usa `Math.abs()` SOLO per display (es. "Speso: €123")
+- `Math.abs()` solo per display o confronti di magnitudine.
+- I calcoli di saldo usano sempre signed cents.
 
 ---
 
-## Struttura Codice
+## Struttura Codice (mappa minima)
 
-```
+```text
 src/
-├── domain/          # Logica pura, no UI
-│   ├── money/       # Parsing, formatting, math
-│   ├── transactions/# Normalization, signed cents
-│   └── categories/  # Definizioni, mapping
+├── domain/          # Logica pura (money, transactions, categories, narration)
 ├── features/        # Moduli feature-based
-│   └── [feature]/
-│       ├── api/     # Repository + React Query
-│       ├── components/
-│       └── __tests__/
-├── components/
-│   ├── ui/          # Primitives (shadcn)
-│   └── patterns/    # Reusable patterns
-└── lib/             # Utilities condivise
+├── brain/           # Neural core locale
+├── VAULT/           # Logica isolata goals/budget
+├── components/      # UI primitives + patterns + layout
+└── lib/             # Utility condivise
 ```
 
 ---
 
 ## Skill di Approfondimento
 
-Per procedure dettagliate, attiva la skill appropriata:
-
 | Contesto | Skill |
-|----------|-------|
-| Calcoli monetari, KPI, budget | `numa-financial-logic` |
-| Componenti React, layout, UBI | `numa-ui-standards` |
-| Import CSV, enrichment | `numa-import-csv` |
-| Aggiornare governance, versioni | `numa-governance-update` |
+|---|---|
+| Calcoli monetari, KPI, ritmi | `numa-financial-logic` |
+| Componenti React/layout/motion | `numa-ui-standards` |
+| Import CSV ed enrichment | `numa-import-csv` |
+| Governance/docs/rules/changelog | `numa-governance-update` |
 
 ---
 
-**Versione**: 2.2.0  
-**Ultimo aggiornamento**: 2026-02-08
+**Versione**: 2.3.0
+**Ultimo aggiornamento**: 2026-02-11

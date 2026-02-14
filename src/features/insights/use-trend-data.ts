@@ -10,6 +10,7 @@ export interface TrendDataItem {
     expensesCents: number
     income: number
     expenses: number
+    hasTransactions: boolean
     savingsRate: number
     savingsRateLabel: string
 }
@@ -23,6 +24,23 @@ export function useTrendData() {
 
         const now = new Date()
         const months: TrendDataItem[] = []
+        const monthBuckets = new Map<string, { incomeCents: number; expensesCents: number; txCount: number }>()
+
+        for (const tx of transactions) {
+            const txDate = new Date(tx.timestamp)
+            const key = `${txDate.getFullYear()}-${txDate.getMonth()}`
+            const bucket = monthBuckets.get(key) ?? { incomeCents: 0, expensesCents: 0, txCount: 0 }
+            const amountCents = Math.abs(tx.amountCents || 0)
+
+            if (tx.type === "income") {
+                bucket.incomeCents += amountCents
+            } else if (tx.type === "expense") {
+                bucket.expensesCents += amountCents
+            }
+            bucket.txCount += 1
+
+            monthBuckets.set(key, bucket)
+        }
 
         // Calculate last 12 months including current
         for (let i = 11; i >= 0; i--) {
@@ -32,20 +50,10 @@ export function useTrendData() {
 
             const label = new Intl.DateTimeFormat(locale, { month: "short" }).format(d)
             const capitalizedLabel = label.charAt(0).toUpperCase() + label.slice(1)
-
-            // Filter transactions for this month
-            const monthTransactions = transactions.filter(t => {
-                const tDate = new Date(t.timestamp)
-                return tDate.getFullYear() === year && tDate.getMonth() === month
-            })
-
-            const incomeCents = monthTransactions
-                .filter(t => t.type === "income")
-                .reduce((sum, t) => sum + (t.amountCents || 0), 0)
-
-            const expensesCents = monthTransactions
-                .filter(t => t.type === "expense")
-                .reduce((sum, t) => sum + (t.amountCents || 0), 0)
+            const bucket = monthBuckets.get(`${year}-${month}`)
+            const incomeCents = bucket?.incomeCents ?? 0
+            const expensesCents = bucket?.expensesCents ?? 0
+            const hasTransactions = (bucket?.txCount ?? 0) > 0
 
             const savingsResCents = incomeCents - expensesCents
             const savingsRate = incomeCents > 0 ? (savingsResCents / incomeCents) * 100 : 0
@@ -56,6 +64,7 @@ export function useTrendData() {
                 expensesCents,
                 income: incomeCents / 100,
                 expenses: expensesCents / 100,
+                hasTransactions,
                 savingsRate,
                 savingsRateLabel: `${savingsRate.toFixed(1)}%`
             })

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { useSettings } from "@/features/settings/api/use-settings"
 import { formatCents } from "@/domain/money/currency"
@@ -19,12 +19,10 @@ interface SpendingCompositionCardProps {
     periodLabel?: string
 }
 
-interface EChartsPieParam {
+interface PieLabelFormatterParam {
     name: string
     value: number
     percent: number
-    color: string | { colorStops: { color: string }[] }
-    dataIndex: number
 }
 
 interface ChartDatum {
@@ -35,6 +33,40 @@ interface ChartDatum {
     itemStyle: {
         color: echarts.LinearGradientObject
     }
+}
+
+interface ActiveConnectorDatum {
+    dataIndex: number
+    color: string
+}
+
+interface PieEventParams {
+    seriesType?: string
+    dataIndex?: number
+    data?: { id?: string }
+}
+
+type LinePoint = [number, number]
+
+interface PieLabelLayoutParam {
+    dataIndex: number
+    labelLinePoints?: unknown
+}
+
+function normalizeLinePoints(points: unknown): LinePoint[] {
+    if (!Array.isArray(points)) return []
+
+    const normalized = points
+        .map((point) => {
+            if (!Array.isArray(point) || point.length < 2) return null
+            const x = Number(point[0])
+            const y = Number(point[1])
+            if (!Number.isFinite(x) || !Number.isFinite(y)) return null
+            return [x, y] as LinePoint
+        })
+        .filter((point): point is LinePoint => point !== null)
+
+    return normalized.length >= 2 ? normalized.slice(0, 3) : []
 }
 
 function resolveResponsiveHeight(width: number): number {
@@ -50,6 +82,11 @@ export function SpendingCompositionCard({
 }: SpendingCompositionCardProps) {
     const { currency, locale } = useCurrency()
     const { data: settings } = useSettings()
+    const [prefersDark, setPrefersDark] = useState(() => (
+        typeof window !== "undefined"
+        && typeof window.matchMedia === "function"
+        && window.matchMedia("(prefers-color-scheme: dark)").matches
+    ))
     const [viewportWidth, setViewportWidth] = useState(
         typeof window === "undefined" ? 1280 : window.innerWidth
     )
@@ -63,14 +100,40 @@ export function SpendingCompositionCard({
         }
     }, [])
 
+    useEffect(() => {
+        if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+            return
+        }
+
+        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
+        const handleChange = (event: MediaQueryListEvent) => {
+            setPrefersDark(event.matches)
+        }
+
+        if (typeof mediaQuery.addEventListener === "function") {
+            mediaQuery.addEventListener("change", handleChange)
+            return () => {
+                mediaQuery.removeEventListener("change", handleChange)
+            }
+        }
+
+        if (typeof mediaQuery.addListener === "function") {
+            mediaQuery.addListener(handleChange)
+            return () => {
+                mediaQuery.removeListener(handleChange)
+            }
+        }
+    }, [])
+
     const isMobile = viewportWidth < 768
     const isDarkMode = settings?.theme === "dark"
         || (settings?.theme === "system"
-            && typeof window !== "undefined"
-            && window.matchMedia("(prefers-color-scheme: dark)").matches)
+            && prefersDark)
     const chartHeight = resolveResponsiveHeight(viewportWidth)
     const showPieChart = !isMobile
     const isLoading = Boolean(isExternalLoading)
+    const [hoveredSliceId, setHoveredSliceId] = useState<string | null>(null)
+    const labelLinePointsRef = useRef<Record<number, LinePoint[]>>({})
 
     const chartSlices = useMemo(
         () => buildSpendingCompositionSlicesFromSummary(
@@ -106,54 +169,140 @@ export function SpendingCompositionCard({
         })
     ), [chartSlices])
 
+    useEffect(() => {
+        labelLinePointsRef.current = {}
+    }, [chartData])
+
     const option: echarts.EChartsOption = useMemo(() => {
         if (!chartData.length) return {}
 
+        const activeDataIndex = hoveredSliceId
+            ? chartData.findIndex((slice) => slice.id === hoveredSliceId)
+            : -1
+
+        const activeConnector: ActiveConnectorDatum | null = activeDataIndex >= 0
+            && chartData[activeDataIndex]
+            ? {
+                dataIndex: activeDataIndex,
+                color: chartData[activeDataIndex].rawColor
+            }
+            : null
+
+        const connectorSeries = {
+            name: "Connector Flow",
+            type: "custom",
+            coordinateSystem: "none",
+            silent: true,
+            tooltip: { show: false },
+            z: 6,
+            data: activeConnector ? [activeConnector] : [],
+            renderItem: () => {
+                if (!activeConnector) return null
+
+                const points = labelLinePointsRef.current[activeConnector.dataIndex]
+                if (!points || points.length < 2) return null
+
+                const p1 = points[0]
+                const p2 = points[1]
+                const p3 = points[2] ?? points[1]
+                const segmentOneLength = Math.hypot(p2[0] - p1[0], p2[1] - p1[1])
+                const segmentTwoLength = Math.hypot(p3[0] - p2[0], p3[1] - p2[1])
+                const totalLength = Math.max(segmentOneLength + segmentTwoLength, 1)
+                const pivot = Math.min(Math.max(segmentOneLength / totalLength, 0.2), 0.82)
+
+                return {
+                    type: "group",
+                    silent: true,
+                    children: [
+                        {
+                            type: "polyline",
+                            shape: { points: [p1, p2, p3] },
+                            style: {
+                                fill: null,
+                                stroke: echarts.color.modifyAlpha(activeConnector.color, 0.35),
+                                lineWidth: 1.1,
+                                opacity: 0.5
+                            }
+                        },
+                        {
+                            type: "polyline",
+                            shape: { points: [p1, p2, p3] },
+                            style: {
+                                fill: null,
+                                stroke: echarts.color.modifyAlpha(activeConnector.color, 0.92),
+                                lineWidth: 1.1,
+                                opacity: 0.2,
+                                shadowBlur: 0,
+                                shadowColor: activeConnector.color
+                            },
+                            keyframeAnimation: {
+                                duration: 2000,
+                                loop: true,
+                                keyframes: [
+                                    {
+                                        percent: 0,
+                                        style: { lineWidth: 1.1, opacity: 0.14, shadowBlur: 0 }
+                                    },
+                                    {
+                                        percent: 0.5,
+                                        style: { lineWidth: 2.2, opacity: 0.9, shadowBlur: 12 }
+                                    },
+                                    {
+                                        percent: 1,
+                                        style: { lineWidth: 1.1, opacity: 0.14, shadowBlur: 0 }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            type: "circle",
+                            shape: { cx: p1[0], cy: p1[1], r: 1.6 },
+                            style: {
+                                fill: activeConnector.color,
+                                opacity: 0
+                            },
+                            keyframeAnimation: {
+                                duration: 2000,
+                                loop: true,
+                                keyframes: [
+                                    {
+                                        percent: 0,
+                                        shape: { cx: p1[0], cy: p1[1], r: 1.2 },
+                                        style: { opacity: 0 }
+                                    },
+                                    {
+                                        percent: pivot,
+                                        shape: { cx: p2[0], cy: p2[1], r: 2.2 },
+                                        style: { opacity: 0.92 }
+                                    },
+                                    {
+                                        percent: 1,
+                                        shape: { cx: p3[0], cy: p3[1], r: 1.4 },
+                                        style: { opacity: 0 }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        } as unknown as echarts.SeriesOption
+
         return {
             tooltip: {
-                trigger: "item",
-                backgroundColor: "rgba(15, 23, 42, 0.96)",
-                borderColor: "rgba(148, 163, 184, 0.25)",
-                borderWidth: 1,
-                padding: [10, 12],
-                extraCssText: "border-radius: 12px; box-shadow: 0 10px 30px rgba(2, 6, 23, 0.4);",
-                textStyle: { color: "#f8fafc", fontSize: 12 },
-                formatter: (params: unknown) => {
-                    const pieParam = params as EChartsPieParam
-                    const markerColor = typeof pieParam.color === "string"
-                        ? pieParam.color
-                        : pieParam.color.colorStops?.[0]?.color
-
-                    // Product decision: spending composition remains fully visible in Privacy Mode.
-                    const value = formatCents(pieParam.value, currency, locale)
-                    const percent = `${Number(pieParam.percent).toFixed(2)}%`
-
-                    return `
-                        <div style="display:flex; flex-direction:column; gap:6px; min-width:170px;">
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <span style="width:8px; height:8px; border-radius:9999px; background:${markerColor};"></span>
-                                <span style="font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:#cbd5e1; font-weight:800;">
-                                    ${pieParam.name}
-                                </span>
-                            </div>
-                            <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
-                                <span style="font-size:18px; font-weight:900; color:#f8fafc;">${value}</span>
-                                <span style="font-size:11px; font-weight:800; color:#60a5fa;">${percent}</span>
-                            </div>
-                        </div>
-                    `
-                }
+                show: false,
+                trigger: "none"
             },
             series: [
                 {
                     name: "Composizione Spese",
                     type: "pie",
-                    radius: isMobile ? ["42%", "61%"] : ["47%", "68%"],
-                    center: ["50%", isMobile ? "44%" : "43%"],
+                    radius: ["47%", "68%"],
+                    center: ["50%", "43%"],
                     avoidLabelOverlap: true,
                     minAngle: 3,
                     itemStyle: {
-                        borderRadius: isMobile ? 10 : 14,
+                        borderRadius: 14,
                         borderColor: isDarkMode ? "rgba(15, 23, 42, 0.9)" : "rgba(248, 250, 252, 0.95)",
                         borderWidth: 3,
                         shadowBlur: 12,
@@ -163,31 +312,30 @@ export function SpendingCompositionCard({
                         show: true,
                         position: "outside",
                         alignTo: "edge",
-                        edgeDistance: isMobile ? 8 : 20,
+                        edgeDistance: 20,
                         bleedMargin: 6,
                         formatter: (params: unknown) => {
-                            const pieParam = params as EChartsPieParam
-                            if (isMobile && pieParam.dataIndex >= 2) return ""
+                            const pieParam = params as PieLabelFormatterParam
                             return `{name|${pieParam.name.toUpperCase()}}\n{value|${formatCents(pieParam.value, currency, locale)}}\n{percent|${pieParam.percent.toFixed(2)}%}`
                         },
                         rich: {
                             name: {
                                 color: "#64748b",
-                                fontSize: isMobile ? 9 : 10,
+                                fontSize: 10,
                                 fontWeight: 800,
                                 align: "left",
                                 padding: [0, 0, 3, 0]
                             },
                             value: {
                                 color: isDarkMode ? "#f8fafc" : "#0f172a",
-                                fontSize: isMobile ? 11 : 14,
+                                fontSize: 14,
                                 fontWeight: 900,
                                 align: "left",
                                 padding: [0, 0, 2, 0]
                             },
                             percent: {
                                 color: "#2563eb",
-                                fontSize: isMobile ? 10 : 11,
+                                fontSize: 11,
                                 fontWeight: 800,
                                 align: "left"
                             }
@@ -195,28 +343,44 @@ export function SpendingCompositionCard({
                     },
                     labelLine: {
                         show: true,
-                        length: isMobile ? 9 : 13,
-                        length2: isMobile ? 6 : 12,
+                        length: 13,
+                        length2: 12,
                         lineStyle: {
                             width: 1.2,
-                            color: "rgba(100, 116, 139, 0.7)"
+                            color: "rgba(100, 116, 139, 0.55)"
                         }
                     },
-                    labelLayout: {
-                        hideOverlap: true
+                    labelLayout: (params: unknown) => {
+                        const pieLayout = params as PieLabelLayoutParam
+                        const points = normalizeLinePoints(pieLayout.labelLinePoints)
+
+                        if (points.length >= 2) {
+                            labelLinePointsRef.current[pieLayout.dataIndex] = points
+                        } else {
+                            delete labelLinePointsRef.current[pieLayout.dataIndex]
+                        }
+
+                        return { hideOverlap: true }
                     },
                     emphasis: {
                         scale: true,
-                        scaleSize: isMobile ? 8 : 11,
+                        scaleSize: 9,
                         focus: "self",
                         itemStyle: {
                             shadowBlur: 22,
                             shadowColor: "rgba(37, 99, 235, 0.25)"
+                        },
+                        labelLine: {
+                            show: true,
+                            lineStyle: {
+                                width: 1.2,
+                                color: "rgba(100, 116, 139, 0.68)"
+                            }
                         }
                     },
                     blur: {
                         itemStyle: {
-                            opacity: 0.24,
+                            opacity: 0.4,
                             shadowBlur: 0
                         },
                         label: {
@@ -232,10 +396,55 @@ export function SpendingCompositionCard({
                     animationDurationUpdate: 350,
                     animationEasing: "cubicOut",
                     animationEasingUpdate: "cubicInOut"
-                }
+                },
+                connectorSeries
             ]
         }
-    }, [chartData, currency, isDarkMode, isMobile, locale])
+    }, [chartData, currency, hoveredSliceId, isDarkMode, locale])
+
+    const onEvents = useMemo(() => ({
+        mouseover: (params: unknown) => {
+            const pieParams = params as PieEventParams
+            if (pieParams.seriesType !== "pie") return
+
+            const sliceId = pieParams.data?.id
+                || (typeof pieParams.dataIndex === "number"
+                    ? chartData[pieParams.dataIndex]?.id
+                    : null)
+
+            if (sliceId) {
+                setHoveredSliceId(sliceId)
+            }
+        },
+        highlight: (params: unknown) => {
+            const pieParams = params as PieEventParams
+            if (pieParams.seriesType !== "pie") return
+
+            const sliceId = pieParams.data?.id
+                || (typeof pieParams.dataIndex === "number"
+                    ? chartData[pieParams.dataIndex]?.id
+                    : null)
+
+            if (sliceId) {
+                setHoveredSliceId(sliceId)
+            }
+        },
+        mouseout: (params: unknown) => {
+            const pieParams = params as { seriesType?: string }
+            if (pieParams.seriesType === "pie") {
+                setHoveredSliceId(null)
+            }
+        },
+        downplay: (params: unknown) => {
+            const pieParams = params as { seriesType?: string }
+            if (pieParams.seriesType === "pie") {
+                setHoveredSliceId(null)
+            }
+        },
+        globalout: () => {
+            setHoveredSliceId(null)
+        }
+    }), [chartData])
 
     const description = periodLabel
         ? `Come si distribuiscono le spese in ${periodLabel}.`
@@ -251,6 +460,7 @@ export function SpendingCompositionCard({
             chartHeight={chartHeight}
             showChart={showPieChart}
             showBackground={false}
+            onEvents={onEvents}
         >
             <div className={`${showPieChart ? "mt-4" : "mt-0"} w-full px-4 pb-3`}>
                 <div className="flex gap-3 overflow-x-auto pb-2 md:grid md:grid-cols-2 md:gap-4 md:overflow-visible">

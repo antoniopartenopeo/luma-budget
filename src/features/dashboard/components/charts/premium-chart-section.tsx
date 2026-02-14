@@ -62,7 +62,7 @@ export function PremiumChartSection({
             contentClassName="p-0 relative z-10"
             className={className}
             background={
-                !isLoading && hasData && showChart && showBackground ? (
+                hasData && showChart && showBackground ? (
                     <div className="w-full h-full flex items-center justify-center opacity-40 dark:opacity-60">
                         {backgroundType === 'radar' && (
                             <>

@@ -66,7 +66,10 @@ describe("Financial Baseline Logic", () => {
         expect(result.averageMonthlyExpenses).toBe(150000) // 1500.00
         expect(result.averageEssentialExpenses).toBe(100000) // 1000.00
         expect(result.expensesStdDev).toBeLessThan(1000) // Should be 0 or very close
+        expect(result.freeCashFlowStdDev).toBeLessThan(1000)
         expect(result.monthsAnalyzed).toBe(3)
+        expect(result.activeMonths).toBe(3)
+        expect(result.activityCoverageRatio).toBe(1)
     })
 
     test("should handle volatility correctly (Standard Deviation)", () => {
@@ -105,5 +108,22 @@ describe("Financial Baseline Logic", () => {
 
         // If this returns 0, it means the map key didn't match the transaction key
         expect(result.averageMonthlyExpenses).toBeGreaterThan(0)
+        expect(result.activeMonths).toBe(1)
+    })
+
+    test("range governance guard: handles month gaps and timezone boundaries with canonical filtering", () => {
+        const boundaryTransactions = [
+            createTransaction(999, "expense", "2024-02-29T12:00:00.000Z", "rent"), // out: before window
+            createTransaction(300, "expense", "2024-03-01T12:00:00.000Z", "rent"), // in
+            createTransaction(600, "expense", "2024-05-31T12:00:00.000Z", "rent"), // in
+            createTransaction(777, "expense", "2024-06-01T12:00:00.000Z", "rent"), // out: after window
+        ]
+
+        const result = calculateBaselineMetrics(boundaryTransactions, categories, 3, now)
+
+        // Included total: 900€ over 3 months (Mar-Apr-May), with April gap counted as zero month.
+        expect(result.averageMonthlyExpenses).toBe(30000)
+        expect(result.activeMonths).toBe(2)
+        expect(result.activityCoverageRatio).toBeCloseTo(2 / 3, 6)
     })
 })

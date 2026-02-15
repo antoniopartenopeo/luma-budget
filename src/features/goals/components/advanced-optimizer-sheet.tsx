@@ -114,7 +114,7 @@ export function AdvancedOptimizerSheet({
         return {
             surplus,
             extraSavings,
-            months: scenarioResult.projection.likelyMonths,
+            months: scenarioResult.projection.likelyMonthsPrecise ?? scenarioResult.projection.likelyMonths,
             canReach: scenarioResult.projection.canReach,
             sustainability: scenarioResult.sustainability
         }
@@ -228,7 +228,10 @@ export function AdvancedOptimizerSheet({
                                     "text-2xl font-black tabular-nums tracking-tight transition-all duration-300",
                                     preview?.canReach ? "text-primary" : "text-muted-foreground"
                                 )}>
-                                    {preview?.canReach && preview.months > 0 ? `~${preview.months} mesi` : "—"}
+                                    {preview?.canReach && preview.months > 0
+                                        ? `~${preview.months >= 24 ? Math.round(preview.months) : preview.months.toFixed(1).replace(".", ",")} mesi`
+                                        : "—"
+                                    }
                                 </p>
                                 {!preview?.canReach && (
                                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">

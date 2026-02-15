@@ -6,10 +6,10 @@ import { calculateDateRange, filterByRange } from "@/lib/date-ranges"
 /**
  * GOVERNANCE NOTE:
  * This file contains Core Optimization Logic.
- * It is used by the "Ottimizzatore" (formerly Simulator) but is safe to re-use
+ * It is used by the "Financial Lab" module but is safe to re-use
  * in Insights or other read-only analysis tools.
  * 
- * Please do not enforce "Simulator" UI coupling here. Keep logic pure.
+ * Please do not enforce UI coupling here. Keep logic pure.
  */
 
 export type SimulationPeriod = 3 | 6 | 12

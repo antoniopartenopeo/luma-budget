@@ -33,7 +33,7 @@ interface GoalContextRibbonProps {
     activeGoal: NUMAGoal | undefined
     activeRhythm?: { type: string; label: string } | null
     onSelectGoal: (id: string) => void
-    onAddGoal: () => void
+    onAddGoal: () => Promise<NUMAGoal>
     onUpdateGoal: (id: string, updates: Partial<Pick<NUMAGoal, "title" | "targetCents">>) => Promise<void>
     onRemoveGoal: (id: string) => Promise<void>
     onReset?: () => void
@@ -55,6 +55,16 @@ export function GoalContextRibbon({
 
     // --- Single Sheet State ---
     const [isEditSheetOpen, setIsEditSheetOpen] = useState(false)
+    const [editGoalId, setEditGoalId] = useState<string | null>(null)
+
+    const sheetGoal = (editGoalId
+        ? portfolio?.goals.find((goal) => goal.id === editGoalId)
+        : activeGoal) ?? null
+
+    const handleSheetOpenChange = (open: boolean) => {
+        setIsEditSheetOpen(open)
+        if (!open) setEditGoalId(null)
+    }
 
     // Wrapper functions for GoalEditSheet
     const handleSaveGoal = async (id: string, title: string, targetCents: number) => {
@@ -63,6 +73,16 @@ export function GoalContextRibbon({
 
     const handleDeleteGoal = async (id: string) => {
         await onRemoveGoal(id)
+    }
+
+    const handleAddGoal = async () => {
+        try {
+            const newGoal = await onAddGoal()
+            setEditGoalId(newGoal.id)
+            setIsEditSheetOpen(true)
+        } catch {
+            // Parent callback handles user feedback (toast).
+        }
     }
 
     if (!portfolio) return null
@@ -85,7 +105,7 @@ export function GoalContextRibbon({
                                             <Target className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                                         </div>
                                         <div className="flex flex-col min-w-0">
-                                            <span className="text-[9px] uppercase font-bold text-muted-foreground/70 tracking-widest leading-none mb-0.5">Obiettivo</span>
+                                            <span className="text-[10px] uppercase font-bold text-muted-foreground/70 tracking-widest leading-none mb-0.5">Obiettivo</span>
                                             <span className="text-sm font-bold truncate text-foreground">
                                                 {activeGoal ? activeGoal.title : "Seleziona..."}
                                             </span>
@@ -119,11 +139,8 @@ export function GoalContextRibbon({
                                 ))}
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem
-                                    onClick={() => {
-                                        onAddGoal()
-                                        setTimeout(() => setIsEditSheetOpen(true), 100)
-                                    }}
-                                    className="p-3 font-bold text-indigo-600 dark:text-indigo-400 cursor-pointer justify-center hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
+                                    onClick={handleAddGoal}
+                                    className="p-3 font-bold text-primary cursor-pointer justify-center hover:bg-primary/10"
                                 >
                                     <Plus className="h-4 w-4 mr-2" /> Nuovo Obiettivo
                                 </DropdownMenuItem>
@@ -135,7 +152,10 @@ export function GoalContextRibbon({
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                onClick={() => setIsEditSheetOpen(true)}
+                                onClick={() => {
+                                    setEditGoalId(activeGoal.id)
+                                    setIsEditSheetOpen(true)
+                                }}
                                 className="h-full w-10 rounded-l-none rounded-r-xl hover:bg-white/90 dark:hover:bg-slate-800/90 text-muted-foreground hover:text-foreground transition-colors"
                                 title="Modifica obiettivo"
                             >
@@ -147,7 +167,7 @@ export function GoalContextRibbon({
                         <>
                             <div className="h-8 w-px bg-border/40 hidden md:block mx-2" />
                             <div className="flex flex-col hidden md:flex">
-                                <span className="text-[9px] uppercase font-bold text-muted-foreground/70 tracking-widest leading-none mb-1">Target</span>
+                                <span className="text-[10px] uppercase font-bold text-muted-foreground/70 tracking-widest leading-none mb-1">Target</span>
                                 <span className="text-2xl font-black text-foreground tabular-nums tracking-tighter leading-none">
                                     {formatCents(activeGoal.targetCents, currency, locale)}
                                 </span>
@@ -210,9 +230,9 @@ export function GoalContextRibbon({
 
             {/* GOAL EDIT SHEET (Extracted Component) */}
             <GoalEditSheet
-                goal={activeGoal ?? null}
+                goal={sheetGoal}
                 open={isEditSheetOpen}
-                onOpenChange={setIsEditSheetOpen}
+                onOpenChange={handleSheetOpenChange}
                 onSave={handleSaveGoal}
                 onDelete={handleDeleteGoal}
             />

@@ -18,7 +18,10 @@ describe("Rhythm Orchestrator (Phase 3)", () => {
         averageSuperfluousExpenses: 50000,
         averageComfortExpenses: 30000,
         expensesStdDev: 10000,
-        monthsAnalyzed: 6
+        freeCashFlowStdDev: 10000,
+        monthsAnalyzed: 6,
+        activeMonths: 6,
+        activityCoverageRatio: 1
     }
 
     const mockScenario: ScenarioConfig = {

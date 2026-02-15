@@ -31,7 +31,7 @@ Ogni modifica al Core deve rispettare questa sequenza:
 
 ### 2. Invariants
 *   **Money**: SOLO interi (centesimi). VIETATO `parseFloat` su valuta.
-*   **Date**: SOLO `filterByRange` (pivot su mese precedente).
+*   **Date**: usare util condivise `calculateDateRange` + `filterByRange` (pivot su mese precedente).
 
 ### 3. Forbidden Imports (Strict)
 *   ❌ `src/app/**`: Mai importare pagine o layout.
@@ -49,3 +49,7 @@ Ogni modifica al Core deve rispettare questa sequenza:
 *   `multi-goal-orchestrator.ts`: Aggregazione portfolio multi-goal.
 *   `rhythm-orchestrator.ts`: Bridge per applicare ritmo su budget/portfolio.
 *   `../config/rhythms.ts`: Configurazioni ritmo disponibili.
+
+## Boundary di persistenza
+- La simulazione resta read-only sui dati transazionali.
+- La persistenza è ammessa solo nel passaggio di commitment (`activateRhythm`) verso portfolio e budget operativo.

@@ -1,5 +1,6 @@
 import { Transaction } from "@/domain/transactions"
 import { Category } from "@/domain/categories"
+import { calculateDateRange, filterByRange } from "@/lib/date-ranges"
 
 export interface BaselineMetrics {
     averageMonthlyIncome: number
@@ -8,7 +9,10 @@ export interface BaselineMetrics {
     averageSuperfluousExpenses: number
     averageComfortExpenses: number
     expensesStdDev: number
+    freeCashFlowStdDev: number
     monthsAnalyzed: number
+    activeMonths: number
+    activityCoverageRatio: number
 }
 
 /**
@@ -26,16 +30,14 @@ export function calculateBaselineMetrics(
     periodMonths: 3 | 6 | 12,
     now: Date = new Date()
 ): BaselineMetrics {
-    // 1. Determine Date Range
-    // Same logic as Simulator: Pivot is previous month
+    // 1. Determine canonical date range using shared governance utilities.
     const previousMonthDate = new Date(now)
     previousMonthDate.setDate(0)
+    const pivotPeriod = `${previousMonthDate.getFullYear()}-${(previousMonthDate.getMonth() + 1).toString().padStart(2, "0")}`
+    const { startDate, endDate } = calculateDateRange(pivotPeriod, periodMonths)
+    const periodTransactions = filterByRange(transactions, startDate, endDate)
 
-    // const pivotYear = previousMonthDate.getFullYear()
-    // const pivotMonth = previousMonthDate.getMonth() + 1
-
-
-    // 2. Group by Month (YYYY-MM)
+    // 2. Group by month keys (YYYY-MM) for exact period window.
     const monthlyStats: Record<string, {
         income: number;
         expenses: number;
@@ -44,48 +46,38 @@ export function calculateBaselineMetrics(
         comfort: number;
     }> = {}
 
-    // Initialize exactly 'periodMonths' keys, counting backward from pivot (previous month)
+    // Initialize exactly 'periodMonths' keys, counting backward from pivot.
     const pivotDate = new Date(now)
-    pivotDate.setDate(0) // Last day of previous month
-
-    // We want keys: Pivot, Pivot-1, ..., Pivot-(period-1)
-    // We want keys: Pivot, Pivot-1, ..., Pivot-(period-1)
+    pivotDate.setDate(0)
     for (let i = 0; i < periodMonths; i++) {
-        // Use Day 1 to avoid "31st -> 1st next month" rollover issues
         const d = new Date(pivotDate.getFullYear(), pivotDate.getMonth() - i, 1)
-        const mStr = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}`
+        const mStr = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, "0")}`
         monthlyStats[mStr] = { income: 0, expenses: 0, essential: 0, superfluous: 0, comfort: 0 }
     }
 
     // Map Categories for fast lookup
     const catMap = new Map(categories.map(c => [c.id, c]))
 
-    // 3. Aggregate Scans
-    transactions.forEach(t => {
+    // 3. Aggregate only transactions in canonical range.
+    periodTransactions.forEach(t => {
         const tDate = new Date(t.timestamp)
-        // We rely on monthlyStats keys as the source of truth for the period.
-        // If the transaction's month is not in our initialized map, it's outside the analysis period.
-
-
-        const mStr = `${tDate.getFullYear()}-${(tDate.getMonth() + 1).toString().padStart(2, '0')}`
-
-        // Skip if month outside (shouldn't happen with logic above but safe)
-        if (!monthlyStats[mStr]) return;
+        const mStr = `${tDate.getFullYear()}-${(tDate.getMonth() + 1).toString().padStart(2, "0")}`
+        if (!monthlyStats[mStr]) return
 
         const amount = Math.abs(t.amountCents)
 
-        if (t.type === 'income') {
+        if (t.type === "income") {
             monthlyStats[mStr].income += amount
-        } else if (t.type === 'expense') {
+        } else if (t.type === "expense") {
             monthlyStats[mStr].expenses += amount
 
             const cat = catMap.get(t.categoryId || "")
             if (cat) {
-                if (cat.spendingNature === 'essential') {
+                if (cat.spendingNature === "essential") {
                     monthlyStats[mStr].essential += amount
-                } else if (cat.spendingNature === 'superfluous') {
+                } else if (cat.spendingNature === "superfluous") {
                     monthlyStats[mStr].superfluous += amount
-                } else if (cat.spendingNature === 'comfort') {
+                } else if (cat.spendingNature === "comfort") {
                     monthlyStats[mStr].comfort += amount
                 }
             }
@@ -96,11 +88,8 @@ export function calculateBaselineMetrics(
     const months = Object.values(monthlyStats)
     const count = months.length
 
-    // Invariant: If we couldn't find data for the requested period (e.g. gaps), we still normalize by periodMonths?
-    // Strictly speaking for "Average Monthly" over LAST N MONTHS, we should divide by N even if some have 0 data,
-    // assuming the period was active. 
-    // BUT the audit says "Pivot Rigido... garanzia dati completi".
-    // If strict, we divide by periodMonths.
+    // Monthly averages are normalized by requested period length,
+    // keeping empty months visible in the baseline/coverage signals.
     const divisor = periodMonths
 
     const totalIncome = months.reduce((sum, m) => sum + m.income, 0)
@@ -120,6 +109,15 @@ export function calculateBaselineMetrics(
     const avgSquaredDiff = squaredDiffs.reduce((sum, sq) => sum + sq, 0) / divisor
     const stdDev = Math.round(Math.sqrt(avgSquaredDiff))
 
+    // StdDev of Free Cash Flow (Income - Expenses): more robust variability signal for goal projection.
+    const freeCashFlows = months.map(m => m.income - m.expenses)
+    const avgFreeCashFlow = Math.round(freeCashFlows.reduce((sum, value) => sum + value, 0) / divisor)
+    const freeCashFlowSquaredDiffs = freeCashFlows.map(value => Math.pow(value - avgFreeCashFlow, 2))
+    const freeCashFlowAvgSquaredDiff = freeCashFlowSquaredDiffs.reduce((sum, sq) => sum + sq, 0) / divisor
+    const freeCashFlowStdDev = Math.round(Math.sqrt(freeCashFlowAvgSquaredDiff))
+
+    const activeMonths = months.filter(m => m.income > 0 || m.expenses > 0).length
+    const activityCoverageRatio = divisor > 0 ? activeMonths / divisor : 0
 
     return {
         averageMonthlyIncome: avgIncome,
@@ -128,6 +126,9 @@ export function calculateBaselineMetrics(
         averageSuperfluousExpenses: avgSuperfluous,
         averageComfortExpenses: avgComfort,
         expensesStdDev: stdDev,
-        monthsAnalyzed: count
+        freeCashFlowStdDev,
+        monthsAnalyzed: count,
+        activeMonths,
+        activityCoverageRatio
     }
 }

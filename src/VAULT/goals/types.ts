@@ -19,6 +19,14 @@ export interface CalibrationMetadata {
     stabilityFactor: number
     lowConfidence?: boolean
     volatilityCents: number
+    confidenceScore?: number
+    coverageRatio?: number
+    marginRatio?: number
+}
+
+export interface BrainAssistSignal {
+    riskScore: number
+    confidence: number
 }
 
 export interface ScenarioConfig {
@@ -48,6 +56,7 @@ export interface GoalScenarioResult {
     projection: ProjectionResult
     sustainability: SustainabilityResult
     simulatedExpenses: number
+    monthlyGoalCapacityCents: number
 }
 
 export interface ProjectionInput {
@@ -61,6 +70,10 @@ export interface ProjectionResult {
     minMonths: number // Best case (optimistic)
     likelyMonths: number // Median case
     maxMonths: number // Worst case (prudent)
+    minMonthsPrecise: number
+    likelyMonthsPrecise: number
+    maxMonthsPrecise: number
+    likelyMonthsComparable: number // One decimal for scenario comparison
     minDate: Date
     likelyDate: Date
     maxDate: Date
@@ -77,7 +90,7 @@ export interface NUMAGoal {
 }
 
 export interface GoalPortfolio {
-    mainGoalId: string
+    mainGoalId?: string
     goals: NUMAGoal[]
     activeRhythm?: {
         type: ScenarioType

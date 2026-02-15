@@ -25,10 +25,18 @@ export interface AIForecast {
     confidence: "high" | "medium" | "low"
 }
 
+export interface AIBrainSignal {
+    isReady: boolean
+    source: "brain" | "fallback"
+    riskScore: number | null
+    confidenceScore: number | null
+}
+
 export interface AIAdvisorResult {
     facts: AdvisorFacts | null
     forecast: AIForecast | null
     subscriptions: AISubscription[]
+    brainSignal: AIBrainSignal
     isLoading: boolean
 }
 
@@ -145,6 +153,19 @@ function isRecentlyActive(latestTimestamp: number, now: Date): boolean {
     return diffDays <= 45
 }
 
+function clamp(value: number, min: number, max: number): number {
+    return Math.min(max, Math.max(min, value))
+}
+
+function createDefaultBrainSignal(): AIBrainSignal {
+    return {
+        isReady: false,
+        source: "fallback",
+        riskScore: null,
+        confidenceScore: null
+    }
+}
+
 export function useAIAdvisor() {
     const currentPeriod = getCurrentPeriod()
     const { data: transactions = [], isLoading: isTransactionsLoading } = useTransactions()
@@ -213,7 +234,12 @@ export function useAIAdvisor() {
 
     const computation = useMemo(() => {
         if (isTransactionsLoading || transactions.length < 2) {
-            return { facts: null, forecast: null, subscriptions: [] }
+            return {
+                facts: null,
+                forecast: null,
+                subscriptions: [],
+                brainSignal: createDefaultBrainSignal()
+            }
         }
 
         const expenses = transactions.filter(t => t.type === "expense")
@@ -233,6 +259,27 @@ export function useAIAdvisor() {
             : fallbackRemainingCurrentMonthExpensesCents
         const primarySource: AIForecast["primarySource"] = brainNowcastReady ? "brain" : "fallback"
         const predictedTotalEstimatedBalanceCents = baseBalanceCents - predictedRemainingCurrentMonthExpensesCents
+        const brainPrediction = brainResultIsCurrent ? (brainEvolution?.prediction ?? null) : null
+        const fallbackRiskScore = brainResultIsCurrent && brainEvolution
+            ? clamp(
+                (brainEvolution.predictedCurrentMonthRemainingExpensesCents || 0)
+                / Math.max(brainEvolution.currentExpensesCents || 0, 1),
+                0,
+                1
+            )
+            : null
+        const brainSignal: AIBrainSignal = {
+            isReady: brainNowcastReady,
+            source: brainNowcastReady ? "brain" : "fallback",
+            riskScore: brainPrediction ? clamp(brainPrediction.riskScore, 0, 1) : fallbackRiskScore,
+            confidenceScore: brainResultIsCurrent
+                ? clamp(
+                    brainPrediction?.confidence ?? (brainEvolution?.currentMonthNowcastConfidence ?? 0),
+                    0,
+                    1
+                )
+                : null
+        }
 
         // 1. Subscription Detection Logic (merchant-centric, one active subscription per merchant)
         const patternMap = new Map<string, { dates: number[]; samples: Array<{ timestamp: number; amountCents: number }> }>()
@@ -330,6 +377,7 @@ export function useAIAdvisor() {
             facts,
             forecast,
             subscriptions: detectedSubscriptions,
+            brainSignal
         }
     }, [
         brainEvolution,
@@ -348,6 +396,7 @@ export function useAIAdvisor() {
             facts: null,
             forecast: null,
             subscriptions: [],
+            brainSignal: createDefaultBrainSignal(),
             isLoading: true
         }
     }

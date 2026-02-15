@@ -10,44 +10,87 @@ import { buildNatureApplicationMap } from "@/domain/simulation"
  * history to propose a rhythm that is challenging but mathematically calibrated.
  */
 function calibrateAdaptiveSavings(baseline: BaselineMetrics, intensity: number) {
+    const averageFreeCashFlow = baseline.averageMonthlyIncome - baseline.averageMonthlyExpenses
+    const totalExpenses = baseline.averageMonthlyExpenses || 1
+    const coverageRatio = baseline.activityCoverageRatio
+    const incomeBase = Math.max(1, baseline.averageMonthlyIncome)
+    const marginRatio = averageFreeCashFlow / incomeBase
+
+    const expenseInstability = baseline.expensesStdDev / totalExpenses
+    const cashFlowInstability = baseline.freeCashFlowStdDev / Math.max(Math.abs(averageFreeCashFlow), incomeBase * 0.1, 1)
+    const combinedInstability = (expenseInstability * 0.6) + (cashFlowInstability * 0.4)
+    const stabilityFactor = Math.max(0.35, 1 - (combinedInstability * 0.8))
+
+    const coverageScore = Math.round(Math.max(0, Math.min(100, coverageRatio * 100)))
+    const stabilityScore = Math.round(Math.max(0, Math.min(100, stabilityFactor * 100)))
+    const marginScore = Math.round(Math.max(0, Math.min(100, 50 + (marginRatio * 120))))
+    const confidenceScore = Math.round((coverageScore * 0.45) + (stabilityScore * 0.35) + (marginScore * 0.2))
+    const lowCoverage = coverageRatio < 0.5 || baseline.activeMonths < Math.min(3, baseline.monthsAnalyzed)
+    const lowConfidence = confidenceScore < 55 || lowCoverage
+
     if (intensity === 0) return {
         savings: { superfluous: 0, comfort: 0 },
-        metadata: { elasticityIndex: 1, stabilityFactor: 1, volatilityCents: baseline.expensesStdDev }
+        metadata: {
+            elasticityIndex: 1,
+            stabilityFactor: 1,
+            lowConfidence,
+            volatilityCents: baseline.expensesStdDev,
+            confidenceScore,
+            coverageRatio,
+            marginRatio
+        }
     }
 
     // 1. Elasticity (How much room is there in extra spending?)
     const extraSpendingTotal = baseline.averageSuperfluousExpenses + baseline.averageComfortExpenses
-    const totalExpenses = baseline.averageMonthlyExpenses || 1
 
     // Ratio of extra spending: higher means more 'fat' to cut.
     // If you spend 50% in extras, cutting is easier than if you spend 5%.
     const elasticityIndex = extraSpendingTotal / totalExpenses
 
-    // 2. Stability (How much risk can we take?)
-    // Normalized coefficient of variation: 1 = stable, 0.4 = wild
-    const instability = (baseline.expensesStdDev / totalExpenses)
-    const stabilityFactor = Math.max(0.4, 1 - (instability * 1.5))
+    // 3. Adaptive Pressure
+    // If expenses are close to income, cuts need to be more effective.
+    const expensePressure = Math.min(1.25, Math.max(0.8, baseline.averageMonthlyExpenses / incomeBase))
 
-    // 3. Calibration Formula
-    // Base potential is weighted by elasticity and stability
-    const potential = elasticityIndex * stabilityFactor
+    // If free cash flow is low/negative, we gently increase adaptation intensity.
+    const lowMarginThreshold = incomeBase * 0.1
+    const marginStressFactor = averageFreeCashFlow <= 0 ? 1.2 : averageFreeCashFlow < lowMarginThreshold ? 1.1 : 1
+
+    // Low data coverage -> reduce aggressiveness for reliability.
+    const confidenceFactor = confidenceScore >= 80
+        ? 1
+        : confidenceScore >= 65
+            ? 0.92
+            : confidenceScore >= 55
+                ? 0.85
+                : 0.72
+
+    // 4. Calibration Formula
+    // Base potential is weighted by elasticity, stability and real affordability pressure.
+    const potential = elasticityIndex * stabilityFactor * expensePressure * marginStressFactor * confidenceFactor
 
     // Superfluous is targeted more aggressively than Comfort
     // Balanced intensity (0.5) targets a fraction of the 'potential'
     const superfluousCut = Math.round(potential * intensity * 120) // Multiplier for UX feeling
     const comfortCut = Math.round(potential * intensity * 50)
 
+    const superfluousFloor = intensity >= 1 ? 20 : intensity >= 0.5 ? 10 : 0
+    const comfortFloor = intensity >= 1 ? 8 : intensity >= 0.5 ? 3 : 0
+
     return {
         savings: {
             // Clamp to ranges that feel human/possible
-            // Balanced minimum is at least 15% superfluous cut.
-            superfluous: Math.min(85, Math.max(15 * intensity, superfluousCut)),
-            comfort: Math.min(40, Math.max(5 * intensity, comfortCut))
+            superfluous: Math.min(85, Math.max(superfluousFloor, superfluousCut)),
+            comfort: Math.min(40, Math.max(comfortFloor, comfortCut))
         },
         metadata: {
             elasticityIndex,
             stabilityFactor,
-            volatilityCents: baseline.expensesStdDev
+            lowConfidence,
+            volatilityCents: baseline.expensesStdDev,
+            confidenceScore,
+            coverageRatio,
+            marginRatio
         }
     }
 }

@@ -15,9 +15,16 @@ export function useGoalPortfolio({ globalProjectionInput }: UseGoalPortfolioProp
     const [portfolio, setPortfolio] = useState<GoalPortfolio | null>(null)
     const [isLoading, setIsLoading] = useState(true)
 
+    const refreshPortfolio = async () => {
+        const data = await getPortfolio()
+        setPortfolio(data)
+        return data
+    }
+
     useEffect(() => {
-        getPortfolio().then(data => {
-            setPortfolio(data)
+        // Initial bootstrap from persisted local portfolio.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        refreshPortfolio().then(() => {
             setIsLoading(false)
         })
     }, [])
@@ -34,7 +41,12 @@ export function useGoalPortfolio({ globalProjectionInput }: UseGoalPortfolioProp
         await savePortfolio(updated)
     }
 
-    const addGoal = async (title: string, targetCents: number) => {
+    const addGoal = async (
+        title: string,
+        targetCents: number,
+        options: { setAsMain?: boolean } = {}
+    ): Promise<NUMAGoal> => {
+        const { setAsMain = false } = options
         const newGoal: NUMAGoal = {
             id: `goal-${Date.now()}`,
             title,
@@ -54,12 +66,14 @@ export function useGoalPortfolio({ globalProjectionInput }: UseGoalPortfolioProp
         } else {
             updated = {
                 ...portfolio,
+                mainGoalId: setAsMain ? newGoal.id : portfolio.mainGoalId,
                 goals: [...portfolio.goals, newGoal]
             }
         }
 
         setPortfolio(updated)
         await savePortfolio(updated)
+        return newGoal
     }
 
     const setRhythm = async (type: "baseline" | "balanced" | "aggressive" | "manual", label: string, benefitCents: number) => {
@@ -87,7 +101,7 @@ export function useGoalPortfolio({ globalProjectionInput }: UseGoalPortfolioProp
             const updated: GoalPortfolio = {
                 ...portfolio,
                 goals: [],
-                mainGoalId: undefined as unknown as string, // Clear active goal
+                mainGoalId: undefined,
                 activeRhythm: undefined // Clear rhythm
             }
             setPortfolio(updated)
@@ -100,7 +114,7 @@ export function useGoalPortfolio({ globalProjectionInput }: UseGoalPortfolioProp
         }
 
         // Standard path: reassign mainGoalId if needed
-        let newMainGoalId = portfolio.mainGoalId
+        let newMainGoalId = portfolio.mainGoalId ?? updatedGoals[0].id
         if (newMainGoalId === goalId) {
             newMainGoalId = updatedGoals[0].id
         }
@@ -129,6 +143,7 @@ export function useGoalPortfolio({ globalProjectionInput }: UseGoalPortfolioProp
         metrics,
         isLoading,
         activeRhythm: portfolio?.activeRhythm,
+        refreshPortfolio,
         setMainGoal,
         addGoal,
         removeGoal,

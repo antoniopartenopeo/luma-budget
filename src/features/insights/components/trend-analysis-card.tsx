@@ -105,7 +105,7 @@ export function TrendAnalysisCard({
         }
     }, [advisorForecast, activeData])
 
-    const option: EChartsOption = useMemo(() => {
+    const option = useMemo<EChartsOption>(() => {
         if (!activeData.length) return {}
 
         const baseMonths = activeData.map((d) => d.month)
@@ -127,6 +127,18 @@ export function TrendAnalysisCard({
         const legendData = projection.enabled
             ? ["Entrate", "Uscite", "Uscite stimate fine mese"]
             : ["Entrate", "Uscite"]
+
+        const buildLinearGradient = (startColor: string, endColor: string) => ({
+            type: "linear" as const,
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+                { offset: 0, color: startColor },
+                { offset: 1, color: endColor }
+            ]
+        })
 
         return {
             backgroundColor: "transparent",
@@ -294,21 +306,14 @@ export function TrendAnalysisCard({
             series: [
                 {
                     name: "Entrate",
-                    type: "line",
+                    type: "line" as const,
                     smooth: 0.4,
                     showSymbol: false,
                     symbol: "circle",
                     symbolSize: 8,
                     animationDelay: prefersReducedMotion ? 0 : (idx) => idx * 25,
                     areaStyle: {
-                        color: {
-                            type: "linear",
-                            x: 0, y: 0, x2: 0, y2: 1,
-                            colorStops: [
-                                { offset: 0, color: "rgba(16, 185, 129, 0.15)" },
-                                { offset: 1, color: "rgba(16, 185, 129, 0)" }
-                            ]
-                        }
+                        color: buildLinearGradient("rgba(16, 185, 129, 0.15)", "rgba(16, 185, 129, 0)")
                     },
                     itemStyle: { color: "#10b981" },
                     lineStyle: {
@@ -341,21 +346,14 @@ export function TrendAnalysisCard({
                 },
                 {
                     name: "Uscite",
-                    type: "line",
+                    type: "line" as const,
                     smooth: 0.4,
                     showSymbol: false,
                     symbol: "rect",
                     symbolSize: 8,
                     animationDelay: prefersReducedMotion ? 0 : (idx) => idx * 25 + 120,
                     areaStyle: {
-                        color: {
-                            type: "linear",
-                            x: 0, y: 0, x2: 0, y2: 1,
-                            colorStops: [
-                                { offset: 0, color: "rgba(244, 63, 94, 0.15)" },
-                                { offset: 1, color: "rgba(244, 63, 94, 0)" }
-                            ]
-                        }
+                        color: buildLinearGradient("rgba(244, 63, 94, 0.15)", "rgba(244, 63, 94, 0)")
                     },
                     itemStyle: { color: "#f43f5e" },
                     lineStyle: {
@@ -396,14 +394,7 @@ export function TrendAnalysisCard({
                             shadowOffsetY: 3
                         },
                         areaStyle: {
-                            color: {
-                                type: "linear",
-                                x: 0, y: 0, x2: 0, y2: 1,
-                                colorStops: [
-                                    { offset: 0, color: "rgba(245, 158, 11, 0.12)" },
-                                    { offset: 1, color: "rgba(245, 158, 11, 0)" }
-                                ]
-                            }
+                            color: buildLinearGradient("rgba(245, 158, 11, 0.12)", "rgba(245, 158, 11, 0)")
                         },
                         z: 6,
                         data: projectionSeriesData

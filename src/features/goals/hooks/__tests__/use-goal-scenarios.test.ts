@@ -1,0 +1,145 @@
+import { renderHook } from "@testing-library/react"
+import { describe, expect, test } from "vitest"
+
+import { Category } from "@/domain/categories"
+import { Transaction } from "@/domain/transactions"
+import { MonthlyAveragesResult } from "@/features/simulator/utils"
+import { BrainAssistSignal, GoalScenarioResult } from "@/VAULT/goals/types"
+
+import { useGoalScenarios } from "../use-goal-scenarios"
+
+function buildDateMonthOffset(monthsAgo: number, day: number): Date {
+    const now = new Date()
+    return new Date(now.getFullYear(), now.getMonth() - monthsAgo, day, 12, 0, 0, 0)
+}
+
+function createFixture() {
+    const categories: Category[] = [
+        { id: "rent", label: "Rent", kind: "expense", spendingNature: "essential", color: "slate", hexColor: "#0f172a", iconName: "home" },
+        { id: "dining", label: "Dining", kind: "expense", spendingNature: "comfort", color: "amber", hexColor: "#f59e0b", iconName: "utensils" },
+        { id: "netflix", label: "Netflix", kind: "expense", spendingNature: "superfluous", color: "rose", hexColor: "#f43f5e", iconName: "film" },
+    ]
+
+    const transactions: Transaction[] = [1, 2, 3].flatMap((monthsAgo) => {
+        const incomeDate = buildDateMonthOffset(monthsAgo, 5)
+        const rentDate = buildDateMonthOffset(monthsAgo, 7)
+        const diningDate = buildDateMonthOffset(monthsAgo, 10)
+        const netflixDate = buildDateMonthOffset(monthsAgo, 12)
+
+        return [
+            {
+                id: `inc-${monthsAgo}`,
+                amountCents: 200000,
+                type: "income",
+                date: incomeDate.toISOString().slice(0, 10),
+                timestamp: incomeDate.getTime(),
+                description: "Income",
+                category: "Income",
+                categoryId: "income"
+            },
+            {
+                id: `rent-${monthsAgo}`,
+                amountCents: 100000,
+                type: "expense",
+                date: rentDate.toISOString().slice(0, 10),
+                timestamp: rentDate.getTime(),
+                description: "Rent",
+                category: "Rent",
+                categoryId: "rent"
+            },
+            {
+                id: `dining-${monthsAgo}`,
+                amountCents: 20000,
+                type: "expense",
+                date: diningDate.toISOString().slice(0, 10),
+                timestamp: diningDate.getTime(),
+                description: "Dining",
+                category: "Dining",
+                categoryId: "dining"
+            },
+            {
+                id: `netflix-${monthsAgo}`,
+                amountCents: 30000,
+                type: "expense",
+                date: netflixDate.toISOString().slice(0, 10),
+                timestamp: netflixDate.getTime(),
+                description: "Netflix",
+                category: "Netflix",
+                categoryId: "netflix"
+            }
+        ]
+    })
+
+    const averages: MonthlyAveragesResult = {
+        incomeCents: 200000,
+        categories: {
+            rent: { categoryId: "rent", averageAmount: 100000, totalInPeriod: 300000, monthCount: 3 },
+            dining: { categoryId: "dining", averageAmount: 20000, totalInPeriod: 60000, monthCount: 3 },
+            netflix: { categoryId: "netflix", averageAmount: 30000, totalInPeriod: 90000, monthCount: 3 },
+        }
+    }
+
+    return { categories, transactions, averages }
+}
+
+interface HookProps {
+    goalTargetCents: number
+    brainAssist: BrainAssistSignal | null
+}
+
+describe("useGoalScenarios", () => {
+    test("returns comparable scenarios with monthly capacity", () => {
+        const { categories, transactions, averages } = createFixture()
+
+        const { result } = renderHook<ReturnType<typeof useGoalScenarios>, HookProps>(
+            ({ goalTargetCents, brainAssist }: HookProps) => useGoalScenarios({
+                goalTargetCents,
+                simulationPeriod: 3,
+                categories,
+                transactions,
+                averages,
+                isLoading: false,
+                brainAssist
+            }),
+            {
+                initialProps: { goalTargetCents: 50000, brainAssist: null }
+            }
+        )
+
+        expect(result.current.scenarios).toHaveLength(3)
+        expect(result.current.scenarios.every((scenario: GoalScenarioResult) => scenario.monthlyGoalCapacityCents >= 0)).toBe(true)
+        expect(result.current.scenarios.every((scenario: GoalScenarioResult) => typeof scenario.projection.likelyMonthsComparable === "number")).toBe(true)
+    })
+
+    test("applies brain prudence by not improving timeline under high risk signal", () => {
+        const { categories, transactions, averages } = createFixture()
+
+        const { result, rerender } = renderHook<ReturnType<typeof useGoalScenarios>, HookProps>(
+            ({ goalTargetCents, brainAssist }: HookProps) => useGoalScenarios({
+                goalTargetCents,
+                simulationPeriod: 3,
+                categories,
+                transactions,
+                averages,
+                isLoading: false,
+                brainAssist
+            }),
+            {
+                initialProps: { goalTargetCents: 300000, brainAssist: null }
+            }
+        )
+
+        const baselineWithout = result.current.scenarios.find((scenario: GoalScenarioResult) => scenario.key === "baseline")
+
+        rerender({
+            goalTargetCents: 300000,
+            brainAssist: { riskScore: 0.9, confidence: 0.95 }
+        })
+
+        const baselineWith = result.current.scenarios.find((scenario: GoalScenarioResult) => scenario.key === "baseline")
+
+        expect(baselineWithout).toBeDefined()
+        expect(baselineWith).toBeDefined()
+        expect((baselineWith?.projection.likelyMonthsPrecise || 0)).toBeGreaterThanOrEqual(baselineWithout?.projection.likelyMonthsPrecise || 0)
+    })
+})

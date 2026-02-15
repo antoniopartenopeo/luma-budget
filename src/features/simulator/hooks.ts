@@ -33,6 +33,7 @@ export function useMonthlyAverages(period: SimulationPeriod) {
     return {
         data: enrichedAverages,
         isLoading: isTxLoading || isCatLoading,
-        rawAverages: averagesResult
+        rawAverages: averagesResult,
+        transactions,
     }
 }

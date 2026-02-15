@@ -11,6 +11,8 @@ interface AIMonitorInput {
     monthlySavingsFormatted: string
     monthsToGoal: number | null
     targetDateFormatted: string | null
+    hasInsufficientData?: boolean
+    brainAssistApplied?: boolean
 }
 
 export interface Sacrifice {
@@ -34,7 +36,9 @@ export function generateAIMonitorMessage({
     savingsPercent,
     monthlySavingsFormatted,
     monthsToGoal,
-    targetDateFormatted
+    targetDateFormatted,
+    hasInsufficientData = false,
+    brainAssistApplied = false
 }: AIMonitorInput): AIMonitorOutput {
     // Fallback for no scenario
     if (!scenario) {
@@ -45,52 +49,78 @@ export function generateAIMonitorMessage({
         }
     }
 
+    if (hasInsufficientData) {
+        return {
+            tone: "strained",
+            message: "Dati insufficienti per una stima affidabile. Aggiungi piu transazioni reali e riprova.",
+            sacrifices: []
+        }
+    }
+
     const projection = scenario.projection
+    const targetLabel = targetDateFormatted || "la data stimata"
+    const likelyMonthsValue = monthsToGoal ?? projection.likelyMonthsPrecise ?? projection.likelyMonths
+    const formatMonths = (months: number) => {
+        if (months >= 24) return `${Math.round(months)}`
+        if (Math.abs(months - Math.round(months)) < 0.2) return `${Math.round(months)}`
+        return months.toFixed(1).replace(".", ",")
+    }
 
     // Critical: Goal unreachable or unsafe sustainability
     if (!projection.canReach || scenario.sustainability.status === "unsafe") {
-        const reason = scenario.sustainability.reason ? ` ${scenario.sustainability.reason}` : "";
+        const details = [projection.unreachableReason, scenario.sustainability.reason]
+            .filter(Boolean)
+            .join(" ")
+        const reason = details ? ` ${details}` : ""
         return {
             tone: "critical",
-            message: `Con questo ritmo non arrivi al traguardo.${reason} Prova ad aumentare un po il risparmio.`,
+            message: `Con il ritmo attuale il traguardo non e ancora raggiungibile.${reason} Per proteggere l'obiettivo, aumenta il margine mensile o riduci le spese variabili.`,
             sacrifices: []
         }
     }
 
     let result: { tone: AIMonitorTone, message: string }
 
-    // Thriving: High savings (>15%) and short timeline (<12 months)
-    if (savingsPercent > 15 && projection.likelyMonths <= 12) {
+    if (likelyMonthsValue === 0) {
         result = {
-            tone: "thriving",
-            message: `Stai mettendo da parte ${monthlySavingsFormatted} al mese. Con questo passo arrivi a ${targetDateFormatted} con buon margine.`
+            tone: "stable",
+            message: "Obiettivo gia raggiunto con il ritmo attuale."
         }
     }
-    // Stable: Decent savings (5-15%) or medium timeline
-    else if (savingsPercent >= 5 && projection.likelyMonths <= 24) {
-        if (monthsToGoal && monthsToGoal > 12) {
+
+    // Thriving: Strong savings and short timeline
+    else if (likelyMonthsValue <= 12 && savingsPercent > 15) {
+        result = {
+            tone: "thriving",
+            message: `Con il ritmo attuale metti da parte ${monthlySavingsFormatted} al mese. Traguardo stimato a ${targetLabel} con margine solido.`
+        }
+    }
+    // Stable: Reachable in a medium horizon (<= 24 months)
+    else if (likelyMonthsValue <= 24) {
+        if (likelyMonthsValue > 12) {
             result = {
                 tone: "stable",
-                message: `Con ${monthlySavingsFormatted} al mese servono circa ${monthsToGoal} mesi. Il piano regge, ma puoi velocizzare.`
+                message: `Con ${monthlySavingsFormatted} al mese servono circa ${formatMonths(likelyMonthsValue)} mesi. Il piano regge, ma puoi velocizzare.`
             }
         } else {
             result = {
                 tone: "stable",
-                message: `${monthlySavingsFormatted} al mese ti portano a ${targetDateFormatted}. Un buon equilibrio.`
+                message: `${monthlySavingsFormatted} al mese ti portano a ${targetLabel}. Ritmo equilibrato.`
             }
         }
     }
-    // Strained: Low savings or long timeline
-    else if (savingsPercent < 5 || projection.likelyMonths > 24) {
-        const years = Math.ceil((monthsToGoal || 36) / 12)
+    // Strained: Reachable but long timeline
+    else if (likelyMonthsValue > 24) {
+        const years = Math.max(1, Math.ceil(likelyMonthsValue / 12))
+        const yearsLabel = years === 1 ? "anno" : "anni"
         result = {
             tone: "strained",
-            message: `${monthlySavingsFormatted} al mese e poco. Ti servirebbero circa ${years} anni. Prova a liberare piu margine.`
+            message: `Con il ritmo attuale (${monthlySavingsFormatted} al mese), il traguardo richiede circa ${years} ${yearsLabel}. Se vuoi accorciare i tempi, aumenta gradualmente il margine.`
         }
     } else {
         result = {
             tone: "stable",
-            message: `Piano attivo: ${monthlySavingsFormatted} al mese verso ${targetDateFormatted}.`
+            message: `Piano attivo: ${monthlySavingsFormatted} al mese verso ${targetLabel}.`
         }
     }
 
@@ -126,10 +156,13 @@ export function generateAIMonitorMessage({
     const behaviorOrigin = scenario.config.type === "manual"
         ? "le tue impostazioni"
         : `il ritmo ${scenario.config.label}`
+    const brainContext = brainAssistApplied
+        ? " Integrazione Brain attiva: prudenza adattiva sul rischio del mese corrente."
+        : ""
 
     return {
         ...result,
-        message: `${result.message} Questo risultato usa le tue abitudini reali (${behaviorOrigin}) e non dipende dal costo totale dell'obiettivo.`,
+        message: `${result.message} Stima basata su abitudini reali (${behaviorOrigin}), ritmo scelto e target obiettivo.${brainContext}`,
         sacrifices
     }
 }
@@ -151,9 +184,9 @@ export function getAIMonitorStyles(tone: AIMonitorTone): {
             }
         case "stable":
             return {
-                containerClass: "bg-gradient-to-br from-indigo-500/5 to-purple-500/5 border-indigo-500/10",
-                textClass: "text-indigo-700 dark:text-indigo-400",
-                iconClass: "text-indigo-500"
+                containerClass: "bg-gradient-to-br from-primary/5 to-primary/10 border-primary/10",
+                textClass: "text-primary",
+                iconClass: "text-primary"
             }
         case "strained":
             return {

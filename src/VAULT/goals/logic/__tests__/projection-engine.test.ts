@@ -12,6 +12,10 @@ describe("Projection Engine Logic", () => {
             min: result.minMonths,
             likely: result.likelyMonths,
             max: result.maxMonths,
+            minPrecise: result.minMonthsPrecise,
+            likelyPrecise: result.likelyMonthsPrecise,
+            maxPrecise: result.maxMonthsPrecise,
+            likelyComparable: result.likelyMonthsComparable,
             reachable: result.canReach
         }
     }
@@ -28,6 +32,8 @@ describe("Projection Engine Logic", () => {
 
         expect(res.reachable).toBe(true)
         expect(res.likely).toBe(5) // 1000 / 200 = 5 months
+        expect(res.likelyPrecise).toBeCloseTo(5, 6)
+        expect(res.likelyComparable).toBe(5)
         expect(res.max).toBeLessThan(12) // Should definitely not be > 10 years
         expect(res.min).toBeLessThan(res.likely) // Optimistic (200+50=250) -> 4 months
     })
@@ -42,6 +48,7 @@ describe("Projection Engine Logic", () => {
         const res = getMonths(input)
         expect(res.reachable).toBe(false)
         expect(res.likely).toBe(0)
+        expect(res.likelyComparable).toBe(0)
         expect(result.unreachableReason).toContain("nullo o negativo")
     })
 
@@ -78,10 +85,12 @@ describe("Projection Engine Logic", () => {
         expect(varRes.min).toBeLessThan(baseRes.min) // Faster in best case? 
         // Base: 200 -> 5 months. 
         // HighVar Optimistic: 300 -> 4 months. Correct.
+        expect(varRes.minPrecise).toBeLessThan(baseRes.minPrecise)
 
         expect(varRes.max).toBeGreaterThan(baseRes.max) // Slower in worst case
         // Base: 200 -> 5 months.
         // HighVar Prudent: 100 -> 10 months. Correct.
+        expect(varRes.maxPrecise).toBeGreaterThan(baseRes.maxPrecise)
     })
 
     test("Extreme Case: Prudent Scenario becomes Negative due to Variability", () => {
@@ -98,6 +107,38 @@ describe("Projection Engine Logic", () => {
         // But max date should be capped or handled safely
         expect(res.max).toBeGreaterThan(res.likely)
         // Logic says if prudent <= 0, max = likely * 2
-        expect(res.max).toBe(res.likely * 2)
+        expect(res.max).toBe(Math.ceil(res.likelyPrecise * 2))
+    })
+
+    test("Precision Guard: exposes decimal months while keeping prudential rounded months", () => {
+        const input: ProjectionInput = {
+            goalTarget: 50000, // 500€
+            currentFreeCashFlow: 14250, // 142.5€
+            historicalVariability: 1500 // 15€
+        }
+
+        const res = getMonths(input)
+        expect(res.reachable).toBe(true)
+        expect(res.likelyPrecise).toBeGreaterThan(3)
+        expect(res.likelyPrecise).toBeLessThan(4)
+        expect(res.likely).toBe(4)
+        expect(res.likelyComparable).toBeCloseTo(3.5, 1)
+    })
+
+    test("Scenario comparison guard: same rounded month can expose different comparable precision", () => {
+        const slower = getMonths({
+            goalTarget: 50000,
+            currentFreeCashFlow: 14000, // 3.57 -> 4
+            historicalVariability: 0
+        })
+        const faster = getMonths({
+            goalTarget: 50000,
+            currentFreeCashFlow: 14500, // 3.44 -> 4
+            historicalVariability: 0
+        })
+
+        expect(slower.likely).toBe(4)
+        expect(faster.likely).toBe(4)
+        expect(slower.likelyComparable).toBeGreaterThan(faster.likelyComparable)
     })
 })

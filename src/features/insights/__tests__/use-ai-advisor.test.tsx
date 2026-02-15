@@ -144,6 +144,8 @@ describe("useAIAdvisor", () => {
         expect(latest?.forecast?.baseBalanceCents).toBe(500000)
         expect(latest?.forecast?.predictedRemainingCurrentMonthExpensesCents).toBe(120000)
         expect(latest?.forecast?.predictedTotalEstimatedBalanceCents).toBe(380000)
+        expect(latest?.brainSignal.isReady).toBe(true)
+        expect(latest?.brainSignal.source).toBe("brain")
     })
 
     it("falls back to run-rate when Brain nowcast is not ready", async () => {
@@ -167,6 +169,8 @@ describe("useAIAdvisor", () => {
         expect(latest?.forecast?.primarySource).toBe("fallback")
         expect(latest?.forecast?.predictedRemainingCurrentMonthExpensesCents).toBe(35000)
         expect(latest?.forecast?.predictedTotalEstimatedBalanceCents).toBe(465000)
+        expect(latest?.brainSignal.isReady).toBe(false)
+        expect(latest?.brainSignal.source).toBe("fallback")
     })
 
     it("re-runs evolution when transaction classification changes", async () => {

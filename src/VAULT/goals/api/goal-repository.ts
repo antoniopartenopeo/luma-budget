@@ -38,6 +38,31 @@ export async function getPortfolio(): Promise<GoalPortfolio | null> {
         }
     }
 
+    if (portfolio) {
+        let shouldPersistHeal = false
+
+        if (portfolio.goals.length === 0) {
+            if (portfolio.mainGoalId !== undefined) {
+                portfolio = { ...portfolio, mainGoalId: undefined }
+                shouldPersistHeal = true
+            }
+        } else {
+            const currentMainId = portfolio.mainGoalId
+            const hasCurrentMain = currentMainId
+                ? portfolio.goals.some((goal) => goal.id === currentMainId)
+                : false
+
+            if (!hasCurrentMain) {
+                portfolio = { ...portfolio, mainGoalId: portfolio.goals[0].id }
+                shouldPersistHeal = true
+            }
+        }
+
+        if (shouldPersistHeal) {
+            await savePortfolio(portfolio)
+        }
+    }
+
     return portfolio
 }
 

@@ -44,7 +44,7 @@ export async function activateRhythm({
 
     if (!portfolio) {
         // Initialize empty or with the first goal
-        const firstGoalId = goalId || `goal - ${Date.now()} `
+        const firstGoalId = goalId || `goal-${Date.now()}`
         portfolio = {
             mainGoalId: firstGoalId,
             goals: [{
@@ -98,10 +98,16 @@ export async function activateRhythm({
         }
     }
 
+    if (!portfolio.mainGoalId && portfolio.goals.length > 0) {
+        portfolio.mainGoalId = portfolio.goals[0].id
+    }
+
     await savePortfolio(portfolio)
 
+    const commitmentGoalId = portfolio.mainGoalId || goalId || portfolio.goals[0]?.id || `goal-${Date.now()}`
+
     const commitment: ActiveGoalCommitment = {
-        id: portfolio.mainGoalId,
+        id: commitmentGoalId,
         goalTargetCents,
         rhythmType: scenario.type,
         rhythmLabel: scenario.label,
@@ -154,4 +160,3 @@ function normalizeSavingsMap(scenario: ScenarioWithOptionalSavings): SavingsMap 
 
     return { superfluous: 0, comfort: 0 }
 }
-

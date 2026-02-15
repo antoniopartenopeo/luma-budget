@@ -52,7 +52,9 @@ export function ScenarioDeck({
                         // Use concise, neutral fallback
                         timeLabel = "Non stimabile"
                     } else if (scenario.projection.likelyMonths > 0) {
-                        timeLabel = `~${scenario.projection.likelyMonths} Mesi`
+                        timeLabel = scenario.projection.likelyMonths <= 24
+                            ? `~${scenario.projection.likelyMonthsComparable.toFixed(1).replace(".", ",")} Mesi`
+                            : `~${scenario.projection.likelyMonths} Mesi`
                         // Format date as MMM YYYY
                         dateLabel = new Intl.DateTimeFormat("it-IT", {
                             month: "short",
@@ -106,9 +108,14 @@ export function ScenarioDeck({
                                     </div>
 
                                     {/* Subtle Approach Label (replaces badges) */}
-                                    <div className="min-h-[24px]">
+                                    <div className="min-h-[40px] space-y-1">
+                                        {scenario.projection.canReach && scenario.monthlyGoalCapacityCents > 0 && (
+                                            <span className="block text-[10px] text-muted-foreground/80 font-bold uppercase tracking-wider">
+                                                Capacita piano: {formatCents(scenario.monthlyGoalCapacityCents, currency, locale)}/mese
+                                            </span>
+                                        )}
                                         {!isBaseline && (
-                                            <span className="text-[10px] text-muted-foreground/70 font-medium italic">
+                                            <span className="block text-[10px] text-muted-foreground/70 font-medium italic">
                                                 Piano: {approachLabel}
                                             </span>
                                         )}

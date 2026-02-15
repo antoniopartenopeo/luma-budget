@@ -1,6 +1,6 @@
 # Governance Quick Check
 
-Generated at (UTC): 2026-02-14T17:31:25Z
+Generated at (UTC): 2026-02-15T21:37:56Z
 
 Scope:
 - Repository: numa-budget
@@ -32,7 +32,7 @@ Rule: transaction source of truth is `amountCents` integer.
 Amount key occurrences (first 60):
 
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/use-ai-advisor.ts:16:    amount: number
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/use-ai-advisor.ts:275:                amount: amount,
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/use-ai-advisor.ts:322:                amount: amount,
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/parse.ts:9:    amount: ["importo", "amount", "ammontare", "entrate", "uscite", "dare", "avere", "saldo", "valore"],
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/parse.ts:86:        amount: -1,
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/subgrouping.ts:34:    const recurring: Array<{ amount: number; rows: EnrichedRow[] }> = [];
@@ -127,6 +127,8 @@ filterByRange usage (first 60):
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/simulator/utils.ts:4:import { calculateDateRange, filterByRange } from "@/lib/date-ranges"
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/simulator/utils.ts:54:    const inRangeTransactions = filterByRange(transactions, startDate, endDate)
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/lib/date-ranges.ts:133:export function filterByRange<T extends { timestamp: number }>(
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/VAULT/goals/logic/financial-baseline.ts:3:import { calculateDateRange, filterByRange } from "@/lib/date-ranges"
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/VAULT/goals/logic/financial-baseline.ts:38:    const periodTransactions = filterByRange(transactions, startDate, endDate)
 
 Candidate files with period logic and no `filterByRange` (first 40):
 

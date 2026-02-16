@@ -1,6 +1,6 @@
 # Governance Quick Check
 
-Generated at (UTC): 2026-02-15T21:40:07Z
+Generated at (UTC): 2026-02-16T20:42:33Z
 
 Scope:
 - Repository: numa-budget
@@ -12,7 +12,7 @@ Scope:
 | Check | Status | Count |
 |---|---|---:|
 | parseFloat on monetary flows (excluding CSV normalize exception) | PASS | 0 |
-| Deprecated `amount` key / string amounts | WARN | key:41 string:21 legacy-files:7 |
+| Deprecated `amount` key / string amounts | WARN | key:25 string:17 legacy-files:5 |
 | Period filters without `filterByRange` | WARN | 4 |
 | Inline style in TSX | WARN | 9 |
 | Tests with formula-duplication heuristic | WARN | 3 |
@@ -54,22 +54,6 @@ Amount key occurrences (first 60):
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/__tests__/normalize.test.ts:112:        const rows = [{ lineNumber: 1, raw: { date: "12/25/2024", amount: "10", description: "US" } }];
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/merchant/normalizers.ts:62:    // Card number with amount: "*7298 DI EUR 25,04"
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/__tests__/superfluous-kpi.test.ts:17:    amount: string,
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/__tests__/superfluous-kpi.test.ts:148:                amount: '-€100.00',
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/__tests__/dashboard-summary.test.ts:54:            amount: 250.00,
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/__tests__/dashboard-summary.test.ts:65:            amount: 100.00,
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/__tests__/dashboard-summary.test.ts:78:            amount: 500.00,
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/__tests__/dashboard-summary.test.ts:121:            amount: 100.00,
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/__tests__/dashboard-summary.test.ts:132:            amount: 100.00,
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/__tests__/dashboard-summary.test.ts:152:        await createTransaction({ amount: 100.00, amountCents: 10000, type: 'expense', description: 'May', categoryId: 'c1', category: 'C1' })
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/__tests__/dashboard-summary.test.ts:156:        await createTransaction({ amount: 200.00, amountCents: 20000, type: 'expense', description: 'Apr', categoryId: 'c1', category: 'C1' })
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/__tests__/dashboard-summary.test.ts:160:        await createTransaction({ amount: 300.00, amountCents: 30000, type: 'expense', description: 'Mar', categoryId: 'c1', category: 'C1' })
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/__tests__/dashboard-summary.test.ts:164:        await createTransaction({ amount: 500.00, amountCents: 50000, type: 'expense', description: 'Jan', categoryId: 'c1', category: 'C1' })
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/__tests__/dashboard-summary.test.ts:189:            amount: 111.00,
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/__tests__/dashboard-summary.test.ts:199:            amount: 222.00,
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/transactions/__tests__/transactions-logic.test.ts:14:        amount: "€100,00",
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/transactions/__tests__/transactions-logic.test.ts:26:        amount: "€50,00",
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/transactions/__tests__/transactions-logic.test.ts:39:        amount: "€20,00",
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/transactions/api/__tests__/transactions-persistence.test.ts:55:            amount: 50.00,
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/domain/money/currency.ts:68:export function euroToCents(amount: number): number {
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/VAULT/goals/logic/__tests__/financial-baseline.test.ts:19:    amount: number,
 
@@ -92,20 +76,14 @@ String amount occurrences (first 60):
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/__tests__/normalize.test.ts:105:        const rows = [{ lineNumber: 1, raw: { date: "5/1/26", amount: "10", description: "Short" } }];
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/__tests__/normalize.test.ts:112:        const rows = [{ lineNumber: 1, raw: { date: "12/25/2024", amount: "10", description: "US" } }];
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/merchant/normalizers.ts:62:    // Card number with amount: "*7298 DI EUR 25,04"
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/__tests__/superfluous-kpi.test.ts:148:                amount: '-€100.00',
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/transactions/__tests__/transactions-logic.test.ts:14:        amount: "€100,00",
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/transactions/__tests__/transactions-logic.test.ts:26:        amount: "€50,00",
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/transactions/__tests__/transactions-logic.test.ts:39:        amount: "€20,00",
 
 Files containing both `amount` and `amountCents` (first 40):
 
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/VAULT/goals/logic/__tests__/financial-baseline.test.ts
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/__tests__/superfluous-kpi.test.ts
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/__tests__/dashboard-summary.test.ts
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/__tests__/normalize.test.ts
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/subgrouping.ts
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/use-ai-advisor.ts
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/transactions/__tests__/transactions-logic.test.ts
 
 ## 3) filterByRange period checks
 

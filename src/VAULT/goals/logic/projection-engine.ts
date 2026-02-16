@@ -19,6 +19,34 @@ function toComparableMonths(preciseMonths: number): number {
     return Math.round(preciseMonths * 10) / 10
 }
 
+function clamp(value: number, min: number, max: number): number {
+    return Math.min(max, Math.max(min, value))
+}
+
+function toPreciseMonthsWithRealtimeOverlay(
+    goalTarget: number,
+    baseCapacity: number,
+    realtimeCapacityFactor: number,
+    realtimeWindowMonths: number
+): number {
+    if (baseCapacity <= 0) return Infinity
+
+    if (realtimeWindowMonths <= 0 || Math.abs(realtimeCapacityFactor - 1) < 0.0001) {
+        return toPreciseMonths(goalTarget, baseCapacity)
+    }
+
+    const shortTermCapacity = baseCapacity * realtimeCapacityFactor
+    if (shortTermCapacity <= 0) return Infinity
+
+    const shortTermContribution = shortTermCapacity * realtimeWindowMonths
+    if (shortTermContribution >= goalTarget) {
+        return goalTarget / shortTermCapacity
+    }
+
+    const remainingTarget = goalTarget - shortTermContribution
+    return realtimeWindowMonths + (remainingTarget / baseCapacity)
+}
+
 function addPreciseMonths(baseDate: Date, preciseMonths: number): Date {
     if (!Number.isFinite(preciseMonths) || preciseMonths <= 0) return baseDate
 
@@ -40,6 +68,13 @@ function addPreciseMonths(baseDate: Date, preciseMonths: number): Date {
 export function projectGoalReachability(input: ProjectionInput): ProjectionResult {
     const { goalTarget, currentFreeCashFlow, historicalVariability } = input
     const baseDate = input.startDate || new Date()
+    const realtimeOverlayApplied = Boolean(input.realtimeOverlay?.enabled)
+    const realtimeCapacityFactor = realtimeOverlayApplied
+        ? clamp(input.realtimeOverlay?.capacityFactor || 1, 0.82, 1.05)
+        : 1
+    const realtimeWindowMonths = realtimeOverlayApplied
+        ? Math.max(1, Math.round(input.realtimeOverlay?.shortTermMonths || 2))
+        : 0
 
     // Edge Case: Goal already met
     if (goalTarget <= 0) {
@@ -50,7 +85,10 @@ export function projectGoalReachability(input: ProjectionInput): ProjectionResul
             maxMonthsPrecise: 0,
             likelyMonthsComparable: 0,
             minDate: baseDate, likelyDate: baseDate, maxDate: baseDate,
-            canReach: true
+            canReach: true,
+            realtimeOverlayApplied,
+            realtimeCapacityFactor,
+            realtimeWindowMonths
         }
     }
 
@@ -63,14 +101,30 @@ export function projectGoalReachability(input: ProjectionInput): ProjectionResul
     // 2. Check Feasibility (Likely scenario must be positive)
     if (likelyCapacity <= 0) {
         // Technically unreachable with current average habits
-        return createUnreachableResult("Il flusso di cassa medio attuale è nullo o negativo.", baseDate)
+        return createUnreachableResult(
+            "Il flusso di cassa medio attuale è nullo o negativo.",
+            baseDate,
+            realtimeOverlayApplied,
+            realtimeCapacityFactor,
+            realtimeWindowMonths
+        )
     }
 
     // 3. Compute precise and display months.
     // Display values remain prudential (ceil), while precise values preserve scenario granularity.
     const safeOptimisticCapacity = optimisticCapacity > 0 ? optimisticCapacity : likelyCapacity
-    const minMonthsPrecise = toPreciseMonths(goalTarget, safeOptimisticCapacity)
-    const likelyMonthsPrecise = toPreciseMonths(goalTarget, likelyCapacity)
+    const minMonthsPrecise = toPreciseMonthsWithRealtimeOverlay(
+        goalTarget,
+        safeOptimisticCapacity,
+        realtimeCapacityFactor,
+        realtimeWindowMonths
+    )
+    const likelyMonthsPrecise = toPreciseMonthsWithRealtimeOverlay(
+        goalTarget,
+        likelyCapacity,
+        realtimeCapacityFactor,
+        realtimeWindowMonths
+    )
 
     // For prudent scenario, if capacity is very low or negative, it might be effectively unreachable
     let maxMonthsPrecise = 0
@@ -81,7 +135,12 @@ export function projectGoalReachability(input: ProjectionInput): ProjectionResul
         // Let's rely on likelyCapacity with a wider margin if prudent is bad.
         maxMonthsPrecise = likelyMonthsPrecise * 2
     } else {
-        maxMonthsPrecise = toPreciseMonths(goalTarget, prudentCapacity)
+        maxMonthsPrecise = toPreciseMonthsWithRealtimeOverlay(
+            goalTarget,
+            prudentCapacity,
+            realtimeCapacityFactor,
+            realtimeWindowMonths
+        )
     }
 
     const minMonths = toDisplayMonths(minMonthsPrecise)
@@ -90,7 +149,13 @@ export function projectGoalReachability(input: ProjectionInput): ProjectionResul
 
     // Safety Cap: If > 10 years, treat as unreachable for practical purposes
     if (likelyMonthsPrecise > 120) {
-        return createUnreachableResult("L'obiettivo richiede oltre 10 anni al ritmo attuale.", baseDate)
+        return createUnreachableResult(
+            "L'obiettivo richiede oltre 10 anni al ritmo attuale.",
+            baseDate,
+            realtimeOverlayApplied,
+            realtimeCapacityFactor,
+            realtimeWindowMonths
+        )
     }
 
     return {
@@ -104,11 +169,20 @@ export function projectGoalReachability(input: ProjectionInput): ProjectionResul
         minDate: addPreciseMonths(baseDate, minMonthsPrecise),
         likelyDate: addPreciseMonths(baseDate, likelyMonthsPrecise),
         maxDate: addPreciseMonths(baseDate, maxMonthsPrecise),
-        canReach: true
+        canReach: true,
+        realtimeOverlayApplied,
+        realtimeCapacityFactor,
+        realtimeWindowMonths
     }
 }
 
-function createUnreachableResult(reason: string, baseDate: Date): ProjectionResult {
+function createUnreachableResult(
+    reason: string,
+    baseDate: Date,
+    realtimeOverlayApplied: boolean,
+    realtimeCapacityFactor: number,
+    realtimeWindowMonths: number
+): ProjectionResult {
     return {
         minMonths: 0,
         likelyMonths: 0,
@@ -121,6 +195,9 @@ function createUnreachableResult(reason: string, baseDate: Date): ProjectionResu
         likelyDate: baseDate,
         maxDate: baseDate,
         canReach: false,
+        realtimeOverlayApplied,
+        realtimeCapacityFactor,
+        realtimeWindowMonths,
         unreachableReason: reason
     }
 }

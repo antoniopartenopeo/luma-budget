@@ -52,7 +52,7 @@ describe('Transactions Persistence (localStorage)', () => {
 
         const newTxData = {
             description: 'Test Persistence',
-            amount: 50.00,
+            amountCents: 5000,
             category: 'Cibo',
             categoryId: 'cibo',
             type: 'expense' as const

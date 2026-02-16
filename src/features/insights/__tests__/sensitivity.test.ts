@@ -38,10 +38,10 @@ describe("Insights Sensitivity", () => {
 
         const input: CategorySpikeInput = {
             transactions: [
-                { id: "1", description: "Food", category: "food", date: "2026-01-15", categoryId: "food", amountCents: -14000, type: "expense", timestamp: new Date("2026-01-15").getTime() },
-                { id: "2", description: "Food", category: "food", date: "2025-12-15", categoryId: "food", amountCents: -10000, type: "expense", timestamp: new Date("2025-12-15").getTime() },
-                { id: "3", description: "Food", category: "food", date: "2025-11-15", categoryId: "food", amountCents: -10000, type: "expense", timestamp: new Date("2025-11-15").getTime() },
-                { id: "4", description: "Food", category: "food", date: "2025-10-15", categoryId: "food", amountCents: -10000, type: "expense", timestamp: new Date("2025-10-15").getTime() },
+                { categoryId: "food", amountCents: -14000, type: "expense", timestamp: new Date("2026-01-15").getTime() },
+                { categoryId: "food", amountCents: -10000, type: "expense", timestamp: new Date("2025-12-15").getTime() },
+                { categoryId: "food", amountCents: -10000, type: "expense", timestamp: new Date("2025-11-15").getTime() },
+                { categoryId: "food", amountCents: -10000, type: "expense", timestamp: new Date("2025-10-15").getTime() },
             ],
             categoriesMap,
             currentPeriod
@@ -70,7 +70,7 @@ describe("Insights Sensitivity", () => {
 
         const input: BudgetRiskInput = {
             transactions: [
-                { id: "5", description: "Expense", category: "food", date: "2026-01-10", amountCents: -55000, type: "expense", timestamp: new Date("2026-01-10").getTime() }
+                { amountCents: -55000, type: "expense", timestamp: new Date("2026-01-10").getTime() }
             ],
             budgetCents,
             period,

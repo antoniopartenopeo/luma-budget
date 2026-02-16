@@ -16,7 +16,10 @@ describe("Projection Engine Logic", () => {
             likelyPrecise: result.likelyMonthsPrecise,
             maxPrecise: result.maxMonthsPrecise,
             likelyComparable: result.likelyMonthsComparable,
-            reachable: result.canReach
+            reachable: result.canReach,
+            realtimeOverlayApplied: result.realtimeOverlayApplied,
+            realtimeCapacityFactor: result.realtimeCapacityFactor,
+            realtimeWindowMonths: result.realtimeWindowMonths
         }
     }
 
@@ -36,6 +39,9 @@ describe("Projection Engine Logic", () => {
         expect(res.likelyComparable).toBe(5)
         expect(res.max).toBeLessThan(12) // Should definitely not be > 10 years
         expect(res.min).toBeLessThan(res.likely) // Optimistic (200+50=250) -> 4 months
+        expect(res.realtimeOverlayApplied).toBe(false)
+        expect(res.realtimeCapacityFactor).toBe(1)
+        expect(res.realtimeWindowMonths).toBe(0)
     })
 
     test("Unreachable if FCF is Zero", () => {
@@ -140,5 +146,55 @@ describe("Projection Engine Logic", () => {
         expect(slower.likely).toBe(4)
         expect(faster.likely).toBe(4)
         expect(slower.likelyComparable).toBeGreaterThan(faster.likelyComparable)
+    })
+
+    test("Realtime overlay off keeps deterministic baseline", () => {
+        const baseline = getMonths({
+            goalTarget: 180000,
+            currentFreeCashFlow: 30000,
+            historicalVariability: 3000
+        })
+        const overlayOff = getMonths({
+            goalTarget: 180000,
+            currentFreeCashFlow: 30000,
+            historicalVariability: 3000,
+            realtimeOverlay: {
+                enabled: false,
+                source: "fallback",
+                shortTermMonths: 2,
+                capacityFactor: 0.9
+            }
+        })
+
+        expect(overlayOff.likelyPrecise).toBeCloseTo(baseline.likelyPrecise, 8)
+        expect(overlayOff.realtimeOverlayApplied).toBe(false)
+        expect(overlayOff.realtimeCapacityFactor).toBe(1)
+        expect(overlayOff.realtimeWindowMonths).toBe(0)
+    })
+
+    test("Realtime overlay on applies short-term correction without breaking prudential rounding", () => {
+        const baseline = getMonths({
+            goalTarget: 180000,
+            currentFreeCashFlow: 30000,
+            historicalVariability: 3000
+        })
+        const corrected = getMonths({
+            goalTarget: 180000,
+            currentFreeCashFlow: 30000,
+            historicalVariability: 3000,
+            realtimeOverlay: {
+                enabled: true,
+                source: "brain",
+                shortTermMonths: 2,
+                capacityFactor: 0.85
+            }
+        })
+
+        expect(corrected.reachable).toBe(true)
+        expect(corrected.realtimeOverlayApplied).toBe(true)
+        expect(corrected.realtimeCapacityFactor).toBe(0.85)
+        expect(corrected.realtimeWindowMonths).toBe(2)
+        expect(corrected.likelyPrecise).toBeGreaterThan(baseline.likelyPrecise)
+        expect(corrected.likely).toBe(Math.ceil(corrected.likelyPrecise))
     })
 })

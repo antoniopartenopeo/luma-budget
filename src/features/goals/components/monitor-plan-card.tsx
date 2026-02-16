@@ -12,19 +12,17 @@ import { motion } from "framer-motion"
 interface MonitorPlanCardProps {
     scenario: GoalScenarioResult
     savingsPercent: number
-    simulatedSurplus: number
+    goalMonthlyCapacityCents: number
     monthsToGoal: number | null
     hasInsufficientData: boolean
-    brainAssistApplied: boolean
 }
 
 export function MonitorPlanCard({
     scenario,
     savingsPercent,
-    simulatedSurplus,
+    goalMonthlyCapacityCents,
     monthsToGoal,
-    hasInsufficientData,
-    brainAssistApplied
+    hasInsufficientData
 }: MonitorPlanCardProps) {
     const { currency, locale } = useCurrency()
     const targetDateFormatted = scenario.projection.likelyDate
@@ -36,13 +34,17 @@ export function MonitorPlanCard({
     const aiMonitor = generateAIMonitorMessage({
         scenario,
         savingsPercent,
-        monthlySavingsFormatted: formatCents(simulatedSurplus, currency, locale),
+        monthlyGoalContributionFormatted: formatCents(goalMonthlyCapacityCents, currency, locale),
         monthsToGoal,
         targetDateFormatted,
-        hasInsufficientData,
-        brainAssistApplied
+        hasInsufficientData
     })
-    const planSourceLabel = brainAssistApplied ? "Fonte Brain" : "Fonte Storico"
+    const planSourceLabel = scenario.planBasis === "brain_overlay"
+        ? "Fonte Brain"
+        : scenario.planBasis === "fallback_overlay"
+            ? "Fonte Storico+Live"
+            : "Fonte Storico"
+    const isBrainDriven = scenario.planBasis === "brain_overlay"
     const styles = getAIMonitorStyles(aiMonitor.tone)
 
     return (
@@ -85,7 +87,7 @@ export function MonitorPlanCard({
                                 variant="outline"
                                 className={cn(
                                     "px-2 py-1 text-[10px] font-bold uppercase tracking-wider",
-                                    brainAssistApplied
+                                    isBrainDriven
                                         ? "bg-primary/10 border-primary/20 text-primary"
                                         : "bg-white/40 dark:bg-white/5 border-white/20 text-muted-foreground"
                                 )}

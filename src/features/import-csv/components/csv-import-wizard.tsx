@@ -3,7 +3,12 @@
 import { useState } from "react"
 import { FileSpreadsheet } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import {
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
 import { ImportStepUpload } from "./step-upload"
 import { ImportStepReview } from "./step-review"
 import { ImportStepSummary } from "./step-summary"
@@ -84,6 +89,7 @@ export function CsvImportWizard() {
             </DialogTrigger>
 
             <DialogContent className="w-full h-full max-w-full max-h-full sm:max-w-7xl sm:max-h-[90vh] sm:h-[90vh] flex flex-col p-0 gap-0 outline-none overflow-hidden sm:rounded-2xl rounded-none">
+                <DialogTitle className="sr-only">Importa CSV</DialogTitle>
                 {step === "upload" && (
                     <ImportStepUpload
                         onContinue={handleUploadComplete}

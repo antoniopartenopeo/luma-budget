@@ -2,7 +2,14 @@ import { BaselineMetrics } from "./financial-baseline"
 import { applySavings, CategoryAverage } from "@/domain/simulation"
 import { checkScenarioSustainability } from "./sustainability-guard"
 import { projectGoalReachability } from "./projection-engine"
-import { BrainAssistSignal, GoalScenarioResult, ScenarioConfig, ScenarioKey, SustainabilityStatus } from "../types"
+import {
+    BrainAssistSignal,
+    GoalScenarioResult,
+    RealtimeOverlaySignal,
+    ScenarioConfig,
+    ScenarioKey,
+    SustainabilityStatus
+} from "../types"
 
 function resolveGoalAllocationRatio(status: SustainabilityStatus): number {
     if (status === "secure") return 0.9
@@ -90,8 +97,9 @@ export function calculateScenario(input: {
     customApplicationMap?: Record<string, number>
     // Optional non-authoritative signal from Brain (risk/confidence only).
     brainAssist?: BrainAssistSignal
+    realtimeOverlay?: RealtimeOverlaySignal
 }): GoalScenarioResult {
-    const { key, baseline, averages, config, goalTargetCents, customApplicationMap, brainAssist } = input
+    const { key, baseline, averages, config, goalTargetCents, customApplicationMap, brainAssist, realtimeOverlay } = input
 
     // 1. Determine which map to use (Config vs Custom Override)
     const applicationMap = customApplicationMap || config.applicationMap
@@ -142,8 +150,15 @@ export function calculateScenario(input: {
     const projection = projectGoalReachability({
         goalTarget: goalTargetCents,
         currentFreeCashFlow: allocatableMonthlyCapacity,
-        historicalVariability: allocatableVariability
+        historicalVariability: allocatableVariability,
+        realtimeOverlay
     })
+
+    const planBasis: GoalScenarioResult["planBasis"] = realtimeOverlay?.enabled
+        ? realtimeOverlay.source === "brain"
+            ? "brain_overlay"
+            : "fallback_overlay"
+        : "historical"
 
     return {
         key,
@@ -151,6 +166,7 @@ export function calculateScenario(input: {
         projection,
         sustainability,
         simulatedExpenses: scenarioExpenses,
-        monthlyGoalCapacityCents: allocatableMonthlyCapacity
+        monthlyGoalCapacityCents: allocatableMonthlyCapacity,
+        planBasis
     }
 }

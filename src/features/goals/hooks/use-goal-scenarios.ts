@@ -3,7 +3,7 @@ import { calculateBaselineMetrics, BaselineMetrics } from "@/VAULT/goals/logic/f
 import { generateScenarios } from "@/VAULT/goals/logic/scenario-generator"
 import { Category } from "@/domain/categories"
 import { Transaction } from "@/domain/transactions"
-import { BrainAssistSignal, GoalScenarioResult, ScenarioKey } from "@/VAULT/goals/types"
+import { BrainAssistSignal, GoalScenarioResult, RealtimeOverlaySignal, ScenarioKey } from "@/VAULT/goals/types"
 import { calculateScenario } from "@/VAULT/goals/logic/scenario-calculator"
 import { MonthlyAveragesResult } from "@/features/simulator/utils"
 
@@ -15,6 +15,7 @@ interface UseGoalScenariosProps {
     averages: MonthlyAveragesResult | null
     isLoading: boolean
     brainAssist?: BrainAssistSignal | null
+    realtimeOverlay?: RealtimeOverlaySignal | null
 }
 
 interface UseGoalScenariosResult {
@@ -31,6 +32,7 @@ export function useGoalScenarios({
     averages,
     isLoading,
     brainAssist,
+    realtimeOverlay,
 }: UseGoalScenariosProps): UseGoalScenariosResult {
     // Compute logic from upstream read model to avoid duplicated data pipelines.
     const results = useMemo(() => {
@@ -55,13 +57,14 @@ export function useGoalScenarios({
                 averages: averages.categories,
                 config,
                 goalTargetCents,
-                brainAssist: brainAssist || undefined
+                brainAssist: brainAssist || undefined,
+                realtimeOverlay: realtimeOverlay || undefined
             })
         })
 
         return { scenarios: scenarioResults, baseline }
 
-    }, [transactions, averages, goalTargetCents, simulationPeriod, categories, isLoading, brainAssist])
+    }, [transactions, averages, goalTargetCents, simulationPeriod, categories, isLoading, brainAssist, realtimeOverlay])
 
     return {
         isLoading,

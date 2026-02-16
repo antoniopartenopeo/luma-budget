@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { act, render } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { useAIAdvisor } from "../use-ai-advisor"
+import { useAIAdvisor, type AIAdvisorResult } from "../use-ai-advisor"
 
 const useTransactionsMock = vi.fn()
 const useCategoriesMock = vi.fn()
@@ -40,7 +40,7 @@ type TestTransaction = {
     isSuperfluous?: boolean
 }
 
-function HookHarness({ onValue }: { onValue: (value: ReturnType<typeof useAIAdvisor>) => void }) {
+function HookHarness({ onValue }: { onValue: (value: AIAdvisorResult) => void }) {
     const value = useAIAdvisor()
 
     useEffect(() => {
@@ -129,7 +129,7 @@ describe("useAIAdvisor", () => {
     })
 
     it("uses canonical dashboard balance and Brain nowcast when ready", async () => {
-        let latest: ReturnType<typeof useAIAdvisor> | null = null
+        let latest: AIAdvisorResult | null = null
 
         render(<HookHarness onValue={(value) => { latest = value }} />)
 
@@ -138,14 +138,16 @@ describe("useAIAdvisor", () => {
             await Promise.resolve()
         })
 
-        expect(latest?.isLoading).toBe(false)
+        const value = latest as AIAdvisorResult | null
+
+        expect(value?.isLoading).toBe(false)
         expect(evolveBrainFromHistoryMock).toHaveBeenCalledTimes(1)
-        expect(latest?.forecast?.primarySource).toBe("brain")
-        expect(latest?.forecast?.baseBalanceCents).toBe(500000)
-        expect(latest?.forecast?.predictedRemainingCurrentMonthExpensesCents).toBe(120000)
-        expect(latest?.forecast?.predictedTotalEstimatedBalanceCents).toBe(380000)
-        expect(latest?.brainSignal.isReady).toBe(true)
-        expect(latest?.brainSignal.source).toBe("brain")
+        expect(value?.forecast?.primarySource).toBe("brain")
+        expect(value?.forecast?.baseBalanceCents).toBe(500000)
+        expect(value?.forecast?.predictedRemainingCurrentMonthExpensesCents).toBe(120000)
+        expect(value?.forecast?.predictedTotalEstimatedBalanceCents).toBe(380000)
+        expect(value?.brainSignal.isReady).toBe(true)
+        expect(value?.brainSignal.source).toBe("brain")
     })
 
     it("falls back to run-rate when Brain nowcast is not ready", async () => {
@@ -156,7 +158,7 @@ describe("useAIAdvisor", () => {
             })
         )
 
-        let latest: ReturnType<typeof useAIAdvisor> | null = null
+        let latest: AIAdvisorResult | null = null
 
         render(<HookHarness onValue={(value) => { latest = value }} />)
 
@@ -165,16 +167,18 @@ describe("useAIAdvisor", () => {
             await Promise.resolve()
         })
 
-        expect(latest?.isLoading).toBe(false)
-        expect(latest?.forecast?.primarySource).toBe("fallback")
-        expect(latest?.forecast?.predictedRemainingCurrentMonthExpensesCents).toBe(35000)
-        expect(latest?.forecast?.predictedTotalEstimatedBalanceCents).toBe(465000)
-        expect(latest?.brainSignal.isReady).toBe(false)
-        expect(latest?.brainSignal.source).toBe("fallback")
+        const value = latest as AIAdvisorResult | null
+
+        expect(value?.isLoading).toBe(false)
+        expect(value?.forecast?.primarySource).toBe("fallback")
+        expect(value?.forecast?.predictedRemainingCurrentMonthExpensesCents).toBe(35000)
+        expect(value?.forecast?.predictedTotalEstimatedBalanceCents).toBe(465000)
+        expect(value?.brainSignal.isReady).toBe(false)
+        expect(value?.brainSignal.source).toBe("fallback")
     })
 
     it("re-runs evolution when transaction classification changes", async () => {
-        let latest: ReturnType<typeof useAIAdvisor> | null = null
+        let latest: AIAdvisorResult | null = null
         let currentTransactions: TestTransaction[] = transactionsFixture
 
         useTransactionsMock.mockImplementation(() => ({
@@ -189,7 +193,8 @@ describe("useAIAdvisor", () => {
             await Promise.resolve()
         })
 
-        expect(latest?.isLoading).toBe(false)
+        const value = latest as AIAdvisorResult | null
+        expect(value?.isLoading).toBe(false)
         expect(evolveBrainFromHistoryMock).toHaveBeenCalledTimes(1)
 
         currentTransactions = transactionsCategoryShiftFixture

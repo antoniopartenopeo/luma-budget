@@ -8,11 +8,10 @@ interface AIMonitorInput {
     scenario: GoalScenarioResult | null
     savingsPercent: number
     // NEW: Dynamic data for contextual messages
-    monthlySavingsFormatted: string
+    monthlyGoalContributionFormatted: string
     monthsToGoal: number | null
     targetDateFormatted: string | null
     hasInsufficientData?: boolean
-    brainAssistApplied?: boolean
 }
 
 export interface Sacrifice {
@@ -34,11 +33,10 @@ interface AIMonitorOutput {
 export function generateAIMonitorMessage({
     scenario,
     savingsPercent,
-    monthlySavingsFormatted,
+    monthlyGoalContributionFormatted,
     monthsToGoal,
     targetDateFormatted,
-    hasInsufficientData = false,
-    brainAssistApplied = false
+    hasInsufficientData = false
 }: AIMonitorInput): AIMonitorOutput {
     // Fallback for no scenario
     if (!scenario) {
@@ -92,7 +90,7 @@ export function generateAIMonitorMessage({
     else if (likelyMonthsValue <= 12 && savingsPercent > 15) {
         result = {
             tone: "thriving",
-            message: `Con il ritmo attuale metti da parte ${monthlySavingsFormatted} al mese. Traguardo stimato a ${targetLabel} con margine solido.`
+            message: `Con il ritmo attuale allochi ${monthlyGoalContributionFormatted} al mese sull'obiettivo. Traguardo stimato a ${targetLabel} con margine solido.`
         }
     }
     // Stable: Reachable in a medium horizon (<= 24 months)
@@ -100,12 +98,12 @@ export function generateAIMonitorMessage({
         if (likelyMonthsValue > 12) {
             result = {
                 tone: "stable",
-                message: `Con ${monthlySavingsFormatted} al mese servono circa ${formatMonths(likelyMonthsValue)} mesi. Il piano regge, ma puoi velocizzare.`
+                message: `Con ${monthlyGoalContributionFormatted} al mese sull'obiettivo servono circa ${formatMonths(likelyMonthsValue)} mesi. Il piano regge, ma puoi velocizzare.`
             }
         } else {
             result = {
                 tone: "stable",
-                message: `${monthlySavingsFormatted} al mese ti portano a ${targetLabel}. Ritmo equilibrato.`
+                message: `${monthlyGoalContributionFormatted} al mese sull'obiettivo ti portano a ${targetLabel}. Ritmo equilibrato.`
             }
         }
     }
@@ -115,12 +113,12 @@ export function generateAIMonitorMessage({
         const yearsLabel = years === 1 ? "anno" : "anni"
         result = {
             tone: "strained",
-            message: `Con il ritmo attuale (${monthlySavingsFormatted} al mese), il traguardo richiede circa ${years} ${yearsLabel}. Se vuoi accorciare i tempi, aumenta gradualmente il margine.`
+            message: `Con il ritmo attuale (${monthlyGoalContributionFormatted} al mese sull'obiettivo), il traguardo richiede circa ${years} ${yearsLabel}. Se vuoi accorciare i tempi, aumenta gradualmente il margine.`
         }
     } else {
         result = {
             tone: "stable",
-            message: `Piano attivo: ${monthlySavingsFormatted} al mese verso ${targetLabel}.`
+            message: `Piano attivo: ${monthlyGoalContributionFormatted} al mese verso ${targetLabel}.`
         }
     }
 
@@ -156,13 +154,15 @@ export function generateAIMonitorMessage({
     const behaviorOrigin = scenario.config.type === "manual"
         ? "le tue impostazioni"
         : `il ritmo ${scenario.config.label}`
-    const brainContext = brainAssistApplied
-        ? " Integrazione Brain attiva: prudenza adattiva sul rischio del mese corrente."
-        : ""
+    const planBasisContext = scenario.planBasis === "brain_overlay"
+        ? " Fonte Brain attiva per aggiornare il breve periodo."
+        : scenario.planBasis === "fallback_overlay"
+            ? " Aggiornamento live basato sullo storico attivo sui prossimi mesi."
+            : ""
 
     return {
         ...result,
-        message: `${result.message} Stima basata su abitudini reali (${behaviorOrigin}), ritmo scelto e target obiettivo.${brainContext}`,
+        message: `${result.message} Stima basata su abitudini reali (${behaviorOrigin}), ritmo scelto e obiettivo.${planBasisContext}`,
         sacrifices
     }
 }

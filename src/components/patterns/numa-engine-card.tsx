@@ -75,10 +75,10 @@ export function NumaEngineCard({
                 <div className="flex items-center justify-between gap-3 mb-8">
                     <div className="flex items-center gap-2">
                         <div className="h-1 w-8 bg-primary rounded-full" />
-                        <h4 className="text-[10px] font-bold uppercase tracking-widest text-foreground/80">{title}</h4>
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-foreground/80">{title}</h4>
                     </div>
                     {audienceHint && (
-                        <span className="px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                        <span className="px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-xs font-bold uppercase tracking-wide text-amber-700 dark:text-amber-400">
                             {audienceHint}
                         </span>
                     )}
@@ -96,13 +96,13 @@ export function NumaEngineCard({
                                 )}>
                                     <step.icon className="h-5 w-5" />
                                 </div>
-                                <p className={cn("text-[10px] font-black uppercase tracking-wider opacity-80", step.colorClass)}>
+                                <p className={cn("text-xs font-black uppercase tracking-wide opacity-80", step.colorClass)}>
                                     {step.stepLabel}
                                 </p>
                                 <p className="text-sm font-bold text-foreground leading-tight">
                                     {step.title}
                                 </p>
-                                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                                <p className="text-xs text-muted-foreground/90 leading-relaxed font-medium">
                                     {step.description}
                                 </p>
                             </div>
@@ -120,12 +120,12 @@ export function NumaEngineCard({
             <div className="mt-10 pt-8 border-t border-slate-200 dark:border-white/5 relative z-10">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
+                        <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                             <ShieldCheck className="h-5 w-5" />
                         </div>
                         <div className="text-left">
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-foreground">{certificationTitle}</p>
-                            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{certificationSubtitle}</p>
+                            <p className="text-xs font-bold uppercase tracking-wide text-foreground">{certificationTitle}</p>
+                            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{certificationSubtitle}</p>
                         </div>
                     </div>
 
@@ -133,7 +133,7 @@ export function NumaEngineCard({
                         variant="outline"
                         size="sm"
                         onClick={() => setIsExpanded(!isExpanded)}
-                        className="w-full sm:w-auto text-[10px] font-black uppercase tracking-widest h-8 rounded-full border-primary/20 hover:bg-primary/5 transition-all group"
+                        className="w-full sm:w-auto text-xs font-black uppercase tracking-wide h-8 rounded-full border-primary/20 hover:bg-primary/5 transition-all group"
                         disabled={!hasAudit}
                     >
                         {isExpanded ? <ChevronUp className="mr-2 h-3 w-3" /> : <ChevronDown className="mr-2 h-3 w-3" />}
@@ -149,10 +149,10 @@ export function NumaEngineCard({
                                 <div key={idx} className="space-y-1">
                                     <div className="flex items-center gap-2 text-primary mb-2">
                                         {stat.icon ? <stat.icon className="h-3 w-3" /> : <div className="h-1.5 w-1.5 rounded-full bg-primary" />}
-                                        <span className="text-[10px] font-black uppercase tracking-tighter">{stat.label}</span>
+                                        <span className="text-xs font-black uppercase tracking-tight">{stat.label}</span>
                                     </div>
                                     <p className="text-xl font-black text-foreground tabular-nums tracking-tighter">{stat.value}</p>
-                                    <p className="text-[10px] text-muted-foreground leading-tight italic font-medium">
+                                    <p className="text-xs text-muted-foreground/90 leading-tight font-medium">
                                         {stat.subValue}
                                     </p>
                                 </div>
@@ -162,7 +162,7 @@ export function NumaEngineCard({
                         {transparencyNote && (
                             <div className="mt-6 flex items-start gap-2 p-3 rounded-xl bg-white/40 dark:bg-black/20 border border-primary/5">
                                 <Sparkles className="h-3 w-3 text-primary shrink-0 mt-0.5" />
-                                <p className="text-[10px] text-muted-foreground italic leading-relaxed font-medium">
+                                <p className="text-xs text-muted-foreground/90 leading-relaxed font-medium">
                                     <strong>Nota di Trasparenza:</strong> {transparencyNote}
                                 </p>
                             </div>

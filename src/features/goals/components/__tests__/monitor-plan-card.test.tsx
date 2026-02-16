@@ -34,7 +34,10 @@ function createScenario(overrides: Partial<GoalScenarioResult> = {}): GoalScenar
             minDate: baseDate,
             likelyDate: baseDate,
             maxDate: baseDate,
-            canReach: true
+            canReach: true,
+            realtimeOverlayApplied: false,
+            realtimeCapacityFactor: 1,
+            realtimeWindowMonths: 0
         },
         sustainability: {
             isSustainable: true,
@@ -45,6 +48,7 @@ function createScenario(overrides: Partial<GoalScenarioResult> = {}): GoalScenar
         },
         simulatedExpenses: 150000,
         monthlyGoalCapacityCents: 14000,
+        planBasis: "historical",
         ...overrides
     }
 }
@@ -56,27 +60,25 @@ describe("MonitorPlanCard", () => {
             <MonitorPlanCard
                 scenario={scenario}
                 savingsPercent={10}
-                simulatedSurplus={50000}
+                goalMonthlyCapacityCents={50000}
                 monthsToGoal={3.8}
                 hasInsufficientData={false}
-                brainAssistApplied
-            />
-        )
-
-        expect(screen.getByText("Fonte Brain")).toBeInTheDocument()
-
-        view.rerender(
-            <MonitorPlanCard
-                scenario={scenario}
-                savingsPercent={10}
-                simulatedSurplus={50000}
-                monthsToGoal={3.8}
-                hasInsufficientData={false}
-                brainAssistApplied={false}
             />
         )
 
         expect(screen.getByText("Fonte Storico")).toBeInTheDocument()
+
+        view.rerender(
+            <MonitorPlanCard
+                scenario={createScenario({ planBasis: "brain_overlay" })}
+                savingsPercent={10}
+                goalMonthlyCapacityCents={50000}
+                monthsToGoal={3.8}
+                hasInsufficientData={false}
+            />
+        )
+
+        expect(screen.getByText("Fonte Brain")).toBeInTheDocument()
     })
 
     test("renders unreachable reason path in monitor narrative", () => {
@@ -93,6 +95,9 @@ describe("MonitorPlanCard", () => {
                 likelyDate: new Date("2026-06-01T12:00:00.000Z"),
                 maxDate: new Date("2026-06-01T12:00:00.000Z"),
                 canReach: false,
+                realtimeOverlayApplied: false,
+                realtimeCapacityFactor: 1,
+                realtimeWindowMonths: 0,
                 unreachableReason: "Capacita insufficiente"
             },
             sustainability: {
@@ -108,10 +113,9 @@ describe("MonitorPlanCard", () => {
             <MonitorPlanCard
                 scenario={scenario}
                 savingsPercent={0}
-                simulatedSurplus={0}
+                goalMonthlyCapacityCents={0}
                 monthsToGoal={null}
                 hasInsufficientData={false}
-                brainAssistApplied={false}
             />
         )
 

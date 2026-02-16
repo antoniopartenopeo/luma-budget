@@ -4,7 +4,7 @@ import { describe, expect, test } from "vitest"
 import { Category } from "@/domain/categories"
 import { Transaction } from "@/domain/transactions"
 import { MonthlyAveragesResult } from "@/features/simulator/utils"
-import { BrainAssistSignal, GoalScenarioResult } from "@/VAULT/goals/types"
+import { BrainAssistSignal, GoalScenarioResult, RealtimeOverlaySignal } from "@/VAULT/goals/types"
 
 import { useGoalScenarios } from "../use-goal-scenarios"
 
@@ -85,6 +85,7 @@ function createFixture() {
 interface HookProps {
     goalTargetCents: number
     brainAssist: BrainAssistSignal | null
+    realtimeOverlay?: RealtimeOverlaySignal | null
 }
 
 describe("useGoalScenarios", () => {
@@ -92,40 +93,43 @@ describe("useGoalScenarios", () => {
         const { categories, transactions, averages } = createFixture()
 
         const { result } = renderHook<ReturnType<typeof useGoalScenarios>, HookProps>(
-            ({ goalTargetCents, brainAssist }: HookProps) => useGoalScenarios({
+            ({ goalTargetCents, brainAssist, realtimeOverlay }: HookProps) => useGoalScenarios({
                 goalTargetCents,
                 simulationPeriod: 3,
                 categories,
                 transactions,
                 averages,
                 isLoading: false,
-                brainAssist
+                brainAssist,
+                realtimeOverlay
             }),
             {
-                initialProps: { goalTargetCents: 50000, brainAssist: null }
+                initialProps: { goalTargetCents: 50000, brainAssist: null, realtimeOverlay: null }
             }
         )
 
         expect(result.current.scenarios).toHaveLength(3)
         expect(result.current.scenarios.every((scenario: GoalScenarioResult) => scenario.monthlyGoalCapacityCents >= 0)).toBe(true)
         expect(result.current.scenarios.every((scenario: GoalScenarioResult) => typeof scenario.projection.likelyMonthsComparable === "number")).toBe(true)
+        expect(result.current.scenarios.every((scenario: GoalScenarioResult) => scenario.planBasis === "historical")).toBe(true)
     })
 
     test("applies brain prudence by not improving timeline under high risk signal", () => {
         const { categories, transactions, averages } = createFixture()
 
         const { result, rerender } = renderHook<ReturnType<typeof useGoalScenarios>, HookProps>(
-            ({ goalTargetCents, brainAssist }: HookProps) => useGoalScenarios({
+            ({ goalTargetCents, brainAssist, realtimeOverlay }: HookProps) => useGoalScenarios({
                 goalTargetCents,
                 simulationPeriod: 3,
                 categories,
                 transactions,
                 averages,
                 isLoading: false,
-                brainAssist
+                brainAssist,
+                realtimeOverlay
             }),
             {
-                initialProps: { goalTargetCents: 300000, brainAssist: null }
+                initialProps: { goalTargetCents: 300000, brainAssist: null, realtimeOverlay: null }
             }
         )
 
@@ -133,7 +137,8 @@ describe("useGoalScenarios", () => {
 
         rerender({
             goalTargetCents: 300000,
-            brainAssist: { riskScore: 0.9, confidence: 0.95 }
+            brainAssist: { riskScore: 0.9, confidence: 0.95 },
+            realtimeOverlay: null
         })
 
         const baselineWith = result.current.scenarios.find((scenario: GoalScenarioResult) => scenario.key === "baseline")
@@ -141,5 +146,36 @@ describe("useGoalScenarios", () => {
         expect(baselineWithout).toBeDefined()
         expect(baselineWith).toBeDefined()
         expect((baselineWith?.projection.likelyMonthsPrecise || 0)).toBeGreaterThanOrEqual(baselineWithout?.projection.likelyMonthsPrecise || 0)
+    })
+
+    test("marks scenarios as brain overlay when realtime signal is active", () => {
+        const { categories, transactions, averages } = createFixture()
+
+        const { result } = renderHook<ReturnType<typeof useGoalScenarios>, HookProps>(
+            ({ goalTargetCents, brainAssist, realtimeOverlay }: HookProps) => useGoalScenarios({
+                goalTargetCents,
+                simulationPeriod: 3,
+                categories,
+                transactions,
+                averages,
+                isLoading: false,
+                brainAssist,
+                realtimeOverlay
+            }),
+            {
+                initialProps: {
+                    goalTargetCents: 300000,
+                    brainAssist: null,
+                    realtimeOverlay: {
+                        enabled: true,
+                        source: "brain",
+                        shortTermMonths: 3,
+                        capacityFactor: 0.9
+                    }
+                }
+            }
+        )
+
+        expect(result.current.scenarios.every((scenario: GoalScenarioResult) => scenario.planBasis === "brain_overlay")).toBe(true)
     })
 })

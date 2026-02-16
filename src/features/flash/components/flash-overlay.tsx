@@ -4,6 +4,7 @@ import {
     Dialog,
     DialogTrigger,
     DialogContent,
+    DialogTitle,
 } from "@/components/ui/dialog"
 import { FlashSummaryView } from "./flash-summary-view"
 import { Button } from "@/components/ui/button"
@@ -32,6 +33,7 @@ export function FlashOverlay({ trigger }: FlashOverlayProps) {
                 )}
             </DialogTrigger>
             <DialogContent className="max-w-md p-0 border-none bg-transparent shadow-none [&>button]:hidden">
+                <DialogTitle className="sr-only">Flash Summary</DialogTitle>
                 <FlashSummaryView onClose={() => setOpen(false)} />
             </DialogContent>
         </Dialog>

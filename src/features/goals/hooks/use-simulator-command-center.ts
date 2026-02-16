@@ -3,11 +3,13 @@ import { useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 import { buildNatureApplicationMap } from "@/domain/simulation"
+import { isFinancialLabRealtimeOverlayEnabled } from "@/lib/feature-flags"
 import { queryKeys } from "@/lib/query-keys"
 import { LOCAL_USER_ID } from "@/lib/runtime-user"
 import { activateRhythm } from "@/VAULT/goals/logic/rhythm-orchestrator"
+import { deriveRealtimeOverlaySignal } from "@/VAULT/goals/logic/realtime-overlay"
 import { calculateScenario } from "@/VAULT/goals/logic/scenario-calculator"
-import { BrainAssistSignal, ScenarioKey } from "@/VAULT/goals/types"
+import { BrainAssistSignal, RealtimeOverlaySignal, ScenarioKey } from "@/VAULT/goals/types"
 import { useAIAdvisor } from "@/features/insights/use-ai-advisor"
 import { useMonthlyAverages } from "@/features/simulator/hooks"
 import { SimulationPeriod } from "@/features/simulator/utils"
@@ -70,7 +72,7 @@ export function useSimulatorCommandCenter() {
         isLoading: isReadModelLoading
     } = useMonthlyAverages(period)
 
-    const { brainSignal } = useAIAdvisor()
+    const { brainSignal, forecast, facts } = useAIAdvisor()
     const brainAssist = useMemo<BrainAssistSignal | null>(() => {
         if (!brainSignal.isReady) return null
         if (brainSignal.riskScore === null || brainSignal.confidenceScore === null) return null
@@ -79,6 +81,36 @@ export function useSimulatorCommandCenter() {
             confidence: brainSignal.confidenceScore
         }
     }, [brainSignal])
+
+    const realtimeOverlayEnabled = useMemo(
+        () => isFinancialLabRealtimeOverlayEnabled(LOCAL_USER_ID),
+        []
+    )
+    const averageMonthlyExpensesCents = useMemo(
+        () => Object.values(manualAverages?.categories || {}).reduce((sum, category) => sum + category.averageAmount, 0),
+        [manualAverages]
+    )
+    const computedRealtimeOverlay = useMemo(
+        () => deriveRealtimeOverlaySignal({
+            flagEnabled: realtimeOverlayEnabled,
+            forecast,
+            facts,
+            brainSignal,
+            avgMonthlyExpensesCents: averageMonthlyExpensesCents
+        }),
+        [realtimeOverlayEnabled, forecast, facts, brainSignal, averageMonthlyExpensesCents]
+    )
+    const [realtimeOverlay, setRealtimeOverlay] = useState<RealtimeOverlaySignal | null>(null)
+
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            setRealtimeOverlay(computedRealtimeOverlay)
+        }, 700)
+
+        return () => {
+            clearTimeout(timeoutId)
+        }
+    }, [computedRealtimeOverlay])
 
     const {
         scenarios,
@@ -91,7 +123,8 @@ export function useSimulatorCommandCenter() {
         transactions,
         averages: manualAverages,
         isLoading: isReadModelLoading,
-        brainAssist
+        brainAssist,
+        realtimeOverlay
     })
 
     const isDataLoading = isFacadeLoading || isPortfolioLoading
@@ -118,12 +151,24 @@ export function useSimulatorCommandCenter() {
                 savingsMap: customSavings
             },
             goalTargetCents,
-            customApplicationMap: customMap
+            customApplicationMap: customMap,
+            brainAssist: brainAssist || undefined,
+            realtimeOverlay: realtimeOverlay || undefined
         })
-    }, [activeScenarioKey, baselineMetrics, categoriesList, customSavings, goalTargetCents, manualAverages, scenarios])
+    }, [activeScenarioKey, baselineMetrics, brainAssist, categoriesList, customSavings, goalTargetCents, manualAverages, realtimeOverlay, scenarios])
 
-    const simulatedSurplus = (baselineMetrics?.averageMonthlyIncome || 0) - (currentScenario?.simulatedExpenses || 0)
-    const extraSavings = simulatedSurplus - ((baselineMetrics?.averageMonthlyIncome || 0) - (baselineMetrics?.averageMonthlyExpenses || 0))
+    const simulatedSurplusBase = (baselineMetrics?.averageMonthlyIncome || 0) - (currentScenario?.simulatedExpenses || 0)
+    const baselineSurplusBase = (baselineMetrics?.averageMonthlyIncome || 0) - (baselineMetrics?.averageMonthlyExpenses || 0)
+    const realtimeCapacityFactor = currentScenario?.projection.realtimeOverlayApplied
+        ? currentScenario.projection.realtimeCapacityFactor
+        : 1
+    const realtimeWindowMonths = currentScenario?.projection.realtimeOverlayApplied
+        ? currentScenario.projection.realtimeWindowMonths
+        : 0
+    const simulatedSurplus = Math.round(simulatedSurplusBase * realtimeCapacityFactor)
+    const baselineSurplusRealtime = Math.round(baselineSurplusBase * realtimeCapacityFactor)
+    const extraSavings = simulatedSurplus - baselineSurplusRealtime
+    const goalMonthlyCapacityRealtime = Math.round((currentScenario?.monthlyGoalCapacityCents || 0) * realtimeCapacityFactor)
     const savingsPercent = currentScenario
         ? Math.round(100 - (currentScenario.simulatedExpenses / (baselineMetrics?.averageMonthlyExpenses || 1)) * 100)
         : 0
@@ -218,7 +263,6 @@ export function useSimulatorCommandCenter() {
     return {
         activeGoal,
         baselineMetrics,
-        brainAssist,
         categoriesList: categoriesList || [],
         currentScenario,
         customSavings,
@@ -233,9 +277,14 @@ export function useSimulatorCommandCenter() {
         minMonthsForRange,
         period,
         portfolio,
+        realtimeOverlay,
         savingsPercent,
         scenarios,
+        simulatedSurplusBase,
         simulatedSurplus,
+        realtimeCapacityFactor,
+        goalMonthlyCapacityRealtime,
+        realtimeWindowMonths,
         activeScenarioKey,
         setActiveScenarioKey,
         setIsAdvancedSheetOpen,

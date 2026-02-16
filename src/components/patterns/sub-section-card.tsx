@@ -30,7 +30,7 @@ export function SubSectionCard({
     const variants = {
         default: "glass-card hover:bg-white/70 dark:hover:bg-white/10",
         premium: "bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 shadow-inner",
-        accent: "bg-gradient-to-br from-primary/10 to-indigo-500/5 border border-primary/20 shadow-inner"
+        accent: "bg-gradient-to-br from-primary/10 to-cyan-500/5 border border-primary/20 shadow-inner"
     }
 
     return (

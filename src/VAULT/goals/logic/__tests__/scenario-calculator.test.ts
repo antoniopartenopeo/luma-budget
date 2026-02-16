@@ -57,6 +57,7 @@ describe("Scenario Calculator", () => {
         expect(result.projection.canReach).toBe(true)
         expect(result.projection.likelyMonths).toBe(3)
         expect(result.monthlyGoalCapacityCents).toBe(45000)
+        expect(result.planBasis).toBe("historical")
         expect(result.projection.likelyMonthsPrecise).toBeLessThanOrEqual(3)
     })
 
@@ -86,6 +87,7 @@ describe("Scenario Calculator", () => {
         expect(result.sustainability.status).toBe("fragile")
         expect(result.projection.canReach).toBe(true)
         expect(result.monthlyGoalCapacityCents).toBe(9750)
+        expect(result.planBasis).toBe("historical")
         expect(result.projection.likelyMonths).toBe(11)
     })
 
@@ -114,6 +116,7 @@ describe("Scenario Calculator", () => {
 
         expect(result.sustainability.status).toBe("unsafe")
         expect(result.monthlyGoalCapacityCents).toBe(0)
+        expect(result.planBasis).toBe("historical")
         expect(result.projection.canReach).toBe(false)
     })
 
@@ -218,5 +221,41 @@ describe("Scenario Calculator", () => {
 
         expect(strongerScenario.monthlyGoalCapacityCents).toBeGreaterThanOrEqual(baselineScenario.monthlyGoalCapacityCents)
         expect(strongerScenario.projection.likelyMonthsPrecise).toBeLessThanOrEqual(baselineScenario.projection.likelyMonthsPrecise)
+    })
+
+    test("applies realtime overlay basis and keeps monotonicity with prudential correction", () => {
+        const baseline = createBaseline()
+        const averages: Record<string, CategoryAverage> = {
+            essential: { categoryId: "essential", averageAmount: 100000, totalInPeriod: 100000, monthCount: 1 },
+            comfort: { categoryId: "comfort", averageAmount: 20000, totalInPeriod: 20000, monthCount: 1 },
+            superfluous: { categoryId: "superfluous", averageAmount: 30000, totalInPeriod: 30000, monthCount: 1 }
+        }
+
+        const withoutOverlay = calculateScenario({
+            key: "baseline",
+            baseline,
+            averages,
+            config: createConfig({ essential: 0, comfort: 0, superfluous: 0 }),
+            goalTargetCents: 300000
+        })
+        const withOverlay = calculateScenario({
+            key: "baseline",
+            baseline,
+            averages,
+            config: createConfig({ essential: 0, comfort: 0, superfluous: 0 }),
+            goalTargetCents: 300000,
+            realtimeOverlay: {
+                enabled: true,
+                source: "brain",
+                shortTermMonths: 2,
+                capacityFactor: 0.9
+            }
+        })
+
+        expect(withOverlay.planBasis).toBe("brain_overlay")
+        expect(withOverlay.projection.realtimeOverlayApplied).toBe(true)
+        expect(withOverlay.projection.realtimeWindowMonths).toBe(2)
+        expect(withOverlay.projection.likelyMonthsPrecise)
+            .toBeGreaterThanOrEqual(withoutOverlay.projection.likelyMonthsPrecise)
     })
 })

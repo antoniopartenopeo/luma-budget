@@ -29,6 +29,13 @@ export interface BrainAssistSignal {
     confidence: number
 }
 
+export interface RealtimeOverlaySignal {
+    enabled: boolean
+    source: "brain" | "fallback"
+    shortTermMonths: number
+    capacityFactor: number
+}
+
 export interface ScenarioConfig {
     type: ScenarioType
     label: string
@@ -57,6 +64,7 @@ export interface GoalScenarioResult {
     sustainability: SustainabilityResult
     simulatedExpenses: number
     monthlyGoalCapacityCents: number
+    planBasis: "historical" | "brain_overlay" | "fallback_overlay"
 }
 
 export interface ProjectionInput {
@@ -64,6 +72,7 @@ export interface ProjectionInput {
     currentFreeCashFlow: number // Monthly average surplus
     historicalVariability: number // Standard deviation of free cash flow (or expenses)
     startDate?: Date // Optional start date for sequential projection
+    realtimeOverlay?: RealtimeOverlaySignal
 }
 
 export interface ProjectionResult {
@@ -78,6 +87,9 @@ export interface ProjectionResult {
     likelyDate: Date
     maxDate: Date
     canReach: boolean
+    realtimeOverlayApplied: boolean
+    realtimeCapacityFactor: number
+    realtimeWindowMonths: number
     unreachableReason?: string
 }
 

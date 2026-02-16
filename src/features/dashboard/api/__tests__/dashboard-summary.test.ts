@@ -51,7 +51,6 @@ describe('Dashboard Summary (Real Wiring)', () => {
         // May 2025 (Current)
         await createTransaction({
             description: 'Expense current month',
-            amount: 250.00,
             amountCents: 25000,
             type: 'expense',
             categoryId: CategoryIds.CIBO,
@@ -62,7 +61,6 @@ describe('Dashboard Summary (Real Wiring)', () => {
 
         await createTransaction({
             description: 'Income current month',
-            amount: 100.00,
             amountCents: 10000,
             type: 'income',
             categoryId: CategoryIds.ENTRATE_OCCASIONALI,
@@ -75,7 +73,6 @@ describe('Dashboard Summary (Real Wiring)', () => {
         vi.setSystemTime(new Date(2025, 3, 15)) // April 15
         await createTransaction({
             description: 'Expense prev month',
-            amount: 500.00,
             amountCents: 50000,
             type: 'expense',
             categoryId: CategoryIds.CIBO,
@@ -118,7 +115,6 @@ describe('Dashboard Summary (Real Wiring)', () => {
 
         await createTransaction({
             description: 'Useful',
-            amount: 100.00,
             amountCents: 10000,
             type: 'expense',
             categoryId: CategoryIds.CIBO,
@@ -129,7 +125,6 @@ describe('Dashboard Summary (Real Wiring)', () => {
 
         await createTransaction({
             description: 'Useless',
-            amount: 100.00,
             amountCents: 10000,
             type: 'expense',
             categoryId: CategoryIds.SVAGO_EXTRA,
@@ -149,19 +144,19 @@ describe('Dashboard Summary (Real Wiring)', () => {
         const currentPeriod = getCurrentPeriod() // 2025-05
 
         // T1: May (Current) = 100
-        await createTransaction({ amount: 100.00, amountCents: 10000, type: 'expense', description: 'May', categoryId: 'c1', category: 'C1' })
+        await createTransaction({ amountCents: 10000, type: 'expense', description: 'May', categoryId: 'c1', category: 'C1' })
 
         // T2: April (Prev) = 200
         vi.setSystemTime(new Date(2025, 3, 15))
-        await createTransaction({ amount: 200.00, amountCents: 20000, type: 'expense', description: 'Apr', categoryId: 'c1', category: 'C1' })
+        await createTransaction({ amountCents: 20000, type: 'expense', description: 'Apr', categoryId: 'c1', category: 'C1' })
 
         // T3: March (Prev-Prev) = 300
         vi.setSystemTime(new Date(2025, 2, 15))
-        await createTransaction({ amount: 300.00, amountCents: 30000, type: 'expense', description: 'Mar', categoryId: 'c1', category: 'C1' })
+        await createTransaction({ amountCents: 30000, type: 'expense', description: 'Mar', categoryId: 'c1', category: 'C1' })
 
         // T4: January (Exclude from 3M range [Mar, Apr, May]) = 500
         vi.setSystemTime(new Date(2025, 0, 15))
-        await createTransaction({ amount: 500.00, amountCents: 50000, type: 'expense', description: 'Jan', categoryId: 'c1', category: 'C1' })
+        await createTransaction({ amountCents: 50000, type: 'expense', description: 'Jan', categoryId: 'c1', category: 'C1' })
 
         // Reset to Current
         vi.setSystemTime(FIXED_DATE)
@@ -186,7 +181,6 @@ describe('Dashboard Summary (Real Wiring)', () => {
 
         await createTransaction({
             description: 'Boundary outside',
-            amount: 111.00,
             amountCents: 11100,
             type: 'expense',
             categoryId: CategoryIds.CIBO,
@@ -196,7 +190,6 @@ describe('Dashboard Summary (Real Wiring)', () => {
 
         await createTransaction({
             description: 'Boundary inside',
-            amount: 222.00,
             amountCents: 22200,
             type: 'expense',
             categoryId: CategoryIds.CIBO,

@@ -18,9 +18,9 @@ function RadarBackground() {
     return (
         <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20 dark:opacity-30">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px]">
-                <div className="absolute inset-0 rounded-full border border-primary/20 animate-ping-slow" />
-                <div className="absolute inset-x-20 inset-y-20 rounded-full border border-primary/10 animate-ping-slow animation-delay-500" />
-                <div className="absolute inset-x-40 inset-y-40 rounded-full border border-primary/5 animate-ping-slow animation-delay-1000" />
+                <div className="absolute inset-0 rounded-full border border-primary/20" />
+                <div className="absolute inset-x-20 inset-y-20 rounded-full border border-primary/10" />
+                <div className="absolute inset-x-40 inset-y-40 rounded-full border border-primary/5" />
             </div>
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
         </div>
@@ -32,23 +32,23 @@ export default function SimulatorPage() {
         activeGoal,
         activeScenarioKey,
         baselineMetrics,
-        brainAssist,
         categoriesList,
         currentScenario,
         customSavings,
-        extraSavings,
+        goalMonthlyCapacityRealtime,
         goalTargetCents,
         hasInsufficientData,
         isAdvancedSheetOpen,
         isCreatingGoal,
         isDataLoading,
         likelyMonthsForCopy,
-        maxMonthsForRange,
-        minMonthsForRange,
         portfolio,
+        realtimeWindowMonths,
         savingsPercent,
         scenarios,
+        simulatedSurplusBase,
         simulatedSurplus,
+        realtimeCapacityFactor,
         handleAddGoalFromRibbon,
         handleCreateFirstGoal,
         handleCustomApply,
@@ -75,7 +75,7 @@ export default function SimulatorPage() {
             <motion.div variants={macroItemVariants}>
                 <PageHeader
                     title="Financial Lab"
-                    description="Simula diversi ritmi di risparmio e scopri quando puoi raggiungere il tuo obiettivo."
+                    description="Confronta ritmi diversi e scopri quando puoi raggiungere il tuo obiettivo."
                 />
             </motion.div>
 
@@ -92,10 +92,10 @@ export default function SimulatorPage() {
                                 >
                                     <Target className={cn(
                                         "h-20 w-20 text-primary transition-all duration-700",
-                                        isCreatingGoal ? "animate-spin-slow opacity-50" : "animate-pulse-soft"
+                                        isCreatingGoal ? "animate-spin-slow opacity-50" : ""
                                     )} />
-                                    <div className="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-emerald-500/20 blur-lg animate-pulse" />
-                                    <div className="absolute -bottom-4 -left-4 h-12 w-12 rounded-full bg-primary/10 blur-xl animate-pulse animation-delay-1000" />
+                                    <div className="absolute -top-2 -right-2 h-8 w-8 rounded-full bg-emerald-500/20 blur-lg" />
+                                    <div className="absolute -bottom-4 -left-4 h-12 w-12 rounded-full bg-primary/10 blur-xl" />
                                 </motion.div>
                             </div>
 
@@ -163,14 +163,14 @@ export default function SimulatorPage() {
                         {currentScenario && (
                             <SimulatorResultsPanel
                                 scenario={currentScenario}
+                                simulatedSurplusBase={simulatedSurplusBase}
                                 simulatedSurplus={simulatedSurplus}
-                                extraSavings={extraSavings}
+                                realtimeCapacityFactor={realtimeCapacityFactor}
+                                goalMonthlyCapacityRealtime={goalMonthlyCapacityRealtime}
+                                realtimeWindowMonths={realtimeWindowMonths}
                                 savingsPercent={savingsPercent}
                                 likelyMonthsForCopy={likelyMonthsForCopy}
-                                minMonthsForRange={minMonthsForRange}
-                                maxMonthsForRange={maxMonthsForRange}
                                 hasInsufficientData={hasInsufficientData}
-                                brainAssistApplied={Boolean(brainAssist)}
                             />
                         )}
                     </MacroSection>

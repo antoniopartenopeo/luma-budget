@@ -3,9 +3,10 @@ import { render, waitFor } from "@testing-library/react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { useCreateTransaction } from "../use-transactions"
+import type { CreateTransactionDTO } from "../types"
 import { CategoryIds } from "@/domain/categories"
 
-const createTransactionMock = vi.fn(async () => ({
+const createTransactionMock = vi.fn(async (_data: CreateTransactionDTO) => ({
     id: "tx-1",
     amountCents: 1000,
     date: new Date().toISOString(),
@@ -18,7 +19,7 @@ const createTransactionMock = vi.fn(async () => ({
 
 vi.mock("../repository", () => ({
     fetchTransactions: vi.fn(async () => []),
-    createTransaction: (...args: unknown[]) => createTransactionMock(...args),
+    createTransaction: (data: CreateTransactionDTO) => createTransactionMock(data),
     updateTransaction: vi.fn(),
     createBatchTransactions: vi.fn(),
 }))

@@ -18,10 +18,9 @@ const createMockTransaction = (
     type: 'expense' | 'income',
     isSuperfluous: boolean = false
 ): Transaction => {
-    const amountCents = parseCurrencyToCents(amount)
+    const amountCents = Math.abs(parseCurrencyToCents(amount))
     return {
         id,
-        amount,
         amountCents,
         date: 'Test date',
         description: 'Test transaction',
@@ -145,8 +144,7 @@ describe('Dashboard Superfluous KPI Calculation', () => {
         it('should handle transactions with missing isSuperfluous (treat as false)', () => {
             const transactionWithoutFlag = {
                 id: '1',
-                amount: '-€100.00',
-                amountCents: -10000,
+                amountCents: 10000,
                 date: 'Test',
                 description: 'Legacy transaction',
                 category: 'Test',

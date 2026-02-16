@@ -154,7 +154,7 @@ export function AdvancedOptimizerSheet({
                                 Modalità Avanzata
                             </SheetTitle>
                             <SheetDescription className="text-sm font-medium text-muted-foreground/80">
-                                Definisci manualmente i parametri di risparmio.
+                                Regola manualmente le riduzioni per aumentare la quota obiettivo.
                             </SheetDescription>
                         </div>
                     </div>
@@ -164,7 +164,7 @@ export function AdvancedOptimizerSheet({
                     {/* Superfluous Slider */}
                     <div className="space-y-4">
                         <div className="flex justify-between items-center px-1">
-                            <label className="text-[10px] uppercase font-bold tracking-wider text-rose-500 px-1">Taglio Superfluo</label>
+                            <label className="text-[10px] uppercase font-bold tracking-wider text-rose-500 px-1">Riduzione superfluo</label>
                             <Badge variant="outline" className="font-mono text-lg bg-rose-500/5 border-rose-500/20 text-rose-600">{superfluous}%</Badge>
                         </div>
                         <Slider
@@ -184,7 +184,7 @@ export function AdvancedOptimizerSheet({
                     {/* Comfort Slider */}
                     <div className="space-y-4">
                         <div className="flex justify-between items-center px-1">
-                            <label className="text-[10px] uppercase font-bold tracking-wider text-amber-500 px-1">Taglio Benessere</label>
+                            <label className="text-[10px] uppercase font-bold tracking-wider text-amber-500 px-1">Riduzione benessere</label>
                             <Badge variant="outline" className="font-mono text-lg bg-amber-500/5 border-amber-500/20 text-amber-600">{comfort}%</Badge>
                         </div>
                         <Slider
@@ -209,7 +209,7 @@ export function AdvancedOptimizerSheet({
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Risparmio/Mese</p>
+                                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Margine/mese</p>
                                 <p className={cn(
                                     "text-2xl font-black tabular-nums tracking-tight transition-all duration-300",
                                     preview && preview.surplus > 0 ? "text-emerald-600" : "text-foreground"
@@ -218,12 +218,12 @@ export function AdvancedOptimizerSheet({
                                 </p>
                                 {preview && preview.extraSavings > 0 && (
                                     <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">
-                                        +{formatCents(preview.extraSavings, currency, locale)} boost
+                                        +{formatCents(preview.extraSavings, currency, locale)} in piu
                                     </p>
                                 )}
                             </div>
                             <div>
-                                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Tempo Obiettivo</p>
+                                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Tempo stimato</p>
                                 <p className={cn(
                                     "text-2xl font-black tabular-nums tracking-tight transition-all duration-300",
                                     preview?.canReach ? "text-primary" : "text-muted-foreground"
@@ -235,7 +235,7 @@ export function AdvancedOptimizerSheet({
                                 </p>
                                 {!preview?.canReach && (
                                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                                        Aumenta il risparmio
+                                        Aumenta la quota mensile
                                     </p>
                                 )}
                             </div>
@@ -249,7 +249,7 @@ export function AdvancedOptimizerSheet({
                     <div className="rounded-xl bg-slate-50 dark:bg-white/5 p-4 border border-border/50 space-y-3">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Nota Metodologica</span>
                         <p className="text-sm font-medium text-muted-foreground leading-relaxed">
-                            Questi parametri sovrascriveranno qualsiasi Ritmo predefinito. Le spese Essenziali non sono modificabili per garantire la sostenibilità.
+                            Questi parametri sostituiscono il ritmo predefinito solo in questo scenario. Le spese essenziali restano protette per mantenere il piano sostenibile.
                         </p>
                     </div>
                 </div>

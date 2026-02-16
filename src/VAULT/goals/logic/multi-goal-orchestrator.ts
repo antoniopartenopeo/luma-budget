@@ -52,7 +52,10 @@ export function calculatePortfolioProjections(
                     minDate: new Date(goal.reachedAt),
                     likelyDate: new Date(goal.reachedAt),
                     maxDate: new Date(goal.reachedAt),
-                    canReach: true
+                    canReach: true,
+                    realtimeOverlayApplied: false,
+                    realtimeCapacityFactor: 1,
+                    realtimeWindowMonths: 0
                 }
             })
             continue
@@ -73,6 +76,9 @@ export function calculatePortfolioProjections(
                     likelyDate: currentStartDate,
                     maxDate: currentStartDate,
                     canReach: false,
+                    realtimeOverlayApplied: false,
+                    realtimeCapacityFactor: 1,
+                    realtimeWindowMonths: 0,
                     unreachableReason: "Obiettivo precedente non raggiungibile nel portafoglio corrente."
                 }
             })

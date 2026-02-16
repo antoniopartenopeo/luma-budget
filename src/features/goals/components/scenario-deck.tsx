@@ -32,6 +32,22 @@ export function ScenarioDeck({
     // Find active scenario for audit
     const activeScenario = scenarios.find(s => s.key === activeKey)
     const calibration = activeScenario?.config.calibration
+    const activeProjection = activeScenario?.projection
+    const sustainabilityLabel = activeScenario?.sustainability.status === "secure"
+        ? "Molto solido"
+        : activeScenario?.sustainability.status === "sustainable"
+            ? "Solido"
+            : activeScenario?.sustainability.status === "fragile"
+                ? "Delicato"
+                : "A rischio"
+    const overlayValue = activeProjection?.realtimeOverlayApplied
+        ? `${activeProjection.realtimeWindowMonths} mesi`
+        : "Nessuno"
+    const overlaySource = activeScenario?.planBasis === "brain_overlay"
+        ? "Fonte Brain"
+        : activeScenario?.planBasis === "fallback_overlay"
+            ? "Fonte Storico+Live"
+            : "Solo Storico"
     return (
         <div className={className}>
             <div className="flex items-center gap-2 mb-4">
@@ -42,7 +58,6 @@ export function ScenarioDeck({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {scenarios.map((scenario) => {
                     const isActive = activeKey === scenario.key
-                    const isBaseline = scenario.key === "baseline"
 
                     // Format "Time to Goal" or fallback with descriptive reason
                     let timeLabel = "—"
@@ -63,9 +78,6 @@ export function ScenarioDeck({
                     } else if (scenario.projection.likelyMonths === 0) {
                         timeLabel = "Raggiunto"
                     }
-
-                    // Approach label (replaces percentage badges)
-                    const approachLabel = isBaseline ? "Ritmo corrente" : scenario.config.label
 
                     return (
                         <div
@@ -90,7 +102,7 @@ export function ScenarioDeck({
                                     {/* Primary Metric: Time to Goal + Date */}
                                     <div className="pt-2 border-t border-border/40 mt-auto">
                                         <div className="flex justify-between items-end">
-                                            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Tempo Stimato</span>
+                                            <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Tempo stimato</span>
                                             <div className="text-right">
                                                 <span className={cn(
                                                     "text-2xl sm:text-3xl lg:text-4xl font-black tabular-nums tracking-tighter block leading-none mb-1",
@@ -99,7 +111,7 @@ export function ScenarioDeck({
                                                     {timeLabel}
                                                 </span>
                                                 {dateLabel && (
-                                                    <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
+                                                    <span className="text-xs text-muted-foreground/90 font-medium uppercase tracking-wide">
                                                         {dateLabel}
                                                     </span>
                                                 )}
@@ -107,19 +119,6 @@ export function ScenarioDeck({
                                         </div>
                                     </div>
 
-                                    {/* Subtle Approach Label (replaces badges) */}
-                                    <div className="min-h-[40px] space-y-1">
-                                        {scenario.projection.canReach && scenario.monthlyGoalCapacityCents > 0 && (
-                                            <span className="block text-[10px] text-muted-foreground/80 font-bold uppercase tracking-wider">
-                                                Capacita piano: {formatCents(scenario.monthlyGoalCapacityCents, currency, locale)}/mese
-                                            </span>
-                                        )}
-                                        {!isBaseline && (
-                                            <span className="block text-[10px] text-muted-foreground/70 font-medium italic">
-                                                Piano: {approachLabel}
-                                            </span>
-                                        )}
-                                    </div>
                                 </div>
                             </SubSectionCard>
                         </div>
@@ -181,29 +180,29 @@ export function ScenarioDeck({
                             colorClass: "text-primary",
                             bgClass: "bg-primary/10",
                             stepLabel: "1. Passato Reale",
-                            title: "Analisi transazioni",
-                            description: "Numa legge il tuo storico per capire entrate e uscite mese per mese."
+                            title: "Guardo i tuoi mesi reali",
+                            description: "Partiamo da entrate e uscite recenti per capire quanto margine hai davvero."
                         },
                         {
                             icon: Sparkles,
                             colorClass: "text-amber-500",
                             bgClass: "bg-amber-500/10",
-                            stepLabel: "2. Calibrazione Adattiva",
-                            title: "Calibrazione ritmo",
-                            description: "Numa regola il piano in base al tuo margine: accelera quando puo, protegge quando serve."
+                            stepLabel: "2. Protezione del piano",
+                            title: "Margine prudente",
+                            description: "Applichiamo un margine di sicurezza per evitare quote troppo tirate."
                         },
                         {
                             icon: Target,
                             colorClass: "text-emerald-500",
                             bgClass: "bg-emerald-500/10",
-                            stepLabel: "3. Futuro Stimato",
-                            title: "Proiezione obiettivo",
-                            description: "Numa stima in quanto tempo puoi arrivare al traguardo con il ritmo scelto."
+                            stepLabel: "3. Arrivo stimato",
+                            title: "Quando puoi arrivare",
+                            description: "Stimiamo quando arrivi all'obiettivo e aggiorniamo solo il breve periodo."
                         }
                     ]}
-                    certificationTitle="Controllo locale del calcolo"
-                    certificationSubtitle="Ogni stima viene eseguita sul dispositivo usando il tuo storico reale."
-                    transparencyNote="Numa non usa un piano uguale per tutti: il risultato si adatta alla tua situazione reale e ai tuoi margini."
+                    certificationTitle="Motore deterministico locale"
+                    certificationSubtitle="Calcolo base stabile con aggiornamento live prudenziale nel breve periodo."
+                    transparencyNote="La base storica resta il riferimento: Brain e live aiutano solo sui prossimi mesi."
                     auditStats={calibration ? [
                         {
                             label: "Profondità Audit",
@@ -216,14 +215,19 @@ export function ScenarioDeck({
                             subValue: `Basato su una volatilità di ${formatCents(calibration.volatilityCents, currency, locale)}/mese.`
                         },
                         {
-                            label: "Elasticità (Extra)",
-                            value: `${(calibration.elasticityIndex * 100).toFixed(1)}%`,
-                            subValue: "Quota di spese non essenziali che il Core puo ridurre in sicurezza."
+                            label: "Sostenibilità",
+                            value: sustainabilityLabel,
+                            subValue: activeScenario?.sustainability.reason || "Valutata su buffer prudenziale e tenuta del piano."
                         },
                         {
-                            label: "Calibrazione Finale",
-                            value: `${activeScenario?.config.savingsMap.superfluous}%`,
-                            subValue: "Livello massimo di risparmio suggerito in modo sostenibile."
+                            label: "Overlay Realtime",
+                            value: overlayValue,
+                            subValue: `Aggiornamento sul breve periodo. ${overlaySource}.`
+                        },
+                        {
+                            label: "Elasticità (Extra)",
+                            value: `${(calibration.elasticityIndex * 100).toFixed(1)}%`,
+                            subValue: "Quota di spese non essenziali riducibile senza stressare troppo il piano."
                         }
                     ] : undefined}
                 />

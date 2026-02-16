@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { useTrendData } from "../use-trend-data"
+import { useTrendData, type TrendDataItem } from "../use-trend-data"
 
 const useTransactionsMock = vi.fn()
 const useCurrencyMock = vi.fn()
@@ -13,7 +13,12 @@ vi.mock("@/features/settings/api/use-currency", () => ({
     useCurrency: () => useCurrencyMock(),
 }))
 
-function HookHarness({ onValue }: { onValue: (value: ReturnType<typeof useTrendData>) => void }) {
+type TrendDataResult = {
+    data: TrendDataItem[]
+    isLoading: boolean
+}
+
+function HookHarness({ onValue }: { onValue: (value: TrendDataResult) => void }) {
     onValue(useTrendData())
     return null
 }
@@ -41,18 +46,20 @@ describe("useTrendData", () => {
             ],
         })
 
-        let latest: ReturnType<typeof useTrendData> | null = null
+        let latest: TrendDataResult | null = null
         render(<HookHarness onValue={(value) => { latest = value }} />)
 
-        expect(latest?.data).toHaveLength(12)
-        expect(latest?.data.at(-1)?.month).toBe("Feb")
-        expect(latest?.data.at(-1)?.incomeCents).toBe(200000)
-        expect(latest?.data.at(-1)?.expensesCents).toBe(75000)
-        expect(latest?.data.at(-1)?.hasTransactions).toBe(true)
-        expect(latest?.data.at(-2)?.month).toBe("Gen")
-        expect(latest?.data.at(-2)?.incomeCents).toBe(150000)
-        expect(latest?.data.at(-2)?.hasTransactions).toBe(true)
-        expect(latest?.data.at(-3)?.hasTransactions).toBe(false)
+        const value = latest as TrendDataResult | null
+
+        expect(value?.data).toHaveLength(12)
+        expect(value?.data.at(-1)?.month).toBe("Feb")
+        expect(value?.data.at(-1)?.incomeCents).toBe(200000)
+        expect(value?.data.at(-1)?.expensesCents).toBe(75000)
+        expect(value?.data.at(-1)?.hasTransactions).toBe(true)
+        expect(value?.data.at(-2)?.month).toBe("Gen")
+        expect(value?.data.at(-2)?.incomeCents).toBe(150000)
+        expect(value?.data.at(-2)?.hasTransactions).toBe(true)
+        expect(value?.data.at(-3)?.hasTransactions).toBe(false)
     })
 
     it("normalizes signed amounts to absolute values", () => {
@@ -64,11 +71,13 @@ describe("useTrendData", () => {
             ],
         })
 
-        let latest: ReturnType<typeof useTrendData> | null = null
+        let latest: TrendDataResult | null = null
         render(<HookHarness onValue={(value) => { latest = value }} />)
 
-        expect(latest?.data.at(-1)?.incomeCents).toBe(100000)
-        expect(latest?.data.at(-1)?.expensesCents).toBe(40000)
-        expect(latest?.data.at(-1)?.hasTransactions).toBe(true)
+        const value = latest as TrendDataResult | null
+
+        expect(value?.data.at(-1)?.incomeCents).toBe(100000)
+        expect(value?.data.at(-1)?.expensesCents).toBe(40000)
+        expect(value?.data.at(-1)?.hasTransactions).toBe(true)
     })
 })

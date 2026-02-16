@@ -34,7 +34,10 @@ function createScenario(partial: Partial<GoalScenarioResult> & Pick<GoalScenario
             minDate: baseDate,
             likelyDate: baseDate,
             maxDate: baseDate,
-            canReach: true
+            canReach: true,
+            realtimeOverlayApplied: false,
+            realtimeCapacityFactor: 1,
+            realtimeWindowMonths: 0
         },
         sustainability: partial.sustainability || {
             isSustainable: true,
@@ -44,12 +47,13 @@ function createScenario(partial: Partial<GoalScenarioResult> & Pick<GoalScenario
             remainingBuffer: 30000
         },
         simulatedExpenses: partial.simulatedExpenses ?? 140000,
-        monthlyGoalCapacityCents: partial.monthlyGoalCapacityCents ?? 14500
+        monthlyGoalCapacityCents: partial.monthlyGoalCapacityCents ?? 14500,
+        planBasis: partial.planBasis ?? "historical"
     }
 }
 
 describe("ScenarioDeck", () => {
-    test("renders comparable months and capacity to differentiate close scenarios", () => {
+    test("renders comparable months and keeps cards focused on time only", () => {
         const scenarios: GoalScenarioResult[] = [
             createScenario({
                 key: "baseline",
@@ -64,7 +68,10 @@ describe("ScenarioDeck", () => {
                     minDate: new Date("2026-05-01T12:00:00.000Z"),
                     likelyDate: new Date("2026-06-01T12:00:00.000Z"),
                     maxDate: new Date("2026-07-01T12:00:00.000Z"),
-                    canReach: true
+                    canReach: true,
+                    realtimeOverlayApplied: false,
+                    realtimeCapacityFactor: 1,
+                    realtimeWindowMonths: 0
                 },
                 monthlyGoalCapacityCents: 14000
             }),
@@ -81,7 +88,10 @@ describe("ScenarioDeck", () => {
                     minDate: new Date("2026-05-01T12:00:00.000Z"),
                     likelyDate: new Date("2026-06-01T12:00:00.000Z"),
                     maxDate: new Date("2026-07-01T12:00:00.000Z"),
-                    canReach: true
+                    canReach: true,
+                    realtimeOverlayApplied: false,
+                    realtimeCapacityFactor: 1,
+                    realtimeWindowMonths: 0
                 },
                 monthlyGoalCapacityCents: 13500
             }),
@@ -98,7 +108,10 @@ describe("ScenarioDeck", () => {
                     minDate: new Date("2026-05-01T12:00:00.000Z"),
                     likelyDate: new Date("2026-06-01T12:00:00.000Z"),
                     maxDate: new Date("2026-07-01T12:00:00.000Z"),
-                    canReach: true
+                    canReach: true,
+                    realtimeOverlayApplied: false,
+                    realtimeCapacityFactor: 1,
+                    realtimeWindowMonths: 0
                 }
             })
         ]
@@ -114,6 +127,41 @@ describe("ScenarioDeck", () => {
 
         expect(screen.getByText("~3,6 Mesi")).toBeInTheDocument()
         expect(screen.getByText("~3,9 Mesi")).toBeInTheDocument()
-        expect(screen.getAllByText(/Capacita piano:/i).length).toBeGreaterThan(0)
+        expect(screen.queryByText(/Capacita piano/i)).not.toBeInTheDocument()
+    })
+
+    test("does not show quota/capacity text even when realtime overlay is active", () => {
+        const scenario = createScenario({
+            key: "baseline",
+            monthlyGoalCapacityCents: 20000,
+            projection: {
+                minMonths: 3,
+                likelyMonths: 4,
+                maxMonths: 5,
+                minMonthsPrecise: 3.2,
+                likelyMonthsPrecise: 3.9,
+                maxMonthsPrecise: 5.2,
+                likelyMonthsComparable: 3.9,
+                minDate: new Date("2026-05-01T12:00:00.000Z"),
+                likelyDate: new Date("2026-06-01T12:00:00.000Z"),
+                maxDate: new Date("2026-07-01T12:00:00.000Z"),
+                canReach: true,
+                realtimeOverlayApplied: true,
+                realtimeCapacityFactor: 0.85,
+                realtimeWindowMonths: 3
+            }
+        })
+
+        render(
+            <ScenarioDeck
+                scenarios={[scenario]}
+                activeKey="baseline"
+                onSelect={() => undefined}
+                onCustomConfigClick={() => undefined}
+            />
+        )
+
+        expect(screen.getByText("~3,9 Mesi")).toBeInTheDocument()
+        expect(screen.queryByText(/Capacita piano/i)).not.toBeInTheDocument()
     })
 })

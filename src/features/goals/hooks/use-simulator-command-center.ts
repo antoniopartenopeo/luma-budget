@@ -2,77 +2,32 @@ import { useEffect, useMemo, useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
-import { buildNatureApplicationMap } from "@/domain/simulation"
 import { isFinancialLabRealtimeOverlayEnabled } from "@/lib/feature-flags"
 import { queryKeys } from "@/lib/query-keys"
 import { LOCAL_USER_ID } from "@/lib/runtime-user"
-import { activateRhythm } from "@/VAULT/goals/logic/rhythm-orchestrator"
 import { deriveRealtimeOverlaySignal } from "@/VAULT/goals/logic/realtime-overlay"
-import { calculateScenario } from "@/VAULT/goals/logic/scenario-calculator"
 import { BrainAssistSignal, RealtimeOverlaySignal, ScenarioKey } from "@/VAULT/goals/types"
 import { useAIAdvisor } from "@/features/insights/use-ai-advisor"
 import { useMonthlyAverages } from "@/features/simulator/hooks"
 import { SimulationPeriod } from "@/features/simulator/utils"
 
-import { useGoalPortfolio } from "./use-goal-portfolio"
+import { resetFinancialLabLegacyState } from "../utils/reset-financial-lab-legacy"
 import { useGoalScenarios } from "./use-goal-scenarios"
 
 export function useSimulatorCommandCenter() {
     const queryClient = useQueryClient()
-    const [isCreatingGoal, setIsCreatingGoal] = useState(false)
-
-    const projectionSettings = useMemo(() => ({
-        currentFreeCashFlow: 0,
-        historicalVariability: 0.1
-    }), [])
-
-    const {
-        portfolio,
-        isLoading: isPortfolioLoading,
-        refreshPortfolio,
-        addGoal,
-        setMainGoal,
-        updateGoal,
-        removeGoal
-    } = useGoalPortfolio({
-        globalProjectionInput: projectionSettings
-    })
-
-    const activeGoal = useMemo(
-        () => portfolio?.goals.find((goal) => goal.id === portfolio.mainGoalId),
-        [portfolio]
-    )
-
-    const [goalTargetCents, setGoalTargetCents] = useState<number>(activeGoal?.targetCents || 0)
-    const [goalTitle, setGoalTitle] = useState<string>(activeGoal?.title || "")
-
-    useEffect(() => {
-        if (activeGoal?.id) {
-            setGoalTargetCents(activeGoal.targetCents)
-            setGoalTitle(activeGoal.title)
-            return
-        }
-
-        setGoalTargetCents(0)
-        setGoalTitle("")
-    }, [activeGoal?.id, activeGoal?.targetCents, activeGoal?.title])
 
     const [period] = useState<SimulationPeriod>(6)
     const [activeScenarioKey, setActiveScenarioKey] = useState<ScenarioKey>("baseline")
-    const [isAdvancedSheetOpen, setIsAdvancedSheetOpen] = useState(false)
-    const [customSavings, setCustomSavings] = useState<{ superfluous: number; comfort: number }>({
-        superfluous: 0,
-        comfort: 0
-    })
 
     const {
         data: categoriesList,
-        rawAverages: manualAverages,
+        rawAverages: monthlyAverages,
         transactions,
         isLoading: isReadModelLoading
     } = useMonthlyAverages(period)
 
-    const { brainSignal, forecast, facts } = useAIAdvisor()
+    const { brainSignal, forecast, facts } = useAIAdvisor({ mode: "readonly" })
     const brainAssist = useMemo<BrainAssistSignal | null>(() => {
         if (!brainSignal.isReady) return null
         if (brainSignal.riskScore === null || brainSignal.confidenceScore === null) return null
@@ -87,8 +42,8 @@ export function useSimulatorCommandCenter() {
         []
     )
     const averageMonthlyExpensesCents = useMemo(
-        () => Object.values(manualAverages?.categories || {}).reduce((sum, category) => sum + category.averageAmount, 0),
-        [manualAverages]
+        () => Object.values(monthlyAverages?.categories || {}).reduce((sum, category) => sum + category.averageAmount, 0),
+        [monthlyAverages]
     )
     const computedRealtimeOverlay = useMemo(
         () => deriveRealtimeOverlaySignal({
@@ -112,189 +67,66 @@ export function useSimulatorCommandCenter() {
         }
     }, [computedRealtimeOverlay])
 
+    useEffect(() => {
+        void (async () => {
+            const didReset = await resetFinancialLabLegacyState()
+            if (!didReset) return
+
+            await queryClient.invalidateQueries({ queryKey: queryKeys.budget.all })
+            await queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
+
+            toast.info("Financial Lab aggiornato", {
+                description: "Stato legacy verificato e riallineato al modello quota sostenibile."
+            })
+        })()
+    }, [queryClient])
+
     const {
         scenarios,
         baselineMetrics,
         isLoading: isFacadeLoading
     } = useGoalScenarios({
-        goalTargetCents,
         simulationPeriod: period,
         categories: categoriesList || [],
         transactions,
-        averages: manualAverages,
+        averages: monthlyAverages,
         isLoading: isReadModelLoading,
         brainAssist,
         realtimeOverlay
     })
 
-    const isDataLoading = isFacadeLoading || isPortfolioLoading
+    const isDataLoading = isFacadeLoading
 
     const currentScenario = useMemo(() => {
-        if (activeScenarioKey !== "custom") {
-            const found = scenarios.find((scenario) => scenario.key === activeScenarioKey)
-            return found || scenarios.find((scenario) => scenario.key === "baseline") || null
-        }
+        const found = scenarios.find((scenario) => scenario.key === activeScenarioKey)
+        return found || scenarios.find((scenario) => scenario.key === "baseline") || null
+    }, [activeScenarioKey, scenarios])
 
-        if (!baselineMetrics || !manualAverages) return null
-        const categories = categoriesList || []
-        const customMap = buildNatureApplicationMap(categories, customSavings)
-
-        return calculateScenario({
-            key: "custom",
-            baseline: baselineMetrics,
-            averages: manualAverages.categories,
-            config: {
-                type: "manual",
-                label: "Personalizzato",
-                description: "Configurazione manuale avanzata",
-                applicationMap: customMap,
-                savingsMap: customSavings
-            },
-            goalTargetCents,
-            customApplicationMap: customMap,
-            brainAssist: brainAssist || undefined,
-            realtimeOverlay: realtimeOverlay || undefined
-        })
-    }, [activeScenarioKey, baselineMetrics, brainAssist, categoriesList, customSavings, goalTargetCents, manualAverages, realtimeOverlay, scenarios])
-
-    const simulatedSurplusBase = (baselineMetrics?.averageMonthlyIncome || 0) - (currentScenario?.simulatedExpenses || 0)
-    const baselineSurplusBase = (baselineMetrics?.averageMonthlyIncome || 0) - (baselineMetrics?.averageMonthlyExpenses || 0)
-    const realtimeCapacityFactor = currentScenario?.projection.realtimeOverlayApplied
-        ? currentScenario.projection.realtimeCapacityFactor
-        : 1
-    const realtimeWindowMonths = currentScenario?.projection.realtimeOverlayApplied
-        ? currentScenario.projection.realtimeWindowMonths
-        : 0
-    const simulatedSurplus = Math.round(simulatedSurplusBase * realtimeCapacityFactor)
-    const baselineSurplusRealtime = Math.round(baselineSurplusBase * realtimeCapacityFactor)
-    const extraSavings = simulatedSurplus - baselineSurplusRealtime
-    const goalMonthlyCapacityRealtime = Math.round((currentScenario?.monthlyGoalCapacityCents || 0) * realtimeCapacityFactor)
+    const simulatedSurplusBase = currentScenario?.quota.baseMonthlyMarginCents || 0
+    const simulatedSurplus = currentScenario?.quota.realtimeMonthlyMarginCents || 0
+    const realtimeCapacityFactor = currentScenario?.quota.realtimeCapacityFactor || 1
+    const realtimeWindowMonths = currentScenario?.quota.realtimeWindowMonths || 0
+    const goalMonthlyCapacityRealtime = currentScenario?.quota.realtimeMonthlyCapacityCents || 0
     const savingsPercent = currentScenario
         ? Math.round(100 - (currentScenario.simulatedExpenses / (baselineMetrics?.averageMonthlyExpenses || 1)) * 100)
         : 0
 
-    const projection = currentScenario?.projection
-    const likelyMonthsForCopy = projection ? projection.likelyMonthsPrecise : null
-    const minMonthsForRange = projection ? projection.minMonthsPrecise : null
-    const maxMonthsForRange = projection ? projection.maxMonthsPrecise : null
-
-    const hasInsufficientData = !manualAverages
-        || (manualAverages.incomeCents <= 0 && Object.keys(manualAverages.categories).length === 0)
-
-    const handleSavePlan = async () => {
-        if (!currentScenario) return
-
-        try {
-            if (!activeGoal?.id) {
-                await addGoal(goalTitle || "Mio Obiettivo", goalTargetCents)
-            }
-
-            await activateRhythm({
-                userId: LOCAL_USER_ID,
-                goalTargetCents,
-                goalTitle: goalTitle || "Mio Obiettivo",
-                scenario: {
-                    type: currentScenario.config.type,
-                    label: currentScenario.config.label,
-                    description: currentScenario.config.description,
-                    applicationMap: currentScenario.config.applicationMap,
-                    savingsMap: currentScenario.config.savingsMap
-                },
-                baseline: {
-                    averageMonthlyIncome: baselineMetrics?.averageMonthlyIncome || 0,
-                    averageMonthlyExpenses: baselineMetrics?.averageMonthlyExpenses || 0,
-                    averageEssentialExpenses: baselineMetrics?.averageEssentialExpenses || 0,
-                    averageSuperfluousExpenses: baselineMetrics?.averageSuperfluousExpenses || 0,
-                    averageComfortExpenses: baselineMetrics?.averageComfortExpenses || 0,
-                    expensesStdDev: baselineMetrics?.expensesStdDev || 0,
-                    freeCashFlowStdDev: baselineMetrics?.freeCashFlowStdDev || 0,
-                    monthsAnalyzed: period,
-                    activeMonths: baselineMetrics?.activeMonths || 0,
-                    activityCoverageRatio: baselineMetrics?.activityCoverageRatio || 0
-                }
-            })
-
-            await refreshPortfolio()
-            await queryClient.invalidateQueries({ queryKey: queryKeys.budget.all })
-            await queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
-
-            toast.success("Piano salvato", {
-                description: "Il piano e ora attivo nella Dashboard."
-            })
-        } catch {
-            toast.error("Non sono riuscito a salvare il piano")
-        }
-    }
-
-    const handleReset = () => {
-        setActiveScenarioKey("baseline")
-        setCustomSavings({ superfluous: 0, comfort: 0 })
-    }
-
-    const handleCustomApply = (newSavings: { superfluous: number; comfort: number }) => {
-        setCustomSavings(newSavings)
-        setActiveScenarioKey("custom")
-        toast.info("Scenario personalizzato applicato")
-    }
-
-    const handleCreateFirstGoal = async () => {
-        setIsCreatingGoal(true)
-        try {
-            await addGoal("Nuovo Obiettivo", 0, { setAsMain: true })
-            toast.success("Obiettivo creato")
-        } catch {
-            toast.error("Non sono riuscito a creare l'obiettivo. Riprova.")
-        } finally {
-            setIsCreatingGoal(false)
-        }
-    }
-
-    const handleAddGoalFromRibbon = async () => {
-        try {
-            const newGoal = await addGoal("Nuovo Obiettivo", 0, { setAsMain: true })
-            toast.success("Obiettivo creato")
-            return newGoal
-        } catch {
-            toast.error("Non sono riuscito a creare l'obiettivo. Riprova.")
-            throw new Error("GOAL_CREATE_FAILED")
-        }
-    }
+    const hasInsufficientData = !monthlyAverages
+        || (monthlyAverages.incomeCents <= 0 && Object.keys(monthlyAverages.categories).length === 0)
 
     return {
-        activeGoal,
-        baselineMetrics,
-        categoriesList: categoriesList || [],
         currentScenario,
-        customSavings,
-        extraSavings,
-        goalTargetCents,
+        goalMonthlyCapacityRealtime,
         hasInsufficientData,
-        isAdvancedSheetOpen,
-        isCreatingGoal,
         isDataLoading,
-        likelyMonthsForCopy,
-        maxMonthsForRange,
-        minMonthsForRange,
         period,
-        portfolio,
-        realtimeOverlay,
         savingsPercent,
         scenarios,
         simulatedSurplusBase,
         simulatedSurplus,
         realtimeCapacityFactor,
-        goalMonthlyCapacityRealtime,
         realtimeWindowMonths,
         activeScenarioKey,
         setActiveScenarioKey,
-        setIsAdvancedSheetOpen,
-        handleAddGoalFromRibbon,
-        handleCreateFirstGoal,
-        handleCustomApply,
-        handleReset,
-        handleSavePlan,
-        removeGoal,
-        setMainGoal,
-        updateGoal
     }
 }

@@ -18,7 +18,7 @@ export const RHYTHMS: RhythmPreset[] = [
     {
         type: "aggressive",
         label: "Aggressivo",
-        description: "Massima velocità per raggiungere l'obiettivo il prima possibile.",
+        description: "Taglio deciso del superfluo per aumentare la quota fissa sostenibile.",
         intensity: 1.0,
         savings: { superfluous: 40, comfort: 15 }
     }

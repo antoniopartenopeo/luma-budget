@@ -1,6 +1,6 @@
 # Governance Quick Check
 
-Generated at (UTC): 2026-02-16T20:42:33Z
+Generated at (UTC): 2026-02-16T20:43:45Z
 
 Scope:
 - Repository: numa-budget

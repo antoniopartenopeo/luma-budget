@@ -40,8 +40,14 @@ type TestTransaction = {
     isSuperfluous?: boolean
 }
 
-function HookHarness({ onValue }: { onValue: (value: AIAdvisorResult) => void }) {
-    const value = useAIAdvisor()
+function HookHarness({
+    onValue,
+    mode
+}: {
+    onValue: (value: AIAdvisorResult) => void
+    mode?: "active" | "readonly"
+}) {
+    const value = useAIAdvisor(mode ? { mode } : undefined)
 
     useEffect(() => {
         onValue(value)
@@ -206,5 +212,28 @@ describe("useAIAdvisor", () => {
         })
 
         expect(evolveBrainFromHistoryMock).toHaveBeenCalledTimes(2)
+    })
+
+    it("supports read-only mode without training side effects", async () => {
+        let latest: AIAdvisorResult | null = null
+
+        render(<HookHarness mode="readonly" onValue={(value) => { latest = value }} />)
+
+        await act(async () => {
+            await Promise.resolve()
+            await Promise.resolve()
+        })
+
+        const value = latest as AIAdvisorResult | null
+        expect(value?.isLoading).toBe(false)
+        expect(initializeBrainMock).not.toHaveBeenCalled()
+        expect(evolveBrainFromHistoryMock).toHaveBeenCalledTimes(1)
+        expect(evolveBrainFromHistoryMock).toHaveBeenLastCalledWith(
+            expect.any(Array),
+            expect.any(Array),
+            expect.objectContaining({
+                allowTraining: false
+            })
+        )
     })
 })

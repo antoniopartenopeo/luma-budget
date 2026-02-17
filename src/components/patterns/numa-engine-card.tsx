@@ -90,7 +90,7 @@ export function NumaEngineCard({
                         <React.Fragment key={idx}>
                             <div className="space-y-3 relative group">
                                 <div className={cn(
-                                    "h-10 w-10 rounded-xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110",
+                                    "h-10 w-10 rounded-xl flex items-center justify-center mb-4 transition-colors duration-200",
                                     step.bgClass,
                                     step.colorClass
                                 )}>
@@ -109,7 +109,7 @@ export function NumaEngineCard({
 
                             {/* Arrow for Desktop (between steps) */}
                             {idx < steps.length - 1 && (
-                                <div className="hidden sm:block absolute top-5 right-[-12px] w-6 h-[1px] bg-slate-200 dark:bg-white/10" />
+                                <div className="hidden sm:block absolute top-5 right-[-12px] w-6 h-[1px] bg-border/60" />
                             )}
                         </React.Fragment>
                     ))}
@@ -117,7 +117,7 @@ export function NumaEngineCard({
             </div>
 
             {/* Expandable Footer (Audit) */}
-            <div className="mt-10 pt-8 border-t border-slate-200 dark:border-white/5 relative z-10">
+            <div className="mt-10 pt-8 border-t border-border/40 relative z-10">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
                         <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
@@ -160,7 +160,7 @@ export function NumaEngineCard({
                         </div>
 
                         {transparencyNote && (
-                            <div className="mt-6 flex items-start gap-2 p-3 rounded-xl bg-white/40 dark:bg-black/20 border border-primary/5">
+                            <div className="mt-6 flex items-start gap-2 p-3 rounded-xl bg-background/40 border border-border/40">
                                 <Sparkles className="h-3 w-3 text-primary shrink-0 mt-0.5" />
                                 <p className="text-xs text-muted-foreground/90 leading-relaxed font-medium">
                                     <strong>Nota di Trasparenza:</strong> {transparencyNote}

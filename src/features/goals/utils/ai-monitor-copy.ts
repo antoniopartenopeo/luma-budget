@@ -1,16 +1,14 @@
 "use client"
 
 import { GoalScenarioResult } from "@/VAULT/goals/types"
+import { getPlanBasisContext } from "./financial-lab-copy"
 
 export type AIMonitorTone = "thriving" | "stable" | "strained" | "critical"
 
 interface AIMonitorInput {
     scenario: GoalScenarioResult | null
     savingsPercent: number
-    // NEW: Dynamic data for contextual messages
     monthlyGoalContributionFormatted: string
-    monthsToGoal: number | null
-    targetDateFormatted: string | null
     hasInsufficientData?: boolean
 }
 
@@ -26,23 +24,16 @@ interface AIMonitorOutput {
     sacrifices: Sacrifice[]
 }
 
-/**
- * Generates DYNAMIC contextual AI Monitor messages based on scenario analysis.
- * Messages now include actual values for a personalized experience.
- */
 export function generateAIMonitorMessage({
     scenario,
     savingsPercent,
     monthlyGoalContributionFormatted,
-    monthsToGoal,
-    targetDateFormatted,
     hasInsufficientData = false
 }: AIMonitorInput): AIMonitorOutput {
-    // Fallback for no scenario
     if (!scenario) {
         return {
             tone: "stable",
-            message: "Scegli uno scenario per vedere il risultato.",
+            message: "Scegli uno scenario per vedere la quota sostenibile.",
             sacrifices: []
         }
     }
@@ -55,81 +46,26 @@ export function generateAIMonitorMessage({
         }
     }
 
-    const projection = scenario.projection
-    const targetLabel = targetDateFormatted || "la data stimata"
-    const likelyMonthsValue = monthsToGoal ?? projection.likelyMonthsPrecise ?? projection.likelyMonths
-    const formatMonths = (months: number) => {
-        if (months >= 24) return `${Math.round(months)}`
-        if (Math.abs(months - Math.round(months)) < 0.2) return `${Math.round(months)}`
-        return months.toFixed(1).replace(".", ",")
+    let tone: AIMonitorTone = "stable"
+    let message = `${monthlyGoalContributionFormatted} al mese e la tua rata fissa aggiuntiva sostenibile nello scenario attuale.`
+
+    if (scenario.sustainability.status === "unsafe") {
+        tone = "critical"
+        message = "Quota non sostenibile in sicurezza. Riduci la pressione sulle spese variabili prima di impostare una nuova rata fissa."
+    } else if (scenario.sustainability.status === "fragile") {
+        tone = "strained"
+        message = `${monthlyGoalContributionFormatted} al mese e possibile, ma con margine delicato. Meglio partire con una rata piu prudente.`
+    } else if (scenario.sustainability.status === "secure" && savingsPercent > 15) {
+        tone = "thriving"
+        message = `${monthlyGoalContributionFormatted} al mese e una quota solida: il margine resta robusto anche dopo l'allocazione.`
     }
 
-    // Critical: Goal unreachable or unsafe sustainability
-    if (!projection.canReach || scenario.sustainability.status === "unsafe") {
-        const details = [projection.unreachableReason, scenario.sustainability.reason]
-            .filter(Boolean)
-            .join(" ")
-        const reason = details ? ` ${details}` : ""
-        return {
-            tone: "critical",
-            message: `Con il ritmo attuale il traguardo non e ancora raggiungibile.${reason} Per proteggere l'obiettivo, aumenta il margine mensile o riduci le spese variabili.`,
-            sacrifices: []
-        }
+    if (scenario.sustainability.reason && scenario.sustainability.status !== "secure") {
+        message += ` Nota: ${scenario.sustainability.reason}`
     }
 
-    let result: { tone: AIMonitorTone, message: string }
-
-    if (likelyMonthsValue === 0) {
-        result = {
-            tone: "stable",
-            message: "Obiettivo gia raggiunto con il ritmo attuale."
-        }
-    }
-
-    // Thriving: Strong savings and short timeline
-    else if (likelyMonthsValue <= 12 && savingsPercent > 15) {
-        result = {
-            tone: "thriving",
-            message: `Con il ritmo attuale allochi ${monthlyGoalContributionFormatted} al mese sull'obiettivo. Traguardo stimato a ${targetLabel} con margine solido.`
-        }
-    }
-    // Stable: Reachable in a medium horizon (<= 24 months)
-    else if (likelyMonthsValue <= 24) {
-        if (likelyMonthsValue > 12) {
-            result = {
-                tone: "stable",
-                message: `Con ${monthlyGoalContributionFormatted} al mese sull'obiettivo servono circa ${formatMonths(likelyMonthsValue)} mesi. Il piano regge, ma puoi velocizzare.`
-            }
-        } else {
-            result = {
-                tone: "stable",
-                message: `${monthlyGoalContributionFormatted} al mese sull'obiettivo ti portano a ${targetLabel}. Ritmo equilibrato.`
-            }
-        }
-    }
-    // Strained: Reachable but long timeline
-    else if (likelyMonthsValue > 24) {
-        const years = Math.max(1, Math.ceil(likelyMonthsValue / 12))
-        const yearsLabel = years === 1 ? "anno" : "anni"
-        result = {
-            tone: "strained",
-            message: `Con il ritmo attuale (${monthlyGoalContributionFormatted} al mese sull'obiettivo), il traguardo richiede circa ${years} ${yearsLabel}. Se vuoi accorciare i tempi, aumenta gradualmente il margine.`
-        }
-    } else {
-        result = {
-            tone: "stable",
-            message: `Piano attivo: ${monthlyGoalContributionFormatted} al mese verso ${targetLabel}.`
-        }
-    }
-
-    // For non-critical but non-secure cases, append the sustainability reason if available
-    if (scenario.sustainability.status === "fragile" && scenario.sustainability.reason) {
-        result.message += ` Nota: ${scenario.sustainability.reason}`
-    }
-
-    // Extract sacrifices based on savingsMap
-    const sacrifices: Sacrifice[] = []
     const savingsMap = scenario.config.savingsMap || { superfluous: 0, comfort: 0 }
+    const sacrifices: Sacrifice[] = []
 
     if (savingsMap.superfluous > 0) {
         sacrifices.push({
@@ -151,25 +87,15 @@ export function generateAIMonitorMessage({
         })
     }
 
-    const behaviorOrigin = scenario.config.type === "manual"
-        ? "le tue impostazioni"
-        : `il ritmo ${scenario.config.label}`
-    const planBasisContext = scenario.planBasis === "brain_overlay"
-        ? " Fonte Brain attiva per aggiornare il breve periodo."
-        : scenario.planBasis === "fallback_overlay"
-            ? " Aggiornamento live basato sullo storico attivo sui prossimi mesi."
-            : ""
+    const planBasisContext = getPlanBasisContext(scenario.planBasis)
 
     return {
-        ...result,
-        message: `${result.message} Stima basata su abitudini reali (${behaviorOrigin}), ritmo scelto e obiettivo.${planBasisContext}`,
+        tone,
+        message: `${message}${planBasisContext}`,
         sacrifices
     }
 }
 
-/**
- * Returns Tailwind classes for the AI Monitor tone.
- */
 export function getAIMonitorStyles(tone: AIMonitorTone): {
     containerClass: string
     textClass: string

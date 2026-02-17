@@ -11,8 +11,8 @@ export interface SustainabilityResult {
     remainingBuffer: number
 }
 
-export type ScenarioType = "baseline" | "balanced" | "aggressive" | "manual"
-export type ScenarioKey = "baseline" | "balanced" | "aggressive" | "custom"
+export type ScenarioType = "baseline" | "balanced" | "aggressive"
+export type ScenarioKey = "baseline" | "balanced" | "aggressive"
 
 export interface CalibrationMetadata {
     elasticityIndex: number
@@ -60,37 +60,18 @@ export interface RhythmPreset {
 export interface GoalScenarioResult {
     key: ScenarioKey
     config: ScenarioConfig
-    projection: ProjectionResult
     sustainability: SustainabilityResult
     simulatedExpenses: number
-    monthlyGoalCapacityCents: number
+    quota: {
+        baseMonthlyMarginCents: number
+        realtimeMonthlyMarginCents: number
+        baseMonthlyCapacityCents: number
+        realtimeMonthlyCapacityCents: number
+        realtimeOverlayApplied: boolean
+        realtimeCapacityFactor: number
+        realtimeWindowMonths: number
+    }
     planBasis: "historical" | "brain_overlay" | "fallback_overlay"
-}
-
-export interface ProjectionInput {
-    goalTarget: number
-    currentFreeCashFlow: number // Monthly average surplus
-    historicalVariability: number // Standard deviation of free cash flow (or expenses)
-    startDate?: Date // Optional start date for sequential projection
-    realtimeOverlay?: RealtimeOverlaySignal
-}
-
-export interface ProjectionResult {
-    minMonths: number // Best case (optimistic)
-    likelyMonths: number // Median case
-    maxMonths: number // Worst case (prudent)
-    minMonthsPrecise: number
-    likelyMonthsPrecise: number
-    maxMonthsPrecise: number
-    likelyMonthsComparable: number // One decimal for scenario comparison
-    minDate: Date
-    likelyDate: Date
-    maxDate: Date
-    canReach: boolean
-    realtimeOverlayApplied: boolean
-    realtimeCapacityFactor: number
-    realtimeWindowMonths: number
-    unreachableReason?: string
 }
 
 export interface NUMAGoal {
@@ -120,23 +101,4 @@ export interface ActiveGoalCommitment {
     rhythmLabel: string
     intensity: number // Aggregate intensity (e.g. 0 to 1)
     activatedAt: string
-}
-
-// Explicit "Contract" for Labs Simulation
-export interface LabsSimulationInput {
-    goalTargetCents: number
-    currentFCFCents: number      // Current "Velocity" (Income - Expenses)
-    currentBenefitCents: number  // Existing Rhythm Benefit in place
-    proposedPaceAdjustmentCents: number // User input (e.g. "I want to save +100€ more")
-    variabilityCents: number     // Standard Deviation
-}
-
-export interface LabsSimulationResult {
-    originalMonths: number
-    simulatedMonths: number
-    minMonths: number
-    maxMonths: number
-    timeSaved: number
-    projectedDate: Date
-    canReach: boolean
 }

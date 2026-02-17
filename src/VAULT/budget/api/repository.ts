@@ -1,4 +1,5 @@
 import { BudgetPlan, CreateBudgetDTO, UpdateBudgetDTO, BUDGET_GROUP_LABELS, BudgetGroupId } from "./types"
+import { STORAGE_KEY_BUDGET_PLANS } from "@/lib/storage-keys"
 import { storage } from "@/lib/storage-utils"
 
 
@@ -6,7 +7,7 @@ import { storage } from "@/lib/storage-utils"
 // STORAGE HELPERS (LEGACY TECHNICAL KEYS)
 // =====================
 
-const STORAGE_KEY = "luma_budget_plans_v1"
+const STORAGE_KEY = STORAGE_KEY_BUDGET_PLANS
 
 // Helper to create budget key from userId and period
 function getBudgetKey(userId: string, period: string): string {
@@ -104,6 +105,10 @@ export async function deleteBudget(userId: string, period: string): Promise<void
     const key = getBudgetKey(userId, period)
     delete plans[key]
     saveToStorage(plans)
+}
+
+export async function clearAllBudgets(): Promise<void> {
+    saveToStorage({})
 }
 
 // =====================

@@ -36,7 +36,7 @@ function createConfig(
 }
 
 describe("Scenario Calculator", () => {
-    test("allocates only a portion of surplus to goal projection when scenario is secure", () => {
+    test("allocates a prudential share of margin when scenario is secure", () => {
         const baseline = createBaseline()
         const averages: Record<string, CategoryAverage> = {
             essential: { categoryId: "essential", averageAmount: 100000, totalInPeriod: 100000, monthCount: 1 },
@@ -48,20 +48,17 @@ describe("Scenario Calculator", () => {
             key: "baseline",
             baseline,
             averages,
-            config: createConfig({ essential: 0, comfort: 0, superfluous: 0 }),
-            goalTargetCents: 100000
+            config: createConfig({ essential: 0, comfort: 0, superfluous: 0 })
         })
 
-        // FCF = 50,000, secure ratio = 0.9 -> allocatable = 45,000 => 3 months
         expect(result.sustainability.status).toBe("secure")
-        expect(result.projection.canReach).toBe(true)
-        expect(result.projection.likelyMonths).toBe(3)
-        expect(result.monthlyGoalCapacityCents).toBe(45000)
+        expect(result.quota.baseMonthlyMarginCents).toBe(50000)
+        expect(result.quota.baseMonthlyCapacityCents).toBe(45000)
+        expect(result.quota.realtimeMonthlyCapacityCents).toBe(45000)
         expect(result.planBasis).toBe("historical")
-        expect(result.projection.likelyMonthsPrecise).toBeLessThanOrEqual(3)
     })
 
-    test("uses a stricter allocation when sustainability is fragile", () => {
+    test("uses stricter allocation when sustainability is fragile", () => {
         const baseline = createBaseline({
             averageMonthlyExpenses: 185000,
             averageEssentialExpenses: 120000,
@@ -79,19 +76,14 @@ describe("Scenario Calculator", () => {
             key: "baseline",
             baseline,
             averages,
-            config: createConfig({ essential: 0, comfort: 0, superfluous: 0 }),
-            goalTargetCents: 100000
+            config: createConfig({ essential: 0, comfort: 0, superfluous: 0 })
         })
 
-        // FCF = 15,000, fragile ratio = 0.65 -> allocatable = 9,750 => 11 months
         expect(result.sustainability.status).toBe("fragile")
-        expect(result.projection.canReach).toBe(true)
-        expect(result.monthlyGoalCapacityCents).toBe(9750)
-        expect(result.planBasis).toBe("historical")
-        expect(result.projection.likelyMonths).toBe(11)
+        expect(result.quota.baseMonthlyCapacityCents).toBe(9750)
     })
 
-    test("marks projection unreachable when scenario is unsafe", () => {
+    test("sets capacity to zero when scenario is unsafe", () => {
         const baseline = createBaseline({
             averageMonthlyIncome: 100000,
             averageMonthlyExpenses: 150000,
@@ -110,17 +102,15 @@ describe("Scenario Calculator", () => {
             key: "baseline",
             baseline,
             averages,
-            config: createConfig({ essential: 0, comfort: 0, superfluous: 0 }),
-            goalTargetCents: 50000
+            config: createConfig({ essential: 0, comfort: 0, superfluous: 0 })
         })
 
         expect(result.sustainability.status).toBe("unsafe")
-        expect(result.monthlyGoalCapacityCents).toBe(0)
+        expect(result.quota.baseMonthlyCapacityCents).toBe(0)
         expect(result.planBasis).toBe("historical")
-        expect(result.projection.canReach).toBe(false)
     })
 
-    test("applies confidence-aware prudence: low confidence slows likely projection", () => {
+    test("low confidence keeps capacity more conservative than high confidence", () => {
         const baseline = createBaseline()
         const averages: Record<string, CategoryAverage> = {
             essential: { categoryId: "essential", averageAmount: 100000, totalInPeriod: 100000, monthCount: 1 },
@@ -135,8 +125,7 @@ describe("Scenario Calculator", () => {
             config: createConfig(
                 { essential: 0, comfort: 0, superfluous: 0 },
                 { calibration: { elasticityIndex: 0.3, stabilityFactor: 0.9, volatilityCents: 5000, confidenceScore: 88 } }
-            ),
-            goalTargetCents: 400000
+            )
         })
 
         const lowConfidence = calculateScenario({
@@ -146,17 +135,13 @@ describe("Scenario Calculator", () => {
             config: createConfig(
                 { essential: 0, comfort: 0, superfluous: 0 },
                 { calibration: { elasticityIndex: 0.3, stabilityFactor: 0.9, volatilityCents: 5000, confidenceScore: 45, lowConfidence: true } }
-            ),
-            goalTargetCents: 400000
+            )
         })
 
-        expect(highConfidence.projection.canReach).toBe(true)
-        expect(lowConfidence.projection.canReach).toBe(true)
-        expect(lowConfidence.projection.likelyMonthsPrecise).toBeGreaterThan(highConfidence.projection.likelyMonthsPrecise)
-        expect(lowConfidence.projection.likelyMonths).toBeGreaterThanOrEqual(highConfidence.projection.likelyMonths)
+        expect(lowConfidence.quota.baseMonthlyCapacityCents).toBeLessThan(highConfidence.quota.baseMonthlyCapacityCents)
     })
 
-    test("applies brain-assist prudence when risk signal is ready", () => {
+    test("brain assist applies extra prudence on capacity", () => {
         const baseline = createBaseline()
         const averages: Record<string, CategoryAverage> = {
             essential: { categoryId: "essential", averageAmount: 100000, totalInPeriod: 100000, monthCount: 1 },
@@ -168,8 +153,7 @@ describe("Scenario Calculator", () => {
             key: "baseline",
             baseline,
             averages,
-            config: createConfig({ essential: 0, comfort: 0, superfluous: 0 }),
-            goalTargetCents: 250000
+            config: createConfig({ essential: 0, comfort: 0, superfluous: 0 })
         })
 
         const withBrainAssist = calculateScenario({
@@ -177,22 +161,16 @@ describe("Scenario Calculator", () => {
             baseline,
             averages,
             config: createConfig({ essential: 0, comfort: 0, superfluous: 0 }),
-            goalTargetCents: 250000,
             brainAssist: {
                 riskScore: 0.85,
                 confidence: 0.9
             }
         })
 
-        expect(withoutBrainAssist.projection.canReach).toBe(true)
-        expect(withBrainAssist.projection.canReach).toBe(true)
-        expect(withBrainAssist.projection.likelyMonthsPrecise)
-            .toBeGreaterThan(withoutBrainAssist.projection.likelyMonthsPrecise)
-        expect(withBrainAssist.projection.likelyMonths)
-            .toBeGreaterThanOrEqual(withoutBrainAssist.projection.likelyMonths)
+        expect(withBrainAssist.quota.baseMonthlyCapacityCents).toBeLessThan(withoutBrainAssist.quota.baseMonthlyCapacityCents)
     })
 
-    test("monotonicity guard: higher monthly capacity cannot worsen likely precise months", () => {
+    test("monotonicity: stronger rhythm cannot worsen monthly capacity", () => {
         const baseline = createBaseline()
         const averages: Record<string, CategoryAverage> = {
             essential: { categoryId: "essential", averageAmount: 100000, totalInPeriod: 100000, monthCount: 1 },
@@ -204,8 +182,7 @@ describe("Scenario Calculator", () => {
             key: "baseline",
             baseline,
             averages,
-            config: createConfig({ essential: 0, comfort: 0, superfluous: 0 }),
-            goalTargetCents: 50000
+            config: createConfig({ essential: 0, comfort: 0, superfluous: 0 })
         })
 
         const strongerScenario = calculateScenario({
@@ -215,15 +192,13 @@ describe("Scenario Calculator", () => {
             config: createConfig(
                 { essential: 0, comfort: 20, superfluous: 40 },
                 { type: "aggressive", label: "Aggressivo" }
-            ),
-            goalTargetCents: 50000
+            )
         })
 
-        expect(strongerScenario.monthlyGoalCapacityCents).toBeGreaterThanOrEqual(baselineScenario.monthlyGoalCapacityCents)
-        expect(strongerScenario.projection.likelyMonthsPrecise).toBeLessThanOrEqual(baselineScenario.projection.likelyMonthsPrecise)
+        expect(strongerScenario.quota.baseMonthlyCapacityCents).toBeGreaterThanOrEqual(baselineScenario.quota.baseMonthlyCapacityCents)
     })
 
-    test("applies realtime overlay basis and keeps monotonicity with prudential correction", () => {
+    test("applies realtime overlay basis and factor", () => {
         const baseline = createBaseline()
         const averages: Record<string, CategoryAverage> = {
             essential: { categoryId: "essential", averageAmount: 100000, totalInPeriod: 100000, monthCount: 1 },
@@ -231,19 +206,11 @@ describe("Scenario Calculator", () => {
             superfluous: { categoryId: "superfluous", averageAmount: 30000, totalInPeriod: 30000, monthCount: 1 }
         }
 
-        const withoutOverlay = calculateScenario({
-            key: "baseline",
-            baseline,
-            averages,
-            config: createConfig({ essential: 0, comfort: 0, superfluous: 0 }),
-            goalTargetCents: 300000
-        })
         const withOverlay = calculateScenario({
             key: "baseline",
             baseline,
             averages,
             config: createConfig({ essential: 0, comfort: 0, superfluous: 0 }),
-            goalTargetCents: 300000,
             realtimeOverlay: {
                 enabled: true,
                 source: "brain",
@@ -253,9 +220,8 @@ describe("Scenario Calculator", () => {
         })
 
         expect(withOverlay.planBasis).toBe("brain_overlay")
-        expect(withOverlay.projection.realtimeOverlayApplied).toBe(true)
-        expect(withOverlay.projection.realtimeWindowMonths).toBe(2)
-        expect(withOverlay.projection.likelyMonthsPrecise)
-            .toBeGreaterThanOrEqual(withoutOverlay.projection.likelyMonthsPrecise)
+        expect(withOverlay.quota.realtimeOverlayApplied).toBe(true)
+        expect(withOverlay.quota.realtimeWindowMonths).toBe(2)
+        expect(withOverlay.quota.realtimeMonthlyCapacityCents).toBeLessThanOrEqual(withOverlay.quota.baseMonthlyCapacityCents)
     })
 })

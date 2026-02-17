@@ -1,8 +1,9 @@
+import { STORAGE_KEY_ACTIVE_GOAL_LEGACY, STORAGE_KEY_GOAL_PORTFOLIO } from "@/lib/storage-keys"
 import { storage } from "@/lib/storage-utils"
 import { ActiveGoalCommitment, GoalPortfolio, NUMAGoal } from "../types"
 
-const PORTFOLIO_KEY = "numa_goal_portfolio_v1"
-const LEGACY_COMMIT_KEY = "numa_active_goal_v1"
+const PORTFOLIO_KEY = STORAGE_KEY_GOAL_PORTFOLIO
+const LEGACY_COMMIT_KEY = STORAGE_KEY_ACTIVE_GOAL_LEGACY
 
 export async function savePortfolio(portfolio: GoalPortfolio): Promise<void> {
     storage.set(PORTFOLIO_KEY, portfolio)
@@ -77,7 +78,7 @@ export async function clearCommitment(): Promise<void> {
 
 // Keeping these for potential backward compatibility or internal usage during transition
 export async function saveCommitment(commitment: ActiveGoalCommitment): Promise<void> {
-    // For now, we manually bridge or mark as deprecated
+    // Legacy bridge kept for compatibility during transition
     storage.set(LEGACY_COMMIT_KEY, commitment)
 }
 

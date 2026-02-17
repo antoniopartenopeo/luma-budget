@@ -78,6 +78,7 @@ export type BrainEvolutionReason =
     | "no-new-data"
     | "insufficient-data"
     | "uninitialized"
+    | "read-only-inference"
 
 export interface BrainTrainingProgress {
     epoch: number

@@ -13,7 +13,6 @@ vi.mock("@/features/settings/api/use-currency", () => ({
 }))
 
 function createScenario(partial: Partial<GoalScenarioResult> & Pick<GoalScenarioResult, "key">): GoalScenarioResult {
-    const baseDate = new Date("2026-06-01T12:00:00.000Z")
     return {
         key: partial.key,
         config: partial.config || {
@@ -23,22 +22,6 @@ function createScenario(partial: Partial<GoalScenarioResult> & Pick<GoalScenario
             applicationMap: {},
             savingsMap: { superfluous: 20, comfort: 5 }
         },
-        projection: partial.projection || {
-            minMonths: 3,
-            likelyMonths: 4,
-            maxMonths: 5,
-            minMonthsPrecise: 2.9,
-            likelyMonthsPrecise: 3.6,
-            maxMonthsPrecise: 5.1,
-            likelyMonthsComparable: 3.6,
-            minDate: baseDate,
-            likelyDate: baseDate,
-            maxDate: baseDate,
-            canReach: true,
-            realtimeOverlayApplied: false,
-            realtimeCapacityFactor: 1,
-            realtimeWindowMonths: 0
-        },
         sustainability: partial.sustainability || {
             isSustainable: true,
             status: "secure",
@@ -47,71 +30,56 @@ function createScenario(partial: Partial<GoalScenarioResult> & Pick<GoalScenario
             remainingBuffer: 30000
         },
         simulatedExpenses: partial.simulatedExpenses ?? 140000,
-        monthlyGoalCapacityCents: partial.monthlyGoalCapacityCents ?? 14500,
+        quota: partial.quota || {
+            baseMonthlyMarginCents: 50000,
+            realtimeMonthlyMarginCents: 48000,
+            baseMonthlyCapacityCents: 14500,
+            realtimeMonthlyCapacityCents: 13600,
+            realtimeOverlayApplied: true,
+            realtimeCapacityFactor: 0.94,
+            realtimeWindowMonths: 3
+        },
         planBasis: partial.planBasis ?? "historical"
     }
 }
 
 describe("ScenarioDeck", () => {
-    test("renders comparable months and keeps cards focused on time only", () => {
+    test("renders quota as primary KPI in scenario cards", () => {
         const scenarios: GoalScenarioResult[] = [
             createScenario({
                 key: "baseline",
-                projection: {
-                    minMonths: 3,
-                    likelyMonths: 4,
-                    maxMonths: 5,
-                    minMonthsPrecise: 3.3,
-                    likelyMonthsPrecise: 3.6,
-                    maxMonthsPrecise: 5.2,
-                    likelyMonthsComparable: 3.6,
-                    minDate: new Date("2026-05-01T12:00:00.000Z"),
-                    likelyDate: new Date("2026-06-01T12:00:00.000Z"),
-                    maxDate: new Date("2026-07-01T12:00:00.000Z"),
-                    canReach: true,
-                    realtimeOverlayApplied: false,
-                    realtimeCapacityFactor: 1,
-                    realtimeWindowMonths: 0
-                },
-                monthlyGoalCapacityCents: 14000
+                quota: {
+                    baseMonthlyMarginCents: 50000,
+                    realtimeMonthlyMarginCents: 45000,
+                    baseMonthlyCapacityCents: 15000,
+                    realtimeMonthlyCapacityCents: 13600,
+                    realtimeOverlayApplied: true,
+                    realtimeCapacityFactor: 0.9,
+                    realtimeWindowMonths: 3
+                }
             }),
             createScenario({
                 key: "balanced",
-                projection: {
-                    minMonths: 3,
-                    likelyMonths: 4,
-                    maxMonths: 5,
-                    minMonthsPrecise: 3.1,
-                    likelyMonthsPrecise: 3.9,
-                    maxMonthsPrecise: 5.4,
-                    likelyMonthsComparable: 3.9,
-                    minDate: new Date("2026-05-01T12:00:00.000Z"),
-                    likelyDate: new Date("2026-06-01T12:00:00.000Z"),
-                    maxDate: new Date("2026-07-01T12:00:00.000Z"),
-                    canReach: true,
-                    realtimeOverlayApplied: false,
-                    realtimeCapacityFactor: 1,
-                    realtimeWindowMonths: 0
-                },
-                monthlyGoalCapacityCents: 13500
+                quota: {
+                    baseMonthlyMarginCents: 52000,
+                    realtimeMonthlyMarginCents: 50000,
+                    baseMonthlyCapacityCents: 16200,
+                    realtimeMonthlyCapacityCents: 14900,
+                    realtimeOverlayApplied: true,
+                    realtimeCapacityFactor: 0.92,
+                    realtimeWindowMonths: 3
+                }
             }),
             createScenario({
                 key: "aggressive",
-                projection: {
-                    minMonths: 3,
-                    likelyMonths: 4,
-                    maxMonths: 5,
-                    minMonthsPrecise: 3.2,
-                    likelyMonthsPrecise: 4.2,
-                    maxMonthsPrecise: 5.5,
-                    likelyMonthsComparable: 4.2,
-                    minDate: new Date("2026-05-01T12:00:00.000Z"),
-                    likelyDate: new Date("2026-06-01T12:00:00.000Z"),
-                    maxDate: new Date("2026-07-01T12:00:00.000Z"),
-                    canReach: true,
-                    realtimeOverlayApplied: false,
-                    realtimeCapacityFactor: 1,
-                    realtimeWindowMonths: 0
+                quota: {
+                    baseMonthlyMarginCents: 54000,
+                    realtimeMonthlyMarginCents: 52000,
+                    baseMonthlyCapacityCents: 17100,
+                    realtimeMonthlyCapacityCents: 15800,
+                    realtimeOverlayApplied: true,
+                    realtimeCapacityFactor: 0.92,
+                    realtimeWindowMonths: 3
                 }
             })
         ]
@@ -121,34 +89,26 @@ describe("ScenarioDeck", () => {
                 scenarios={scenarios}
                 activeKey="baseline"
                 onSelect={() => undefined}
-                onCustomConfigClick={() => undefined}
             />
         )
 
-        expect(screen.getByText("~3,6 Mesi")).toBeInTheDocument()
-        expect(screen.getByText("~3,9 Mesi")).toBeInTheDocument()
-        expect(screen.queryByText(/Capacita piano/i)).not.toBeInTheDocument()
+        expect(screen.getByText("136,00 €/mese")).toBeInTheDocument()
+        expect(screen.getByText("149,00 €/mese")).toBeInTheDocument()
+        expect(screen.queryByText(/Tempo stimato/i)).not.toBeInTheDocument()
+        expect(screen.queryByText(/Quando puoi arrivare/i)).not.toBeInTheDocument()
+        expect(screen.queryByText("Personalizzato")).not.toBeInTheDocument()
+        expect(screen.queryByText(/Apri configurazione/i)).not.toBeInTheDocument()
     })
 
-    test("does not show quota/capacity text even when realtime overlay is active", () => {
+    test("shows sustainability status label in each scenario card", () => {
         const scenario = createScenario({
             key: "baseline",
-            monthlyGoalCapacityCents: 20000,
-            projection: {
-                minMonths: 3,
-                likelyMonths: 4,
-                maxMonths: 5,
-                minMonthsPrecise: 3.2,
-                likelyMonthsPrecise: 3.9,
-                maxMonthsPrecise: 5.2,
-                likelyMonthsComparable: 3.9,
-                minDate: new Date("2026-05-01T12:00:00.000Z"),
-                likelyDate: new Date("2026-06-01T12:00:00.000Z"),
-                maxDate: new Date("2026-07-01T12:00:00.000Z"),
-                canReach: true,
-                realtimeOverlayApplied: true,
-                realtimeCapacityFactor: 0.85,
-                realtimeWindowMonths: 3
+            sustainability: {
+                isSustainable: true,
+                status: "fragile",
+                reason: null,
+                safeBufferRequired: 10000,
+                remainingBuffer: 3000
             }
         })
 
@@ -157,11 +117,9 @@ describe("ScenarioDeck", () => {
                 scenarios={[scenario]}
                 activeKey="baseline"
                 onSelect={() => undefined}
-                onCustomConfigClick={() => undefined}
             />
         )
 
-        expect(screen.getByText("~3,9 Mesi")).toBeInTheDocument()
-        expect(screen.queryByText(/Capacita piano/i)).not.toBeInTheDocument()
+        expect(screen.getByText("Delicato")).toBeInTheDocument()
     })
 })

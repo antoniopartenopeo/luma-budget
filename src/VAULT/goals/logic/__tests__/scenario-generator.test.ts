@@ -68,22 +68,19 @@ describe("Scenario Generator Logic", () => {
             key: "baseline",
             baseline,
             averages,
-            config: scenarios[0],
-            goalTargetCents: 50000
+            config: scenarios[0]
         })
         const balancedResult = calculateScenario({
             key: "balanced",
             baseline,
             averages,
-            config: scenarios[1],
-            goalTargetCents: 50000
+            config: scenarios[1]
         })
         const aggressiveResult = calculateScenario({
             key: "aggressive",
             baseline,
             averages,
-            config: scenarios[2],
-            goalTargetCents: 50000
+            config: scenarios[2]
         })
 
         const baselineSurplus = baseline.averageMonthlyIncome - baselineResult.simulatedExpenses

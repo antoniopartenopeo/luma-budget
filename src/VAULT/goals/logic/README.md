@@ -25,8 +25,8 @@ Codice qui dentro:
 ### 1. Behavior Proof Signature
 Ogni modifica al Core deve rispettare questa sequenza:
 1.  **Read**: `useTransactions` (Source of Truth).
-2.  **Compute**: `baseline` -> `scenarios` -> `projection` (Pure Logic).
-3.  **Action**: `setRhythm` -> `savePortfolio` (Persistence).
+2.  **Compute**: `baseline` -> `scenarios` -> `quota` (Pure Logic).
+3.  **Action**: nessuna persistenza implicita nel flusso Financial Lab.
 4.  **No Hidden State**: Vietato accedere a `localStorage` se non via Repository.
 
 ### 2. Invariants
@@ -39,17 +39,14 @@ Ogni modifica al Core deve rispettare questa sequenza:
 *   ❌ `react-dom`, `framer-motion`: Mai importare animazioni o rendering.
 
 ## Logic Files (The Vault)
-*   `use-goal-scenarios.ts`: Hook orchestrator per baseline/scenari/proiezioni.
-*   `use-goal-portfolio.ts`: Portfolio persistence manager.
+*   `use-goal-scenarios.ts`: Hook orchestrator per baseline/scenari quota-centrici.
 *   `financial-baseline.ts`: Baseline math engine.
 *   `scenario-generator.ts`: Costruzione configurazioni scenario.
-*   `scenario-calculator.ts`: Applicazione savings + sostenibilita + reachability.
+*   `scenario-calculator.ts`: Applicazione savings + sostenibilita + quota sostenibile.
 *   `sustainability-guard.ts`: Safety checks.
-*   `projection-engine.ts`: Proiezione singolo obiettivo.
-*   `multi-goal-orchestrator.ts`: Aggregazione portfolio multi-goal.
-*   `rhythm-orchestrator.ts`: Bridge per applicare ritmo su budget/portfolio.
+*   `realtime-overlay.ts`: Correzione prudenziale breve periodo.
 *   `../config/rhythms.ts`: Configurazioni ritmo disponibili.
 
 ## Boundary di persistenza
 - La simulazione resta read-only sui dati transazionali.
-- La persistenza è ammessa solo nel passaggio di commitment (`activateRhythm`) verso portfolio e budget operativo.
+- Il flusso Financial Lab quota-mode non applica commitment su portfolio o budget operativo.

@@ -13,7 +13,6 @@ vi.mock("@/features/settings/api/use-currency", () => ({
 }))
 
 function createScenario(overrides: Partial<GoalScenarioResult> = {}): GoalScenarioResult {
-    const baseDate = new Date("2026-06-01T12:00:00.000Z")
     return {
         key: "baseline",
         config: {
@@ -23,22 +22,6 @@ function createScenario(overrides: Partial<GoalScenarioResult> = {}): GoalScenar
             applicationMap: {},
             savingsMap: { superfluous: 0, comfort: 0 }
         },
-        projection: {
-            minMonths: 3,
-            likelyMonths: 4,
-            maxMonths: 5,
-            minMonthsPrecise: 3.3,
-            likelyMonthsPrecise: 3.8,
-            maxMonthsPrecise: 5.2,
-            likelyMonthsComparable: 3.8,
-            minDate: baseDate,
-            likelyDate: baseDate,
-            maxDate: baseDate,
-            canReach: true,
-            realtimeOverlayApplied: true,
-            realtimeCapacityFactor: 0.9,
-            realtimeWindowMonths: 3
-        },
         sustainability: {
             isSustainable: true,
             status: "secure",
@@ -47,7 +30,15 @@ function createScenario(overrides: Partial<GoalScenarioResult> = {}): GoalScenar
             remainingBuffer: 30000
         },
         simulatedExpenses: 150000,
-        monthlyGoalCapacityCents: 16000,
+        quota: {
+            baseMonthlyMarginCents: 50000,
+            realtimeMonthlyMarginCents: 45000,
+            baseMonthlyCapacityCents: 16000,
+            realtimeMonthlyCapacityCents: 13600,
+            realtimeOverlayApplied: true,
+            realtimeCapacityFactor: 0.9,
+            realtimeWindowMonths: 3
+        },
         planBasis: "brain_overlay",
         ...overrides
     }
@@ -64,13 +55,11 @@ describe("SimulatorResultsPanel", () => {
                 goalMonthlyCapacityRealtime={13600}
                 realtimeWindowMonths={3}
                 savingsPercent={10}
-                likelyMonthsForCopy={3.8}
                 hasInsufficientData={false}
             />
         )
 
         expect(screen.getByText("Come nasce la quota")).toBeInTheDocument()
-        expect(screen.getByText("Qui vedi, passo per passo, come arriviamo alla tua quota mensile.")).toBeInTheDocument()
         expect(screen.getByText("1) Margine base storico")).toBeInTheDocument()
         expect(screen.getByText("2) Correzione live (3 mesi)")).toBeInTheDocument()
         expect(screen.getByText("3) In pratica")).toBeInTheDocument()
@@ -80,7 +69,6 @@ describe("SimulatorResultsPanel", () => {
         expect(screen.getByText(/Margine aggiornato:/i)).toBeInTheDocument()
         expect(screen.getByText(/450,00 €\/mese/i)).toBeInTheDocument()
         expect(screen.getAllByText(/136,00 €\/mese/i).length).toBeGreaterThan(0)
-        expect(screen.queryByText(/Margine realtime \(primi/i)).not.toBeInTheDocument()
         expect(screen.queryByText("Quando arrivi")).not.toBeInTheDocument()
         expect(screen.queryByText("Sostenibilita")).not.toBeInTheDocument()
     })
@@ -89,8 +77,11 @@ describe("SimulatorResultsPanel", () => {
         render(
             <SimulatorResultsPanel
                 scenario={createScenario({
-                    projection: {
-                        ...createScenario().projection,
+                    quota: {
+                        baseMonthlyMarginCents: 50000,
+                        realtimeMonthlyMarginCents: 50000,
+                        baseMonthlyCapacityCents: 16000,
+                        realtimeMonthlyCapacityCents: 16000,
                         realtimeOverlayApplied: false,
                         realtimeCapacityFactor: 1,
                         realtimeWindowMonths: 0
@@ -102,7 +93,6 @@ describe("SimulatorResultsPanel", () => {
                 goalMonthlyCapacityRealtime={16000}
                 realtimeWindowMonths={0}
                 savingsPercent={10}
-                likelyMonthsForCopy={3.8}
                 hasInsufficientData={false}
             />
         )

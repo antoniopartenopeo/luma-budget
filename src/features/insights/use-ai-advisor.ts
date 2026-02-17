@@ -40,6 +40,10 @@ export interface AIAdvisorResult {
     isLoading: boolean
 }
 
+export interface UseAIAdvisorOptions {
+    mode?: "active" | "readonly"
+}
+
 function computeBrainInputSignature(
     transactions: Array<{
         amountCents: number
@@ -166,7 +170,9 @@ function createDefaultBrainSignal(): AIBrainSignal {
     }
 }
 
-export function useAIAdvisor() {
+export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
+    const advisorMode = options.mode || "active"
+    const isReadOnlyMode = advisorMode === "readonly"
     const currentPeriod = getCurrentPeriod()
     const { data: transactions = [], isLoading: isTransactionsLoading } = useTransactions()
     const { data: categories = [], isLoading: isCategoriesLoading } = useCategories({ includeArchived: true })
@@ -204,9 +210,14 @@ export function useAIAdvisor() {
         }))
 
         let cancelled = false
-        initializeBrain()
+        if (!isReadOnlyMode) {
+            initializeBrain()
+        }
 
-        void evolveBrainFromHistory(brainTransactions, brainCategories, { preferredPeriod: currentPeriod })
+        void evolveBrainFromHistory(brainTransactions, brainCategories, {
+            preferredPeriod: currentPeriod,
+            allowTraining: !isReadOnlyMode
+        })
             .then((result) => {
                 if (!cancelled) {
                     setBrainEvolution(result)
@@ -227,6 +238,7 @@ export function useAIAdvisor() {
         brainInputSignature,
         categories,
         currentPeriod,
+        isReadOnlyMode,
         isCategoriesLoading,
         isTransactionsLoading,
         transactions,

@@ -8,7 +8,6 @@ import { calculateScenario } from "@/VAULT/goals/logic/scenario-calculator"
 import { MonthlyAveragesResult } from "@/features/simulator/utils"
 
 interface UseGoalScenariosProps {
-    goalTargetCents: number
     simulationPeriod?: 3 | 6 | 12
     categories: Category[]
     transactions: Transaction[] | undefined
@@ -25,7 +24,6 @@ interface UseGoalScenariosResult {
 }
 
 export function useGoalScenarios({
-    goalTargetCents,
     simulationPeriod = 6,
     categories,
     transactions,
@@ -56,7 +54,6 @@ export function useGoalScenarios({
                 baseline,
                 averages: averages.categories,
                 config,
-                goalTargetCents,
                 brainAssist: brainAssist || undefined,
                 realtimeOverlay: realtimeOverlay || undefined
             })
@@ -64,7 +61,7 @@ export function useGoalScenarios({
 
         return { scenarios: scenarioResults, baseline }
 
-    }, [transactions, averages, goalTargetCents, simulationPeriod, categories, isLoading, brainAssist, realtimeOverlay])
+    }, [transactions, averages, simulationPeriod, categories, isLoading, brainAssist, realtimeOverlay])
 
     return {
         isLoading,

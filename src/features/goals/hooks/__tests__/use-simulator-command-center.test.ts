@@ -9,45 +9,23 @@ import { useSimulatorCommandCenter } from "../use-simulator-command-center"
 
 const useGoalScenariosMock = vi.fn()
 const useAIAdvisorMock = vi.fn()
+const resetFinancialLabLegacyStateMock = vi.fn()
+const invalidateQueriesMock = vi.fn()
 
 vi.mock("@tanstack/react-query", () => ({
     useQueryClient: () => ({
-        invalidateQueries: vi.fn()
+        invalidateQueries: invalidateQueriesMock
     })
 }))
 
 vi.mock("sonner", () => ({
     toast: {
-        success: vi.fn(),
-        error: vi.fn(),
         info: vi.fn()
     }
 }))
 
 vi.mock("@/lib/feature-flags", () => ({
     isFinancialLabRealtimeOverlayEnabled: () => true
-}))
-
-vi.mock("../use-goal-portfolio", () => ({
-    useGoalPortfolio: () => ({
-        portfolio: {
-            mainGoalId: "goal-1",
-            goals: [
-                {
-                    id: "goal-1",
-                    title: "Test Goal",
-                    targetCents: 50000,
-                    createdAt: "2026-01-01T00:00:00.000Z"
-                }
-            ]
-        },
-        isLoading: false,
-        refreshPortfolio: vi.fn(),
-        addGoal: vi.fn(),
-        setMainGoal: vi.fn(),
-        updateGoal: vi.fn(),
-        removeGoal: vi.fn()
-    })
 }))
 
 vi.mock("@/features/simulator/hooks", () => ({
@@ -76,15 +54,18 @@ vi.mock("@/features/simulator/hooks", () => ({
 }))
 
 vi.mock("@/features/insights/use-ai-advisor", () => ({
-    useAIAdvisor: () => useAIAdvisorMock()
+    useAIAdvisor: (...args: unknown[]) => useAIAdvisorMock(...args)
 }))
 
 vi.mock("../use-goal-scenarios", () => ({
     useGoalScenarios: (...args: unknown[]) => useGoalScenariosMock(...args)
 }))
 
+vi.mock("../../utils/reset-financial-lab-legacy", () => ({
+    resetFinancialLabLegacyState: () => resetFinancialLabLegacyStateMock()
+}))
+
 function createScenario(overrides: Partial<GoalScenarioResult> = {}): GoalScenarioResult {
-    const baseDate = new Date("2026-06-01T12:00:00.000Z")
     return {
         key: "baseline",
         config: {
@@ -94,22 +75,6 @@ function createScenario(overrides: Partial<GoalScenarioResult> = {}): GoalScenar
             applicationMap: {},
             savingsMap: { superfluous: 0, comfort: 0 }
         },
-        projection: {
-            minMonths: 3,
-            likelyMonths: 4,
-            maxMonths: 5,
-            minMonthsPrecise: 3.3,
-            likelyMonthsPrecise: 3.8,
-            maxMonthsPrecise: 5.2,
-            likelyMonthsComparable: 3.8,
-            minDate: baseDate,
-            likelyDate: baseDate,
-            maxDate: baseDate,
-            canReach: true,
-            realtimeOverlayApplied: false,
-            realtimeCapacityFactor: 1,
-            realtimeWindowMonths: 0
-        },
         sustainability: {
             isSustainable: true,
             status: "secure",
@@ -118,7 +83,15 @@ function createScenario(overrides: Partial<GoalScenarioResult> = {}): GoalScenar
             remainingBuffer: 30000
         },
         simulatedExpenses: 140000,
-        monthlyGoalCapacityCents: 14000,
+        quota: {
+            baseMonthlyMarginCents: 60000,
+            realtimeMonthlyMarginCents: 60000,
+            baseMonthlyCapacityCents: 14000,
+            realtimeMonthlyCapacityCents: 14000,
+            realtimeOverlayApplied: false,
+            realtimeCapacityFactor: 1,
+            realtimeWindowMonths: 0
+        },
         planBasis: "historical",
         ...overrides
     }
@@ -127,8 +100,11 @@ function createScenario(overrides: Partial<GoalScenarioResult> = {}): GoalScenar
 describe("useSimulatorCommandCenter", () => {
     beforeEach(() => {
         vi.useFakeTimers()
+        invalidateQueriesMock.mockReset()
         useGoalScenariosMock.mockReset()
         useAIAdvisorMock.mockReset()
+        resetFinancialLabLegacyStateMock.mockReset()
+        resetFinancialLabLegacyStateMock.mockResolvedValue(false)
 
         useGoalScenariosMock.mockImplementation((params: { realtimeOverlay?: RealtimeOverlaySignal | null }) => {
             const realtimeOverlay = params?.realtimeOverlay
@@ -138,8 +114,11 @@ describe("useSimulatorCommandCenter", () => {
             return {
                 scenarios: [
                     createScenario({
-                        projection: {
-                            ...createScenario().projection,
+                        quota: {
+                            baseMonthlyMarginCents: 60000,
+                            realtimeMonthlyMarginCents: Math.round(60000 * realtimeCapacityFactor),
+                            baseMonthlyCapacityCents: 14000,
+                            realtimeMonthlyCapacityCents: Math.round(14000 * realtimeCapacityFactor),
                             realtimeOverlayApplied,
                             realtimeCapacityFactor,
                             realtimeWindowMonths
@@ -197,6 +176,12 @@ describe("useSimulatorCommandCenter", () => {
         vi.useRealTimers()
     })
 
+    test("runs legacy reset check on mount", () => {
+        renderHook(() => useSimulatorCommandCenter())
+        expect(resetFinancialLabLegacyStateMock).toHaveBeenCalledTimes(1)
+        expect(useAIAdvisorMock).toHaveBeenCalledWith({ mode: "readonly" })
+    })
+
     test("applies debounced realtime overlay and extends to 3 months only for strong brain signal", () => {
         renderHook(() => useSimulatorCommandCenter())
 
@@ -218,8 +203,7 @@ describe("useSimulatorCommandCenter", () => {
     test("remodulates realtime margin and quota for the short-term window", () => {
         const { result } = renderHook(() => useSimulatorCommandCenter())
 
-        const baseSurplus = 60000
-        expect(result.current.simulatedSurplus).toBe(baseSurplus)
+        expect(result.current.simulatedSurplus).toBe(60000)
         expect(result.current.goalMonthlyCapacityRealtime).toBe(14000)
         expect(result.current.realtimeWindowMonths).toBe(0)
 
@@ -227,12 +211,12 @@ describe("useSimulatorCommandCenter", () => {
             vi.advanceTimersByTime(700)
         })
 
-        const projection = result.current.currentScenario?.projection
-        expect(projection?.realtimeOverlayApplied).toBe(true)
+        const quota = result.current.currentScenario?.quota
+        expect(quota?.realtimeOverlayApplied).toBe(true)
         expect(result.current.realtimeWindowMonths).toBe(3)
 
-        const realtimeFactor = projection?.realtimeCapacityFactor || 1
-        expect(result.current.simulatedSurplus).toBe(Math.round(baseSurplus * realtimeFactor))
+        const realtimeFactor = quota?.realtimeCapacityFactor || 1
+        expect(result.current.simulatedSurplus).toBe(Math.round(60000 * realtimeFactor))
         expect(result.current.goalMonthlyCapacityRealtime).toBe(Math.round(14000 * realtimeFactor))
     })
 })

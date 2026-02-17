@@ -13,6 +13,17 @@ export interface StorageKeyConfig {
     invalidatesQueries?: string[]
 }
 
+export const STORAGE_KEY_TRANSACTIONS = "luma_transactions_v1"
+export const STORAGE_KEY_BUDGET_PLANS = "luma_budget_plans_v1"
+export const STORAGE_KEY_CATEGORIES = "luma_categories_v1"
+export const STORAGE_KEY_SETTINGS = "luma_settings_v1"
+export const STORAGE_KEY_GOAL_PORTFOLIO = "numa_goal_portfolio_v1"
+export const STORAGE_KEY_ACTIVE_GOAL_LEGACY = "numa_active_goal_v1"
+export const STORAGE_KEY_INSIGHTS_SIGNATURE = "insights_smart_advice_signature_v1"
+export const STORAGE_KEY_NOTIFICATIONS = "numa_notifications_state_v2"
+export const STORAGE_KEY_PRIVACY = "numa-privacy-storage"
+export const STORAGE_KEY_FINLAB_HARD_SWITCH_DONE = "numa_finlab_hard_switch_v1_done"
+
 function countTransactions(raw: unknown): number {
     if (!raw || typeof raw !== "object") return 0
     const obj = raw as Record<string, unknown>
@@ -65,52 +76,56 @@ function countPrivacyState(raw: unknown): number {
 
 export const STORAGE_KEYS_REGISTRY: StorageKeyConfig[] = [
     {
-        key: "luma_transactions_v1",
+        key: STORAGE_KEY_TRANSACTIONS,
         label: "Transazioni",
         countFn: countTransactions,
         invalidatesQueries: ["transactions", "dashboard-summary", "recent-transactions"],
     },
     {
-        key: "luma_budget_plans_v1",
+        key: STORAGE_KEY_BUDGET_PLANS,
         label: "Piani Ritmo",
         countFn: countBudgetPlans,
         invalidatesQueries: ["budgets", "dashboard-summary"],
     },
     {
-        key: "luma_categories_v1",
+        key: STORAGE_KEY_CATEGORIES,
         label: "Categorie",
         countFn: countCategories,
         invalidatesQueries: ["categories", "dashboard-summary"],
     },
     {
-        key: "luma_settings_v1",
+        key: STORAGE_KEY_SETTINGS,
         label: "Impostazioni",
         invalidatesQueries: ["settings", "dashboard-summary"],
     },
     {
-        key: "numa_goal_portfolio_v1",
+        key: STORAGE_KEY_GOAL_PORTFOLIO,
         label: "Portfolio Obiettivi",
         countFn: countGoalsInPortfolio,
         invalidatesQueries: ["dashboard-summary"],
     },
     {
-        key: "numa_active_goal_v1",
+        key: STORAGE_KEY_ACTIVE_GOAL_LEGACY,
         label: "Goal Attivo (Legacy)",
         countFn: countLegacyGoal,
     },
     {
-        key: "insights_smart_advice_signature_v1",
+        key: STORAGE_KEY_INSIGHTS_SIGNATURE,
         label: "Firma Insight AI",
     },
     {
-        key: "numa_notifications_state_v2",
+        key: STORAGE_KEY_NOTIFICATIONS,
         label: "Notifiche Beta",
         invalidatesQueries: ["notifications"],
     },
     {
-        key: "numa-privacy-storage",
+        key: STORAGE_KEY_PRIVACY,
         label: "Privacy Mode",
         countFn: countPrivacyState,
+    },
+    {
+        key: STORAGE_KEY_FINLAB_HARD_SWITCH_DONE,
+        label: "Financial Lab Hard Switch Marker",
     },
 ]
 

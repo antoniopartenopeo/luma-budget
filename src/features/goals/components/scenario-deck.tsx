@@ -5,9 +5,14 @@ import * as React from "react"
 import { SubSectionCard } from "@/components/patterns/sub-section-card"
 import { NumaEngineCard } from "@/components/patterns/numa-engine-card"
 import { cn } from "@/lib/utils"
-import { Compass, Target, CheckCircle2, Sparkles } from "lucide-react"
+import { Compass, CheckCircle2, Wallet, TrendingUp, ShieldCheck } from "lucide-react"
 import { GoalScenarioResult, ScenarioKey } from "@/VAULT/goals/types"
-import { Badge } from "@/components/ui/badge"
+import {
+    FINANCIAL_LAB_COPY,
+    getOverlayStatsValue,
+    getPlanBasisLabel,
+    getSustainabilityLabel
+} from "@/features/goals/utils/financial-lab-copy"
 
 import { formatCents } from "@/domain/money"
 import { useCurrency } from "@/features/settings/api/use-currency"
@@ -16,7 +21,6 @@ interface ScenarioDeckProps {
     scenarios: GoalScenarioResult[]
     activeKey: ScenarioKey
     onSelect: (key: ScenarioKey) => void
-    onCustomConfigClick: () => void
     className?: string
 }
 
@@ -24,60 +28,33 @@ export function ScenarioDeck({
     scenarios,
     activeKey,
     onSelect,
-    onCustomConfigClick,
     className
 }: ScenarioDeckProps) {
     const { currency, locale } = useCurrency()
 
-    // Find active scenario for audit
     const activeScenario = scenarios.find(s => s.key === activeKey)
     const calibration = activeScenario?.config.calibration
-    const activeProjection = activeScenario?.projection
-    const sustainabilityLabel = activeScenario?.sustainability.status === "secure"
-        ? "Molto solido"
-        : activeScenario?.sustainability.status === "sustainable"
-            ? "Solido"
-            : activeScenario?.sustainability.status === "fragile"
-                ? "Delicato"
-                : "A rischio"
-    const overlayValue = activeProjection?.realtimeOverlayApplied
-        ? `${activeProjection.realtimeWindowMonths} mesi`
-        : "Nessuno"
-    const overlaySource = activeScenario?.planBasis === "brain_overlay"
-        ? "Fonte Brain"
-        : activeScenario?.planBasis === "fallback_overlay"
-            ? "Fonte Storico+Live"
-            : "Solo Storico"
+    const sustainabilityLabel = activeScenario
+        ? getSustainabilityLabel(activeScenario.sustainability.status)
+        : "—"
+    const overlayValue = getOverlayStatsValue(
+        Boolean(activeScenario?.quota.realtimeOverlayApplied),
+        activeScenario?.quota.realtimeWindowMonths || 0
+    )
+    const overlaySource = getPlanBasisLabel(activeScenario?.planBasis || "historical")
+
     return (
         <div className={className}>
             <div className="flex items-center gap-2 mb-4">
                 <Compass className="h-5 w-5 text-primary" />
-                <h3 className="text-lg font-bold tracking-tight">Scegli il piano</h3>
+                <h3 className="text-lg font-bold tracking-tight">{FINANCIAL_LAB_COPY.scenarioDeck.title}</h3>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {scenarios.map((scenario) => {
                     const isActive = activeKey === scenario.key
-
-                    // Format "Time to Goal" or fallback with descriptive reason
-                    let timeLabel = "—"
-                    let dateLabel: string | null = null
-
-                    if (!scenario.projection.canReach) {
-                        // Use concise, neutral fallback
-                        timeLabel = "Non stimabile"
-                    } else if (scenario.projection.likelyMonths > 0) {
-                        timeLabel = scenario.projection.likelyMonths <= 24
-                            ? `~${scenario.projection.likelyMonthsComparable.toFixed(1).replace(".", ",")} Mesi`
-                            : `~${scenario.projection.likelyMonths} Mesi`
-                        // Format date as MMM YYYY
-                        dateLabel = new Intl.DateTimeFormat("it-IT", {
-                            month: "short",
-                            year: "numeric"
-                        }).format(scenario.projection.likelyDate)
-                    } else if (scenario.projection.likelyMonths === 0) {
-                        timeLabel = "Raggiunto"
-                    }
+                    const quotaLabel = `${formatCents(scenario.quota.realtimeMonthlyCapacityCents, currency, locale)}/mese`
+                    const statusLabel = getSustainabilityLabel(scenario.sustainability.status)
 
                     return (
                         <div
@@ -88,10 +65,10 @@ export function ScenarioDeck({
                             <SubSectionCard
                                 variant={isActive ? "accent" : "default"}
                                 label={scenario.config.label}
-                                icon={isActive ? <CheckCircle2 className="h-4 w-4 text-primary" /> : <Target className="h-4 w-4 text-muted-foreground" />}
+                                icon={isActive ? <CheckCircle2 className="h-4 w-4 text-primary" /> : <Wallet className="h-4 w-4 text-muted-foreground" />}
                                 className={cn(
                                     "h-full border-2 transition-all duration-300 relative overflow-hidden",
-                                    isActive ? "border-primary/50 shadow-lg bg-primary/5" : "border-transparent opacity-80 hover:opacity-100 hover:bg-slate-50 dark:hover:bg-slate-800"
+                                    isActive ? "border-primary/50 shadow-lg bg-primary/5" : "border-transparent opacity-80 hover:opacity-100 hover:bg-accent/30 dark:hover:bg-accent/20"
                                 )}
                             >
                                 <div className="space-y-4 flex-1 flex flex-col">
@@ -99,148 +76,84 @@ export function ScenarioDeck({
                                         {scenario.config.description}
                                     </p>
 
-                                    {/* Primary Metric: Time to Goal + Date */}
                                     <div className="pt-2 border-t border-border/40 mt-auto">
-                                        <div className="flex justify-between items-end">
-                                            <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Tempo stimato</span>
-                                            <div className="text-right">
-                                                <span className={cn(
-                                                    "text-2xl sm:text-3xl lg:text-4xl font-black tabular-nums tracking-tighter block leading-none mb-1",
-                                                    !scenario.projection.canReach ? "text-muted-foreground text-sm font-bold" : (isActive ? "text-primary" : "text-foreground")
-                                                )}>
-                                                    {timeLabel}
-                                                </span>
-                                                {dateLabel && (
-                                                    <span className="text-xs text-muted-foreground/90 font-medium uppercase tracking-wide">
-                                                        {dateLabel}
-                                                    </span>
-                                                )}
-                                            </div>
+                                        <div className="flex justify-between items-end gap-3">
+                                            <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{FINANCIAL_LAB_COPY.scenarioDeck.quotaLabel}</span>
+                                            <span className={cn(
+                                                "text-xl sm:text-2xl lg:text-3xl font-black tabular-nums tracking-tighter leading-none",
+                                                isActive ? "text-primary" : "text-foreground"
+                                            )}>
+                                                {quotaLabel}
+                                            </span>
                                         </div>
+                                        <p className="mt-2 text-xs uppercase tracking-wide font-bold text-muted-foreground">
+                                            {statusLabel}
+                                        </p>
                                     </div>
-
                                 </div>
                             </SubSectionCard>
                         </div>
                     )
                 })}
-
-
-                {/* 4. CUSTOM / ADVANCED CARD */}
-                <div
-                    onClick={() => {
-                        onSelect("custom")
-                        onCustomConfigClick()
-                    }}
-                    className="cursor-pointer h-full group"
-                >
-                    <SubSectionCard
-                        variant={activeKey === "custom" ? "accent" : "default"}
-                        label="Personalizzato"
-                        icon={<Sparkles className={cn("h-4 w-4", activeKey === "custom" ? "text-amber-500 fill-amber-500/20" : "text-muted-foreground")} />}
-                        className={cn(
-                            "h-full border-2 border-dashed transition-all duration-300 relative overflow-hidden",
-                            activeKey === "custom"
-                                ? "border-amber-500/50 shadow-lg bg-amber-500/5"
-                                : "border-border/60 hover:border-amber-500/30 hover:bg-amber-50/50 dark:hover:bg-amber-900/10"
-                        )}
-                    >
-                        <div className="space-y-4 flex-1 flex flex-col">
-                            <p className="text-sm text-muted-foreground font-medium leading-relaxed">
-                                Decidi tu quanto ridurre le spese non essenziali.
-                            </p>
-
-                            <div className="pt-2 border-t border-border/40 flex items-center justify-between h-[42px] mt-auto">
-                                {/* h-[42px] aligns with visual height of other cards' metrics */}
-                                <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider group-hover:text-amber-600 transition-colors">
-                                    Apri configurazione
-                                </span>
-                                <div className="h-8 w-8 rounded-full bg-muted/50 flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
-                                    <Sparkles className="h-4 w-4 text-muted-foreground group-hover:text-amber-600" />
-                                </div>
-                            </div>
-
-                            {/* Empty space for alignment with badges */}
-                            <div className="min-h-[24px]"></div>
-                        </div>
-                    </SubSectionCard>
-                </div>
-
             </div>
 
-            {/* The Numa Engine - Visual Logic Legend (Centralized) */}
             <div className="mt-12 mb-8">
                 <NumaEngineCard
-                    title="Come calcola Numa"
+                    title={FINANCIAL_LAB_COPY.scenarioDeck.engineTitle}
                     icon={Compass}
-                    audienceHint="In breve"
+                    audienceHint={FINANCIAL_LAB_COPY.scenarioDeck.audienceHint}
                     steps={[
                         {
-                            icon: CheckCircle2,
+                            icon: Wallet,
                             colorClass: "text-primary",
                             bgClass: "bg-primary/10",
-                            stepLabel: "1. Passato Reale",
-                            title: "Guardo i tuoi mesi reali",
-                            description: "Partiamo da entrate e uscite recenti per capire quanto margine hai davvero."
+                            stepLabel: FINANCIAL_LAB_COPY.scenarioDeck.steps[0].stepLabel,
+                            title: FINANCIAL_LAB_COPY.scenarioDeck.steps[0].title,
+                            description: FINANCIAL_LAB_COPY.scenarioDeck.steps[0].description
                         },
                         {
-                            icon: Sparkles,
+                            icon: TrendingUp,
                             colorClass: "text-amber-500",
                             bgClass: "bg-amber-500/10",
-                            stepLabel: "2. Protezione del piano",
-                            title: "Margine prudente",
-                            description: "Applichiamo un margine di sicurezza per evitare quote troppo tirate."
+                            stepLabel: FINANCIAL_LAB_COPY.scenarioDeck.steps[1].stepLabel,
+                            title: FINANCIAL_LAB_COPY.scenarioDeck.steps[1].title,
+                            description: FINANCIAL_LAB_COPY.scenarioDeck.steps[1].description
                         },
                         {
-                            icon: Target,
+                            icon: ShieldCheck,
                             colorClass: "text-emerald-500",
                             bgClass: "bg-emerald-500/10",
-                            stepLabel: "3. Arrivo stimato",
-                            title: "Quando puoi arrivare",
-                            description: "Stimiamo quando arrivi all'obiettivo e aggiorniamo solo il breve periodo."
+                            stepLabel: FINANCIAL_LAB_COPY.scenarioDeck.steps[2].stepLabel,
+                            title: FINANCIAL_LAB_COPY.scenarioDeck.steps[2].title,
+                            description: FINANCIAL_LAB_COPY.scenarioDeck.steps[2].description
                         }
                     ]}
-                    certificationTitle="Motore deterministico locale"
-                    certificationSubtitle="Calcolo base stabile con aggiornamento live prudenziale nel breve periodo."
-                    transparencyNote="La base storica resta il riferimento: Brain e live aiutano solo sui prossimi mesi."
+                    certificationTitle={FINANCIAL_LAB_COPY.scenarioDeck.certificationTitle}
+                    certificationSubtitle={FINANCIAL_LAB_COPY.scenarioDeck.certificationSubtitle}
+                    transparencyNote={FINANCIAL_LAB_COPY.scenarioDeck.transparencyNote}
                     auditStats={calibration ? [
                         {
-                            label: "Profondità Audit",
-                            value: "Ultimi 6 Mesi",
-                            subValue: `Analisi di ${activeScenario?.config.label === "Nessun Ritmo" ? "tutte le" : "ogni"} transazione nel periodo.`
+                            label: FINANCIAL_LAB_COPY.scenarioDeck.audit.depthLabel,
+                            value: FINANCIAL_LAB_COPY.scenarioDeck.audit.depthValue,
+                            subValue: FINANCIAL_LAB_COPY.scenarioDeck.audit.depthSubValue
                         },
                         {
-                            label: "Stabilità Rilevata",
+                            label: FINANCIAL_LAB_COPY.scenarioDeck.audit.stabilityLabel,
                             value: `${(calibration.stabilityFactor * 100).toFixed(1)}%`,
-                            subValue: `Basato su una volatilità di ${formatCents(calibration.volatilityCents, currency, locale)}/mese.`
+                            subValue: FINANCIAL_LAB_COPY.scenarioDeck.audit.stabilitySubValue
                         },
                         {
-                            label: "Sostenibilità",
+                            label: FINANCIAL_LAB_COPY.scenarioDeck.audit.sustainabilityLabel,
                             value: sustainabilityLabel,
-                            subValue: activeScenario?.sustainability.reason || "Valutata su buffer prudenziale e tenuta del piano."
+                            subValue: activeScenario?.sustainability.reason || FINANCIAL_LAB_COPY.scenarioDeck.audit.sustainabilitySubValue
                         },
                         {
-                            label: "Overlay Realtime",
+                            label: FINANCIAL_LAB_COPY.scenarioDeck.audit.overlayLabel,
                             value: overlayValue,
-                            subValue: `Aggiornamento sul breve periodo. ${overlaySource}.`
-                        },
-                        {
-                            label: "Elasticità (Extra)",
-                            value: `${(calibration.elasticityIndex * 100).toFixed(1)}%`,
-                            subValue: "Quota di spese non essenziali riducibile senza stressare troppo il piano."
+                            subValue: `${FINANCIAL_LAB_COPY.scenarioDeck.audit.overlaySubValuePrefix} ${overlaySource}.`
                         }
                     ] : undefined}
                 />
-            </div>
-
-            {/* Contextual Warning if needed */}
-            <div className="mt-4 flex justify-end">
-                {activeKey === "custom" && (
-                    <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px] px-2 h-6 font-bold flex items-center gap-1.5 shadow-sm">
-                        <Sparkles className="h-3 w-3" />
-                        PERSONALIZZATO ATTIVO
-                    </Badge>
-                )}
             </div>
         </div>
     )

@@ -13,7 +13,6 @@ vi.mock("@/features/settings/api/use-currency", () => ({
 }))
 
 function createScenario(overrides: Partial<GoalScenarioResult> = {}): GoalScenarioResult {
-    const baseDate = new Date("2026-06-01T12:00:00.000Z")
     return {
         key: "baseline",
         config: {
@@ -23,22 +22,6 @@ function createScenario(overrides: Partial<GoalScenarioResult> = {}): GoalScenar
             applicationMap: {},
             savingsMap: { superfluous: 0, comfort: 0 }
         },
-        projection: {
-            minMonths: 3,
-            likelyMonths: 4,
-            maxMonths: 5,
-            minMonthsPrecise: 3.3,
-            likelyMonthsPrecise: 3.8,
-            maxMonthsPrecise: 5.2,
-            likelyMonthsComparable: 3.8,
-            minDate: baseDate,
-            likelyDate: baseDate,
-            maxDate: baseDate,
-            canReach: true,
-            realtimeOverlayApplied: false,
-            realtimeCapacityFactor: 1,
-            realtimeWindowMonths: 0
-        },
         sustainability: {
             isSustainable: true,
             status: "secure",
@@ -47,7 +30,15 @@ function createScenario(overrides: Partial<GoalScenarioResult> = {}): GoalScenar
             remainingBuffer: 30000
         },
         simulatedExpenses: 150000,
-        monthlyGoalCapacityCents: 14000,
+        quota: {
+            baseMonthlyMarginCents: 50000,
+            realtimeMonthlyMarginCents: 47000,
+            baseMonthlyCapacityCents: 14000,
+            realtimeMonthlyCapacityCents: 13200,
+            realtimeOverlayApplied: true,
+            realtimeCapacityFactor: 0.94,
+            realtimeWindowMonths: 3
+        },
         planBasis: "historical",
         ...overrides
     }
@@ -61,7 +52,6 @@ describe("MonitorPlanCard", () => {
                 scenario={scenario}
                 savingsPercent={10}
                 goalMonthlyCapacityCents={50000}
-                monthsToGoal={3.8}
                 hasInsufficientData={false}
             />
         )
@@ -73,7 +63,6 @@ describe("MonitorPlanCard", () => {
                 scenario={createScenario({ planBasis: "brain_overlay" })}
                 savingsPercent={10}
                 goalMonthlyCapacityCents={50000}
-                monthsToGoal={3.8}
                 hasInsufficientData={false}
             />
         )
@@ -81,25 +70,8 @@ describe("MonitorPlanCard", () => {
         expect(screen.getByText("Fonte Brain")).toBeInTheDocument()
     })
 
-    test("renders unreachable reason path in monitor narrative", () => {
+    test("renders critical sustainability message path", () => {
         const scenario = createScenario({
-            projection: {
-                minMonths: 0,
-                likelyMonths: 0,
-                maxMonths: 0,
-                minMonthsPrecise: 0,
-                likelyMonthsPrecise: 0,
-                maxMonthsPrecise: 0,
-                likelyMonthsComparable: 0,
-                minDate: new Date("2026-06-01T12:00:00.000Z"),
-                likelyDate: new Date("2026-06-01T12:00:00.000Z"),
-                maxDate: new Date("2026-06-01T12:00:00.000Z"),
-                canReach: false,
-                realtimeOverlayApplied: false,
-                realtimeCapacityFactor: 1,
-                realtimeWindowMonths: 0,
-                unreachableReason: "Capacita insufficiente"
-            },
             sustainability: {
                 isSustainable: false,
                 status: "unsafe",
@@ -114,11 +86,10 @@ describe("MonitorPlanCard", () => {
                 scenario={scenario}
                 savingsPercent={0}
                 goalMonthlyCapacityCents={0}
-                monthsToGoal={null}
                 hasInsufficientData={false}
             />
         )
 
-        expect(screen.getByText(/Capacita insufficiente/i)).toBeInTheDocument()
+        expect(screen.getByText(/Quota non sostenibile/i)).toBeInTheDocument()
     })
 })

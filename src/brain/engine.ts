@@ -106,6 +106,7 @@ function yieldMainThread(): Promise<void> {
 export interface EvolveBrainOptions {
     preferredPeriod?: string
     onProgress?: (progress: BrainTrainingProgress) => void
+    allowTraining?: boolean
 }
 
 export async function evolveBrainFromHistory(
@@ -113,6 +114,7 @@ export async function evolveBrainFromHistory(
     categories: BrainCategoryLike[],
     options: EvolveBrainOptions = {}
 ): Promise<BrainEvolutionResult> {
+    const allowTraining = options.allowTraining !== false
     const snapshot = getBrainSnapshot()
     const dataset = buildBrainDataset(transactions, categories, options.preferredPeriod)
     const combinedSampleCount = dataset.samples.length + dataset.nowcastSamples.length
@@ -151,6 +153,27 @@ export async function evolveBrainFromHistory(
     ) {
         return {
             reason: "insufficient-data",
+            snapshot,
+            datasetFingerprint: dataset.fingerprint,
+            didTrain: false,
+            epochsRun: 0,
+            sampleCount: combinedSampleCount,
+            monthsAnalyzed: dataset.months,
+            averageLoss: snapshot.lossEma,
+            prediction: predictionState.prediction,
+            inferencePeriod: predictionState.inferredPeriod,
+            currentIncomeCents: predictionState.currentIncomeCents,
+            currentExpensesCents: predictionState.currentExpensesCents,
+            predictedExpensesNextMonthCents: predictionState.predictedExpensesNextMonthCents,
+            predictedCurrentMonthRemainingExpensesCents: nowcastState.predictedCurrentMonthRemainingExpensesCents,
+            currentMonthNowcastConfidence: nowcastState.currentMonthNowcastConfidence,
+            currentMonthNowcastReady: nowcastState.currentMonthNowcastReady,
+        }
+    }
+
+    if (!allowTraining) {
+        return {
+            reason: "read-only-inference",
             snapshot,
             datasetFingerprint: dataset.fingerprint,
             didTrain: false,

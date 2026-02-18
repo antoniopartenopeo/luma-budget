@@ -30,6 +30,13 @@ import {
 import { useTransactions } from "@/features/transactions/api/use-transactions"
 import { useCategories } from "@/features/categories/api/use-categories"
 import { useCurrency } from "@/features/settings/api/use-currency"
+import {
+    adaptBrainAdaptivePolicy,
+    type BrainAdaptivePolicy,
+    loadBrainAdaptivePolicy,
+    saveBrainAdaptivePolicy,
+} from "@/features/insights/brain-auto-tune"
+import { resolveAdaptiveNowcastConfidenceThreshold } from "@/features/insights/brain-adaptive-thresholds"
 import { formatCents } from "@/domain/money"
 import { PageHeader } from "@/components/ui/page-header"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -104,6 +111,10 @@ function clampPercent(value: number): number {
     return Math.max(0, Math.min(100, Math.round(value)))
 }
 
+function formatRatioAsPercent(value: number): string {
+    return `${(value * 100).toFixed(1)}%`
+}
+
 function formatFeatureLabel(feature: string): string {
     const labels: Record<string, string> = {
         expense_income_ratio: "Rapporto spese/entrate",
@@ -111,11 +122,25 @@ function formatFeatureLabel(feature: string): string {
         comfort_share: "Quota spese di comfort",
         txn_density: "Frequenza transazioni",
         expense_momentum: "Tendenza recente delle spese",
+        income_momentum: "Tendenza recente delle entrate",
+        discretionary_pressure: "Pressione spese discrezionali",
+        expense_gap_ratio: "Divario tra spese ed entrate",
     }
 
     if (labels[feature]) return labels[feature]
     const fallback = feature.replace(/_/g, " ")
     return fallback.charAt(0).toUpperCase() + fallback.slice(1)
+}
+
+function isSameAdaptivePolicy(a: BrainAdaptivePolicy, b: BrainAdaptivePolicy): boolean {
+    return a.version === b.version
+        && a.minNowcastConfidence === b.minNowcastConfidence
+        && a.outlierMinConfidence === b.outlierMinConfidence
+        && a.primaryBlendThreshold === b.primaryBlendThreshold
+        && a.overshootDeltaCents === b.overshootDeltaCents
+        && a.rollingQuality === b.rollingQuality
+        && a.steps === b.steps
+        && a.updatedAt === b.updatedAt
 }
 
 function signatureOf(snapshot: NeuralBrainSnapshot | null): string {
@@ -224,6 +249,7 @@ export default function BrainPage() {
 
     const [snapshot, setSnapshot] = useState<NeuralBrainSnapshot | null>(null)
     const [evolution, setEvolution] = useState<BrainEvolutionResult | null>(null)
+    const [adaptivePolicy, setAdaptivePolicy] = useState(() => loadBrainAdaptivePolicy())
     const [timeline, setTimeline] = useState<TimelineEvent[]>([])
     const [evolutionHistory, setEvolutionHistory] = useState<EvolutionPoint[]>([])
     const [training, setTraining] = useState<TrainingState>({
@@ -240,6 +266,7 @@ export default function BrainPage() {
     const snapshotSignatureRef = useRef("boot")
     const trainingLockRef = useRef(false)
     const lastAutoSignatureRef = useRef("")
+    const lastAdaptivePolicySignatureRef = useRef("")
 
     const pushEvent = useCallback((title: string, detail: string, tone: EventTone = "neutral") => {
         const nextId = `event-${eventCounterRef.current}`
@@ -260,6 +287,10 @@ export default function BrainPage() {
         const hasChanged = nextSignature !== snapshotSignatureRef.current
 
         setSnapshot(next)
+        setAdaptivePolicy((prev) => {
+            const loaded = loadBrainAdaptivePolicy()
+            return isSameAdaptivePolicy(prev, loaded) ? prev : loaded
+        })
 
         if (!hasChanged && reason === "poll") return
 
@@ -361,6 +392,14 @@ export default function BrainPage() {
                 setSnapshot(result.snapshot)
                 snapshotSignatureRef.current = signatureOf(result.snapshot)
             }
+            if (lastAdaptivePolicySignatureRef.current !== inputSignature) {
+                lastAdaptivePolicySignatureRef.current = inputSignature
+                setAdaptivePolicy((currentPolicy) => {
+                    const nextPolicy = adaptBrainAdaptivePolicy(currentPolicy, result)
+                    saveBrainAdaptivePolicy(nextPolicy)
+                    return nextPolicy
+                })
+            }
 
             setTraining((prev) => ({
                 ...prev,
@@ -384,6 +423,7 @@ export default function BrainPage() {
         }
     }, [
         categories,
+        inputSignature,
         isDataLoading,
         isInitialized,
         pushEvent,
@@ -567,7 +607,7 @@ export default function BrainPage() {
     const predictedExpensesLabel = evolution?.prediction
         ? formatCents(evolution.predictedExpensesNextMonthCents, currency, locale)
         : "-"
-    const currentMonthRemainingLabel = evolution && evolution.currentMonthNowcastReady
+    const rawCurrentMonthRemainingLabel = evolution && evolution.currentMonthNowcastReady
         ? formatCents(evolution.predictedCurrentMonthRemainingExpensesCents, currency, locale)
         : "-"
     const currentMonthConfidencePercent = evolution
@@ -575,6 +615,36 @@ export default function BrainPage() {
         : 0
 
     const contributorsTop = evolution?.prediction?.contributors.slice(0, 3) ?? []
+    const nextMonthMaeLabel = evolution && evolution.nextMonthReliability.sampleCount > 0
+        ? formatRatioAsPercent(evolution.nextMonthReliability.mae)
+        : "-"
+    const nextMonthMapeLabel = evolution && evolution.nextMonthReliability.mapeSampleCount > 0
+        ? formatRatioAsPercent(evolution.nextMonthReliability.mape)
+        : "-"
+    const nextMonthReliabilitySamples = evolution?.nextMonthReliability.sampleCount ?? 0
+    const nowcastMaeLabel = evolution && evolution.nowcastReliability.sampleCount > 0
+        ? formatRatioAsPercent(evolution.nowcastReliability.mae)
+        : "-"
+    const nowcastMapeLabel = evolution && evolution.nowcastReliability.mapeSampleCount > 0
+        ? formatRatioAsPercent(evolution.nowcastReliability.mape)
+        : "-"
+    const nowcastReliabilitySamples = evolution?.nowcastReliability.sampleCount ?? 0
+    const adaptiveNowcastConfidenceThreshold = resolveAdaptiveNowcastConfidenceThreshold({
+        baseThreshold: adaptivePolicy.minNowcastConfidence,
+        maturityScore: Math.max(
+            0,
+            Math.min(1, (snapshot?.currentMonthHead?.trainedSamples ?? 0) / BRAIN_MATURITY_SAMPLE_TARGET)
+        ),
+        reliabilitySampleCount: evolution?.nowcastReliability.sampleCount ?? 0,
+        reliabilityMape: evolution?.nowcastReliability.mape ?? 0,
+        reliabilityMae: evolution?.nowcastReliability.mae ?? 0,
+    })
+    const adaptiveNowcastConfidencePercent = Math.round(adaptiveNowcastConfidenceThreshold * 100)
+    const advisorNowcastReady = Boolean(
+        evolution?.currentMonthNowcastReady
+        && currentMonthConfidencePercent >= adaptiveNowcastConfidencePercent
+    )
+    const currentMonthRemainingLabel = advisorNowcastReady ? rawCurrentMonthRemainingLabel : "-"
     const brainKpiCardClassName = "h-auto"
     const brainKpiValueClassName = "text-[clamp(1.65rem,2.1vw,2.5rem)] leading-none break-normal"
     const brainKpiMoneyValueClassName = "text-[clamp(1.6rem,2vw,2.35rem)] leading-none break-normal whitespace-nowrap"
@@ -602,6 +672,7 @@ export default function BrainPage() {
             lastCompletedAt: null,
         })
         lastAutoSignatureRef.current = ""
+        lastAdaptivePolicySignatureRef.current = ""
         snapshotSignatureRef.current = signatureOf(null)
         pushEvent("Core resettato", "Memoria locale del Core cancellata.", "warning")
     }, [pushEvent])
@@ -671,7 +742,7 @@ export default function BrainPage() {
                                         </div>
                                     )}
 
-                                    <div className="grid gap-3 sm:grid-cols-3">
+                                    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
                                         <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
                                             <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Versione Core</p>
                                             <p className="mt-1 text-sm font-bold">{snapshot?.version ?? "-"}</p>
@@ -683,6 +754,20 @@ export default function BrainPage() {
                                         <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
                                             <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Ultimo aggiornamento</p>
                                             <p className="mt-1 text-sm font-bold">{formatUpdatedAt(snapshot?.updatedAt ?? null)}</p>
+                                        </div>
+                                        <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
+                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Affidabilita prossimo mese</p>
+                                            <p className="mt-1 text-sm font-bold tabular-nums">MAE {nextMonthMaeLabel}</p>
+                                            <p className="mt-1 text-[10px] text-muted-foreground tabular-nums">
+                                                MAPE {nextMonthMapeLabel} · {nextMonthReliabilitySamples} campioni
+                                            </p>
+                                        </div>
+                                        <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
+                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Affidabilita residuo mese</p>
+                                            <p className="mt-1 text-sm font-bold tabular-nums">MAE {nowcastMaeLabel}</p>
+                                            <p className="mt-1 text-[10px] text-muted-foreground tabular-nums">
+                                                MAPE {nowcastMapeLabel} · {nowcastReliabilitySamples} campioni · soglia {adaptiveNowcastConfidencePercent}%
+                                            </p>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -803,10 +888,10 @@ export default function BrainPage() {
                                 title="Residuo mese corrente"
                                 value={currentMonthRemainingLabel}
                                 icon={CalendarClock}
-                                trend={evolution?.currentMonthNowcastReady ? "neutral" : "warning"}
-                                change={evolution?.currentMonthNowcastReady ? `${currentMonthConfidencePercent}%` : "Non pronta"}
-                                comparisonLabel={evolution?.currentMonthNowcastReady ? "Confidenza" : "Stato"}
-                                description="Stima residua fino a fine mese."
+                                trend={advisorNowcastReady ? "neutral" : "warning"}
+                                change={advisorNowcastReady ? `${currentMonthConfidencePercent}%` : evolution ? `Soglia ${adaptiveNowcastConfidencePercent}%` : "Non pronta"}
+                                comparisonLabel={advisorNowcastReady ? "Confidenza" : "Policy"}
+                                description="Stima residua validata con soglia adattiva."
                                 className={brainKpiCardClassName}
                                 valueClassName={brainKpiMoneyValueClassName}
                                 compact

@@ -12,6 +12,15 @@ import {
     type BrainEvolutionResult
 } from "@/brain"
 import { getCurrentPeriod, getDaysElapsedInMonth, getDaysInMonth, getPreviousMonths } from "@/lib/date-ranges"
+import {
+    adaptBrainAdaptivePolicy,
+    loadBrainAdaptivePolicy,
+    saveBrainAdaptivePolicy,
+} from "./brain-auto-tune"
+import {
+    resolveAdaptiveNowcastConfidenceThreshold,
+    resolveAdaptiveOutlierBlendConfidence,
+} from "./brain-adaptive-thresholds"
 import { filterTransactionsByMonth } from "./utils"
 import { detectActiveSubscriptions, type DetectedSubscription } from "./subscription-detection"
 
@@ -105,17 +114,13 @@ function createDefaultBrainSignal(): AIBrainSignal {
     }
 }
 
-const MIN_BRAIN_NOWCAST_CONFIDENCE = 0.72
-const MIN_OUTLIER_BLEND_CONFIDENCE = 0.88
 const HIGH_CONFIDENCE_BRAIN_OVERSHOOT_RATIO = 2.4
 const MID_CONFIDENCE_BRAIN_OVERSHOOT_RATIO = 2.1
 const LOW_CONFIDENCE_BRAIN_OVERSHOOT_RATIO = 1.8
-const MIN_BRAIN_OVERSHOOT_DELTA_CENTS = 30000
 const OUTLIER_DAMPING_STRENGTH = 1.25
 const HIGH_TRUST_SPIKE_CONFIDENCE = 0.9
 const HIGH_TRUST_SPIKE_MATURITY_SCORE = 0.8
 const HIGH_TRUST_SPIKE_MIN_BLEND_WEIGHT = 0.72
-const PRIMARY_BRAIN_BLEND_WEIGHT_THRESHOLD = 0.6
 
 function resolveAllowedBrainOvershootRatio(confidenceScore: number): number {
     if (confidenceScore >= 0.85) return HIGH_CONFIDENCE_BRAIN_OVERSHOOT_RATIO
@@ -128,12 +133,13 @@ function resolveOutlierBrainBlendWeight(params: {
     maturityScore: number
     overshootRatio: number
     allowedOvershootRatio: number
+    minConfidence: number
 }): number {
-    const { confidenceScore, maturityScore, overshootRatio, allowedOvershootRatio } = params
-    if (confidenceScore < MIN_OUTLIER_BLEND_CONFIDENCE) return 0
+    const { confidenceScore, maturityScore, overshootRatio, allowedOvershootRatio, minConfidence } = params
+    if (confidenceScore < minConfidence) return 0
 
     const confidenceFactor = clamp(
-        (confidenceScore - MIN_OUTLIER_BLEND_CONFIDENCE) / (1 - MIN_OUTLIER_BLEND_CONFIDENCE),
+        (confidenceScore - minConfidence) / (1 - minConfidence),
         0,
         1
     )
@@ -162,7 +168,9 @@ export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
 
     const [brainEvolution, setBrainEvolution] = useState<BrainEvolutionResult | null>(null)
     const [brainEvolutionSignature, setBrainEvolutionSignature] = useState("")
+    const [adaptivePolicy, setAdaptivePolicy] = useState(() => loadBrainAdaptivePolicy())
     const lastBrainSignatureRef = useRef("")
+    const lastAdaptiveTuneSignatureRef = useRef("")
 
     const brainInputSignature = useMemo(
         () => computeBrainInputSignature(transactions, categories, currentPeriod),
@@ -201,6 +209,14 @@ export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
                 if (!cancelled) {
                     setBrainEvolution(result)
                     setBrainEvolutionSignature(brainInputSignature)
+                    if (!isReadOnlyMode && lastAdaptiveTuneSignatureRef.current !== brainInputSignature) {
+                        lastAdaptiveTuneSignatureRef.current = brainInputSignature
+                        setAdaptivePolicy((currentPolicy) => {
+                            const nextPolicy = adaptBrainAdaptivePolicy(currentPolicy, result)
+                            saveBrainAdaptivePolicy(nextPolicy)
+                            return nextPolicy
+                        })
+                    }
                 }
             })
             .catch(() => {
@@ -271,6 +287,21 @@ export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
             0,
             1
         )
+        const nowcastReliabilitySampleCount = brainEvolution?.nowcastReliability?.sampleCount ?? 0
+        const nowcastReliabilityMape = brainEvolution?.nowcastReliability?.mape ?? 0
+        const nowcastReliabilityMae = brainEvolution?.nowcastReliability?.mae ?? 0
+        const adaptiveNowcastConfidenceThreshold = resolveAdaptiveNowcastConfidenceThreshold({
+            baseThreshold: adaptivePolicy.minNowcastConfidence,
+            maturityScore: brainMaturityScore,
+            reliabilitySampleCount: nowcastReliabilitySampleCount,
+            reliabilityMape: nowcastReliabilityMape,
+            reliabilityMae: nowcastReliabilityMae
+        })
+        const adaptiveOutlierBlendConfidence = resolveAdaptiveOutlierBlendConfidence({
+            adaptiveNowcastThreshold: adaptiveNowcastConfidenceThreshold,
+            reliabilitySampleCount: nowcastReliabilitySampleCount,
+            baseOutlierConfidence: adaptivePolicy.outlierMinConfidence
+        })
         const brainRemainingCurrentMonthExpensesCents = Math.max(
             0,
             brainEvolution?.predictedCurrentMonthRemainingExpensesCents ?? 0
@@ -281,7 +312,7 @@ export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
             : 1
         const allowedOvershootRatio = resolveAllowedBrainOvershootRatio(brainNowcastConfidenceScore)
         const allowedOvershootDeltaCents = Math.max(
-            MIN_BRAIN_OVERSHOOT_DELTA_CENTS,
+            adaptivePolicy.overshootDeltaCents,
             Math.round(overshootAnchorCents * 0.45)
         )
         const isBrainOutlier = brainNowcastReady
@@ -295,9 +326,10 @@ export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
                     confidenceScore: brainNowcastConfidenceScore,
                     maturityScore: brainMaturityScore,
                     overshootRatio,
-                    allowedOvershootRatio
+                    allowedOvershootRatio,
+                    minConfidence: adaptiveOutlierBlendConfidence
                 })
-                : brainNowcastConfidenceScore >= MIN_BRAIN_NOWCAST_CONFIDENCE
+                : brainNowcastConfidenceScore >= adaptiveNowcastConfidenceThreshold
                     ? 1
                     : 0
             : 0
@@ -310,7 +342,7 @@ export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
                 )
             )
             : fallbackRemainingCurrentMonthExpensesCents
-        const canUseBrainNowcast = brainBlendWeight >= PRIMARY_BRAIN_BLEND_WEIGHT_THRESHOLD
+        const canUseBrainNowcast = brainBlendWeight >= adaptivePolicy.primaryBlendThreshold
         const primarySource: AIForecast["primarySource"] = canUseBrainNowcast ? "brain" : "fallback"
         const predictedTotalEstimatedBalanceCents = baseBalanceCents - predictedRemainingCurrentMonthExpensesCents
         const fallbackRiskScore = currentMonthExpensesCents > 0
@@ -390,6 +422,7 @@ export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
         brainEvolution,
         brainEvolutionSignature,
         brainInputSignature,
+        adaptivePolicy,
         categories,
         currentPeriod,
         dashboardSummary?.netBalanceAllTimeCents,

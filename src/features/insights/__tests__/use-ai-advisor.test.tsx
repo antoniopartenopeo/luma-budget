@@ -127,6 +127,7 @@ describe("useAIAdvisor", () => {
         vi.clearAllMocks()
         vi.useFakeTimers()
         vi.setSystemTime(new Date("2026-02-15T10:00:00.000Z"))
+        window.localStorage.clear()
 
         useTransactionsMock.mockReturnValue({
             data: transactionsFixture,
@@ -278,18 +279,20 @@ describe("useAIAdvisor", () => {
                 },
                 snapshot: {
                     version: 2,
-                    featureSchemaVersion: 1,
-                    weights: [0, 0, 0, 0, 0],
+                    featureSchemaVersion: 2,
+                    weights: [0, 0, 0, 0, 0, 0, 0, 0],
                     bias: 0,
                     learningRate: 0.03,
                     trainedSamples: 160,
                     lossEma: 0.08,
+                    absErrorEma: 0.12,
                     currentMonthHead: {
-                        weights: [0, 0, 0, 0, 0],
+                        weights: [0, 0, 0, 0, 0, 0, 0, 0],
                         bias: 0,
                         learningRate: 0.03,
                         trainedSamples: 160,
                         lossEma: 0.08,
+                        absErrorEma: 0.12,
                     },
                     dataFingerprint: "brain-v2-test-high-maturity",
                     updatedAt: "2026-02-15T10:00:00.000Z"

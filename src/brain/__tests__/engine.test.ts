@@ -91,6 +91,10 @@ describe("evolveBrainFromHistory", () => {
         expect(result.predictedCurrentMonthRemainingExpensesCents).toBeGreaterThanOrEqual(0)
         expect(result.currentMonthNowcastConfidence).toBeGreaterThanOrEqual(0)
         expect(result.currentMonthNowcastReady).toBeTypeOf("boolean")
+        expect(result.nextMonthReliability.sampleCount).toBeGreaterThanOrEqual(0)
+        expect(result.nowcastReliability.sampleCount).toBeGreaterThanOrEqual(0)
+        expect(result.nextMonthReliability.mae).toBeGreaterThanOrEqual(0)
+        expect(result.nowcastReliability.mae).toBeGreaterThanOrEqual(0)
     })
 
     it("skips training when fingerprint is unchanged", async () => {
@@ -108,6 +112,8 @@ describe("evolveBrainFromHistory", () => {
         expect(result.reason).toBe("uninitialized")
         expect(result.snapshot).toBeNull()
         expect(result.currentMonthNowcastReady).toBe(false)
+        expect(result.nextMonthReliability.sampleCount).toBe(0)
+        expect(result.nowcastReliability.sampleCount).toBe(0)
     })
 
     it("can train with sparse but real data (single-month bootstrap)", async () => {

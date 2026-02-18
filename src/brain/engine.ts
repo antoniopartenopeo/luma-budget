@@ -10,7 +10,14 @@ import {
 import { getBrainSnapshot } from "./core"
 import { computeBrainInputSignature } from "./input-signature"
 import { saveBrainSnapshot } from "./storage"
-import { BrainEvolutionResult, BrainTrainingProgress, NeuralBrainSnapshot } from "./types"
+import {
+    BRAIN_FEATURE_NAMES,
+    BrainEvolutionResult,
+    BrainReliabilityMetrics,
+    BrainTrainingProgress,
+    NeuralBrainSnapshot,
+    NeuralTrainingSample
+} from "./types"
 
 const MIN_SAMPLES_FOR_TRAINING = 1
 const MIN_NOWCAST_SAMPLES_FOR_TRAINING = 1
@@ -31,6 +38,62 @@ function resolveEpochs(sampleCount: number): number {
     if (sampleCount <= 6) return 7
     if (sampleCount <= 12) return 5
     return 4
+}
+
+const EMPTY_RELIABILITY: BrainReliabilityMetrics = {
+    sampleCount: 0,
+    mae: 0,
+    mape: 0,
+    mapeSampleCount: 0,
+}
+
+function computeReliabilityMetrics(
+    samples: NeuralTrainingSample[],
+    predictRatio: (x: number[]) => number
+): BrainReliabilityMetrics {
+    if (samples.length === 0) return EMPTY_RELIABILITY
+
+    let totalAbsoluteError = 0
+    let totalPercentageError = 0
+    let mapeSampleCount = 0
+
+    for (const sample of samples) {
+        const target = clamp(sample.y, 0, 2)
+        const predicted = clamp(predictRatio(sample.x), 0, 2)
+        const absError = Math.abs(predicted - target)
+        totalAbsoluteError += absError
+
+        if (target > 0.0001) {
+            totalPercentageError += absError / target
+            mapeSampleCount += 1
+        }
+    }
+
+    return {
+        sampleCount: samples.length,
+        mae: totalAbsoluteError / samples.length,
+        mape: mapeSampleCount > 0 ? totalPercentageError / mapeSampleCount : 0,
+        mapeSampleCount,
+    }
+}
+
+function resolveReliabilityState(
+    snapshot: NeuralBrainSnapshot,
+    dataset: ReturnType<typeof buildBrainDataset>
+): {
+    nextMonth: BrainReliabilityMetrics
+    nowcast: BrainReliabilityMetrics
+} {
+    return {
+        nextMonth: computeReliabilityMetrics(
+            dataset.samples,
+            (x) => predictWithBrain(snapshot, x, BRAIN_FEATURE_NAMES).predictedExpenseRatio
+        ),
+        nowcast: computeReliabilityMetrics(
+            dataset.nowcastSamples,
+            (x) => predictCurrentMonthWithBrain(snapshot, x, BRAIN_FEATURE_NAMES).predictedExpenseRatio
+        ),
+    }
 }
 
 function resolvePredictionResult(snapshot: NeuralBrainSnapshot, inferenceInput: ReturnType<typeof buildBrainDataset>["inferenceInput"]) {
@@ -152,6 +215,8 @@ async function evolveBrainFromHistoryInternal(
             predictedCurrentMonthRemainingExpensesCents: 0,
             currentMonthNowcastConfidence: 0,
             currentMonthNowcastReady: false,
+            nextMonthReliability: EMPTY_RELIABILITY,
+            nowcastReliability: EMPTY_RELIABILITY,
         }
     }
 
@@ -161,6 +226,7 @@ async function evolveBrainFromHistoryInternal(
         dataset.currentMonthInferenceInput,
         dataset.months
     )
+    const reliabilityState = resolveReliabilityState(snapshot, dataset)
 
     if (
         dataset.samples.length < MIN_SAMPLES_FOR_TRAINING
@@ -183,6 +249,8 @@ async function evolveBrainFromHistoryInternal(
             predictedCurrentMonthRemainingExpensesCents: nowcastState.predictedCurrentMonthRemainingExpensesCents,
             currentMonthNowcastConfidence: nowcastState.currentMonthNowcastConfidence,
             currentMonthNowcastReady: nowcastState.currentMonthNowcastReady,
+            nextMonthReliability: reliabilityState.nextMonth,
+            nowcastReliability: reliabilityState.nowcast,
         }
     }
 
@@ -204,6 +272,8 @@ async function evolveBrainFromHistoryInternal(
             predictedCurrentMonthRemainingExpensesCents: nowcastState.predictedCurrentMonthRemainingExpensesCents,
             currentMonthNowcastConfidence: nowcastState.currentMonthNowcastConfidence,
             currentMonthNowcastReady: nowcastState.currentMonthNowcastReady,
+            nextMonthReliability: reliabilityState.nextMonth,
+            nowcastReliability: reliabilityState.nowcast,
         }
     }
 
@@ -228,6 +298,8 @@ async function evolveBrainFromHistoryInternal(
             predictedCurrentMonthRemainingExpensesCents: nowcastState.predictedCurrentMonthRemainingExpensesCents,
             currentMonthNowcastConfidence: nowcastState.currentMonthNowcastConfidence,
             currentMonthNowcastReady: nowcastState.currentMonthNowcastReady,
+            nextMonthReliability: reliabilityState.nextMonth,
+            nowcastReliability: reliabilityState.nowcast,
         }
     }
 
@@ -240,10 +312,12 @@ async function evolveBrainFromHistoryInternal(
     if (dataset.samples.length >= MIN_SAMPLES_FOR_TRAINING) {
         const epochs = resolveEpochs(dataset.samples.length)
         let cumulativeLoss = 0
+        let cumulativeAbsError = 0
         for (let epoch = 1; epoch <= epochs; epoch++) {
-            const { snapshot: nextSnapshot, averageLoss } = trainBrainEpoch(working, dataset.samples)
+            const { snapshot: nextSnapshot, averageLoss, averageAbsError } = trainBrainEpoch(working, dataset.samples)
             working = nextSnapshot
             cumulativeLoss += averageLoss
+            cumulativeAbsError += averageAbsError
 
             options.onProgress?.({
                 epoch,
@@ -256,10 +330,12 @@ async function evolveBrainFromHistoryInternal(
         }
 
         const averageLoss = clamp(cumulativeLoss / epochs, 0, 10)
+        const averageAbsError = clamp(cumulativeAbsError / epochs, 0, 2)
         working = finalizeTrainingSnapshot(
             working,
             dataset.samples.length,
             averageLoss,
+            averageAbsError,
             dataset.fingerprint
         )
         epochsRun += epochs
@@ -271,10 +347,12 @@ async function evolveBrainFromHistoryInternal(
     if (dataset.nowcastSamples.length >= MIN_NOWCAST_SAMPLES_FOR_TRAINING) {
         const epochs = resolveEpochs(dataset.nowcastSamples.length)
         let cumulativeLoss = 0
+        let cumulativeAbsError = 0
         for (let epoch = 1; epoch <= epochs; epoch++) {
-            const { snapshot: nextSnapshot, averageLoss } = trainCurrentMonthHeadEpoch(working, dataset.nowcastSamples)
+            const { snapshot: nextSnapshot, averageLoss, averageAbsError } = trainCurrentMonthHeadEpoch(working, dataset.nowcastSamples)
             working = nextSnapshot
             cumulativeLoss += averageLoss
+            cumulativeAbsError += averageAbsError
 
             options.onProgress?.({
                 epoch,
@@ -287,10 +365,12 @@ async function evolveBrainFromHistoryInternal(
         }
 
         const averageLoss = clamp(cumulativeLoss / epochs, 0, 10)
+        const averageAbsError = clamp(cumulativeAbsError / epochs, 0, 2)
         working = finalizeCurrentMonthTrainingSnapshot(
             working,
             dataset.nowcastSamples.length,
             averageLoss,
+            averageAbsError,
             dataset.fingerprint
         )
         epochsRun += epochs
@@ -317,6 +397,8 @@ async function evolveBrainFromHistoryInternal(
             predictedCurrentMonthRemainingExpensesCents: nowcastState.predictedCurrentMonthRemainingExpensesCents,
             currentMonthNowcastConfidence: nowcastState.currentMonthNowcastConfidence,
             currentMonthNowcastReady: nowcastState.currentMonthNowcastReady,
+            nextMonthReliability: reliabilityState.nextMonth,
+            nowcastReliability: reliabilityState.nowcast,
         }
     }
 
@@ -329,6 +411,7 @@ async function evolveBrainFromHistoryInternal(
         dataset.currentMonthInferenceInput,
         dataset.months
     )
+    const reliabilityAfterTraining = resolveReliabilityState(working, dataset)
 
     return {
         reason: "trained",
@@ -347,6 +430,8 @@ async function evolveBrainFromHistoryInternal(
         predictedCurrentMonthRemainingExpensesCents: nowcastAfterTraining.predictedCurrentMonthRemainingExpensesCents,
         currentMonthNowcastConfidence: nowcastAfterTraining.currentMonthNowcastConfidence,
         currentMonthNowcastReady: nowcastAfterTraining.currentMonthNowcastReady,
+        nextMonthReliability: reliabilityAfterTraining.nextMonth,
+        nowcastReliability: reliabilityAfterTraining.nowcast,
     }
 }
 

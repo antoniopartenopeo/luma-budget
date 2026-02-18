@@ -44,6 +44,7 @@ export function createEmptyBrainHead(learningRate: number = 0.035): NeuralHeadSn
         learningRate: clamp(learningRate, 0.008, 0.05),
         trainedSamples: 0,
         lossEma: 0,
+        absErrorEma: 0,
     }
 }
 
@@ -63,6 +64,7 @@ function normalizeHead(raw: unknown, fallbackLearningRate: number = 0.035): Neur
         learningRate: clamp(toFiniteNumber(candidate.learningRate, fallbackLearningRate), 0.008, 0.05),
         trainedSamples: Math.max(0, Math.round(toFiniteNumber(candidate.trainedSamples, 0))),
         lossEma: Math.max(0, toFiniteNumber(candidate.lossEma, 0)),
+        absErrorEma: Math.max(0, toFiniteNumber(candidate.absErrorEma, 0)),
     }
 }
 
@@ -77,6 +79,7 @@ function extractNextMonthHead(snapshot: NeuralBrainSnapshot): NeuralHeadSnapshot
         learningRate: clamp(snapshot.learningRate, 0.008, 0.05),
         trainedSamples: Math.max(0, Math.round(snapshot.trainedSamples)),
         lossEma: Math.max(0, snapshot.lossEma),
+        absErrorEma: Math.max(0, snapshot.absErrorEma),
     }
 }
 
@@ -88,6 +91,7 @@ function withNextMonthHead(snapshot: NeuralBrainSnapshot, head: NeuralHeadSnapsh
         learningRate: head.learningRate,
         trainedSamples: head.trainedSamples,
         lossEma: head.lossEma,
+        absErrorEma: head.absErrorEma,
     }
 }
 
@@ -126,6 +130,7 @@ export function createNewBrainSnapshot(nowIso: string = new Date().toISOString()
         learningRate: nextMonthHead.learningRate,
         trainedSamples: nextMonthHead.trainedSamples,
         lossEma: nextMonthHead.lossEma,
+        absErrorEma: nextMonthHead.absErrorEma,
         currentMonthHead: createEmptyBrainHead(),
         dataFingerprint: "",
         updatedAt: nowIso,
@@ -157,6 +162,7 @@ export function migrateBrainSnapshot(
         learningRate: nextMonthHead.learningRate,
         trainedSamples: nextMonthHead.trainedSamples,
         lossEma: nextMonthHead.lossEma,
+        absErrorEma: nextMonthHead.absErrorEma,
         currentMonthHead,
         dataFingerprint: typeof candidate.dataFingerprint === "string" ? candidate.dataFingerprint : "",
         updatedAt: typeof candidate.updatedAt === "string" ? candidate.updatedAt : nowIso,
@@ -184,9 +190,10 @@ function trainHeadEpoch(
 ): {
     head: NeuralHeadSnapshot
     averageLoss: number
+    averageAbsError: number
 } {
     if (samples.length === 0) {
-        return { head, averageLoss: head.lossEma }
+        return { head, averageLoss: head.lossEma, averageAbsError: head.absErrorEma }
     }
 
     const next: NeuralHeadSnapshot = {
@@ -195,12 +202,14 @@ function trainHeadEpoch(
     }
 
     let totalLoss = 0
+    let totalAbsError = 0
     for (const sample of samples) {
         const target = clamp(sample.y, 0, 2)
         const { normalizedX, s, predictedExpenseRatio } = forwardHead(next, sample.x)
         const error = predictedExpenseRatio - target
         const loss = error * error
         totalLoss += loss
+        totalAbsError += Math.abs(error)
 
         // dLoss/dz with predictedExpenseRatio = 2 * sigmoid(z)
         const dLossDz = 2 * error * (2 * s * (1 - s))
@@ -214,23 +223,29 @@ function trainHeadEpoch(
     return {
         head: next,
         averageLoss: totalLoss / samples.length,
+        averageAbsError: totalAbsError / samples.length,
     }
 }
 
 function finalizeHeadSnapshot(
     head: NeuralHeadSnapshot,
     sampleCount: number,
-    averageLoss: number
+    averageLoss: number,
+    averageAbsError: number
 ): NeuralHeadSnapshot {
     const alpha = 0.22
     const nextLossEma = head.lossEma === 0
         ? averageLoss
         : (1 - alpha) * head.lossEma + alpha * averageLoss
+    const nextAbsErrorEma = head.absErrorEma === 0
+        ? averageAbsError
+        : (1 - alpha) * head.absErrorEma + alpha * averageAbsError
 
     return {
         ...head,
         trainedSamples: head.trainedSamples + sampleCount,
         lossEma: nextLossEma,
+        absErrorEma: nextAbsErrorEma,
         learningRate: clamp(head.learningRate * 0.997, 0.008, 0.05),
     }
 }
@@ -238,7 +253,8 @@ function finalizeHeadSnapshot(
 function computeConfidence(head: NeuralHeadSnapshot): number {
     const sampleFactor = clamp(head.trainedSamples / 72, 0, 1)
     const lossFactor = 1 - clamp(head.lossEma / 0.22, 0, 1)
-    return clamp(0.12 + sampleFactor * 0.7 + lossFactor * 0.18, 0.08, 0.99)
+    const errorFactor = 1 - clamp(head.absErrorEma / 0.45, 0, 1)
+    return clamp(0.1 + sampleFactor * 0.62 + lossFactor * 0.16 + errorFactor * 0.12, 0.08, 0.99)
 }
 
 function predictWithHead(
@@ -275,11 +291,13 @@ export function trainBrainEpoch(
 ): {
     snapshot: NeuralBrainSnapshot
     averageLoss: number
+    averageAbsError: number
 } {
-    const { head, averageLoss } = trainHeadEpoch(extractNextMonthHead(snapshot), samples)
+    const { head, averageLoss, averageAbsError } = trainHeadEpoch(extractNextMonthHead(snapshot), samples)
     return {
         snapshot: withNextMonthHead(snapshot, head),
         averageLoss,
+        averageAbsError,
     }
 }
 
@@ -289,11 +307,13 @@ export function trainCurrentMonthHeadEpoch(
 ): {
     snapshot: NeuralBrainSnapshot
     averageLoss: number
+    averageAbsError: number
 } {
-    const { head, averageLoss } = trainHeadEpoch(resolveCurrentMonthHead(snapshot), samples)
+    const { head, averageLoss, averageAbsError } = trainHeadEpoch(resolveCurrentMonthHead(snapshot), samples)
     return {
         snapshot: withCurrentMonthHead(snapshot, head),
         averageLoss,
+        averageAbsError,
     }
 }
 
@@ -301,10 +321,11 @@ export function finalizeTrainingSnapshot(
     snapshot: NeuralBrainSnapshot,
     sampleCount: number,
     averageLoss: number,
+    averageAbsError: number,
     fingerprint: string,
     nowIso: string = new Date().toISOString()
 ): NeuralBrainSnapshot {
-    const nextHead = finalizeHeadSnapshot(extractNextMonthHead(snapshot), sampleCount, averageLoss)
+    const nextHead = finalizeHeadSnapshot(extractNextMonthHead(snapshot), sampleCount, averageLoss, averageAbsError)
     return {
         ...withNextMonthHead(snapshot, nextHead),
         dataFingerprint: fingerprint,
@@ -316,10 +337,11 @@ export function finalizeCurrentMonthTrainingSnapshot(
     snapshot: NeuralBrainSnapshot,
     sampleCount: number,
     averageLoss: number,
+    averageAbsError: number,
     fingerprint: string,
     nowIso: string = new Date().toISOString()
 ): NeuralBrainSnapshot {
-    const currentHead = finalizeHeadSnapshot(resolveCurrentMonthHead(snapshot), sampleCount, averageLoss)
+    const currentHead = finalizeHeadSnapshot(resolveCurrentMonthHead(snapshot), sampleCount, averageLoss, averageAbsError)
     return {
         ...withCurrentMonthHead(snapshot, currentHead),
         dataFingerprint: fingerprint,

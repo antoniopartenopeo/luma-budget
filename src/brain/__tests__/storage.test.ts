@@ -27,11 +27,13 @@ describe("brain storage migration", () => {
 
         expect(migrated).not.toBeNull()
         expect(migrated?.version).toBe(2)
-        expect(migrated?.weights).toEqual(legacySnapshot.weights)
+        expect(migrated?.weights).toEqual([...legacySnapshot.weights, 0, 0, 0])
         expect(migrated?.trainedSamples).toBe(legacySnapshot.trainedSamples)
+        expect(migrated?.absErrorEma).toBe(0)
         expect(migrated?.currentMonthHead).toBeDefined()
         expect(migrated?.currentMonthHead.trainedSamples).toBe(0)
-        expect(migrated?.currentMonthHead.weights).toEqual([0, 0, 0, 0, 0])
+        expect(migrated?.currentMonthHead.weights).toEqual([0, 0, 0, 0, 0, 0, 0, 0])
+        expect(migrated?.currentMonthHead.absErrorEma).toBe(0)
 
         const persisted = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || "{}")
         expect(persisted.currentMonthHead).toBeDefined()

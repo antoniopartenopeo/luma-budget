@@ -206,6 +206,7 @@ function aggregateMonthlySignals(
 
 function buildFeatureValues(current: MonthlySignal, previous: MonthlySignal): number[] {
     const incomeSafe = Math.max(current.incomeCents, 1)
+    const prevIncomeSafe = Math.max(previous.incomeCents, 1)
     const prevExpensesSafe = Math.max(previous.expensesCents, 1)
 
     const expenseIncomeRatio = clamp((current.expensesCents / incomeSafe) / 2, 0, 1)
@@ -217,6 +218,9 @@ function buildFeatureValues(current: MonthlySignal, previous: MonthlySignal): nu
         : 0
     const txDensity = clamp(current.transactionCount / 120, 0, 1)
     const expenseMomentum = normalizeSigned((current.expensesCents - previous.expensesCents) / prevExpensesSafe)
+    const incomeMomentum = normalizeSigned((current.incomeCents - previous.incomeCents) / prevIncomeSafe)
+    const discretionaryPressure = clamp((current.superfluousCents + current.comfortCents) / incomeSafe, 0, 1)
+    const expenseGapRatio = normalizeSigned((current.expensesCents - current.incomeCents) / incomeSafe)
 
     return [
         expenseIncomeRatio,
@@ -224,6 +228,9 @@ function buildFeatureValues(current: MonthlySignal, previous: MonthlySignal): nu
         comfortShare,
         txDensity,
         expenseMomentum,
+        incomeMomentum,
+        discretionaryPressure,
+        expenseGapRatio,
     ]
 }
 

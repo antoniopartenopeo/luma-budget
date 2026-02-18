@@ -1,6 +1,6 @@
 export const NEURAL_BRAIN_VERSION = 2 as const
-export const FEATURE_SCHEMA_VERSION = 1 as const
-export const NEURAL_BRAIN_VECTOR_SIZE = 5 as const
+export const FEATURE_SCHEMA_VERSION = 2 as const
+export const NEURAL_BRAIN_VECTOR_SIZE = 8 as const
 export const BRAIN_MATURITY_SAMPLE_TARGET = 120 as const
 
 export const BRAIN_FEATURE_NAMES = [
@@ -9,6 +9,9 @@ export const BRAIN_FEATURE_NAMES = [
     "comfort_share",
     "txn_density",
     "expense_momentum",
+    "income_momentum",
+    "discretionary_pressure",
+    "expense_gap_ratio",
 ] as const
 
 export type BrainFeatureName = (typeof BRAIN_FEATURE_NAMES)[number]
@@ -19,6 +22,7 @@ export interface NeuralHeadSnapshot {
     learningRate: number
     trainedSamples: number
     lossEma: number
+    absErrorEma: number
 }
 
 export interface NeuralBrainSnapshot {
@@ -29,6 +33,7 @@ export interface NeuralBrainSnapshot {
     learningRate: number
     trainedSamples: number
     lossEma: number
+    absErrorEma: number
     currentMonthHead: NeuralHeadSnapshot
     dataFingerprint: string
     updatedAt: string
@@ -87,6 +92,13 @@ export interface BrainTrainingProgress {
     sampleCount: number
 }
 
+export interface BrainReliabilityMetrics {
+    sampleCount: number
+    mae: number
+    mape: number
+    mapeSampleCount: number
+}
+
 export interface BrainEvolutionResult {
     reason: BrainEvolutionReason
     snapshot: NeuralBrainSnapshot | null
@@ -104,4 +116,6 @@ export interface BrainEvolutionResult {
     predictedCurrentMonthRemainingExpensesCents: number
     currentMonthNowcastConfidence: number
     currentMonthNowcastReady: boolean
+    nextMonthReliability: BrainReliabilityMetrics
+    nowcastReliability: BrainReliabilityMetrics
 }

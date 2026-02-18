@@ -19,8 +19,8 @@ Tutti i componenti devono aderire rigorosamente a queste definizioni matematiche
 | :--- | :--- | :--- |
 | **Saldo Totale Stimato (Advisor)** | `baseBalanceCents - predictedRemainingCurrentMonthExpensesCents` | Metrica primaria della card Advisor. |
 | **Spesa Residua Stimata** | `predictedRemainingCurrentMonthExpensesCents >= 0` | Mai negativa; può provenire da Brain o fallback storico. |
-| **Fonte Brain** | `currentMonthNowcastReady === true` | Etichetta consentita solo con nowcast realmente pronto. |
-| **Fonte Storico** | fallback attivo | Usare quando il Brain non è pronto o non aggiornato sul dataset corrente. |
+| **Fonte Core** | `currentMonthNowcastReady === true` | Etichetta consentita solo con nowcast realmente pronto (source interna: `brain`). |
+| **Fonte Storico** | fallback attivo | Usare quando il Core non è pronto o non aggiornato sul dataset corrente. |
 | **Risparmio (Savings)** | `(Income - Expenses) > 0` | Valido solo se strettamente positivo. Se negativo, è "Deficit" o "Perdita". |
 | **Savings Rate** | `(Income - Expenses) / Income` | Calcolabile solo se `Income > 0`. Se `Income = 0`, il tasso è indefinito. |
 | **Deficit** | `(Income - Expenses) < 0` | Saldo negativo in valore assoluto. |
@@ -79,9 +79,9 @@ Prima di approvare una PR su Insights, verificare:
 3.  [ ] "Surplus" è usato solo per cifre significative?
 4.  [ ] Nessun calcolo matematico dentro le stringhe di template?
 5.  [ ] La formula Advisor usa `Saldo Totale Stimato = baseBalance - spesa residua stimata`?
-6.  [ ] La fonte mostrata (`Brain`/`Storico`) è coerente con il readiness reale?
+6.  [ ] La fonte mostrata (`Core`/`Storico`) è coerente con il readiness reale?
 7.  [ ] **Eseguire `npm test src/domain/narration/__tests__/semantic-enforcement.test.ts` e verificare che passi.**
 ---
 
-**Versione**: 1.3.0  
-**Ultimo aggiornamento**: 2026-02-11
+**Versione**: 1.4.0  
+**Ultimo aggiornamento**: 2026-02-18

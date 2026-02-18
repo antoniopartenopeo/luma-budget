@@ -26,6 +26,7 @@ Single entrypoint for all Markdown documentation.
 | UX governance | `/docs/governance/UX_STANDARDS.md` | AI/UX interaction changes | Trust patterns (real-processing states, feedback loops) |
 | Semantic ADR | `/docs/governance/adr/ADR-005-Semantic-Shift-Rhythm.md` | Copy/narration changes | Budget -> Rhythm language contract |
 | Audit process | `/docs/audit/README.md` | Pre-merge/release checks | Governance quick-check workflow |
+| Release + in-app updates feed | `/CHANGELOG.md` | Every release note change | Canonical source for `/updates` and TopBar notifications |
 | Governance operations | Global skill `$numa-governance-update` | Updating rules/skills/docs policy | Keep docs and agent memory aligned |
 
 ## 4) Documentation hygiene policy

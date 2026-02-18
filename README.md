@@ -14,7 +14,7 @@ Local-first persistence, deterministic narration, and rhythm-based planning.
 | Financial Lab (`/simulator`) | Stable | Portfolio obiettivi, scenari baseline/balanced/aggressive/custom, attivazione ritmo |
 | Neural Core (`/brain`) | Active | Training locale del modello, nowcast mese corrente, timeline maturità |
 | Settings | Stable | Preferenze, categorie, backup/restore, diagnostica tecnica |
-| Notifications + Updates | Stable | Feed aggiornamenti in-app, badge unread, pagina `/updates` |
+| Notifications + Updates | Stable | Feed aggiornamenti in-app da `CHANGELOG.md`, badge unread, pagina `/updates` |
 | Privacy + Flash | Stable | Privacy mode globale e overlay snapshot rapido |
 
 ## Architecture
@@ -43,6 +43,7 @@ src/
 - Repository layer -> `localStorage` persistence
 - React Query -> cache + invalidation
 - Cross-tab sync -> `storage` listeners on registered keys
+- `CHANGELOG.md` -> `/api/notifications/changelog` -> feed notifiche in TopBar e `/updates`
 - Narration layer -> deterministic copy from domain facts/state
 
 ### Persistence keys
@@ -53,8 +54,10 @@ src/
 - `luma_settings_v1`
 - `numa_goal_portfolio_v1`
 - `numa_active_goal_v1` (legacy)
+- `numa_finlab_hard_switch_v1_done`
 - `numa_notifications_state_v2`
 - `numa-privacy-storage`
+- `numa_brain_adaptive_policy_v1`
 
 Neural core storage is managed separately in `src/brain/storage.ts`:
 - `numa_neural_core_v1`

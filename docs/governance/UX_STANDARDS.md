@@ -1,8 +1,8 @@
 # Numa UX Standards & Patterns
 
 > **Stato:** Active
-> **Versione:** 1.2
-> **Ultimo aggiornamento:** 2026-02-11
+> **Versione:** 1.3
+> **Ultimo aggiornamento:** 2026-02-18
 
 Linee guida UX ad alto livello per mantenere fiducia, chiarezza e coerenza cross-feature.
 
@@ -20,8 +20,8 @@ Per Advisor/Insights e per ogni operazione dichiarata come "analisi", lo stato d
 
 ### B. Forecast Source Transparency
 Quando viene mostrata una previsione in Insights/Advisor, la UI deve dichiarare la fonte:
-- `Fonte Brain` solo se il nowcast è realmente pronto.
-- `Fonte Storico` quando il Brain non è pronto o non è aggiornato.
+- `Fonte Core` solo se il nowcast è realmente pronto (internal source: `brain`).
+- `Fonte Storico` quando il Core non è pronto o non è aggiornato.
 
 ### C. Contradiction Suppression
 Se nel periodo corrente è presente un segnale `high/critical`, i messaggi rassicuranti a bassa severità nello stesso orizzonte vanno soppressi.

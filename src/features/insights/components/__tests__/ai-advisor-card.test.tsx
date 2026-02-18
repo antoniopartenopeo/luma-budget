@@ -46,7 +46,7 @@ describe("AIAdvisorCard", () => {
         render(<AIAdvisorCard />)
 
         expect(screen.getByText("Saldo totale stimato")).toBeInTheDocument()
-        expect(screen.getByText("Fonte Brain")).toBeInTheDocument()
+        expect(screen.getByText("Fonte Core")).toBeInTheDocument()
         expect(screen.getByText("Saldo base totale meno spesa residua stimata del mese.")).toBeInTheDocument()
         expect(
             screen.getByText((text) => text.includes("3.750") || text.includes("3750"))

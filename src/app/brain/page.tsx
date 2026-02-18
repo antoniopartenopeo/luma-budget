@@ -5,8 +5,6 @@ import {
     Activity,
     BrainCircuit,
     CalendarClock,
-    Cpu,
-    Database,
     Gauge,
     RotateCcw,
     ShieldCheck,
@@ -41,6 +39,7 @@ import { formatCents } from "@/domain/money"
 import { PageHeader } from "@/components/ui/page-header"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { MacroSection, macroItemVariants } from "@/components/patterns/macro-section"
 import { KpiCard } from "@/components/patterns/kpi-card"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
@@ -160,7 +159,7 @@ function resolveStage(snapshot: NeuralBrainSnapshot | null): StageState {
         return {
             id: "dormant",
             label: "Spento",
-            summary: "Il Core e spento: avvialo per iniziare a imparare.",
+            summary: "Il Core è spento: avvialo per iniziare a imparare.",
             badgeVariant: "outline",
         }
     }
@@ -170,7 +169,7 @@ function resolveStage(snapshot: NeuralBrainSnapshot | null): StageState {
         return {
             id: "newborn",
             label: "Nuovo",
-            summary: "Il Core e nato, ma non ha ancora imparato dai tuoi dati.",
+            summary: "Il Core è nato, ma non ha ancora imparato dai tuoi dati.",
             badgeVariant: "secondary",
         }
     }
@@ -203,7 +202,7 @@ function formatEvolutionReason(result: BrainEvolutionResult): { title: string; d
     if (result.reason === "trained") {
         return {
             title: "Apprendimento completato",
-            detail: `Il Core ha concluso ${result.epochsRun} cicli su ${result.sampleCount} campioni (stabilita ${result.averageLoss.toFixed(4)}).`,
+            detail: `Il Core ha concluso ${result.epochsRun} cicli su ${result.sampleCount} campioni (stabilità ${result.averageLoss.toFixed(4)}).`,
             tone: "positive",
         }
     }
@@ -219,14 +218,14 @@ function formatEvolutionReason(result: BrainEvolutionResult): { title: string; d
     if (result.reason === "insufficient-data") {
         return {
             title: "Dati insufficienti",
-            detail: `Per imparare servono piu dati: mesi validi ${result.monthsAnalyzed}, campioni ${result.sampleCount}.`,
+            detail: `Per imparare servono più dati: mesi validi ${result.monthsAnalyzed}, campioni ${result.sampleCount}.`,
             tone: "warning",
         }
     }
 
     return {
         title: "Core non avviato",
-        detail: "Inizializza il Core per attivare analisi e previsioni.",
+        detail: "Avvia il Core per attivare analisi e previsioni.",
         tone: "warning",
     }
 }
@@ -302,7 +301,7 @@ export default function BrainPage() {
         }
 
         if (reason === "storage") {
-            pushEvent("Aggiornamento rilevato", "Lo stato del Core e cambiato in un'altra scheda.", "warning")
+            pushEvent("Aggiornamento rilevato", "Lo stato del Core è cambiato in un'altra scheda.", "warning")
             return
         }
 
@@ -340,7 +339,7 @@ export default function BrainPage() {
     const runEvolution = useCallback(async () => {
         if (trainingLockRef.current) return
         if (!isInitialized) {
-            pushEvent("Core non attivo", "Inizializza il Core prima di avviare l'analisi.", "warning")
+            pushEvent("Core non attivo", "Avvia il Core prima di eseguire l'analisi.", "warning")
             return
         }
         if (isDataLoading) {
@@ -381,7 +380,7 @@ export default function BrainPage() {
 
                     pushEvent(
                         `Ciclo ${progress.epoch}/${progress.totalEpochs}`,
-                        `Campioni ${progress.sampleCount} · stabilita ${progress.averageLoss.toFixed(4)}`,
+                        `Campioni ${progress.sampleCount} · stabilità ${progress.averageLoss.toFixed(4)}`,
                         "neutral"
                     )
                 },
@@ -528,7 +527,7 @@ export default function BrainPage() {
                     fontSize: 11,
                     fontWeight: 700,
                 },
-                data: ["Prontezza", "Esperienza", "Stabilita"],
+                data: ["Prontezza", "Esperienza", "Stabilità"],
             },
             grid: {
                 left: "4%",
@@ -577,7 +576,7 @@ export default function BrainPage() {
                     data: evolutionChartSeries.experience,
                 },
                 {
-                    name: "Stabilita",
+                    name: "Stabilità",
                     type: "line",
                     smooth: 0.35,
                     showSymbol: false,
@@ -725,9 +724,9 @@ export default function BrainPage() {
                                             <p className="mt-1 text-[10px] text-muted-foreground">{snapshot?.trainedSamples ?? 0}/{BRAIN_MATURITY_SAMPLE_TARGET} campioni appresi.</p>
                                         </div>
                                         <div className="rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5">
-                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Stabilita</p>
+                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Stabilità</p>
                                             <p className="mt-1 text-sm font-bold tabular-nums">{stabilityProgress}%</p>
-                                            <p className="mt-1 text-[10px] text-muted-foreground">Stabilita attuale: {liveLoss.toFixed(4)}.</p>
+                                            <p className="mt-1 text-[10px] text-muted-foreground">Stabilità attuale: {liveLoss.toFixed(4)}.</p>
                                         </div>
                                     </div>
 
@@ -737,37 +736,25 @@ export default function BrainPage() {
                                                 Analisi in corso
                                             </p>
                                             <p className="mt-1 text-xs text-muted-foreground">
-                                                Ciclo {training.epoch}/{training.totalEpochs} · campioni {training.sampleCount} · stabilita {training.currentLoss.toFixed(4)}
+                                                Ciclo {training.epoch}/{training.totalEpochs} · campioni {training.sampleCount} · stabilità {training.currentLoss.toFixed(4)}
                                             </p>
                                         </div>
                                     )}
 
-                                    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-                                        <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Versione Core</p>
-                                            <p className="mt-1 text-sm font-bold">{snapshot?.version ?? "-"}</p>
-                                        </div>
-                                        <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Schema fattori</p>
-                                            <p className="mt-1 text-sm font-bold">{snapshot?.featureSchemaVersion ?? "-"}</p>
-                                        </div>
+                                    <div className="grid gap-3 sm:grid-cols-3">
                                         <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
                                             <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Ultimo aggiornamento</p>
                                             <p className="mt-1 text-sm font-bold">{formatUpdatedAt(snapshot?.updatedAt ?? null)}</p>
                                         </div>
                                         <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Affidabilita prossimo mese</p>
-                                            <p className="mt-1 text-sm font-bold tabular-nums">MAE {nextMonthMaeLabel}</p>
-                                            <p className="mt-1 text-[10px] text-muted-foreground tabular-nums">
-                                                MAPE {nextMonthMapeLabel} · {nextMonthReliabilitySamples} campioni
-                                            </p>
+                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Affidabilità residuo mese</p>
+                                            <p className="mt-1 text-sm font-bold tabular-nums">MAE {nowcastMaeLabel} · MAPE {nowcastMapeLabel}</p>
+                                            <p className="mt-1 text-[10px] text-muted-foreground tabular-nums">{nowcastReliabilitySamples} campioni osservati</p>
                                         </div>
                                         <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Affidabilita residuo mese</p>
-                                            <p className="mt-1 text-sm font-bold tabular-nums">MAE {nowcastMaeLabel}</p>
-                                            <p className="mt-1 text-[10px] text-muted-foreground tabular-nums">
-                                                MAPE {nowcastMapeLabel} · {nowcastReliabilitySamples} campioni · soglia {adaptiveNowcastConfidencePercent}%
-                                            </p>
+                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Soglia qualità</p>
+                                            <p className="mt-1 text-sm font-bold tabular-nums">{adaptiveNowcastConfidencePercent}%</p>
+                                            <p className="mt-1 text-[10px] text-muted-foreground">Confidenza minima per usare la stima del mese corrente.</p>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -791,7 +778,7 @@ export default function BrainPage() {
                                             className="min-w-[170px]"
                                         >
                                             <Zap className="h-4 w-4" />
-                                            Inizializza Core
+                                            Avvia Core
                                         </Button>
                                         <Button
                                             variant="outline"
@@ -800,32 +787,36 @@ export default function BrainPage() {
                                             className="min-w-[170px]"
                                         >
                                             <RotateCcw className="h-4 w-4" />
-                                            Azzera Core
+                                            Resetta Core
                                         </Button>
                                     </div>
 
-                                    <div className="rounded-2xl border border-border/60 bg-background/50 p-4">
-                                        <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-                                            Registro eventi in tempo reale
-                                        </p>
-                                        <div className="mt-3 space-y-2 max-h-64 overflow-y-auto pr-1">
-                                            {timeline.length === 0 && (
-                                                <p className="text-xs text-muted-foreground">Nessun evento per ora.</p>
-                                            )}
-                                            {timeline.map((event) => (
-                                                <div key={event.id} className="rounded-xl border border-border/50 bg-muted/20 px-3 py-2">
-                                                    <div className="flex items-center justify-between gap-3">
-                                                        <div className="flex items-center gap-2">
-                                                            <span className={cn("h-2 w-2 rounded-full", eventToneClass(event.tone))} />
-                                                            <p className="text-xs font-bold text-foreground">{event.title}</p>
+                                    <Accordion type="single" collapsible className="rounded-2xl border border-border/60 bg-background/50 px-4">
+                                        <AccordionItem value="technical-events" className="border-none">
+                                            <AccordionTrigger className="py-3 text-sm font-semibold text-foreground hover:no-underline">
+                                                Registro eventi tecnici
+                                            </AccordionTrigger>
+                                            <AccordionContent className="pb-4">
+                                                <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                                                    {timeline.length === 0 && (
+                                                        <p className="text-xs text-muted-foreground">Nessun evento per ora.</p>
+                                                    )}
+                                                    {timeline.map((event) => (
+                                                        <div key={event.id} className="rounded-xl border border-border/50 bg-muted/20 px-3 py-2">
+                                                            <div className="flex items-center justify-between gap-3">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className={cn("h-2 w-2 rounded-full", eventToneClass(event.tone))} />
+                                                                    <p className="text-xs font-bold text-foreground">{event.title}</p>
+                                                                </div>
+                                                                <p className="text-[10px] text-muted-foreground tabular-nums">{formatClock(event.at)}</p>
+                                                            </div>
+                                                            <p className="mt-1 text-[11px] text-muted-foreground">{event.detail}</p>
                                                         </div>
-                                                        <p className="text-[10px] text-muted-foreground tabular-nums">{formatClock(event.at)}</p>
-                                                    </div>
-                                                    <p className="mt-1 text-[11px] text-muted-foreground">{event.detail}</p>
+                                                    ))}
                                                 </div>
-                                            ))}
-                                        </div>
-                                    </div>
+                                            </AccordionContent>
+                                        </AccordionItem>
+                                    </Accordion>
                                 </CardContent>
                                 <CardFooter className="pt-0">
                                     <p className="text-[11px] text-muted-foreground">
@@ -835,39 +826,15 @@ export default function BrainPage() {
                             </Card>
                         </div>
 
-                        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-                            <KpiCard
-                                title="Unita Core"
-                                value={vectorWeights.length}
-                                icon={Cpu}
-                                trend="neutral"
-                                change={`${activeWeightsCount}/${vectorWeights.length}`}
-                                comparisonLabel="Attive"
-                                description="Componenti interne del modello."
-                                className={brainKpiCardClassName}
-                                valueClassName={brainKpiValueClassName}
-                                compact
-                            />
-                            <KpiCard
-                                title="Campioni"
-                                value={snapshot?.trainedSamples ?? 0}
-                                icon={Database}
-                                trend={snapshot && snapshot.trainedSamples > 0 ? "up" : "neutral"}
-                                change={`${experienceProgress}%`}
-                                comparisonLabel="Maturita"
-                                description="Campioni usati per imparare."
-                                className={brainKpiCardClassName}
-                                valueClassName={brainKpiValueClassName}
-                                compact
-                            />
+                        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                             <KpiCard
                                 title="Rischio"
                                 value={evolution?.prediction ? `${riskPercent}%` : "-"}
                                 icon={ShieldCheck}
                                 trend={evolution?.prediction ? (riskPercent > 65 ? "warning" : "neutral") : "neutral"}
                                 change={evolution?.prediction ? `${confidencePercent}%` : "-"}
-                                comparisonLabel="Affidabilita"
-                                description="Probabilita di aumento spese."
+                                comparisonLabel="Affidabilità"
+                                description="Probabilità di aumento spese."
                                 className={brainKpiCardClassName}
                                 valueClassName={brainKpiValueClassName}
                                 compact
@@ -890,89 +857,121 @@ export default function BrainPage() {
                                 icon={CalendarClock}
                                 trend={advisorNowcastReady ? "neutral" : "warning"}
                                 change={advisorNowcastReady ? `${currentMonthConfidencePercent}%` : evolution ? `Soglia ${adaptiveNowcastConfidencePercent}%` : "Non pronta"}
-                                comparisonLabel={advisorNowcastReady ? "Confidenza" : "Policy"}
-                                description="Stima residua validata con soglia adattiva."
+                                comparisonLabel={advisorNowcastReady ? "Confidenza" : "Soglia qualità"}
+                                description="Stima residua del mese con controllo qualità automatico."
                                 className={brainKpiCardClassName}
                                 valueClassName={brainKpiMoneyValueClassName}
                                 compact
                             />
                         </div>
 
-                        <Card className="glass-card">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <BrainCircuit className="h-5 w-5" />
-                                    Mappa segnali del Core
-                                </CardTitle>
-                                <CardDescription>
-                                    Ogni barra indica quanto pesa una componente interna del Core sulla stima attuale. I neuroni (1, 2, 3...) sono parti tecniche del modello, non categorie di spesa.
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                                {vectorWeights.map((weight, index) => {
-                                    const intensity = clampPercent(Math.abs(weight) * 28)
-                                    const intensityScale = Math.max(0, Math.min(1, intensity / 100))
-                                    return (
-                                        <div
-                                            key={`weight-${index}`}
-                                            className="rounded-xl border border-border/60 bg-muted/20 p-3"
-                                        >
-                                            <div className="flex items-center justify-between gap-2">
-                                                <p className="text-[11px] font-bold tracking-wide text-foreground/85">
-                                                    Neurone {index + 1}
-                                                </p>
-                                                <p className="text-xs font-medium tabular-nums text-muted-foreground">
-                                                    {weight.toFixed(4)}
-                                                </p>
+                        <Accordion type="single" collapsible className="rounded-2xl border border-border/60 bg-background/40 px-4">
+                            <AccordionItem value="technical-details" className="border-none">
+                                <AccordionTrigger className="py-3 text-sm font-semibold text-foreground hover:no-underline">
+                                    Dettagli tecnici (facoltativo)
+                                </AccordionTrigger>
+                                <AccordionContent className="pb-4">
+                                    <div className="space-y-4">
+                                        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                                            <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
+                                                <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Versione Core</p>
+                                                <p className="mt-1 text-sm font-bold">{snapshot?.version ?? "-"}</p>
                                             </div>
-                                            <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-background/70">
-                                                <motion.div
-                                                    className="h-full w-full origin-left transform-gpu rounded-full bg-gradient-to-r from-primary via-info to-success"
-                                                    initial={{ scaleX: 0 }}
-                                                    animate={{ scaleX: intensityScale }}
-                                                    transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                                                />
+                                            <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
+                                                <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Schema fattori</p>
+                                                <p className="mt-1 text-sm font-bold">{snapshot?.featureSchemaVersion ?? "-"}</p>
+                                            </div>
+                                            <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
+                                                <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Affidabilità prossimo mese</p>
+                                                <p className="mt-1 text-sm font-bold tabular-nums">MAE {nextMonthMaeLabel} · MAPE {nextMonthMapeLabel}</p>
+                                                <p className="mt-1 text-[10px] text-muted-foreground tabular-nums">{nextMonthReliabilitySamples} campioni osservati</p>
+                                            </div>
+                                            <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
+                                                <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Struttura Core</p>
+                                                <p className="mt-1 text-sm font-bold tabular-nums">{vectorWeights.length} unità · {snapshot?.trainedSamples ?? 0} campioni</p>
+                                                <p className="mt-1 text-[10px] text-muted-foreground tabular-nums">{activeWeightsCount} attive · {silentWeightsCount} neutre</p>
                                             </div>
                                         </div>
-                                    )
-                                })}
-                            </CardContent>
-                        </Card>
 
-                        <Card className="glass-card">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <TrendingUp className="h-5 w-5" />
-                                    Fattori principali della stima
-                                </CardTitle>
-                                <CardDescription>
-                                    Qui vedi i fattori che stanno alzando o abbassando la stima in questo momento.
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                {contributorsTop.length === 0 ? (
-                                    <p className="text-sm text-muted-foreground">
-                                        Stima non ancora pronta: servono piu dati o una nuova analisi completa.
-                                    </p>
-                                ) : (
-                                    <div className="space-y-2">
-                                        {contributorsTop.map((item) => (
-                                            <div key={item.feature} className="rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5">
-                                                <div className="flex items-center justify-between gap-2">
-                                                    <p className="text-xs font-bold text-foreground tracking-wide">{formatFeatureLabel(item.feature)}</p>
-                                                    <p className="text-xs text-muted-foreground tabular-nums">
-                                                        effetto sulla stima {item.contribution.toFixed(4)}
+                                        <Card className="glass-card">
+                                            <CardHeader>
+                                                <CardTitle className="flex items-center gap-2">
+                                                    <BrainCircuit className="h-5 w-5" />
+                                                    Mappa segnali del Core
+                                                </CardTitle>
+                                                <CardDescription>
+                                                    Ogni barra indica quanto pesa una componente interna del Core sulla stima attuale.
+                                                </CardDescription>
+                                            </CardHeader>
+                                            <CardContent className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                                                {vectorWeights.map((weight, index) => {
+                                                    const intensity = clampPercent(Math.abs(weight) * 28)
+                                                    const intensityScale = Math.max(0, Math.min(1, intensity / 100))
+                                                    return (
+                                                        <div
+                                                            key={`weight-${index}`}
+                                                            className="rounded-xl border border-border/60 bg-muted/20 p-3"
+                                                        >
+                                                            <div className="flex items-center justify-between gap-2">
+                                                                <p className="text-[11px] font-bold tracking-wide text-foreground/85">
+                                                                    Neurone {index + 1}
+                                                                </p>
+                                                                <p className="text-xs font-medium tabular-nums text-muted-foreground">
+                                                                    {weight.toFixed(4)}
+                                                                </p>
+                                                            </div>
+                                                            <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-background/70">
+                                                                <motion.div
+                                                                    className="h-full w-full origin-left transform-gpu rounded-full bg-gradient-to-r from-primary via-info to-success"
+                                                                    initial={{ scaleX: 0 }}
+                                                                    animate={{ scaleX: intensityScale }}
+                                                                    transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                })}
+                                            </CardContent>
+                                        </Card>
+
+                                        <Card className="glass-card">
+                                            <CardHeader>
+                                                <CardTitle className="flex items-center gap-2">
+                                                    <TrendingUp className="h-5 w-5" />
+                                                    Fattori principali della stima
+                                                </CardTitle>
+                                                <CardDescription>
+                                                    Qui vedi i fattori che stanno alzando o abbassando la stima in questo momento.
+                                                </CardDescription>
+                                            </CardHeader>
+                                            <CardContent>
+                                                {contributorsTop.length === 0 ? (
+                                                    <p className="text-sm text-muted-foreground">
+                                                        Stima non ancora pronta: servono più dati o una nuova analisi completa.
                                                     </p>
-                                                </div>
-                                                <p className="mt-1 text-[11px] text-muted-foreground tabular-nums">
-                                                    valore attuale {item.value.toFixed(4)} · peso interno {item.weight.toFixed(4)}
-                                                </p>
-                                            </div>
-                                        ))}
+                                                ) : (
+                                                    <div className="space-y-2">
+                                                        {contributorsTop.map((item) => (
+                                                            <div key={item.feature} className="rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5">
+                                                                <div className="flex items-center justify-between gap-2">
+                                                                    <p className="text-xs font-bold text-foreground tracking-wide">{formatFeatureLabel(item.feature)}</p>
+                                                                    <p className="text-xs text-muted-foreground tabular-nums">
+                                                                        effetto sulla stima {item.contribution.toFixed(4)}
+                                                                    </p>
+                                                                </div>
+                                                                <p className="mt-1 text-[11px] text-muted-foreground tabular-nums">
+                                                                    valore attuale {item.value.toFixed(4)} · peso interno {item.weight.toFixed(4)}
+                                                                </p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </CardContent>
+                                        </Card>
                                     </div>
-                                )}
-                            </CardContent>
-                        </Card>
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
                     </div>
                 </MacroSection>
             </motion.div>

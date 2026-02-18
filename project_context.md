@@ -2,11 +2,11 @@
 
 Last updated: 2026-02-18
 Repository root: /Users/acvisuals/.gemini/antigravity/scratch/numa-budget
-Source skill: deep-reasoning-dev
+Source workflow: numa-governance-update
 
 ## Linguaggi e Framework Rilevati
 - TypeScript: strict mode (`tsconfig.json`) con Next.js App Router
-- React 19 + Next 15 (UI client-side + server layout)
+- React 19 + Next 16.1.6 (UI client-side + server layout)
 - Tailwind CSS 4 + utility design tokens in `src/app/globals.css`
 - Vitest + Testing Library per unit/component tests
 
@@ -15,6 +15,7 @@ Source skill: deep-reasoning-dev
 - Domain pure logic in `src/domain/*`
 - Isolated sensitive logic in `src/VAULT/*`
 - Local-first persistence via `src/lib/storage-utils.ts` + storage keys registry
+- Changelog-driven notifications (`CHANGELOG.md` -> `/api/notifications/changelog` -> TopBar + `/updates`)
 
 ## Convenzioni di Naming e Stile
 - Path alias `@/*` per import assoluti
@@ -25,6 +26,7 @@ Source skill: deep-reasoning-dev
 - `framer-motion`: rischio di inconsistenza reduced-motion se non gestito nei componenti locali
 - localStorage migration/reset: rischio side effect cross-feature se cleanup troppo aggressivo
 - Mixed legacy goals types in VAULT: rischio semantic drift con nuovo Financial Lab quota-mode
+- Terminologia source label (`Core` vs `Storico`) da mantenere allineata tra UI, changelog e regole semantiche
 
 ## ADR Sintetici (Decisioni Architetturali)
 - 2026-02-11 Semantic shift Rhythm (ADR-005) - Contesto: ridurre tono punitivo budget. Impatto: copy e narrative contract.

@@ -63,7 +63,7 @@ function resolveBrainSignalDisplay(advisorData: ReturnType<typeof useAIAdvisor>)
     }
 
     const isBrainSource = advisorData.forecast.primarySource === "brain"
-    const source = isBrainSource ? "Fonte: Neural Core" : "Fonte: storico"
+    const source = isBrainSource ? "Fonte: Core" : "Fonte: Storico"
     const confidence = advisorData.forecast.confidence === "high"
         ? "Alta"
         : advisorData.forecast.confidence === "medium"
@@ -247,7 +247,7 @@ export function DashboardKpiGrid({
                             bgClass: "bg-emerald-500/10",
                             stepLabel: "Passo 1",
                             title: "Quanto puoi spendere ora",
-                            description: "Il saldo del periodo mostra quanta liquidita reale resta dopo entrate e uscite."
+                            description: "Il saldo del periodo mostra quanta liquidità reale resta dopo entrate e uscite."
                         },
                         {
                             icon: PiggyBank,
@@ -268,7 +268,7 @@ export function DashboardKpiGrid({
                     ]}
                     auditStats={[
                         { label: "Metodo", value: "Storico comportamentale", subValue: "Base del calcolo mensile.", icon: TrendingUp },
-                        { label: "Aggiornamento", value: "Automatico", subValue: "Ricalcolo ad ogni nuovo movimento.", icon: Zap },
+                        { label: "Aggiornamento", value: "Automatico", subValue: "Ricalcolo a ogni nuovo movimento.", icon: Zap },
                         { label: "Dati usati", value: "Transazioni reali", subValue: "Nessuna stima manuale richiesta.", icon: BrainCircuit },
                         { label: "Privacy", value: "Locale", subValue: "I calcoli restano sul dispositivo.", icon: ShieldCheck },
                     ]}

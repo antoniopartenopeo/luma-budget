@@ -14,7 +14,7 @@ This document outlines the technical path for building **Numa Neuro Core**, a ze
 1.  **The Left Brain (Deterministic Logic)**
     *   *Role*: Architecture, Accounting, Precision.
     *   *Task*: "Quanto ho speso?" "Qual è il saldo?"
-    *   *Tech*: Standard TypeScript Logic (existing `financial-math.ts`).
+    *   *Tech*: Standard TypeScript logic (`src/domain/money/*`, `src/domain/transactions/*`, `src/domain/simulation/savings.ts`).
     *   *Rule*: **NEVER REPLACE**. Accounting must be exact (1+1=2).
 
 2.  **The Right Brain (Numa Neuro Core)**
@@ -24,7 +24,7 @@ This document outlines the technical path for building **Numa Neuro Core**, a ze
     *   *Rule*: **ALWAYS MONITOR**. It observes the Logic and adds context.
 
 **Scope Application**:
-*   The AI acts as an **Omni-Observer**. It can feed insights into *any* section (Dashboard, Budget, Goals).
+*   The AI acts as an **Omni-Observer**. It can feed insights into *any* section (Dashboard, Insights, Financial Lab).
 *   It does **not** replace the calculator; it acts as the **Analyst** reading the calculator.
 
 ---

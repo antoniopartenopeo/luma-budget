@@ -30,9 +30,10 @@ Schema usato in tutte le release:
 
 ### Changed (Miglioramenti per te)
 - In Insights, la metrica principale è ora `Saldo totale stimato`: parte dal saldo totale e sottrae la spesa residua prevista nel mese corrente.
-- La provenienza della stima è più chiara: `Fonte Brain` quando il modello è pronto, `Fonte Storico` quando si usa il fallback.
+- La provenienza della stima è più chiara: `Fonte Core` quando il modello è pronto, `Fonte Storico` quando si usa il fallback.
 - Gli stati di caricamento compaiono solo quando serve davvero: niente attese artificiali.
 - La lettura dei trend è più lineare e coerente tra le card.
+- Le notifiche aggiornamenti in-app ora vengono generate direttamente da questo changelog, mantenendo allineati campanella TopBar e pagina `/updates`.
 
 ### Fixed (Correzioni)
 - Quando i dati non bastano, Insights lo comunica in modo esplicito (senza messaggi ambigui).
@@ -46,11 +47,16 @@ Schema usato in tutte le release:
 
 ## [0.3.1] - 2026-02-09
 
+### Added (Novità per te)
+- Nuovo centro aggiornamenti beta in TopBar con badge non letti e stato criticità.
+- Introdotta la pagina `/updates` con storico release leggibile e azione "segna tutto come letto".
+
 ### Changed (Miglioramenti per te)
 - Gestione importi più uniforme, con calcoli più stabili nelle viste principali.
 - Architettura più chiara tra logica finanziaria e interfaccia, per ridurre comportamenti incoerenti.
 - Controlli qualità più severi per intercettare regressioni prima del rilascio.
 - Animazioni e stati UI più consistenti, con maggiore rispetto delle preferenze di riduzione movimento.
+- Metadata build/versione centralizzati nelle diagnostiche per tracciare meglio gli aggiornamenti distribuiti.
 
 ### Fixed (Correzioni)
 - Date di fine mese più affidabili nei passaggi tra mesi e fusi orari.

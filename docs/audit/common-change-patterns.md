@@ -60,9 +60,25 @@ Guardrail:
 - niente stringhe narrative arbitrarie nei componenti se gia coperte da layer deterministico
 - mantenere compatibilita con link/azioni e sorting esistenti
 
+## 5) Aggiornare notifiche in-app da release notes
+
+Intento: mantenere allineati changelog pubblico, campanella TopBar e pagina `/updates`.
+
+Passi minimi:
+1. Aggiorna `CHANGELOG.md` rispettando lo schema release (`Added/Changed/Fixed/Removed`).
+2. Verifica che le sezioni release siano parseabili (header `## [x.y.z] - YYYY-MM-DD` e bullet list).
+3. Valida feed e coerenza versione con `npm run release:validate`.
+4. Verifica UI notifiche (`/updates` + campanella TopBar) se la release introduce copy critica o breaking.
+
+Guardrail:
+- `CHANGELOG.md` è fonte canonica del feed notifiche (`/api/notifications/changelog`), evitare sorgenti secondarie.
+- Evitare duplicati tra `body` e `highlights` nelle entry generate.
+- Mantenere naming utente coerente: `Fonte Core` / `Fonte Storico`.
+
 ## Definition of done minima
 
 1. `npm run test:run` passa.
 2. `npm run build` passa.
 3. `bash scripts/audit/governance-quick-check.sh` aggiornato e letto.
-4. Nessuna regressione ai constraint non negoziabili.
+4. Se hai toccato release/changelog, `npm run release:validate` passa.
+5. Nessuna regressione ai constraint non negoziabili.

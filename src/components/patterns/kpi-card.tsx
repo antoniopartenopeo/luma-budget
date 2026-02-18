@@ -92,7 +92,7 @@ export function KpiCard({
                     compact ? "px-4 gap-1 pb-1" : "pb-2"
                 )}>
                     <div className="flex flex-col gap-1.5">
-                        <CardTitle className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        <CardTitle className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
                             {title}
                         </CardTitle>
                         {badge && (
@@ -100,7 +100,7 @@ export function KpiCard({
                                 {badge}
                             </div>
                         )}
-                        {subtitle && <p className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">{subtitle}</p>}
+                        {subtitle && <p className="text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wide">{subtitle}</p>}
                     </div>
                     <div className={cn(
                         "h-8 w-8 rounded-full flex items-center justify-center transition-colors duration-300",
@@ -152,10 +152,7 @@ export function KpiCard({
                             </p>
                         )}
                         {description && (
-                            <p className={cn(
-                                "text-[10px] text-muted-foreground/50 mt-1 leading-tight",
-                                compact ? "" : "italic"
-                            )}>
+                            <p className="text-[11px] text-muted-foreground/70 mt-1 leading-snug">
                                 {description}
                             </p>
                         )}

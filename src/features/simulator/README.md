@@ -12,7 +12,8 @@ Per coerenza di prodotto, evita l'uso di "Simulator" o "Ottimizzatore" nella cop
 1.  **Read-Only sulle transazioni**: il modulo non modifica mai i movimenti finanziari.
 2.  **Simulazione effimera**: i risultati "what-if" restano locali e non attivano piani persistenti.
 3.  **No Commitment Path**: la pagina non salva portfolio/rhythm e non aggiorna budget operativo.
-4.  **Trasparenza fonte**: il piano mostra sempre se la prudenza usa segnali Brain o storico.
+4.  **Trasparenza fonte**: il piano mostra sempre se la prudenza usa segnali Core o storico.
+5.  **Migrazione legacy one-shot**: al primo avvio può azzerare stato legacy (`numa_goal_portfolio_v1`, `numa_active_goal_v1`, budget legacy condizionale) e scrive il marker `numa_finlab_hard_switch_v1_done`.
 
 ## Core Logic (split reale)
 La logica e stata separata in due livelli:

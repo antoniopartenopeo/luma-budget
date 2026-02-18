@@ -46,8 +46,8 @@ export function NumaAdvisorHowItWorksCard({ forecast, facts, className }: NumaAd
                     colorClass: "text-emerald-500",
                     bgClass: "bg-emerald-500/10",
                     stepLabel: "2. Fonte stima",
-                    title: "Brain quando pronto",
-                    description: "Se il Brain e pronto usiamo il nowcast reale; altrimenti usiamo una stima storica prudente."
+                    title: "Core quando pronto",
+                    description: "Se il Core è pronto usiamo il nowcast reale; altrimenti usiamo una stima storica prudente."
                 },
                 {
                     icon: Lock,
@@ -68,7 +68,7 @@ export function NumaAdvisorHowItWorksCard({ forecast, facts, className }: NumaAd
                 },
                 {
                     label: "Fonte attiva",
-                    value: forecast?.primarySource === "brain" ? "Brain" : "Storico",
+                    value: forecast?.primarySource === "brain" ? "Core" : "Storico",
                     subValue: forecast?.primarySource === "brain"
                         ? "Nowcast del Core sul mese corrente."
                         : "Residuo storico (con backup run-rate)."
@@ -191,7 +191,7 @@ function AIAdvisorCardView({ forecast, subscriptions, isLoading: aiLoading }: AI
                     </div>
                     <div>
                         <h3 className="font-semibold text-lg">Dati ancora insufficienti</h3>
-                        <p className="max-w-[300px] text-sm font-medium leading-relaxed text-muted-foreground">Servono piu movimenti per stimare in modo affidabile il saldo totale del mese.</p>
+                        <p className="max-w-[300px] text-sm font-medium leading-relaxed text-muted-foreground">Servono più movimenti per stimare in modo affidabile il saldo totale del mese.</p>
                     </div>
                 </div>
             </MacroSection>
@@ -225,7 +225,7 @@ function AIAdvisorCardView({ forecast, subscriptions, isLoading: aiLoading }: AI
                                             ? "bg-primary/10 text-primary border-primary/20"
                                             : "bg-muted text-muted-foreground border-border"
                                     )}>
-                                        {forecast.primarySource === "brain" ? "Fonte Brain" : "Fonte Storico"}
+                                        {forecast.primarySource === "brain" ? "Fonte Core" : "Fonte Storico"}
                                     </div>
                                     <div className={cn(
                                         "px-3 py-1.5 rounded-xl border text-[10px] font-bold uppercase tracking-wider",
@@ -236,10 +236,10 @@ function AIAdvisorCardView({ forecast, subscriptions, isLoading: aiLoading }: AI
                                                 : "bg-rose-500/10 text-rose-600 border-rose-500/20"
                                     )}>
                                         {forecast.confidence === "high"
-                                            ? "Affidabilita alta"
+                                            ? "Affidabilità alta"
                                             : forecast.confidence === "medium"
-                                                ? "Affidabilita media"
-                                                : "Affidabilita bassa"}
+                                                ? "Affidabilità media"
+                                                : "Affidabilità bassa"}
                                     </div>
                                 </div>
                             }

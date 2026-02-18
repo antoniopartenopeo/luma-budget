@@ -137,11 +137,12 @@ Invarianti:
 2. [ ] Macro geometry e materiali coerenti (`rounded-[2.5rem]`, `glass-panel`)
 3. [ ] Motion conforme alle primitive e a `prefers-reduced-motion`
 4. [ ] Nessun fake loading su AI/analisi
-5. [ ] Typography coerente con scala ufficiale
-6. [ ] Nessun inline style statico non giustificato
-7. [ ] Verifica `/.agent/rules/ui-regression-checklist.md`
+5. [ ] Etichette fonte previsione coerenti (`Fonte Core` o `Fonte Storico`)
+6. [ ] Typography coerente con scala ufficiale
+7. [ ] Nessun inline style statico non giustificato
+8. [ ] Verifica `/.agent/rules/ui-regression-checklist.md`
 
 ---
 
-**Versione**: 1.6.0
-**Ultimo aggiornamento**: 2026-02-11
+**Versione**: 1.7.0
+**Ultimo aggiornamento**: 2026-02-18

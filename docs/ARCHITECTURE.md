@@ -46,6 +46,9 @@ Primary pages:
 - `/updates`
 - `/brain`
 
+Primary API endpoints:
+- `/api/notifications/changelog` (in-app updates feed generated from `CHANGELOG.md`)
+
 Navigation contract:
 - Sidebar hosts core pages (`/`, `/transactions`, `/insights`, `/simulator`, `/settings`).
 - Topbar hosts cross-cutting actions (quick expense, flash overlay, privacy toggle, notifications, neural-core trigger).
@@ -79,6 +82,12 @@ Navigation contract:
 - Subscription detection and grouping powered by merchant-normalized monthly cadence.
 - Trend timeline supports upcoming charge milestones for active subscriptions.
 
+### Notifications runtime (`src/features/notifications/*`)
+- Changelog-driven source: release entries are parsed from `/CHANGELOG.md`.
+- Server endpoint (`/api/notifications/changelog`) transforms markdown release sections into typed notification items.
+- Client reads feed via React Query and persists read-state in `numa_notifications_state_v2`.
+- Topbar bell and `/updates` page consume the same feed, so release notes and in-app notifications stay aligned.
+
 ## 4) Data and State Flow
 
 1. Repositories read/write local storage.
@@ -99,6 +108,7 @@ App-level registry (canonical): `src/lib/storage-keys.ts`
 - `numa_finlab_hard_switch_v1_done`
 - `numa_notifications_state_v2`
 - `numa-privacy-storage`
+- `numa_brain_adaptive_policy_v1`
 
 Brain storage (managed in `src/brain/storage.ts`):
 - `numa_neural_core_v1`

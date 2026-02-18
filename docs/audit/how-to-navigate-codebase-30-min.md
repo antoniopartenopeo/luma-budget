@@ -32,6 +32,7 @@ Checklist:
 - Transactions: `src/features/transactions/`.
 - Dashboard/KPI: `src/features/dashboard/`.
 - Insights: `src/features/insights/`.
+- Notifications/Updates: `src/features/notifications/` + `src/app/api/notifications/changelog/route.ts`.
 - Vault (logica sensibile): `src/VAULT/`.
 
 Approccio:
@@ -44,6 +45,7 @@ Approccio:
 1. Esegui `npm run test:run`.
 2. Esegui `npm run build`.
 3. Esegui `bash scripts/audit/governance-quick-check.sh`.
+4. Se hai toccato `CHANGELOG.md`, esegui `npm run release:validate`.
 
 Se fallisce:
 - separa i problemi in backlog: `logic behavior`, `ui behavior`, `doc/comment`.

@@ -1,14 +1,14 @@
 "use client"
 
-import { GoalScenarioResult } from "@/VAULT/goals/types"
+import { QuotaScenarioResult } from "@/VAULT/goals/types"
 import { getPlanBasisContext } from "./financial-lab-copy"
 
 export type AIMonitorTone = "thriving" | "stable" | "strained" | "critical"
 
 interface AIMonitorInput {
-    scenario: GoalScenarioResult | null
+    scenario: QuotaScenarioResult | null
     savingsPercent: number
-    monthlyGoalContributionFormatted: string
+    monthlyQuotaFormatted: string
     hasInsufficientData?: boolean
 }
 
@@ -27,7 +27,7 @@ interface AIMonitorOutput {
 export function generateAIMonitorMessage({
     scenario,
     savingsPercent,
-    monthlyGoalContributionFormatted,
+    monthlyQuotaFormatted,
     hasInsufficientData = false
 }: AIMonitorInput): AIMonitorOutput {
     if (!scenario) {
@@ -47,17 +47,17 @@ export function generateAIMonitorMessage({
     }
 
     let tone: AIMonitorTone = "stable"
-    let message = `${monthlyGoalContributionFormatted} al mese e la tua rata fissa aggiuntiva sostenibile nello scenario attuale.`
+    let message = `${monthlyQuotaFormatted} al mese e la tua rata fissa aggiuntiva sostenibile nello scenario attuale.`
 
     if (scenario.sustainability.status === "unsafe") {
         tone = "critical"
         message = "Quota non sostenibile in sicurezza. Riduci la pressione sulle spese variabili prima di impostare una nuova rata fissa."
     } else if (scenario.sustainability.status === "fragile") {
         tone = "strained"
-        message = `${monthlyGoalContributionFormatted} al mese e possibile, ma con margine delicato. Meglio partire con una rata piu prudente.`
+        message = `${monthlyQuotaFormatted} al mese e possibile, ma con margine delicato. Meglio partire con una rata piu prudente.`
     } else if (scenario.sustainability.status === "secure" && savingsPercent > 15) {
         tone = "thriving"
-        message = `${monthlyGoalContributionFormatted} al mese e una quota solida: il margine resta robusto anche dopo l'allocazione.`
+        message = `${monthlyQuotaFormatted} al mese e una quota solida: il margine resta robusto anche dopo l'allocazione.`
     }
 
     if (scenario.sustainability.reason && scenario.sustainability.status !== "secure") {

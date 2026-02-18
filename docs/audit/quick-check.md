@@ -1,6 +1,6 @@
 # Governance Quick Check
 
-Generated at (UTC): 2026-02-18T18:52:51Z
+Generated at (UTC): 2026-02-18T21:13:18Z
 
 Scope:
 - Repository: numa-budget
@@ -95,8 +95,8 @@ filterByRange usage (first 60):
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/recent-transactions.tsx:3:import { calculateDateRangeLocal, filterByRange } from "@/lib/date-ranges"
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/recent-transactions.tsx:74:        filteredTransactions = filterByRange(filteredTransactions, startDate, endDate)
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/repository.ts:5:import { calculateDateRangeLocal, filterByRange } from "@/lib/date-ranges"
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/repository.ts:41:    const rangeTransactions = filterByRange(transactions, startDate, endDate)
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/repository.ts:53:    const targetMonthTransactions = filterByRange(transactions, pivotStart, pivotEnd)
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/repository.ts:39:    const rangeTransactions = filterByRange(transactions, startDate, endDate)
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/repository.ts:51:    const targetMonthTransactions = filterByRange(transactions, pivotStart, pivotEnd)
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/transactions/utils/transactions-logic.ts:3:import { filterByRange } from "@/lib/date-ranges";
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/transactions/utils/transactions-logic.ts:52:    const scopedTransactions = filterByRange(transactions, start, end)
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/simulator/utils.ts:4:import { calculateDateRange, filterByRange } from "@/lib/date-ranges"

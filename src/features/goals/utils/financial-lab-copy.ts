@@ -1,6 +1,6 @@
-import { GoalScenarioResult, SustainabilityStatus } from "@/VAULT/goals/types"
+import { QuotaScenarioResult, SustainabilityStatus } from "@/VAULT/goals/types"
 
-type PlanBasis = GoalScenarioResult["planBasis"]
+type PlanBasis = QuotaScenarioResult["planBasis"]
 
 export const FINANCIAL_LAB_COPY = {
     page: {

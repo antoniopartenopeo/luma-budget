@@ -3,11 +3,11 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 
 import { Category } from "@/domain/categories"
 import { MonthlyAveragesResult } from "@/features/simulator/utils"
-import { GoalScenarioResult, RealtimeOverlaySignal } from "@/VAULT/goals/types"
+import { QuotaScenarioResult, RealtimeOverlaySignal } from "@/VAULT/goals/types"
 
 import { useSimulatorCommandCenter } from "../use-simulator-command-center"
 
-const useGoalScenariosMock = vi.fn()
+const useQuotaScenariosMock = vi.fn()
 const useAIAdvisorMock = vi.fn()
 const resetFinancialLabLegacyStateMock = vi.fn()
 const invalidateQueriesMock = vi.fn()
@@ -57,15 +57,15 @@ vi.mock("@/features/insights/use-ai-advisor", () => ({
     useAIAdvisor: (...args: unknown[]) => useAIAdvisorMock(...args)
 }))
 
-vi.mock("../use-goal-scenarios", () => ({
-    useGoalScenarios: (...args: unknown[]) => useGoalScenariosMock(...args)
+vi.mock("../use-quota-scenarios", () => ({
+    useQuotaScenarios: (...args: unknown[]) => useQuotaScenariosMock(...args)
 }))
 
 vi.mock("../../utils/reset-financial-lab-legacy", () => ({
     resetFinancialLabLegacyState: () => resetFinancialLabLegacyStateMock()
 }))
 
-function createScenario(overrides: Partial<GoalScenarioResult> = {}): GoalScenarioResult {
+function createScenario(overrides: Partial<QuotaScenarioResult> = {}): QuotaScenarioResult {
     return {
         key: "baseline",
         config: {
@@ -101,12 +101,12 @@ describe("useSimulatorCommandCenter", () => {
     beforeEach(() => {
         vi.useFakeTimers()
         invalidateQueriesMock.mockReset()
-        useGoalScenariosMock.mockReset()
+        useQuotaScenariosMock.mockReset()
         useAIAdvisorMock.mockReset()
         resetFinancialLabLegacyStateMock.mockReset()
         resetFinancialLabLegacyStateMock.mockResolvedValue(false)
 
-        useGoalScenariosMock.mockImplementation((params: { realtimeOverlay?: RealtimeOverlaySignal | null }) => {
+        useQuotaScenariosMock.mockImplementation((params: { realtimeOverlay?: RealtimeOverlaySignal | null }) => {
             const realtimeOverlay = params?.realtimeOverlay
             const realtimeOverlayApplied = Boolean(realtimeOverlay?.enabled)
             const realtimeCapacityFactor = realtimeOverlayApplied ? realtimeOverlay?.capacityFactor || 1 : 1
@@ -185,7 +185,7 @@ describe("useSimulatorCommandCenter", () => {
     test("applies debounced realtime overlay and extends to 3 months only for strong brain signal", () => {
         renderHook(() => useSimulatorCommandCenter())
 
-        const initialCall = useGoalScenariosMock.mock.calls[0]?.[0]
+        const initialCall = useQuotaScenariosMock.mock.calls[0]?.[0]
         expect(initialCall).toBeDefined()
         expect(initialCall.realtimeOverlay).toBeNull()
 
@@ -193,7 +193,7 @@ describe("useSimulatorCommandCenter", () => {
             vi.advanceTimersByTime(700)
         })
 
-        const latestCall = useGoalScenariosMock.mock.calls[useGoalScenariosMock.mock.calls.length - 1]?.[0]
+        const latestCall = useQuotaScenariosMock.mock.calls[useQuotaScenariosMock.mock.calls.length - 1]?.[0]
         expect(latestCall.realtimeOverlay).toBeTruthy()
         expect(latestCall.realtimeOverlay.enabled).toBe(true)
         expect(latestCall.realtimeOverlay.source).toBe("brain")
@@ -204,7 +204,7 @@ describe("useSimulatorCommandCenter", () => {
         const { result } = renderHook(() => useSimulatorCommandCenter())
 
         expect(result.current.simulatedSurplus).toBe(60000)
-        expect(result.current.goalMonthlyCapacityRealtime).toBe(14000)
+        expect(result.current.monthlyQuotaRealtimeCents).toBe(14000)
         expect(result.current.realtimeWindowMonths).toBe(0)
 
         act(() => {
@@ -217,6 +217,6 @@ describe("useSimulatorCommandCenter", () => {
 
         const realtimeFactor = quota?.realtimeCapacityFactor || 1
         expect(result.current.simulatedSurplus).toBe(Math.round(60000 * realtimeFactor))
-        expect(result.current.goalMonthlyCapacityRealtime).toBe(Math.round(14000 * realtimeFactor))
+        expect(result.current.monthlyQuotaRealtimeCents).toBe(Math.round(14000 * realtimeFactor))
     })
 })

@@ -3,14 +3,14 @@ import { applySavings, CategoryAverage } from "@/domain/simulation"
 import { checkScenarioSustainability } from "./sustainability-guard"
 import {
     BrainAssistSignal,
-    GoalScenarioResult,
+    QuotaScenarioResult,
     RealtimeOverlaySignal,
     ScenarioConfig,
     ScenarioKey,
     SustainabilityStatus
 } from "../types"
 
-function resolveGoalAllocationRatio(status: SustainabilityStatus): number {
+function resolveQuotaAllocationRatio(status: SustainabilityStatus): number {
     if (status === "secure") return 0.9
     if (status === "sustainable") return 0.8
     if (status === "fragile") return 0.65
@@ -77,7 +77,7 @@ export function calculateScenario(input: {
     // Optional non-authoritative signal from Brain (risk/confidence only).
     brainAssist?: BrainAssistSignal
     realtimeOverlay?: RealtimeOverlaySignal
-}): GoalScenarioResult {
+}): QuotaScenarioResult {
     const { key, baseline, averages, config, brainAssist, realtimeOverlay } = input
 
     // 1. Determine scenario map
@@ -100,9 +100,9 @@ export function calculateScenario(input: {
         scenarioExpenses
     )
 
-    // 5. Derive allocatable monthly capacity for the goal.
+    // 5. Derive allocatable monthly capacity for the fixed quota.
     // We don't allocate 100% of projected surplus: a portion remains as operational buffer.
-    const allocationRatio = resolveGoalAllocationRatio(sustainability.status)
+    const allocationRatio = resolveQuotaAllocationRatio(sustainability.status)
     const { capacityFactor } = resolveConfidenceTuning(config)
     const brainTuning = resolveBrainAssistTuning(brainAssist)
     const effectiveAllocationRatio = allocationRatio * capacityFactor * brainTuning.capacityFactor
@@ -118,7 +118,7 @@ export function calculateScenario(input: {
     const realtimeMonthlyMarginCents = Math.round(projectedFCF * realtimeCapacityFactor)
     const realtimeMonthlyCapacityCents = Math.round(allocatableMonthlyCapacity * realtimeCapacityFactor)
 
-    const planBasis: GoalScenarioResult["planBasis"] = realtimeOverlay?.enabled
+    const planBasis: QuotaScenarioResult["planBasis"] = realtimeOverlay?.enabled
         ? realtimeOverlay.source === "brain"
             ? "brain_overlay"
             : "fallback_overlay"

@@ -16,7 +16,6 @@ import {
 import { ConfirmDialog } from "@/components/patterns/confirm-dialog"
 import { queryKeys } from "@/lib/query-keys"
 import { seedTransactions, __resetTransactionsCache } from "@/features/transactions/api/repository"
-import { __resetBudgetsCache } from "@/VAULT/budget/api/repository"
 import { __resetCategoriesCache } from "@/features/categories/api/repository"
 import { resetSettings } from "@/features/settings/api/repository"
 import { resetAllData } from "@/features/settings/backup/backup-utils"
@@ -24,7 +23,7 @@ import { buildDiagnosticsSnapshot, DiagnosticsSnapshot } from "@/features/settin
 import { DiagnosticsMetaStrip } from "@/features/settings/diagnostics/components/diagnostics-meta-strip"
 import { MacroSection } from "@/components/patterns/macro-section"
 
-type ResetType = "transactions" | "budgets" | "settings" | "all" | null
+type ResetType = "transactions" | "settings" | "all" | null
 
 export function AdvancedSection() {
     const queryClient = useQueryClient()
@@ -65,12 +64,10 @@ export function AdvancedSection() {
 
     const invalidateAll = async () => {
         __resetTransactionsCache()
-        __resetBudgetsCache()
         __resetCategoriesCache()
         await Promise.all([
             queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all }),
             queryClient.invalidateQueries({ queryKey: queryKeys.transactions.recent }),
-            queryClient.invalidateQueries({ queryKey: queryKeys.budget.all }),
             queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all }),
             queryClient.invalidateQueries({ queryKey: queryKeys.categories.all() }),
             queryClient.invalidateQueries({ queryKey: queryKeys.categories.active() }),
@@ -97,16 +94,6 @@ export function AdvancedSection() {
                         queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
                     ])
                     setStatus({ type: "success", message: "Tutte le transazioni sono state eliminate." })
-                    break
-                }
-                case "budgets": {
-                    const { resetBudgets } = await import("@/features/settings/backup/backup-utils")
-                    resetBudgets()
-                    await Promise.all([
-                        queryClient.invalidateQueries({ queryKey: queryKeys.budget.all }),
-                        queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all })
-                    ])
-                    setStatus({ type: "success", message: "Tutti i piani ritmo sono stati eliminati." })
                     break
                 }
                 case "settings": {
@@ -159,11 +146,6 @@ export function AdvancedSection() {
                     title: "Elimina Transazioni",
                     description: "Sei sicuro di voler eliminare TUTTE le transazioni? Questa azione è irreversibile."
                 }
-            case "budgets":
-                return {
-                    title: "Elimina Piani Ritmo",
-                    description: "Sei sicuro di voler eliminare TUTTI i piani ritmo? Questa azione è irreversibile."
-                }
             case "settings":
                 return {
                     title: "Ripristina Impostazioni",
@@ -172,7 +154,7 @@ export function AdvancedSection() {
             case "all":
                 return {
                     title: "Reset Totale",
-                    description: "Vuoi davvero eliminare tutti i dati? Questa azione cancellerà permanentemente transazioni, piani ritmo, categorie, impostazioni, portfolio obiettivi, stato notifiche e preferenze privacy. Questa azione è irreversibile."
+                    description: "Vuoi davvero eliminare tutti i dati? Questa azione cancellerà permanentemente transazioni, categorie, impostazioni, portfolio legacy, stato notifiche e preferenze privacy. Questa azione è irreversibile."
                 }
             default:
                 return { title: "", description: "" }
@@ -301,16 +283,6 @@ export function AdvancedSection() {
                                     >
                                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
                                         Elimina solo transazioni
-                                    </Button>
-
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => setResetDialog("budgets")}
-                                        disabled={isLoading}
-                                        className="justify-start text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/20"
-                                    >
-                                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
-                                        Elimina solo piani ritmo
                                     </Button>
 
                                     <Button

@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import { describe, expect, test, vi } from "vitest"
 
-import { GoalScenarioResult } from "@/VAULT/goals/types"
+import { QuotaScenarioResult } from "@/VAULT/goals/types"
 
 import { MonitorPlanCard } from "../monitor-plan-card"
 
@@ -12,7 +12,7 @@ vi.mock("@/features/settings/api/use-currency", () => ({
     })
 }))
 
-function createScenario(overrides: Partial<GoalScenarioResult> = {}): GoalScenarioResult {
+function createScenario(overrides: Partial<QuotaScenarioResult> = {}): QuotaScenarioResult {
     return {
         key: "baseline",
         config: {
@@ -51,7 +51,7 @@ describe("MonitorPlanCard", () => {
             <MonitorPlanCard
                 scenario={scenario}
                 savingsPercent={10}
-                goalMonthlyCapacityCents={50000}
+                monthlyQuotaCents={50000}
                 hasInsufficientData={false}
             />
         )
@@ -62,7 +62,7 @@ describe("MonitorPlanCard", () => {
             <MonitorPlanCard
                 scenario={createScenario({ planBasis: "brain_overlay" })}
                 savingsPercent={10}
-                goalMonthlyCapacityCents={50000}
+                monthlyQuotaCents={50000}
                 hasInsufficientData={false}
             />
         )
@@ -85,7 +85,7 @@ describe("MonitorPlanCard", () => {
             <MonitorPlanCard
                 scenario={scenario}
                 savingsPercent={0}
-                goalMonthlyCapacityCents={0}
+                monthlyQuotaCents={0}
                 hasInsufficientData={false}
             />
         )

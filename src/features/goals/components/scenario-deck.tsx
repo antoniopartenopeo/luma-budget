@@ -6,7 +6,7 @@ import { SubSectionCard } from "@/components/patterns/sub-section-card"
 import { NumaEngineCard } from "@/components/patterns/numa-engine-card"
 import { cn } from "@/lib/utils"
 import { Compass, CheckCircle2, Wallet, TrendingUp, ShieldCheck } from "lucide-react"
-import { GoalScenarioResult, ScenarioKey } from "@/VAULT/goals/types"
+import { QuotaScenarioResult, ScenarioKey } from "@/VAULT/goals/types"
 import {
     FINANCIAL_LAB_COPY,
     getOverlayAuditSubValue,
@@ -19,7 +19,7 @@ import { formatCents } from "@/domain/money"
 import { useCurrency } from "@/features/settings/api/use-currency"
 
 interface ScenarioDeckProps {
-    scenarios: GoalScenarioResult[]
+    scenarios: QuotaScenarioResult[]
     activeKey: ScenarioKey
     onSelect: (key: ScenarioKey) => void
     className?: string

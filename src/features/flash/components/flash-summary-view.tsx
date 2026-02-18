@@ -19,7 +19,7 @@ import { useSettings } from "@/features/settings/api/use-settings"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { getCurrentPeriod, formatPeriodLabel } from "@/features/insights/utils"
 import { formatCents } from "@/domain/money"
-import { calculateUtilizationPct, calculateSharePct } from "@/domain/money"
+import { calculateSharePct } from "@/domain/money"
 import { narrateSnapshot, deriveSnapshotState, SnapshotFacts } from "@/domain/narration"
 import { getDaysElapsedInMonth, getDaysInMonth } from "@/lib/date-ranges"
 import { cn } from "@/lib/utils"
@@ -52,14 +52,13 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
         totalIncomeCents,
         totalExpensesCents,
         netBalanceCents,
-        budgetTotalCents,
-        budgetRemainingCents,
         uselessSpendPercent,
         categoriesSummary
     } = data
 
-    const budgetSpentCents = budgetTotalCents - budgetRemainingCents
-    const budgetUsedPct = calculateUtilizationPct(budgetSpentCents, budgetTotalCents)
+    const expensePressurePct = totalIncomeCents > 0
+        ? Math.max(0, calculateSharePct(totalExpensesCents, totalIncomeCents))
+        : 0
 
     // Core facts derived from data
     const top3Categories = [...categoriesSummary].sort((a, b) => b.valueCents - a.valueCents).slice(0, 3)
@@ -73,8 +72,7 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
     const daysInMonth = getDaysInMonth(period)
     const elapsedRatio = daysElapsed / daysInMonth
 
-    const projectedSpentCents = elapsedRatio > 0 ? Math.round(totalExpensesCents / elapsedRatio) : 0
-    const isProjectedOverrun = budgetTotalCents > 0 && projectedSpentCents > budgetTotalCents
+    const isProjectedOverrun = false
 
     // Rule B6: Data Integrity flag
     const isDataIncomplete = categoriesSummary.length === 0 && daysElapsed > 2
@@ -86,8 +84,8 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
         expensesFormatted: formatCents(totalExpensesCents, currency, locale),
         balanceFormatted: formatCents(netBalanceCents, currency, locale),
         balanceCents: netBalanceCents,
-        budgetFormatted: budgetTotalCents > 0 ? formatCents(budgetTotalCents, currency, locale) : undefined,
-        utilizationPercent: budgetTotalCents > 0 ? budgetUsedPct : undefined,
+        budgetFormatted: undefined,
+        utilizationPercent: undefined,
         superfluousPercent: uselessSpendPercent ?? undefined,
         superfluousTargetPercent: superfluousTarget,
         savingsRatePercent,
@@ -188,18 +186,18 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                         </div>
                     </motion.div>
 
-                    {/* Ritmo & Goal - Half width */}
+                    {/* Pressure & Superfluous - Half width */}
                     <motion.div variants={itemVariants} className="glass-card rounded-2xl p-4">
                         <div className="flex items-center justify-between mb-3">
                             <PiggyBank className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Ritmo</span>
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Pressione</span>
                         </div>
-                        <div className={cn("text-lg font-bold text-foreground", blurClass)}>{budgetUsedPct}%</div>
+                        <div className={cn("text-lg font-bold text-foreground", blurClass)}>{expensePressurePct}%</div>
                         <div className="h-1.5 bg-muted rounded-full overflow-hidden mt-2">
                             <motion.div
                                 initial={{ width: 0 }}
-                                animate={{ width: `${Math.min(budgetUsedPct, 100)}%` }}
-                                className={cn("h-full", budgetUsedPct > 90 ? "bg-rose-500" : "bg-blue-500")}
+                                animate={{ width: `${Math.min(expensePressurePct, 100)}%` }}
+                                className={cn("h-full", expensePressurePct > 90 ? "bg-rose-500" : "bg-blue-500")}
                             />
                         </div>
                     </motion.div>

@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge"
 import { formatCents } from "@/domain/money"
-import { GoalScenarioResult } from "@/VAULT/goals/types"
+import { QuotaScenarioResult } from "@/VAULT/goals/types"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { generateAIMonitorMessage, getAIMonitorStyles } from "@/features/goals/utils/ai-monitor-copy"
 import { FINANCIAL_LAB_COPY, getPlanBasisLabel } from "@/features/goals/utils/financial-lab-copy"
@@ -11,16 +11,16 @@ import { Sparkles } from "lucide-react"
 import { motion, useReducedMotion } from "framer-motion"
 
 interface MonitorPlanCardProps {
-    scenario: GoalScenarioResult
+    scenario: QuotaScenarioResult
     savingsPercent: number
-    goalMonthlyCapacityCents: number
+    monthlyQuotaCents: number
     hasInsufficientData: boolean
 }
 
 export function MonitorPlanCard({
     scenario,
     savingsPercent,
-    goalMonthlyCapacityCents,
+    monthlyQuotaCents,
     hasInsufficientData
 }: MonitorPlanCardProps) {
     const { currency, locale } = useCurrency()
@@ -29,7 +29,7 @@ export function MonitorPlanCard({
     const aiMonitor = generateAIMonitorMessage({
         scenario,
         savingsPercent,
-        monthlyGoalContributionFormatted: formatCents(goalMonthlyCapacityCents, currency, locale),
+        monthlyQuotaFormatted: formatCents(monthlyQuotaCents, currency, locale),
         hasInsufficientData
     })
     const planSourceLabel = getPlanBasisLabel(scenario.planBasis)

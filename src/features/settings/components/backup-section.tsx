@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/alert-dialog"
 import { queryKeys } from "@/lib/query-keys"
 import { __resetTransactionsCache } from "@/features/transactions/api/repository"
-import { __resetBudgetsCache } from "@/VAULT/budget/api/repository"
 import { __resetCategoriesCache } from "@/features/categories/api/repository"
 import {
     buildBackupV2,
@@ -43,12 +42,10 @@ export function BackupSection() {
 
     const invalidateAll = async () => {
         __resetTransactionsCache()
-        __resetBudgetsCache()
         __resetCategoriesCache()
         await Promise.all([
             queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all }),
             queryClient.invalidateQueries({ queryKey: queryKeys.transactions.recent }),
-            queryClient.invalidateQueries({ queryKey: queryKeys.budget.all }),
             queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all }),
             queryClient.invalidateQueries({ queryKey: queryKeys.categories.all() }),
             queryClient.invalidateQueries({ queryKey: queryKeys.categories.active() }),
@@ -219,9 +216,6 @@ export function BackupSection() {
                                 <div className="grid grid-cols-2 gap-2">
                                     <span className="text-muted-foreground">Transazioni:</span>
                                     <span className="font-medium">{pendingBackup.summary.txCount}</span>
-
-                                    <span className="text-muted-foreground">Piani Ritmo:</span>
-                                    <span className="font-medium">{pendingBackup.summary.budgetCount}</span>
                                 </div>
                                 <div className="pt-1">
                                     <span className="text-muted-foreground block mb-1">Periodi inclusi:</span>

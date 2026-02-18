@@ -1,7 +1,7 @@
-# Goals Logic Vault
+# Quota Logic Vault
 
 > **Status**: LOCKED
-> **Role**: Core Domain Logic for Goals/Labs
+> **Role**: Core Domain Logic for Financial Lab quota-mode
 
 Questa directory contiene il cervello finanziario del sistema.
 Codice qui dentro:
@@ -14,8 +14,6 @@ Codice qui dentro:
 *   `@/lib/*`
 *   `@/VAULT/goals/types`
 *   `@/VAULT/goals/config/rhythms`
-*   `@/VAULT/goals/api/*`
-*   `@/VAULT/budget/api/*`
 *   `@/features/transactions/api/use-transactions`
 *   `@/features/simulator/hooks` (baseline read model)
 *   `react`, `date-fns` (orchestrazione hook/date)
@@ -39,7 +37,7 @@ Ogni modifica al Core deve rispettare questa sequenza:
 *   ❌ `react-dom`, `framer-motion`: Mai importare animazioni o rendering.
 
 ## Logic Files (The Vault)
-*   `use-goal-scenarios.ts`: Hook orchestrator per baseline/scenari quota-centrici.
+*   `use-quota-scenarios.ts`: Hook orchestrator per baseline/scenari quota-centrici.
 *   `financial-baseline.ts`: Baseline math engine.
 *   `scenario-generator.ts`: Costruzione configurazioni scenario.
 *   `scenario-calculator.ts`: Applicazione savings + sostenibilita + quota sostenibile.
@@ -49,4 +47,4 @@ Ogni modifica al Core deve rispettare questa sequenza:
 
 ## Boundary di persistenza
 - La simulazione resta read-only sui dati transazionali.
-- Il flusso Financial Lab quota-mode non applica commitment su portfolio o budget operativo.
+- Il flusso Financial Lab quota-mode non applica commitment su portfolio o sistemi legacy.

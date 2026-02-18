@@ -87,7 +87,6 @@ describe("diagnostics-utils", () => {
     describe("buildDiagnosticsSnapshot", () => {
         it("should build snapshot with storage info", () => {
             localStorage.setItem("luma_transactions_v1", JSON.stringify([1, 2]))
-            localStorage.setItem("luma_budget_plans_v1", JSON.stringify({ jan: {}, feb: {} }))
             localStorage.setItem("luma_settings_v1", JSON.stringify({ version: 1 }))
             localStorage.setItem("luma_categories_v1", JSON.stringify({ categories: [1, 2, 3] }))
 
@@ -99,10 +98,6 @@ describe("diagnostics-utils", () => {
             const transactions = snapshot.storage.find(s => s.key === "luma_transactions_v1")
             expect(transactions?.present).toBe(true)
             expect(transactions?.summary).toContain("Transazioni: 2")
-
-            const budgets = snapshot.storage.find(s => s.key === "luma_budget_plans_v1")
-            expect(budgets?.present).toBe(true)
-            expect(budgets?.summary).toContain("Piani Ritmo: 2")
 
             const settings = snapshot.storage.find(s => s.key === "luma_settings_v1")
             expect(settings?.present).toBe(true)

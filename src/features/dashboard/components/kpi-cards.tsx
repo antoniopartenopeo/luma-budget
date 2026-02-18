@@ -267,7 +267,7 @@ export function DashboardKpiGrid({
                         }
                     ]}
                     auditStats={[
-                        { label: "Metodo", value: "Storico + Budget", subValue: "Base del calcolo mensile.", icon: TrendingUp },
+                        { label: "Metodo", value: "Storico comportamentale", subValue: "Base del calcolo mensile.", icon: TrendingUp },
                         { label: "Aggiornamento", value: "Automatico", subValue: "Ricalcolo ad ogni nuovo movimento.", icon: Zap },
                         { label: "Dati usati", value: "Transazioni reali", subValue: "Nessuna stima manuale richiesta.", icon: BrainCircuit },
                         { label: "Privacy", value: "Locale", subValue: "I calcoli restano sul dispositivo.", icon: ShieldCheck },

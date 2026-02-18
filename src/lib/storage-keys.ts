@@ -14,11 +14,12 @@ export interface StorageKeyConfig {
 }
 
 export const STORAGE_KEY_TRANSACTIONS = "luma_transactions_v1"
+// Legacy technical key kept only for backward compatibility of old backups/migrations.
 export const STORAGE_KEY_BUDGET_PLANS = "luma_budget_plans_v1"
 export const STORAGE_KEY_CATEGORIES = "luma_categories_v1"
 export const STORAGE_KEY_SETTINGS = "luma_settings_v1"
-export const STORAGE_KEY_GOAL_PORTFOLIO = "numa_goal_portfolio_v1"
-export const STORAGE_KEY_ACTIVE_GOAL_LEGACY = "numa_active_goal_v1"
+export const STORAGE_KEY_LEGACY_PORTFOLIO = "numa_goal_portfolio_v1"
+export const STORAGE_KEY_LEGACY_ACTIVE_COMMIT = "numa_active_goal_v1"
 export const STORAGE_KEY_NOTIFICATIONS = "numa_notifications_state_v2"
 export const STORAGE_KEY_PRIVACY = "numa-privacy-storage"
 export const STORAGE_KEY_FINLAB_HARD_SWITCH_DONE = "numa_finlab_hard_switch_v1_done"
@@ -39,12 +40,6 @@ function countTransactions(raw: unknown): number {
     return count
 }
 
-function countBudgetPlans(raw: unknown): number {
-    if (!raw || typeof raw !== "object") return 0
-    if (Array.isArray(raw)) return raw.length
-    return Object.keys(raw).length
-}
-
 function countCategories(raw: unknown): number {
     if (!raw || typeof raw !== "object") return 0
     const obj = raw as Record<string, unknown>
@@ -56,14 +51,14 @@ function countCategories(raw: unknown): number {
     return 0
 }
 
-function countGoalsInPortfolio(raw: unknown): number {
+function countLegacyPortfolioRecords(raw: unknown): number {
     if (!raw || typeof raw !== "object") return 0
     const obj = raw as Record<string, unknown>
     if (Array.isArray(obj.goals)) return obj.goals.length
     return 0
 }
 
-function countLegacyGoal(raw: unknown): number {
+function countLegacyCommitRecord(raw: unknown): number {
     if (!raw || typeof raw !== "object") return 0
     return 1
 }
@@ -81,12 +76,6 @@ export const STORAGE_KEYS_REGISTRY: StorageKeyConfig[] = [
         invalidatesQueries: ["transactions", "dashboard-summary", "recent-transactions"],
     },
     {
-        key: STORAGE_KEY_BUDGET_PLANS,
-        label: "Piani Ritmo",
-        countFn: countBudgetPlans,
-        invalidatesQueries: ["budgets", "dashboard-summary"],
-    },
-    {
         key: STORAGE_KEY_CATEGORIES,
         label: "Categorie",
         countFn: countCategories,
@@ -98,15 +87,15 @@ export const STORAGE_KEYS_REGISTRY: StorageKeyConfig[] = [
         invalidatesQueries: ["settings", "dashboard-summary"],
     },
     {
-        key: STORAGE_KEY_GOAL_PORTFOLIO,
-        label: "Portfolio Obiettivi",
-        countFn: countGoalsInPortfolio,
+        key: STORAGE_KEY_LEGACY_PORTFOLIO,
+        label: "Portfolio Legacy",
+        countFn: countLegacyPortfolioRecords,
         invalidatesQueries: ["dashboard-summary"],
     },
     {
-        key: STORAGE_KEY_ACTIVE_GOAL_LEGACY,
-        label: "Goal Attivo (Legacy)",
-        countFn: countLegacyGoal,
+        key: STORAGE_KEY_LEGACY_ACTIVE_COMMIT,
+        label: "Commit Legacy",
+        countFn: countLegacyCommitRecord,
     },
     {
         key: STORAGE_KEY_NOTIFICATIONS,

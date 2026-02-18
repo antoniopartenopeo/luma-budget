@@ -15,7 +15,7 @@ export default function SimulatorPage() {
     const {
         activeScenarioKey,
         currentScenario,
-        goalMonthlyCapacityRealtime,
+        monthlyQuotaRealtimeCents,
         hasInsufficientData,
         isDataLoading,
         realtimeWindowMonths,
@@ -67,7 +67,7 @@ export default function SimulatorPage() {
                             simulatedSurplusBase={simulatedSurplusBase}
                             simulatedSurplus={simulatedSurplus}
                             realtimeCapacityFactor={realtimeCapacityFactor}
-                            goalMonthlyCapacityRealtime={goalMonthlyCapacityRealtime}
+                            monthlyQuotaRealtimeCents={monthlyQuotaRealtimeCents}
                             realtimeWindowMonths={realtimeWindowMonths}
                             savingsPercent={savingsPercent}
                             hasInsufficientData={hasInsufficientData}

@@ -8,7 +8,7 @@ const SAFE_LIQUIDITY_BUFFER_RATIO = 0.20 // 20% is considered secure
 
 /**
  * Calculates the minimum monthly liquidity buffer required for safety.
- * This is the amount of money that should NOT be allocated to goals/savings.
+ * This is the amount of money that should NOT be allocated to fixed quotas/savings.
  */
 export function calculateSafeSavingsBuffer(averageMonthlyIncome: number): number {
     return Math.round(averageMonthlyIncome * MIN_LIQUIDITY_BUFFER_RATIO)

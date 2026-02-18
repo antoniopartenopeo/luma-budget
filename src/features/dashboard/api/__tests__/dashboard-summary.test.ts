@@ -2,11 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { fetchDashboardSummary } from '../repository'
 import { __resetTransactionsCache, createTransaction } from '../../../transactions/api/repository'
 import { getCurrentPeriod, calculateDateRangeLocal } from "@/lib/date-ranges"
-import { upsertBudget, __resetBudgetsCache } from "@/VAULT/budget/api/repository"
 import { __resetCategoriesCache } from '../../../categories/api/repository'
 import { CategoryIds } from '@/domain/categories'
-
-const DEFAULT_USER_ID = 'user-1'
 
 // Mock storage just in case, though we will rely on repository methods which use storage utils
 // We want to ensure clean state.
@@ -20,7 +17,6 @@ describe('Dashboard Summary (Real Wiring)', () => {
         vi.useFakeTimers({ toFake: ['Date'] })
         vi.setSystemTime(FIXED_DATE)
         __resetTransactionsCache()
-        __resetBudgetsCache()
         __resetCategoriesCache()
 
         // Mock localStorage to be an in-memory map for speed and isolation
@@ -37,17 +33,10 @@ describe('Dashboard Summary (Real Wiring)', () => {
         vi.useRealTimers()
     })
 
-    it('should calculate summary with real budget and transactions for current month', async () => {
+    it('should calculate summary with real transactions for current month', async () => {
         const currentPeriod = getCurrentPeriod() // Should be "2025-05" due to fake timer
 
-        // 1. Setup real budget (1000€) via Repository
-        await upsertBudget(DEFAULT_USER_ID, currentPeriod, {
-            period: currentPeriod,
-            globalBudgetAmountCents: 100000,
-            groupBudgets: []
-        })
-
-        // 2. Setup transactions via Repository (triggers logic + backfill implicitly)
+        // Setup transactions via Repository (triggers logic + backfill implicitly)
         // May 2025 (Current)
         await createTransaction({
             description: 'Expense current month',
@@ -94,20 +83,6 @@ describe('Dashboard Summary (Real Wiring)', () => {
 
         // netBalance (ALL TIME): income(100) - expenses(250 + 500) = 100 - 750 = -650
         expect(summary.netBalance).toBe(-650)
-
-        // budgetTotal: from budgetPlan (1000)
-        expect(summary.budgetTotal).toBe(1000)
-        // budgetRemaining: budget (1000) - expenses (250) = 750
-        expect(summary.budgetRemaining).toBe(750)
-    })
-
-    it('should handle missing budget plan gracefully (budgetTotal = 0)', async () => {
-        const currentPeriod = getCurrentPeriod()
-        const summary = await fetchDashboardSummary({ mode: 'month', period: currentPeriod })
-
-        expect(summary.budgetTotal).toBe(0)
-        expect(summary.budgetRemaining).toBe(0)
-        expect(summary.netBalance).toBe(0)
     })
 
     it('should calculate useless spend percentage correctly for current month', async () => {

@@ -3,11 +3,11 @@ import { calculateBaselineMetrics, BaselineMetrics } from "@/VAULT/goals/logic/f
 import { generateScenarios } from "@/VAULT/goals/logic/scenario-generator"
 import { Category } from "@/domain/categories"
 import { Transaction } from "@/domain/transactions"
-import { BrainAssistSignal, GoalScenarioResult, RealtimeOverlaySignal, ScenarioKey } from "@/VAULT/goals/types"
+import { BrainAssistSignal, QuotaScenarioResult, RealtimeOverlaySignal, ScenarioKey } from "@/VAULT/goals/types"
 import { calculateScenario } from "@/VAULT/goals/logic/scenario-calculator"
 import { MonthlyAveragesResult } from "@/features/simulator/utils"
 
-interface UseGoalScenariosProps {
+interface UseQuotaScenariosProps {
     simulationPeriod?: 3 | 6 | 12
     categories: Category[]
     transactions: Transaction[] | undefined
@@ -17,13 +17,13 @@ interface UseGoalScenariosProps {
     realtimeOverlay?: RealtimeOverlaySignal | null
 }
 
-interface UseGoalScenariosResult {
+interface UseQuotaScenariosResult {
     isLoading: boolean
-    scenarios: GoalScenarioResult[]
+    scenarios: QuotaScenarioResult[]
     baselineMetrics: BaselineMetrics | null
 }
 
-export function useGoalScenarios({
+export function useQuotaScenarios({
     simulationPeriod = 6,
     categories,
     transactions,
@@ -31,7 +31,7 @@ export function useGoalScenarios({
     isLoading,
     brainAssist,
     realtimeOverlay,
-}: UseGoalScenariosProps): UseGoalScenariosResult {
+}: UseQuotaScenariosProps): UseQuotaScenariosResult {
     // Compute logic from upstream read model to avoid duplicated data pipelines.
     const results = useMemo(() => {
         if (isLoading || !transactions || !averages) return { scenarios: [], baseline: null }
@@ -43,7 +43,7 @@ export function useGoalScenarios({
         const configs = generateScenarios(baseline, categories)
 
         // C. Calculate Results using Pure Logic
-        const scenarioResults: GoalScenarioResult[] = configs.map(config => {
+        const scenarioResults: QuotaScenarioResult[] = configs.map(config => {
             // Map known Rhythm types to ScenarioKeys strictly
             let key: ScenarioKey = "baseline"
             if (config.type === "balanced") key = "balanced"

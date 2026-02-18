@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react"
 import { describe, expect, test, vi } from "vitest"
 
-import { GoalScenarioResult } from "@/VAULT/goals/types"
+import { QuotaScenarioResult } from "@/VAULT/goals/types"
 
 import { ScenarioDeck } from "../scenario-deck"
 
@@ -12,7 +12,7 @@ vi.mock("@/features/settings/api/use-currency", () => ({
     })
 }))
 
-function createScenario(partial: Partial<GoalScenarioResult> & Pick<GoalScenarioResult, "key">): GoalScenarioResult {
+function createScenario(partial: Partial<QuotaScenarioResult> & Pick<QuotaScenarioResult, "key">): QuotaScenarioResult {
     return {
         key: partial.key,
         config: partial.config || {
@@ -50,7 +50,7 @@ function createScenario(partial: Partial<GoalScenarioResult> & Pick<GoalScenario
 
 describe("ScenarioDeck", () => {
     test("renders quota as primary KPI in scenario cards", () => {
-        const scenarios: GoalScenarioResult[] = [
+        const scenarios: QuotaScenarioResult[] = [
             createScenario({
                 key: "baseline",
                 quota: {

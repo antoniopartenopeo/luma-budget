@@ -1,7 +1,7 @@
 "use client"
 
 import { formatCents } from "@/domain/money"
-import { GoalScenarioResult } from "@/VAULT/goals/types"
+import { QuotaScenarioResult } from "@/VAULT/goals/types"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { cn } from "@/lib/utils"
 import { ShieldCheck, Target, TrendingUp, Wallet } from "lucide-react"
@@ -18,11 +18,11 @@ import {
 import { MonitorPlanCard } from "./monitor-plan-card"
 
 interface SimulatorResultsPanelProps {
-    scenario: GoalScenarioResult
+    scenario: QuotaScenarioResult
     simulatedSurplusBase: number
     simulatedSurplus: number
     realtimeCapacityFactor: number
-    goalMonthlyCapacityRealtime: number
+    monthlyQuotaRealtimeCents: number
     realtimeWindowMonths: number
     savingsPercent: number
     hasInsufficientData: boolean
@@ -33,14 +33,14 @@ export function SimulatorResultsPanel({
     simulatedSurplusBase,
     simulatedSurplus,
     realtimeCapacityFactor,
-    goalMonthlyCapacityRealtime,
+    monthlyQuotaRealtimeCents,
     realtimeWindowMonths,
     savingsPercent,
     hasInsufficientData
 }: SimulatorResultsPanelProps) {
     const { currency, locale } = useCurrency()
-    const goalMonthlyCapacity = realtimeWindowMonths > 0
-        ? goalMonthlyCapacityRealtime
+    const monthlyQuotaCents = realtimeWindowMonths > 0
+        ? monthlyQuotaRealtimeCents
         : scenario.quota.baseMonthlyCapacityCents
     const realtimeAdjustmentCents = simulatedSurplus - simulatedSurplusBase
     const realtimeAdjustmentSign = realtimeAdjustmentCents > 0 ? "+" : ""
@@ -130,7 +130,7 @@ export function SimulatorResultsPanel({
                                 <p className="text-xs font-bold tracking-wide">{FINANCIAL_LAB_COPY.resultsPanel.practicalStepLabel}</p>
                             </div>
                             <div className="mt-auto space-y-1">
-                                <p className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tighter tabular-nums">{formatCents(goalMonthlyCapacity, currency, locale)}/mese</p>
+                                <p className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tighter tabular-nums">{formatCents(monthlyQuotaCents, currency, locale)}/mese</p>
                                 <p className="text-xs text-muted-foreground/80 min-h-[32px]">{FINANCIAL_LAB_COPY.resultsPanel.practicalStepDescription}</p>
                             </div>
                         </div>
@@ -155,7 +155,7 @@ export function SimulatorResultsPanel({
             <MonitorPlanCard
                 scenario={scenario}
                 savingsPercent={savingsPercent}
-                goalMonthlyCapacityCents={goalMonthlyCapacity}
+                monthlyQuotaCents={monthlyQuotaCents}
                 hasInsufficientData={hasInsufficientData}
             />
         </div>

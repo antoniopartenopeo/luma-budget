@@ -3,10 +3,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useState, useEffect } from "react"
 import { __resetTransactionsCache } from "@/features/transactions/api/repository"
-import { __resetBudgetsCache } from "@/VAULT/budget/api/repository"
 import { __resetCategoriesCache } from "@/features/categories/api/repository"
 import {
-    STORAGE_KEY_BUDGET_PLANS,
     STORAGE_KEY_CATEGORIES,
     STORAGE_KEYS_REGISTRY,
     STORAGE_KEY_TRANSACTIONS
@@ -14,7 +12,6 @@ import {
 
 const CACHE_RESETTERS: Record<string, () => void> = {
     [STORAGE_KEY_TRANSACTIONS]: __resetTransactionsCache,
-    [STORAGE_KEY_BUDGET_PLANS]: __resetBudgetsCache,
     [STORAGE_KEY_CATEGORIES]: __resetCategoriesCache,
 }
 

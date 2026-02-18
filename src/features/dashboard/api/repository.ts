@@ -1,6 +1,5 @@
 import { DashboardSummary, DashboardTimeFilter } from "./types"
 import { fetchTransactions } from "../../transactions/api/repository"
-import { fetchBudget } from "@/VAULT/budget/api/repository"
 import { getSignedCents } from "@/domain/transactions"
 import { calculateDateRangeLocal, filterByRange } from "@/lib/date-ranges"
 import { getCategoryById } from "@/features/categories/config"
@@ -8,7 +7,6 @@ import { getCategories } from "@/features/categories/api/repository"
 import { calculateSuperfluousMetrics } from "../../transactions/utils/transactions-logic"
 
 import { sumExpensesInCents, sumIncomeInCents } from "@/domain/money"
-import { LOCAL_USER_ID } from "@/lib/runtime-user"
 
 export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promise<DashboardSummary> => {
     // Simulate network delay
@@ -22,10 +20,8 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
 
     // 2. Fetch all data
     // In a real app, we would filter in the query, but here we fetch all and filter in memory
-    const [transactions, budgetPlan, categories] = await Promise.all([
+    const [transactions, categories] = await Promise.all([
         fetchTransactions(),
-        // Budget logic: always fetch for the "pivot" period (filter.period)
-        fetchBudget(LOCAL_USER_ID, filter.period),
         getCategories()
     ])
 
@@ -45,16 +41,7 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
     const totalSpentCents = totalExpensesCents
     const totalIncomeCentsSafe = totalIncomeCents
 
-    // 6. Calculate Budget Remaining
-    // Rule: mode="month" -> use period; mode="range" -> use end period (filter.period)
-    const { startDate: pivotStart, endDate: pivotEnd } = calculateDateRangeLocal(filter.period, 1)
-    const targetMonthTransactions = filterByRange(transactions, pivotStart, pivotEnd)
-    const targetMonthExpensesCents = sumExpensesInCents(targetMonthTransactions)
-
-    const budgetTotalCents = budgetPlan?.globalBudgetAmountCents || 0
-    const budgetRemainingCents = Math.max(budgetTotalCents - targetMonthExpensesCents, 0)
-
-    // 7. Calculate Category Distribution (Range-based)
+    // 6. Calculate Category Distribution (Range-based)
     const categoryMap = new Map<string, { label: string, amountCents: number, color: string }>()
     rangeTransactions.filter(t => t.type === 'expense').forEach(t => {
         const amountCents = Math.abs(getSignedCents(t))
@@ -82,14 +69,14 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
             return a.name.localeCompare(b.name, "it-IT")
         })
 
-    // 8. Calculate Superfluous Spending (Range-based)
+    // 7. Calculate Superfluous Spending (Range-based)
     const {
         percentage: uselessSpendPercent
     } = calculateSuperfluousMetrics(rangeTransactions)
 
 
 
-    // 9. Monthly Data for Charts
+    // 8. Monthly Data for Charts
     const monthlyExpenses = []
     const startM = startDate.getMonth()
     const startY = startDate.getFullYear()
@@ -130,8 +117,6 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
         totalExpensesCents: totalSpentCents,
         // Compatibility alias used by existing components and hooks.
         netBalanceCents,
-        budgetTotalCents,
-        budgetRemainingCents,
         allTimeIncome: allTimeIncomeCents / 100,
         allTimeExpenses: allTimeExpensesCents / 100,
         netBalanceAllTime: netBalanceCents / 100,
@@ -139,8 +124,6 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
         totalIncome: totalIncomeCentsSafe / 100,
         totalExpenses: totalSpentCents / 100,
         netBalance: netBalanceCents / 100,
-        budgetTotal: budgetTotalCents / 100,
-        budgetRemaining: budgetRemainingCents / 100,
         uselessSpendPercent: finalUselessPercent,
         categoriesSummary,
         usefulVsUseless: {

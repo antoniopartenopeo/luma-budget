@@ -2,7 +2,7 @@ import { storage } from "@/lib/storage-utils";
 import {
     STORAGE_KEY_BUDGET_PLANS,
     STORAGE_KEY_CATEGORIES,
-    STORAGE_KEY_GOAL_PORTFOLIO,
+    STORAGE_KEY_LEGACY_PORTFOLIO,
     STORAGE_KEY_NOTIFICATIONS,
     STORAGE_KEY_PRIVACY,
     STORAGE_KEYS_REGISTRY,
@@ -18,7 +18,7 @@ export const STORAGE_KEYS = {
     BUDGETS: STORAGE_KEY_BUDGET_PLANS,
     CATEGORIES: STORAGE_KEY_CATEGORIES,
     SETTINGS: STORAGE_KEY_SETTINGS,
-    PORTFOLIO: STORAGE_KEY_GOAL_PORTFOLIO,
+    PORTFOLIO: STORAGE_KEY_LEGACY_PORTFOLIO,
     NOTIFICATIONS: STORAGE_KEY_NOTIFICATIONS,
     PRIVACY: STORAGE_KEY_PRIVACY,
 };
@@ -240,7 +240,10 @@ export const resetBudgets = (): void => {
  * Completely clears all application data from localStorage.
  */
 export const resetAllData = (): void => {
-    const keys = new Set(STORAGE_KEYS_REGISTRY.map(config => config.key));
+    const keys = new Set([
+        ...STORAGE_KEYS_REGISTRY.map(config => config.key),
+        STORAGE_KEYS.BUDGETS, // Legacy key: keep cleanup deterministic even after budget feature removal.
+    ]);
     keys.forEach(key => storage.remove(key));
 };
 

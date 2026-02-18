@@ -1,10 +1,8 @@
 import { useMemo } from "react"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
 import { useCategories } from "@/features/categories/api/use-categories"
-import { useBudget } from "@/VAULT/budget/api/use-budget"
 import { Insight } from "./types"
 import {
-    buildBudgetRiskInsight,
     buildCategorySpikeInsights,
     buildTopDriversInsight,
 } from "./generators"
@@ -27,11 +25,10 @@ interface UseInsightsResult {
 export function useInsights({ period }: UseInsightsOptions): UseInsightsResult {
     const { data: transactions = [], isLoading: transactionsLoading } = useTransactions()
     const { data: categories = [], isLoading: categoriesLoading } = useCategories({ includeArchived: true })
-    const { data: budgetPlan, isLoading: budgetLoading } = useBudget(period)
     const { data: settings, isLoading: settingsLoading } = useSettings()
     const { currency, locale } = useCurrency()
 
-    const isLoading = transactionsLoading || categoriesLoading || budgetLoading || settingsLoading
+    const isLoading = transactionsLoading || categoriesLoading || settingsLoading
 
     const result = useMemo(() => {
         if (isLoading) {
@@ -46,23 +43,7 @@ export function useInsights({ period }: UseInsightsOptions): UseInsightsResult {
             categories.map(c => [c.id, { label: c.label }])
         )
 
-        const currentDate = new Date()
-        const budgetCents = budgetPlan?.globalBudgetAmountCents ?? null
-
         const insights: Insight[] = []
-
-        // Generate Budget Risk Insight
-        const budgetRisk = buildBudgetRiskInsight({
-            transactions,
-            budgetCents,
-            period,
-            currentDate,
-            currency,
-            locale,
-        }, thresholds)
-        if (budgetRisk) {
-            insights.push(budgetRisk)
-        }
 
         // Generate Category Spike Insights
         const categorySpikes = buildCategorySpikeInsights({
@@ -93,7 +74,7 @@ export function useInsights({ period }: UseInsightsOptions): UseInsightsResult {
             isEmpty: insights.length === 0,
             hasTransactions,
         }
-    }, [transactions, categories, budgetPlan, period, isLoading, settings?.insightsSensitivity, currency, locale])
+    }, [transactions, categories, period, isLoading, settings?.insightsSensitivity, currency, locale])
 
     return {
         ...result,

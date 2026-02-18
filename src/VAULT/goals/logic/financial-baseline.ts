@@ -109,7 +109,7 @@ export function calculateBaselineMetrics(
     const avgSquaredDiff = squaredDiffs.reduce((sum, sq) => sum + sq, 0) / divisor
     const stdDev = Math.round(Math.sqrt(avgSquaredDiff))
 
-    // StdDev of Free Cash Flow (Income - Expenses): more robust variability signal for goal projection.
+    // StdDev of Free Cash Flow (Income - Expenses): more robust variability signal for quota projection.
     const freeCashFlows = months.map(m => m.income - m.expenses)
     const avgFreeCashFlow = Math.round(freeCashFlows.reduce((sum, value) => sum + value, 0) / divisor)
     const freeCashFlowSquaredDiffs = freeCashFlows.map(value => Math.pow(value - avgFreeCashFlow, 2))

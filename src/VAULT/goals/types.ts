@@ -57,7 +57,7 @@ export interface RhythmPreset {
     }
 }
 
-export interface GoalScenarioResult {
+export interface QuotaScenarioResult {
     key: ScenarioKey
     config: ScenarioConfig
     sustainability: SustainabilityResult
@@ -72,33 +72,4 @@ export interface GoalScenarioResult {
         realtimeWindowMonths: number
     }
     planBasis: "historical" | "brain_overlay" | "fallback_overlay"
-}
-
-export interface NUMAGoal {
-    id: string
-    title: string
-    targetCents: number
-    createdAt: string
-    reachedAt?: string
-}
-
-export interface GoalPortfolio {
-    mainGoalId?: string
-    goals: NUMAGoal[]
-    activeRhythm?: {
-        type: ScenarioType
-        label: string
-        intensity: number
-        benefitCents: number // Monthly FCF improvement in cents
-        activatedAt: string
-    }
-}
-
-export interface ActiveGoalCommitment {
-    id: string
-    goalTargetCents: number
-    rhythmType: ScenarioType
-    rhythmLabel: string
-    intensity: number // Aggregate intensity (e.g. 0 to 1)
-    activatedAt: string
 }

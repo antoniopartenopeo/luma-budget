@@ -20,8 +20,6 @@ export interface DashboardSummary {
     totalIncomeCents: number
     totalExpensesCents: number
     netBalanceCents: number
-    budgetTotalCents: number
-    budgetRemainingCents: number
     allTimeIncome: number
     allTimeExpenses: number
     netBalanceAllTime: number
@@ -29,8 +27,6 @@ export interface DashboardSummary {
     totalIncome: number
     totalExpenses: number
     netBalance: number
-    budgetTotal: number
-    budgetRemaining: number
     uselessSpendPercent: number | null
     categoriesSummary: CategorySummary[]
     usefulVsUseless: {

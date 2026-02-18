@@ -16,15 +16,6 @@ vi.mock('@/lib/storage-utils', () => ({
     }
 }))
 
-// Mock Budget repository
-vi.mock('@/VAULT/budget/api/repository', () => ({
-    fetchBudget: vi.fn(() => Promise.resolve({
-        globalBudgetAmount: 1000,
-        groups: {}
-    }))
-}))
-
-
 describe('Dashboard Calculation Regression Test', () => {
     beforeEach(() => {
         vi.clearAllMocks()

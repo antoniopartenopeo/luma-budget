@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import { describe, expect, test, vi } from "vitest"
 
-import { GoalScenarioResult } from "@/VAULT/goals/types"
+import { QuotaScenarioResult } from "@/VAULT/goals/types"
 
 import { SimulatorResultsPanel } from "../simulator-results-panel"
 
@@ -12,7 +12,7 @@ vi.mock("@/features/settings/api/use-currency", () => ({
     })
 }))
 
-function createScenario(overrides: Partial<GoalScenarioResult> = {}): GoalScenarioResult {
+function createScenario(overrides: Partial<QuotaScenarioResult> = {}): QuotaScenarioResult {
     return {
         key: "baseline",
         config: {
@@ -52,7 +52,7 @@ describe("SimulatorResultsPanel", () => {
                 simulatedSurplusBase={50000}
                 simulatedSurplus={45000}
                 realtimeCapacityFactor={0.9}
-                goalMonthlyCapacityRealtime={13600}
+                monthlyQuotaRealtimeCents={13600}
                 realtimeWindowMonths={3}
                 savingsPercent={10}
                 hasInsufficientData={false}
@@ -90,7 +90,7 @@ describe("SimulatorResultsPanel", () => {
                 simulatedSurplusBase={50000}
                 simulatedSurplus={50000}
                 realtimeCapacityFactor={1}
-                goalMonthlyCapacityRealtime={16000}
+                monthlyQuotaRealtimeCents={16000}
                 realtimeWindowMonths={0}
                 savingsPercent={10}
                 hasInsufficientData={false}

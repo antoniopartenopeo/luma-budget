@@ -56,6 +56,36 @@ const itemVariants: Variants = {
 
 import { ExpandableCard } from "@/components/patterns/expandable-card"
 
+const IMPACT_BAR_WIDTH_CLASSES = [
+    "w-0",
+    "w-[5%]",
+    "w-[10%]",
+    "w-[15%]",
+    "w-[20%]",
+    "w-[25%]",
+    "w-[30%]",
+    "w-[35%]",
+    "w-[40%]",
+    "w-[45%]",
+    "w-1/2",
+    "w-[55%]",
+    "w-[60%]",
+    "w-[65%]",
+    "w-[70%]",
+    "w-[75%]",
+    "w-[80%]",
+    "w-[85%]",
+    "w-[90%]",
+    "w-[95%]",
+    "w-full",
+] as const
+
+function resolveImpactBarWidthClass(impactPct: number): string {
+    const bounded = Math.max(0, Math.min(100, impactPct))
+    const bucketIndex = Math.round(bounded / 5)
+    return IMPACT_BAR_WIDTH_CLASSES[bucketIndex] ?? "w-full"
+}
+
 export function InsightCard({ insight }: InsightCardProps) {
     const config = severityConfig[insight.severity]
     const Icon = kindIcons[insight.kind] || Activity
@@ -134,6 +164,7 @@ export function InsightCard({ insight }: InsightCardProps) {
                                     {insight.drivers.map((driver) => {
                                         const maxAmount = Math.max(...(insight.drivers?.map(d => d.amountCents) || [1]))
                                         const impactPct = (driver.amountCents / maxAmount) * 100
+                                        const impactWidthClass = resolveImpactBarWidthClass(impactPct)
 
                                         return (
                                             <div key={driver.id} className="group/driver relative overflow-hidden p-3 rounded-2xl glass-card border-white/10 hover:bg-white/60 dark:hover:bg-white/10 transition-all duration-300">
@@ -141,9 +172,9 @@ export function InsightCard({ insight }: InsightCardProps) {
                                                 <div
                                                     className={cn(
                                                         "absolute left-0 top-0 bottom-0 opacity-[0.08] transition-all duration-1000 ease-out",
+                                                        impactWidthClass,
                                                         insight.severity === 'high' ? "bg-rose-500" : insight.severity === 'medium' ? "bg-amber-500" : "bg-primary"
                                                     )}
-                                                    style={{ width: `${impactPct}%` }}
                                                 />
 
                                                 <div className="relative z-10 flex items-center justify-between gap-4">

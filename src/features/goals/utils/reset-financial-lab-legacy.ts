@@ -31,7 +31,13 @@ export async function resetFinancialLabLegacyState(): Promise<boolean> {
     const alreadyMigrated = storage.get<boolean>(FINLAB_HARD_SWITCH_MARKER, false)
     if (alreadyMigrated) return false
 
+    const hasLegacyPortfolio = storage.get<Record<string, unknown> | null>(GOAL_PORTFOLIO_KEY, null) !== null
+    const hasLegacyCommit = storage.get<Record<string, unknown> | null>(LEGACY_COMMIT_KEY, null) !== null
     const shouldClearBudgets = hasLegacyRhythmState() && hasAnyBudgetPlans()
+    const didChange =
+        hasLegacyPortfolio
+        || hasLegacyCommit
+        || shouldClearBudgets
 
     storage.remove(GOAL_PORTFOLIO_KEY)
     storage.remove(LEGACY_COMMIT_KEY)
@@ -40,5 +46,5 @@ export async function resetFinancialLabLegacyState(): Promise<boolean> {
     }
     storage.set(FINLAB_HARD_SWITCH_MARKER, true)
 
-    return true
+    return didChange
 }

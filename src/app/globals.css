@@ -45,7 +45,7 @@
   --radius-xl: var(--radius);
   /* 2.5rem / 40px - Macro surfaces */
   --radius-lg: 1rem;
-  /* 16px - Large cards (legacy ref) */
+  /* 16px - Large cards */
   --radius-md: 0.75rem;
   /* 12px - Controls (Buttons, Inputs) */
   --radius-sm: 0.5rem;

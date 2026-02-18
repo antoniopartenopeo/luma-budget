@@ -8,6 +8,7 @@ import {
     trainCurrentMonthHeadEpoch,
 } from "./model"
 import { getBrainSnapshot } from "./core"
+import { computeBrainInputSignature } from "./input-signature"
 import { saveBrainSnapshot } from "./storage"
 import { BrainEvolutionResult, BrainTrainingProgress, NeuralBrainSnapshot } from "./types"
 
@@ -17,6 +18,9 @@ const MIN_SAMPLES_FOR_PREDICTION = 1
 const MIN_NOWCAST_READY_MONTHS = 2
 const MIN_NOWCAST_READY_SAMPLES = 16
 const MIN_NOWCAST_READY_CONFIDENCE = 0.55
+
+let evolutionQueue: Promise<void> = Promise.resolve()
+const inFlightEvolutions = new Map<string, Promise<BrainEvolutionResult>>()
 
 function clamp(value: number, min: number, max: number): number {
     return Math.min(max, Math.max(min, value))
@@ -109,7 +113,18 @@ export interface EvolveBrainOptions {
     allowTraining?: boolean
 }
 
-export async function evolveBrainFromHistory(
+function buildEvolutionRunKey(
+    transactions: BrainTransactionLike[],
+    categories: BrainCategoryLike[],
+    options: EvolveBrainOptions
+): string {
+    const period = options.preferredPeriod ?? "auto"
+    const mode = options.allowTraining === false ? "readonly" : "active"
+    const signature = computeBrainInputSignature(transactions, categories, period)
+    return `${mode}:${signature}`
+}
+
+async function evolveBrainFromHistoryInternal(
     transactions: BrainTransactionLike[],
     categories: BrainCategoryLike[],
     options: EvolveBrainOptions = {}
@@ -333,4 +348,33 @@ export async function evolveBrainFromHistory(
         currentMonthNowcastConfidence: nowcastAfterTraining.currentMonthNowcastConfidence,
         currentMonthNowcastReady: nowcastAfterTraining.currentMonthNowcastReady,
     }
+}
+
+export async function evolveBrainFromHistory(
+    transactions: BrainTransactionLike[],
+    categories: BrainCategoryLike[],
+    options: EvolveBrainOptions = {}
+): Promise<BrainEvolutionResult> {
+    const runKey = buildEvolutionRunKey(transactions, categories, options)
+    const inFlight = inFlightEvolutions.get(runKey)
+    if (inFlight) return inFlight
+
+    const scheduled = evolutionQueue.then(
+        () => evolveBrainFromHistoryInternal(transactions, categories, options),
+        () => evolveBrainFromHistoryInternal(transactions, categories, options)
+    )
+
+    const tracked = scheduled.finally(() => {
+        if (inFlightEvolutions.get(runKey) === tracked) {
+            inFlightEvolutions.delete(runKey)
+        }
+    })
+
+    inFlightEvolutions.set(runKey, tracked)
+    evolutionQueue = tracked.then(
+        () => undefined,
+        () => undefined
+    )
+
+    return tracked
 }

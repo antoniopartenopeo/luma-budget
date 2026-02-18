@@ -6,6 +6,7 @@ import { useCurrency } from "@/features/settings/api/use-currency"
 
 export interface TrendDataItem {
     month: string
+    yearMonth: string
     incomeCents: number
     expensesCents: number
     income: number
@@ -47,6 +48,7 @@ export function useTrendData() {
             const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
             const year = d.getFullYear()
             const month = d.getMonth() // 0-indexed
+            const yearMonth = `${year}-${String(month + 1).padStart(2, "0")}`
 
             const label = new Intl.DateTimeFormat(locale, { month: "short" }).format(d)
             const capitalizedLabel = label.charAt(0).toUpperCase() + label.slice(1)
@@ -60,6 +62,7 @@ export function useTrendData() {
 
             months.push({
                 month: capitalizedLabel,
+                yearMonth,
                 incomeCents,
                 expensesCents,
                 income: incomeCents / 100,

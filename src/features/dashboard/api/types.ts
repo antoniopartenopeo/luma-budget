@@ -13,12 +13,18 @@ export type DashboardTimeFilter = {
 }
 
 export interface DashboardSummary {
+    allTimeIncomeCents: number
+    allTimeExpensesCents: number
+    netBalanceAllTimeCents: number
     totalSpentCents: number
     totalIncomeCents: number
     totalExpensesCents: number
     netBalanceCents: number
     budgetTotalCents: number
     budgetRemainingCents: number
+    allTimeIncome: number
+    allTimeExpenses: number
+    netBalanceAllTime: number
     totalSpent: number
     totalIncome: number
     totalExpenses: number
@@ -36,9 +42,4 @@ export interface DashboardSummary {
         totalCents: number
         total: number
     }[]
-    activeRhythm?: {
-        type: string
-        label: string
-        intensity: number
-    }
 }

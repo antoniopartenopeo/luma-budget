@@ -19,7 +19,6 @@ export const STORAGE_KEY_CATEGORIES = "luma_categories_v1"
 export const STORAGE_KEY_SETTINGS = "luma_settings_v1"
 export const STORAGE_KEY_GOAL_PORTFOLIO = "numa_goal_portfolio_v1"
 export const STORAGE_KEY_ACTIVE_GOAL_LEGACY = "numa_active_goal_v1"
-export const STORAGE_KEY_INSIGHTS_SIGNATURE = "insights_smart_advice_signature_v1"
 export const STORAGE_KEY_NOTIFICATIONS = "numa_notifications_state_v2"
 export const STORAGE_KEY_PRIVACY = "numa-privacy-storage"
 export const STORAGE_KEY_FINLAB_HARD_SWITCH_DONE = "numa_finlab_hard_switch_v1_done"
@@ -108,10 +107,6 @@ export const STORAGE_KEYS_REGISTRY: StorageKeyConfig[] = [
         key: STORAGE_KEY_ACTIVE_GOAL_LEGACY,
         label: "Goal Attivo (Legacy)",
         countFn: countLegacyGoal,
-    },
-    {
-        key: STORAGE_KEY_INSIGHTS_SIGNATURE,
-        label: "Firma Insight AI",
     },
     {
         key: STORAGE_KEY_NOTIFICATIONS,

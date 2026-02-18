@@ -14,6 +14,10 @@ import { SimulationPeriod } from "@/features/simulator/utils"
 import { resetFinancialLabLegacyState } from "../utils/reset-financial-lab-legacy"
 import { useGoalScenarios } from "./use-goal-scenarios"
 
+function clamp(value: number, min: number, max: number): number {
+    return Math.min(max, Math.max(min, value))
+}
+
 export function useSimulatorCommandCenter() {
     const queryClient = useQueryClient()
 
@@ -107,8 +111,13 @@ export function useSimulatorCommandCenter() {
     const realtimeCapacityFactor = currentScenario?.quota.realtimeCapacityFactor || 1
     const realtimeWindowMonths = currentScenario?.quota.realtimeWindowMonths || 0
     const goalMonthlyCapacityRealtime = currentScenario?.quota.realtimeMonthlyCapacityCents || 0
-    const savingsPercent = currentScenario
-        ? Math.round(100 - (currentScenario.simulatedExpenses / (baselineMetrics?.averageMonthlyExpenses || 1)) * 100)
+    const baselineExpenses = baselineMetrics?.averageMonthlyExpenses || 0
+    const savingsPercent = currentScenario && baselineExpenses > 0
+        ? clamp(
+            Math.round(((baselineExpenses - currentScenario.simulatedExpenses) / baselineExpenses) * 100),
+            -100,
+            100
+        )
         : 0
 
     const hasInsufficientData = !monthlyAverages

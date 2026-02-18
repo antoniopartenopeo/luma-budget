@@ -21,6 +21,7 @@ import {
     BrainTrainingProgress,
     NEURAL_BRAIN_VECTOR_SIZE,
     NeuralBrainSnapshot,
+    computeBrainInputSignature,
     evolveBrainFromHistory,
     getBrainSnapshot,
     initializeBrain,
@@ -39,13 +40,13 @@ import { StaggerContainer } from "@/components/patterns/stagger-container"
 import { EChartsWrapper } from "@/features/dashboard/components/charts/echarts-wrapper"
 import type { EChartsOption } from "echarts"
 import { cn } from "@/lib/utils"
+import { getCurrentPeriod } from "@/lib/date-ranges"
 
 const STABILITY_LOSS_TARGET = 0.12
 const POLL_INTERVAL_MS = 5000
 
 type StageId = "dormant" | "newborn" | "imprinting" | "adapting"
 type SyncReason = "boot" | "poll" | "storage"
-type EvolutionTrigger = "auto" | "manual"
 type EventTone = "neutral" | "positive" | "warning" | "critical"
 
 interface TimelineEvent {
@@ -70,7 +71,6 @@ interface TrainingState {
     progress: number
     currentLoss: number
     sampleCount: number
-    trigger: EvolutionTrigger | null
     lastCompletedAt: string | null
 }
 
@@ -79,40 +79,6 @@ interface EvolutionPoint {
     readiness: number
     experience: number
     stability: number
-}
-
-function computeInputSignature(
-    transactions: Array<{ amountCents: number; timestamp: number; categoryId: string; type: string; isSuperfluous?: boolean }>,
-    categories: Array<{ id: string; spendingNature: string }>
-): string {
-    let txHash = 2166136261
-    for (const tx of transactions) {
-        txHash ^= tx.timestamp
-        txHash += (txHash << 1) + (txHash << 4) + (txHash << 7) + (txHash << 8) + (txHash << 24)
-
-        txHash ^= tx.amountCents
-        txHash += (txHash << 1) + (txHash << 4) + (txHash << 7) + (txHash << 8) + (txHash << 24)
-
-        txHash ^= tx.type === "income" ? 1 : 2
-        txHash += (txHash << 1) + (txHash << 4) + (txHash << 7) + (txHash << 8) + (txHash << 24)
-
-        txHash ^= tx.isSuperfluous === true ? 3 : tx.isSuperfluous === false ? 4 : 5
-        txHash += (txHash << 1) + (txHash << 4) + (txHash << 7) + (txHash << 8) + (txHash << 24)
-    }
-
-    let categoryHash = 2166136261
-    for (const category of categories) {
-        for (let i = 0; i < category.id.length; i++) {
-            categoryHash ^= category.id.charCodeAt(i)
-            categoryHash += (categoryHash << 1) + (categoryHash << 4) + (categoryHash << 7) + (categoryHash << 8) + (categoryHash << 24)
-        }
-        for (let i = 0; i < category.spendingNature.length; i++) {
-            categoryHash ^= category.spendingNature.charCodeAt(i)
-            categoryHash += (categoryHash << 1) + (categoryHash << 4) + (categoryHash << 7) + (categoryHash << 8) + (categoryHash << 24)
-        }
-    }
-
-    return `${transactions.length}:${categories.length}:${(txHash >>> 0).toString(16)}:${(categoryHash >>> 0).toString(16)}`
 }
 
 function formatUpdatedAt(value: string | null): string {
@@ -267,7 +233,6 @@ export default function BrainPage() {
         progress: 0,
         currentLoss: 0,
         sampleCount: 0,
-        trigger: null,
         lastCompletedAt: null,
     })
 
@@ -336,9 +301,12 @@ export default function BrainPage() {
 
     const isInitialized = snapshot !== null
     const isDataLoading = isTransactionsLoading || isCategoriesLoading
-    const inputSignature = useMemo(() => computeInputSignature(transactions, categories), [transactions, categories])
+    const inputSignature = useMemo(
+        () => computeBrainInputSignature(transactions, categories, getCurrentPeriod()),
+        [categories, transactions]
+    )
 
-    const runEvolution = useCallback(async (trigger: EvolutionTrigger) => {
+    const runEvolution = useCallback(async () => {
         if (trainingLockRef.current) return
         if (!isInitialized) {
             pushEvent("Core non attivo", "Inizializza il Core prima di avviare l'analisi.", "warning")
@@ -359,12 +327,11 @@ export default function BrainPage() {
             progress: 0,
             currentLoss: baselineLoss,
             sampleCount: 0,
-            trigger,
         }))
 
         pushEvent(
             "Analisi avviata",
-            `Avvio ${trigger === "auto" ? "automatico" : "manuale"} · ${transactions.length} transazioni · ${categories.length} categorie`,
+            `Avvio automatico · ${transactions.length} transazioni · ${categories.length} categorie`,
             "neutral"
         )
 
@@ -427,7 +394,7 @@ export default function BrainPage() {
         if (!isInitialized || isDataLoading) return
         if (lastAutoSignatureRef.current === inputSignature) return
         lastAutoSignatureRef.current = inputSignature
-        void runEvolution("auto")
+        void runEvolution()
     }, [inputSignature, isInitialized, isDataLoading, runEvolution])
 
     const stage = useMemo(() => resolveStage(snapshot), [snapshot])
@@ -632,17 +599,12 @@ export default function BrainPage() {
             progress: 0,
             currentLoss: 0,
             sampleCount: 0,
-            trigger: null,
             lastCompletedAt: null,
         })
         lastAutoSignatureRef.current = ""
         snapshotSignatureRef.current = signatureOf(null)
         pushEvent("Core resettato", "Memoria locale del Core cancellata.", "warning")
     }, [pushEvent])
-
-    const handleManualAnalyze = useCallback(() => {
-        void runEvolution("manual")
-    }, [runEvolution])
 
     return (
         <StaggerContainer className="space-y-8 pb-20 md:pb-10">
@@ -745,15 +707,6 @@ export default function BrainPage() {
                                         >
                                             <Zap className="h-4 w-4" />
                                             Inizializza Core
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            onClick={handleManualAnalyze}
-                                            disabled={!isInitialized || isDataLoading || training.isTraining}
-                                            className="min-w-[170px]"
-                                        >
-                                            <TrendingUp className="h-4 w-4" />
-                                            Analizza ora
                                         </Button>
                                         <Button
                                             variant="outline"

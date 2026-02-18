@@ -28,8 +28,7 @@ export const macroItemVariants: Variants = {
 }
 
 /**
- * MacroSection: La primitiva strutturale universale Numa Premium.
- * Allineata al "Budget Surface Spec" (Gold Standard).
+ * MacroSection: primitiva strutturale universale del design system Numa.
  */
 export function MacroSection({
     title,

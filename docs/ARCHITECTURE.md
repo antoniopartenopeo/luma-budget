@@ -46,10 +46,6 @@ Primary pages:
 - `/updates`
 - `/brain`
 
-Legacy redirects:
-- `/budget` -> `/`
-- `/goals/lab` -> `/`
-
 Navigation contract:
 - Sidebar hosts core pages (`/`, `/transactions`, `/insights`, `/simulator`, `/settings`).
 - Topbar hosts cross-cutting actions (quick expense, flash overlay, privacy toggle, notifications, neural-core trigger).
@@ -101,7 +97,6 @@ App-level registry (canonical): `src/lib/storage-keys.ts`
 - `numa_goal_portfolio_v1`
 - `numa_active_goal_v1` (legacy)
 - `numa_finlab_hard_switch_v1_done`
-- `insights_smart_advice_signature_v1`
 - `numa_notifications_state_v2`
 - `numa-privacy-storage`
 

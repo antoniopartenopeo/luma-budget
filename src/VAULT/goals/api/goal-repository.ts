@@ -5,12 +5,25 @@ import { ActiveGoalCommitment, GoalPortfolio, NUMAGoal } from "../types"
 const PORTFOLIO_KEY = STORAGE_KEY_GOAL_PORTFOLIO
 const LEGACY_COMMIT_KEY = STORAGE_KEY_ACTIVE_GOAL_LEGACY
 
+function removeStorageKeyIfSupported(key: string): void {
+    if (typeof storage.remove === "function") {
+        storage.remove(key)
+    }
+}
+
+function isValidPortfolio(candidate: unknown): candidate is GoalPortfolio {
+    if (!candidate || typeof candidate !== "object") return false
+    const value = candidate as Partial<GoalPortfolio>
+    return Array.isArray(value.goals)
+}
+
 export async function savePortfolio(portfolio: GoalPortfolio): Promise<void> {
     storage.set(PORTFOLIO_KEY, portfolio)
 }
 
 export async function getPortfolio(): Promise<GoalPortfolio | null> {
-    let portfolio = storage.get<GoalPortfolio | null>(PORTFOLIO_KEY, null)
+    const rawPortfolio = storage.get<GoalPortfolio | null>(PORTFOLIO_KEY, null)
+    let portfolio = isValidPortfolio(rawPortfolio) ? rawPortfolio : null
 
     // Migration logic
     if (!portfolio) {
@@ -35,7 +48,7 @@ export async function getPortfolio(): Promise<GoalPortfolio | null> {
             }
             // Save and clean up
             await savePortfolio(portfolio)
-            storage.remove(LEGACY_COMMIT_KEY)
+            removeStorageKeyIfSupported(LEGACY_COMMIT_KEY)
         }
     }
 
@@ -68,20 +81,6 @@ export async function getPortfolio(): Promise<GoalPortfolio | null> {
 }
 
 export async function clearPortfolio(): Promise<void> {
-    storage.remove(PORTFOLIO_KEY)
-    storage.remove(LEGACY_COMMIT_KEY)
-}
-
-export async function clearCommitment(): Promise<void> {
-    await clearPortfolio()
-}
-
-// Keeping these for potential backward compatibility or internal usage during transition
-export async function saveCommitment(commitment: ActiveGoalCommitment): Promise<void> {
-    // Legacy bridge kept for compatibility during transition
-    storage.set(LEGACY_COMMIT_KEY, commitment)
-}
-
-export async function getCommitment(): Promise<ActiveGoalCommitment | null> {
-    return storage.get(LEGACY_COMMIT_KEY, null)
+    removeStorageKeyIfSupported(PORTFOLIO_KEY)
+    removeStorageKeyIfSupported(LEGACY_COMMIT_KEY)
 }

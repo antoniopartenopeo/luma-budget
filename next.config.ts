@@ -13,19 +13,7 @@ const nextConfig: NextConfig = {
       "local",
   },
   async redirects() {
-    return [
-      {
-        source: '/budget',
-        destination: '/',
-        permanent: true,
-      },
-      // Legacy Goals Lab redirect (Safe fallback to home)
-      {
-        source: '/goals/lab',
-        destination: '/',
-        permanent: true,
-      },
-    ]
+    return []
   },
 };
 

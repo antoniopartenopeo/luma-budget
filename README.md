@@ -39,10 +39,6 @@ src/
 - `/updates`
 - `/brain`
 
-Legacy redirects:
-- `/budget` -> `/`
-- `/goals/lab` -> `/`
-
 ### Data flow
 - Repository layer -> `localStorage` persistence
 - React Query -> cache + invalidation
@@ -57,7 +53,6 @@ Legacy redirects:
 - `luma_settings_v1`
 - `numa_goal_portfolio_v1`
 - `numa_active_goal_v1` (legacy)
-- `insights_smart_advice_signature_v1`
 - `numa_notifications_state_v2`
 - `numa-privacy-storage`
 

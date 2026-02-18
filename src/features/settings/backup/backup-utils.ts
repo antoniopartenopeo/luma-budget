@@ -1,18 +1,26 @@
 import { storage } from "@/lib/storage-utils";
-import { STORAGE_KEYS_REGISTRY } from "@/lib/storage-keys";
+import {
+    STORAGE_KEY_BUDGET_PLANS,
+    STORAGE_KEY_CATEGORIES,
+    STORAGE_KEY_GOAL_PORTFOLIO,
+    STORAGE_KEY_NOTIFICATIONS,
+    STORAGE_KEY_PRIVACY,
+    STORAGE_KEYS_REGISTRY,
+    STORAGE_KEY_SETTINGS,
+    STORAGE_KEY_TRANSACTIONS
+} from "@/lib/storage-keys";
 
 export const BACKUP_VERSION = 2 as const;
 export const BACKUP_LEGACY_VERSION = 1 as const;
 
 export const STORAGE_KEYS = {
-    TRANSACTIONS: "luma_transactions_v1" as const,
-    BUDGETS: "luma_budget_plans_v1" as const,
-    CATEGORIES: "luma_categories_v1" as const,
-    SETTINGS: "luma_settings_v1" as const,
-    PORTFOLIO: "numa_goal_portfolio_v1" as const,
-    NOTIFICATIONS: "numa_notifications_state_v2" as const,
-    PRIVACY: "numa-privacy-storage" as const,
-    INSIGHTS_SIGNATURE: "insights_smart_advice_signature_v1" as const,
+    TRANSACTIONS: STORAGE_KEY_TRANSACTIONS,
+    BUDGETS: STORAGE_KEY_BUDGET_PLANS,
+    CATEGORIES: STORAGE_KEY_CATEGORIES,
+    SETTINGS: STORAGE_KEY_SETTINGS,
+    PORTFOLIO: STORAGE_KEY_GOAL_PORTFOLIO,
+    NOTIFICATIONS: STORAGE_KEY_NOTIFICATIONS,
+    PRIVACY: STORAGE_KEY_PRIVACY,
 };
 
 export type BackupV1 = {
@@ -43,7 +51,6 @@ export type BackupV2 = {
         portfolioKey: typeof STORAGE_KEYS.PORTFOLIO;
         notificationsKey: typeof STORAGE_KEYS.NOTIFICATIONS;
         privacyKey: typeof STORAGE_KEYS.PRIVACY;
-        insightsSignatureKey: typeof STORAGE_KEYS.INSIGHTS_SIGNATURE;
     };
     payload: {
         transactions: unknown | null;
@@ -53,7 +60,6 @@ export type BackupV2 = {
         portfolio: unknown | null;
         notifications: unknown | null;
         privacy: unknown | null;
-        insightsSignature: unknown | null;
     };
 };
 
@@ -74,7 +80,6 @@ export const buildBackupV2 = (): BackupV2 => {
             portfolioKey: STORAGE_KEYS.PORTFOLIO,
             notificationsKey: STORAGE_KEYS.NOTIFICATIONS,
             privacyKey: STORAGE_KEYS.PRIVACY,
-            insightsSignatureKey: STORAGE_KEYS.INSIGHTS_SIGNATURE,
         },
         payload: {
             transactions: storage.get(STORAGE_KEYS.TRANSACTIONS, null),
@@ -84,7 +89,6 @@ export const buildBackupV2 = (): BackupV2 => {
             portfolio: storage.get(STORAGE_KEYS.PORTFOLIO, null),
             notifications: storage.get(STORAGE_KEYS.NOTIFICATIONS, null),
             privacy: storage.get(STORAGE_KEYS.PRIVACY, null),
-            insightsSignature: storage.get(STORAGE_KEYS.INSIGHTS_SIGNATURE, null),
         },
     };
 };
@@ -136,7 +140,6 @@ function normalizeV2Backup(data: Record<string, unknown>): BackupV2 {
             portfolioKey: STORAGE_KEYS.PORTFOLIO,
             notificationsKey: STORAGE_KEYS.NOTIFICATIONS,
             privacyKey: STORAGE_KEYS.PRIVACY,
-            insightsSignatureKey: STORAGE_KEYS.INSIGHTS_SIGNATURE,
         },
         payload: {
             transactions: payload.transactions ?? null,
@@ -146,7 +149,6 @@ function normalizeV2Backup(data: Record<string, unknown>): BackupV2 {
             portfolio: payload.portfolio ?? null,
             notifications: payload.notifications ?? null,
             privacy: payload.privacy ?? null,
-            insightsSignature: payload.insightsSignature ?? null,
         },
     };
 }
@@ -212,14 +214,12 @@ export const applyBackupOverwrite = (backup: BackupFile): void => {
         applyStorageValue(STORAGE_KEYS.PORTFOLIO, null);
         applyStorageValue(STORAGE_KEYS.NOTIFICATIONS, null);
         applyStorageValue(STORAGE_KEYS.PRIVACY, null);
-        applyStorageValue(STORAGE_KEYS.INSIGHTS_SIGNATURE, null);
         return;
     }
 
     applyStorageValue(STORAGE_KEYS.PORTFOLIO, backup.payload.portfolio);
     applyStorageValue(STORAGE_KEYS.NOTIFICATIONS, backup.payload.notifications);
     applyStorageValue(STORAGE_KEYS.PRIVACY, backup.payload.privacy);
-    applyStorageValue(STORAGE_KEYS.INSIGHTS_SIGNATURE, backup.payload.insightsSignature);
 };
 
 /**

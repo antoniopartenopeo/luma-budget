@@ -6,6 +6,7 @@ import { useDashboardSummary } from "@/features/dashboard/api/use-dashboard"
 import { useCategories } from "@/features/categories/api/use-categories"
 import {
     BRAIN_MATURITY_SAMPLE_TARGET,
+    computeBrainInputSignature,
     evolveBrainFromHistory,
     initializeBrain,
     type BrainEvolutionResult
@@ -41,53 +42,6 @@ export interface AIAdvisorResult {
 
 export interface UseAIAdvisorOptions {
     mode?: "active" | "readonly"
-}
-
-function computeBrainInputSignature(
-    transactions: Array<{
-        amountCents: number
-        timestamp: number
-        categoryId: string
-        type: "income" | "expense"
-        isSuperfluous?: boolean
-    }>,
-    categories: Array<{
-        id: string
-        spendingNature: "essential" | "comfort" | "superfluous"
-    }>,
-    period: string
-): string {
-    let h = 2166136261
-
-    for (const tx of transactions) {
-        h ^= tx.timestamp
-        h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)
-
-        h ^= tx.amountCents
-        h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)
-
-        h ^= tx.type === "income" ? 1 : 2
-        h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)
-
-        for (let i = 0; i < tx.categoryId.length; i++) {
-            h ^= tx.categoryId.charCodeAt(i)
-            h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)
-        }
-
-        h ^= tx.isSuperfluous === true ? 19 : tx.isSuperfluous === false ? 23 : 29
-        h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)
-    }
-
-    for (const category of categories) {
-        for (let i = 0; i < category.id.length; i++) {
-            h ^= category.id.charCodeAt(i)
-            h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)
-        }
-        h ^= category.spendingNature === "essential" ? 11 : category.spendingNature === "comfort" ? 13 : 17
-        h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)
-    }
-
-    return `${period}:${transactions.length}:${categories.length}:${(h >>> 0).toString(16)}`
 }
 
 function estimateRemainingExpensesFromHistory(
@@ -299,7 +253,9 @@ export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
         )
         const runRateRemainingCurrentMonthExpensesCents = estimateRemainingExpensesRunRate(currentMonthExpensesCents, currentPeriod)
         const fallbackRemainingCurrentMonthExpensesCents = historicalRemainingCurrentMonthExpensesCents ?? runRateRemainingCurrentMonthExpensesCents
-        const baseBalanceCents = dashboardSummary?.netBalanceCents ?? 0
+        const baseBalanceCents = dashboardSummary?.netBalanceAllTimeCents
+            ?? dashboardSummary?.netBalanceCents
+            ?? 0
         const brainResultIsCurrent = brainEvolutionSignature === brainInputSignature
         const brainNowcastReady = brainResultIsCurrent && brainEvolution?.currentMonthNowcastReady === true
         const brainPrediction = brainResultIsCurrent ? (brainEvolution?.prediction ?? null) : null
@@ -436,6 +392,7 @@ export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
         brainInputSignature,
         categories,
         currentPeriod,
+        dashboardSummary?.netBalanceAllTimeCents,
         dashboardSummary?.netBalanceCents,
         isTransactionsLoading,
         transactions

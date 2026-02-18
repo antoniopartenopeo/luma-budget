@@ -5,12 +5,17 @@ import { useState, useEffect } from "react"
 import { __resetTransactionsCache } from "@/features/transactions/api/repository"
 import { __resetBudgetsCache } from "@/VAULT/budget/api/repository"
 import { __resetCategoriesCache } from "@/features/categories/api/repository"
-import { STORAGE_KEYS_REGISTRY } from "@/lib/storage-keys"
+import {
+    STORAGE_KEY_BUDGET_PLANS,
+    STORAGE_KEY_CATEGORIES,
+    STORAGE_KEYS_REGISTRY,
+    STORAGE_KEY_TRANSACTIONS
+} from "@/lib/storage-keys"
 
 const CACHE_RESETTERS: Record<string, () => void> = {
-    luma_transactions_v1: __resetTransactionsCache,
-    luma_budget_plans_v1: __resetBudgetsCache,
-    luma_categories_v1: __resetCategoriesCache,
+    [STORAGE_KEY_TRANSACTIONS]: __resetTransactionsCache,
+    [STORAGE_KEY_BUDGET_PLANS]: __resetBudgetsCache,
+    [STORAGE_KEY_CATEGORIES]: __resetCategoriesCache,
 }
 
 const STORAGE_KEY_TO_QUERY_ROOTS: ReadonlyMap<string, ReadonlySet<string>> = new Map(

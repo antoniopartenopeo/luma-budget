@@ -8,7 +8,6 @@ import { getCategories } from "@/features/categories/api/repository"
 import { calculateSuperfluousMetrics } from "../../transactions/utils/transactions-logic"
 
 import { sumExpensesInCents, sumIncomeInCents } from "@/domain/money"
-import { getPortfolio } from "@/VAULT/goals/api/goal-repository"
 import { LOCAL_USER_ID } from "@/lib/runtime-user"
 
 export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promise<DashboardSummary> => {
@@ -23,12 +22,11 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
 
     // 2. Fetch all data
     // In a real app, we would filter in the query, but here we fetch all and filter in memory
-    const [transactions, budgetPlan, categories, portfolio] = await Promise.all([
+    const [transactions, budgetPlan, categories] = await Promise.all([
         fetchTransactions(),
         // Budget logic: always fetch for the "pivot" period (filter.period)
         fetchBudget(LOCAL_USER_ID, filter.period),
-        getCategories(),
-        getPortfolio()
+        getCategories()
     ])
 
     // 3. Calculate All-Time Net Balance (Global, unfiltered)
@@ -124,12 +122,19 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
     const finalUselessPercent = totalExpensesCents > 0 ? uselessSpendPercent : null
 
     return {
+        allTimeIncomeCents,
+        allTimeExpensesCents,
+        netBalanceAllTimeCents: netBalanceCents,
         totalSpentCents,
         totalIncomeCents: totalIncomeCentsSafe,
         totalExpensesCents: totalSpentCents,
+        // Compatibility alias used by existing components and hooks.
         netBalanceCents,
         budgetTotalCents,
         budgetRemainingCents,
+        allTimeIncome: allTimeIncomeCents / 100,
+        allTimeExpenses: allTimeExpensesCents / 100,
+        netBalanceAllTime: netBalanceCents / 100,
         totalSpent: totalSpentCents / 100,
         totalIncome: totalIncomeCentsSafe / 100,
         totalExpenses: totalSpentCents / 100,
@@ -142,11 +147,6 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
             useful: finalUselessPercent !== null ? 100 - finalUselessPercent : 100,
             useless: finalUselessPercent !== null ? finalUselessPercent : 0
         },
-        monthlyExpenses,
-        activeRhythm: portfolio?.activeRhythm ? {
-            type: portfolio.activeRhythm.type,
-            label: portfolio.activeRhythm.label,
-            intensity: portfolio.activeRhythm.intensity
-        } : undefined
+        monthlyExpenses
     }
 }

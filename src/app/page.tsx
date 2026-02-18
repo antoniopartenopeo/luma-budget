@@ -34,13 +34,10 @@ export default function DashboardPage() {
         <DashboardKpiGrid
           totalSpentCents={data?.totalSpentCents}
           netBalanceCents={data?.netBalanceCents}
-          budgetTotalCents={data?.budgetTotalCents}
-          budgetRemainingCents={data?.budgetRemainingCents}
           uselessSpendPercent={data?.uselessSpendPercent}
           isLoading={isLoading}
           filter={filter}
           headerActions={<DashboardFilterBar filter={filter} onFilterChange={setFilter} />}
-          activeRhythm={data?.activeRhythm}
         />
 
         {/* SUBORDINATE CONTENT */}

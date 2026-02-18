@@ -9,7 +9,7 @@ import { useSettings } from "@/features/settings/api/use-settings"
 import { KpiCard, KpiTone } from "@/components/patterns/kpi-card"
 import { narrateKPI, deriveKPIState, KPIFacts } from "@/domain/narration"
 import { MacroSection } from "@/components/patterns/macro-section"
-import { getBalanceTone, getBudgetTone, getSuperfluousTone } from "../utils/kpi-logic"
+import { getBalanceTone, getSuperfluousTone } from "../utils/kpi-logic"
 import { usePrivacyStore } from "@/features/privacy/privacy.store"
 import { getPrivacyClass } from "@/features/privacy/privacy-utils"
 import { useAIAdvisor } from "@/features/insights/use-ai-advisor"
@@ -24,17 +24,10 @@ import { BrainCircuit, ShieldCheck, Hourglass, TrendingUp, PiggyBank, Zap } from
 interface DashboardKpiGridProps {
     totalSpentCents?: number
     netBalanceCents?: number
-    budgetTotalCents?: number
-    budgetRemainingCents?: number
     uselessSpendPercent?: number | null
     isLoading?: boolean
     filter?: DashboardTimeFilter
     headerActions?: React.ReactNode
-    activeRhythm?: {
-        type: string
-        label: string
-        intensity: number
-    }
 }
 
 interface BrainSignalDisplay {
@@ -112,13 +105,10 @@ function resolveBrainSignalDisplay(advisorData: ReturnType<typeof useAIAdvisor>)
 export function DashboardKpiGrid({
     totalSpentCents,
     netBalanceCents,
-    budgetTotalCents,
-    budgetRemainingCents,
     uselessSpendPercent,
     isLoading,
     filter,
-    headerActions,
-    activeRhythm
+    headerActions
 }: DashboardKpiGridProps) {
     const router = useRouter()
     const { currency, locale } = useCurrency()
@@ -132,10 +122,6 @@ export function DashboardKpiGrid({
     const formatValue = (value: number) => {
         return formatCents(value, currency, locale)
     }
-
-    const budgetPercent = budgetTotalCents && budgetTotalCents > 0
-        ? Math.round(((budgetRemainingCents || 0) / budgetTotalCents) * 100)
-        : 0
 
     const pivotPeriod = filter?.period || getCurrentPeriod()
     const currentDate = new Date(`${pivotPeriod}-01`)
@@ -153,10 +139,6 @@ export function DashboardKpiGrid({
     // Semantica dei toni:
     const saldoTone = getBalanceTone((netBalanceCents || 0) / 100)
     const spesaTone: KpiTone = "neutral"
-
-    const hasBudget = !!(budgetTotalCents && budgetTotalCents > 0)
-    const isMonthlyView = filter?.mode === "month"
-    const budgetTone = (!isMonthlyView) ? "neutral" : getBudgetTone((budgetRemainingCents || 0) / 100, hasBudget)
 
     const superflueTone = getSuperfluousTone(uselessSpendPercent ?? null, superfluousTarget)
 
@@ -222,32 +204,6 @@ export function DashboardKpiGrid({
                 </motion.div>
                 <motion.div variants={macroItemVariants} className="h-full">
                     <KpiCard
-                        title="Pacing Temporale"
-                        value={isLoading ? 0 : (isMonthlyView ? formatValue(budgetRemainingCents || 0) : "—")}
-                        animatedValue={isMonthlyView ? (budgetRemainingCents || 0) : undefined}
-                        formatFn={formatValue}
-                        valueClassName={getPrivacyClass(isPrivacyMode)}
-                        change={isLoading ? "" : (isMonthlyView && hasBudget ? `${budgetPercent}%` : "")}
-                        trend={!isMonthlyView || !hasBudget ? "neutral" : (budgetTone === "positive" ? "up" : "down")}
-                        comparisonLabel={!isMonthlyView ? "Solo in vista Mensile" : (hasBudget ? "Rimanente nel periodo" : "Imposta un ritmo")}
-                        tone={budgetTone}
-                        icon={DollarSign}
-                        isLoading={isLoading}
-                        onClick={isMonthlyView && !hasBudget ? () => router.push("/simulator") : undefined}
-                        description={isLoading ? undefined : buildNarration("budget", budgetRemainingCents || 0, budgetTone, budgetPercent)}
-                        badge={activeRhythm && (
-                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                                <span className="relative flex h-1.5 w-1.5">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-                                </span>
-                                {activeRhythm.label}
-                            </span>
-                        )}
-                    />
-                </motion.div>
-                <motion.div variants={macroItemVariants} className="h-full">
-                    <KpiCard
                         title="Spese Extra"
                         value={isLoading ? 0 : (uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—")}
                         animatedValue={uselessSpendPercent ?? undefined}
@@ -291,7 +247,7 @@ export function DashboardKpiGrid({
                             bgClass: "bg-emerald-500/10",
                             stepLabel: "Passo 1",
                             title: "Quanto puoi spendere ora",
-                            description: `La card "Pacing Temporale" mostra il margine reale del mese, calcolato dal piano ${activeRhythm?.label || "attivo"}.`
+                            description: "Il saldo del periodo mostra quanta liquidita reale resta dopo entrate e uscite."
                         },
                         {
                             icon: PiggyBank,
@@ -311,7 +267,7 @@ export function DashboardKpiGrid({
                         }
                     ]}
                     auditStats={[
-                        { label: "Piano", value: activeRhythm?.label || "Standard", subValue: "Base del calcolo mensile.", icon: TrendingUp },
+                        { label: "Metodo", value: "Storico + Budget", subValue: "Base del calcolo mensile.", icon: TrendingUp },
                         { label: "Aggiornamento", value: "Automatico", subValue: "Ricalcolo ad ogni nuovo movimento.", icon: Zap },
                         { label: "Dati usati", value: "Transazioni reali", subValue: "Nessuna stima manuale richiesta.", icon: BrainCircuit },
                         { label: "Privacy", value: "Locale", subValue: "I calcoli restano sul dispositivo.", icon: ShieldCheck },

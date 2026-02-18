@@ -1,6 +1,6 @@
 # Governance Quick Check
 
-Generated at (UTC): 2026-02-18T00:54:20Z
+Generated at (UTC): 2026-02-18T18:52:51Z
 
 Scope:
 - Repository: numa-budget
@@ -14,7 +14,7 @@ Scope:
 | parseFloat on monetary flows (excluding CSV normalize exception) | PASS | 0 |
 | Deprecated `amount` key / string amounts | WARN | key:23 string:17 legacy-files:4 |
 | Period filters without `filterByRange` | WARN | 4 |
-| Inline style in TSX (non-exempt) | WARN | non-exempt:1 total:9 exempt:8 |
+| Inline style in TSX (non-exempt) | PASS | non-exempt:0 total:8 exempt:8 |
 | Tests with formula-duplication heuristic | WARN | 4 |
 
 ## 1) parseFloat checks
@@ -118,7 +118,7 @@ Rule: prefer Tailwind classes; inline styles only where technically unavoidable.
 
 Inline style hits (non-exempt, first 80):
 
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/components/insight-card.tsx:146:                                                    style={{ width: `${impactPct}%` }}
+_None_
 
 Inline style hits (exempt technical cases, first 40):
 

@@ -53,10 +53,12 @@ describe("useTrendData", () => {
 
         expect(value?.data).toHaveLength(12)
         expect(value?.data.at(-1)?.month).toBe("Feb")
+        expect(value?.data.at(-1)?.yearMonth).toBe("2026-02")
         expect(value?.data.at(-1)?.incomeCents).toBe(200000)
         expect(value?.data.at(-1)?.expensesCents).toBe(75000)
         expect(value?.data.at(-1)?.hasTransactions).toBe(true)
         expect(value?.data.at(-2)?.month).toBe("Gen")
+        expect(value?.data.at(-2)?.yearMonth).toBe("2026-01")
         expect(value?.data.at(-2)?.incomeCents).toBe(150000)
         expect(value?.data.at(-2)?.hasTransactions).toBe(true)
         expect(value?.data.at(-3)?.hasTransactions).toBe(false)

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 import { describe, expect, test, vi } from "vitest"
 
 import { GoalScenarioResult } from "@/VAULT/goals/types"
@@ -20,7 +20,12 @@ function createScenario(partial: Partial<GoalScenarioResult> & Pick<GoalScenario
             label: partial.key === "aggressive" ? "Aggressivo" : partial.key === "balanced" ? "Equilibrato" : "Nessun Ritmo",
             description: "Scenario test",
             applicationMap: {},
-            savingsMap: { superfluous: 20, comfort: 5 }
+            savingsMap: { superfluous: 20, comfort: 5 },
+            calibration: {
+                elasticityIndex: 0.5,
+                stabilityFactor: 0.9,
+                volatilityCents: 12000
+            }
         },
         sustainability: partial.sustainability || {
             isSustainable: true,
@@ -121,5 +126,32 @@ describe("ScenarioDeck", () => {
         )
 
         expect(screen.getByText("Delicato")).toBeInTheDocument()
+    })
+
+    test("shows coherent overlay audit copy when realtime overlay is disabled", () => {
+        const scenario = createScenario({
+            key: "baseline",
+            planBasis: "historical",
+            quota: {
+                baseMonthlyMarginCents: 50000,
+                realtimeMonthlyMarginCents: 50000,
+                baseMonthlyCapacityCents: 14500,
+                realtimeMonthlyCapacityCents: 14500,
+                realtimeOverlayApplied: false,
+                realtimeCapacityFactor: 1,
+                realtimeWindowMonths: 0
+            }
+        })
+
+        render(
+            <ScenarioDeck
+                scenarios={[scenario]}
+                activeKey="baseline"
+                onSelect={() => undefined}
+            />
+        )
+
+        fireEvent.click(screen.getByRole("button", { name: /Vedi Audit Tecnico/i }))
+        expect(screen.getByText("Nessun aggiornamento live attivo. Fonte Storico.")).toBeInTheDocument()
     })
 })

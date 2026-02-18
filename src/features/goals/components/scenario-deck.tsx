@@ -9,6 +9,7 @@ import { Compass, CheckCircle2, Wallet, TrendingUp, ShieldCheck } from "lucide-r
 import { GoalScenarioResult, ScenarioKey } from "@/VAULT/goals/types"
 import {
     FINANCIAL_LAB_COPY,
+    getOverlayAuditSubValue,
     getOverlayStatsValue,
     getPlanBasisLabel,
     getSustainabilityLabel
@@ -150,7 +151,10 @@ export function ScenarioDeck({
                         {
                             label: FINANCIAL_LAB_COPY.scenarioDeck.audit.overlayLabel,
                             value: overlayValue,
-                            subValue: `${FINANCIAL_LAB_COPY.scenarioDeck.audit.overlaySubValuePrefix} ${overlaySource}.`
+                            subValue: getOverlayAuditSubValue(
+                                Boolean(activeScenario?.quota.realtimeOverlayApplied),
+                                overlaySource
+                            )
                         }
                     ] : undefined}
                 />

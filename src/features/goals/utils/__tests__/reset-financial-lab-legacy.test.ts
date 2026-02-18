@@ -46,4 +46,11 @@ describe("resetFinancialLabLegacyState", () => {
         expect(localStorage.getItem(BUDGET_KEY)).toBe(JSON.stringify({ "local-user:2026-02": { id: "b1" } }))
         expect(localStorage.getItem(MARKER_KEY)).toBe("true")
     })
+
+    test("returns false when there is no legacy state to migrate", async () => {
+        const didRun = await resetFinancialLabLegacyState()
+
+        expect(didRun).toBe(false)
+        expect(localStorage.getItem(MARKER_KEY)).toBe("true")
+    })
 })

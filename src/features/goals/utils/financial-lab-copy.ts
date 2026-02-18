@@ -42,7 +42,8 @@ export const FINANCIAL_LAB_COPY = {
             sustainabilityLabel: "Sostenibilita",
             sustainabilitySubValue: "Valutata su buffer prudenziale e tenuta del piano.",
             overlayLabel: "Overlay Realtime",
-            overlaySubValuePrefix: "Aggiornamento sul breve periodo."
+            overlaySubValuePrefix: "Aggiornamento sul breve periodo.",
+            overlaySubValueDisabledPrefix: "Nessun aggiornamento live attivo."
         }
     },
     resultsPanel: {
@@ -121,4 +122,11 @@ export function getRealtimeNarrative(realtimeWindowMonths: number): string {
 
 export function getOverlayStatsValue(realtimeOverlayApplied: boolean, realtimeWindowMonths: number): string {
     return realtimeOverlayApplied ? `${realtimeWindowMonths} mesi` : "Nessuno"
+}
+
+export function getOverlayAuditSubValue(realtimeOverlayApplied: boolean, sourceLabel: string): string {
+    if (realtimeOverlayApplied) {
+        return `${FINANCIAL_LAB_COPY.scenarioDeck.audit.overlaySubValuePrefix} ${sourceLabel}.`
+    }
+    return `${FINANCIAL_LAB_COPY.scenarioDeck.audit.overlaySubValueDisabledPrefix} ${sourceLabel}.`
 }

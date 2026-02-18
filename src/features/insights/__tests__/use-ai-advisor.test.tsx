@@ -23,6 +23,19 @@ vi.mock("@/features/dashboard/api/use-dashboard", () => ({
 
 vi.mock("@/brain", () => ({
     BRAIN_MATURITY_SAMPLE_TARGET: 120,
+    computeBrainInputSignature: (
+        transactions: Array<{ timestamp: number; amountCents: number; categoryId: string; type: string; isSuperfluous?: boolean }>,
+        categories: Array<{ id: string; spendingNature: string }>,
+        period: string
+    ) => {
+        const txSignature = transactions
+            .map((tx) => `${tx.timestamp}:${tx.amountCents}:${tx.categoryId}:${tx.type}:${tx.isSuperfluous === true ? 1 : tx.isSuperfluous === false ? 0 : "u"}`)
+            .join("|")
+        const categoriesSignature = categories
+            .map((category) => `${category.id}:${category.spendingNature}`)
+            .join("|")
+        return `${period}:${txSignature}:${categoriesSignature}`
+    },
     initializeBrain: (...args: unknown[]) => initializeBrainMock(...args),
     evolveBrainFromHistory: (...args: unknown[]) => evolveBrainFromHistoryMock(...args),
 }))

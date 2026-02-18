@@ -9,6 +9,7 @@ import { useCurrency } from "@/features/settings/api/use-currency"
 import { formatEuroNumber } from "@/domain/money"
 import { narrateTrend, deriveTrendState, type TrendFacts, type OrchestrationContext } from "@/domain/narration"
 import { SUBSCRIPTION_ACTIVE_WINDOW_DAYS } from "../subscription-detection"
+import { getCurrentPeriod } from "@/lib/date-ranges"
 import type { AIForecast, AISubscription } from "../use-ai-advisor"
 import type { EChartsOption } from "echarts"
 
@@ -23,6 +24,8 @@ interface TrendProjectionState {
     sourceLabel: "Brain" | "Storico"
     remainingExpenses: number
     projectedEndExpenses: number
+    anchorIndex: number
+    anchorYearMonth: string | null
 }
 
 interface UpcomingChargeMilestone {
@@ -31,18 +34,57 @@ interface UpcomingChargeMilestone {
     description: string
     amountCents: number
     daysUntilCharge: number
+    timestamp: number
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000
 const TIMELINE_MAX_ITEMS = 5
+const PROJECTION_AXIS_KEY = "__projection_end__"
+
+function escapeHtml(value: string): string {
+    return value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;")
+}
+
+function getDaysInMonth(year: number, monthIndex: number): number {
+    return new Date(year, monthIndex + 1, 0).getDate()
+}
+
+function addMonthsClamped(baseDate: Date, monthOffset: number): Date {
+    const targetYear = baseDate.getFullYear()
+    const targetMonthIndex = baseDate.getMonth() + monthOffset
+    const targetMonthDate = new Date(targetYear, targetMonthIndex, 1)
+    const lastDayOfTargetMonth = getDaysInMonth(targetMonthDate.getFullYear(), targetMonthDate.getMonth())
+    const targetDay = Math.min(baseDate.getDate(), lastDayOfTargetMonth)
+    return new Date(targetMonthDate.getFullYear(), targetMonthDate.getMonth(), targetDay, 0, 0, 0, 0)
+}
+
+function getPeriodEndTimestamp(period: string): number {
+    const [yearStr, monthStr] = period.split("-")
+    const year = Number(yearStr)
+    const month = Number(monthStr)
+    if (!Number.isFinite(year) || !Number.isFinite(month) || month < 1 || month > 12) {
+        return Number.NaN
+    }
+    return new Date(year, month, 0, 23, 59, 59, 999).getTime()
+}
 
 function estimateNextMonthlyCharge(lastChargeTimestamp: number, now: Date): Date {
-    const nextCharge = new Date(lastChargeTimestamp)
-    nextCharge.setHours(0, 0, 0, 0)
+    const baseCharge = new Date(lastChargeTimestamp)
+    baseCharge.setHours(0, 0, 0, 0)
+    const todayStart = new Date(now)
+    todayStart.setHours(0, 0, 0, 0)
 
+    let nextCharge = new Date(baseCharge)
+    let monthOffset = 0
     let guard = 0
-    while (nextCharge.getTime() < now.getTime() && guard < 24) {
-        nextCharge.setMonth(nextCharge.getMonth() + 1)
+    while (nextCharge.getTime() < todayStart.getTime() && guard < 24) {
+        monthOffset += 1
+        nextCharge = addMonthsClamped(baseCharge, monthOffset)
         guard += 1
     }
 
@@ -64,8 +106,10 @@ export function TrendAnalysisCard({
     const prefersReducedMotion = useReducedMotion()
     const { currency, locale } = useCurrency()
     const { data: settings } = useSettings()
+    const currentPeriod = getCurrentPeriod()
     const isDarkMode = settings?.theme === "dark" || (settings?.theme === "system" && typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches)
     const activeData = useMemo(() => data.filter((item) => item.hasTransactions), [data])
+    const hasActiveData = activeData.length > 0
 
     const chartStatus = useMemo(() => {
         if (activeData.length < 3) return "default"
@@ -76,18 +120,6 @@ export function TrendAnalysisCard({
         if (avgSavingsRate < 10) return "warning"
         return "default"
     }, [activeData])
-
-    const milestones = useMemo(() => {
-        if (data.length === 0 || activeData.length === 0) return { bestIndex: -1 }
-        let bestIdx = 0
-
-        data.forEach((d, i) => {
-            if (!d.hasTransactions) return
-            if (!data[bestIdx].hasTransactions || d.savingsRate > data[bestIdx].savingsRate) bestIdx = i
-        })
-
-        return { bestIndex: bestIdx }
-    }, [activeData, data])
 
     const trendNarration = useMemo(() => {
         if (activeData.length < 2) return null
@@ -120,10 +152,24 @@ export function TrendAnalysisCard({
                 sourceLabel: "Storico",
                 remainingExpenses: 0,
                 projectedEndExpenses: 0,
+                anchorIndex: -1,
+                anchorYearMonth: null
             }
         }
 
-        const currentMonth = activeData[activeData.length - 1]
+        const currentMonthIndex = activeData.findIndex((item) => item.yearMonth === currentPeriod)
+        if (currentMonthIndex < 0) {
+            return {
+                enabled: false,
+                sourceLabel: "Storico",
+                remainingExpenses: 0,
+                projectedEndExpenses: 0,
+                anchorIndex: -1,
+                anchorYearMonth: null
+            }
+        }
+
+        const currentMonth = activeData[currentMonthIndex]
         const remainingExpenses = Math.max(0, advisorForecast.predictedRemainingCurrentMonthExpensesCents / 100)
         const projectedEndExpenses = Math.max(
             currentMonth.expenses,
@@ -135,8 +181,10 @@ export function TrendAnalysisCard({
             sourceLabel: advisorForecast.primarySource === "brain" ? "Brain" : "Storico",
             remainingExpenses,
             projectedEndExpenses,
+            anchorIndex: currentMonthIndex,
+            anchorYearMonth: currentMonth.yearMonth
         }
-    }, [advisorForecast, activeData])
+    }, [advisorForecast, activeData, currentPeriod])
 
     const upcomingChargeMilestones = useMemo<UpcomingChargeMilestone[]>(() => {
         if (advisorSubscriptions.length === 0) return []
@@ -154,7 +202,8 @@ export function TrendAnalysisCard({
                     nextChargeDate,
                     description: subscription.description,
                     amountCents: subscription.amountCents,
-                    daysUntilCharge
+                    daysUntilCharge,
+                    timestamp: nextChargeDate.getTime()
                 }
             })
             .filter((item) => item.nextChargeDate.getTime() <= windowEndTs)
@@ -177,7 +226,8 @@ export function TrendAnalysisCard({
                     axisLabel,
                     description: item.description,
                     amountCents: item.amountCents,
-                    daysUntilCharge: item.daysUntilCharge
+                    daysUntilCharge: item.daysUntilCharge,
+                    timestamp: item.timestamp
                 }
             })
     }, [advisorSubscriptions, locale])
@@ -186,34 +236,71 @@ export function TrendAnalysisCard({
         if (!activeData.length) return {}
 
         const baseMonths = activeData.map((d) => d.month)
-        const timelineAxisKeys = upcomingChargeMilestones.map((item) => item.axisKey)
-        const hasTimelineMilestones = timelineAxisKeys.length > 0
-        const axisLabelByKey = new Map<string, string>(upcomingChargeMilestones.map((item) => [item.axisKey, item.axisLabel]))
+        const hasTimelineMilestones = upcomingChargeMilestones.length > 0
+        const projectionTimestamp = projection.enabled && projection.anchorYearMonth
+            ? getPeriodEndTimestamp(projection.anchorYearMonth)
+            : Number.NaN
+        const futureAxisPoints: Array<{
+            axisKey: string
+            axisLabel: string
+            timestamp: number
+            kind: "projection" | "timeline"
+        }> = [
+            ...(projection.enabled && Number.isFinite(projectionTimestamp)
+                ? [{
+                    axisKey: PROJECTION_AXIS_KEY,
+                    axisLabel: "Fine mese",
+                    timestamp: projectionTimestamp,
+                    kind: "projection" as const
+                }]
+                : []),
+            ...upcomingChargeMilestones.map((milestone) => ({
+                axisKey: milestone.axisKey,
+                axisLabel: milestone.axisLabel,
+                timestamp: milestone.timestamp,
+                kind: "timeline" as const
+            }))
+        ].sort((a, b) => {
+            if (a.timestamp !== b.timestamp) return a.timestamp - b.timestamp
+            if (a.kind === b.kind) return 0
+            return a.kind === "timeline" ? -1 : 1
+        })
+
+        const axisLabelByKey = new Map<string, string>(
+            futureAxisPoints.map((item) => [item.axisKey, item.axisLabel])
+        )
         const xAxisData = [
             ...baseMonths,
-            ...(projection.enabled ? ["Fine mese"] : []),
-            ...timelineAxisKeys
+            ...futureAxisPoints.map((item) => item.axisKey)
         ]
 
         const incomeSeriesData: Array<number | null> = activeData.map((d) => d.income)
         const expensesSeriesData: Array<number | null> = activeData.map((d) => d.expenses)
-        const trailingSlots = (projection.enabled ? 1 : 0) + timelineAxisKeys.length
+        const trailingSlots = futureAxisPoints.length
         for (let index = 0; index < trailingSlots; index += 1) {
             incomeSeriesData.push(null)
             expensesSeriesData.push(null)
         }
 
+        const axisIndexByKey = new Map<string, number>(
+            xAxisData.map((key, index) => [key, index])
+        )
         const projectionSeriesData: Array<number | null> = xAxisData.map(() => null)
         if (projection.enabled) {
-            projectionSeriesData[activeData.length - 1] = activeData[activeData.length - 1].expenses
-            projectionSeriesData[activeData.length] = projection.projectedEndExpenses
+            const projectionEndIndex = axisIndexByKey.get(PROJECTION_AXIS_KEY)
+            if (projection.anchorIndex >= 0 && projectionEndIndex !== undefined) {
+                projectionSeriesData[projection.anchorIndex] = activeData[projection.anchorIndex].expenses
+                projectionSeriesData[projectionEndIndex] = projection.projectedEndExpenses
+            }
         }
 
         const timelineSeriesData: Array<number | null> = xAxisData.map(() => null)
         if (hasTimelineMilestones) {
-            const timelineStartIndex = xAxisData.length - timelineAxisKeys.length
-            upcomingChargeMilestones.forEach((_, index) => {
-                timelineSeriesData[timelineStartIndex + index] = 0.08
+            upcomingChargeMilestones.forEach((milestone) => {
+                const timelineIndex = axisIndexByKey.get(milestone.axisKey)
+                if (timelineIndex !== undefined) {
+                    timelineSeriesData[timelineIndex] = 0.08
+                }
             })
         }
 
@@ -279,11 +366,12 @@ export function TrendAnalysisCard({
                     if (rows.length === 0) return ""
 
                     const index = rows[0].dataIndex
-                    const title = rows[0].name || xAxisData[index] || "Periodo"
-                    const timelineMilestone = timelineMilestoneByAxisKey.get(title)
-                    const isProjectionEnd = projection.enabled && index === activeData.length
+                    const axisKey = rows[0].name || xAxisData[index] || "Periodo"
+                    const title = axisLabelByKey.get(axisKey) || axisKey || "Periodo"
+                    const safeTitle = escapeHtml(title)
+                    const timelineMilestone = timelineMilestoneByAxisKey.get(axisKey)
+                    const isProjectionEnd = projection.enabled && axisKey === PROJECTION_AXIS_KEY
                     const monthStats = index < activeData.length ? activeData[index] : null
-                    const hasMonthTransactions = monthStats?.hasTransactions ?? false
 
                     const valueBySeries = new Map<string, number>()
                     for (const row of rows) {
@@ -293,6 +381,8 @@ export function TrendAnalysisCard({
                     }
 
                     if (timelineMilestone) {
+                        const safeTimelineDescription = escapeHtml(timelineMilestone.description)
+                        const safeDueLabel = escapeHtml(formatDueLabel(timelineMilestone.daysUntilCharge))
                         return `
             <div style="display: flex; flex-direction: column; gap: 4px;">
               <div style="display: flex; justify-content: space-between; gap: 24px;">
@@ -301,20 +391,21 @@ export function TrendAnalysisCard({
               </div>
               <div style="display: flex; justify-content: space-between; gap: 24px;">
                 <span style="color: #94a3b8; font-size: 12px;">Voce</span>
-                <span style="font-weight: 700; color: ${isDarkMode ? "#e2e8f0" : "#1e293b"}; font-size: 13px;">${timelineMilestone.description}</span>
+                <span style="font-weight: 700; color: ${isDarkMode ? "#e2e8f0" : "#1e293b"}; font-size: 13px;">${safeTimelineDescription}</span>
               </div>
               <div style="display: flex; justify-content: space-between; gap: 24px; margin-top: 4px; padding-top: 4px; border-top: 1px dashed rgba(128,128,128,0.2);">
                 <span style="color: #94a3b8; font-size: 12px;">Quando</span>
-                <span style="font-weight: 700; color: #0f766e; font-size: 13px;">${formatDueLabel(timelineMilestone.daysUntilCharge)}</span>
+                <span style="font-weight: 700; color: #0f766e; font-size: 13px;">${safeDueLabel}</span>
               </div>
             </div>
           `
                     }
 
                     if (isProjectionEnd) {
+                        const safeSourceLabel = escapeHtml(projection.sourceLabel)
                         return `
             <div style="font-weight: 700; font-size: 14px; margin-bottom: 8px; border-bottom: 1px solid rgba(128,128,128,0.2); padding-bottom: 4px;">
-              ${title}
+              ${safeTitle}
             </div>
             <div style="display: flex; flex-direction: column; gap: 4px;">
               <div style="display: flex; justify-content: space-between; gap: 24px;">
@@ -327,7 +418,7 @@ export function TrendAnalysisCard({
               </div>
               <div style="display: flex; justify-content: space-between; gap: 24px; margin-top: 4px; padding-top: 4px; border-top: 1px dashed rgba(128,128,128,0.2);">
                 <span style="color: #94a3b8; font-size: 12px;">Fonte</span>
-                <span style="font-weight: 700; color: #3b82f6; font-size: 13px;">${projection.sourceLabel}</span>
+                <span style="font-weight: 700; color: #3b82f6; font-size: 13px;">${safeSourceLabel}</span>
               </div>
             </div>
           `
@@ -336,26 +427,20 @@ export function TrendAnalysisCard({
                     const incomeValue = valueBySeries.get("Entrate") ?? 0
                     const expensesValue = valueBySeries.get("Uscite") ?? 0
                     const savingsRate = monthStats?.savingsRateLabel ?? "0.0%"
-                    if (!hasMonthTransactions) {
-                        return `
-            <div style="font-weight: 700; font-size: 14px; margin-bottom: 8px; border-bottom: 1px solid rgba(128,128,128,0.2); padding-bottom: 4px;">
-              ${title}
-            </div>
-            <div style="color: #94a3b8; font-size: 12px;">Nessun movimento registrato in questo mese.</div>
-          `
-                    }
-                    const projectionNote = projection.enabled && index === activeData.length - 1
+                    const safeSavingsRate = escapeHtml(savingsRate)
+                    const safeSourceLabel = escapeHtml(projection.sourceLabel)
+                    const projectionNote = projection.enabled && index === projection.anchorIndex
                         ? `
               <div style="display: flex; justify-content: space-between; gap: 24px; margin-top: 4px; padding-top: 4px; border-top: 1px dashed rgba(128,128,128,0.2);">
                 <span style="color: #94a3b8; font-size: 12px;">Fine mese stimata</span>
-                <span style="font-weight: 700; color: #f59e0b; font-size: 13px;">${formatEuroNumber(projection.projectedEndExpenses, currency, locale)} (${projection.sourceLabel})</span>
+                <span style="font-weight: 700; color: #f59e0b; font-size: 13px;">${formatEuroNumber(projection.projectedEndExpenses, currency, locale)} (${safeSourceLabel})</span>
               </div>
             `
                         : ""
 
                     return `
             <div style="font-weight: 700; font-size: 14px; margin-bottom: 8px; border-bottom: 1px solid rgba(128,128,128,0.2); padding-bottom: 4px;">
-              ${title}
+              ${safeTitle}
             </div>
             <div style="display: flex; flex-direction: column; gap: 4px;">
               <div style="display: flex; justify-content: space-between; gap: 24px;">
@@ -368,7 +453,7 @@ export function TrendAnalysisCard({
               </div>
               <div style="display: flex; justify-content: space-between; gap: 24px; margin-top: 4px; padding-top: 4px; border-top: 1px dashed rgba(128,128,128,0.2);">
                 <span style="color: #94a3b8; font-size: 12px;">Risparmio</span>
-                <span style="font-weight: 700; color: #3b82f6; font-size: 13px;">${savingsRate}</span>
+                <span style="font-weight: 700; color: #3b82f6; font-size: 13px;">${safeSavingsRate}</span>
               </div>
               ${projectionNote}
             </div>
@@ -455,7 +540,7 @@ export function TrendAnalysisCard({
                         shadowOffsetY: 4
                     },
                     markPoint: {
-                        data: milestones.bestIndex !== -1 ? [
+                        data: hasActiveData ? [
                             {
                                 type: "max",
                                 name: "Record",
@@ -515,7 +600,7 @@ export function TrendAnalysisCard({
                         showSymbol: true,
                         symbol: "circle",
                         symbolSize: 9,
-                        connectNulls: false,
+                        connectNulls: true,
                         itemStyle: { color: "#f59e0b" },
                         lineStyle: {
                             width: 3,
@@ -559,15 +644,13 @@ export function TrendAnalysisCard({
                     : [])
             ]
         }
-    }, [activeData, currency, locale, isDarkMode, milestones, projection, prefersReducedMotion, upcomingChargeMilestones])
-    const hasUpcomingTimeline = upcomingChargeMilestones.length > 0
+    }, [activeData, hasActiveData, currency, locale, isDarkMode, projection, prefersReducedMotion, upcomingChargeMilestones])
+    const trendDescription = trendNarration ?? "Confronto mese per mese tra entrate e uscite."
 
     return (
         <PremiumChartSection
             title="Andamento entrate e uscite"
-            description={trendNarration
-                ? `${trendNarration}${projection.enabled ? ` Proiezione fine mese (${projection.sourceLabel}).` : ""}${hasUpcomingTimeline ? ` Prossimi addebiti integrati (${SUBSCRIPTION_ACTIVE_WINDOW_DAYS}g).` : ""}`
-                : `Confronto mese per mese tra entrate e uscite.${projection.enabled ? " Include la proiezione di fine mese." : ""}${hasUpcomingTimeline ? ` Include i prossimi addebiti (${SUBSCRIPTION_ACTIVE_WINDOW_DAYS}g).` : ""}`}
+            description={trendDescription}
             option={option}
             isLoading={isLoading}
             status={chartStatus}

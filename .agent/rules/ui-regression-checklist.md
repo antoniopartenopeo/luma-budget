@@ -30,8 +30,9 @@ Questa checklist definisce controlli **deterministici** per garantire l'integrit
 ## 5. Motion: Entrance Animations
 | Verifica | Criticità | Automazione (Come) |
 |:---|:---|:---|
-| Configurazione `initial: { scale: 0.98 }`. | Evita salti verticali (`y: 10`) a favore di uno zoom premium. | **Testing Library**: Mock `framer-motion` e verifica che le props passate al componente includano `animate.scale: 1` e `initial.scale: 0.98`. |
-| Durata transizione `duration: 0.5`. | Velocità standardizzata per tutte le transizioni di ingresso. | **Component State**: Verifica configurazione `transition.duration === 0.5`. |
+| Uso della primitive `animate-enter-up` per ingressi sezione/card. | Standard motion condiviso e centralizzato in `globals.css`. | **DOM/Static**: verifica presenza classe `animate-enter-up` nei container di ingresso principali. |
+| Nessun fallback a utility legacy (`animate-in fade-in`) per i flussi core. | Evita drift tra policy e implementazione motion. | **Static**: ricerca classi legacy e segnala occorrenze nei componenti core. |
+| Presenza di supporto `prefers-reduced-motion` sulle primitive globali. | Accessibilità motion non negoziabile. | **CSS/Integration**: verifica media query `@media (prefers-reduced-motion: reduce)` e override animation. |
 
 ## 6. Tone & Semantics: Numa Advisor
 | Verifica | Criticità | Automazione (Come) |
@@ -42,7 +43,7 @@ Questa checklist definisce controlli **deterministici** per garantire l'integrit
 | Verifica | Criticità | Automazione (Come) |
 |:---|:---|:---|
 | Struttura `flex flex-col h-full` con Header/Footer delimitati da bordi. | Garantisce che le azioni siano sempre visibili e lo scrolling corretto. | **DOM**: Verifica `flex-col` sul wrapper e `border-b` / `border-t` sugli elementi estremi. |
-| Altazza bottoni footer esattamente `h-12`. | Uniformità delle azioni primarie. | **CSS**: Verifica computed height di `48px` sui bottoni nel footer dello Sheet. |
+| Altezza bottoni footer esattamente `h-12`. | Uniformità delle azioni primarie. | **CSS**: Verifica computed height di `48px` sui bottoni nel footer dello Sheet. |
 
 ## 8. Typography: Premium Readability
 | Verifica | Criticità | Automazione (Come) |

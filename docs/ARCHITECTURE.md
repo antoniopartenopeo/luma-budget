@@ -1,7 +1,7 @@
 # Numa Budget Architecture
 
 > **Status**: Active
-> **Last update**: 2026-02-11
+> **Last update**: 2026-02-18
 > **Principles**: Feature-first, domain isolation, local-first persistence, deterministic narration.
 
 ## 1) System Topology
@@ -77,6 +77,11 @@ Navigation contract:
 - Facts -> derive state -> narrate text.
 - No math in narrator functions.
 - Orchestrator suppresses contradictory low-priority reassurance in current critical contexts.
+
+### Insights runtime (`src/features/insights/*`)
+- Advisor forecast source transparency (`Brain` vs `Storico` fallback).
+- Subscription detection and grouping powered by merchant-normalized monthly cadence.
+- Trend timeline supports upcoming charge milestones for active subscriptions.
 
 ## 4) Data and State Flow
 

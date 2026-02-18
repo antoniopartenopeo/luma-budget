@@ -73,8 +73,8 @@ period_candidates=""
 while IFS= read -r file; do
     [ -z "$file" ] && continue
 
-    if grep -Eq '\bperiod\b|fromDate|toDate|dateRange|calculateDateRange\(' "$file" 2>/dev/null; then
-        if grep -Eq 'setMonth\(|setFullYear\(|dateRange\.from|dateRange\.to|calculateDateRange\(' "$file" 2>/dev/null; then
+    if grep -Eq '\bperiod\b|fromDate|toDate|dateRange|calculateDateRange(Local)?\(' "$file" 2>/dev/null; then
+        if grep -Eq 'setMonth\(|setFullYear\(|dateRange\.from|dateRange\.to|calculateDateRange(Local)?\(' "$file" 2>/dev/null; then
             if ! grep -q 'filterByRange' "$file" 2>/dev/null; then
                 period_candidates+="$file"$'\n'
             fi
@@ -87,7 +87,21 @@ period_candidates_count="$(count_lines "$period_candidates")"
 # ---------------------------------------------------------
 # 4) Inline style in TSX
 # ---------------------------------------------------------
-inline_style_hits="$(grep -RIn --include='*.tsx' 'style={{' "$SRC_DIR" 2>/dev/null || true)"
+inline_style_hits_all="$(grep -RIn --include='*.tsx' 'style={{' "$SRC_DIR" 2>/dev/null || true)"
+inline_style_all_count="$(count_lines "$inline_style_hits_all")"
+
+# Exempt technical inline-style cases explicitly allowed by governance:
+# - chart runtime sizing / canvas wrappers
+# - dynamic SVG orbit palette
+# - runtime color chips from data source
+inline_style_exempt_hits="$(printf '%s\n' "$inline_style_hits_all" | grep -E \
+    'src/features/dashboard/components/charts/echarts-wrapper.tsx:|src/features/dashboard/components/charts/premium-chart-section.tsx:|src/features/dashboard/components/charts/spending-composition-card.tsx:|src/components/layout/topbar-action-cluster.tsx:' \
+    || true)"
+inline_style_exempt_count="$(count_lines "$inline_style_exempt_hits")"
+
+inline_style_hits="$(printf '%s\n' "$inline_style_hits_all" | grep -Ev \
+    'src/features/dashboard/components/charts/echarts-wrapper.tsx:|src/features/dashboard/components/charts/premium-chart-section.tsx:|src/features/dashboard/components/charts/spending-composition-card.tsx:|src/components/layout/topbar-action-cluster.tsx:' \
+    || true)"
 inline_style_count="$(count_lines "$inline_style_hits")"
 
 # ---------------------------------------------------------
@@ -134,6 +148,8 @@ AMOUNT_STRING_COUNT=$amount_string_count
 AMOUNT_LEGACY_COUNT=$amount_legacy_count
 PERIOD_CANDIDATE_COUNT=$period_candidates_count
 INLINE_STYLE_COUNT=$inline_style_count
+INLINE_STYLE_TOTAL_COUNT=$inline_style_all_count
+INLINE_STYLE_EXEMPT_COUNT=$inline_style_exempt_count
 FORMULA_CANDIDATE_COUNT=$formula_candidates_count
 EOF
 
@@ -154,7 +170,7 @@ Scope:
 | parseFloat on monetary flows (excluding CSV normalize exception) | $parsefloat_status | $parsefloat_count |
 | Deprecated \`amount\` key / string amounts | $amount_status | key:$amount_key_count string:$amount_string_count legacy-files:$amount_legacy_count |
 | Period filters without \`filterByRange\` | $period_status | $period_candidates_count |
-| Inline style in TSX | $inline_style_status | $inline_style_count |
+| Inline style in TSX (non-exempt) | $inline_style_status | non-exempt:$inline_style_count total:$inline_style_all_count exempt:$inline_style_exempt_count |
 | Tests with formula-duplication heuristic | $formula_status | $formula_candidates_count |
 
 ## 1) parseFloat checks
@@ -209,10 +225,16 @@ $(head_or_empty "$period_candidates" 40)
 
 Rule: prefer Tailwind classes; inline styles only where technically unavoidable.
 
-Inline style hits (first 80):
+Inline style hits (non-exempt, first 80):
 
 \
 $(head_or_empty "$inline_style_hits" 80)
+\
+
+Inline style hits (exempt technical cases, first 40):
+
+\
+$(head_or_empty "$inline_style_exempt_hits" 40)
 \
 
 ## 5) Test formula duplication checks (heuristic)

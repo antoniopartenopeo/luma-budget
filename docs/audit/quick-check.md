@@ -1,6 +1,6 @@
 # Governance Quick Check
 
-Generated at (UTC): 2026-02-18T00:35:20Z
+Generated at (UTC): 2026-02-18T00:54:20Z
 
 Scope:
 - Repository: numa-budget
@@ -14,7 +14,7 @@ Scope:
 | parseFloat on monetary flows (excluding CSV normalize exception) | PASS | 0 |
 | Deprecated `amount` key / string amounts | WARN | key:23 string:17 legacy-files:4 |
 | Period filters without `filterByRange` | WARN | 4 |
-| Inline style in TSX | WARN | 9 |
+| Inline style in TSX (non-exempt) | WARN | non-exempt:1 total:9 exempt:8 |
 | Tests with formula-duplication heuristic | WARN | 4 |
 
 ## 1) parseFloat checks
@@ -116,9 +116,12 @@ Candidate files with period logic and no `filterByRange` (first 40):
 
 Rule: prefer Tailwind classes; inline styles only where technically unavoidable.
 
-Inline style hits (first 80):
+Inline style hits (non-exempt, first 80):
 
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/components/insight-card.tsx:146:                                                    style={{ width: `${impactPct}%` }}
+
+Inline style hits (exempt technical cases, first 40):
+
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/echarts-wrapper.tsx:67:        <div ref={containerRef} className={className} style={{ width: "100%", height: "100%", ...style }}>
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/echarts-wrapper.tsx:70:                style={{ height: "100%", width: "100%" }}
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/charts/premium-chart-section.tsx:49:                <div style={{ height: chartHeight }}>

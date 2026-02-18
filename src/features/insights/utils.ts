@@ -83,6 +83,8 @@ export function getExpenseTotalsByCategoryCents(
 export function buildTransactionsUrl(params: {
     period?: string
     categoryId?: string
+    search?: string
+    type?: "all" | "income" | "expense" | "superfluous"
     sortByAmount?: boolean
 }): string {
     const searchParams = new URLSearchParams()
@@ -96,6 +98,14 @@ export function buildTransactionsUrl(params: {
 
     if (params.categoryId) {
         searchParams.set("cat", params.categoryId)
+    }
+
+    if (params.search) {
+        searchParams.set("q", params.search)
+    }
+
+    if (params.type && params.type !== "all") {
+        searchParams.set("type", params.type)
     }
 
     if (params.sortByAmount) {

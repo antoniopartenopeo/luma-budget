@@ -1,6 +1,6 @@
 # Governance Quick Check
 
-Generated at (UTC): 2026-02-16T20:43:45Z
+Generated at (UTC): 2026-02-18T00:35:20Z
 
 Scope:
 - Repository: numa-budget
@@ -12,10 +12,10 @@ Scope:
 | Check | Status | Count |
 |---|---|---:|
 | parseFloat on monetary flows (excluding CSV normalize exception) | PASS | 0 |
-| Deprecated `amount` key / string amounts | WARN | key:25 string:17 legacy-files:5 |
+| Deprecated `amount` key / string amounts | WARN | key:23 string:17 legacy-files:4 |
 | Period filters without `filterByRange` | WARN | 4 |
 | Inline style in TSX | WARN | 9 |
-| Tests with formula-duplication heuristic | WARN | 3 |
+| Tests with formula-duplication heuristic | WARN | 4 |
 
 ## 1) parseFloat checks
 
@@ -31,8 +31,6 @@ Rule: transaction source of truth is `amountCents` integer.
 
 Amount key occurrences (first 60):
 
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/use-ai-advisor.ts:16:    amount: number
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/use-ai-advisor.ts:322:                amount: amount,
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/parse.ts:9:    amount: ["importo", "amount", "ammontare", "entrate", "uscite", "dare", "avere", "saldo", "valore"],
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/parse.ts:86:        amount: -1,
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/subgrouping.ts:34:    const recurring: Array<{ amount: number; rows: EnrichedRow[] }> = [];
@@ -83,7 +81,6 @@ Files containing both `amount` and `amountCents` (first 40):
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/__tests__/superfluous-kpi.test.ts
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/__tests__/normalize.test.ts
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/import-csv/core/subgrouping.ts
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/use-ai-advisor.ts
 
 ## 3) filterByRange period checks
 
@@ -140,6 +137,7 @@ Candidate test files (first 60):
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/VAULT/goals/logic/__tests__/sustainability-guard.test.ts
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/domain/narration/__tests__/semantic-enforcement.test.ts
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/__tests__/dashboard-calculation.test.ts
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/insights/__tests__/subscription-detection.test.ts
 
 ## Backlog candidates (non-fix in this pass)
 

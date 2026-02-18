@@ -8,12 +8,14 @@ import { useTrendData } from "../use-trend-data"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { formatEuroNumber } from "@/domain/money"
 import { narrateTrend, deriveTrendState, type TrendFacts, type OrchestrationContext } from "@/domain/narration"
-import type { AIForecast } from "../use-ai-advisor"
+import { SUBSCRIPTION_ACTIVE_WINDOW_DAYS } from "../subscription-detection"
+import type { AIForecast, AISubscription } from "../use-ai-advisor"
 import type { EChartsOption } from "echarts"
 
 interface TrendAnalysisCardProps {
     hasHighSeverityCurrentIssue?: boolean
     advisorForecast?: AIForecast | null
+    advisorSubscriptions?: AISubscription[]
 }
 
 interface TrendProjectionState {
@@ -23,9 +25,40 @@ interface TrendProjectionState {
     projectedEndExpenses: number
 }
 
+interface UpcomingChargeMilestone {
+    axisKey: string
+    axisLabel: string
+    description: string
+    amountCents: number
+    daysUntilCharge: number
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000
+const TIMELINE_MAX_ITEMS = 5
+
+function estimateNextMonthlyCharge(lastChargeTimestamp: number, now: Date): Date {
+    const nextCharge = new Date(lastChargeTimestamp)
+    nextCharge.setHours(0, 0, 0, 0)
+
+    let guard = 0
+    while (nextCharge.getTime() < now.getTime() && guard < 24) {
+        nextCharge.setMonth(nextCharge.getMonth() + 1)
+        guard += 1
+    }
+
+    return nextCharge
+}
+
+function formatDueLabel(daysUntilCharge: number): string {
+    if (daysUntilCharge <= 0) return "oggi"
+    if (daysUntilCharge === 1) return "tra 1 giorno"
+    return `tra ${daysUntilCharge} giorni`
+}
+
 export function TrendAnalysisCard({
     hasHighSeverityCurrentIssue = false,
     advisorForecast = null,
+    advisorSubscriptions = [],
 }: TrendAnalysisCardProps) {
     const { data, isLoading } = useTrendData()
     const prefersReducedMotion = useReducedMotion()
@@ -105,15 +138,67 @@ export function TrendAnalysisCard({
         }
     }, [advisorForecast, activeData])
 
+    const upcomingChargeMilestones = useMemo<UpcomingChargeMilestone[]>(() => {
+        if (advisorSubscriptions.length === 0) return []
+
+        const now = new Date()
+        const windowEndTs = now.getTime() + (SUBSCRIPTION_ACTIVE_WINDOW_DAYS * DAY_MS)
+        const dateFormatter = new Intl.DateTimeFormat(locale, { day: "2-digit", month: "short" })
+        const labelCountByDate = new Map<string, number>()
+
+        return advisorSubscriptions
+            .map((subscription) => {
+                const nextChargeDate = estimateNextMonthlyCharge(subscription.lastChargeTimestamp, now)
+                const daysUntilCharge = Math.max(0, Math.ceil((nextChargeDate.getTime() - now.getTime()) / DAY_MS))
+                return {
+                    nextChargeDate,
+                    description: subscription.description,
+                    amountCents: subscription.amountCents,
+                    daysUntilCharge
+                }
+            })
+            .filter((item) => item.nextChargeDate.getTime() <= windowEndTs)
+            .sort((a, b) => {
+                if (a.nextChargeDate.getTime() !== b.nextChargeDate.getTime()) {
+                    return a.nextChargeDate.getTime() - b.nextChargeDate.getTime()
+                }
+                return b.amountCents - a.amountCents
+            })
+            .slice(0, TIMELINE_MAX_ITEMS)
+            .map((item) => {
+                const baseDateLabel = dateFormatter.format(item.nextChargeDate)
+                const sequence = (labelCountByDate.get(baseDateLabel) || 0) + 1
+                labelCountByDate.set(baseDateLabel, sequence)
+                const axisKey = `${baseDateLabel}#${sequence}`
+                const axisLabel = sequence === 1 ? baseDateLabel : `${baseDateLabel}*`
+
+                return {
+                    axisKey,
+                    axisLabel,
+                    description: item.description,
+                    amountCents: item.amountCents,
+                    daysUntilCharge: item.daysUntilCharge
+                }
+            })
+    }, [advisorSubscriptions, locale])
+
     const option = useMemo<EChartsOption>(() => {
         if (!activeData.length) return {}
 
         const baseMonths = activeData.map((d) => d.month)
-        const xAxisData = projection.enabled ? [...baseMonths, "Fine mese"] : baseMonths
+        const timelineAxisKeys = upcomingChargeMilestones.map((item) => item.axisKey)
+        const hasTimelineMilestones = timelineAxisKeys.length > 0
+        const axisLabelByKey = new Map<string, string>(upcomingChargeMilestones.map((item) => [item.axisKey, item.axisLabel]))
+        const xAxisData = [
+            ...baseMonths,
+            ...(projection.enabled ? ["Fine mese"] : []),
+            ...timelineAxisKeys
+        ]
 
         const incomeSeriesData: Array<number | null> = activeData.map((d) => d.income)
         const expensesSeriesData: Array<number | null> = activeData.map((d) => d.expenses)
-        if (projection.enabled) {
+        const trailingSlots = (projection.enabled ? 1 : 0) + timelineAxisKeys.length
+        for (let index = 0; index < trailingSlots; index += 1) {
             incomeSeriesData.push(null)
             expensesSeriesData.push(null)
         }
@@ -121,12 +206,26 @@ export function TrendAnalysisCard({
         const projectionSeriesData: Array<number | null> = xAxisData.map(() => null)
         if (projection.enabled) {
             projectionSeriesData[activeData.length - 1] = activeData[activeData.length - 1].expenses
-            projectionSeriesData[xAxisData.length - 1] = projection.projectedEndExpenses
+            projectionSeriesData[activeData.length] = projection.projectedEndExpenses
         }
 
-        const legendData = projection.enabled
-            ? ["Entrate", "Uscite", "Uscite stimate fine mese"]
-            : ["Entrate", "Uscite"]
+        const timelineSeriesData: Array<number | null> = xAxisData.map(() => null)
+        if (hasTimelineMilestones) {
+            const timelineStartIndex = xAxisData.length - timelineAxisKeys.length
+            upcomingChargeMilestones.forEach((_, index) => {
+                timelineSeriesData[timelineStartIndex + index] = 0.08
+            })
+        }
+
+        const legendData = [
+            "Entrate",
+            "Uscite",
+            ...(projection.enabled ? ["Uscite stimate fine mese"] : []),
+            ...(hasTimelineMilestones ? ["Prossimi addebiti"] : [])
+        ]
+        const timelineMilestoneByAxisKey = new Map(
+            upcomingChargeMilestones.map((item) => [item.axisKey, item] as const)
+        )
 
         const buildLinearGradient = (startColor: string, endColor: string) => ({
             type: "linear" as const,
@@ -154,7 +253,7 @@ export function TrendAnalysisCard({
                         color: isDarkMode ? "rgba(255, 255, 255, 0.03)" : "rgba(0, 0, 0, 0.02)"
                     },
                     label: {
-                        show: true,
+                        show: false,
                         backgroundColor: isDarkMode ? "#1e293b" : "#f8fafc",
                         color: isDarkMode ? "#f8fafc" : "#1e293b",
                         padding: [4, 8],
@@ -181,7 +280,8 @@ export function TrendAnalysisCard({
 
                     const index = rows[0].dataIndex
                     const title = rows[0].name || xAxisData[index] || "Periodo"
-                    const isProjectionEnd = projection.enabled && index === xAxisData.length - 1
+                    const timelineMilestone = timelineMilestoneByAxisKey.get(title)
+                    const isProjectionEnd = projection.enabled && index === activeData.length
                     const monthStats = index < activeData.length ? activeData[index] : null
                     const hasMonthTransactions = monthStats?.hasTransactions ?? false
 
@@ -190,6 +290,25 @@ export function TrendAnalysisCard({
                         if (typeof row.value === "number" && Number.isFinite(row.value)) {
                             valueBySeries.set(row.seriesName, row.value)
                         }
+                    }
+
+                    if (timelineMilestone) {
+                        return `
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <div style="display: flex; justify-content: space-between; gap: 24px;">
+                <span style="color: #94a3b8; font-size: 12px;">Addebito previsto</span>
+                <span style="font-weight: 700; color: #0f766e; font-size: 13px;">${formatEuroNumber(timelineMilestone.amountCents / 100, currency, locale)}</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; gap: 24px;">
+                <span style="color: #94a3b8; font-size: 12px;">Voce</span>
+                <span style="font-weight: 700; color: ${isDarkMode ? "#e2e8f0" : "#1e293b"}; font-size: 13px;">${timelineMilestone.description}</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; gap: 24px; margin-top: 4px; padding-top: 4px; border-top: 1px dashed rgba(128,128,128,0.2);">
+                <span style="color: #94a3b8; font-size: 12px;">Quando</span>
+                <span style="font-weight: 700; color: #0f766e; font-size: 13px;">${formatDueLabel(timelineMilestone.daysUntilCharge)}</span>
+              </div>
+            </div>
+          `
                     }
 
                     if (isProjectionEnd) {
@@ -284,25 +403,38 @@ export function TrendAnalysisCard({
                     color: isDarkMode ? "#64748b" : "#94a3b8",
                     fontSize: 11,
                     fontWeight: 600,
-                    margin: 16
+                    margin: 16,
+                    formatter: (value: string | number) => axisLabelByKey.get(String(value)) || String(value)
                 },
                 axisTick: { show: false }
             },
-            yAxis: {
-                type: "value",
-                splitLine: {
-                    lineStyle: {
-                        type: "dashed",
-                        color: isDarkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"
+            yAxis: [
+                {
+                    type: "value",
+                    splitLine: {
+                        lineStyle: {
+                            type: "dashed",
+                            color: isDarkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"
+                        }
+                    },
+                    axisLabel: {
+                        color: isDarkMode ? "#475569" : "#94a3b8",
+                        fontSize: 10,
+                        fontWeight: 600,
+                        formatter: (value: number) => value >= 1000 ? `${(value / 1000).toFixed(0)}k` : value.toString()
                     }
                 },
-                axisLabel: {
-                    color: isDarkMode ? "#475569" : "#94a3b8",
-                    fontSize: 10,
-                    fontWeight: 600,
-                    formatter: (value: number) => value >= 1000 ? `${(value / 1000).toFixed(0)}k` : value.toString()
+                {
+                    type: "value",
+                    min: 0,
+                    max: 1,
+                    show: false,
+                    splitLine: { show: false },
+                    axisLabel: { show: false },
+                    axisLine: { show: false },
+                    axisTick: { show: false }
                 }
-            },
+            ],
             series: [
                 {
                     name: "Entrate",
@@ -400,18 +532,42 @@ export function TrendAnalysisCard({
                         data: projectionSeriesData
                     }]
                     : [])
+                ,
+                ...(hasTimelineMilestones
+                    ? [{
+                        name: "Prossimi addebiti",
+                        type: "line" as const,
+                        yAxisIndex: 1,
+                        smooth: false,
+                        showSymbol: true,
+                        symbol: "circle",
+                        symbolSize: 11,
+                        connectNulls: false,
+                        itemStyle: {
+                            color: "#0f766e",
+                            borderColor: "#ccfbf1",
+                            borderWidth: 2
+                        },
+                        lineStyle: {
+                            width: 2,
+                            type: "dashed" as const,
+                            color: "rgba(15, 118, 110, 0.55)"
+                        },
+                        z: 8,
+                        data: timelineSeriesData
+                    }]
+                    : [])
             ]
         }
-    }, [activeData, currency, locale, isDarkMode, milestones, projection, prefersReducedMotion])
+    }, [activeData, currency, locale, isDarkMode, milestones, projection, prefersReducedMotion, upcomingChargeMilestones])
+    const hasUpcomingTimeline = upcomingChargeMilestones.length > 0
 
     return (
         <PremiumChartSection
-            title={projection.enabled
-                ? "Andamento entrate, uscite e proiezione fine mese"
-                : "Andamento entrate e uscite"}
+            title="Andamento entrate e uscite"
             description={trendNarration
-                ? `${trendNarration}${projection.enabled ? ` Inclusa proiezione uscite a fine mese (${projection.sourceLabel}).` : ""}`
-                : "Confronto mese per mese tra entrate e uscite."}
+                ? `${trendNarration}${projection.enabled ? ` Proiezione fine mese (${projection.sourceLabel}).` : ""}${hasUpcomingTimeline ? ` Prossimi addebiti integrati (${SUBSCRIPTION_ACTIVE_WINDOW_DAYS}g).` : ""}`
+                : `Confronto mese per mese tra entrate e uscite.${projection.enabled ? " Include la proiezione di fine mese." : ""}${hasUpcomingTimeline ? ` Include i prossimi addebiti (${SUBSCRIPTION_ACTIVE_WINDOW_DAYS}g).` : ""}`}
             option={option}
             isLoading={isLoading}
             status={chartStatus}

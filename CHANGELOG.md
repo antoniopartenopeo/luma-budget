@@ -17,6 +17,8 @@ Schema usato in tutte le release:
 - Su mobile, la Composizione Spese passa a una vista più leggibile a card/legenda (senza grafico a torta completo).
 - Aggiunta la KPI **Segnale del mese** in Dashboard, con stato sintetico e rimando rapido a Insights.
 - Aggiornata la responsività dei grafici ECharts con resize più affidabile.
+- In Insights, la sezione **Abbonamenti attivi** ora è organizzata in card espandibili per gruppo, con dettaglio transazioni rilevate.
+- La vista **Prossimi addebiti** è stata trasformata in una timeline visuale a milestone, più leggibile e orientata alle scadenze.
 
 ### Fixed (Correzioni)
 - Corretto il calcolo periodo mensile in Dashboard usando range locale, riducendo incoerenze nei passaggi di mese/fuso.

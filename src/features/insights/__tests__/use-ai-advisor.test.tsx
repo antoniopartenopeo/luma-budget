@@ -22,6 +22,7 @@ vi.mock("@/features/dashboard/api/use-dashboard", () => ({
 }))
 
 vi.mock("@/brain", () => ({
+    BRAIN_MATURITY_SAMPLE_TARGET: 120,
     initializeBrain: (...args: unknown[]) => initializeBrainMock(...args),
     evolveBrainFromHistory: (...args: unknown[]) => evolveBrainFromHistoryMock(...args),
 }))
@@ -101,7 +102,7 @@ function buildBrainResult(overrides: Record<string, unknown> = {}) {
         currentIncomeCents: 310000,
         currentExpensesCents: 150000,
         predictedExpensesNextMonthCents: 170000,
-        predictedCurrentMonthRemainingExpensesCents: 120000,
+        predictedCurrentMonthRemainingExpensesCents: 60000,
         currentMonthNowcastConfidence: 0.78,
         currentMonthNowcastReady: true,
         ...overrides,
@@ -150,8 +151,8 @@ describe("useAIAdvisor", () => {
         expect(evolveBrainFromHistoryMock).toHaveBeenCalledTimes(1)
         expect(value?.forecast?.primarySource).toBe("brain")
         expect(value?.forecast?.baseBalanceCents).toBe(500000)
-        expect(value?.forecast?.predictedRemainingCurrentMonthExpensesCents).toBe(120000)
-        expect(value?.forecast?.predictedTotalEstimatedBalanceCents).toBe(380000)
+        expect(value?.forecast?.predictedRemainingCurrentMonthExpensesCents).toBe(60000)
+        expect(value?.forecast?.predictedTotalEstimatedBalanceCents).toBe(440000)
         expect(value?.brainSignal.isReady).toBe(true)
         expect(value?.brainSignal.source).toBe("brain")
     })
@@ -181,6 +182,124 @@ describe("useAIAdvisor", () => {
         expect(value?.forecast?.predictedTotalEstimatedBalanceCents).toBe(465000)
         expect(value?.brainSignal.isReady).toBe(false)
         expect(value?.brainSignal.source).toBe("fallback")
+    })
+
+    it("falls back when Brain confidence is below quality threshold", async () => {
+        evolveBrainFromHistoryMock.mockResolvedValue(
+            buildBrainResult({
+                currentMonthNowcastReady: true,
+                currentMonthNowcastConfidence: 0.61,
+                predictedCurrentMonthRemainingExpensesCents: 120000,
+                prediction: {
+                    predictedExpenseRatio: 0.7,
+                    riskScore: 0.45,
+                    confidence: 0.61,
+                    contributors: []
+                },
+            })
+        )
+
+        let latest: AIAdvisorResult | null = null
+
+        render(<HookHarness onValue={(value) => { latest = value }} />)
+
+        await act(async () => {
+            await Promise.resolve()
+            await Promise.resolve()
+        })
+
+        const value = latest as AIAdvisorResult | null
+
+        expect(value?.isLoading).toBe(false)
+        expect(value?.forecast?.primarySource).toBe("fallback")
+        expect(value?.forecast?.predictedRemainingCurrentMonthExpensesCents).toBe(35000)
+        expect(value?.brainSignal.isReady).toBe(false)
+        expect(value?.brainSignal.source).toBe("fallback")
+    })
+
+    it("falls back when Brain nowcast is an outlier vs historical anchor", async () => {
+        evolveBrainFromHistoryMock.mockResolvedValue(
+            buildBrainResult({
+                currentMonthNowcastReady: true,
+                currentMonthNowcastConfidence: 0.84,
+                predictedCurrentMonthRemainingExpensesCents: 150000,
+                prediction: {
+                    predictedExpenseRatio: 1.1,
+                    riskScore: 0.76,
+                    confidence: 0.84,
+                    contributors: []
+                },
+            })
+        )
+
+        let latest: AIAdvisorResult | null = null
+
+        render(<HookHarness onValue={(value) => { latest = value }} />)
+
+        await act(async () => {
+            await Promise.resolve()
+            await Promise.resolve()
+        })
+
+        const value = latest as AIAdvisorResult | null
+
+        expect(value?.isLoading).toBe(false)
+        expect(value?.forecast?.primarySource).toBe("fallback")
+        expect(value?.forecast?.predictedRemainingCurrentMonthExpensesCents).toBe(35000)
+        expect(value?.forecast?.predictedTotalEstimatedBalanceCents).toBe(465000)
+        expect(value?.brainSignal.isReady).toBe(false)
+        expect(value?.brainSignal.source).toBe("fallback")
+    })
+
+    it("keeps Brain as primary on outlier when confidence and maturity are both high", async () => {
+        evolveBrainFromHistoryMock.mockResolvedValue(
+            buildBrainResult({
+                currentMonthNowcastReady: true,
+                currentMonthNowcastConfidence: 0.95,
+                predictedCurrentMonthRemainingExpensesCents: 170000,
+                prediction: {
+                    predictedExpenseRatio: 1.2,
+                    riskScore: 0.84,
+                    confidence: 0.95,
+                    contributors: []
+                },
+                snapshot: {
+                    version: 2,
+                    featureSchemaVersion: 1,
+                    weights: [0, 0, 0, 0, 0],
+                    bias: 0,
+                    learningRate: 0.03,
+                    trainedSamples: 160,
+                    lossEma: 0.08,
+                    currentMonthHead: {
+                        weights: [0, 0, 0, 0, 0],
+                        bias: 0,
+                        learningRate: 0.03,
+                        trainedSamples: 160,
+                        lossEma: 0.08,
+                    },
+                    dataFingerprint: "brain-v2-test-high-maturity",
+                    updatedAt: "2026-02-15T10:00:00.000Z"
+                }
+            })
+        )
+
+        let latest: AIAdvisorResult | null = null
+
+        render(<HookHarness onValue={(value) => { latest = value }} />)
+
+        await act(async () => {
+            await Promise.resolve()
+            await Promise.resolve()
+        })
+
+        const value = latest as AIAdvisorResult | null
+
+        expect(value?.isLoading).toBe(false)
+        expect(value?.forecast?.primarySource).toBe("brain")
+        expect(value?.forecast?.predictedRemainingCurrentMonthExpensesCents).toBe(132200)
+        expect(value?.brainSignal.isReady).toBe(true)
+        expect(value?.brainSignal.source).toBe("brain")
     })
 
     it("re-runs evolution when transaction classification changes", async () => {

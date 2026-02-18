@@ -36,9 +36,19 @@ import { SortField, SortOrder } from "../utils/transactions-logic"
 import { usePrivacyStore } from "@/features/privacy/privacy.store"
 import { getPrivacyClass } from "@/features/privacy/privacy-utils"
 import { motion, AnimatePresence } from "framer-motion"
-import { macroItemVariants } from "@/components/patterns/macro-section"
 
 const MotionTableRow = motion(TableRow)
+const tableRowPresenceVariants = {
+    initial: { opacity: 0 },
+    animate: {
+        opacity: 1,
+        transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] as const }
+    },
+    exit: {
+        opacity: 0,
+        transition: { duration: 0.12, ease: "easeOut" as const }
+    }
+} as const
 
 interface TransactionsTableProps {
     transactions: Transaction[]
@@ -144,11 +154,14 @@ export function TransactionsTable({
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <AnimatePresence mode="popLayout">
+                        <AnimatePresence initial={false}>
                             {transactions.map((transaction) => (
                                 <MotionTableRow
                                     key={transaction.id}
-                                    variants={macroItemVariants}
+                                    variants={tableRowPresenceVariants}
+                                    initial="initial"
+                                    animate="animate"
+                                    exit="exit"
                                     className="hover:bg-muted/20 transition-all border-b last:border-0 cursor-pointer group"
                                     onClick={() => onRowClick(transaction)}
                                 >

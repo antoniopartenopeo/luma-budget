@@ -2,20 +2,19 @@ import { useMemo, useState, useEffect, useRef } from "react"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
 import { sumExpensesInCents } from "@/domain/money"
 import { AdvisorFacts } from "@/domain/narration"
-import { extractMerchantKey } from "@/features/import-csv/core/merchant/pipeline"
 import { useDashboardSummary } from "@/features/dashboard/api/use-dashboard"
 import { useCategories } from "@/features/categories/api/use-categories"
-import { evolveBrainFromHistory, initializeBrain, type BrainEvolutionResult } from "@/brain"
+import {
+    BRAIN_MATURITY_SAMPLE_TARGET,
+    evolveBrainFromHistory,
+    initializeBrain,
+    type BrainEvolutionResult
+} from "@/brain"
 import { getCurrentPeriod, getDaysElapsedInMonth, getDaysInMonth, getPreviousMonths } from "@/lib/date-ranges"
 import { filterTransactionsByMonth } from "./utils"
+import { detectActiveSubscriptions, type DetectedSubscription } from "./subscription-detection"
 
-export interface AISubscription {
-    id: string
-    description: string
-    amountCents: number
-    amount: number
-    frequency: "monthly"
-}
+export type AISubscription = DetectedSubscription
 
 export interface AIForecast {
     baseBalanceCents: number
@@ -139,24 +138,6 @@ function estimateRemainingExpensesRunRate(
     return Math.max(projectedTotalCents - currentMonthExpensesCents, 0)
 }
 
-function isMonthlySubscriptionPattern(sortedDates: number[]): boolean {
-    if (sortedDates.length < 2) return false
-    const diffsInDays: number[] = []
-    for (let i = 1; i < sortedDates.length; i++) {
-        diffsInDays.push((sortedDates[i] - sortedDates[i - 1]) / (1000 * 60 * 60 * 24))
-    }
-
-    const monthlyMatches = diffsInDays.filter((diffDays) => diffDays >= 25 && diffDays <= 35).length
-    const cadenceRatio = monthlyMatches / diffsInDays.length
-
-    return monthlyMatches >= 1 && cadenceRatio >= 0.5
-}
-
-function isRecentlyActive(latestTimestamp: number, now: Date): boolean {
-    const diffDays = (now.getTime() - latestTimestamp) / (1000 * 60 * 60 * 24)
-    return diffDays <= 45
-}
-
 function clamp(value: number, min: number, max: number): number {
     return Math.min(max, Math.max(min, value))
 }
@@ -168,6 +149,50 @@ function createDefaultBrainSignal(): AIBrainSignal {
         riskScore: null,
         confidenceScore: null
     }
+}
+
+const MIN_BRAIN_NOWCAST_CONFIDENCE = 0.72
+const MIN_OUTLIER_BLEND_CONFIDENCE = 0.88
+const HIGH_CONFIDENCE_BRAIN_OVERSHOOT_RATIO = 2.4
+const MID_CONFIDENCE_BRAIN_OVERSHOOT_RATIO = 2.1
+const LOW_CONFIDENCE_BRAIN_OVERSHOOT_RATIO = 1.8
+const MIN_BRAIN_OVERSHOOT_DELTA_CENTS = 30000
+const OUTLIER_DAMPING_STRENGTH = 1.25
+const HIGH_TRUST_SPIKE_CONFIDENCE = 0.9
+const HIGH_TRUST_SPIKE_MATURITY_SCORE = 0.8
+const HIGH_TRUST_SPIKE_MIN_BLEND_WEIGHT = 0.72
+const PRIMARY_BRAIN_BLEND_WEIGHT_THRESHOLD = 0.6
+
+function resolveAllowedBrainOvershootRatio(confidenceScore: number): number {
+    if (confidenceScore >= 0.85) return HIGH_CONFIDENCE_BRAIN_OVERSHOOT_RATIO
+    if (confidenceScore >= 0.75) return MID_CONFIDENCE_BRAIN_OVERSHOOT_RATIO
+    return LOW_CONFIDENCE_BRAIN_OVERSHOOT_RATIO
+}
+
+function resolveOutlierBrainBlendWeight(params: {
+    confidenceScore: number
+    maturityScore: number
+    overshootRatio: number
+    allowedOvershootRatio: number
+}): number {
+    const { confidenceScore, maturityScore, overshootRatio, allowedOvershootRatio } = params
+    if (confidenceScore < MIN_OUTLIER_BLEND_CONFIDENCE) return 0
+
+    const confidenceFactor = clamp(
+        (confidenceScore - MIN_OUTLIER_BLEND_CONFIDENCE) / (1 - MIN_OUTLIER_BLEND_CONFIDENCE),
+        0,
+        1
+    )
+    const maturityFactor = 0.45 + (0.55 * maturityScore)
+    const overshootExcess = Math.max(0, overshootRatio - allowedOvershootRatio)
+    const outlierDamping = 1 / (1 + (overshootExcess * OUTLIER_DAMPING_STRENGTH))
+
+    let blendWeight = confidenceFactor * maturityFactor * outlierDamping
+    if (confidenceScore >= HIGH_TRUST_SPIKE_CONFIDENCE && maturityScore >= HIGH_TRUST_SPIKE_MATURITY_SCORE) {
+        blendWeight = Math.max(blendWeight, HIGH_TRUST_SPIKE_MIN_BLEND_WEIGHT)
+    }
+
+    return clamp(blendWeight, 0, 1)
 }
 
 export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
@@ -255,6 +280,17 @@ export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
         }
 
         const expenses = transactions.filter(t => t.type === "expense")
+        const categoriesById = new Map(categories.map((category) => [category.id, category]))
+        const subscriptionCandidates = expenses.map((expense) => {
+            const category = categoriesById.get(expense.categoryId)
+            return {
+                amountCents: expense.amountCents,
+                description: expense.description,
+                timestamp: expense.timestamp,
+                categoryId: expense.categoryId,
+                categoryLabel: category?.label || expense.category || expense.categoryId
+            }
+        })
         const currentMonthTransactions = filterTransactionsByMonth(transactions, currentPeriod)
         const currentMonthExpensesCents = sumExpensesInCents(currentMonthTransactions)
         const historicalRemainingCurrentMonthExpensesCents = estimateRemainingExpensesFromHistory(
@@ -266,83 +302,86 @@ export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
         const baseBalanceCents = dashboardSummary?.netBalanceCents ?? 0
         const brainResultIsCurrent = brainEvolutionSignature === brainInputSignature
         const brainNowcastReady = brainResultIsCurrent && brainEvolution?.currentMonthNowcastReady === true
-        const predictedRemainingCurrentMonthExpensesCents = brainNowcastReady
-            ? Math.max(0, brainEvolution?.predictedCurrentMonthRemainingExpensesCents ?? 0)
-            : fallbackRemainingCurrentMonthExpensesCents
-        const primarySource: AIForecast["primarySource"] = brainNowcastReady ? "brain" : "fallback"
-        const predictedTotalEstimatedBalanceCents = baseBalanceCents - predictedRemainingCurrentMonthExpensesCents
         const brainPrediction = brainResultIsCurrent ? (brainEvolution?.prediction ?? null) : null
-        const fallbackRiskScore = brainResultIsCurrent && brainEvolution
+        const brainNowcastConfidenceScore = brainResultIsCurrent
             ? clamp(
-                (brainEvolution.predictedCurrentMonthRemainingExpensesCents || 0)
-                / Math.max(brainEvolution.currentExpensesCents || 0, 1),
+                brainPrediction?.confidence ?? (brainEvolution?.currentMonthNowcastConfidence ?? 0),
+                0,
+                1
+            )
+            : 0
+        const brainMaturityScore = clamp(
+            (brainEvolution?.snapshot?.currentMonthHead?.trainedSamples ?? 0) / BRAIN_MATURITY_SAMPLE_TARGET,
+            0,
+            1
+        )
+        const brainRemainingCurrentMonthExpensesCents = Math.max(
+            0,
+            brainEvolution?.predictedCurrentMonthRemainingExpensesCents ?? 0
+        )
+        const overshootAnchorCents = historicalRemainingCurrentMonthExpensesCents ?? fallbackRemainingCurrentMonthExpensesCents
+        const overshootRatio = overshootAnchorCents > 0
+            ? brainRemainingCurrentMonthExpensesCents / Math.max(overshootAnchorCents, 1)
+            : 1
+        const allowedOvershootRatio = resolveAllowedBrainOvershootRatio(brainNowcastConfidenceScore)
+        const allowedOvershootDeltaCents = Math.max(
+            MIN_BRAIN_OVERSHOOT_DELTA_CENTS,
+            Math.round(overshootAnchorCents * 0.45)
+        )
+        const isBrainOutlier = brainNowcastReady
+            && overshootAnchorCents > 0
+            && brainRemainingCurrentMonthExpensesCents > overshootAnchorCents
+            && overshootRatio > allowedOvershootRatio
+            && (brainRemainingCurrentMonthExpensesCents - overshootAnchorCents) > allowedOvershootDeltaCents
+        const brainBlendWeight = brainNowcastReady
+            ? isBrainOutlier
+                ? resolveOutlierBrainBlendWeight({
+                    confidenceScore: brainNowcastConfidenceScore,
+                    maturityScore: brainMaturityScore,
+                    overshootRatio,
+                    allowedOvershootRatio
+                })
+                : brainNowcastConfidenceScore >= MIN_BRAIN_NOWCAST_CONFIDENCE
+                    ? 1
+                    : 0
+            : 0
+        const predictedRemainingCurrentMonthExpensesCents = brainBlendWeight > 0
+            ? Math.max(
+                0,
+                Math.round(
+                    fallbackRemainingCurrentMonthExpensesCents
+                    + ((brainRemainingCurrentMonthExpensesCents - fallbackRemainingCurrentMonthExpensesCents) * brainBlendWeight)
+                )
+            )
+            : fallbackRemainingCurrentMonthExpensesCents
+        const canUseBrainNowcast = brainBlendWeight >= PRIMARY_BRAIN_BLEND_WEIGHT_THRESHOLD
+        const primarySource: AIForecast["primarySource"] = canUseBrainNowcast ? "brain" : "fallback"
+        const predictedTotalEstimatedBalanceCents = baseBalanceCents - predictedRemainingCurrentMonthExpensesCents
+        const fallbackRiskScore = currentMonthExpensesCents > 0
+            ? clamp(
+                predictedRemainingCurrentMonthExpensesCents / Math.max(currentMonthExpensesCents, 1),
                 0,
                 1
             )
             : null
         const brainSignal: AIBrainSignal = {
-            isReady: brainNowcastReady,
-            source: brainNowcastReady ? "brain" : "fallback",
-            riskScore: brainPrediction ? clamp(brainPrediction.riskScore, 0, 1) : fallbackRiskScore,
+            isReady: canUseBrainNowcast,
+            source: canUseBrainNowcast ? "brain" : "fallback",
+            riskScore: canUseBrainNowcast && brainPrediction
+                ? clamp(brainPrediction.riskScore, 0, 1)
+                : fallbackRiskScore,
             confidenceScore: brainResultIsCurrent
-                ? clamp(
-                    brainPrediction?.confidence ?? (brainEvolution?.currentMonthNowcastConfidence ?? 0),
-                    0,
-                    1
-                )
+                ? brainNowcastConfidenceScore
                 : null
         }
 
-        // 1. Subscription Detection Logic (merchant-centric, one active subscription per merchant)
-        const patternMap = new Map<string, { dates: number[]; samples: Array<{ timestamp: number; amountCents: number }> }>()
-        expenses.forEach(t => {
-            const merchantKey = extractMerchantKey(t.description)
-            const key = merchantKey
-            const timestamp = new Date(t.timestamp).getTime()
-            const record = patternMap.get(key) || { dates: [], samples: [] }
-            record.dates.push(timestamp)
-            record.samples.push({ timestamp, amountCents: Math.abs(t.amountCents) })
-            patternMap.set(key, record)
-        })
-
-        const detectedSubscriptions: AISubscription[] = []
-        let subscriptionTotalYearlyCents = 0
         const now = new Date()
+        const {
+            subscriptions: detectedSubscriptions,
+            totalYearlyCents: subscriptionTotalYearlyCents
+        } = detectActiveSubscriptions(subscriptionCandidates, { now })
 
-        patternMap.forEach((record, merchantKey) => {
-            if (merchantKey === "ALTRO" || merchantKey === "UNRESOLVED") return
-            if (record.dates.length < 2) return
-
-            const sortedDates = [...record.dates].sort((a, b) => a - b)
-            const latestTimestamp = sortedDates[sortedDates.length - 1]
-            if (!isRecentlyActive(latestTimestamp, now)) return
-            if (!isMonthlySubscriptionPattern(sortedDates)) return
-
-            const latestAmountCents =
-                record.samples
-                    .slice()
-                    .sort((a, b) => b.timestamp - a.timestamp)[0]?.amountCents ?? 0
-            const amount = latestAmountCents / 100
-
-            // Noise Gate: Ignore subscriptions under €5
-            if (Math.abs(amount) < 5) return
-
-            detectedSubscriptions.push({
-                id: merchantKey,
-                description: merchantKey,
-                amountCents: latestAmountCents,
-                amount: amount,
-                frequency: "monthly"
-            })
-            subscriptionTotalYearlyCents += (Math.abs(latestAmountCents) * 12)
-        })
-
-        detectedSubscriptions.sort((a, b) => {
-            if (b.amount !== a.amount) return b.amount - a.amount
-            return a.description.localeCompare(b.description)
-        })
-
-        // 2. Historical coverage signal (used only for confidence level)
+        // 1. Historical coverage signal (used only for confidence level)
         const last3Months = []
         for (let i = 1; i <= 3; i++) {
             const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
@@ -395,6 +434,7 @@ export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
         brainEvolution,
         brainEvolutionSignature,
         brainInputSignature,
+        categories,
         currentPeriod,
         dashboardSummary?.netBalanceCents,
         isTransactionsLoading,

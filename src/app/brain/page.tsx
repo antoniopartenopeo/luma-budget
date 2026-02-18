@@ -138,6 +138,20 @@ function clampPercent(value: number): number {
     return Math.max(0, Math.min(100, Math.round(value)))
 }
 
+function formatFeatureLabel(feature: string): string {
+    const labels: Record<string, string> = {
+        expense_income_ratio: "Rapporto spese/entrate",
+        superfluous_share: "Quota spese non essenziali",
+        comfort_share: "Quota spese di comfort",
+        txn_density: "Frequenza transazioni",
+        expense_momentum: "Tendenza recente delle spese",
+    }
+
+    if (labels[feature]) return labels[feature]
+    const fallback = feature.replace(/_/g, " ")
+    return fallback.charAt(0).toUpperCase() + fallback.slice(1)
+}
+
 function signatureOf(snapshot: NeuralBrainSnapshot | null): string {
     if (!snapshot) return "not-initialized"
     return [
@@ -154,7 +168,7 @@ function resolveStage(snapshot: NeuralBrainSnapshot | null): StageState {
     if (!snapshot) {
         return {
             id: "dormant",
-            label: "Dormant",
+            label: "Spento",
             summary: "Il Core e spento: avvialo per iniziare a imparare.",
             badgeVariant: "outline",
         }
@@ -164,7 +178,7 @@ function resolveStage(snapshot: NeuralBrainSnapshot | null): StageState {
     if (trained === 0) {
         return {
             id: "newborn",
-            label: "Newborn",
+            label: "Nuovo",
             summary: "Il Core e nato, ma non ha ancora imparato dai tuoi dati.",
             badgeVariant: "secondary",
         }
@@ -173,7 +187,7 @@ function resolveStage(snapshot: NeuralBrainSnapshot | null): StageState {
     if (trained < 36) {
         return {
             id: "imprinting",
-            label: "Imprinting",
+            label: "In apprendimento",
             summary: "Il Core sta imparando le prime abitudini dalle tue spese passate.",
             badgeVariant: "secondary",
         }
@@ -181,7 +195,7 @@ function resolveStage(snapshot: NeuralBrainSnapshot | null): StageState {
 
     return {
         id: "adapting",
-        label: "Adapting",
+        label: "Attivo",
         summary: "Il Core ha una buona base e si aggiorna quando arrivano nuovi dati.",
         badgeVariant: "secondary",
     }
@@ -327,7 +341,7 @@ export default function BrainPage() {
     const runEvolution = useCallback(async (trigger: EvolutionTrigger) => {
         if (trainingLockRef.current) return
         if (!isInitialized) {
-            pushEvent("Core offline", "Inizializza il Core prima di avviare l'analisi.", "warning")
+            pushEvent("Core non attivo", "Inizializza il Core prima di avviare l'analisi.", "warning")
             return
         }
         if (isDataLoading) {
@@ -507,7 +521,7 @@ export default function BrainPage() {
                     fontSize: 11,
                     fontWeight: 700,
                 },
-                data: ["Readiness", "Experience", "Stability"],
+                data: ["Prontezza", "Esperienza", "Stabilita"],
             },
             grid: {
                 left: "4%",
@@ -538,7 +552,7 @@ export default function BrainPage() {
             },
             series: [
                 {
-                    name: "Readiness",
+                    name: "Prontezza",
                     type: "line",
                     smooth: 0.35,
                     showSymbol: false,
@@ -547,7 +561,7 @@ export default function BrainPage() {
                     data: evolutionChartSeries.readiness,
                 },
                 {
-                    name: "Experience",
+                    name: "Esperienza",
                     type: "line",
                     smooth: 0.35,
                     showSymbol: false,
@@ -556,7 +570,7 @@ export default function BrainPage() {
                     data: evolutionChartSeries.experience,
                 },
                 {
-                    name: "Stability",
+                    name: "Stabilita",
                     type: "line",
                     smooth: 0.35,
                     showSymbol: false,
@@ -594,6 +608,9 @@ export default function BrainPage() {
         : 0
 
     const contributorsTop = evolution?.prediction?.contributors.slice(0, 3) ?? []
+    const brainKpiCardClassName = "h-auto"
+    const brainKpiValueClassName = "text-[clamp(1.65rem,2.1vw,2.5rem)] leading-none break-normal"
+    const brainKpiMoneyValueClassName = "text-[clamp(1.6rem,2vw,2.35rem)] leading-none break-normal whitespace-nowrap"
 
     const handleInitialize = useCallback(() => {
         const newborn = initializeBrain()
@@ -634,18 +651,16 @@ export default function BrainPage() {
                     title={
                         <span className="flex items-center gap-3">
                             <BrainCircuit className="h-8 w-8" />
-                            Neural Core
+                            Core previsioni
                         </span>
                     }
-                    description="Qui vedi come il Neural Core impara dalle tue spese reali e genera previsioni."
+                    description="Qui vedi come il Core impara dalle tue spese reali e aggiorna le stime."
                 />
             </motion.div>
 
             <motion.div variants={macroItemVariants}>
                 <MacroSection
                     variant="premium"
-                    title="Neural Evolution Console"
-                    description="Monitoraggio in tempo reale: il Core si aggiorna con il tuo storico."
                     background={<NeuralFieldBackground />}
                 >
                     <div className="space-y-6">
@@ -654,7 +669,7 @@ export default function BrainPage() {
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
                                         <Gauge className="h-5 w-5" />
-                                        Evolution Index
+                                        Indice evoluzione
                                     </CardTitle>
                                     <CardDescription>{stage.summary}</CardDescription>
                                 </CardHeader>
@@ -667,17 +682,17 @@ export default function BrainPage() {
 
                                     <div className="grid gap-3 sm:grid-cols-3">
                                         <div className="rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5">
-                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Readiness</p>
+                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Prontezza</p>
                                             <p className="mt-1 text-sm font-bold tabular-nums">{evolutionProgress}%</p>
                                             <p className="mt-1 text-[10px] text-muted-foreground">Prontezza complessiva del Core.</p>
                                         </div>
                                         <div className="rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5">
-                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Experience</p>
+                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Esperienza</p>
                                             <p className="mt-1 text-sm font-bold tabular-nums">{experienceProgress}%</p>
                                             <p className="mt-1 text-[10px] text-muted-foreground">{snapshot?.trainedSamples ?? 0}/{BRAIN_MATURITY_SAMPLE_TARGET} campioni appresi.</p>
                                         </div>
                                         <div className="rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5">
-                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Stability</p>
+                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Stabilita</p>
                                             <p className="mt-1 text-sm font-bold tabular-nums">{stabilityProgress}%</p>
                                             <p className="mt-1 text-[10px] text-muted-foreground">Stabilita attuale: {liveLoss.toFixed(4)}.</p>
                                         </div>
@@ -700,7 +715,7 @@ export default function BrainPage() {
                                             <p className="mt-1 text-sm font-bold">{snapshot?.version ?? "-"}</p>
                                         </div>
                                         <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Schema funzioni</p>
+                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Schema fattori</p>
                                             <p className="mt-1 text-sm font-bold">{snapshot?.featureSchemaVersion ?? "-"}</p>
                                         </div>
                                         <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
@@ -715,7 +730,7 @@ export default function BrainPage() {
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
                                         <Activity className="h-5 w-5" />
-                                        Core Controls
+                                        Comandi Core
                                     </CardTitle>
                                 <CardDescription>
                                     Azioni base del Core: avvio, analisi e reset.
@@ -747,13 +762,13 @@ export default function BrainPage() {
                                             className="min-w-[170px]"
                                         >
                                             <RotateCcw className="h-4 w-4" />
-                                            Reset Core
+                                            Azzera Core
                                         </Button>
                                     </div>
 
                                     <div className="rounded-2xl border border-border/60 bg-background/50 p-4">
                                         <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-                                            Registro eventi live
+                                            Registro eventi in tempo reale
                                         </p>
                                         <div className="mt-3 space-y-2 max-h-64 overflow-y-auto pr-1">
                                             {timeline.length === 0 && (
@@ -784,49 +799,64 @@ export default function BrainPage() {
 
                         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
                             <KpiCard
-                                title="Neural Units"
+                                title="Unita Core"
                                 value={vectorWeights.length}
                                 icon={Cpu}
                                 trend="neutral"
                                 change={`${activeWeightsCount}/${vectorWeights.length}`}
-                                comparisonLabel="Pesi attivi"
-                                description="Numero totale di unita interne del Core"
+                                comparisonLabel="Attive"
+                                description="Componenti interne del modello."
+                                className={brainKpiCardClassName}
+                                valueClassName={brainKpiValueClassName}
+                                compact
                             />
                             <KpiCard
-                                title="Samples Trained"
+                                title="Campioni"
                                 value={snapshot?.trainedSamples ?? 0}
                                 icon={Database}
                                 trend={snapshot && snapshot.trainedSamples > 0 ? "up" : "neutral"}
                                 change={`${experienceProgress}%`}
-                                comparisonLabel="Obiettivo maturita"
-                                description="Campioni storici gia imparati"
+                                comparisonLabel="Maturita"
+                                description="Campioni usati per imparare."
+                                className={brainKpiCardClassName}
+                                valueClassName={brainKpiValueClassName}
+                                compact
                             />
                             <KpiCard
-                                title="Prediction Risk"
+                                title="Rischio"
                                 value={evolution?.prediction ? `${riskPercent}%` : "-"}
                                 icon={ShieldCheck}
                                 trend={evolution?.prediction ? (riskPercent > 65 ? "warning" : "neutral") : "neutral"}
                                 change={evolution?.prediction ? `${confidencePercent}%` : "-"}
                                 comparisonLabel="Affidabilita"
-                                description="Rischio stimato di aumento spese"
+                                description="Probabilita di aumento spese."
+                                className={brainKpiCardClassName}
+                                valueClassName={brainKpiValueClassName}
+                                compact
                             />
                             <KpiCard
-                                title="Next Month Expense"
+                                title="Spesa prossimo mese"
                                 value={predictedExpensesLabel}
                                 icon={Sparkles}
                                 trend={evolution?.prediction ? "up" : "neutral"}
                                 change={evolution?.inferencePeriod ?? "-"}
-                                comparisonLabel="Mese analizzato"
-                                description="Spesa prevista dal Core per il prossimo mese"
+                                comparisonLabel="Periodo"
+                                description="Stima spesa del prossimo mese."
+                                className={brainKpiCardClassName}
+                                valueClassName={brainKpiMoneyValueClassName}
+                                compact
                             />
                             <KpiCard
-                                title="Current Month Remaining"
+                                title="Residuo mese corrente"
                                 value={currentMonthRemainingLabel}
                                 icon={CalendarClock}
                                 trend={evolution?.currentMonthNowcastReady ? "neutral" : "warning"}
-                                change={evolution?.currentMonthNowcastReady ? `${currentMonthConfidencePercent}%` : "Not ready"}
-                                comparisonLabel={evolution?.currentMonthNowcastReady ? "Confidenza nowcast" : "Stato nowcast"}
-                                description="Spesa residua stimata fino a fine mese corrente"
+                                change={evolution?.currentMonthNowcastReady ? `${currentMonthConfidencePercent}%` : "Non pronta"}
+                                comparisonLabel={evolution?.currentMonthNowcastReady ? "Confidenza" : "Stato"}
+                                description="Stima residua fino a fine mese."
+                                className={brainKpiCardClassName}
+                                valueClassName={brainKpiMoneyValueClassName}
+                                compact
                             />
                         </div>
 
@@ -834,10 +864,10 @@ export default function BrainPage() {
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
                                     <BrainCircuit className="h-5 w-5" />
-                                    Neural Vector Map
+                                    Mappa segnali del Core
                                 </CardTitle>
                                 <CardDescription>
-                                    Ogni barra mostra quanto pesa una singola unita del Core in questo momento.
+                                    Ogni barra indica quanto pesa una componente interna del Core sulla stima attuale. I neuroni (1, 2, 3...) sono parti tecniche del modello, non categorie di spesa.
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -850,8 +880,8 @@ export default function BrainPage() {
                                             className="rounded-xl border border-border/60 bg-muted/20 p-3"
                                         >
                                             <div className="flex items-center justify-between gap-2">
-                                                <p className="text-[11px] font-bold uppercase tracking-wide text-foreground/85">
-                                                    Neuron {index + 1}
+                                                <p className="text-[11px] font-bold tracking-wide text-foreground/85">
+                                                    Neurone {index + 1}
                                                 </p>
                                                 <p className="text-xs font-medium tabular-nums text-muted-foreground">
                                                     {weight.toFixed(4)}
@@ -875,29 +905,29 @@ export default function BrainPage() {
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
                                     <TrendingUp className="h-5 w-5" />
-                                    Live Inference Notes
+                                    Fattori principali della stima
                                 </CardTitle>
                                 <CardDescription>
-                                    Fattori che influenzano di piu la previsione attuale.
+                                    Qui vedi i fattori che stanno alzando o abbassando la stima in questo momento.
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 {contributorsTop.length === 0 ? (
                                     <p className="text-sm text-muted-foreground">
-                                        Predizione non ancora pronta: servono piu dati o una nuova analisi completa.
+                                        Stima non ancora pronta: servono piu dati o una nuova analisi completa.
                                     </p>
                                 ) : (
                                     <div className="space-y-2">
                                         {contributorsTop.map((item) => (
                                             <div key={item.feature} className="rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5">
                                                 <div className="flex items-center justify-between gap-2">
-                                                    <p className="text-xs font-bold text-foreground uppercase tracking-wide">{item.feature}</p>
+                                                    <p className="text-xs font-bold text-foreground tracking-wide">{formatFeatureLabel(item.feature)}</p>
                                                     <p className="text-xs text-muted-foreground tabular-nums">
-                                                        impatto {item.contribution.toFixed(4)}
+                                                        effetto sulla stima {item.contribution.toFixed(4)}
                                                     </p>
                                                 </div>
                                                 <p className="mt-1 text-[11px] text-muted-foreground tabular-nums">
-                                                    valore {item.value.toFixed(4)} · peso {item.weight.toFixed(4)}
+                                                    valore attuale {item.value.toFixed(4)} · peso interno {item.weight.toFixed(4)}
                                                 </p>
                                             </div>
                                         ))}

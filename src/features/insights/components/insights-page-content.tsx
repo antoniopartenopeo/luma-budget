@@ -13,7 +13,7 @@ import { useInsights } from "../use-insights"
 import { useAIAdvisor } from "../use-ai-advisor"
 import { InsightCard } from "./insight-card"
 import { TrendAnalysisCard } from "./trend-analysis-card"
-import { AIAdvisorCard } from "./ai-advisor-card"
+import { AIAdvisorCard, NumaAdvisorHowItWorksCard } from "./ai-advisor-card"
 import { getCurrentPeriod, formatPeriodLabel } from "../utils"
 
 interface InsightsPageContentProps {
@@ -49,6 +49,13 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
 
             {/* Global Motion Orchestration */}
             <StaggerContainer>
+                {/* How It Works Section */}
+                <NumaAdvisorHowItWorksCard
+                    forecast={advisorData.forecast}
+                    facts={advisorData.facts}
+                    className="rounded-[2.5rem]"
+                />
+
                 {/* AI Advisor Section (HERO) */}
                 <AIAdvisorCard advisorData={advisorData} />
 
@@ -58,6 +65,7 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
                     <TrendAnalysisCard
                         hasHighSeverityCurrentIssue={hasHighSeverityCurrentIssue}
                         advisorForecast={advisorData.forecast}
+                        advisorSubscriptions={advisorData.subscriptions}
                     />
 
                     {/* Periodic Analysis Section */}

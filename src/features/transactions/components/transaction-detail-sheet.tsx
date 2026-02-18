@@ -97,6 +97,7 @@ function TransactionDetailSheetContent({
     const defaultFormValues: Partial<CreateTransactionDTO> = {
         description: transaction.description,
         amountCents: transaction.amountCents,
+        date: transaction.date,
         category: transaction.category,
         categoryId: transaction.categoryId,
         type: transaction.type,

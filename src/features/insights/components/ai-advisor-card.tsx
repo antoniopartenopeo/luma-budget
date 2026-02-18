@@ -8,17 +8,133 @@ import { useAIAdvisor, type AIAdvisorResult } from "../use-ai-advisor"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { SubSectionCard } from "@/components/patterns/sub-section-card"
 import { NumaEngineCard } from "@/components/patterns/numa-engine-card"
+import { KpiCard } from "@/components/patterns/kpi-card"
+import { SubscriptionPortfolioCard } from "@/components/patterns/subscription-portfolio-card"
+import { buildTransactionsUrl } from "../utils"
+
+const PORTFOLIO_MAX_ITEMS = 6
+const MONTHS_IN_YEAR = 12
 
 interface AIAdvisorCardProps {
     advisorData?: AIAdvisorResult
 }
 
-function AIAdvisorCardView({ forecast, facts, subscriptions, isLoading: aiLoading }: AIAdvisorResult) {
+interface NumaAdvisorHowItWorksCardProps {
+    forecast: AIAdvisorResult["forecast"]
+    facts: AIAdvisorResult["facts"]
+    className?: string
+}
+
+export function NumaAdvisorHowItWorksCard({ forecast, facts, className }: NumaAdvisorHowItWorksCardProps) {
+    return (
+        <NumaEngineCard
+            title="Come lavora Numa Advisor"
+            icon={BrainCircuit}
+            audienceHint="Versione semplice"
+            className={className}
+            steps={[
+                {
+                    icon: LineChart,
+                    colorClass: "text-primary",
+                    bgClass: "bg-primary/10",
+                    stepLabel: "1. Base + residuo",
+                    title: "Formula chiara",
+                    description: "Partiamo dal saldo base totale e sottraiamo la spesa residua stimata fino a fine mese."
+                },
+                {
+                    icon: Search,
+                    colorClass: "text-emerald-500",
+                    bgClass: "bg-emerald-500/10",
+                    stepLabel: "2. Fonte stima",
+                    title: "Brain quando pronto",
+                    description: "Se il Brain e pronto usiamo il nowcast reale; altrimenti usiamo una stima storica prudente."
+                },
+                {
+                    icon: Lock,
+                    colorClass: "text-slate-500",
+                    bgClass: "bg-slate-500/10",
+                    stepLabel: "3. Segnali utili",
+                    title: "Abbonamenti e rincari",
+                    description: "Evidenziamo ricorrenze e possibili aumenti prezzo per aiutarti ad agire in anticipo."
+                }
+            ]}
+            auditLabel="Dettagli tecnici"
+            transparencyNote="I tuoi dati finanziari vengono analizzati solo sul dispositivo. Nessuna informazione personale viene inviata al cloud per questa funzione."
+            auditStats={[
+                {
+                    label: "Formula",
+                    value: "Saldo base - residuo",
+                    subValue: "Metrica principale della card."
+                },
+                {
+                    label: "Fonte attiva",
+                    value: forecast?.primarySource === "brain" ? "Brain" : "Storico",
+                    subValue: forecast?.primarySource === "brain"
+                        ? "Nowcast del Core sul mese corrente."
+                        : "Residuo storico (con backup run-rate)."
+                },
+                {
+                    label: "Esecuzione",
+                    value: "Locale",
+                    subValue: "Calcolo fatto in locale, senza API esterne."
+                },
+                ...(facts ? [{
+                    label: "Mesi storici",
+                    value: `${facts.historicalMonthsCount} Mesi`,
+                    subValue: "Storico usato per la stima attuale."
+                }] : [])
+            ]}
+        />
+    )
+}
+
+function AIAdvisorCardView({ forecast, subscriptions, isLoading: aiLoading }: AIAdvisorResult) {
     const { currency, locale } = useCurrency()
 
     const isLoading = aiLoading
-    const visibleSubscriptions = subscriptions.slice(0, 3)
-    const hiddenSubscriptionsCount = Math.max(0, subscriptions.length - visibleSubscriptions.length)
+    const subscriptionPortfolio = React.useMemo(() => {
+        const enrichedSubscriptions = subscriptions
+            .map((subscription) => ({
+                ...subscription,
+                yearlyCents: subscription.amountCents * MONTHS_IN_YEAR,
+            }))
+            .sort((a, b) => {
+                if (b.amountCents !== a.amountCents) return b.amountCents - a.amountCents
+                return a.description.localeCompare(b.description)
+            })
+
+        const monthlyTotalCents = enrichedSubscriptions.reduce((sum, subscription) => sum + subscription.amountCents, 0)
+        const yearlyTotalCents = monthlyTotalCents * MONTHS_IN_YEAR
+        const averageMonthlyCents = enrichedSubscriptions.length > 0
+            ? Math.round(monthlyTotalCents / enrichedSubscriptions.length)
+            : 0
+
+        const enrichedSubscriptionsWithImpact = enrichedSubscriptions
+            .map((subscription) => ({
+                ...subscription,
+                impactPct: monthlyTotalCents > 0
+                    ? Math.round((subscription.amountCents / monthlyTotalCents) * 100)
+                    : 0,
+                transactionsHref: buildTransactionsUrl({
+                    categoryId: subscription.categoryId,
+                    type: "expense"
+                })
+            }))
+            .sort((a, b) => {
+                if (b.amountCents !== a.amountCents) return b.amountCents - a.amountCents
+                return a.description.localeCompare(b.description)
+            })
+
+        const visiblePortfolioSubscriptions = enrichedSubscriptionsWithImpact.slice(0, PORTFOLIO_MAX_ITEMS)
+
+        return {
+            averageMonthlyCents,
+            monthlyTotalCents,
+            yearlyTotalCents,
+            visiblePortfolioSubscriptions,
+            hiddenPortfolioCount: Math.max(0, enrichedSubscriptions.length - visiblePortfolioSubscriptions.length)
+        }
+    }, [subscriptions])
 
     // 1. DYNAMIC ATMOSPHERE: Calculate status based on financial health
     const advisorStatus = React.useMemo(() => {
@@ -58,7 +174,7 @@ function AIAdvisorCardView({ forecast, facts, subscriptions, isLoading: aiLoadin
                             <Sparkles className="h-6 w-6 text-primary animate-pulse" />
                         </div>
                     </div>
-                    <p className="text-sm font-medium text-muted-foreground animate-pulse">
+                    <p className="text-sm font-medium leading-relaxed text-muted-foreground animate-pulse">
                         Sto preparando la stima...
                     </p>
                 </div>
@@ -75,7 +191,7 @@ function AIAdvisorCardView({ forecast, facts, subscriptions, isLoading: aiLoadin
                     </div>
                     <div>
                         <h3 className="font-semibold text-lg">Dati ancora insufficienti</h3>
-                        <p className="text-sm text-muted-foreground max-w-[300px]">Servono piu movimenti per stimare in modo affidabile il saldo totale del mese.</p>
+                        <p className="max-w-[300px] text-sm font-medium leading-relaxed text-muted-foreground">Servono piu movimenti per stimare in modo affidabile il saldo totale del mese.</p>
                     </div>
                 </div>
             </MacroSection>
@@ -104,7 +220,7 @@ function AIAdvisorCardView({ forecast, facts, subscriptions, isLoading: aiLoadin
                             extra={
                                 <div className="flex flex-wrap items-center gap-2">
                                     <div className={cn(
-                                        "px-3 py-1.5 rounded-xl text-[11px] font-black border uppercase tracking-wide",
+                                        "px-3 py-1.5 rounded-xl border text-[10px] font-bold uppercase tracking-wider",
                                         forecast.primarySource === "brain"
                                             ? "bg-primary/10 text-primary border-primary/20"
                                             : "bg-muted text-muted-foreground border-border"
@@ -112,7 +228,7 @@ function AIAdvisorCardView({ forecast, facts, subscriptions, isLoading: aiLoadin
                                         {forecast.primarySource === "brain" ? "Fonte Brain" : "Fonte Storico"}
                                     </div>
                                     <div className={cn(
-                                        "px-3 py-1.5 rounded-xl text-[11px] font-black border uppercase tracking-wide",
+                                        "px-3 py-1.5 rounded-xl border text-[10px] font-bold uppercase tracking-wider",
                                         forecast.confidence === "high"
                                             ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
                                             : forecast.confidence === "medium"
@@ -135,7 +251,7 @@ function AIAdvisorCardView({ forecast, facts, subscriptions, isLoading: aiLoadin
                                 )}>
                                     {formatCents(forecast.predictedTotalEstimatedBalanceCents, currency, locale)}
                                 </div>
-                                <p className="text-xs text-muted-foreground font-medium">
+                                <p className="text-sm font-medium leading-relaxed text-muted-foreground">
                                     Saldo base totale meno spesa residua stimata del mese.
                                 </p>
                             </div>
@@ -143,106 +259,64 @@ function AIAdvisorCardView({ forecast, facts, subscriptions, isLoading: aiLoadin
                     </motion.div>
                 )}
 
-                {/* 2. Subscriptions */}
+                {/* 2. Periodic expenses */}
                 {subscriptions.length > 0 && (
                     <motion.div variants={itemVariants}>
                         <SubSectionCard
-                            label="Abbonamenti rilevati"
-                            icon={<Wallet className="h-4 w-4 text-indigo-500" />}
+                            label="Spese periodiche attive"
+                            icon={<Wallet className="h-4 w-4 text-primary" />}
                         >
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                                <div className="flex items-baseline gap-3">
-                                    <span className="text-4xl font-black text-foreground tabular-nums">{subscriptions.length}</span>
-                                    <span className="text-sm text-muted-foreground font-medium uppercase tracking-wider">Servizi attivi nel mese</span>
+                            <div className="space-y-5">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+                                    <KpiCard
+                                        compact
+                                        title="Voci periodiche"
+                                        value={subscriptions.length}
+                                        icon={Wallet}
+                                        tone="neutral"
+                                        className="rounded-xl border border-border/60 bg-background/70 shadow-none"
+                                        valueClassName="text-xl sm:text-2xl lg:text-3xl"
+                                    />
+                                    <KpiCard
+                                        compact
+                                        title="Totale mensile"
+                                        value={formatCents(subscriptionPortfolio.monthlyTotalCents, currency, locale)}
+                                        icon={TrendingUp}
+                                        tone="neutral"
+                                        className="rounded-xl border border-border/60 bg-background/70 shadow-none"
+                                        valueClassName="text-xl sm:text-2xl lg:text-3xl"
+                                    />
+                                    <KpiCard
+                                        compact
+                                        title="Totale annuo"
+                                        value={formatCents(subscriptionPortfolio.yearlyTotalCents, currency, locale)}
+                                        icon={LineChart}
+                                        tone="neutral"
+                                        className="rounded-xl border border-border/60 bg-background/70 shadow-none"
+                                        valueClassName="text-xl sm:text-2xl lg:text-3xl"
+                                    />
+                                    <KpiCard
+                                        compact
+                                        title="Costo medio"
+                                        value={formatCents(subscriptionPortfolio.averageMonthlyCents, currency, locale)}
+                                        icon={Sparkles}
+                                        tone="neutral"
+                                        className="rounded-xl border border-border/60 bg-background/70 shadow-none"
+                                        valueClassName="text-xl sm:text-2xl lg:text-3xl"
+                                    />
                                 </div>
 
-                                <div className="flex flex-wrap gap-2">
-                                    {visibleSubscriptions.map((sub) => (
-                                        <div
-                                            key={sub.id}
-                                            className="max-w-full md:max-w-[34rem] px-3 py-1.5 rounded-xl bg-background/80 dark:bg-slate-800 border border-border/50 text-xs font-bold text-muted-foreground shadow-sm"
-                                            title={`${sub.description} · ${formatCents(sub.amountCents, currency, locale)}/mese`}
-                                        >
-                                            <span className="inline-flex max-w-full items-center gap-2">
-                                                <span className="truncate">{sub.description}</span>
-                                                <span className="shrink-0 text-foreground/80">
-                                                    {formatCents(sub.amountCents, currency, locale)}/mese
-                                                </span>
-                                            </span>
-                                        </div>
-                                    ))}
-                                    {hiddenSubscriptionsCount > 0 && (
-                                        <div className="px-3 py-1.5 rounded-xl bg-muted/50 border border-border/50 text-xs font-bold text-muted-foreground shadow-sm">
-                                            +{hiddenSubscriptionsCount} altri
-                                        </div>
-                                    )}
+                                <div className="flex flex-col gap-4">
+                                    <SubscriptionPortfolioCard
+                                        items={subscriptionPortfolio.visiblePortfolioSubscriptions}
+                                        hiddenCount={subscriptionPortfolio.hiddenPortfolioCount}
+                                        formatAmount={(amountCents) => formatCents(amountCents, currency, locale)}
+                                    />
                                 </div>
                             </div>
                         </SubSectionCard>
                     </motion.div>
                 )}
-
-                {/* NEW: Numa Engine Card (Centralized) */}
-                <motion.div variants={itemVariants}>
-                    <NumaEngineCard
-                        title="Come lavora Numa Advisor"
-                        icon={BrainCircuit}
-                        audienceHint="Versione semplice"
-                        className="rounded-[2.5rem]"
-                        steps={[
-                            {
-                                icon: LineChart,
-                                colorClass: "text-indigo-500",
-                                bgClass: "bg-indigo-500/10",
-                                stepLabel: "1. Base + residuo",
-                                title: "Formula chiara",
-                                description: "Partiamo dal saldo base totale e sottraiamo la spesa residua stimata fino a fine mese."
-                            },
-                            {
-                                icon: Search,
-                                colorClass: "text-emerald-500",
-                                bgClass: "bg-emerald-500/10",
-                                stepLabel: "2. Fonte stima",
-                                title: "Brain quando pronto",
-                                description: "Se il Brain e pronto usiamo il nowcast reale; altrimenti usiamo una stima storica prudente."
-                            },
-                            {
-                                icon: Lock,
-                                colorClass: "text-slate-500",
-                                bgClass: "bg-slate-500/10",
-                                stepLabel: "3. Segnali utili",
-                                title: "Abbonamenti e rincari",
-                                description: "Evidenziamo ricorrenze e possibili aumenti prezzo per aiutarti ad agire in anticipo."
-                            }
-                        ]}
-                        auditLabel="Dettagli tecnici"
-                        transparencyNote="I tuoi dati finanziari vengono analizzati solo sul dispositivo. Nessuna informazione personale viene inviata al cloud per questa funzione."
-                        auditStats={[
-                            {
-                                label: "Formula",
-                                value: "Saldo base - residuo",
-                                subValue: "Metrica principale della card."
-                            },
-                            {
-                                label: "Fonte attiva",
-                                value: forecast?.primarySource === "brain" ? "Brain" : "Storico",
-                                subValue: forecast?.primarySource === "brain"
-                                    ? "Nowcast del Core sul mese corrente."
-                                    : "Residuo storico (con backup run-rate)."
-                            },
-                            {
-                                label: "Esecuzione",
-                                value: "Locale",
-                                subValue: "Calcolo fatto in locale, senza API esterne."
-                            },
-                            ...(facts ? [{
-                                label: "Mesi storici",
-                                value: `${facts.historicalMonthsCount} Mesi`,
-                                subValue: "Storico usato per la stima attuale."
-                            }] : [])
-                        ]}
-                    />
-                </motion.div>
             </motion.div>
         </MacroSection>
     )

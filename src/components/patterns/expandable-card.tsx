@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 import { Card } from "@/components/ui/card"
 
 interface ExpandableCardProps {
-    children: React.ReactNode
+    children?: React.ReactNode
     expandedContent?: React.ReactNode
     title: React.ReactNode
     description?: React.ReactNode
@@ -45,6 +45,7 @@ export function ExpandableCard({
     onToggle
 }: ExpandableCardProps) {
     const [isExpanded, setIsExpanded] = React.useState(isDefaultExpanded)
+    const resolvedIndicatorColor = indicatorColor ?? "bg-primary/50"
 
     const handleToggle = () => {
         const nextState = !isExpanded
@@ -60,10 +61,8 @@ export function ExpandableCard({
                 className
             )}
         >
-            {/* Visual Indicator Stripe (Left) */}
-            {indicatorColor && (
-                <div className={cn("absolute left-0 top-0 bottom-0 w-1.5 z-20", indicatorColor)} />
-            )}
+            {/* Visual Indicator Stripe (Left) - always present for visual consistency */}
+            <div className={cn("absolute left-0 top-0 bottom-0 w-1.5 z-20", resolvedIndicatorColor)} />
 
             {/* Reflection Accent */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/40 dark:from-white/5 to-transparent pointer-events-none z-10" />
@@ -115,10 +114,11 @@ export function ExpandableCard({
                     </div>
                 </div>
 
-                {/* Primary Content (Always Visible or part of the body) */}
-                <div className={cn("mt-6", contentClassName)}>
-                    {children}
-                </div>
+                {children ? (
+                    <div className={cn("mt-6", contentClassName)}>
+                        {children}
+                    </div>
+                ) : null}
 
                 {/* Expanded Content Section */}
                 <AnimatePresence>

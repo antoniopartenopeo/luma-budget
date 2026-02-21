@@ -1,35 +1,28 @@
 "use client"
 
-import Link from "next/link"
-import { ArrowLeft, FileSpreadsheet } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { useState } from "react"
 import { PageHeader } from "@/components/ui/page-header"
 import { CsvImportWizard } from "@/features/import-csv/components/csv-import-wizard"
+import { MacroSection } from "@/components/patterns/macro-section"
+import { BankCsvHelpSection } from "@/features/import-csv/components/bank-csv-help-section"
 
 export default function TransactionsImportPage() {
+    const [wizardStep, setWizardStep] = useState<"upload" | "review" | "summary">("upload")
+
     return (
         <div className="space-y-6 w-full">
             <PageHeader
-                title={
-                    <span className="flex items-center gap-3">
-                        <FileSpreadsheet className="h-8 w-8" />
-                        Importa CSV
-                    </span>
-                }
+                title="Importa CSV"
                 description="Carica un estratto conto e valida le transazioni prima dell'import."
-                actions={(
-                    <Button asChild variant="outline" size="sm">
-                        <Link href="/transactions">
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Torna alle transazioni
-                        </Link>
-                    </Button>
-                )}
             />
 
-            <div className="min-h-[70vh]">
-                <CsvImportWizard />
-            </div>
+            <MacroSection contentClassName="p-0" className="w-full">
+                <div className="min-h-[70vh]">
+                    <CsvImportWizard onStepChange={setWizardStep} />
+                </div>
+            </MacroSection>
+
+            {wizardStep === "upload" ? <BankCsvHelpSection /> : null}
         </div>
     )
 }

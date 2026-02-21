@@ -238,7 +238,6 @@ export function DashboardKpiGrid({
                 <NumaEngineCard
                     title="Come Funziona Davvero"
                     icon={BrainCircuit}
-                    audienceHint="Spiegazione semplice"
                     className="w-full"
                     steps={[
                         {

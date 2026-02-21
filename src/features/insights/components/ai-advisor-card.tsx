@@ -30,7 +30,6 @@ export function NumaAdvisorHowItWorksCard({ forecast, facts, className }: NumaAd
         <NumaEngineCard
             title="Come lavora Numa Advisor"
             icon={BrainCircuit}
-            audienceHint="Versione semplice"
             className={className}
             steps={[
                 {

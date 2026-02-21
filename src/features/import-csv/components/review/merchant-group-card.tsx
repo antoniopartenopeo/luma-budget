@@ -41,35 +41,35 @@ export function MerchantGroupCard({
         <AccordionItem
             value={group.id}
             className={cn(
-                "bg-card border rounded-xl shadow-sm overflow-hidden",
-                isHighImpact && "border-primary/30 ring-1 ring-primary/10"
+                "overflow-hidden rounded-xl border border-border/70 bg-background/70",
+                isHighImpact && "border-primary/35"
             )}
         >
-            <div className="flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors">
+            <div className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/20">
                 <div className="flex-1 min-w-0">
                     <AccordionTrigger className="px-0 py-0 hover:no-underline">
                         <div className="flex items-center justify-between w-full gap-3 pr-2">
                             <div className="flex-1 min-w-0 text-left">
                                 <div className="flex items-center gap-2 mb-0.5">
-                                    <h3 className="font-bold text-sm md:text-base truncate">
+                                    <h3 className="truncate text-sm font-semibold md:text-base">
                                         {group.label}
                                     </h3>
                                     {isHighImpact && (
-                                        <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px] uppercase tracking-wider shrink-0">
-                                            Top
+                                        <Badge className="shrink-0 border-primary/20 bg-primary/10 text-xs font-medium text-primary">
+                                            Rilevante
                                         </Badge>
                                     )}
                                 </div>
                                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <span className="font-bold text-foreground tabular-nums">
+                                    <span className="font-semibold text-foreground tabular-nums">
                                         {formatCents(Math.abs(group.totalCents))}
                                     </span>
                                     <span className="w-1 h-1 rounded-full bg-border" />
-                                    <span>{group.rowCount} tx</span>
+                                    <span>{group.rowCount} movimenti</span>
                                     {hasMultipleSubgroups && (
                                         <>
                                             <span className="w-1 h-1 rounded-full bg-border" />
-                                            <span>{group.subgroups.length} pattern</span>
+                                            <span>{group.subgroups.length} gruppi interni</span>
                                         </>
                                     )}
                                 </div>
@@ -77,7 +77,7 @@ export function MerchantGroupCard({
                         </div>
                     </AccordionTrigger>
                 </div>
-                <div className="shrink-0 w-32 md:w-40">
+                <div className="w-32 shrink-0 md:w-40">
                     <CategoryPicker
                         value={effectiveCategoryId || ""}
                         onChange={(val) => onGroupCategoryChange(group.id, val)}
@@ -97,6 +97,7 @@ export function MerchantGroupCard({
                 ) : (
                     <div className="mt-2">
                         <RowsList
+                            variant="flat"
                             rows={group.subgroups[0]?.rowIds.map(getRowById).filter(Boolean) as EnrichedRow[] || []}
                         />
                     </div>
@@ -124,7 +125,7 @@ function SubgroupList({
     getRowById
 }: SubgroupListProps) {
     return (
-        <Accordion type="multiple" className="space-y-1.5 mt-2">
+        <Accordion type="multiple" className="mt-2 space-y-2">
             {subgroups.map(sg => {
                 const sgCatId = getSubgroupEffectiveCategory(sg)
                 const sgRows = sg.rowIds.map(getRowById).filter(Boolean) as EnrichedRow[]
@@ -134,14 +135,14 @@ function SubgroupList({
                     <AccordionItem
                         key={sg.id}
                         value={sg.id}
-                        className="bg-muted/30 border rounded-lg"
+                        className="rounded-lg border border-border/60 bg-muted/15"
                     >
                         <div className="flex items-center gap-2 px-3 py-2">
                             <div className="flex-1 min-w-0">
-                                <AccordionTrigger className="px-0 py-0 hover:no-underline text-sm">
+                                <AccordionTrigger className="px-0 py-0 text-sm hover:no-underline">
                                     <div className="flex items-center gap-2 min-w-0">
-                                        <span className="font-medium truncate">{sg.label}</span>
-                                        <span className="text-xs font-mono tabular-nums text-muted-foreground">
+                                        <span className="truncate text-sm font-medium">{sg.label}</span>
+                                        <span className="text-xs tabular-nums text-muted-foreground">
                                             {formatCents(Math.abs(sgTotal))}
                                         </span>
                                     </div>
@@ -160,7 +161,7 @@ function SubgroupList({
                             </div>
                         </div>
                         <AccordionContent className="px-3 pb-3">
-                            <RowsList rows={sgRows} />
+                            <RowsList rows={sgRows} variant="flat" />
                         </AccordionContent>
                     </AccordionItem>
                 )

@@ -102,7 +102,6 @@ export function ScenarioDeck({
                 <NumaEngineCard
                     title={FINANCIAL_LAB_COPY.scenarioDeck.engineTitle}
                     icon={Compass}
-                    audienceHint={FINANCIAL_LAB_COPY.scenarioDeck.audienceHint}
                     steps={[
                         {
                             icon: Wallet,

@@ -12,7 +12,6 @@ export const FINANCIAL_LAB_COPY = {
         title: "Scegli lo scenario quota",
         quotaLabel: "Quota sostenibile",
         engineTitle: "Come calcola Numa",
-        audienceHint: "In breve",
         steps: [
             {
                 stepLabel: "1. Base Storica",

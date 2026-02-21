@@ -102,11 +102,7 @@ export function SubscriptionPortfolioCard({
                                     </Button>
                                 </div>
                             }
-                        >
-                            <p className="text-sm text-muted-foreground leading-snug">
-                                Espandi per aprire i movimenti correlati.
-                            </p>
-                        </ExpandableCard>
+                        />
                     )
                 })}
             </div>

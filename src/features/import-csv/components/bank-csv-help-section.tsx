@@ -1,71 +1,63 @@
 "use client"
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { ExternalLink, Landmark, HelpCircle } from "lucide-react"
 import { BANK_LINKS } from "../config/bank-links"
 import { cn } from "@/lib/utils"
+import { ExpandableCard } from "@/components/patterns/expandable-card"
 
 export function BankCsvHelpSection() {
     return (
         <div className="w-full mt-2 animate-enter-up">
-            <Accordion type="single" collapsible className="w-full bg-muted/20 border rounded-xl overflow-hidden shadow-sm">
-                <AccordionItem value="help" className="border-none px-1">
-                    <AccordionTrigger className="px-4 py-2 hover:no-underline hover:bg-muted/50 transition-colors group">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                                <HelpCircle className="h-4 w-4" />
-                            </div>
-                            <div className="text-left">
-                                <span className="text-sm font-bold text-foreground flex items-center gap-2">
-                                    Come ottenere il file CSV
-                                </span>
-                                <p className="text-xs text-muted-foreground font-normal mt-0.5">
-                                    Link rapidi alle guide ufficiali della tua banca
-                                </p>
-                            </div>
-                        </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="px-4 pb-4">
-                        <div className="pt-2">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                {BANK_LINKS.map(bank => (
-                                    <a
-                                        key={bank.id}
-                                        href={bank.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className={cn(
-                                            "flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-muted/50 hover:border-primary/30 transition-all group/card",
-                                            "outline-none focus:ring-2 focus:ring-primary/20",
-                                            "relative overflow-hidden"
-                                        )}
-                                    >
-                                        <div className="w-8 h-8 rounded-full bg-background border flex items-center justify-center text-muted-foreground shrink-0 group-hover/card:text-primary transition-colors">
-                                            <Landmark className="h-4 w-4" />
+            <ExpandableCard
+                icon={<HelpCircle className="h-5 w-5 text-primary" />}
+                indicatorColor="bg-primary"
+                title={
+                    <h3 className="text-base font-semibold tracking-tight text-foreground sm:text-lg">
+                        Come ottenere il file CSV
+                    </h3>
+                }
+                description={
+                    <p className="text-sm font-medium text-muted-foreground">
+                        Link rapidi alle guide ufficiali della tua banca
+                    </p>
+                }
+                className="w-full"
+                contentClassName="mt-2"
+                expandedContent={
+                    <div className="space-y-4 pl-0 sm:pl-[64px]">
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            {BANK_LINKS.map((bank) => (
+                                <a
+                                    key={bank.id}
+                                    href={bank.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(event) => event.stopPropagation()}
+                                    className={cn(
+                                        "group/card relative overflow-hidden rounded-lg border border-border/60 bg-background/60 p-3 transition-colors hover:border-primary/30 hover:bg-muted/40",
+                                        "flex items-center gap-3 outline-none focus:ring-2 focus:ring-primary/20"
+                                    )}
+                                >
+                                    <Landmark className="h-3 w-3 shrink-0 text-muted-foreground group-hover/card:text-primary" />
+                                    <div className="min-w-0 flex-1">
+                                        <div className="flex items-center gap-1.5">
+                                            <span className="truncate text-sm font-medium">{bank.name}</span>
+                                            <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 transition-opacity group-hover/card:opacity-100" />
                                         </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-1.5">
-                                                <span className="text-sm font-medium truncate">{bank.name}</span>
-                                                <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover/card:opacity-100 transition-opacity" />
-                                            </div>
-                                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-mono">
-                                                {bank.region}
-                                            </p>
-                                        </div>
-                                    </a>
-                                ))}
-                            </div>
-                            <div className="mt-4 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-300 text-xs border border-blue-100 dark:border-blue-900/30">
-                                <p className="leading-relaxed">
-                                    <strong>Nota Bene:</strong> I link portano alle pagine di supporto ufficiali.
-                                    Cerca sempre l&apos;opzione <em>&quot;Esporta movimenti&quot;</em> o <em>&quot;Estratto conto&quot;</em>
-                                    e scegli il formato <strong>CSV</strong> o <strong>Excel</strong>.
-                                </p>
-                            </div>
+                                        <p className="text-xs text-muted-foreground">{bank.region}</p>
+                                    </div>
+                                </a>
+                            ))}
                         </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
+
+                        <div className="rounded-lg border border-sky-200/60 bg-sky-50/80 p-3 text-sm text-sky-800 dark:border-sky-900/40 dark:bg-sky-950/20 dark:text-sky-300">
+                            <p className="leading-relaxed">
+                                <strong>Nota:</strong> cerca <em>&quot;Esporta movimenti&quot;</em> o <em>&quot;Estratto conto&quot;</em> e scegli <strong>CSV</strong> o <strong>Excel</strong>.
+                            </p>
+                        </div>
+                    </div>
+                }
+            />
         </div>
     )
 }

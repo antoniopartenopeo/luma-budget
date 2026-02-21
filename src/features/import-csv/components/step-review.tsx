@@ -10,14 +10,11 @@ import { getIncludedGroups } from "../core/filters"
 import { cn } from "@/lib/utils"
 import { ReviewResult } from "./csv-import-wizard"
 import { WizardShell } from "./wizard-shell"
-import { MacroSection } from "@/components/patterns/macro-section"
 
 // Sub-components
 import {
-    ReviewAdvice,
     ThresholdSlider,
     MerchantGroupCard,
-    ImportMetricsGrid,
 } from "./review"
 
 // ============================================
@@ -170,7 +167,6 @@ export function ImportStepReview({
         return { assigned, total }
     }, [filteredGroups, rowsById, overrides])
 
-    const completionPercent = stats.total > 0 ? (stats.assigned / stats.total) * 100 : 0
     const getRowById = (id: string) => rowsById.get(id)
     const getGroupSuggestedCategory = (group: Group) => {
         const firstGroupRowId = group.subgroups[0]?.rowIds[0]
@@ -179,9 +175,9 @@ export function ImportStepReview({
     }
 
     const directionSections = [
-        { key: "expenses", title: "Uscite", titleClassName: "text-rose-700 dark:text-rose-300", groups: groupsByDirection.expenses },
-        { key: "incomes", title: "Entrate", titleClassName: "text-emerald-700 dark:text-emerald-300", groups: groupsByDirection.incomes },
-        { key: "mixed", title: "Misti", titleClassName: "text-amber-700 dark:text-amber-300", groups: groupsByDirection.mixed },
+        { key: "expenses", title: "Uscite", groups: groupsByDirection.expenses },
+        { key: "incomes", title: "Entrate", groups: groupsByDirection.incomes },
+        { key: "mixed", title: "Misti", groups: groupsByDirection.mixed },
     ] as const
 
     // ============================================
@@ -193,50 +189,18 @@ export function ImportStepReview({
             <Button variant="ghost" onClick={onBack} className="h-12 px-5 gap-1.5 text-sm">
                 <ArrowLeft className="h-4 w-4" /> Indietro
             </Button>
-            <div className="flex items-center gap-3">
-                {hiddenGroupsCount > 0 && (
-                    <div className="text-xs text-amber-600 font-medium hidden sm:block">
-                        {hiddenGroupsCount} gruppi sotto soglia
-                    </div>
+            <Button
+                onClick={() => onContinue({ overrides, excludedGroupIds })}
+                className={cn(
+                    "h-12 gap-1.5 rounded-xl px-6 text-sm shadow-lg transition-all hover:-translate-y-[1px]",
+                    stats.total > stats.assigned && "border-amber-200 bg-amber-50 text-amber-900 hover:bg-amber-100 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-200"
                 )}
-                <Button
-                    onClick={() => onContinue({ overrides, excludedGroupIds })}
-                    className={cn(
-                        "gap-1.5 rounded-xl px-6 h-12 shadow-lg hover:translate-y-[-1px] transition-all text-sm",
-                        stats.total > stats.assigned && "border-amber-200 bg-amber-50 text-amber-900 hover:bg-amber-100 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-200"
-                    )}
-                    variant={stats.total > stats.assigned ? "outline" : "default"}
-                >
-                    {stats.total > stats.assigned ? "Continua" : "Procedi"}
-                    <ArrowRight className="h-4 w-4" />
-                </Button>
-            </div>
+                variant={stats.total > stats.assigned ? "outline" : "default"}
+            >
+                Continua
+                <ArrowRight className="h-4 w-4" />
+            </Button>
         </div>
-    )
-
-    const headerExtra = (
-        <div className="text-right shrink-0 bg-muted/50 p-2 px-4 rounded-xl border">
-            <div className="text-xl md:text-2xl font-bold tabular-nums text-primary flex items-baseline justify-end gap-1">
-                {stats.assigned} <span className="text-muted-foreground/40 text-sm md:text-base font-sans">di {stats.total}</span>
-            </div>
-            <div className="text-[10px] md:text-xs text-muted-foreground font-medium uppercase tracking-wider">Classificate</div>
-            <div className="text-[10px] text-muted-foreground mt-0.5 tabular-nums">
-                {importVisibility.importableRows} pronte import
-            </div>
-        </div>
-    )
-
-    const topBar = (
-        <ThresholdSlider
-            thresholdCents={thresholdCents}
-            visualThreshold={visualThreshold}
-            isDragging={isDragging}
-            hiddenGroupsCount={hiddenGroupsCount}
-            onVisualChange={setVisualThreshold}
-            onCommit={onThresholdChange}
-            onDragStart={() => setIsDragging(true)}
-            onDragEnd={() => setIsDragging(false)}
-        />
     )
 
     // ============================================
@@ -245,106 +209,100 @@ export function ImportStepReview({
 
     return (
         <WizardShell
-            title="Revisione Rapida"
-            subtitle="Controlla come abbiamo raggruppato le tue spese."
+            title="Controlla i movimenti"
+            subtitle="Rivedi gruppi e categorie prima del salvataggio."
             step="review"
-            headerExtra={headerExtra}
-            topBar={topBar}
             footer={footer}
         >
-            <div className="space-y-6">
+            <div className="space-y-5">
+                <section className="space-y-3 rounded-xl border border-border/60 bg-muted/10 p-4">
+                    <ThresholdSlider
+                        thresholdCents={thresholdCents}
+                        visualThreshold={visualThreshold}
+                        isDragging={isDragging}
+                        hiddenGroupsCount={hiddenGroupsCount}
+                        onVisualChange={setVisualThreshold}
+                        onCommit={onThresholdChange}
+                        onDragStart={() => setIsDragging(true)}
+                        onDragEnd={() => setIsDragging(false)}
+                    />
 
-                {/* Consultant Advice */}
-                <div className="shrink-0">
-                    <ReviewAdvice completionPercent={completionPercent} />
-                </div>
-
-                <ImportMetricsGrid
-                    items={[
-                        {
-                            key: "valid-rows",
-                            label: "Righe valide",
-                            value: importVisibility.totalValidRows,
-                            tone: "neutral",
-                        },
-                        {
-                            key: "ready-import",
-                            label: "Pronte import",
-                            value: importVisibility.importableRows,
-                            tone: "success",
-                        },
-                        {
-                            key: "duplicates",
-                            label: "Duplicati esclusi",
-                            value: importVisibility.duplicatesTotal,
-                            tone: "warning",
-                            detail: importVisibility.duplicatesTotal > 0
-                                ? `${importVisibility.duplicatesConfirmed} certi + ${importVisibility.duplicatesSuspected} sospetti`
-                                : undefined,
-                        },
-                        {
-                            key: "discarded",
-                            label: "Righe scartate",
-                            value: parseErrorsCount,
-                            tone: "danger",
-                        },
-                    ]}
-                />
+                    <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                        <div className="rounded-lg border border-border/60 bg-background/50 px-3 py-2.5">
+                            <div className="text-xs font-medium text-muted-foreground">Righe valide</div>
+                            <div className="text-xl font-semibold tabular-nums">{importVisibility.totalValidRows}</div>
+                        </div>
+                        <div className="rounded-lg border border-emerald-500/20 bg-background/50 px-3 py-2.5">
+                            <div className="text-xs font-medium text-muted-foreground">Pronte da aggiungere</div>
+                            <div className="text-xl font-semibold tabular-nums text-emerald-700 dark:text-emerald-300">{importVisibility.importableRows}</div>
+                        </div>
+                        <div className="rounded-lg border border-amber-500/20 bg-background/50 px-3 py-2.5">
+                            <div className="text-xs font-medium text-muted-foreground">Duplicati esclusi</div>
+                            <div className="text-xl font-semibold tabular-nums text-amber-700 dark:text-amber-300">{importVisibility.duplicatesTotal}</div>
+                            {importVisibility.duplicatesTotal > 0 && (
+                                <div className="text-xs text-muted-foreground">
+                                    {importVisibility.duplicatesConfirmed} certi + {importVisibility.duplicatesSuspected} sospetti
+                                </div>
+                            )}
+                        </div>
+                        <div className="rounded-lg border border-rose-500/20 bg-background/50 px-3 py-2.5">
+                            <div className="text-xs font-medium text-muted-foreground">Righe non leggibili</div>
+                            <div className="text-xl font-semibold tabular-nums text-rose-700 dark:text-rose-300">{parseErrorsCount}</div>
+                        </div>
+                    </div>
+                </section>
 
                 {parseErrorsCount > 0 && (
                     <div className="rounded-xl border border-amber-300/50 bg-amber-50/60 dark:bg-amber-950/20 p-3 text-amber-900 dark:text-amber-200">
                         <div className="flex items-start gap-2">
                             <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
                             <div className="text-xs md:text-sm">
-                                Ho rilevato <strong>{parseErrorsCount}</strong> righe non importabili nel CSV.
-                                Le transazioni valide sono già pronte qui sotto.
+                                Ho trovato <strong>{parseErrorsCount}</strong> righe non leggibili nel file.
+                                I movimenti validi sono già pronti qui sotto.
                             </div>
                         </div>
                     </div>
                 )}
 
-                {/* Content Area */}
-                <MacroSection contentClassName="p-0">
-                    {filteredGroups.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-12 text-center">
-                            <Filter className="h-10 w-10 text-muted-foreground/50 mb-3" />
-                            <p className="text-muted-foreground text-sm">Nessun gruppo sopra la soglia selezionata</p>
-                            <Button variant="ghost" size="sm" className="mt-2" onClick={() => onThresholdChange(0)}>
-                                Mostra tutti
-                            </Button>
-                        </div>
-                    ) : (
-                        <div className="space-y-5">
-                            {directionSections.map((section) => (
-                                section.groups.length > 0 ? (
-                                    <div key={section.key} className="space-y-2">
-                                        <div className="flex items-center justify-between">
-                                            <h4 className={cn("text-xs md:text-sm font-bold uppercase tracking-wider", section.titleClassName)}>
-                                                {section.title}
-                                            </h4>
-                                            <span className="text-xs text-muted-foreground">{section.groups.length} gruppi</span>
-                                        </div>
-                                        <Accordion type="multiple" className="space-y-2">
-                                            {section.groups.map((group, index) => (
-                                                <MerchantGroupCard
-                                                    key={group.id}
-                                                    group={group}
-                                                    index={index}
-                                                    totalGroups={section.groups.length}
-                                                    effectiveCategoryId={getGroupSuggestedCategory(group)}
-                                                    onGroupCategoryChange={setGroupCategory}
-                                                    onSubgroupCategoryChange={setSubgroupCategory}
-                                                    getSubgroupEffectiveCategory={(sg) => getSubgroupEffectiveCategory(sg, group)}
-                                                    getRowById={getRowById}
-                                                />
-                                            ))}
-                                        </Accordion>
+                {filteredGroups.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-10 text-center">
+                        <Filter className="h-10 w-10 text-muted-foreground/50 mb-3" />
+                        <p className="text-muted-foreground text-sm">Con il filtro attuale non vedo gruppi disponibili</p>
+                        <Button variant="ghost" size="sm" className="mt-2" onClick={() => onThresholdChange(0)}>
+                            Mostra tutti
+                        </Button>
+                    </div>
+                ) : (
+                    <div className="space-y-5">
+                        {directionSections.map((section) => (
+                            section.groups.length > 0 ? (
+                                <div key={section.key} className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-base font-semibold text-foreground">
+                                            {section.title}
+                                        </h4>
+                                        <span className="text-xs text-muted-foreground">{section.groups.length} gruppi</span>
                                     </div>
-                                ) : null
-                            ))}
-                        </div>
-                    )}
-                </MacroSection>
+                                    <Accordion type="multiple" className="space-y-2">
+                                        {section.groups.map((group, index) => (
+                                            <MerchantGroupCard
+                                                key={group.id}
+                                                group={group}
+                                                index={index}
+                                                totalGroups={section.groups.length}
+                                                effectiveCategoryId={getGroupSuggestedCategory(group)}
+                                                onGroupCategoryChange={setGroupCategory}
+                                                onSubgroupCategoryChange={setSubgroupCategory}
+                                                getSubgroupEffectiveCategory={(sg) => getSubgroupEffectiveCategory(sg, group)}
+                                                getRowById={getRowById}
+                                            />
+                                        ))}
+                                    </Accordion>
+                                </div>
+                            ) : null
+                        ))}
+                    </div>
+                )}
             </div>
         </WizardShell>
     )

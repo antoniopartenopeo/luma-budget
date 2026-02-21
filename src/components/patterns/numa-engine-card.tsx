@@ -30,7 +30,6 @@ interface NumaEngineCardProps {
     auditLabel?: string // Label for the button e.g. "Vedi Audit Tecnico"
     certificationTitle?: string
     certificationSubtitle?: string
-    audienceHint?: string
     className?: string
 }
 
@@ -52,7 +51,6 @@ export function NumaEngineCard({
     auditLabel = "Vedi Audit Tecnico",
     certificationTitle = "Certificazione Privacy",
     certificationSubtitle = "Analisi 100% Locale e Verificata.",
-    audienceHint,
     className
 }: NumaEngineCardProps) {
     const [isExpanded, setIsExpanded] = React.useState(false)
@@ -72,16 +70,11 @@ export function NumaEngineCard({
 
             {/* Header */}
             <div className="relative z-10">
-                <div className="flex items-center justify-between gap-3 mb-8">
+                <div className="mb-8 flex items-center gap-2">
                     <div className="flex items-center gap-2">
                         <div className="h-1 w-8 bg-primary rounded-full" />
                         <h4 className="text-xs font-bold uppercase tracking-wider text-foreground/80">{title}</h4>
                     </div>
-                    {audienceHint && (
-                        <span className="px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-xs font-bold uppercase tracking-wide text-amber-700 dark:text-amber-400">
-                            {audienceHint}
-                        </span>
-                    )}
                 </div>
 
                 {/* 3 Visual Steps */}

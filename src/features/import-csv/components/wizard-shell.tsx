@@ -1,7 +1,7 @@
 "use client"
 
 import { ReactNode } from "react"
-import { Upload, Filter, CheckCircle2 } from "lucide-react"
+import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface WizardShellProps {
@@ -15,6 +15,17 @@ interface WizardShellProps {
     className?: string
 }
 
+interface WizardStepConfig {
+    id: WizardShellProps["step"]
+    label: string
+}
+
+const WIZARD_STEPS: WizardStepConfig[] = [
+    { id: "upload", label: "Carica" },
+    { id: "review", label: "Controlla" },
+    { id: "summary", label: "Conferma" },
+]
+
 export function WizardShell({
     title,
     subtitle,
@@ -25,115 +36,82 @@ export function WizardShell({
     footer,
     className
 }: WizardShellProps) {
-
-    const steps = [
-        {
-            id: "upload",
-            label: "1. Upload",
-            icon: Upload,
-            active: step === "upload",
-            completed: step === "review" || step === "summary"
-        },
-        {
-            id: "review",
-            label: "2. Revisione",
-            icon: Filter,
-            active: step === "review",
-            completed: step === "summary"
-        },
-        {
-            id: "summary",
-            label: "3. Riepilogo",
-            icon: CheckCircle2,
-            active: step === "summary",
-            completed: false
-        }
-    ]
-
     return (
-        <div className="flex flex-col min-h-[70vh] bg-background animate-enter-up">
-            {/* 1. Shell Header (Sticky Top) */}
-            <div className="shrink-0 py-2 px-3 md:px-4 border-b bg-card/80 backdrop-blur-xl z-20">
-                <div className="flex md:hidden items-center justify-between gap-2">
-                    <div className="min-w-0 flex-1">
-                        <h2 className="text-base font-bold tracking-tight bg-gradient-to-br from-foreground to-muted-foreground bg-clip-text text-transparent truncate">
-                            {title}
-                        </h2>
-                        <p className="text-muted-foreground text-xs truncate">
-                            {subtitle}
-                        </p>
+        <div className="flex min-h-[70vh] flex-col animate-enter-up">
+            <div className="shrink-0 border-b border-border/60">
+                <div className="px-4 py-4 sm:px-6 sm:py-5">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div className="min-w-0 space-y-1">
+                            <h2 className="truncate text-xl font-bold tracking-tight sm:text-2xl">
+                                {title}
+                            </h2>
+                            <p className="text-sm font-medium leading-relaxed text-muted-foreground">
+                                {subtitle}
+                            </p>
+                        </div>
+                        {headerExtra && <div className="shrink-0">{headerExtra}</div>}
                     </div>
 
-                    {headerExtra && <div className="shrink-0">{headerExtra}</div>}
-                </div>
+                    <div className="mt-4 grid gap-2 sm:grid-cols-3">
+                        {WIZARD_STEPS.map((wizardStep, index) => {
+                            const isActive = wizardStep.id === step
+                            const isCompleted =
+                                wizardStep.id === "upload"
+                                    ? step !== "upload"
+                                    : wizardStep.id === "review"
+                                        ? step === "summary"
+                                        : false
 
-                <div className="hidden md:grid grid-cols-[minmax(0,1fr)_minmax(0,28rem)_minmax(0,1fr)] items-center gap-3">
-                    <div className="min-w-0">
-                        <h2 className="text-lg font-bold tracking-tight bg-gradient-to-br from-foreground to-muted-foreground bg-clip-text text-transparent truncate">
-                            {title}
-                        </h2>
-                        <p className="text-muted-foreground text-xs truncate">
-                            {subtitle}
-                        </p>
-                    </div>
-
-                    {/* Visual Stepper (centered) */}
-                    <div className="grid w-full grid-cols-3 gap-1.5 justify-self-center">
-                        {steps.map((s) => (
-                            <div
-                                key={s.id}
-                                className={cn(
-                                    "flex flex-col items-center px-1.5 py-1 rounded-lg border transition-all duration-300",
-                                    s.active
-                                        ? "bg-card shadow-sm ring-1 ring-primary/20 border-primary/20"
-                                        : "bg-muted/30 border-transparent opacity-60 grayscale-[0.5]"
-                                )}
-                            >
-                                <div className={cn(
-                                    "w-5 h-5 rounded-full flex items-center justify-center mb-1 transition-colors",
-                                    s.active
-                                        ? "bg-primary text-primary-foreground"
-                                        : s.completed
-                                            ? "bg-primary/20 text-primary"
-                                            : "bg-muted text-muted-foreground"
-                                )}>
-                                    <s.icon className="h-3 w-3" />
+                            return (
+                                <div
+                                    key={wizardStep.id}
+                                    className={cn(
+                                        "flex items-center gap-2 rounded-lg border px-3 py-2 transition-colors",
+                                        isActive && "border-primary/30 bg-primary/5 text-foreground",
+                                        !isActive && isCompleted && "border-border/60 bg-muted/10 text-foreground",
+                                        !isActive && !isCompleted && "border-border/50 bg-transparent text-muted-foreground"
+                                    )}
+                                >
+                                    <span
+                                        className={cn(
+                                            "flex h-6 w-6 items-center justify-center rounded-full border text-xs font-medium",
+                                            isActive && "border-primary/30 bg-primary/10 text-primary",
+                                            !isActive && isCompleted && "border-border/60 bg-muted/20 text-foreground",
+                                            !isActive && !isCompleted && "border-border/60 bg-transparent text-muted-foreground"
+                                        )}
+                                    >
+                                        {isCompleted ? <Check className="h-3 w-3" /> : index + 1}
+                                    </span>
+                                    <span className={cn(
+                                        "truncate text-sm font-medium",
+                                        isActive && "text-primary"
+                                    )}>
+                                        {index + 1}. {wizardStep.label}
+                                    </span>
                                 </div>
-                                <span className={cn(
-                                    "text-[10px] font-medium tracking-tight leading-none",
-                                    s.active ? "text-foreground font-bold" : "text-muted-foreground"
-                                )}>
-                                    {s.label}
-                                </span>
-                            </div>
-                        ))}
+                            )
+                        })}
                     </div>
-
-                    <div className="justify-self-end">{headerExtra ?? null}</div>
                 </div>
             </div>
 
-            {/* 1b. Top Bar (Optional, Fixed) */}
             {topBar && (
-                <div className="shrink-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+                <div className="shrink-0 border-b border-border/60">
                     {topBar}
                 </div>
             )}
 
-            {/* 2. Scrollable Content Area */}
             <div className={cn(
-                "flex-1 overflow-y-auto overflow-x-hidden min-h-0", // min-h-0 is crucial for flex children scrolling
-                "bg-background",
+                "min-h-0 flex-1 overflow-x-hidden",
                 className
             )}>
-                <div className="w-full h-full p-2 md:p-4">
+                <div className="h-full w-full px-4 py-4 sm:px-6 sm:py-6">
                     {children}
                 </div>
             </div>
 
-            {/* 3. Shell Footer (Sticky Bottom) */}
-            <div className="shrink-0 p-2 md:p-3 border-t bg-card/80 backdrop-blur-xl z-20">
-                <div className="w-full flex items-center justify-between">
+            <div className="shrink-0 border-t border-border/60">
+                <div className="px-4 py-3 sm:px-6">
                     {footer}
                 </div>
             </div>

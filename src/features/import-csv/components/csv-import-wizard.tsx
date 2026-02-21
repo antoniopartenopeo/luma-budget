@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { ImportStepUpload } from "./step-upload"
 import { ImportStepReview } from "./step-review"
@@ -14,7 +14,11 @@ export interface ReviewResult {
     excludedGroupIds: string[]
 }
 
-export function CsvImportWizard() {
+interface CsvImportWizardProps {
+    onStepChange?: (step: "upload" | "review" | "summary") => void
+}
+
+export function CsvImportWizard({ onStepChange }: CsvImportWizardProps = {}) {
     const router = useRouter()
     const { data: categories = [] } = useCategories()
     const [step, setStep] = useState<"upload" | "review" | "summary">("upload")
@@ -69,6 +73,10 @@ export function CsvImportWizard() {
         resetWizard()
         router.push("/transactions")
     }
+
+    useEffect(() => {
+        onStepChange?.(step)
+    }, [step, onStepChange])
 
     return (
         <div className="w-full">

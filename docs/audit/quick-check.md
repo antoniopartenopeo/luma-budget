@@ -1,6 +1,6 @@
 # Governance Quick Check
 
-Generated at (UTC): 2026-02-18T23:42:41Z
+Generated at (UTC): 2026-02-21T13:10:20Z
 
 Scope:
 - Repository: numa-budget
@@ -13,7 +13,7 @@ Scope:
 |---|---|---:|
 | parseFloat on monetary flows (excluding CSV normalize exception) | PASS | 0 |
 | Deprecated `amount` key / string amounts | WARN | key:23 string:17 legacy-files:4 |
-| Period filters without `filterByRange` | WARN | 4 |
+| Period filters without `filterByRange` | WARN | 3 |
 | Inline style in TSX (non-exempt) | PASS | non-exempt:0 total:8 exempt:8 |
 | Tests with formula-duplication heuristic | WARN | 4 |
 
@@ -100,13 +100,12 @@ filterByRange usage (first 60):
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/transactions/utils/transactions-logic.ts:52:    const scopedTransactions = filterByRange(transactions, start, end)
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/simulator/utils.ts:4:import { calculateDateRange, filterByRange } from "@/lib/date-ranges"
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/simulator/utils.ts:54:    const inRangeTransactions = filterByRange(transactions, startDate, endDate)
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/lib/date-ranges.ts:133:export function filterByRange<T extends { timestamp: number }>(
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/lib/date-ranges.ts:143:export function filterByRange<T extends { timestamp: number }>(
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/VAULT/goals/logic/financial-baseline.ts:3:import { calculateDateRange, filterByRange } from "@/lib/date-ranges"
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/VAULT/goals/logic/financial-baseline.ts:38:    const periodTransactions = filterByRange(transactions, startDate, endDate)
 
 Candidate files with period logic and no `filterByRange` (first 40):
 
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/dashboard-filter-bar.tsx
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/components/kpi-cards.tsx
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/transactions/components/transactions-filter-bar.tsx
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/transactions/hooks/use-transactions-view.ts

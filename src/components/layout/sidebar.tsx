@@ -1,15 +1,23 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { LayoutDashboard, LineChart, Settings, FlaskConical, Receipt } from "lucide-react"
+import { usePathname, useRouter } from "next/navigation"
+import { LayoutDashboard, LineChart, Settings, FlaskConical, Receipt, FileSpreadsheet, Download, ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { BrandLogo } from "@/components/ui/brand-logo"
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
-  { icon: Receipt, label: "Transazioni", href: "/transactions" },
+  {
+    icon: Receipt,
+    label: "Transazioni",
+    href: "/transactions",
+    children: [
+      { id: "transactions-import", icon: FileSpreadsheet, label: "Importa CSV", href: "/transactions/import" },
+      { id: "transactions-export", icon: Download, label: "Esporta CSV", href: "/transactions?action=export" },
+    ]
+  },
   { icon: LineChart, label: "Insights", href: "/insights" },
   { icon: FlaskConical, label: "Financial Lab", href: "/simulator" },
   { icon: Settings, label: "Impostazioni", href: "/settings" },
@@ -22,9 +30,33 @@ interface SidebarProps {
 
 export function Sidebar({ className, onNavigate }: SidebarProps) {
   const pathname = usePathname()
+  const router = useRouter()
+
   const isItemActive = (href: string) => {
-    if (href === "/") return pathname === "/"
-    return pathname === href || pathname.startsWith(`${href}/`)
+    const baseHref = href.split("?")[0]
+    if (baseHref === "/") return pathname === "/"
+    return pathname === baseHref || pathname.startsWith(`${baseHref}/`)
+  }
+
+  const isChildActive = (childId: string, href: string) => {
+    if (childId === "transactions-export") {
+      return pathname === "/transactions"
+    }
+    return isItemActive(href)
+  }
+
+  const handleParentClick = (href: string, hasChildren: boolean) => {
+    if (!hasChildren) {
+      if (!isItemActive(href)) {
+        router.push(href)
+      }
+      onNavigate?.()
+      return
+    }
+
+    if (!pathname.startsWith(href)) {
+      router.push(href)
+    }
   }
 
   return (
@@ -45,11 +77,13 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
           <nav className="space-y-1.5">
             {sidebarItems.map((item) => {
               const isActive = isItemActive(item.href)
+              const hasChildren = Array.isArray(item.children) && item.children.length > 0
+              const isExpanded = hasChildren && pathname.startsWith(item.href)
               return (
-                <Link key={item.href} href={item.href} passHref>
+                <div key={item.href} className="space-y-1.5">
                   <Button
                     variant="ghost"
-                    onClick={onNavigate}
+                    onClick={() => handleParentClick(item.href, hasChildren)}
                     className={cn(
                       "w-full justify-start gap-3 px-4 py-6 text-sm font-medium transition-all relative overflow-hidden",
                       isActive
@@ -59,11 +93,39 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
                   >
                     <item.icon className={cn("h-4 w-4", isActive ? "text-primary" : "text-foreground/75")} />
                     <span className="flex-1 text-left">{item.label}</span>
+                    {hasChildren && (
+                      <ChevronDown className={cn("h-3 w-3 transition-transform", isExpanded && "rotate-180")} />
+                    )}
                     {isActive && (
                       <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full" />
                     )}
                   </Button>
-                </Link>
+
+                  {hasChildren && isExpanded && (
+                    <div className="ml-4 space-y-1">
+                      {(item.children ?? []).map((child) => {
+                        const childActive = isChildActive(child.id, child.href)
+                        return (
+                          <Link key={child.id} href={child.href} passHref>
+                            <Button
+                              variant="ghost"
+                              onClick={onNavigate}
+                              className={cn(
+                                "w-full justify-start gap-2.5 rounded-lg px-3 py-4 text-xs font-medium",
+                                childActive
+                                  ? "bg-primary/10 text-primary hover:bg-primary/15"
+                                  : "text-foreground/70 hover:bg-white/40 dark:hover:bg-white/5 hover:text-foreground"
+                              )}
+                            >
+                              <child.icon className={cn("h-3 w-3", childActive ? "text-primary" : "text-muted-foreground")} />
+                              <span className="text-left">{child.label}</span>
+                            </Button>
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
               )
             })}
           </nav>

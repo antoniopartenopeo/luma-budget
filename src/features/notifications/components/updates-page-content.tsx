@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
-import { BellRing, AlertTriangle } from "lucide-react"
+import { AlertTriangle } from "lucide-react"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -40,12 +40,7 @@ export function UpdatesPageContent() {
     return (
         <div className="space-y-8 w-full">
             <PageHeader
-                title={
-                    <span className="flex items-center gap-3">
-                        <BellRing className="h-8 w-8" />
-                        Storico Aggiornamenti
-                    </span>
-                }
+                title="Storico Aggiornamenti"
                 description="Riepilogo completo delle release e dei fix distribuiti ai beta tester."
                 actions={(
                     <Button

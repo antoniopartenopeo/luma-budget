@@ -15,6 +15,7 @@ interface ThresholdSliderProps {
     onCommit: (value: number) => void
     onDragStart: () => void
     onDragEnd: () => void
+    className?: string
 }
 
 /**
@@ -29,19 +30,20 @@ export function ThresholdSlider({
     onVisualChange,
     onCommit,
     onDragStart,
-    onDragEnd
+    onDragEnd,
+    className
 }: ThresholdSliderProps) {
     return (
-        <div className="px-3 md:px-6 py-2.5 flex flex-col gap-2">
+        <div className={["flex flex-col gap-2", className].filter(Boolean).join(" ")}>
             <div className="flex items-center gap-3">
-                <Filter className="h-4 w-4 text-muted-foreground shrink-0" />
-                <span className="text-sm font-medium">Soglia rilevanza</span>
+                <Filter className="h-3 w-3 text-muted-foreground shrink-0" />
+                <span className="text-sm font-semibold">Mostra importi da</span>
                 <Badge variant="outline" className="ml-auto font-mono tabular-nums text-xs">
                     {isDragging ? formatCents(visualThreshold) : formatCents(thresholdCents)}
                 </Badge>
                 {hiddenGroupsCount > 0 && (
-                    <Badge variant="secondary" className="text-xs bg-amber-100 text-amber-800 border-amber-200">
-                        {hiddenGroupsCount} nascosti
+                    <Badge variant="secondary" className="border-amber-300/60 bg-amber-100/70 text-xs text-amber-800">
+                        {hiddenGroupsCount} gruppi nascosti
                     </Badge>
                 )}
             </div>
@@ -60,9 +62,9 @@ export function ThresholdSlider({
                 }}
                 className="w-full"
             />
-            <div className="flex justify-between text-[10px] text-muted-foreground">
-                <span>Tutti</span>
-                <span>Solo grandi importi</span>
+            <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Tutti i movimenti</span>
+                <span>Solo importi più alti</span>
             </div>
         </div>
     )

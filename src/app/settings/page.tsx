@@ -93,12 +93,7 @@ export default function SettingsPage() {
         <div className="space-y-6">
             <div className="mb-8">
                 <PageHeader
-                    title={
-                        <span className="flex items-center gap-3">
-                            <Settings2 className="h-8 w-8" />
-                            Impostazioni
-                        </span>
-                    }
+                    title="Impostazioni"
                     description="Configura le preferenze dell'applicazione e gestisci i tuoi dati."
                 />
             </div>

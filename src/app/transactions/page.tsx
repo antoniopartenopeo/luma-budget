@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, Suspense } from "react"
+import { useCallback, useEffect, useState, Suspense } from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { ArrowUpRight } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -18,7 +19,6 @@ import { PageHeader } from "@/components/ui/page-header"
 
 import { StateMessage } from "@/components/ui/state-message"
 import { Skeleton } from "@/components/ui/skeleton"
-import { TransactionsActions } from "@/features/transactions/components/transactions-actions"
 import { MacroSection, macroItemVariants } from "@/components/patterns/macro-section"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
 import { motion } from "framer-motion"
@@ -26,6 +26,9 @@ import { motion } from "framer-motion"
 
 
 function TransactionsPageContent() {
+    const router = useRouter()
+    const pathname = usePathname()
+    const searchParams = useSearchParams()
     const { data: transactions = [], isLoading, isError, refetch } = useTransactions()
     const {
         search, type, categoryId, period, fromDate, toDate,
@@ -64,7 +67,7 @@ function TransactionsPageContent() {
         })
     }
 
-    const handleExport = async (all: boolean = false) => {
+    const handleExport = useCallback(async (all: boolean = false) => {
         if (isExporting || isLoading) return
         setIsExporting(true)
         try {
@@ -83,7 +86,38 @@ function TransactionsPageContent() {
         } finally {
             setIsExporting(false)
         }
-    }
+    }, [
+        isExporting,
+        isLoading,
+        transactions,
+        sortedList,
+        categories,
+        filters.dateRange.from,
+        filters.dateRange.to
+    ])
+
+    useEffect(() => {
+        if (searchParams.get("action") !== "export") return
+        if (isLoading || isExporting) return
+
+        let cancelled = false
+
+        const runExport = async () => {
+            await handleExport(true)
+            if (cancelled) return
+
+            const nextParams = new URLSearchParams(searchParams.toString())
+            nextParams.delete("action")
+            const nextQuery = nextParams.toString()
+            router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, { scroll: false })
+        }
+
+        void runExport()
+
+        return () => {
+            cancelled = true
+        }
+    }, [searchParams, isLoading, isExporting, handleExport, router, pathname])
 
     if (isError) {
         return (
@@ -110,14 +144,6 @@ function TransactionsPageContent() {
                 <PageHeader
                     title="Transazioni"
                     description="Analisi dettagliata del tuo flusso di cassa."
-                    actions={
-                        <TransactionsActions
-                            onExportView={() => handleExport(false)}
-                            onExportAll={() => handleExport(true)}
-                            isExporting={isExporting}
-                            hasResults={filteredList.length > 0}
-                        />
-                    }
                 />
             </motion.div>
 

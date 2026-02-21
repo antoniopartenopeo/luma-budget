@@ -110,14 +110,14 @@ export function ImportStepSummary({
                 <div className="w-24 h-24 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-6 text-emerald-600 dark:text-emerald-400 cursor-default shadow-lg shadow-emerald-500/20">
                     <CheckCircle2 className="h-12 w-12" />
                 </div>
-                <h2 className="text-3xl font-bold tracking-tight mb-2">Importazione Completata!</h2>
+                <h2 className="mb-2 text-2xl font-bold tracking-tight sm:text-3xl">Importazione completata</h2>
                 <p className="text-muted-foreground text-lg w-full mx-auto mb-8">
-                    Hai aggiunto <span className="text-foreground font-bold">{stats?.count} transazioni</span> alla tua storia.
+                    Hai aggiunto <span className="text-foreground font-semibold">{stats?.count} movimenti</span> allo storico.
                     <br />
-                    <span className="font-medium text-primary">Puoi rivederle e modificarle dalla tabella transazioni.</span>
+                    <span className="font-medium text-primary">Li puoi rivedere e modificare dalla pagina Transazioni.</span>
                 </p>
-                <Button onClick={onClose} size="lg" className="rounded-full px-12 h-14 text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all">
-                    Torna alle Transazioni
+                <Button onClick={onClose} size="lg" className="h-12 rounded-xl px-8 text-base shadow-lg transition-all hover:shadow-xl">
+                    Torna a Transazioni
                 </Button>
             </div>
         )
@@ -127,7 +127,7 @@ export function ImportStepSummary({
         return (
             <StateMessage
                 title="Preparazione riepilogo"
-                description="Sto caricando le categorie, attendi un momento."
+                description="Sto preparando gli ultimi dettagli, attendi un momento."
                 variant="empty"
             />
         )
@@ -136,8 +136,8 @@ export function ImportStepSummary({
     if (!payload || !stats) {
         return (
             <StateMessage
-                title="Errore di Calcolo"
-                description="Impossibile generare il riepilogo. Torna indietro e riprova."
+                title="Non riesco a preparare il riepilogo"
+                description="Torna allo step precedente e riprova."
                 variant="error"
             />
         )
@@ -148,23 +148,22 @@ export function ImportStepSummary({
             <Button variant="ghost" onClick={isPending ? undefined : onBack} disabled={isPending} className="h-12 px-5 text-muted-foreground hover:text-foreground">
                 Indietro
             </Button>
-            <Button onClick={handleConfirm} disabled={isPending} className="gap-2 rounded-full px-10 h-12 shadow-lg hover:shadow-primary/25 text-lg transition-all">
-                {isPending ? <Loader2 className="h-5 w-5 animate-spin-slow" /> : "Conferma Import"}
+            <Button onClick={handleConfirm} disabled={isPending} className="h-12 gap-2 rounded-xl px-6 shadow-lg transition-all hover:shadow-primary/25">
+                {isPending ? <Loader2 className="h-5 w-5 animate-spin-slow" /> : "Aggiungi movimenti"}
             </Button>
         </div>
     )
 
     return (
         <WizardShell
-            title="Riepilogo Finale"
-            subtitle="Ecco cosa stiamo per aggiungere al tuo bilancio."
+            title="Conferma i dati"
+            subtitle="Ultimo controllo prima di aggiungere i movimenti."
             step="summary"
             footer={footer}
         >
-            <div className="flex-1 p-6 md:p-12 animate-enter-up">
-                <MacroSection>
+            <div className="animate-enter-up">
+                <MacroSection contentClassName="space-y-6">
                     <ImportMetricsGrid
-                        className="mb-6"
                         items={[
                             {
                                 key: "valid-rows",
@@ -180,13 +179,13 @@ export function ImportStepSummary({
                             },
                             {
                                 key: "below-threshold",
-                                label: "Sotto soglia",
+                                label: "Nascoste dal filtro",
                                 value: importVisibility.excludedByThreshold,
                                 tone: "info",
                             },
                             {
                                 key: "ready-import",
-                                label: "Da importare",
+                                label: "Pronte da aggiungere",
                                 value: importVisibility.readyToImport,
                                 tone: "success",
                             },
@@ -194,15 +193,15 @@ export function ImportStepSummary({
                     />
 
                     {importVisibility.discardedRows > 0 && (
-                        <div className="mb-6 text-xs text-muted-foreground">
-                            Righe scartate durante lettura CSV: <span className="font-semibold tabular-nums">{importVisibility.discardedRows}</span>
+                        <div className="text-sm text-muted-foreground">
+                            Righe non leggibili nel file: <span className="font-semibold tabular-nums">{importVisibility.discardedRows}</span>
                         </div>
                     )}
 
                     <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6">
                         <KpiCard
                             compact
-                            title="Entrate Totali"
+                            title="Totale entrate"
                             value={formatCents(stats.income)}
                             icon={TrendingUp}
                             tone="positive"
@@ -211,7 +210,7 @@ export function ImportStepSummary({
                         />
                         <KpiCard
                             compact
-                            title="Uscite Totali"
+                            title="Totale uscite"
                             value={formatCents(stats.expense)}
                             icon={TrendingDown}
                             tone="negative"
@@ -220,7 +219,7 @@ export function ImportStepSummary({
                         />
                         <KpiCard
                             compact
-                            title="Saldo del Periodo"
+                            title="Saldo periodo"
                             value={formatSignedCents(stats.net)}
                             icon={Wallet}
                             tone={stats.net >= 0 ? "positive" : "negative"}
@@ -232,14 +231,14 @@ export function ImportStepSummary({
                         />
                     </div>
 
-                    <div className="w-full mt-12 text-center space-y-6">
-                        <p className="text-muted-foreground">
-                            Premendo conferma, queste <strong className="text-foreground">{stats.count} transazioni</strong> diventeranno parte del tuo storico.
-                            Potrai sempre modificarle, cancellarle o riorganizzarle in seguito.
+                    <div className="w-full space-y-4 rounded-xl border border-border/60 bg-muted/15 p-4">
+                        <p className="text-sm text-muted-foreground">
+                            Confermando aggiungerai <strong className="font-semibold text-foreground">{stats.count} movimenti</strong> allo storico.
+                            In seguito potrai sempre correggerli o eliminarli.
                         </p>
 
                         {isSaveError && (
-                            <div className="p-4 rounded-xl bg-destructive/10 text-destructive border border-destructive/20 flex items-center gap-3 text-left">
+                            <div className="flex items-center gap-3 rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-left text-destructive">
                                 <AlertCircle className="h-5 w-5 shrink-0" />
                                 <div>
                                     <p className="font-bold text-sm">Errore durante il salvataggio</p>

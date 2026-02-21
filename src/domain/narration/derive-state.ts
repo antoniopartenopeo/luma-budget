@@ -6,7 +6,7 @@
  * This is the ONLY place where business logic lives for state determination.
  */
 
-import { KPIFacts, KPIState, SnapshotFacts, SnapshotState, TrendFacts, TrendState, AdvisorFacts, AdvisorState, BudgetFacts, BudgetState } from "./types"
+import { KPIFacts, KPIState, SnapshotFacts, SnapshotState, TrendFacts, TrendState, AdvisorFacts, AdvisorState } from "./types"
 
 
 /**
@@ -205,55 +205,4 @@ export function deriveAdvisorState(facts: AdvisorFacts): AdvisorState {
     }
 
     return "neutral"
-}
-
-/**
- * Derives the BudgetState from facts.
- * 
- * Rules (in priority order - MUST MATCH CHECKLIST):
- * 1. calm/neutral: isDataIncomplete === true
- * 2. early_uncertain: elapsedRatio < 0.15 (15% of period)
- * 3. over_budget: spentCents > limitCents
- * 4. at_risk: pacingRatio > 1.1 OR projectedSpendCents > limitCents
- * 5. on_track: pacingRatio <= 1.1
- */
-export function deriveBudgetState(facts: BudgetFacts): BudgetState {
-    const {
-        spentCents,
-        limitCents,
-        elapsedRatio,
-        pacingRatio,
-        projectedSpendCents,
-        isDataIncomplete
-    } = facts
-
-    // Precedence 1: Data Integrity
-    if (isDataIncomplete) {
-        return "calm"
-    }
-
-    // Precedence 2: Early Month (Rule B1)
-    if (elapsedRatio < 0.15) {
-        return "early_uncertain"
-    }
-
-    // Precedence 3: Limit Exceeded (Rule B5)
-    if (spentCents > limitCents) {
-        return "over_budget"
-    }
-
-    // Precedence 4: At Risk (Rule B4 & B3)
-    // 10% buffer allowed before calling at_risk for noise reduction
-    if (pacingRatio > 1.1 || projectedSpendCents > limitCents) {
-        return "at_risk"
-    }
-
-    // Precedence 5: On Track
-    // Requires pacingRatio to be valid (> 0) and healthy
-    if (pacingRatio > 0 && pacingRatio <= 1.1) {
-        return "on_track"
-    }
-
-    // Fallback: Calm (Insufficient signal)
-    return "calm"
 }

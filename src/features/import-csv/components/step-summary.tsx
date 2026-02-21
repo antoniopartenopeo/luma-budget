@@ -10,6 +10,10 @@ import { useCreateBatchTransactions } from "@/features/transactions/api/use-tran
 import { useCategories } from "@/features/categories/api/use-categories"
 import { WizardShell } from "./wizard-shell"
 import { MacroSection } from "@/components/patterns/macro-section"
+import { formatCents, formatSignedCents } from "@/domain/money"
+import { KpiCard } from "@/components/patterns/kpi-card"
+import { ImportMetricsGrid } from "./review"
+import { cn } from "@/lib/utils"
 
 interface ImportStepSummaryProps {
     importState: ImportState
@@ -66,6 +70,29 @@ export function ImportStepSummary({
         return { income, expense, net, count }
     }, [payload])
 
+    const importVisibility = useMemo(() => {
+        const totalValidRows = importState.summary.totalRows
+        const duplicatesSkipped = importState.summary.duplicatesSkipped
+        const discardedRows = importState.summary.parseErrors.length
+        const importableBeforeThreshold = importState.summary.selectedRows
+        const readyToImport = stats?.count ?? 0
+        const excludedByThreshold = Math.max(0, importableBeforeThreshold - readyToImport)
+
+        return {
+            totalValidRows,
+            duplicatesSkipped,
+            discardedRows,
+            excludedByThreshold,
+            readyToImport
+        }
+    }, [
+        importState.summary.totalRows,
+        importState.summary.duplicatesSkipped,
+        importState.summary.parseErrors.length,
+        importState.summary.selectedRows,
+        stats?.count
+    ])
+
     const handleConfirm = async () => {
         if (!payload) return
 
@@ -80,14 +107,14 @@ export function ImportStepSummary({
     if (isSuccess) {
         return (
             <div className="flex flex-col h-full items-center justify-center p-8 bg-background animate-enter-up text-center">
-                <div className="w-24 h-24 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-6 text-emerald-600 dark:text-emerald-400 animate-bounce cursor-default shadow-lg shadow-emerald-500/20">
+                <div className="w-24 h-24 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-6 text-emerald-600 dark:text-emerald-400 cursor-default shadow-lg shadow-emerald-500/20">
                     <CheckCircle2 className="h-12 w-12" />
                 </div>
                 <h2 className="text-3xl font-bold tracking-tight mb-2">Importazione Completata!</h2>
                 <p className="text-muted-foreground text-lg w-full mx-auto mb-8">
                     Hai aggiunto <span className="text-foreground font-bold">{stats?.count} transazioni</span> alla tua storia.
                     <br />
-                    <span className="font-medium text-primary">Il vero viaggio inizia ora.</span>
+                    <span className="font-medium text-primary">Puoi rivederle e modificarle dalla tabella transazioni.</span>
                 </p>
                 <Button onClick={onClose} size="lg" className="rounded-full px-12 h-14 text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all">
                     Torna alle Transazioni
@@ -122,7 +149,7 @@ export function ImportStepSummary({
                 Indietro
             </Button>
             <Button onClick={handleConfirm} disabled={isPending} className="gap-2 rounded-full px-10 h-12 shadow-lg hover:shadow-primary/25 text-lg transition-all">
-                {isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : "Conferma Import"}
+                {isPending ? <Loader2 className="h-5 w-5 animate-spin-slow" /> : "Conferma Import"}
             </Button>
         </div>
     )
@@ -136,31 +163,73 @@ export function ImportStepSummary({
         >
             <div className="flex-1 p-6 md:p-12 animate-enter-up">
                 <MacroSection>
+                    <ImportMetricsGrid
+                        className="mb-6"
+                        items={[
+                            {
+                                key: "valid-rows",
+                                label: "Righe valide",
+                                value: importVisibility.totalValidRows,
+                                tone: "neutral",
+                            },
+                            {
+                                key: "duplicates",
+                                label: "Duplicati esclusi",
+                                value: importVisibility.duplicatesSkipped,
+                                tone: "warning",
+                            },
+                            {
+                                key: "below-threshold",
+                                label: "Sotto soglia",
+                                value: importVisibility.excludedByThreshold,
+                                tone: "info",
+                            },
+                            {
+                                key: "ready-import",
+                                label: "Da importare",
+                                value: importVisibility.readyToImport,
+                                tone: "success",
+                            },
+                        ]}
+                    />
+
+                    {importVisibility.discardedRows > 0 && (
+                        <div className="mb-6 text-xs text-muted-foreground">
+                            Righe scartate durante lettura CSV: <span className="font-semibold tabular-nums">{importVisibility.discardedRows}</span>
+                        </div>
+                    )}
+
                     <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* KPI Cards */}
-                        <div className="bg-emerald-500/5 p-6 rounded-2xl border border-emerald-500/20 flex flex-col justify-center items-center text-emerald-700 dark:text-emerald-400">
-                            <TrendingUp className="h-8 w-8 mb-2 opacity-50" />
-                            <div className="text-sm font-medium opacity-70">Entrate Totali</div>
-                            <div className="text-2xl font-bold">
-                                {(stats.income / 100).toLocaleString("it-IT", { style: "currency", currency: "EUR" })}
-                            </div>
-                        </div>
-
-                        <div className="bg-rose-500/5 p-6 rounded-2xl border border-rose-500/20 flex flex-col justify-center items-center text-rose-700 dark:text-rose-400">
-                            <TrendingDown className="h-8 w-8 mb-2 opacity-50" />
-                            <div className="text-sm font-medium opacity-70">Uscite Totali</div>
-                            <div className="text-2xl font-bold">
-                                {(stats.expense / 100).toLocaleString("it-IT", { style: "currency", currency: "EUR" })}
-                            </div>
-                        </div>
-
-                        <div className="bg-primary/5 p-6 rounded-2xl border border-primary/20 flex flex-col justify-center items-center text-primary md:col-span-1 border-t-4 border-t-primary">
-                            <Wallet className="h-8 w-8 mb-2 opacity-50" />
-                            <div className="text-sm font-medium opacity-70">Saldo del Periodo</div>
-                            <div className="text-2xl font-bold">
-                                {(stats.net / 100).toLocaleString("it-IT", { style: "currency", currency: "EUR" })}
-                            </div>
-                        </div>
+                        <KpiCard
+                            compact
+                            title="Entrate Totali"
+                            value={formatCents(stats.income)}
+                            icon={TrendingUp}
+                            tone="positive"
+                            valueClassName="text-2xl sm:text-3xl lg:text-4xl text-emerald-700 dark:text-emerald-300"
+                            className="h-full"
+                        />
+                        <KpiCard
+                            compact
+                            title="Uscite Totali"
+                            value={formatCents(stats.expense)}
+                            icon={TrendingDown}
+                            tone="negative"
+                            valueClassName="text-2xl sm:text-3xl lg:text-4xl text-rose-700 dark:text-rose-300"
+                            className="h-full"
+                        />
+                        <KpiCard
+                            compact
+                            title="Saldo del Periodo"
+                            value={formatSignedCents(stats.net)}
+                            icon={Wallet}
+                            tone={stats.net >= 0 ? "positive" : "negative"}
+                            valueClassName={cn(
+                                "text-2xl sm:text-3xl lg:text-4xl",
+                                stats.net >= 0 ? "text-emerald-700 dark:text-emerald-300" : "text-rose-700 dark:text-rose-300"
+                            )}
+                            className="h-full"
+                        />
                     </div>
 
                     <div className="w-full mt-12 text-center space-y-6">

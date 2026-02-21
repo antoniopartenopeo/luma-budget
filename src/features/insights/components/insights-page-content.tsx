@@ -15,6 +15,7 @@ import { InsightCard } from "./insight-card"
 import { TrendAnalysisCard } from "./trend-analysis-card"
 import { AIAdvisorCard, NumaAdvisorHowItWorksCard } from "./ai-advisor-card"
 import { getCurrentPeriod, formatPeriodLabel } from "../utils"
+import { shiftPeriod } from "@/lib/date-ranges"
 
 interface InsightsPageContentProps {
     initialPeriod?: string
@@ -29,11 +30,7 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
 
     // Period navigation helpers
     const navigatePeriod = (direction: "prev" | "next") => {
-        const [year, month] = period.split("-").map(Number)
-        const date = new Date(year, month - 1 + (direction === "next" ? 1 : -1), 1)
-        const newYear = date.getFullYear()
-        const newMonth = (date.getMonth() + 1).toString().padStart(2, "0")
-        setPeriod(`${newYear}-${newMonth}`)
+        setPeriod(shiftPeriod(period, direction === "next" ? 1 : -1))
     }
 
     const isCurrentMonth = period === getCurrentPeriod()

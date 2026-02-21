@@ -259,8 +259,8 @@ export function DashboardKpiGrid({
                         },
                         {
                             icon: Hourglass,
-                            colorClass: "text-indigo-500",
-                            bgClass: "bg-indigo-500/10",
+                            colorClass: "text-primary",
+                            bgClass: "bg-primary/10",
                             stepLabel: "Passo 3",
                             title: "Quando si aggiorna",
                             description: "Ogni nuovo movimento aggiorna stima, velocità e direzione del mese."

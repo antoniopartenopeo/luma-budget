@@ -16,7 +16,8 @@ import { MacroSection } from "@/components/patterns/macro-section"
 import {
     ReviewAdvice,
     ThresholdSlider,
-    MerchantGroupCard
+    MerchantGroupCard,
+    ImportMetricsGrid,
 } from "./review"
 
 // ============================================
@@ -51,6 +52,7 @@ export function ImportStepReview({
     const [isDragging, setIsDragging] = useState(false)
 
     const { groups, rows } = initialState
+    const rowsById = useMemo(() => new Map(rows.map((row) => [row.id, row])), [rows])
 
     // Use shared filter function for consistency with step-summary
     const { includedGroups: filteredGroups, excludedGroupIds } = useMemo(
@@ -59,7 +61,25 @@ export function ImportStepReview({
     )
 
     const hiddenGroupsCount = excludedGroupIds.length
-    const parseErrorsCount = initialState.errors.length
+    const parseErrorsCount = initialState.summary.parseErrors.length
+
+    const importVisibility = useMemo(() => {
+        let duplicatesConfirmed = 0
+        let duplicatesSuspected = 0
+
+        rows.forEach((row) => {
+            if (row.duplicateStatus === "confirmed") duplicatesConfirmed++
+            if (row.duplicateStatus === "suspected") duplicatesSuspected++
+        })
+
+        return {
+            totalValidRows: initialState.summary.totalRows,
+            importableRows: initialState.summary.selectedRows,
+            duplicatesTotal: duplicatesConfirmed + duplicatesSuspected,
+            duplicatesConfirmed,
+            duplicatesSuspected
+        }
+    }, [rows, initialState.summary.totalRows, initialState.summary.selectedRows])
 
     const groupsByDirection = useMemo(() => {
         const expenses: Group[] = []
@@ -72,7 +92,7 @@ export function ImportStepReview({
 
             for (const subgroup of group.subgroups) {
                 for (const rowId of subgroup.rowIds) {
-                    const row = rows.find(r => r.id === rowId)
+                    const row = rowsById.get(rowId)
                     if (!row) continue
                     if (row.amountCents > 0) hasIncome = true
                     if (row.amountCents < 0) hasExpense = true
@@ -87,7 +107,7 @@ export function ImportStepReview({
         })
 
         return { expenses, incomes, mixed }
-    }, [filteredGroups, rows])
+    }, [filteredGroups, rowsById])
 
     // ============================================
     // Override Handlers
@@ -134,7 +154,7 @@ export function ImportStepReview({
         filteredGroups.forEach((g: Group) => {
             g.subgroups.forEach((sg: Subgroup) => {
                 sg.rowIds.forEach((rid: string) => {
-                    const row = rows.find(r => r.id === rid)
+                    const row = rowsById.get(rid)
                     if (row && row.isSelected) {
                         total++
                         const catId = resolveCategory(row, sg, g, overrides)
@@ -148,10 +168,21 @@ export function ImportStepReview({
         })
 
         return { assigned, total }
-    }, [filteredGroups, rows, overrides])
+    }, [filteredGroups, rowsById, overrides])
 
     const completionPercent = stats.total > 0 ? (stats.assigned / stats.total) * 100 : 0
-    const getRowById = (id: string) => rows.find(r => r.id === id)
+    const getRowById = (id: string) => rowsById.get(id)
+    const getGroupSuggestedCategory = (group: Group) => {
+        const firstGroupRowId = group.subgroups[0]?.rowIds[0]
+        const firstGroupRow = firstGroupRowId ? rowsById.get(firstGroupRowId) : undefined
+        return getGroupEffectiveCategory(group) || group.subgroups[0]?.categoryId || firstGroupRow?.suggestedCategoryId || null
+    }
+
+    const directionSections = [
+        { key: "expenses", title: "Uscite", titleClassName: "text-rose-700 dark:text-rose-300", groups: groupsByDirection.expenses },
+        { key: "incomes", title: "Entrate", titleClassName: "text-emerald-700 dark:text-emerald-300", groups: groupsByDirection.incomes },
+        { key: "mixed", title: "Misti", titleClassName: "text-amber-700 dark:text-amber-300", groups: groupsByDirection.mixed },
+    ] as const
 
     // ============================================
     // Render Helpers
@@ -185,10 +216,13 @@ export function ImportStepReview({
 
     const headerExtra = (
         <div className="text-right shrink-0 bg-muted/50 p-2 px-4 rounded-xl border">
-            <div className="text-xl md:text-2xl font-bold font-mono text-primary flex items-baseline justify-end gap-1">
+            <div className="text-xl md:text-2xl font-bold tabular-nums text-primary flex items-baseline justify-end gap-1">
                 {stats.assigned} <span className="text-muted-foreground/40 text-sm md:text-base font-sans">di {stats.total}</span>
             </div>
             <div className="text-[10px] md:text-xs text-muted-foreground font-medium uppercase tracking-wider">Classificate</div>
+            <div className="text-[10px] text-muted-foreground mt-0.5 tabular-nums">
+                {importVisibility.importableRows} pronte import
+            </div>
         </div>
     )
 
@@ -225,6 +259,38 @@ export function ImportStepReview({
                     <ReviewAdvice completionPercent={completionPercent} />
                 </div>
 
+                <ImportMetricsGrid
+                    items={[
+                        {
+                            key: "valid-rows",
+                            label: "Righe valide",
+                            value: importVisibility.totalValidRows,
+                            tone: "neutral",
+                        },
+                        {
+                            key: "ready-import",
+                            label: "Pronte import",
+                            value: importVisibility.importableRows,
+                            tone: "success",
+                        },
+                        {
+                            key: "duplicates",
+                            label: "Duplicati esclusi",
+                            value: importVisibility.duplicatesTotal,
+                            tone: "warning",
+                            detail: importVisibility.duplicatesTotal > 0
+                                ? `${importVisibility.duplicatesConfirmed} certi + ${importVisibility.duplicatesSuspected} sospetti`
+                                : undefined,
+                        },
+                        {
+                            key: "discarded",
+                            label: "Righe scartate",
+                            value: parseErrorsCount,
+                            tone: "danger",
+                        },
+                    ]}
+                />
+
                 {parseErrorsCount > 0 && (
                     <div className="rounded-xl border border-amber-300/50 bg-amber-50/60 dark:bg-amber-950/20 p-3 text-amber-900 dark:text-amber-200">
                         <div className="flex items-start gap-2">
@@ -249,107 +315,33 @@ export function ImportStepReview({
                         </div>
                     ) : (
                         <div className="space-y-5">
-                            {groupsByDirection.expenses.length > 0 && (
-                                <div className="space-y-2">
-                                    <div className="flex items-center justify-between">
-                                        <h4 className="text-xs md:text-sm font-bold uppercase tracking-wider text-rose-700 dark:text-rose-300">
-                                            Uscite
-                                        </h4>
-                                        <span className="text-xs text-muted-foreground">{groupsByDirection.expenses.length} gruppi</span>
-                                    </div>
-                                    <Accordion type="multiple" className="space-y-2">
-                                        {groupsByDirection.expenses.map((group, index) => {
-                                            const firstGroupRowId = group.subgroups[0]?.rowIds[0]
-                                            const firstGroupRow = firstGroupRowId ? rows.find(r => r.id === firstGroupRowId) : undefined
-                                            const effectiveCatId = getGroupEffectiveCategory(group) ||
-                                                group.subgroups[0]?.categoryId ||
-                                                firstGroupRow?.suggestedCategoryId
-
-                                            return (
+                            {directionSections.map((section) => (
+                                section.groups.length > 0 ? (
+                                    <div key={section.key} className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <h4 className={cn("text-xs md:text-sm font-bold uppercase tracking-wider", section.titleClassName)}>
+                                                {section.title}
+                                            </h4>
+                                            <span className="text-xs text-muted-foreground">{section.groups.length} gruppi</span>
+                                        </div>
+                                        <Accordion type="multiple" className="space-y-2">
+                                            {section.groups.map((group, index) => (
                                                 <MerchantGroupCard
                                                     key={group.id}
                                                     group={group}
                                                     index={index}
-                                                    totalGroups={groupsByDirection.expenses.length}
-                                                    effectiveCategoryId={effectiveCatId || null}
+                                                    totalGroups={section.groups.length}
+                                                    effectiveCategoryId={getGroupSuggestedCategory(group)}
                                                     onGroupCategoryChange={setGroupCategory}
                                                     onSubgroupCategoryChange={setSubgroupCategory}
                                                     getSubgroupEffectiveCategory={(sg) => getSubgroupEffectiveCategory(sg, group)}
                                                     getRowById={getRowById}
                                                 />
-                                            )
-                                        })}
-                                    </Accordion>
-                                </div>
-                            )}
-
-                            {groupsByDirection.incomes.length > 0 && (
-                                <div className="space-y-2">
-                                    <div className="flex items-center justify-between">
-                                        <h4 className="text-xs md:text-sm font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
-                                            Entrate
-                                        </h4>
-                                        <span className="text-xs text-muted-foreground">{groupsByDirection.incomes.length} gruppi</span>
+                                            ))}
+                                        </Accordion>
                                     </div>
-                                    <Accordion type="multiple" className="space-y-2">
-                                        {groupsByDirection.incomes.map((group, index) => {
-                                            const firstGroupRowId = group.subgroups[0]?.rowIds[0]
-                                            const firstGroupRow = firstGroupRowId ? rows.find(r => r.id === firstGroupRowId) : undefined
-                                            const effectiveCatId = getGroupEffectiveCategory(group) ||
-                                                group.subgroups[0]?.categoryId ||
-                                                firstGroupRow?.suggestedCategoryId
-
-                                            return (
-                                                <MerchantGroupCard
-                                                    key={group.id}
-                                                    group={group}
-                                                    index={index}
-                                                    totalGroups={groupsByDirection.incomes.length}
-                                                    effectiveCategoryId={effectiveCatId || null}
-                                                    onGroupCategoryChange={setGroupCategory}
-                                                    onSubgroupCategoryChange={setSubgroupCategory}
-                                                    getSubgroupEffectiveCategory={(sg) => getSubgroupEffectiveCategory(sg, group)}
-                                                    getRowById={getRowById}
-                                                />
-                                            )
-                                        })}
-                                    </Accordion>
-                                </div>
-                            )}
-
-                            {groupsByDirection.mixed.length > 0 && (
-                                <div className="space-y-2">
-                                    <div className="flex items-center justify-between">
-                                        <h4 className="text-xs md:text-sm font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300">
-                                            Misti
-                                        </h4>
-                                        <span className="text-xs text-muted-foreground">{groupsByDirection.mixed.length} gruppi</span>
-                                    </div>
-                                    <Accordion type="multiple" className="space-y-2">
-                                        {groupsByDirection.mixed.map((group, index) => {
-                                            const firstGroupRowId = group.subgroups[0]?.rowIds[0]
-                                            const firstGroupRow = firstGroupRowId ? rows.find(r => r.id === firstGroupRowId) : undefined
-                                            const effectiveCatId = getGroupEffectiveCategory(group) ||
-                                                group.subgroups[0]?.categoryId ||
-                                                firstGroupRow?.suggestedCategoryId
-
-                                            return (
-                                                <MerchantGroupCard
-                                                    key={group.id}
-                                                    group={group}
-                                                    index={index}
-                                                    totalGroups={groupsByDirection.mixed.length}
-                                                    effectiveCategoryId={effectiveCatId || null}
-                                                    onGroupCategoryChange={setGroupCategory}
-                                                    onSubgroupCategoryChange={setSubgroupCategory}
-                                                    getSubgroupEffectiveCategory={(sg) => getSubgroupEffectiveCategory(sg, group)}
-                                                    getRowById={getRowById}
-                                                />
-                                            )
-                                        })}
-                                    </Accordion>
-                                </div>
-                            )}
+                                ) : null
+                            ))}
                         </div>
                     )}
                 </MacroSection>

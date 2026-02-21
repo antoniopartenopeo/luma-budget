@@ -1,6 +1,7 @@
 "use client"
 
-import { Download, MoreHorizontal, Plus, Loader2 } from "lucide-react"
+import { Download, MoreHorizontal, Plus, Loader2, FileSpreadsheet } from "lucide-react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,
@@ -9,7 +10,6 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { CsvImportWizard } from "@/features/import-csv/components/csv-import-wizard"
 
 interface TransactionsActionsProps {
     onAdd?: () => void
@@ -39,8 +39,13 @@ export function TransactionsActions({
                 </Button>
             )}
 
-            {/* Action 2: Import CSV (Existing Component) */}
-            <CsvImportWizard />
+            {/* Action 2: Import CSV (Dedicated page) */}
+            <Button asChild variant="outline" size="sm" aria-label="Importa CSV" className="h-10 w-10 sm:w-auto rounded-xl gap-2 px-0 sm:px-4">
+                <Link href="/transactions/import">
+                    <FileSpreadsheet className="h-4 w-4" />
+                    <span className="hidden sm:inline">Importa CSV</span>
+                </Link>
+            </Button>
 
             {/* Action 3: Export & More */}
             <DropdownMenu>
@@ -61,7 +66,7 @@ export function TransactionsActions({
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 rounded-2xl p-2 border-muted-foreground/10 shadow-xl">
-                    <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 py-1.5 gray-500">
+                    <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 py-1.5">
                         Formato CSV
                     </DropdownMenuLabel>
                     <DropdownMenuItem

@@ -36,7 +36,7 @@ export function ThresholdSlider({
             <div className="flex items-center gap-3">
                 <Filter className="h-4 w-4 text-muted-foreground shrink-0" />
                 <span className="text-sm font-medium">Soglia rilevanza</span>
-                <Badge variant="outline" className="ml-auto font-mono text-xs">
+                <Badge variant="outline" className="ml-auto font-mono tabular-nums text-xs">
                     {isDragging ? formatCents(visualThreshold) : formatCents(thresholdCents)}
                 </Badge>
                 {hiddenGroupsCount > 0 && (

@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { processCSV, generatePayload } from "../pipeline";
 import { Override } from "../types";
 import { CategoryIds, CATEGORIES } from "@/domain/categories";
+import { Transaction } from "@/domain/transactions/types";
 
 describe("CSV Import Core Integration", () => {
     it("runs full pipeline deterministic end-to-end", () => {
@@ -50,7 +51,7 @@ describe("CSV Import Core Integration", () => {
         expect(txNetflix?.classificationSource).toBe("ruleBased");
     });
 
-    it("fallbacks to ALTRO_SUPERFLUO if category is missing (Invariant I1 relaxed)", () => {
+    it("applies fallback category coherent with transaction type when category is missing", () => {
         const csv = `Data,Descrizione,Importo
 2024-01-01,UNKNOWN AMT,10`;
         const state = processCSV(csv, []);
@@ -59,6 +60,32 @@ describe("CSV Import Core Integration", () => {
         expect(unknownRow.suggestedCategoryId).toBeNull();
 
         const payload = generatePayload(state.groups, state.rows, [], CATEGORIES);
-        expect(payload.transactions[0].categoryId).toBe(CategoryIds.ALTRO_SUPERFLUO);
+        expect(payload.transactions[0].categoryId).toBe(CategoryIds.ENTRATE_OCCASIONALI);
+    });
+
+    it("reports duplicate visibility counters in summary", () => {
+        const csv = `Data,Descrizione,Importo
+2024-01-01,POS MARKET,-50.00
+2024-01-02,SPESA GENERICA,-12.00`;
+
+        const existing: Transaction[] = [
+            {
+                id: "tx-1",
+                date: "2024-01-01",
+                amountCents: 5000,
+                description: "POS MARKET",
+                category: "Spesa Alimentare",
+                categoryId: CategoryIds.CIBO,
+                type: "expense",
+                timestamp: new Date("2024-01-01").getTime()
+            }
+        ];
+
+        const state = processCSV(csv, existing);
+
+        expect(state.summary.totalRows).toBe(2);
+        expect(state.summary.duplicatesSkipped).toBe(1);
+        expect(state.summary.selectedRows).toBe(1);
+        expect(state.rows.filter((row) => row.isSelected)).toHaveLength(1);
     });
 });

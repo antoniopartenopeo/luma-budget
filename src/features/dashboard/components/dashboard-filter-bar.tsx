@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react"
 import { DashboardTimeFilter } from "../api/types"
 import { cn } from "@/lib/utils"
-import { formatPeriodLabel, getCurrentPeriod } from "@/lib/date-ranges"
+import { formatPeriodLabel, shiftPeriod } from "@/lib/date-ranges"
 
 interface DashboardFilterBarProps {
     filter: DashboardTimeFilter
@@ -12,24 +12,15 @@ interface DashboardFilterBarProps {
 }
 
 export function DashboardFilterBar({ filter, onFilterChange }: DashboardFilterBarProps) {
-    // Helpers to manipulate YYYY-MM
-    const currentDate = new Date(filter.period + "-01")
-
     // Format period label (e.g. "Gennaio 2024")
     const capitalizedLabel = formatPeriodLabel(filter.period, "it-IT")
 
     const handlePrevMonth = () => {
-        const d = new Date(currentDate)
-        d.setMonth(d.getMonth() - 1)
-        const newPeriod = getCurrentPeriod(d)
-        onFilterChange({ ...filter, period: newPeriod })
+        onFilterChange({ ...filter, period: shiftPeriod(filter.period, -1) })
     }
 
     const handleNextMonth = () => {
-        const d = new Date(currentDate)
-        d.setMonth(d.getMonth() + 1)
-        const newPeriod = getCurrentPeriod(d)
-        onFilterChange({ ...filter, period: newPeriod })
+        onFilterChange({ ...filter, period: shiftPeriod(filter.period, 1) })
     }
 
     const handleModeChange = (mode: "month" | "range", months?: 3 | 6 | 12) => {

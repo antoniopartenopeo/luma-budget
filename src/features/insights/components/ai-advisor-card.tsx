@@ -169,12 +169,12 @@ function AIAdvisorCardView({ forecast, subscriptions, isLoading: aiLoading }: AI
             <MacroSection title="Numa Advisor" description="Sto analizzando i tuoi dati..." className="h-[auto] min-h-[240px]">
                 <div className="flex flex-col items-center justify-center py-12 gap-4">
                     <div className="relative">
-                        <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
+                        <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse-soft" />
                         <div className="relative h-12 w-12 rounded-2xl bg-background/50 border border-primary/20 flex items-center justify-center shadow-lg">
-                            <Sparkles className="h-6 w-6 text-primary animate-pulse" />
+                            <Sparkles className="h-6 w-6 text-primary animate-pulse-soft" />
                         </div>
                     </div>
-                    <p className="text-sm font-medium leading-relaxed text-muted-foreground animate-pulse">
+                    <p className="text-sm font-medium leading-relaxed text-muted-foreground animate-pulse-soft">
                         Sto preparando la stima...
                     </p>
                 </div>
@@ -274,7 +274,7 @@ function AIAdvisorCardView({ forecast, subscriptions, isLoading: aiLoading }: AI
                                         value={subscriptions.length}
                                         icon={Wallet}
                                         tone="neutral"
-                                        className="rounded-xl border border-border/60 bg-background/70 shadow-none"
+                                        className="rounded-xl border border-border/60 bg-background/70"
                                         valueClassName="text-xl sm:text-2xl lg:text-3xl"
                                     />
                                     <KpiCard
@@ -283,7 +283,7 @@ function AIAdvisorCardView({ forecast, subscriptions, isLoading: aiLoading }: AI
                                         value={formatCents(subscriptionPortfolio.monthlyTotalCents, currency, locale)}
                                         icon={TrendingUp}
                                         tone="neutral"
-                                        className="rounded-xl border border-border/60 bg-background/70 shadow-none"
+                                        className="rounded-xl border border-border/60 bg-background/70"
                                         valueClassName="text-xl sm:text-2xl lg:text-3xl"
                                     />
                                     <KpiCard
@@ -292,7 +292,7 @@ function AIAdvisorCardView({ forecast, subscriptions, isLoading: aiLoading }: AI
                                         value={formatCents(subscriptionPortfolio.yearlyTotalCents, currency, locale)}
                                         icon={LineChart}
                                         tone="neutral"
-                                        className="rounded-xl border border-border/60 bg-background/70 shadow-none"
+                                        className="rounded-xl border border-border/60 bg-background/70"
                                         valueClassName="text-xl sm:text-2xl lg:text-3xl"
                                     />
                                     <KpiCard
@@ -301,7 +301,7 @@ function AIAdvisorCardView({ forecast, subscriptions, isLoading: aiLoading }: AI
                                         value={formatCents(subscriptionPortfolio.averageMonthlyCents, currency, locale)}
                                         icon={Sparkles}
                                         tone="neutral"
-                                        className="rounded-xl border border-border/60 bg-background/70 shadow-none"
+                                        className="rounded-xl border border-border/60 bg-background/70"
                                         valueClassName="text-xl sm:text-2xl lg:text-3xl"
                                     />
                                 </div>

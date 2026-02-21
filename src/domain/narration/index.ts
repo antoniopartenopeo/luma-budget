@@ -12,7 +12,6 @@ export type { NarrationResult, SnapshotFacts, SnapshotState } from "./types"
 // Snapshot (Flash Summary)
 export * from "./types"
 export * from "./snapshot.narrator"
-export * from "./budget.narrator"
 export * from "./kpi.narrator"
 export * from "./trend.narrator"
 export * from "./derive-state"

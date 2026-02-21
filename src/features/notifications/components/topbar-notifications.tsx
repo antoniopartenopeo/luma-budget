@@ -15,35 +15,14 @@ import {
     useMarkNotificationAsRead,
     useUnreadNotifications
 } from "../api/use-notifications"
-import { NotificationKind } from "../types"
+import {
+    NOTIFICATION_KIND_CLASS,
+    NOTIFICATION_KIND_LABEL,
+    formatItalianDate,
+} from "./notification-ui"
 
 interface TopbarNotificationsProps {
     triggerClassName?: string
-}
-
-const KIND_LABEL: Record<NotificationKind, string> = {
-    feature: "Feature",
-    fix: "Fix",
-    improvement: "Improvement",
-    breaking: "Breaking",
-}
-
-const KIND_CLASS: Record<NotificationKind, string> = {
-    feature: "border-primary/20 bg-primary/10 text-primary dark:text-primary",
-    fix: "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-    improvement: "border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-300",
-    breaking: "border-rose-500/25 bg-rose-500/15 text-rose-700 dark:text-rose-300",
-}
-
-function formatItalianDate(isoDate: string): string {
-    const timestamp = new Date(isoDate).getTime()
-    if (!Number.isFinite(timestamp)) return isoDate
-
-    return new Intl.DateTimeFormat("it-IT", {
-        year: "numeric",
-        month: "short",
-        day: "2-digit",
-    }).format(new Date(timestamp))
 }
 
 export function TopbarNotifications({ triggerClassName }: TopbarNotificationsProps) {
@@ -152,9 +131,9 @@ export function TopbarNotifications({ triggerClassName }: TopbarNotificationsPro
                                     <div className="flex items-center gap-1.5">
                                         <Badge
                                             variant="outline"
-                                            className={cn("text-[9px] px-2 py-0.5", KIND_CLASS[notification.kind])}
+                                            className={cn("text-[9px] px-2 py-0.5", NOTIFICATION_KIND_CLASS[notification.kind])}
                                         >
-                                            {KIND_LABEL[notification.kind]}
+                                            {NOTIFICATION_KIND_LABEL[notification.kind]}
                                         </Badge>
                                         {isCritical && (
                                             <Badge variant="outline" className="text-[9px] px-2 py-0.5 border-rose-500/25 bg-rose-500/15 text-rose-700 dark:text-rose-300">

@@ -114,39 +114,6 @@ export type KPIState =
     | "neutral"      // Contextual or insufficient data
 
 // =====================
-// BUDGET TYPES (Specific Section)
-// =====================
-
-/**
- * Facts for a dedicated Budget section narration.
- * Strict alignment with BUDEGT-2 Skill.
- */
-export interface BudgetFacts {
-    spentCents: number
-    limitCents: number
-    /** 0 to 1 ratio of time elapsed in period */
-    elapsedRatio: number
-    /** 0 to 1 ratio of budget used */
-    utilizationRatio: number
-    /** Derived metric for pacing (utilization / elapsed) */
-    pacingRatio: number
-    /** Predicted spend at end of period based on current burn rate */
-    projectedSpendCents: number
-    /** Data integrity flag */
-    isDataIncomplete: boolean
-}
-
-/**
- * States for the Budget domain
- */
-export type BudgetState =
-    | "early_uncertain" // Rule B1: Pacing not yet relevant
-    | "calm"            // Rule B6: Missing data or zero signal
-    | "on_track"        // Rule B3: Pacing is healthy
-    | "at_risk"         // Rule B4: Pacing/Projection is off
-    | "over_budget"     // Rule B5: spent > limit
-
-// =====================
 // TREND TYPES (Insights)
 // =====================
 

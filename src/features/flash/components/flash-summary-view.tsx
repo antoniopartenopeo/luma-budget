@@ -197,7 +197,7 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                             <motion.div
                                 initial={{ width: 0 }}
                                 animate={{ width: `${Math.min(expensePressurePct, 100)}%` }}
-                                className={cn("h-full", expensePressurePct > 90 ? "bg-rose-500" : "bg-blue-500")}
+                                className={cn("h-full", expensePressurePct > 90 ? "bg-rose-500" : "bg-primary")}
                             />
                         </div>
                     </motion.div>
@@ -212,7 +212,7 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                             <motion.div
                                 initial={{ width: 0 }}
                                 animate={{ width: `${Math.min(uselessSpendPercent ?? 0, 100)}%` }}
-                                className={cn("h-full", isSuperfluousOver ? "bg-rose-500" : "bg-indigo-500")}
+                                className={cn("h-full", isSuperfluousOver ? "bg-rose-500" : "bg-primary")}
                             />
                         </div>
                     </motion.div>
@@ -241,10 +241,10 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                 </motion.div>
 
                 {/* Insight - Clean Text */}
-                <motion.div variants={itemVariants} className="relative z-10 mt-auto bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/40 dark:to-purple-950/40 border border-indigo-100/50 dark:border-indigo-500/20 rounded-2xl p-4">
-                    <div className="flex items-center gap-1.5 text-[9px] font-bold text-indigo-500 dark:text-indigo-400 mb-1.5 uppercase tracking-widest">
+                <motion.div variants={itemVariants} className="relative z-10 mt-auto bg-gradient-to-br from-primary/10 to-cyan-500/10 dark:from-primary/20 dark:to-cyan-500/20 border border-primary/20 rounded-2xl p-4">
+                    <div className="flex items-center gap-1.5 text-[9px] font-bold text-primary mb-1.5 uppercase tracking-widest">
                         <Sparkles className="h-3 w-3" />
-                        AI Insight
+                        Numa Insight
                     </div>
                     <p className="text-xs font-medium text-foreground/90 leading-snug">
                         {narration.text}

@@ -30,7 +30,7 @@ export default function SimulatorPage() {
     if (isDataLoading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-                <RefreshCw className="h-8 w-8 text-primary animate-spin" />
+                <RefreshCw className="h-8 w-8 text-primary animate-spin-slow" />
                 <p className="text-sm font-medium text-muted-foreground">{FINANCIAL_LAB_COPY.page.loading}</p>
             </div>
         )

@@ -67,22 +67,21 @@ function TransactionsPageContent() {
     const handleExport = async (all: boolean = false) => {
         if (isExporting || isLoading) return
         setIsExporting(true)
+        try {
+            const exportList = all ? transactions : sortedList
+            const result = exportTransactionsToCSV({
+                transactions: exportList,
+                categories: categories,
+                dateRange: filters.dateRange.from && filters.dateRange.to
+                    ? { start: filters.dateRange.from.toISOString(), end: filters.dateRange.to.toISOString() }
+                    : undefined
+            })
 
-        // Small delay for UX feedback
-        await new Promise(resolve => setTimeout(resolve, 300))
-
-        const exportList = all ? transactions : sortedList
-        const result = exportTransactionsToCSV({
-            transactions: exportList,
-            categories: categories,
-            dateRange: filters.dateRange.from && filters.dateRange.to
-                ? { start: filters.dateRange.from.toISOString(), end: filters.dateRange.to.toISOString() }
-                : undefined
-        })
-
-        setIsExporting(false)
-        if (!result.success) {
-            setExportError(result.error || "Si è verificato un errore durante l'esportazione.")
+            if (!result.success) {
+                setExportError(result.error || "Si è verificato un errore durante l'esportazione.")
+            }
+        } finally {
+            setIsExporting(false)
         }
     }
 

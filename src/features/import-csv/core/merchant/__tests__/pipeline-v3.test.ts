@@ -71,6 +71,22 @@ describe("Merchant Extraction v3 - Golden Fixtures", () => {
             desc: "Addebito sepa dd per fattura a vostro carico incasso fmitpmt-69437859 sdd da it46zzz0000013970161009 iliad mandato nr. iliad-ad823o-2",
             expected: "ILIAD"
         },
+        {
+            desc: "ADDEBITO SEPA DD PER FATTURA A VOSTRO CARICO Incasso SICURA0000001764668 SDD da IT560010000003562770481 FINDOMESTIC BANCA S.P.A. mandato nr. 7260841020",
+            expected: "FINDOMESTIC"
+        },
+        {
+            desc: "ADDEBITO SEPA SDD A FAVORE DI IT19X0542811101000000123456 COFIDIS SA MANDATO NR 8821",
+            expected: "COFIDIS"
+        },
+        {
+            desc: "ADDEBITO SEPA SDD BENEFICIARIO AGOS DUCATO S.P.A. MANDATO NR 771",
+            expected: "AGOS"
+        },
+        {
+            desc: "ADDEBITO SEPA DD PER FATTURA INCASSO SDD DA IT560010000003562770481 FASTWEB",
+            expected: "FASTWEB"
+        },
 
         // 10. No-space rail separators
         { desc: "PAYPAL*NETFLIX", expected: "NETFLIX" },

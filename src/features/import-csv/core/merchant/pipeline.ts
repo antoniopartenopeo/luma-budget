@@ -12,6 +12,115 @@ import { extractPaymentRail, MARKETPLACE_RAILS } from "./payment-rails";
 import { getOverride } from "./overrides";
 import { fuzzyMatch } from "./fuzzy-matcher";
 
+const SEPA_CREDITOR_STOPWORDS = new Set([
+    ...SCORING_BLACKLIST,
+    "IT",
+    "IBAN",
+    "BANCA",
+    "BANK",
+    "S",
+    "P",
+    "A",
+    "SPA",
+    "SRL",
+    "SRLS",
+    "DA",
+    "PER",
+    "DEL",
+    "DELLA",
+    "DEI",
+    "DELLE",
+    "A",
+]);
+
+const SEPA_TAIL_PATTERNS = [
+    /\bA\s+FAVORE\s+DI\b\s+(.+)$/,
+    /\bBENEFICIARIO\b\s+(.+)$/,
+    /\bDA\b\s+(.+)$/,
+];
+
+function resolveBrandFromTokens(tokens: string[]): string | null {
+    if (tokens.length === 0) return null;
+
+    for (let i = 0; i < tokens.length - 2; i++) {
+        const trigram = `${tokens[i]} ${tokens[i + 1]} ${tokens[i + 2]}`;
+        if (BRAND_DICT[trigram]) return BRAND_DICT[trigram];
+    }
+
+    for (let i = 0; i < tokens.length - 1; i++) {
+        const bigram = `${tokens[i]} ${tokens[i + 1]}`;
+        if (BRAND_DICT[bigram]) return BRAND_DICT[bigram];
+    }
+
+    for (const token of tokens) {
+        if (BRAND_DICT[token]) return BRAND_DICT[token];
+    }
+
+    return null;
+}
+
+function isSepaReferenceToken(token: string): boolean {
+    if (/^IT\d{6,}$/.test(token)) return true; // IBAN fragments
+    if (/^[A-Z]{2,}\d{4,}$/.test(token)) return true; // compact references (e.g. SICURA0000123)
+
+    const digits = (token.match(/\d/g) || []).length;
+    if (digits >= 4) return true;
+
+    return false;
+}
+
+function tokenizeSepaSegment(segment: string): string[] {
+    return tokenize(segment)
+        .flatMap((token) => token.split(/[^A-Z0-9]+/).filter(Boolean))
+        .filter((token) =>
+            token.length >= 2 &&
+            !SEPA_CREDITOR_STOPWORDS.has(token) &&
+            !/^\d+$/.test(token) &&
+            !isSepaReferenceToken(token)
+        );
+}
+
+/**
+ * Tries to extract creditor/merchant from SEPA direct debit descriptions.
+ * Example:
+ * "ADDEBITO SEPA ... SDD DA IT... FINDOMESTIC BANCA S.P.A. MANDATO NR..."
+ */
+function extractSepaCreditorCandidate(text: string): string | null {
+    if (!/\b(SEPA|SDD|MANDATO|INCASSO|FATTURA)\b/.test(text)) return null;
+
+    // Fast path: if a known merchant already exists in the SEPA string, use it directly.
+    const globalTokens = tokenizeSepaSegment(text);
+    const globalBrandMatch = resolveBrandFromTokens(globalTokens);
+    if (globalBrandMatch) return globalBrandMatch;
+
+    let tail: string | null = null;
+    for (const pattern of SEPA_TAIL_PATTERNS) {
+        const match = text.match(pattern);
+        if (match?.[1]) {
+            tail = match[1].trim();
+            break;
+        }
+    }
+
+    if (!tail) return null;
+
+    const cleanedTail = tail
+        .split(/\bMANDATO\b|\bNR\b|\bN\b/)[0]
+        .trim();
+
+    if (!cleanedTail) return null;
+
+    const tokens = tokenizeSepaSegment(cleanedTail);
+
+    if (tokens.length === 0) return null;
+
+    const tailBrandMatch = resolveBrandFromTokens(tokens);
+    if (tailBrandMatch) return tailBrandMatch;
+
+    // Fallback: first meaningful token after SEPA creditor segment.
+    return tokens[0];
+}
+
 /**
  * Main pipeline function
  * Extracts a normalized merchant key from a transaction description
@@ -46,6 +155,9 @@ export function extractMerchantKey(description: string): string {
     text = stripPositionalNoise(text);
     // Clean any remaining asterisks at start/end
     text = text.replace(/^\*+|\*+$/g, "").trim();
+
+    const sepaCreditor = extractSepaCreditorCandidate(text);
+    if (sepaCreditor) return sepaCreditor;
 
     // If practically empty after cleaning (and stripping rail), evaluate fallback
     if (text.length < 2) {

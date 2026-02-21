@@ -27,7 +27,7 @@ export function RowsList({ rows, showMore = 0 }: RowsListProps) {
                         <span className="text-[10px] text-muted-foreground">{r.date}</span>
                     </div>
                     <div className={cn(
-                        "font-mono font-medium shrink-0 ml-2",
+                        "font-mono font-medium tabular-nums shrink-0 ml-2",
                         r.amountCents >= 0 ? "text-emerald-600" : "text-rose-600"
                     )}>
                         {formatCents(r.amountCents)}

@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useSettings, useUpsertSettings } from "@/features/settings/api/use-settings"
-import { ThemePreference, CurrencyCode, InsightsSensitivity } from "@/features/settings/api/types"
+import { AppSettingsV1, ThemePreference, CurrencyCode, InsightsSensitivity } from "@/features/settings/api/types"
 import { MacroSection } from "@/components/patterns/macro-section"
 
 export function PreferencesSection() {
@@ -18,9 +18,9 @@ export function PreferencesSection() {
     const upsertSettings = useUpsertSettings()
     const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle")
 
-    const handleThemeChange = (theme: string) => {
+    const commitPatch = (patch: Partial<Omit<AppSettingsV1, "version">>) => {
         setSaveStatus("saving")
-        upsertSettings.mutate({ theme: theme as ThemePreference }, {
+        upsertSettings.mutate(patch, {
             onSuccess: () => {
                 setSaveStatus("success")
                 setTimeout(() => setSaveStatus("idle"), 2000)
@@ -32,49 +32,23 @@ export function PreferencesSection() {
         })
     }
 
+    const handleThemeChange = (theme: string) => {
+        commitPatch({ theme: theme as ThemePreference })
+    }
+
     const handleCurrencyChange = (currency: string) => {
-        setSaveStatus("saving")
-        upsertSettings.mutate({ currency: currency as CurrencyCode }, {
-            onSuccess: () => {
-                setSaveStatus("success")
-                setTimeout(() => setSaveStatus("idle"), 2000)
-            },
-            onError: () => {
-                setSaveStatus("error")
-                setTimeout(() => setSaveStatus("idle"), 3000)
-            }
-        })
+        commitPatch({ currency: currency as CurrencyCode })
     }
 
     const handleSuperfluousTargetChange = (value: string) => {
         const num = parseInt(value, 10)
         if (isNaN(num)) return
 
-        setSaveStatus("saving")
-        upsertSettings.mutate({ superfluousTargetPercent: num }, {
-            onSuccess: () => {
-                setSaveStatus("success")
-                setTimeout(() => setSaveStatus("idle"), 2000)
-            },
-            onError: () => {
-                setSaveStatus("error")
-                setTimeout(() => setSaveStatus("idle"), 3000)
-            }
-        })
+        commitPatch({ superfluousTargetPercent: num })
     }
 
     const handleInsightsSensitivityChange = (value: string) => {
-        setSaveStatus("saving")
-        upsertSettings.mutate({ insightsSensitivity: value as InsightsSensitivity }, {
-            onSuccess: () => {
-                setSaveStatus("success")
-                setTimeout(() => setSaveStatus("idle"), 2000)
-            },
-            onError: () => {
-                setSaveStatus("error")
-                setTimeout(() => setSaveStatus("idle"), 3000)
-            }
-        })
+        commitPatch({ insightsSensitivity: value as InsightsSensitivity })
     }
 
     return (
@@ -85,7 +59,7 @@ export function PreferencesSection() {
                 <div className="text-sm font-normal">
                     {saveStatus === "saving" && (
                         <span className="text-muted-foreground flex items-center">
-                            <Loader2 className="h-3 w-3 mr-2 animate-spin" /> Salvataggio...
+                            <Loader2 className="h-3 w-3 mr-2 animate-spin-slow" /> Salvataggio...
                         </span>
                     )}
                     {saveStatus === "success" && (

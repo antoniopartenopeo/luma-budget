@@ -135,7 +135,7 @@ export function TopbarActionCluster() {
     return (
         <div
             data-testid="topbar-action-cluster"
-            className="group relative overflow-visible rounded-full p-1 glass-card bg-white/45 dark:bg-white/[0.07] border-white/50 dark:border-white/15 transition-all duration-300 hover:-translate-y-[1px] hover:shadow-xl hover:ring-1 hover:ring-primary/25 motion-reduce:transform-none"
+            className="group relative overflow-visible rounded-full p-1 glass-card bg-white/45 dark:bg-white/[0.07] border-white/50 dark:border-white/15 transition-all duration-300 hover:shadow-lg motion-reduce:transform-none"
         >
             <div className="absolute inset-0 bg-gradient-to-br from-white/35 dark:from-white/[0.08] via-transparent to-transparent pointer-events-none" />
 
@@ -148,8 +148,8 @@ export function TopbarActionCluster() {
                             aria-label="Apri Numa Flash"
                             className={cn(segmentButtonClass, "border-none hover:shadow-none text-primary")}
                         >
-                            <span className="pointer-events-none absolute inset-0 rounded-full border border-primary/30 opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:scale-110 group-active:opacity-100 group-active:scale-110 motion-safe:group-hover:animate-ping-slow motion-safe:group-active:animate-ping-slow motion-reduce:animate-none" />
-                            <Sparkles className="h-5 w-5 fill-primary transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110 group-active:rotate-12 group-active:scale-110 motion-reduce:transform-none" />
+                            <span className="pointer-events-none absolute inset-0 rounded-full border border-primary/30 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-active:opacity-100 motion-reduce:animate-none" />
+                            <Sparkles className="h-5 w-5 fill-primary transition-transform duration-300 group-hover:rotate-6 group-active:rotate-6 motion-reduce:transform-none" />
                         </Button>
                     }
                 />
@@ -176,7 +176,7 @@ export function TopbarActionCluster() {
                         )}
                     </Button>
 
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-primary text-[10px] font-black border border-primary/20 transition-all duration-300 group-hover:scale-[1.04] group-hover:shadow-[0_0_16px_-4px_rgba(8,145,178,0.45)] group-active:scale-[1.04] group-active:shadow-[0_0_16px_-4px_rgba(8,145,178,0.45)] motion-reduce:transform-none">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-primary text-[10px] font-black border border-primary/20 transition-all duration-300 group-hover:scale-[1.02] group-active:scale-[1.02] motion-reduce:transform-none">
                         {initials}
                     </div>
                 </div>

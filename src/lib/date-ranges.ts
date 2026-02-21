@@ -57,6 +57,16 @@ export function getCurrentPeriod(date: Date = new Date()): string {
 }
 
 /**
+ * Shift a period string by the provided number of months.
+ * Positive delta moves forward, negative moves backward.
+ */
+export function shiftPeriod(period: string, deltaMonths: number): string {
+    const [year, month] = period.split("-").map(Number)
+    const shifted = new Date(year, month - 1 + deltaMonths, 1)
+    return getCurrentPeriod(shifted)
+}
+
+/**
  * Format a period string to a human-readable month label (e.g. "Gennaio 2024")
  */
 export function formatPeriodLabel(period: string, locale: string = "it-IT"): string {

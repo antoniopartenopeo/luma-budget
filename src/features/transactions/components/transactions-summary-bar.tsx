@@ -1,83 +1,89 @@
-"use client";
+"use client"
 
-import { Card } from "@/components/ui/card";
-import { TransactionSummary } from "../utils/transactions-logic";
-import { formatCents } from "@/domain/money";
-import { cn } from "@/lib/utils";
-import { TrendingUp, TrendingDown, Wallet, Hash } from "lucide-react";
-import { usePrivacyStore } from "@/features/privacy/privacy.store";
-import { getPrivacyClass } from "@/features/privacy/privacy-utils";
+import { TransactionSummary } from "../utils/transactions-logic"
+import { formatCents } from "@/domain/money"
+import { cn } from "@/lib/utils"
+import { TrendingUp, TrendingDown, Wallet, Hash, type LucideIcon } from "lucide-react"
+import { usePrivacyStore } from "@/features/privacy/privacy.store"
+import { getPrivacyClass } from "@/features/privacy/privacy-utils"
+import { KpiCard } from "@/components/patterns/kpi-card"
 
 interface TransactionsSummaryBarProps {
-    summary: TransactionSummary;
-    isLoading?: boolean;
+    summary: TransactionSummary
+    isLoading?: boolean
+}
+
+type SummaryKpiTone = "neutral" | "positive" | "negative"
+
+interface SummaryItem {
+    label: string
+    value: string
+    icon: LucideIcon
+    tone: SummaryKpiTone
+    valueClassName: string
+    isMoney: boolean
 }
 
 export function TransactionsSummaryBar({ summary, isLoading }: TransactionsSummaryBarProps) {
-    const { isPrivacyMode } = usePrivacyStore();
+    const { isPrivacyMode } = usePrivacyStore()
+    const netBalanceTone: SummaryKpiTone = summary.netBalance >= 0 ? "positive" : "negative"
 
-    const items = [
+    const items: SummaryItem[] = [
         {
             label: "Operazioni",
-            value: summary.totalCount.toString(), // Counts are not usually sensitive, keeping visible or blur? User said "amounts". Counts are arguably sensitive. Let's blur money only for now based on strict request, or all? "Importo" usually means money. Let's blur money.
+            value: summary.totalCount.toString(),
             icon: Hash,
-            color: "text-blue-600",
-            bgColor: "bg-blue-50",
-            borderColor: "border-blue-100",
+            tone: "neutral",
+            valueClassName: "text-primary",
             isMoney: false
         },
         {
             label: "Entrate",
             value: formatCents(summary.totalIncome),
             icon: TrendingUp,
-            color: "text-emerald-600",
-            bgColor: "bg-emerald-50",
-            borderColor: "border-emerald-100",
+            tone: "positive",
+            valueClassName: "text-emerald-600 dark:text-emerald-400",
             isMoney: true
         },
         {
             label: "Uscite",
             value: formatCents(summary.totalExpense),
             icon: TrendingDown,
-            color: "text-rose-600",
-            bgColor: "bg-rose-50",
-            borderColor: "border-rose-100",
+            tone: "negative",
+            valueClassName: "text-rose-600 dark:text-rose-400",
             isMoney: true
         },
         {
             label: "Bilancio",
             value: formatCents(summary.netBalance),
             icon: Wallet,
-            color: summary.netBalance >= 0 ? "text-emerald-700" : "text-rose-700",
-            bgColor: summary.netBalance >= 0 ? "bg-emerald-100/50" : "bg-rose-100/50",
-            borderColor: summary.netBalance >= 0 ? "border-emerald-200" : "border-rose-200",
+            tone: netBalanceTone,
+            valueClassName: netBalanceTone === "positive"
+                ? "text-emerald-700 dark:text-emerald-300"
+                : "text-rose-700 dark:text-rose-300",
             isMoney: true
         },
-    ];
+    ]
 
     return (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
             {items.map((item) => (
-                <Card
+                <KpiCard
                     key={item.label}
-                    className={cn(
-                        "p-3 md:p-4 rounded-xl flex flex-col gap-1 transition-all glass-card",
-                        isLoading ? "opacity-50 animate-pulse" : ""
+                    compact
+                    title={item.label}
+                    value={item.value}
+                    icon={item.icon}
+                    tone={item.tone}
+                    isLoading={isLoading}
+                    className="h-full"
+                    valueClassName={cn(
+                        "text-xl sm:text-2xl lg:text-3xl",
+                        item.valueClassName,
+                        item.isMoney && getPrivacyClass(isPrivacyMode)
                     )}
-                >
-                    <div className="flex items-center justify-between">
-                        <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                            {item.label}
-                        </span>
-                        <div className={cn("p-1.5 rounded-lg border", item.bgColor, item.borderColor)}>
-                            <item.icon className={cn("h-3 w-3 md:h-3.5 md:h-3.5", item.color)} />
-                        </div>
-                    </div>
-                    <div className={cn("text-base md:text-xl font-black tabular-nums tracking-tight mt-1", item.color, item.isMoney && getPrivacyClass(isPrivacyMode))}>
-                        {item.value}
-                    </div>
-                </Card>
+                />
             ))}
         </div>
-    );
+    )
 }

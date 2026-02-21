@@ -26,7 +26,9 @@ export function buildImportPayload(
 
                 // Fallback for unassigned categories (as promised by UI)
                 if (!categoryId) {
-                    categoryId = CategoryIds.ALTRO_SUPERFLUO;
+                    categoryId = row.amountCents > 0
+                        ? CategoryIds.ENTRATE_OCCASIONALI
+                        : CategoryIds.ALTRO_SUPERFLUO;
                 }
 
                 // Validation helper

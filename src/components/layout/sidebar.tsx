@@ -10,7 +10,6 @@ import { BrandLogo } from "@/components/ui/brand-logo"
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
   { icon: Receipt, label: "Transazioni", href: "/transactions" },
-  // { icon: Target, label: "Labs", href: "/labs" }, // REMOVED (Legacy/Reset)
   { icon: LineChart, label: "Insights", href: "/insights" },
   { icon: FlaskConical, label: "Financial Lab", href: "/simulator" },
   { icon: Settings, label: "Impostazioni", href: "/settings" },
@@ -23,8 +22,10 @@ interface SidebarProps {
 
 export function Sidebar({ className, onNavigate }: SidebarProps) {
   const pathname = usePathname()
-
-
+  const isItemActive = (href: string) => {
+    if (href === "/") return pathname === "/"
+    return pathname === href || pathname.startsWith(`${href}/`)
+  }
 
   return (
     <aside className={cn(
@@ -43,7 +44,7 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
         <div className="flex-1 overflow-y-auto py-6 px-4">
           <nav className="space-y-1.5">
             {sidebarItems.map((item) => {
-              const isActive = pathname === item.href
+              const isActive = isItemActive(item.href)
               return (
                 <Link key={item.href} href={item.href} passHref>
                   <Button

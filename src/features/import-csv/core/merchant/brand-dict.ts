@@ -536,6 +536,11 @@ export const BRAND_DICT: Record<string, string> = {
     "MEDIOLANUM": "MEDIOLANUM",
     "DEUTSCHE BANK": "DEUTSCHE BANK",
     "CREDIT AGRICOLE": "CREDIT AGRICOLE",
+    "FINDOMESTIC": "FINDOMESTIC",
+    "FINDOMESTIC BANCA": "FINDOMESTIC",
+    "AGOS": "AGOS",
+    "AGOS DUCATO": "AGOS",
+    "COFIDIS": "COFIDIS",
 
     // =====================================================
     // HEALTH & PHARMACY (15+)

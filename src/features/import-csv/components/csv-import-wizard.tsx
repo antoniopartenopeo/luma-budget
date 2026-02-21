@@ -1,14 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { FileSpreadsheet } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import {
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
+import { useRouter } from "next/navigation"
 import { ImportStepUpload } from "./step-upload"
 import { ImportStepReview } from "./step-review"
 import { ImportStepSummary } from "./step-summary"
@@ -22,8 +15,8 @@ export interface ReviewResult {
 }
 
 export function CsvImportWizard() {
+    const router = useRouter()
     const { data: categories = [] } = useCategories()
-    const [open, setOpen] = useState(false)
     const [step, setStep] = useState<"upload" | "review" | "summary">("upload")
 
     // Core Logic State
@@ -40,13 +33,6 @@ export function CsvImportWizard() {
         setOverrides([])
         setExcludedGroupIds([])
         setThresholdCents(0)
-    }
-
-    const handleOpenChange = (newOpen: boolean) => {
-        setOpen(newOpen)
-        if (!newOpen) {
-            setTimeout(resetWizard, 300)
-        }
     }
 
     // Step Transitions
@@ -75,50 +61,45 @@ export function CsvImportWizard() {
     }
 
     const handleImportSuccess = () => {
-        setOpen(false)
         resetWizard()
+        router.push("/transactions")
+    }
+
+    const handleClose = () => {
+        resetWizard()
+        router.push("/transactions")
     }
 
     return (
-        <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2 hidden md:flex">
-                    <FileSpreadsheet className="h-4 w-4" />
-                    Importa CSV
-                </Button>
-            </DialogTrigger>
+        <div className="w-full">
+            {step === "upload" && (
+                <ImportStepUpload
+                    onContinue={handleUploadComplete}
+                    onClose={handleClose}
+                />
+            )}
 
-            <DialogContent className="w-full h-full max-w-full max-h-full sm:max-w-7xl sm:max-h-[90vh] sm:h-[90vh] flex flex-col p-0 gap-0 outline-none overflow-hidden sm:rounded-2xl rounded-none">
-                <DialogTitle className="sr-only">Importa CSV</DialogTitle>
-                {step === "upload" && (
-                    <ImportStepUpload
-                        onContinue={handleUploadComplete}
-                        onClose={() => setOpen(false)}
-                    />
-                )}
+            {step === "review" && importState && (
+                <ImportStepReview
+                    initialState={importState}
+                    initialOverrides={overrides}
+                    thresholdCents={thresholdCents}
+                    onThresholdChange={setThresholdCents}
+                    onBack={() => setStep("upload")}
+                    onContinue={handleReviewComplete}
+                />
+            )}
 
-                {step === "review" && importState && (
-                    <ImportStepReview
-                        initialState={importState}
-                        initialOverrides={overrides}
-                        thresholdCents={thresholdCents}
-                        onThresholdChange={setThresholdCents}
-                        onBack={() => setStep("upload")}
-                        onContinue={handleReviewComplete}
-                    />
-                )}
-
-                {step === "summary" && importState && (
-                    <ImportStepSummary
-                        importState={importState}
-                        overrides={overrides}
-                        thresholdCents={thresholdCents}
-                        excludedGroupIds={excludedGroupIds}
-                        onBack={() => setStep("review")}
-                        onClose={handleImportSuccess}
-                    />
-                )}
-            </DialogContent>
-        </Dialog>
+            {step === "summary" && importState && (
+                <ImportStepSummary
+                    importState={importState}
+                    overrides={overrides}
+                    thresholdCents={thresholdCents}
+                    excludedGroupIds={excludedGroupIds}
+                    onBack={() => setStep("review")}
+                    onClose={handleImportSuccess}
+                />
+            )}
+        </div>
     )
 }

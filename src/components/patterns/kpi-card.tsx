@@ -22,6 +22,8 @@ export interface KpiCardProps {
     onClick?: () => void
     className?: string
     valueClassName?: string
+    valueMeta?: string
+    valueMetaClassName?: string
     description?: string
     /**
      * If provided, the card will animate the value transition.
@@ -47,6 +49,8 @@ export function KpiCard({
     onClick,
     className,
     valueClassName,
+    valueMeta,
+    valueMetaClassName,
     description,
     animatedValue,
     formatFn,
@@ -110,17 +114,37 @@ export function KpiCard({
                     compact ? "px-4" : "flex-1 flex flex-col"
                 )}>
                     <div className={cn(
-                        "text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter tabular-nums break-words",
+                        "text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter tabular-nums break-words flex items-baseline gap-2",
                         valueClassName
                     )}>
                         {typeof animatedValue === 'number' ? (
-                            <AnimatedNumber
-                                value={animatedValue}
-                                formatFn={formatFn}
-                                className="block" // ensure block to maintain layout
-                            />
+                            <>
+                                <AnimatedNumber
+                                    value={animatedValue}
+                                    formatFn={formatFn}
+                                    className="block" // ensure block to maintain layout
+                                />
+                                {valueMeta && (
+                                    <span className={cn(
+                                        "text-sm sm:text-base lg:text-lg font-bold tracking-normal text-muted-foreground/75",
+                                        valueMetaClassName
+                                    )}>
+                                        {valueMeta}
+                                    </span>
+                                )}
+                            </>
                         ) : (
-                            value
+                            <>
+                                {value}
+                                {valueMeta && (
+                                    <span className={cn(
+                                        "text-sm sm:text-base lg:text-lg font-bold tracking-normal text-muted-foreground/75",
+                                        valueMetaClassName
+                                    )}>
+                                        {valueMeta}
+                                    </span>
+                                )}
+                            </>
                         )}
                     </div>
 

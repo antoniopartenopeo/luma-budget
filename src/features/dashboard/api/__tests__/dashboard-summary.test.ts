@@ -146,6 +146,68 @@ describe('Dashboard Summary (Real Wiring)', () => {
         expect(summary.netBalance).toBe(-1100)
     })
 
+    it('should extract and deduplicate used cards in a filter-aware way', async () => {
+        const currentPeriod = getCurrentPeriod() // 2025-05
+
+        await createTransaction({
+            description: 'PAGAMENTO APPLE PAY MASTERCARD NFC del 18/05/2025 CARTA *7298 DI EUR 30,40 FIRENZE',
+            amountCents: 3040,
+            type: 'expense',
+            categoryId: CategoryIds.CIBO,
+            category: 'Cibo',
+        })
+
+        await createTransaction({
+            description: 'PAGAMENTO POS CARTA *7298 PANIFICIO FIRENZE',
+            amountCents: 910,
+            type: 'expense',
+            categoryId: CategoryIds.CIBO,
+            category: 'Cibo',
+        })
+
+        await createTransaction({
+            description: 'PAGAMENTO VISA NFC del 18/05/2025 CARTA *7298 DI EUR 12,30 LIBRERIA',
+            amountCents: 1230,
+            type: 'expense',
+            categoryId: CategoryIds.SVAGO_EXTRA,
+            category: 'Svago',
+        })
+
+        // Previous month: must not appear in current-month cardsUsed (filter-aware behavior)
+        vi.setSystemTime(new Date(2025, 3, 5))
+        await createTransaction({
+            description: 'PAGAMENTO MASTERCARD CARTA *1234 NEGOZIO APRILE',
+            amountCents: 2450,
+            type: 'expense',
+            categoryId: CategoryIds.CIBO,
+            category: 'Cibo',
+        })
+
+        vi.setSystemTime(FIXED_DATE)
+
+        const summary = await fetchDashboardSummary({ mode: 'month', period: currentPeriod })
+
+        expect(summary.cardsUsed).toHaveLength(3)
+        expect(summary.cardsUsed.every(card => card.last4 === '7298')).toBe(true)
+
+        const mastercard = summary.cardsUsed.find(card => card.cardId === 'mastercard_7298')
+        const visa = summary.cardsUsed.find(card => card.cardId === 'visa_7298')
+        const unknown = summary.cardsUsed.find(card => card.cardId === 'unk_7298')
+
+        expect(mastercard).toBeDefined()
+        expect(mastercard?.walletProvider).toBe('Apple Pay')
+        expect(mastercard?.confidence).toBe('high')
+        expect(mastercard?.status).toBe('active')
+
+        expect(visa).toBeDefined()
+        expect(visa?.network).toBe('Visa')
+        expect(visa?.status).toBe('active')
+
+        expect(unknown).toBeDefined()
+        expect(unknown?.network).toBe('Unknown')
+        expect(unknown?.status).toBe('active')
+    })
+
     it('should apply local month boundaries consistently', async () => {
         const currentPeriod = getCurrentPeriod() // 2025-05 with fake timer
         const { startDate } = calculateDateRangeLocal(currentPeriod, 1)

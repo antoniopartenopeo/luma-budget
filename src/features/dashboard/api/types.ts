@@ -1,3 +1,5 @@
+import type { CardNetwork, CardParseConfidence, WalletProvider } from "@/domain/transactions"
+
 export interface CategorySummary {
     name: string
     id: string
@@ -10,6 +12,19 @@ export type DashboardTimeFilter = {
     mode: "month" | "range"
     period: string // YYYY-MM
     months?: 3 | 6 | 12
+}
+
+export type CardUsageStatus = "active" | "stale"
+
+export interface DashboardCardUsage {
+    cardId: string
+    last4: string
+    network: CardNetwork
+    walletProvider: WalletProvider
+    firstSeen: string
+    lastSeen: string
+    status: CardUsageStatus
+    confidence: CardParseConfidence
 }
 
 export interface DashboardSummary {
@@ -38,4 +53,5 @@ export interface DashboardSummary {
         totalCents: number
         total: number
     }[]
+    cardsUsed: DashboardCardUsage[]
 }

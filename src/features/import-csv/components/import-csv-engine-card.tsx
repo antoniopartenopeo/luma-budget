@@ -43,7 +43,6 @@ export function ImportCsvEngineCard() {
                 title: step.title,
                 description: step.description
             }))}
-            auditLabel="Apri dettagli"
             certificationTitle="Controllo e trasparenza"
             certificationSubtitle="Lettura guidata, privacy locale"
             transparencyNote="Durante questa fase il file resta nel browser: nulla viene inviato fuori dal tuo dispositivo."

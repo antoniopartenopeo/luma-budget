@@ -5,6 +5,7 @@ import { calculateDateRangeLocal, filterByRange } from "@/lib/date-ranges"
 import { getCategoryById } from "@/features/categories/config"
 import { getCategories } from "@/features/categories/api/repository"
 import { calculateSuperfluousMetrics } from "../../transactions/utils/transactions-logic"
+import { buildCardsUsed } from "../utils/cards-used"
 
 import { sumExpensesInCents, sumIncomeInCents } from "@/domain/money"
 
@@ -74,6 +75,7 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
         percentage: uselessSpendPercent
     } = calculateSuperfluousMetrics(rangeTransactions)
 
+    const cardsUsed = buildCardsUsed(rangeTransactions, new Date())
 
 
     // 8. Monthly Data for Charts
@@ -130,6 +132,7 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
             useful: finalUselessPercent !== null ? 100 - finalUselessPercent : 100,
             useless: finalUselessPercent !== null ? finalUselessPercent : 0
         },
-        monthlyExpenses
+        monthlyExpenses,
+        cardsUsed
     }
 }

@@ -170,7 +170,7 @@ describe("ScenarioDeck", () => {
             />
         )
 
-        fireEvent.click(screen.getByRole("button", { name: /Vedi Audit Tecnico/i }))
+        fireEvent.click(screen.getByRole("button", { name: /Apri dettagli tecnici/i }))
         expect(screen.getByText("Nessun aggiornamento live attivo. Fonte Storico.")).toBeInTheDocument()
     })
 })

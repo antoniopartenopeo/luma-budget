@@ -56,7 +56,6 @@ export function NumaAdvisorHowItWorksCard({ forecast, facts, className }: NumaAd
                     description: "Evidenziamo ricorrenze e possibili aumenti prezzo per aiutarti ad agire in anticipo."
                 }
             ]}
-            auditLabel="Dettagli tecnici"
             transparencyNote="I tuoi dati finanziari vengono analizzati solo sul dispositivo. Nessuna informazione personale viene inviata al cloud per questa funzione."
             auditStats={[
                 {

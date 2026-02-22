@@ -26,13 +26,14 @@ interface NumaEngineCardProps {
     steps: EngineStep[]
     auditStats?: AuditStat[]
     transparencyNote?: string
-    auditLabel?: string // Label for the button e.g. "Vedi Audit Tecnico"
     certificationTitle?: string
     certificationSubtitle?: string
     className?: string
 }
 
 const NUMA_ENGINE_UNIVERSAL_TITLE = "Come Funziona Numa"
+const NUMA_ENGINE_AUDIT_OPEN_LABEL = "Apri dettagli tecnici"
+const NUMA_ENGINE_AUDIT_CLOSE_LABEL = "Chiudi dettagli"
 
 /**
  * NumaEngineCard
@@ -48,7 +49,6 @@ export function NumaEngineCard({
     steps,
     auditStats,
     transparencyNote,
-    auditLabel = "Vedi Audit Tecnico",
     certificationTitle = "Certificazione Privacy",
     certificationSubtitle = "Analisi 100% Locale e Verificata.",
     className
@@ -130,7 +130,7 @@ export function NumaEngineCard({
                         disabled={!hasAudit}
                     >
                         {isExpanded ? <ChevronUp className="mr-2 h-3 w-3" /> : <ChevronDown className="mr-2 h-3 w-3" />}
-                        {isExpanded ? "Chiudi dettagli" : auditLabel}
+                        {isExpanded ? NUMA_ENGINE_AUDIT_CLOSE_LABEL : NUMA_ENGINE_AUDIT_OPEN_LABEL}
                     </Button>
                 </div>
 

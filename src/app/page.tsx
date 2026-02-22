@@ -35,6 +35,7 @@ export default function DashboardPage() {
           totalSpentCents={data?.totalSpentCents}
           netBalanceCents={data?.netBalanceCents}
           uselessSpendPercent={data?.uselessSpendPercent}
+          cardsUsed={data?.cardsUsed}
           isLoading={isLoading}
           filter={filter}
           headerActions={<DashboardFilterBar filter={filter} onFilterChange={setFilter} />}

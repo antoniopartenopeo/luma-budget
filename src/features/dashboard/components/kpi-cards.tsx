@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { DollarSign, Wallet, CreditCard, AlertTriangle } from "lucide-react"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { formatCents } from "@/domain/money"
-import { DashboardTimeFilter } from "../api/types"
+import { DashboardCardUsage, DashboardTimeFilter } from "../api/types"
 import { useSettings } from "@/features/settings/api/use-settings"
 import { KpiCard, KpiTone } from "@/components/patterns/kpi-card"
 import { narrateKPI, deriveKPIState, KPIFacts } from "@/domain/narration"
@@ -20,11 +20,13 @@ import { formatPeriodLabel, getCurrentPeriod } from "@/lib/date-ranges"
 
 import { NumaEngineCard } from "@/components/patterns/numa-engine-card"
 import { BrainCircuit, ShieldCheck, Hourglass, TrendingUp, PiggyBank, Zap } from "lucide-react"
+import { UsedCardsKpiDeck } from "./used-cards-kpi-deck"
 
 interface DashboardKpiGridProps {
     totalSpentCents?: number
     netBalanceCents?: number
     uselessSpendPercent?: number | null
+    cardsUsed?: DashboardCardUsage[]
     isLoading?: boolean
     filter?: DashboardTimeFilter
     headerActions?: React.ReactNode
@@ -106,6 +108,7 @@ export function DashboardKpiGrid({
     totalSpentCents,
     netBalanceCents,
     uselessSpendPercent,
+    cardsUsed,
     isLoading,
     filter,
     headerActions
@@ -202,11 +205,24 @@ export function DashboardKpiGrid({
                         { label: "Privacy", value: "Locale", subValue: "I calcoli restano sul dispositivo.", icon: ShieldCheck },
                     ]}
                     transparencyNote="Questa card non inventa regole: mostra solo lo stato reale del mese usando i tuoi movimenti."
-                    auditLabel="Apri dettagli"
                     certificationTitle="Controllo e trasparenza"
                     certificationSubtitle="Logica chiara, dati reali, privacy locale"
                 />
             </motion.div>
+
+            <MacroSection
+                title="Carte utilizzate"
+                description="Carte rilevate nel periodo selezionato"
+                contentClassName="pt-5"
+                className="w-full"
+            >
+                <UsedCardsKpiDeck
+                    cards={cardsUsed || []}
+                    isLoading={isLoading}
+                    isPrivacyMode={isPrivacyMode}
+                    showHeader={false}
+                />
+            </MacroSection>
 
             <MacroSection
                 title="Panoramica del periodo"
@@ -252,8 +268,7 @@ export function DashboardKpiGrid({
                             value={isLoading ? 0 : (uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—")}
                             animatedValue={uselessSpendPercent ?? undefined}
                             formatFn={(v) => `${Math.round(v)}%`}
-                            change={`Target ${superfluousTarget}%`}
-                            trend={superflueTone === "positive" ? "up" : superflueTone === "negative" ? "down" : "neutral"}
+                            valueMeta={isLoading ? undefined : `/ ${superfluousTarget}%`}
                             tone={superflueTone}
                             icon={AlertTriangle}
                             isLoading={isLoading}
@@ -261,18 +276,16 @@ export function DashboardKpiGrid({
                             description={isLoading ? undefined : buildNarration("superfluous", uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—", superflueTone, uselessSpendPercent ?? undefined)}
                         />
                     </motion.div>
-                    <motion.div variants={macroItemVariants} className="h-full md:col-span-2 lg:col-span-4">
+                    <motion.div variants={macroItemVariants} className="h-full">
                         <KpiCard
                             title="Segnale del mese"
                             value={brainSignal.value}
-                            change={brainSignal.message}
-                            trend={brainSignal.trend}
                             comparisonLabel={`${brainSignal.source} · Affidabilità ${brainSignal.confidence}`}
                             tone={brainSignal.tone}
                             icon={BrainCircuit}
                             isLoading={false}
                             onClick={() => router.push("/insights")}
-                            compact
+                            description={brainSignal.message}
                         />
                     </motion.div>
                 </StaggerContainer>

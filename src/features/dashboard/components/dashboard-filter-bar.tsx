@@ -2,8 +2,8 @@
 
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react"
+import { SegmentedPillSelector } from "@/components/patterns/segmented-pill-selector"
 import { DashboardTimeFilter } from "../api/types"
-import { cn } from "@/lib/utils"
 import { formatPeriodLabel, shiftPeriod } from "@/lib/date-ranges"
 
 interface DashboardFilterBarProps {
@@ -27,6 +27,26 @@ export function DashboardFilterBar({ filter, onFilterChange }: DashboardFilterBa
         onFilterChange({ ...filter, mode, months: mode === "range" ? months : undefined })
     }
 
+    const modeValue = filter.mode === "month" ? "month" : `range-${filter.months}`
+
+    const handleSegmentChange = (value: string) => {
+        if (value === "month") {
+            handleModeChange("month")
+            return
+        }
+        if (value === "range-3") {
+            handleModeChange("range", 3)
+            return
+        }
+        if (value === "range-6") {
+            handleModeChange("range", 6)
+            return
+        }
+        if (value === "range-12") {
+            handleModeChange("range", 12)
+        }
+    }
+
     return (
         <div className="flex flex-col sm:flex-row gap-4 items-center justify-between glass-card px-2 py-1.5 md:px-3 rounded-xl border-none">
             {/* Period Selector (Left) */}
@@ -46,41 +66,18 @@ export function DashboardFilterBar({ filter, onFilterChange }: DashboardFilterBa
             </div>
 
             {/* Mode Selector (Right) */}
-            <div className="flex items-center flex-wrap justify-center gap-1 bg-muted/20 p-1 rounded-lg">
-                <Button
-                    variant={filter.mode === "month" ? "secondary" : "ghost"}
-                    size="sm"
-                    onClick={() => handleModeChange("month")}
-                    className={cn("text-xs h-7 md:h-8 px-2 md:px-3", filter.mode === "month" && "bg-background shadow-sm")}
-                >
-                    Mese
-                </Button>
-                <div className="w-px h-4 bg-border mx-1 hidden xs:block" />
-                <Button
-                    variant={filter.mode === "range" && filter.months === 3 ? "secondary" : "ghost"}
-                    size="sm"
-                    onClick={() => handleModeChange("range", 3)}
-                    className={cn("text-xs h-7 md:h-8 px-2 md:px-3", filter.mode === "range" && filter.months === 3 && "bg-background shadow-sm")}
-                >
-                    3M
-                </Button>
-                <Button
-                    variant={filter.mode === "range" && filter.months === 6 ? "secondary" : "ghost"}
-                    size="sm"
-                    onClick={() => handleModeChange("range", 6)}
-                    className={cn("text-xs h-7 md:h-8 px-2 md:px-3", filter.mode === "range" && filter.months === 6 && "bg-background shadow-sm")}
-                >
-                    6M
-                </Button>
-                <Button
-                    variant={filter.mode === "range" && filter.months === 12 ? "secondary" : "ghost"}
-                    size="sm"
-                    onClick={() => handleModeChange("range", 12)}
-                    className={cn("text-xs h-7 md:h-8 px-2 md:px-3", filter.mode === "range" && filter.months === 12 && "bg-background shadow-sm")}
-                >
-                    12M
-                </Button>
-            </div>
+            <SegmentedPillSelector
+                value={modeValue}
+                onChange={handleSegmentChange}
+                options={[
+                    { value: "month", label: "Mese" },
+                    { value: "range-3", label: "3M" },
+                    { value: "range-6", label: "6M" },
+                    { value: "range-12", label: "12M" },
+                ]}
+                className="flex-wrap justify-center"
+                buttonClassName="md:h-8 md:px-3"
+            />
         </div>
     )
 }

@@ -203,9 +203,9 @@ describe("useSimulatorCommandCenter", () => {
     test("remodulates realtime margin and quota for the short-term window", () => {
         const { result } = renderHook(() => useSimulatorCommandCenter())
 
-        expect(result.current.simulatedSurplus).toBe(60000)
-        expect(result.current.monthlyQuotaRealtimeCents).toBe(14000)
-        expect(result.current.realtimeWindowMonths).toBe(0)
+        expect(result.current.currentScenario?.quota.realtimeMonthlyMarginCents).toBe(60000)
+        expect(result.current.currentScenario?.quota.realtimeMonthlyCapacityCents).toBe(14000)
+        expect(result.current.currentScenario?.quota.realtimeWindowMonths).toBe(0)
 
         act(() => {
             vi.advanceTimersByTime(700)
@@ -213,10 +213,10 @@ describe("useSimulatorCommandCenter", () => {
 
         const quota = result.current.currentScenario?.quota
         expect(quota?.realtimeOverlayApplied).toBe(true)
-        expect(result.current.realtimeWindowMonths).toBe(3)
+        expect(result.current.currentScenario?.quota.realtimeWindowMonths).toBe(3)
 
         const realtimeFactor = quota?.realtimeCapacityFactor || 1
-        expect(result.current.simulatedSurplus).toBe(Math.round(60000 * realtimeFactor))
-        expect(result.current.monthlyQuotaRealtimeCents).toBe(Math.round(14000 * realtimeFactor))
+        expect(result.current.currentScenario?.quota.realtimeMonthlyMarginCents).toBe(Math.round(60000 * realtimeFactor))
+        expect(result.current.currentScenario?.quota.realtimeMonthlyCapacityCents).toBe(Math.round(14000 * realtimeFactor))
     })
 })

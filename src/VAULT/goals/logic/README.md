@@ -14,15 +14,13 @@ Codice qui dentro:
 *   `@/lib/*`
 *   `@/VAULT/goals/types`
 *   `@/VAULT/goals/config/rhythms`
-*   `@/features/transactions/api/use-transactions`
-*   `@/features/simulator/hooks` (baseline read model)
-*   `react`, `date-fns` (orchestrazione hook/date)
+*   `date-fns` (solo helper temporali, se necessario)
 
 ## Governance Rules
 
 ### 1. Behavior Proof Signature
 Ogni modifica al Core deve rispettare questa sequenza:
-1.  **Read**: `useTransactions` (Source of Truth).
+1.  **Read**: il read-model viene preparato fuori dal Vault.
 2.  **Compute**: `baseline` -> `scenarios` -> `quota` (Pure Logic).
 3.  **Action**: nessuna persistenza implicita nel flusso Financial Lab.
 4.  **No Hidden State**: Vietato accedere a `localStorage` se non via Repository.
@@ -37,13 +35,13 @@ Ogni modifica al Core deve rispettare questa sequenza:
 *   ❌ `react-dom`, `framer-motion`: Mai importare animazioni o rendering.
 
 ## Logic Files (The Vault)
-*   `use-quota-scenarios.ts`: Hook orchestrator per baseline/scenari quota-centrici.
 *   `financial-baseline.ts`: Baseline math engine.
 *   `scenario-generator.ts`: Costruzione configurazioni scenario.
 *   `scenario-calculator.ts`: Applicazione savings + sostenibilita + quota sostenibile.
 *   `sustainability-guard.ts`: Safety checks.
 *   `realtime-overlay.ts`: Correzione prudenziale breve periodo.
 *   `../config/rhythms.ts`: Configurazioni ritmo disponibili.
+*   `src/features/goals/hooks/use-quota-scenarios.ts`: orchestrazione React (fuori Vault) che usa il core.
 
 ## Boundary di persistenza
 - La simulazione resta read-only sui dati transazionali.

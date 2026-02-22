@@ -73,13 +73,13 @@ test('Verifica Macro-Geometry Numa Premium', async ({ page }) => {
 
 ### Vitest + React Testing Library (Unit)
 ```typescript
-test('Configurazione Motion standardizzata', () => {
-  render(<GlobalBudgetCard />);
-  const motionDiv = screen.getByTestId('motion-container');
-  
-  // Verifica props passate a Framer Motion
-  expect(motionDiv).toHaveAttribute('initial', expect.stringContaining('"scale":0.98'));
-  expect(motionDiv).toHaveAttribute('animate', expect.stringContaining('"scale":1'));
+test('Motion primitive conforme', () => {
+  render(<DashboardSection />);
+  const section = screen.getByTestId('section-root');
+
+  // Usa la primitive canonica e non fallback legacy
+  expect(section.className).toContain('animate-enter-up');
+  expect(section.className).not.toContain('animate-in');
 });
 ```
 

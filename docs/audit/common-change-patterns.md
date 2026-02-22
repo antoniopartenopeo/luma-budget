@@ -75,6 +75,36 @@ Guardrail:
 - Evitare duplicati tra `body` e `highlights` nelle entry generate.
 - Mantenere naming utente coerente: `Fonte Core` / `Fonte Storico`.
 
+## 6) Evolvere Financial Lab (/simulator) senza regressioni
+
+Intento: iterare UI/UX scenario-driven mantenendo invarianti read-only e logica quota.
+
+Passi minimi:
+1. Parti da `src/features/goals/components/scenario-deck.tsx` per modifiche visuali/step-by-step.
+2. Mantieni copy e label in `src/features/goals/utils/financial-lab-copy.ts` come fonte unica.
+3. Verifica orchestrazione in `src/features/goals/hooks/use-simulator-command-center.ts`.
+4. Non reintrodurre pannelli separati che duplicano la derivazione quota già integrata nelle card.
+
+Guardrail:
+- Nessun commitment di portfolio/ritmo dalla pagina `/simulator`.
+- Overlay realtime resta correzione prudenziale sul breve periodo, non sostituto della base storica.
+- Mantieni etichette fonte coerenti (`Fonte Core` / `Fonte Storico`).
+
+## 7) Evolvere Import CSV review con preset e KPI
+
+Intento: migliorare revisione import senza perdere trasparenza su esclusioni/deduplica.
+
+Passi minimi:
+1. Mantieni preset soglia in `src/features/import-csv/components/review/threshold-preset-selector.tsx`.
+2. Aggiorna KPI/feedback di revisione in `src/features/import-csv/components/step-review.tsx`.
+3. Mantieni coerenza summary/confirm in `src/features/import-csv/components/step-summary.tsx`.
+4. Se cambia il flusso UX, aggiorna la card motore in `src/features/import-csv/components/import-csv-engine-card.tsx`.
+
+Guardrail:
+- Evitare ritorno a slider continuo se non richiesto da evidenze UX.
+- Conservare distinzione chiara tra `duplicati confermati` e `possibili duplicati`.
+- Nessun invio remoto dati: il flusso resta local-first.
+
 ## Definition of done minima
 
 1. `npm run test:run` passa.

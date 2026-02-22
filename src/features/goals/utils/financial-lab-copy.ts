@@ -5,13 +5,15 @@ type PlanBasis = QuotaScenarioResult["planBasis"]
 export const FINANCIAL_LAB_COPY = {
     page: {
         title: "Financial Lab",
-        description: "Scopri la tua quota fissa sostenibile aggiuntiva, basata su storico reale e correzione live.",
+        description: "Qui vedi la quota fissa aggiuntiva sostenibile. Insights mostra invece il saldo stimato di fine mese.",
         loading: "Sto preparando Financial Lab..."
     },
     scenarioDeck: {
         title: "Scegli lo scenario quota",
+        subtitle: "Ogni scenario mostra la quota mensile sostenibile, non il saldo finale del mese.",
         quotaLabel: "Quota sostenibile",
-        engineTitle: "Come calcola Numa",
+        perMonthSuffix: "/mese",
+        sustainabilityInlineLabel: "Tenuta quota",
         steps: [
             {
                 stepLabel: "1. Base Storica",
@@ -48,26 +50,19 @@ export const FINANCIAL_LAB_COPY = {
     resultsPanel: {
         title: "Come nasce la quota",
         intro: "Qui vedi, passo per passo, come arriviamo alla tua quota mensile.",
-        baseStepLabel: "1) Margine base storico",
-        baseStepDescription: "Quanto in media ti rimane a fine mese dai dati storici.",
-        liveStepLabelBase: "2) Correzione live",
-        practicalStepLabel: "3) In pratica",
-        practicalStepDescription: "Questa e la rata fissa aggiuntiva sostenibile che puoi permetterti ogni mese.",
+        liveStepLabelBase: "Correzione live",
         updatedMarginLabel: "Margine aggiornato",
         noLiveNarrative: "Nessuna correzione live attiva: usiamo solo la base storica.",
-        liveNarrativePrefix: "Per i prossimi",
-        liveNarrativeSuffix: "mesi aggiorniamo il margine con dati piu recenti, poi torniamo alla base storica.",
-        sustainabilityPanelLabel: "Tenuta del piano"
-    },
-    monitor: {
-        title: "Monitor quota"
+        liveNarrative: "Aggiorniamo il margine usando i segnali piu recenti, per mantenere la quota prudente."
     },
     planBasis: {
-        brain: "Fonte Brain",
-        fallback: "Fonte Storico+Live",
-        historical: "Fonte Storico",
-        badgeLivePrefix: "Live",
-        badgeHistorical: "Solo storico"
+        brain: "Fonte Core",
+        fallback: "Fonte Storico",
+        historical: "Fonte Storico"
+    },
+    scenarioCard: {
+        detailTitle: "Come nasce la quota",
+        baseStepTitle: "Margine disponibile"
     }
 } as const
 
@@ -77,44 +72,20 @@ export function getPlanBasisLabel(planBasis: PlanBasis): string {
     return FINANCIAL_LAB_COPY.planBasis.historical
 }
 
-export function getPlanBasisContext(planBasis: PlanBasis): string {
-    if (planBasis === "brain_overlay") return " Fonte Brain attiva sul breve periodo."
-    if (planBasis === "fallback_overlay") return " Correzione live basata su storico attivo sui prossimi mesi."
-    return " Basata solo su storico consolidato."
-}
-
 export function getSustainabilityLabel(status: SustainabilityStatus): string {
-    if (status === "secure") return "Molto solido"
-    if (status === "sustainable") return "Solido"
-    if (status === "fragile") return "Delicato"
+    if (status === "secure") return "Molto solida"
+    if (status === "sustainable") return "Solida"
+    if (status === "fragile") return "Delicata"
     return "A rischio"
 }
 
-export function getSustainabilityGuidance(status: SustainabilityStatus, reason: string | null): string {
-    if (reason) return reason
-    if (status === "secure") return "Si: il piano lascia un buon margine di sicurezza ogni mese."
-    if (status === "sustainable") return "Si: il piano regge, ma con margine moderato."
-    if (status === "fragile") return "Parzialmente: il piano e delicato e va monitorato."
-    return "No: il piano e troppo tirato per essere sicuro."
-}
-
-export function getRealtimeStepLabel(realtimeWindowMonths: number): string {
-    if (realtimeWindowMonths > 0) {
-        return `${FINANCIAL_LAB_COPY.resultsPanel.liveStepLabelBase} (${realtimeWindowMonths} mesi)`
-    }
+export function getRealtimeStepLabel(_realtimeWindowMonths: number): string {
     return FINANCIAL_LAB_COPY.resultsPanel.liveStepLabelBase
-}
-
-export function getRealtimeBadgeLabel(realtimeWindowMonths: number): string {
-    if (realtimeWindowMonths > 0) {
-        return `${FINANCIAL_LAB_COPY.planBasis.badgeLivePrefix} ${realtimeWindowMonths} mesi`
-    }
-    return FINANCIAL_LAB_COPY.planBasis.badgeHistorical
 }
 
 export function getRealtimeNarrative(realtimeWindowMonths: number): string {
     if (realtimeWindowMonths > 0) {
-        return `${FINANCIAL_LAB_COPY.resultsPanel.liveNarrativePrefix} ${realtimeWindowMonths} ${FINANCIAL_LAB_COPY.resultsPanel.liveNarrativeSuffix}`
+        return FINANCIAL_LAB_COPY.resultsPanel.liveNarrative
     }
     return FINANCIAL_LAB_COPY.resultsPanel.noLiveNarrative
 }

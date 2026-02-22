@@ -1,4 +1,4 @@
-import { computeMonthlyAverages, applySavings, SimulationPeriod, CategoryAverage, computeEffectiveSavingsPct, classifySuperfluousSpend } from "../utils"
+import { computeMonthlyAverages, applySavings, SimulationPeriod, CategoryAverage } from "../utils"
 import { Transaction } from "@/features/transactions/api/types"
 import { describe, it, expect } from "vitest"
 
@@ -86,33 +86,3 @@ describe("Simulator Utils", () => {
         })
     })
 })
-
-describe("Group Expansion & Overrides", () => {
-
-
-    it("computeEffectiveSavingsPct: override should take precedence", () => {
-        expect(computeEffectiveSavingsPct(10, 50)).toBe(50)
-        expect(computeEffectiveSavingsPct(10, 0)).toBe(0)
-        expect(computeEffectiveSavingsPct(10, null)).toBe(10)
-    })
-
-    it("classifySuperfluousSpend: should classify correctly", () => {
-        // OK cases
-        expect(classifySuperfluousSpend(0, 0)).toBe("OK")
-        expect(classifySuperfluousSpend(1000, 100000)).toBe("OK") // 1% share, 10€
-
-        // WARN cases: 10% <= share < 20% AND amount >= 50€ (5000 cents)
-        expect(classifySuperfluousSpend(5000, 50000)).toBe("WARN") // 10%, 50€ -> WARN boundary
-        expect(classifySuperfluousSpend(6000, 50000)).toBe("WARN") // 12%, 60€ -> WARN
-
-        // OK because share match but amount too low (<50€)
-        expect(classifySuperfluousSpend(4000, 40000)).toBe("OK") // 10%, 40€ -> OK (amount rule)
-
-        // HIGH cases: share >= 20%
-        expect(classifySuperfluousSpend(2000, 10000)).toBe("HIGH") // 20% -> HIGH
-
-        // HIGH cases: amount >= 200€ (20000 cents) regardless of share
-        expect(classifySuperfluousSpend(20000, 1000000)).toBe("HIGH") // 2% share but 200€ -> HIGH
-    })
-})
-

@@ -14,14 +14,10 @@ import { SimulationPeriod } from "@/features/simulator/utils"
 import { resetFinancialLabLegacyState } from "../utils/reset-financial-lab-legacy"
 import { useQuotaScenarios } from "./use-quota-scenarios"
 
-function clamp(value: number, min: number, max: number): number {
-    return Math.min(max, Math.max(min, value))
-}
-
 export function useSimulatorCommandCenter() {
     const queryClient = useQueryClient()
 
-    const [period] = useState<SimulationPeriod>(6)
+    const period: SimulationPeriod = 6
     const [activeScenarioKey, setActiveScenarioKey] = useState<ScenarioKey>("baseline")
 
     const {
@@ -86,7 +82,6 @@ export function useSimulatorCommandCenter() {
 
     const {
         scenarios,
-        baselineMetrics,
         isLoading: isFacadeLoading
     } = useQuotaScenarios({
         simulationPeriod: period,
@@ -105,35 +100,10 @@ export function useSimulatorCommandCenter() {
         return found || scenarios.find((scenario) => scenario.key === "baseline") || null
     }, [activeScenarioKey, scenarios])
 
-    const simulatedSurplusBase = currentScenario?.quota.baseMonthlyMarginCents || 0
-    const simulatedSurplus = currentScenario?.quota.realtimeMonthlyMarginCents || 0
-    const realtimeCapacityFactor = currentScenario?.quota.realtimeCapacityFactor || 1
-    const realtimeWindowMonths = currentScenario?.quota.realtimeWindowMonths || 0
-    const monthlyQuotaRealtimeCents = currentScenario?.quota.realtimeMonthlyCapacityCents || 0
-    const baselineExpenses = baselineMetrics?.averageMonthlyExpenses || 0
-    const savingsPercent = currentScenario && baselineExpenses > 0
-        ? clamp(
-            Math.round(((baselineExpenses - currentScenario.simulatedExpenses) / baselineExpenses) * 100),
-            -100,
-            100
-        )
-        : 0
-
-    const hasInsufficientData = !monthlyAverages
-        || (monthlyAverages.incomeCents <= 0 && Object.keys(monthlyAverages.categories).length === 0)
-
     return {
         currentScenario,
-        monthlyQuotaRealtimeCents,
-        hasInsufficientData,
         isDataLoading,
-        period,
-        savingsPercent,
         scenarios,
-        simulatedSurplusBase,
-        simulatedSurplus,
-        realtimeCapacityFactor,
-        realtimeWindowMonths,
         activeScenarioKey,
         setActiveScenarioKey,
     }

@@ -28,7 +28,6 @@ interface NumaAdvisorHowItWorksCardProps {
 export function NumaAdvisorHowItWorksCard({ forecast, facts, className }: NumaAdvisorHowItWorksCardProps) {
     return (
         <NumaEngineCard
-            title="Come lavora Numa Advisor"
             icon={BrainCircuit}
             className={className}
             steps={[

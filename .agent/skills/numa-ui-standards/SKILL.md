@@ -48,6 +48,7 @@ Vincoli:
 - evitare container stretti arbitrari (`max-w-4xl`) sulle pagine principali
 - usare il container di sistema di `AppShell`
 - favorire flusso verticale e leggibilita dei numeri
+- su `/simulator` usare `ScenarioDeck` come superficie dominante, evitando pannelli risultati separati duplicati
 
 ---
 
@@ -144,5 +145,5 @@ Invarianti:
 
 ---
 
-**Versione**: 1.7.0
-**Ultimo aggiornamento**: 2026-02-18
+**Versione**: 1.8.0
+**Ultimo aggiornamento**: 2026-02-22

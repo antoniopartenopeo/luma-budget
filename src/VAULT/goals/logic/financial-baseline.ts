@@ -1,6 +1,6 @@
 import { Transaction } from "@/domain/transactions"
 import { Category } from "@/domain/categories"
-import { calculateDateRange, filterByRange } from "@/lib/date-ranges"
+import { filterByRange, getPreviousCompleteMonthsRange, getRollingMonthKeysFromPivot } from "@/lib/date-ranges"
 
 export interface BaselineMetrics {
     averageMonthlyIncome: number
@@ -31,10 +31,7 @@ export function calculateBaselineMetrics(
     now: Date = new Date()
 ): BaselineMetrics {
     // 1. Determine canonical date range using shared governance utilities.
-    const previousMonthDate = new Date(now)
-    previousMonthDate.setDate(0)
-    const pivotPeriod = `${previousMonthDate.getFullYear()}-${(previousMonthDate.getMonth() + 1).toString().padStart(2, "0")}`
-    const { startDate, endDate } = calculateDateRange(pivotPeriod, periodMonths)
+    const { pivotPeriod, startDate, endDate } = getPreviousCompleteMonthsRange(periodMonths, now)
     const periodTransactions = filterByRange(transactions, startDate, endDate)
 
     // 2. Group by month keys (YYYY-MM) for exact period window.
@@ -47,13 +44,10 @@ export function calculateBaselineMetrics(
     }> = {}
 
     // Initialize exactly 'periodMonths' keys, counting backward from pivot.
-    const pivotDate = new Date(now)
-    pivotDate.setDate(0)
-    for (let i = 0; i < periodMonths; i++) {
-        const d = new Date(pivotDate.getFullYear(), pivotDate.getMonth() - i, 1)
-        const mStr = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, "0")}`
-        monthlyStats[mStr] = { income: 0, expenses: 0, essential: 0, superfluous: 0, comfort: 0 }
-    }
+    const monthKeys = getRollingMonthKeysFromPivot(pivotPeriod, periodMonths)
+    monthKeys.forEach((monthKey) => {
+        monthlyStats[monthKey] = { income: 0, expenses: 0, essential: 0, superfluous: 0, comfort: 0 }
+    })
 
     // Map Categories for fast lookup
     const catMap = new Map(categories.map(c => [c.id, c]))

@@ -93,7 +93,6 @@ export function SubscriptionPortfolioCard({
                                         asChild
                                         size="sm"
                                         className="rounded-xl h-9 gap-2 shadow-sm"
-                                        onClick={(event) => event.stopPropagation()}
                                     >
                                         <Link href={item.transactionsHref}>
                                             Apri transazioni filtrate

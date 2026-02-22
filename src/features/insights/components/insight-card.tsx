@@ -213,7 +213,6 @@ export function InsightCard({ insight }: InsightCardProps) {
                                         variant="default"
                                         size="sm"
                                         asChild
-                                        onClick={(e) => e.stopPropagation()}
                                         className="rounded-xl h-9 gap-2 shadow-sm"
                                     >
                                         <Link href={action.href}>

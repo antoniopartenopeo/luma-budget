@@ -102,7 +102,6 @@ export function CsvImportWizard({ onStepChange }: CsvImportWizardProps = {}) {
                 <ImportStepSummary
                     importState={importState}
                     overrides={overrides}
-                    thresholdCents={thresholdCents}
                     excludedGroupIds={excludedGroupIds}
                     onBack={() => setStep("review")}
                     onClose={handleImportSuccess}

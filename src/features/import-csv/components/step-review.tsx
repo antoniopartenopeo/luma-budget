@@ -1,9 +1,19 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { ArrowLeft, ArrowRight, Filter, AlertTriangle } from "lucide-react"
+import {
+    ArrowLeft,
+    ArrowRight,
+    Filter,
+    AlertTriangle,
+    ListChecks,
+    PlusCircle,
+    Copy,
+    CircleAlert,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Accordion } from "@/components/ui/accordion"
+import { KpiCard } from "@/components/patterns/kpi-card"
 import { ImportState, Override, Group, Subgroup } from "../core/types"
 import { resolveCategory } from "../core/overrides"
 import { getIncludedGroups } from "../core/filters"
@@ -13,7 +23,7 @@ import { WizardShell } from "./wizard-shell"
 
 // Sub-components
 import {
-    ThresholdSlider,
+    ThresholdPresetSelector,
     MerchantGroupCard,
 } from "./review"
 
@@ -44,10 +54,6 @@ export function ImportStepReview({
 }: ImportStepReviewProps) {
     const [overrides, setOverrides] = useState<Override[]>(initialOverrides)
 
-    // Visual threshold for slider drag (committed value comes from props)
-    const [visualThreshold, setVisualThreshold] = useState(thresholdCents)
-    const [isDragging, setIsDragging] = useState(false)
-
     const { groups, rows } = initialState
     const rowsById = useMemo(() => new Map(rows.map((row) => [row.id, row])), [rows])
 
@@ -57,7 +63,6 @@ export function ImportStepReview({
         [groups, thresholdCents]
     )
 
-    const hiddenGroupsCount = excludedGroupIds.length
     const parseErrorsCount = initialState.summary.parseErrors.length
 
     const importVisibility = useMemo(() => {
@@ -166,7 +171,6 @@ export function ImportStepReview({
 
         return { assigned, total }
     }, [filteredGroups, rowsById, overrides])
-
     const getRowById = (id: string) => rowsById.get(id)
     const getGroupSuggestedCategory = (group: Group) => {
         const firstGroupRowId = group.subgroups[0]?.rowIds[0]
@@ -215,41 +219,55 @@ export function ImportStepReview({
             footer={footer}
         >
             <div className="space-y-5">
-                <section className="space-y-3 rounded-xl border border-border/60 bg-muted/10 p-4">
-                    <ThresholdSlider
-                        thresholdCents={thresholdCents}
-                        visualThreshold={visualThreshold}
-                        isDragging={isDragging}
-                        hiddenGroupsCount={hiddenGroupsCount}
-                        onVisualChange={setVisualThreshold}
-                        onCommit={onThresholdChange}
-                        onDragStart={() => setIsDragging(true)}
-                        onDragEnd={() => setIsDragging(false)}
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                    <KpiCard
+                        compact
+                        title="Righe valide"
+                        value={importVisibility.totalValidRows}
+                        icon={ListChecks}
+                        tone="neutral"
+                        className="h-full"
+                        valueClassName="text-2xl sm:text-3xl lg:text-4xl text-foreground"
                     />
+                    <KpiCard
+                        compact
+                        title="Pronte da aggiungere"
+                        value={importVisibility.importableRows}
+                        icon={PlusCircle}
+                        tone="positive"
+                        className="h-full"
+                        valueClassName="text-2xl sm:text-3xl lg:text-4xl text-emerald-700 dark:text-emerald-300"
+                    />
+                    <KpiCard
+                        compact
+                        title="Duplicati esclusi"
+                        value={importVisibility.duplicatesTotal}
+                        icon={Copy}
+                        tone="warning"
+                        className="h-full"
+                        valueClassName="text-2xl sm:text-3xl lg:text-4xl text-amber-700 dark:text-amber-300"
+                        description={
+                            importVisibility.duplicatesTotal > 0
+                                ? `${importVisibility.duplicatesConfirmed} confermati + ${importVisibility.duplicatesSuspected} da verificare`
+                                : undefined
+                        }
+                    />
+                    <KpiCard
+                        compact
+                        title="Righe non leggibili"
+                        value={parseErrorsCount}
+                        icon={CircleAlert}
+                        tone="negative"
+                        className="h-full"
+                        valueClassName="text-2xl sm:text-3xl lg:text-4xl text-rose-700 dark:text-rose-300"
+                    />
+                </div>
 
-                    <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-                        <div className="rounded-lg border border-border/60 bg-background/50 px-3 py-2.5">
-                            <div className="text-xs font-medium text-muted-foreground">Righe valide</div>
-                            <div className="text-xl font-semibold tabular-nums">{importVisibility.totalValidRows}</div>
-                        </div>
-                        <div className="rounded-lg border border-emerald-500/20 bg-background/50 px-3 py-2.5">
-                            <div className="text-xs font-medium text-muted-foreground">Pronte da aggiungere</div>
-                            <div className="text-xl font-semibold tabular-nums text-emerald-700 dark:text-emerald-300">{importVisibility.importableRows}</div>
-                        </div>
-                        <div className="rounded-lg border border-amber-500/20 bg-background/50 px-3 py-2.5">
-                            <div className="text-xs font-medium text-muted-foreground">Duplicati esclusi</div>
-                            <div className="text-xl font-semibold tabular-nums text-amber-700 dark:text-amber-300">{importVisibility.duplicatesTotal}</div>
-                            {importVisibility.duplicatesTotal > 0 && (
-                                <div className="text-xs text-muted-foreground">
-                                    {importVisibility.duplicatesConfirmed} certi + {importVisibility.duplicatesSuspected} sospetti
-                                </div>
-                            )}
-                        </div>
-                        <div className="rounded-lg border border-rose-500/20 bg-background/50 px-3 py-2.5">
-                            <div className="text-xs font-medium text-muted-foreground">Righe non leggibili</div>
-                            <div className="text-xl font-semibold tabular-nums text-rose-700 dark:text-rose-300">{parseErrorsCount}</div>
-                        </div>
-                    </div>
+                <section>
+                    <ThresholdPresetSelector
+                        thresholdCents={thresholdCents}
+                        onCommit={onThresholdChange}
+                    />
                 </section>
 
                 {parseErrorsCount > 0 && (

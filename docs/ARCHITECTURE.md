@@ -1,7 +1,7 @@
 # Numa Budget Architecture
 
 > **Status**: Active
-> **Last update**: 2026-02-18
+> **Last update**: 2026-02-22
 > **Principles**: Feature-first, domain isolation, local-first persistence, deterministic narration.
 
 ## 1) System Topology
@@ -62,7 +62,7 @@ Navigation contract:
 
 ### VAULT (`src/VAULT/*`)
 - Sensitive/strategic logic isolated from UI.
-- `goals` controls scenarios, baseline, projection, active rhythm commit.
+- `goals` controls scenarios, baseline, projection and realtime overlay orchestration (no direct commitment path in simulator runtime).
 - `budget` stores and derives budget plans used by dashboard/runtime.
 
 ### Brain (`src/brain/*`)
@@ -78,9 +78,19 @@ Navigation contract:
 - Orchestrator suppresses contradictory low-priority reassurance in current critical contexts.
 
 ### Insights runtime (`src/features/insights/*`)
-- Advisor forecast source transparency (`Brain` vs `Storico` fallback).
+- Advisor forecast source transparency (`Core` vs `Storico` fallback).
 - Subscription detection and grouping powered by merchant-normalized monthly cadence.
 - Trend timeline supports upcoming charge milestones for active subscriptions.
+
+### Financial Lab runtime (`src/app/simulator/page.tsx` + `src/features/goals/*`)
+- Simulator surface is scenario-deck centric: each scenario card is expandable and shows the 3-step quota derivation.
+- Live correction (`realtime overlay`) is folded inside scenario details rather than a separate results panel.
+- Runtime remains advisory/read-only on transactions; no direct portfolio commit from the simulator page.
+
+### Import CSV runtime (`src/features/import-csv/*`)
+- Upload/review/summary wizard with grouped merchant review.
+- Review step uses threshold presets and KPI summaries instead of a continuous threshold slider.
+- Import page surfaces a dedicated `NumaEngineCard` for flow transparency.
 
 ### Notifications runtime (`src/features/notifications/*`)
 - Changelog-driven source: release entries are parsed from `/CHANGELOG.md`.

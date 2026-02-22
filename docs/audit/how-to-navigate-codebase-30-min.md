@@ -32,6 +32,8 @@ Checklist:
 - Transactions: `src/features/transactions/`.
 - Dashboard/KPI: `src/features/dashboard/`.
 - Insights: `src/features/insights/`.
+- Import CSV: `src/features/import-csv/`.
+- Financial Lab scenarios: `src/features/goals/` + `src/app/simulator/page.tsx`.
 - Notifications/Updates: `src/features/notifications/` + `src/app/api/notifications/changelog/route.ts`.
 - Vault (logica sensibile): `src/VAULT/`.
 
@@ -57,3 +59,5 @@ Se fallisce:
 - "Sto aggiungendo una KPI": parti da `src/features/dashboard/api/repository.ts`.
 - "Sto aggiungendo un filtro periodo": parti da `src/lib/date-ranges.ts`.
 - "Sto aggiungendo una insight": parti da `src/features/insights/generators.ts`.
+- "Sto evolvendo Financial Lab": parti da `src/features/goals/components/scenario-deck.tsx`.
+- "Sto evolvendo Import CSV review": parti da `src/features/import-csv/components/step-review.tsx`.

@@ -7,11 +7,11 @@ Local-first persistence, deterministic narration, and rhythm-based planning.
 
 | Module | Status | Description |
 |---|---|---|
-| Dashboard | Stable | KPI finanziari, composizione spese, movimenti recenti, ritmo attivo |
+| Dashboard | Stable | KPI finanziari, composizione spese, movimenti recenti, ritmo attivo, filtri periodo a pill (`Mese/3M/6M/12M`) |
 | Transactions | Stable | CRUD, filtri periodo/range, export CSV, quick add da TopBar |
-| Import CSV | Stable | Wizard multi-step con parse/normalize/dedupe/enrich/grouping merchant |
-| Insights | Stable | Trend analysis + AI Advisor (`Brain`/`Storico`) + portfolio abbonamenti e timeline prossimi addebiti |
-| Financial Lab (`/simulator`) | Stable | Portfolio obiettivi, scenari baseline/balanced/aggressive/custom, attivazione ritmo |
+| Import CSV | Stable | Wizard multi-step con parse/normalize/dedupe/enrich/grouping merchant + review guidata con preset soglia |
+| Insights | Stable | Trend analysis + AI Advisor (`Core`/`Storico`) + portfolio abbonamenti e timeline prossimi addebiti |
+| Financial Lab (`/simulator`) | Stable | Scenari baseline/balanced/aggressive in card espandibili con breakdown step-by-step della quota sostenibile |
 | Neural Core (`/brain`) | Active | Training locale del modello, nowcast mese corrente, timeline maturità |
 | Settings | Stable | Preferenze, categorie, backup/restore, diagnostica tecnica |
 | Notifications + Updates | Stable | Feed aggiornamenti in-app da `CHANGELOG.md`, badge unread, pagina `/updates` |

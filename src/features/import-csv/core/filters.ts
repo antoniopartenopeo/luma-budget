@@ -2,7 +2,6 @@ import { Group } from "./types";
 
 // Fixed threshold range: 0-1000€ = 0-100000 cents
 export const THRESHOLD_MAX_CENTS = 100000;
-export const THRESHOLD_STEP_CENTS = 500; // 5€ steps
 
 export interface FilterResult {
     includedGroups: Group[];

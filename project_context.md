@@ -1,6 +1,6 @@
 # Project Context
 
-Last updated: 2026-02-18
+Last updated: 2026-02-22
 Repository root: /Users/acvisuals/.gemini/antigravity/scratch/numa-budget
 Source workflow: numa-governance-update
 
@@ -16,6 +16,8 @@ Source workflow: numa-governance-update
 - Isolated sensitive logic in `src/VAULT/*`
 - Local-first persistence via `src/lib/storage-utils.ts` + storage keys registry
 - Changelog-driven notifications (`CHANGELOG.md` -> `/api/notifications/changelog` -> TopBar + `/updates`)
+- Shared UI selector pattern via `SegmentedPillSelector` (Dashboard periods + Import CSV threshold presets)
+- Financial Lab scenario surface consolidata in `ScenarioDeck` con breakdown espandibile
 
 ## Convenzioni di Naming e Stile
 - Path alias `@/*` per import assoluti
@@ -27,6 +29,7 @@ Source workflow: numa-governance-update
 - localStorage migration/reset: rischio side effect cross-feature se cleanup troppo aggressivo
 - Mixed legacy goals types in VAULT: rischio semantic drift con nuovo Financial Lab quota-mode
 - Terminologia source label (`Core` vs `Storico`) da mantenere allineata tra UI, changelog e regole semantiche
+- Refactor estesi UI (simulator/import) con forte riduzione componenti legacy: rischio drift test se checklist non aggiornata
 
 ## ADR Sintetici (Decisioni Architetturali)
 - 2026-02-11 Semantic shift Rhythm (ADR-005) - Contesto: ridurre tono punitivo budget. Impatto: copy e narrative contract.

@@ -57,6 +57,44 @@ export function getCurrentPeriod(date: Date = new Date()): string {
 }
 
 /**
+ * Returns the previous complete month as YYYY-MM.
+ * Example: if now is 2026-01-17, returns 2025-12.
+ */
+export function getPreviousCompleteMonthPeriod(now: Date = new Date()): string {
+    const previousMonthDate = new Date(now)
+    previousMonthDate.setDate(0)
+    return getCurrentPeriod(previousMonthDate)
+}
+
+/**
+ * Returns month keys (YYYY-MM) from pivot backwards.
+ * Includes pivot month as first element.
+ */
+export function getRollingMonthKeysFromPivot(pivotPeriod: string, months: number): string[] {
+    const [year, month] = pivotPeriod.split("-").map(Number)
+    const keys: string[] = []
+
+    for (let i = 0; i < months; i++) {
+        const date = new Date(year, month - 1 - i, 1)
+        keys.push(getCurrentPeriod(date))
+    }
+
+    return keys
+}
+
+/**
+ * Canonical range for "last N complete months" ending on previous month.
+ */
+export function getPreviousCompleteMonthsRange(
+    months: number,
+    now: Date = new Date()
+): { pivotPeriod: string; startDate: Date; endDate: Date } {
+    const pivotPeriod = getPreviousCompleteMonthPeriod(now)
+    const { startDate, endDate } = calculateDateRange(pivotPeriod, months)
+    return { pivotPeriod, startDate, endDate }
+}
+
+/**
  * Shift a period string by the provided number of months.
  * Positive delta moves forward, negative moves backward.
  */

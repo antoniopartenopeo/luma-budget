@@ -18,7 +18,7 @@ Tutti i componenti devono aderire rigorosamente a queste definizioni matematiche
 | Termine | Formula / Condizione | Note |
 | :--- | :--- | :--- |
 | **Saldo Totale Stimato (Advisor)** | `baseBalanceCents - predictedRemainingCurrentMonthExpensesCents` | Metrica primaria della card Advisor. |
-| **Spesa Residua Stimata** | `predictedRemainingCurrentMonthExpensesCents >= 0` | Mai negativa; può provenire da Brain o fallback storico. |
+| **Spesa Residua Stimata** | `predictedRemainingCurrentMonthExpensesCents >= 0` | Mai negativa; può provenire da Core o fallback storico. |
 | **Fonte Core** | `currentMonthNowcastReady === true` | Etichetta consentita solo con nowcast realmente pronto (source interna: `brain`). |
 | **Fonte Storico** | fallback attivo | Usare quando il Core non è pronto o non aggiornato sul dataset corrente. |
 | **Risparmio (Savings)** | `(Income - Expenses) > 0` | Valido solo se strettamente positivo. Se negativo, è "Deficit" o "Perdita". |

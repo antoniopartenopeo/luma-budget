@@ -32,7 +32,6 @@ export function BankCsvHelpSection() {
                                     href={bank.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    onClick={(event) => event.stopPropagation()}
                                     className={cn(
                                         "group/card relative overflow-hidden rounded-lg border border-border/60 bg-background/60 p-3 transition-colors hover:border-primary/30 hover:bg-muted/40",
                                         "flex items-center gap-3 outline-none focus:ring-2 focus:ring-primary/20"

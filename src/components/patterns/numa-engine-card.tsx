@@ -22,7 +22,6 @@ export interface AuditStat {
 }
 
 interface NumaEngineCardProps {
-    title: string
     icon: LucideIcon
     steps: EngineStep[]
     auditStats?: AuditStat[]
@@ -32,6 +31,8 @@ interface NumaEngineCardProps {
     certificationSubtitle?: string
     className?: string
 }
+
+const NUMA_ENGINE_UNIVERSAL_TITLE = "Come Funziona Numa"
 
 /**
  * NumaEngineCard
@@ -43,7 +44,6 @@ interface NumaEngineCardProps {
  * 3. Expandable "Audit" Section (Footer) with strict Grid Layout
  */
 export function NumaEngineCard({
-    title,
     icon: BackgroundIcon,
     steps,
     auditStats,
@@ -73,7 +73,7 @@ export function NumaEngineCard({
                 <div className="mb-8 flex items-center gap-2">
                     <div className="flex items-center gap-2">
                         <div className="h-1 w-8 bg-primary rounded-full" />
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-foreground/80">{title}</h4>
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-foreground/80">{NUMA_ENGINE_UNIVERSAL_TITLE}</h4>
                     </div>
                 </div>
 

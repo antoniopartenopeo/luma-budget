@@ -1,8 +1,8 @@
 # Numa Motion Principles & Governance
 
 > **Stato:** Attivo e vincolante
-> **Versione:** 1.3
-> **Ultimo aggiornamento:** 2026-02-11
+> **Versione:** 1.4
+> **Ultimo aggiornamento:** 2026-02-22
 
 Il motion in Numa comunica stato e priorità. Non è decorazione autonoma.
 
@@ -60,7 +60,7 @@ Per overlay Radix (`Dialog`, `Sheet`, `Popover`, `Dropdown`, `Select`) sono cons
 ### Zone Motion-Positive
 - Dashboard: transizioni KPI/charts.
 - Insights: stati advisor/trend.
-- Simulator/Goals: feedback su scenario e attivazione ritmo.
+- Simulator/Goals: feedback su scenario e derivazione quota sostenibile.
 - Neural Core: progresso e stato evolutivo.
 
 ### Zone Static-First

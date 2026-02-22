@@ -19,10 +19,16 @@ Schema usato in tutte le release:
 - Aggiornata la responsività dei grafici ECharts con resize più affidabile.
 - In Insights, la sezione **Abbonamenti attivi** ora è organizzata in card espandibili per gruppo, con dettaglio transazioni rilevate.
 - La vista **Prossimi addebiti** è stata trasformata in una timeline visuale a milestone, più leggibile e orientata alle scadenze.
+- In Dashboard, il selettore periodo ora usa pill segmentate (`Mese`, `3M`, `6M`, `12M`) per una lettura più immediata.
+- In Financial Lab, gli scenari sono stati consolidati in card espandibili con dettaglio step-by-step della quota (base storica, correzione live, quota sostenibile), senza pannello separato.
+- Nel wizard Import CSV, la revisione ora usa preset di soglia rapidi (al posto dello slider continuo) con KPI sintetiche su righe valide, duplicati e righe non leggibili.
+- La pagina `/transactions/import` include una card "Come Funziona Numa" dedicata al flusso di import.
+- Uniformato il pattern `NumaEngineCard` con titolo canonico condiviso e migliorata la consistenza dei componenti espandibili.
 
 ### Fixed (Correzioni)
 - Corretto il calcolo periodo mensile in Dashboard usando range locale, riducendo incoerenze nei passaggi di mese/fuso.
 - Sincronizzati i report audit di governance sul branch (`quick-check` + summary).
+- Corretto il comportamento del link "Apri transazioni filtrate" nel portfolio abbonamenti per evitare side effect di propagazione evento.
 
 ---
 

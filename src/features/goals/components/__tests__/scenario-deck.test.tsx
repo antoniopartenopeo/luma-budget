@@ -97,10 +97,29 @@ describe("ScenarioDeck", () => {
             />
         )
 
-        expect(screen.getByText("136,00 €/mese")).toBeInTheDocument()
-        expect(screen.getByText("149,00 €/mese")).toBeInTheDocument()
+        expect(screen.getAllByText(/136,00/i).length).toBeGreaterThan(0)
+        expect(screen.getByText(/149,00/i)).toBeInTheDocument()
+        expect(screen.getAllByText("/mese").length).toBeGreaterThan(0)
+        expect(screen.getByText("Ogni scenario mostra la quota mensile sostenibile, non il saldo finale del mese.")).toBeInTheDocument()
+        const baselineButton = screen.getByRole("button", { name: /Nessun Ritmo/i })
+        expect(baselineButton).toBeInTheDocument()
+        expect(screen.queryByTestId("scenario-step-baseline-margin")).not.toBeInTheDocument()
+        expect(screen.queryByTestId("scenario-step-baseline-live")).not.toBeInTheDocument()
+        expect(screen.queryByTestId("scenario-step-baseline-quota")).not.toBeInTheDocument()
+
+        fireEvent.click(baselineButton)
+
+        const marginStep = screen.getByTestId("scenario-step-baseline-margin")
+        const liveStep = screen.getByTestId("scenario-step-baseline-live")
+        const quotaStep = screen.getByTestId("scenario-step-baseline-quota")
+        expect(marginStep.compareDocumentPosition(liveStep) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+        expect(liveStep.compareDocumentPosition(quotaStep) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+        expect(screen.getByText("Correzione live")).toBeInTheDocument()
+        expect(screen.queryByText(/Correzione live \(\d+ mesi\)/i)).not.toBeInTheDocument()
+        expect(screen.getAllByText(/Tenuta quota: Molto solida/i).length).toBeGreaterThan(0)
         expect(screen.queryByText(/Tempo stimato/i)).not.toBeInTheDocument()
         expect(screen.queryByText(/Quando puoi arrivare/i)).not.toBeInTheDocument()
+        expect(screen.queryByText(/3\) In pratica/i)).not.toBeInTheDocument()
         expect(screen.queryByText("Personalizzato")).not.toBeInTheDocument()
         expect(screen.queryByText(/Apri configurazione/i)).not.toBeInTheDocument()
     })
@@ -125,7 +144,7 @@ describe("ScenarioDeck", () => {
             />
         )
 
-        expect(screen.getByText("Delicato")).toBeInTheDocument()
+        expect(screen.getByText(/Tenuta quota: Delicata/i)).toBeInTheDocument()
     })
 
     test("shows coherent overlay audit copy when realtime overlay is disabled", () => {

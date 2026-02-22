@@ -164,119 +164,118 @@ export function DashboardKpiGrid({
     }
 
     return (
-        <MacroSection
-            title="Panoramica del periodo"
-            description={isLoading ? undefined : contextText}
-            headerActions={headerActions}
-            className="w-full"
-        >
-            {/* Animated Grid Container for Soft Transitions */}
-            <StaggerContainer
-                key={filter?.period || "default"}
-                className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4 pt-4"
-            >
-                <motion.div variants={macroItemVariants} className="h-full">
-                    <KpiCard
-                        title="Saldo"
-                        value={isLoading ? 0 : formatValue(netBalanceCents || 0)}
-                        animatedValue={netBalanceCents || 0}
-                        formatFn={formatValue}
-                        valueClassName={getPrivacyClass(isPrivacyMode)}
-                        comparisonLabel="Totale storico"
-                        tone={saldoTone}
-                        icon={CreditCard}
-                        isLoading={isLoading}
-                        description={isLoading ? undefined : buildNarration("balance", netBalanceCents || 0, saldoTone)}
-                    />
-                </motion.div>
-                <motion.div variants={macroItemVariants} className="h-full">
-                    <KpiCard
-                        title="Spesa"
-                        value={isLoading ? 0 : formatValue(totalSpentCents || 0)}
-                        animatedValue={totalSpentCents || 0}
-                        formatFn={formatValue}
-                        valueClassName={getPrivacyClass(isPrivacyMode)}
-                        icon={Wallet}
-                        isLoading={isLoading}
-                        onClick={() => router.push("/transactions")}
-                        description={isLoading ? undefined : buildNarration("expenses", totalSpentCents || 0, spesaTone)}
-                    />
-                </motion.div>
-                <motion.div variants={macroItemVariants} className="h-full">
-                    <KpiCard
-                        title="Spese Extra"
-                        value={isLoading ? 0 : (uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—")}
-                        animatedValue={uselessSpendPercent ?? undefined}
-                        formatFn={(v) => `${Math.round(v)}%`}
-                        change={`Target ${superfluousTarget}%`}
-                        trend={superflueTone === "positive" ? "up" : superflueTone === "negative" ? "down" : "neutral"}
-                        tone={superflueTone}
-                        icon={AlertTriangle}
-                        isLoading={isLoading}
-                        onClick={() => router.push("/transactions?filter=wants")}
-                        description={isLoading ? undefined : buildNarration("superfluous", uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—", superflueTone, uselessSpendPercent ?? undefined)}
-                    />
-                </motion.div>
-                <motion.div variants={macroItemVariants} className="h-full md:col-span-2 lg:col-span-4">
-                    <KpiCard
-                        title="Segnale del mese"
-                        value={brainSignal.value}
-                        change={brainSignal.message}
-                        trend={brainSignal.trend}
-                        comparisonLabel={`${brainSignal.source} · Affidabilità ${brainSignal.confidence}`}
-                        tone={brainSignal.tone}
-                        icon={BrainCircuit}
-                        isLoading={false}
-                        onClick={() => router.push("/insights")}
-                        compact
-                    />
-                </motion.div>
-            </StaggerContainer>
+        <div className="w-full space-y-6">
+            <NumaEngineCard
+                icon={BrainCircuit}
+                className="w-full"
+                steps={[
+                    {
+                        icon: DollarSign,
+                        colorClass: "text-emerald-500",
+                        bgClass: "bg-emerald-500/10",
+                        stepLabel: "Passo 1",
+                        title: "Quanto puoi spendere ora",
+                        description: "Il saldo del periodo mostra quanta liquidità reale resta dopo entrate e uscite."
+                    },
+                    {
+                        icon: PiggyBank,
+                        colorClass: "text-amber-500",
+                        bgClass: "bg-amber-500/10",
+                        stepLabel: "Passo 2",
+                        title: "Cosa fa migliorare il margine",
+                        description: "Se riduci le Spese Extra, il margine residuo migliora automaticamente."
+                    },
+                    {
+                        icon: Hourglass,
+                        colorClass: "text-primary",
+                        bgClass: "bg-primary/10",
+                        stepLabel: "Passo 3",
+                        title: "Quando si aggiorna",
+                        description: "Ogni nuovo movimento aggiorna stima, velocità e direzione del mese."
+                    }
+                ]}
+                auditStats={[
+                    { label: "Metodo", value: "Storico comportamentale", subValue: "Base del calcolo mensile.", icon: TrendingUp },
+                    { label: "Aggiornamento", value: "Automatico", subValue: "Ricalcolo a ogni nuovo movimento.", icon: Zap },
+                    { label: "Dati usati", value: "Transazioni reali", subValue: "Nessuna stima manuale richiesta.", icon: BrainCircuit },
+                    { label: "Privacy", value: "Locale", subValue: "I calcoli restano sul dispositivo.", icon: ShieldCheck },
+                ]}
+                transparencyNote="Questa card non inventa regole: mostra solo lo stato reale del mese usando i tuoi movimenti."
+                auditLabel="Apri dettagli"
+                certificationTitle="Controllo e trasparenza"
+                certificationSubtitle="Logica chiara, dati reali, privacy locale"
+            />
 
-            {/* NUMA ENGINE (Transparency Context) */}
-            <div className="mt-8">
-                <NumaEngineCard
-                    title="Come Funziona Davvero"
-                    icon={BrainCircuit}
-                    className="w-full"
-                    steps={[
-                        {
-                            icon: DollarSign,
-                            colorClass: "text-emerald-500",
-                            bgClass: "bg-emerald-500/10",
-                            stepLabel: "Passo 1",
-                            title: "Quanto puoi spendere ora",
-                            description: "Il saldo del periodo mostra quanta liquidità reale resta dopo entrate e uscite."
-                        },
-                        {
-                            icon: PiggyBank,
-                            colorClass: "text-amber-500",
-                            bgClass: "bg-amber-500/10",
-                            stepLabel: "Passo 2",
-                            title: "Cosa fa migliorare il margine",
-                            description: "Se riduci le Spese Extra, il margine residuo migliora automaticamente."
-                        },
-                        {
-                            icon: Hourglass,
-                            colorClass: "text-primary",
-                            bgClass: "bg-primary/10",
-                            stepLabel: "Passo 3",
-                            title: "Quando si aggiorna",
-                            description: "Ogni nuovo movimento aggiorna stima, velocità e direzione del mese."
-                        }
-                    ]}
-                    auditStats={[
-                        { label: "Metodo", value: "Storico comportamentale", subValue: "Base del calcolo mensile.", icon: TrendingUp },
-                        { label: "Aggiornamento", value: "Automatico", subValue: "Ricalcolo a ogni nuovo movimento.", icon: Zap },
-                        { label: "Dati usati", value: "Transazioni reali", subValue: "Nessuna stima manuale richiesta.", icon: BrainCircuit },
-                        { label: "Privacy", value: "Locale", subValue: "I calcoli restano sul dispositivo.", icon: ShieldCheck },
-                    ]}
-                    transparencyNote="Questa card non inventa regole: mostra solo lo stato reale del mese usando i tuoi movimenti."
-                    auditLabel="Apri dettagli"
-                    certificationTitle="Controllo e trasparenza"
-                    certificationSubtitle="Logica chiara, dati reali, privacy locale"
-                />
-            </div>
-        </MacroSection>
+            <MacroSection
+                title="Panoramica del periodo"
+                description={isLoading ? undefined : contextText}
+                headerActions={headerActions}
+                className="w-full"
+            >
+                {/* Animated Grid Container for Soft Transitions */}
+                <StaggerContainer
+                    key={filter?.period || "default"}
+                    className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4 pt-4"
+                >
+                    <motion.div variants={macroItemVariants} className="h-full">
+                        <KpiCard
+                            title="Saldo"
+                            value={isLoading ? 0 : formatValue(netBalanceCents || 0)}
+                            animatedValue={netBalanceCents || 0}
+                            formatFn={formatValue}
+                            valueClassName={getPrivacyClass(isPrivacyMode)}
+                            comparisonLabel="Totale storico"
+                            tone={saldoTone}
+                            icon={CreditCard}
+                            isLoading={isLoading}
+                            description={isLoading ? undefined : buildNarration("balance", netBalanceCents || 0, saldoTone)}
+                        />
+                    </motion.div>
+                    <motion.div variants={macroItemVariants} className="h-full">
+                        <KpiCard
+                            title="Spesa"
+                            value={isLoading ? 0 : formatValue(totalSpentCents || 0)}
+                            animatedValue={totalSpentCents || 0}
+                            formatFn={formatValue}
+                            valueClassName={getPrivacyClass(isPrivacyMode)}
+                            icon={Wallet}
+                            isLoading={isLoading}
+                            onClick={() => router.push("/transactions")}
+                            description={isLoading ? undefined : buildNarration("expenses", totalSpentCents || 0, spesaTone)}
+                        />
+                    </motion.div>
+                    <motion.div variants={macroItemVariants} className="h-full">
+                        <KpiCard
+                            title="Spese Extra"
+                            value={isLoading ? 0 : (uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—")}
+                            animatedValue={uselessSpendPercent ?? undefined}
+                            formatFn={(v) => `${Math.round(v)}%`}
+                            change={`Target ${superfluousTarget}%`}
+                            trend={superflueTone === "positive" ? "up" : superflueTone === "negative" ? "down" : "neutral"}
+                            tone={superflueTone}
+                            icon={AlertTriangle}
+                            isLoading={isLoading}
+                            onClick={() => router.push("/transactions?filter=wants")}
+                            description={isLoading ? undefined : buildNarration("superfluous", uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—", superflueTone, uselessSpendPercent ?? undefined)}
+                        />
+                    </motion.div>
+                    <motion.div variants={macroItemVariants} className="h-full md:col-span-2 lg:col-span-4">
+                        <KpiCard
+                            title="Segnale del mese"
+                            value={brainSignal.value}
+                            change={brainSignal.message}
+                            trend={brainSignal.trend}
+                            comparisonLabel={`${brainSignal.source} · Affidabilità ${brainSignal.confidence}`}
+                            tone={brainSignal.tone}
+                            icon={BrainCircuit}
+                            isLoading={false}
+                            onClick={() => router.push("/insights")}
+                            compact
+                        />
+                    </motion.div>
+                </StaggerContainer>
+
+            </MacroSection>
+        </div>
     )
 }

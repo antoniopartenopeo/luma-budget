@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { CheckCircle2, Wallet, TrendingUp, TrendingDown, Loader2, AlertCircle } from "lucide-react"
+import { CheckCircle2, TrendingUp, TrendingDown, Loader2, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ImportState, Override } from "../core/types"
 import { generatePayload } from "../core/pipeline"
@@ -10,15 +10,12 @@ import { useCreateBatchTransactions } from "@/features/transactions/api/use-tran
 import { useCategories } from "@/features/categories/api/use-categories"
 import { WizardShell } from "./wizard-shell"
 import { MacroSection } from "@/components/patterns/macro-section"
-import { formatCents, formatSignedCents } from "@/domain/money"
+import { formatCents } from "@/domain/money"
 import { KpiCard } from "@/components/patterns/kpi-card"
-import { ImportMetricsGrid } from "./review"
-import { cn } from "@/lib/utils"
 
 interface ImportStepSummaryProps {
     importState: ImportState
     overrides: Override[]
-    thresholdCents: number
     excludedGroupIds: string[]
     onBack: () => void
     onClose: () => void
@@ -66,32 +63,13 @@ export function ImportStepSummary({
             else expense += t.amountCents
         })
 
-        const net = income - expense
-        return { income, expense, net, count }
+        return { income, expense, count }
     }, [payload])
 
-    const importVisibility = useMemo(() => {
-        const totalValidRows = importState.summary.totalRows
-        const duplicatesSkipped = importState.summary.duplicatesSkipped
+    const importDiagnostics = useMemo(() => {
         const discardedRows = importState.summary.parseErrors.length
-        const importableBeforeThreshold = importState.summary.selectedRows
-        const readyToImport = stats?.count ?? 0
-        const excludedByThreshold = Math.max(0, importableBeforeThreshold - readyToImport)
-
-        return {
-            totalValidRows,
-            duplicatesSkipped,
-            discardedRows,
-            excludedByThreshold,
-            readyToImport
-        }
-    }, [
-        importState.summary.totalRows,
-        importState.summary.duplicatesSkipped,
-        importState.summary.parseErrors.length,
-        importState.summary.selectedRows,
-        stats?.count
-    ])
+        return { discardedRows }
+    }, [importState.summary.parseErrors.length])
 
     const handleConfirm = async () => {
         if (!payload) return
@@ -105,21 +83,32 @@ export function ImportStepSummary({
     }
 
     if (isSuccess) {
-        return (
-            <div className="flex flex-col h-full items-center justify-center p-8 bg-background animate-enter-up text-center">
-                <div className="w-24 h-24 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-6 text-emerald-600 dark:text-emerald-400 cursor-default shadow-lg shadow-emerald-500/20">
-                    <CheckCircle2 className="h-12 w-12" />
-                </div>
-                <h2 className="mb-2 text-2xl font-bold tracking-tight sm:text-3xl">Importazione completata</h2>
-                <p className="text-muted-foreground text-lg w-full mx-auto mb-8">
-                    Hai aggiunto <span className="text-foreground font-semibold">{stats?.count} movimenti</span> allo storico.
-                    <br />
-                    <span className="font-medium text-primary">Li puoi rivedere e modificare dalla pagina Transazioni.</span>
-                </p>
+        const footer = (
+            <div className="flex w-full justify-end">
                 <Button onClick={onClose} size="lg" className="h-12 rounded-xl px-8 text-base shadow-lg transition-all hover:shadow-xl">
                     Torna a Transazioni
                 </Button>
             </div>
+        )
+
+        return (
+            <WizardShell
+                title="Importazione completata"
+                subtitle="I movimenti sono stati aggiunti allo storico."
+                step="summary"
+                footer={footer}
+            >
+                <MacroSection contentClassName="py-10">
+                    <div className="flex flex-col items-center justify-center gap-4 text-center">
+                        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 shadow-lg shadow-emerald-500/20 dark:bg-emerald-900/30 dark:text-emerald-400">
+                            <CheckCircle2 className="h-10 w-10" />
+                        </div>
+                        <p className="text-lg text-muted-foreground">
+                            Hai aggiunto <span className="font-semibold text-foreground">{stats?.count} movimenti</span>.
+                        </p>
+                    </div>
+                </MacroSection>
+            </WizardShell>
         )
     }
 
@@ -162,46 +151,22 @@ export function ImportStepSummary({
             footer={footer}
         >
             <div className="animate-enter-up">
-                <MacroSection contentClassName="space-y-6">
-                    <ImportMetricsGrid
-                        items={[
-                            {
-                                key: "valid-rows",
-                                label: "Righe valide",
-                                value: importVisibility.totalValidRows,
-                                tone: "neutral",
-                            },
-                            {
-                                key: "duplicates",
-                                label: "Duplicati esclusi",
-                                value: importVisibility.duplicatesSkipped,
-                                tone: "warning",
-                            },
-                            {
-                                key: "below-threshold",
-                                label: "Nascoste dal filtro",
-                                value: importVisibility.excludedByThreshold,
-                                tone: "info",
-                            },
-                            {
-                                key: "ready-import",
-                                label: "Pronte da aggiungere",
-                                value: importVisibility.readyToImport,
-                                tone: "success",
-                            },
-                        ]}
-                    />
-
-                    {importVisibility.discardedRows > 0 && (
-                        <div className="text-sm text-muted-foreground">
-                            Righe non leggibili nel file: <span className="font-semibold tabular-nums">{importVisibility.discardedRows}</span>
-                        </div>
-                    )}
-
-                    <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6">
+                <MacroSection contentClassName="space-y-5">
+                    <div className="w-full grid grid-cols-1 gap-4 lg:grid-cols-3">
+                        <KpiCard
+                            compact
+                            title="Movimenti da aggiungere"
+                            value={stats.count}
+                            icon={CheckCircle2}
+                            tone="neutral"
+                            valueClassName="text-2xl sm:text-3xl lg:text-4xl text-foreground"
+                            className="h-full"
+                            description="Confermando aggiungerai questi movimenti."
+                        />
                         <KpiCard
                             compact
                             title="Totale entrate"
+                            subtitle="Esclusi duplicati"
                             value={formatCents(stats.income)}
                             icon={TrendingUp}
                             tone="positive"
@@ -211,42 +176,35 @@ export function ImportStepSummary({
                         <KpiCard
                             compact
                             title="Totale uscite"
+                            subtitle="Esclusi duplicati"
                             value={formatCents(stats.expense)}
                             icon={TrendingDown}
                             tone="negative"
                             valueClassName="text-2xl sm:text-3xl lg:text-4xl text-rose-700 dark:text-rose-300"
                             className="h-full"
                         />
-                        <KpiCard
-                            compact
-                            title="Saldo periodo"
-                            value={formatSignedCents(stats.net)}
-                            icon={Wallet}
-                            tone={stats.net >= 0 ? "positive" : "negative"}
-                            valueClassName={cn(
-                                "text-2xl sm:text-3xl lg:text-4xl",
-                                stats.net >= 0 ? "text-emerald-700 dark:text-emerald-300" : "text-rose-700 dark:text-rose-300"
+                    </div>
+
+                    {(importDiagnostics.discardedRows > 0 || isSaveError) && (
+                        <div className="w-full space-y-3 rounded-xl border border-border/60 bg-muted/15 p-4">
+                            {importDiagnostics.discardedRows > 0 && (
+                                <p className="text-sm text-muted-foreground">
+                                    Righe non leggibili ignorate:{" "}
+                                    <span className="font-semibold tabular-nums text-foreground">{importDiagnostics.discardedRows}</span>
+                                </p>
                             )}
-                            className="h-full"
-                        />
-                    </div>
 
-                    <div className="w-full space-y-4 rounded-xl border border-border/60 bg-muted/15 p-4">
-                        <p className="text-sm text-muted-foreground">
-                            Confermando aggiungerai <strong className="font-semibold text-foreground">{stats.count} movimenti</strong> allo storico.
-                            In seguito potrai sempre correggerli o eliminarli.
-                        </p>
-
-                        {isSaveError && (
-                            <div className="flex items-center gap-3 rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-left text-destructive">
-                                <AlertCircle className="h-5 w-5 shrink-0" />
-                                <div>
-                                    <p className="font-bold text-sm">Errore durante il salvataggio</p>
-                                    <p className="text-xs opacity-90">Ci dispiace, qualcosa è andato storto. Riprova.</p>
+                            {isSaveError && (
+                                <div className="flex items-center gap-3 rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-left text-destructive">
+                                    <AlertCircle className="h-5 w-5 shrink-0" />
+                                    <div>
+                                        <p className="font-bold text-sm">Errore durante il salvataggio</p>
+                                        <p className="text-xs opacity-90">Ci dispiace, qualcosa è andato storto. Riprova.</p>
+                                    </div>
                                 </div>
-                            </div>
-                        )}
-                    </div>
+                            )}
+                        </div>
+                    )}
                 </MacroSection>
             </div>
         </WizardShell>

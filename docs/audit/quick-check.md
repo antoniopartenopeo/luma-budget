@@ -1,6 +1,6 @@
 # Governance Quick Check
 
-Generated at (UTC): 2026-02-22T00:40:08Z
+Generated at (UTC): 2026-02-22T00:55:56Z
 
 Scope:
 - Repository: numa-budget
@@ -98,11 +98,11 @@ filterByRange usage (first 60):
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/dashboard/api/repository.ts:35:    const rangeTransactions = filterByRange(transactions, startDate, endDate)
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/transactions/utils/transactions-logic.ts:3:import { filterByRange } from "@/lib/date-ranges";
 /Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/transactions/utils/transactions-logic.ts:52:    const scopedTransactions = filterByRange(transactions, start, end)
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/simulator/utils.ts:4:import { calculateDateRange, filterByRange } from "@/lib/date-ranges"
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/simulator/utils.ts:54:    const inRangeTransactions = filterByRange(transactions, startDate, endDate)
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/lib/date-ranges.ts:143:export function filterByRange<T extends { timestamp: number }>(
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/VAULT/goals/logic/financial-baseline.ts:3:import { calculateDateRange, filterByRange } from "@/lib/date-ranges"
-/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/VAULT/goals/logic/financial-baseline.ts:38:    const periodTransactions = filterByRange(transactions, startDate, endDate)
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/simulator/utils.ts:3:import { filterByRange, getPreviousCompleteMonthsRange } from "@/lib/date-ranges"
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/features/simulator/utils.ts:45:    const inRangeTransactions = filterByRange(transactions, startDate, endDate)
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/lib/date-ranges.ts:181:export function filterByRange<T extends { timestamp: number }>(
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/VAULT/goals/logic/financial-baseline.ts:3:import { filterByRange, getPreviousCompleteMonthsRange, getRollingMonthKeysFromPivot } from "@/lib/date-ranges"
+/Users/acvisuals/.gemini/antigravity/scratch/numa-budget/src/VAULT/goals/logic/financial-baseline.ts:35:    const periodTransactions = filterByRange(transactions, startDate, endDate)
 
 Candidate files with period logic and no `filterByRange` (first 40):
 

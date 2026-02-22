@@ -165,46 +165,48 @@ export function DashboardKpiGrid({
 
     return (
         <div className="w-full space-y-6">
-            <NumaEngineCard
-                icon={BrainCircuit}
-                className="w-full"
-                steps={[
-                    {
-                        icon: DollarSign,
-                        colorClass: "text-emerald-500",
-                        bgClass: "bg-emerald-500/10",
-                        stepLabel: "Passo 1",
-                        title: "Quanto puoi spendere ora",
-                        description: "Il saldo del periodo mostra quanta liquidità reale resta dopo entrate e uscite."
-                    },
-                    {
-                        icon: PiggyBank,
-                        colorClass: "text-amber-500",
-                        bgClass: "bg-amber-500/10",
-                        stepLabel: "Passo 2",
-                        title: "Cosa fa migliorare il margine",
-                        description: "Se riduci le Spese Extra, il margine residuo migliora automaticamente."
-                    },
-                    {
-                        icon: Hourglass,
-                        colorClass: "text-primary",
-                        bgClass: "bg-primary/10",
-                        stepLabel: "Passo 3",
-                        title: "Quando si aggiorna",
-                        description: "Ogni nuovo movimento aggiorna stima, velocità e direzione del mese."
-                    }
-                ]}
-                auditStats={[
-                    { label: "Metodo", value: "Storico comportamentale", subValue: "Base del calcolo mensile.", icon: TrendingUp },
-                    { label: "Aggiornamento", value: "Automatico", subValue: "Ricalcolo a ogni nuovo movimento.", icon: Zap },
-                    { label: "Dati usati", value: "Transazioni reali", subValue: "Nessuna stima manuale richiesta.", icon: BrainCircuit },
-                    { label: "Privacy", value: "Locale", subValue: "I calcoli restano sul dispositivo.", icon: ShieldCheck },
-                ]}
-                transparencyNote="Questa card non inventa regole: mostra solo lo stato reale del mese usando i tuoi movimenti."
-                auditLabel="Apri dettagli"
-                certificationTitle="Controllo e trasparenza"
-                certificationSubtitle="Logica chiara, dati reali, privacy locale"
-            />
+            <motion.div variants={macroItemVariants}>
+                <NumaEngineCard
+                    icon={BrainCircuit}
+                    className="w-full"
+                    steps={[
+                        {
+                            icon: DollarSign,
+                            colorClass: "text-emerald-500",
+                            bgClass: "bg-emerald-500/10",
+                            stepLabel: "Passo 1",
+                            title: "Quanto puoi spendere ora",
+                            description: "Il saldo del periodo mostra quanta liquidità reale resta dopo entrate e uscite."
+                        },
+                        {
+                            icon: PiggyBank,
+                            colorClass: "text-amber-500",
+                            bgClass: "bg-amber-500/10",
+                            stepLabel: "Passo 2",
+                            title: "Cosa fa migliorare il margine",
+                            description: "Se riduci le Spese Extra, il margine residuo migliora automaticamente."
+                        },
+                        {
+                            icon: Hourglass,
+                            colorClass: "text-primary",
+                            bgClass: "bg-primary/10",
+                            stepLabel: "Passo 3",
+                            title: "Quando si aggiorna",
+                            description: "Ogni nuovo movimento aggiorna stima, velocità e direzione del mese."
+                        }
+                    ]}
+                    auditStats={[
+                        { label: "Metodo", value: "Storico comportamentale", subValue: "Base del calcolo mensile.", icon: TrendingUp },
+                        { label: "Aggiornamento", value: "Automatico", subValue: "Ricalcolo a ogni nuovo movimento.", icon: Zap },
+                        { label: "Dati usati", value: "Transazioni reali", subValue: "Nessuna stima manuale richiesta.", icon: BrainCircuit },
+                        { label: "Privacy", value: "Locale", subValue: "I calcoli restano sul dispositivo.", icon: ShieldCheck },
+                    ]}
+                    transparencyNote="Questa card non inventa regole: mostra solo lo stato reale del mese usando i tuoi movimenti."
+                    auditLabel="Apri dettagli"
+                    certificationTitle="Controllo e trasparenza"
+                    certificationSubtitle="Logica chiara, dati reali, privacy locale"
+                />
+            </motion.div>
 
             <MacroSection
                 title="Panoramica del periodo"

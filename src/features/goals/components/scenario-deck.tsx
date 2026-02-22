@@ -148,7 +148,7 @@ export function ScenarioDeck({
                     const marginDeltaSign = marginDeltaCents > 0 ? "+" : ""
                     const marginDeltaPct = Math.round((scenario.quota.realtimeCapacityFactor - 1) * 100)
                     const marginDeltaPctSign = marginDeltaPct > 0 ? "+" : ""
-                    const realtimeStepLabel = getRealtimeStepLabel(scenario.quota.realtimeWindowMonths)
+                    const realtimeStepLabel = getRealtimeStepLabel()
                     const realtimeNarrative = getRealtimeNarrative(scenario.quota.realtimeWindowMonths)
                     const updatedMarginLabel = `${formatCents(scenario.quota.realtimeMonthlyMarginCents, currency, locale)}${perMonthSuffix}`
                     const planBasisBadge = getPlanBasisLabel(scenario.planBasis)

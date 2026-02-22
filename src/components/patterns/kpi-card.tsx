@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
-import { motion } from "framer-motion"
 
 export type KpiTone = "positive" | "negative" | "neutral" | "warning"
 
@@ -71,12 +70,7 @@ export function KpiCard({
     }
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className={compact ? undefined : "h-full"}
-        >
+        <div className={compact ? undefined : "h-full"}>
             <Card
                 className={cn(
                     "rounded-xl glass-card",
@@ -159,6 +153,6 @@ export function KpiCard({
                     </div>
                 </CardContent>
             </Card>
-        </motion.div>
+        </div>
     )
 }

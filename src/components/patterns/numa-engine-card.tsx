@@ -60,7 +60,7 @@ export function NumaEngineCard({
 
     return (
         <div className={cn(
-            "relative overflow-hidden glass-card backdrop-blur-2xl rounded-[2.5rem] p-8 sm:p-10",
+            "relative overflow-hidden glass-panel backdrop-blur-2xl rounded-[2.5rem] p-8 sm:p-10",
             className
         )}>
             {/* Background Decor */}

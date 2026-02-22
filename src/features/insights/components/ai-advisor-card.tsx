@@ -1,5 +1,5 @@
 import * as React from "react"
-import { motion, Variants } from "framer-motion"
+import { motion, Variants, useReducedMotion } from "framer-motion"
 import { Sparkles, TrendingUp, Wallet, BrainCircuit, LineChart, Search, Lock } from "lucide-react"
 import { MacroSection } from "@/components/patterns/macro-section"
 import { cn } from "@/lib/utils"
@@ -88,6 +88,7 @@ export function NumaAdvisorHowItWorksCard({ forecast, facts, className }: NumaAd
 
 function AIAdvisorCardView({ forecast, subscriptions, isLoading: aiLoading }: AIAdvisorResult) {
     const { currency, locale } = useCurrency()
+    const prefersReducedMotion = useReducedMotion()
 
     const isLoading = aiLoading
     const subscriptionPortfolio = React.useMemo(() => {
@@ -205,8 +206,8 @@ function AIAdvisorCardView({ forecast, subscriptions, isLoading: aiLoading }: AI
         >
             <motion.div
                 variants={containerVariants}
-                initial="hidden"
-                animate="visible"
+                initial={prefersReducedMotion ? false : "hidden"}
+                animate={prefersReducedMotion ? undefined : "visible"}
                 className="flex flex-col gap-6"
             >
                 {/* 1. Proiezione */}

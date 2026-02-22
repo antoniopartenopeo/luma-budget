@@ -48,7 +48,7 @@ export function TopbarNotifications({ triggerClassName }: TopbarNotificationsPro
                     variant="ghost"
                     size="icon"
                     data-testid="topbar-notifications-trigger"
-                    aria-label="Notifiche changelog beta"
+                    aria-label="Notifiche aggiornamenti"
                     className={cn(
                         "group relative h-10 w-10 rounded-full border border-primary/20 bg-primary/10 text-primary transition-all duration-300 hover:bg-primary/20 hover:shadow-md hover:-translate-y-[1px] motion-reduce:transform-none",
                         triggerClassName
@@ -72,13 +72,13 @@ export function TopbarNotifications({ triggerClassName }: TopbarNotificationsPro
             >
                 <div className="px-4 py-3 border-b border-border/50 flex items-center justify-between gap-3">
                     <div className="flex flex-col gap-0.5">
-                        <span className="text-xs font-black uppercase tracking-wider text-foreground">Aggiornamenti Beta</span>
+                        <span className="text-xs font-black uppercase tracking-wider text-foreground">Aggiornamenti App</span>
                         <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-medium text-muted-foreground">
+                            <span className="text-xs font-medium text-muted-foreground">
                                 {unreadCount} non lett{unreadCount === 1 ? "o" : "i"}
                             </span>
                             {criticalUnreadCount > 0 && (
-                                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-600 dark:text-rose-300">
+                                <span className="inline-flex items-center gap-1 text-xs font-bold text-rose-600 dark:text-rose-300">
                                     <AlertTriangle className="h-3 w-3" />
                                     {criticalUnreadCount} critic{criticalUnreadCount === 1 ? "o" : "i"}
                                 </span>
@@ -89,7 +89,7 @@ export function TopbarNotifications({ triggerClassName }: TopbarNotificationsPro
                         variant="ghost"
                         size="sm"
                         data-testid="topbar-notifications-mark-all"
-                        className="text-[10px] uppercase tracking-wider font-bold h-7 px-2"
+                        className="text-xs uppercase tracking-wider font-bold h-7 px-2"
                         disabled={!hasUnread || markAllAsRead.isPending}
                         onClick={() => markAllAsRead.mutate({
                             ids: notifications.map(notification => notification.id),
@@ -131,17 +131,17 @@ export function TopbarNotifications({ triggerClassName }: TopbarNotificationsPro
                                     <div className="flex items-center gap-1.5">
                                         <Badge
                                             variant="outline"
-                                            className={cn("text-[9px] px-2 py-0.5", NOTIFICATION_KIND_CLASS[notification.kind])}
+                                            className={cn("text-[10px] px-2 py-0.5", NOTIFICATION_KIND_CLASS[notification.kind])}
                                         >
                                             {NOTIFICATION_KIND_LABEL[notification.kind]}
                                         </Badge>
                                         {isCritical && (
-                                            <Badge variant="outline" className="text-[9px] px-2 py-0.5 border-rose-500/25 bg-rose-500/15 text-rose-700 dark:text-rose-300">
+                                            <Badge variant="outline" className="text-[10px] px-2 py-0.5 border-rose-500/25 bg-rose-500/15 text-rose-700 dark:text-rose-300">
                                                 Critico
                                             </Badge>
                                         )}
                                     </div>
-                                    <span className="text-[10px] text-muted-foreground font-medium">
+                                    <span className="text-xs text-muted-foreground font-medium">
                                         {formatItalianDate(notification.publishedAt)}
                                     </span>
                                 </div>
@@ -164,7 +164,7 @@ export function TopbarNotifications({ triggerClassName }: TopbarNotificationsPro
                                             variant="ghost"
                                             size="sm"
                                             data-testid={`notification-read-${notification.id}`}
-                                            className="h-7 px-2 text-[10px] uppercase tracking-wider font-bold"
+                                            className="h-7 px-2 text-xs uppercase tracking-wider font-bold"
                                             onClick={() => markOneAsRead.mutate({
                                                 id: notification.id,
                                                 lastSeenVersion: latestVersion,
@@ -181,7 +181,7 @@ export function TopbarNotifications({ triggerClassName }: TopbarNotificationsPro
                 </div>
 
                 <div className="px-3 py-2 border-t border-border/50">
-                    <Button asChild variant="ghost" size="sm" data-testid="topbar-notifications-open-updates" className="w-full justify-center text-[10px] uppercase tracking-wider font-bold h-8">
+                    <Button asChild variant="ghost" size="sm" data-testid="topbar-notifications-open-updates" className="w-full justify-center text-xs uppercase tracking-wider font-bold h-8">
                         <Link href="/updates">Apri storico aggiornamenti</Link>
                     </Button>
                 </div>

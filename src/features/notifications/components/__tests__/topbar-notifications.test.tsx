@@ -67,7 +67,7 @@ describe("TopbarNotifications", () => {
         await openNotificationsMenu()
 
         await waitFor(() => {
-            expect(screen.getByText("Aggiornamenti Beta")).toBeInTheDocument()
+            expect(screen.getByText("Aggiornamenti App")).toBeInTheDocument()
             expect(screen.getByText("v0.3.0 · Nuove funzionalita")).toBeInTheDocument()
         })
     })

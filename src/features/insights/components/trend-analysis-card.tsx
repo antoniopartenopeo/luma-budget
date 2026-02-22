@@ -386,16 +386,16 @@ export function TrendAnalysisCard({
                         return `
             <div style="display: flex; flex-direction: column; gap: 4px;">
               <div style="display: flex; justify-content: space-between; gap: 24px;">
-                <span style="color: #94a3b8; font-size: 12px;">Addebito previsto</span>
-                <span style="font-weight: 700; color: #0f766e; font-size: 13px;">${formatEuroNumber(timelineMilestone.amountCents / 100, currency, locale)}</span>
+                <span style="color: oklch(var(--muted-foreground)); font-size: 12px;">Addebito previsto</span>
+                <span style="font-weight: 700; color: oklch(var(--success)); font-size: 13px;">${formatEuroNumber(timelineMilestone.amountCents / 100, currency, locale)}</span>
               </div>
               <div style="display: flex; justify-content: space-between; gap: 24px;">
-                <span style="color: #94a3b8; font-size: 12px;">Voce</span>
-                <span style="font-weight: 700; color: ${isDarkMode ? "#e2e8f0" : "#1e293b"}; font-size: 13px;">${safeTimelineDescription}</span>
+                <span style="color: oklch(var(--muted-foreground)); font-size: 12px;">Voce</span>
+                <span style="font-weight: 700; color: oklch(var(--foreground)); font-size: 13px;">${safeTimelineDescription}</span>
               </div>
               <div style="display: flex; justify-content: space-between; gap: 24px; margin-top: 4px; padding-top: 4px; border-top: 1px dashed rgba(128,128,128,0.2);">
-                <span style="color: #94a3b8; font-size: 12px;">Quando</span>
-                <span style="font-weight: 700; color: #0f766e; font-size: 13px;">${safeDueLabel}</span>
+                <span style="color: oklch(var(--muted-foreground)); font-size: 12px;">Quando</span>
+                <span style="font-weight: 700; color: oklch(var(--success)); font-size: 13px;">${safeDueLabel}</span>
               </div>
             </div>
           `
@@ -409,16 +409,16 @@ export function TrendAnalysisCard({
             </div>
             <div style="display: flex; flex-direction: column; gap: 4px;">
               <div style="display: flex; justify-content: space-between; gap: 24px;">
-                <span style="color: #94a3b8; font-size: 12px;">Uscite stimate</span>
-                <span style="font-weight: 700; color: #f59e0b; font-size: 13px;">${formatEuroNumber(projection.projectedEndExpenses, currency, locale)}</span>
+                <span style="color: oklch(var(--muted-foreground)); font-size: 12px;">Uscite stimate</span>
+                <span style="font-weight: 700; color: oklch(var(--warning)); font-size: 13px;">${formatEuroNumber(projection.projectedEndExpenses, currency, locale)}</span>
               </div>
               <div style="display: flex; justify-content: space-between; gap: 24px;">
-                <span style="color: #94a3b8; font-size: 12px;">Spese residue previste</span>
-                <span style="font-weight: 700; color: #f59e0b; font-size: 13px;">${formatEuroNumber(projection.remainingExpenses, currency, locale)}</span>
+                <span style="color: oklch(var(--muted-foreground)); font-size: 12px;">Spese residue previste</span>
+                <span style="font-weight: 700; color: oklch(var(--warning)); font-size: 13px;">${formatEuroNumber(projection.remainingExpenses, currency, locale)}</span>
               </div>
               <div style="display: flex; justify-content: space-between; gap: 24px; margin-top: 4px; padding-top: 4px; border-top: 1px dashed rgba(128,128,128,0.2);">
-                <span style="color: #94a3b8; font-size: 12px;">Fonte</span>
-                <span style="font-weight: 700; color: #3b82f6; font-size: 13px;">${safeSourceLabel}</span>
+                <span style="color: oklch(var(--muted-foreground)); font-size: 12px;">Fonte</span>
+                <span style="font-weight: 700; color: oklch(var(--info)); font-size: 13px;">${safeSourceLabel}</span>
               </div>
             </div>
           `
@@ -432,8 +432,8 @@ export function TrendAnalysisCard({
                     const projectionNote = projection.enabled && index === projection.anchorIndex
                         ? `
               <div style="display: flex; justify-content: space-between; gap: 24px; margin-top: 4px; padding-top: 4px; border-top: 1px dashed rgba(128,128,128,0.2);">
-                <span style="color: #94a3b8; font-size: 12px;">Fine mese stimata</span>
-                <span style="font-weight: 700; color: #f59e0b; font-size: 13px;">${formatEuroNumber(projection.projectedEndExpenses, currency, locale)} (${safeSourceLabel})</span>
+                <span style="color: oklch(var(--muted-foreground)); font-size: 12px;">Fine mese stimata</span>
+                <span style="font-weight: 700; color: oklch(var(--warning)); font-size: 13px;">${formatEuroNumber(projection.projectedEndExpenses, currency, locale)} (${safeSourceLabel})</span>
               </div>
             `
                         : ""
@@ -444,16 +444,16 @@ export function TrendAnalysisCard({
             </div>
             <div style="display: flex; flex-direction: column; gap: 4px;">
               <div style="display: flex; justify-content: space-between; gap: 24px;">
-                <span style="color: #94a3b8; font-size: 12px;">Entrate</span>
-                <span style="font-weight: 700; color: #10b981; font-size: 13px;">${formatEuroNumber(incomeValue, currency, locale)}</span>
+                <span style="color: oklch(var(--muted-foreground)); font-size: 12px;">Entrate</span>
+                <span style="font-weight: 700; color: oklch(var(--success)); font-size: 13px;">${formatEuroNumber(incomeValue, currency, locale)}</span>
               </div>
               <div style="display: flex; justify-content: space-between; gap: 24px;">
-                <span style="color: #94a3b8; font-size: 12px;">Uscite</span>
-                <span style="font-weight: 700; color: #f43f5e; font-size: 13px;">${formatEuroNumber(expensesValue, currency, locale)}</span>
+                <span style="color: oklch(var(--muted-foreground)); font-size: 12px;">Uscite</span>
+                <span style="font-weight: 700; color: oklch(var(--destructive)); font-size: 13px;">${formatEuroNumber(expensesValue, currency, locale)}</span>
               </div>
               <div style="display: flex; justify-content: space-between; gap: 24px; margin-top: 4px; padding-top: 4px; border-top: 1px dashed rgba(128,128,128,0.2);">
-                <span style="color: #94a3b8; font-size: 12px;">Risparmio</span>
-                <span style="font-weight: 700; color: #3b82f6; font-size: 13px;">${safeSavingsRate}</span>
+                <span style="color: oklch(var(--muted-foreground)); font-size: 12px;">Risparmio</span>
+                <span style="font-weight: 700; color: oklch(var(--info)); font-size: 13px;">${safeSavingsRate}</span>
               </div>
               ${projectionNote}
             </div>

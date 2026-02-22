@@ -4,8 +4,8 @@ import { useState } from "react"
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { motion, AnimatePresence } from "framer-motion"
-import { MacroSection } from "@/components/patterns/macro-section"
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
+import { MacroSection, macroItemVariants } from "@/components/patterns/macro-section"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
 import { PageHeader } from "@/components/ui/page-header"
 import { StateMessage } from "@/components/ui/state-message"
@@ -23,6 +23,7 @@ interface InsightsPageContentProps {
 
 export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps) {
     const [period, setPeriod] = useState(initialPeriod || getCurrentPeriod())
+    const prefersReducedMotion = useReducedMotion()
 
     const { insights, isLoading, isEmpty, hasTransactions } = useInsights({ period })
     const advisorData = useAIAdvisor()
@@ -47,11 +48,13 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
             {/* Global Motion Orchestration */}
             <StaggerContainer>
                 {/* How It Works Section */}
-                <NumaAdvisorHowItWorksCard
-                    forecast={advisorData.forecast}
-                    facts={advisorData.facts}
-                    className="rounded-[2.5rem]"
-                />
+                <motion.div variants={macroItemVariants}>
+                    <NumaAdvisorHowItWorksCard
+                        forecast={advisorData.forecast}
+                        facts={advisorData.facts}
+                        className="rounded-[2.5rem]"
+                    />
+                </motion.div>
 
                 {/* AI Advisor Section (HERO) */}
                 <AIAdvisorCard advisorData={advisorData} />
@@ -102,9 +105,9 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
                                 {isLoading ? (
                                     <motion.div
                                         key="loading"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
+                                        initial={prefersReducedMotion ? false : { opacity: 0 }}
+                                        animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+                                        exit={prefersReducedMotion ? undefined : { opacity: 0 }}
                                         className="space-y-4 py-8"
                                     >
                                         <div className="space-y-4">
@@ -116,9 +119,9 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
                                 ) : isEmpty ? (
                                     <motion.div
                                         key="empty"
-                                        initial={{ opacity: 0, scale: 0.98 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        exit={{ opacity: 0 }}
+                                        initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.98 }}
+                                        animate={prefersReducedMotion ? undefined : { opacity: 1, scale: 1 }}
+                                        exit={prefersReducedMotion ? undefined : { opacity: 0 }}
                                         className="py-8"
                                     >
                                         <StateMessage
@@ -134,8 +137,8 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
                                 ) : (
                                     <motion.div
                                         key="list"
-                                        initial="hidden"
-                                        animate="visible"
+                                        initial={prefersReducedMotion ? false : "hidden"}
+                                        animate={prefersReducedMotion ? undefined : "visible"}
                                         variants={{
                                             hidden: { opacity: 0 },
                                             visible: {

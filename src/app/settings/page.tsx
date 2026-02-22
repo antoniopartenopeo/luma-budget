@@ -9,6 +9,9 @@ import { CategoriesSection } from "@/features/settings/components/categories-sec
 import { BackupSection } from "@/features/settings/components/backup-section"
 import { AdvancedSection } from "@/features/settings/components/advanced-section"
 import { PageHeader } from "@/components/ui/page-header"
+import { StaggerContainer } from "@/components/patterns/stagger-container"
+import { macroItemVariants } from "@/components/patterns/macro-section"
+import { motion } from "framer-motion"
 
 const VALID_TABS = ["preferences", "categories", "backup", "advanced"] as const
 type TabValue = typeof VALID_TABS[number]
@@ -40,22 +43,22 @@ function SettingsContent() {
 
     return (
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="flex w-full overflow-x-auto overflow-y-hidden mb-8 bg-muted/20 p-1 rounded-xl scrollbar-hide">
-                <TabsTrigger value="preferences" className="flex-1 gap-2 min-w-[100px] sm:min-w-0" aria-label="Preferenze">
+            <TabsList className="mb-8 grid w-full grid-cols-2 gap-1 rounded-xl bg-muted/20 p-1 sm:grid-cols-4">
+                <TabsTrigger value="preferences" className="min-w-0 gap-2 px-2 py-2 text-xs sm:text-sm" aria-label="Preferenze">
                     <Settings2 className="h-4 w-4 hidden xs:block" aria-hidden="true" />
-                    <span>Preferenze</span>
+                    <span className="truncate">Preferenze</span>
                 </TabsTrigger>
-                <TabsTrigger value="categories" className="flex-1 gap-2 min-w-[100px] sm:min-w-0" aria-label="Categorie">
+                <TabsTrigger value="categories" className="min-w-0 gap-2 px-2 py-2 text-xs sm:text-sm" aria-label="Categorie">
                     <Database className="h-4 w-4 hidden xs:block" aria-hidden="true" />
-                    <span>Categorie</span>
+                    <span className="truncate">Categorie</span>
                 </TabsTrigger>
-                <TabsTrigger value="backup" className="flex-1 gap-2 min-w-[100px] sm:min-w-0" aria-label="Backup">
+                <TabsTrigger value="backup" className="min-w-0 gap-2 px-2 py-2 text-xs sm:text-sm" aria-label="Backup">
                     <Download className="h-4 w-4 hidden xs:block" aria-hidden="true" />
-                    <span>Backup</span>
+                    <span className="truncate">Backup</span>
                 </TabsTrigger>
-                <TabsTrigger value="advanced" className="flex-1 gap-2 min-w-[100px] sm:min-w-0" aria-label="Avanzate (sezione tecnica)">
+                <TabsTrigger value="advanced" className="min-w-0 gap-2 px-2 py-2 text-xs sm:text-sm" aria-label="Avanzate (sezione tecnica)">
                     <Wrench className="h-4 w-4 hidden xs:block" aria-hidden="true" />
-                    <span>Avanzate (Tech)</span>
+                    <span className="truncate">Avanzate</span>
                 </TabsTrigger>
             </TabsList>
 
@@ -90,17 +93,19 @@ function SettingsLoading() {
 
 export default function SettingsPage() {
     return (
-        <div className="space-y-6">
-            <div className="mb-8">
+        <StaggerContainer className="space-y-8">
+            <motion.div variants={macroItemVariants}>
                 <PageHeader
                     title="Impostazioni"
                     description="Configura le preferenze dell'applicazione e gestisci i tuoi dati."
                 />
-            </div>
+            </motion.div>
 
-            <Suspense fallback={<SettingsLoading />}>
-                <SettingsContent />
-            </Suspense>
-        </div>
+            <motion.div variants={macroItemVariants}>
+                <Suspense fallback={<SettingsLoading />}>
+                    <SettingsContent />
+                </Suspense>
+            </motion.div>
+        </StaggerContainer>
     )
 }

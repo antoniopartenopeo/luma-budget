@@ -79,7 +79,7 @@ export function getSustainabilityLabel(status: SustainabilityStatus): string {
     return "A rischio"
 }
 
-export function getRealtimeStepLabel(_realtimeWindowMonths: number): string {
+export function getRealtimeStepLabel(): string {
     return FINANCIAL_LAB_COPY.resultsPanel.liveStepLabelBase
 }
 

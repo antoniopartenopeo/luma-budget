@@ -53,6 +53,8 @@ interface PieLabelLayoutParam {
     labelLinePoints?: unknown
 }
 
+const CHART_FALLBACK_COLORS = ["#0891b2", "#0ea5a4", "#22c55e", "#f59e0b", "#f97316"] as const
+
 function normalizeLinePoints(points: unknown): LinePoint[] {
     if (!Array.isArray(points)) return []
 
@@ -152,7 +154,7 @@ export function SpendingCompositionCard({
         chartSlices.map((slice, index) => {
             const baseColor = slice.id === SYNTHETIC_ALTRI_ID
                 ? "#94a3b8"
-                : (slice.color || ["#4f46e5", "#f97316", "#0ea5e9", "#22c55e", "#f59e0b"][index % 5])
+                : (slice.color || CHART_FALLBACK_COLORS[index % CHART_FALLBACK_COLORS.length])
 
             const gradient = new echarts.graphic.LinearGradient(0, 0, 0, 1, [
                 { offset: 0, color: baseColor },

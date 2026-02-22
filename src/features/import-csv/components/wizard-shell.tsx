@@ -86,7 +86,7 @@ export function WizardShell({
                                         "truncate text-sm font-medium",
                                         isActive && "text-primary"
                                     )}>
-                                        {index + 1}. {wizardStep.label}
+                                        {wizardStep.label}
                                     </span>
                                 </div>
                             )

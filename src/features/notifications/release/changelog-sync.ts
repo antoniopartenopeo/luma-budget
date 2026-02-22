@@ -59,9 +59,34 @@ function toIsoDate(date: string): string {
     return `${date}T09:00:00.000Z`
 }
 
-function buildId(version: string, date: string, kind: NotificationKind, sequence: number): string {
+function hashContent(value: string): string {
+    // FNV-1a 32-bit hash for stable content fingerprinting.
+    let hash = 0x811c9dc5
+    for (let i = 0; i < value.length; i += 1) {
+        hash ^= value.charCodeAt(i)
+        hash = Math.imul(hash, 0x01000193)
+    }
+    return (hash >>> 0).toString(36).slice(0, 8)
+}
+
+function buildContentFingerprint(sectionTitle: string, highlights: string[]): string {
+    const normalized = [sectionTitle, ...highlights]
+        .join(" | ")
+        .toLowerCase()
+        .replace(/\s+/g, " ")
+        .trim()
+    return hashContent(normalized)
+}
+
+function buildId(
+    version: string,
+    date: string,
+    kind: NotificationKind,
+    sequence: number,
+    contentFingerprint: string,
+): string {
     const compactDate = date.replaceAll("-", "")
-    const base = `release-${version}-${compactDate}-${kind}`
+    const base = `release-${version}-${compactDate}-${kind}-${contentFingerprint}`
     return sequence === 1 ? base : `${base}-${sequence}`
 }
 
@@ -152,10 +177,11 @@ export function buildNotificationsFromReleases(releases: ParsedRelease[]): Chang
         for (const section of releaseEntries) {
             const sectionHighlights = sanitizeHighlights(section.items)
             const kind = sectionKind(section.title, sectionHighlights)
+            const contentFingerprint = buildContentFingerprint(section.title, sectionHighlights)
             const key = `${release.version}:${release.date}:${kind}`
             const sequence = (idCounter.get(key) ?? 0) + 1
             idCounter.set(key, sequence)
-            const id = buildId(release.version, release.date, kind, sequence)
+            const id = buildId(release.version, release.date, kind, sequence, contentFingerprint)
             const body = sectionHighlights[0] ?? `Aggiornamento release v${release.version}`
             const highlights = dedupeHighlights(sectionHighlights.slice(1).filter(item => item !== body))
 

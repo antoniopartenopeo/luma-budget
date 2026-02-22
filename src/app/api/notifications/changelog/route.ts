@@ -17,7 +17,7 @@ export async function GET() {
         const notifications = buildNotificationsFromReleases(releases)
         return NextResponse.json(notifications, {
             headers: {
-                "Cache-Control": "public, max-age=0, s-maxage=60, stale-while-revalidate=300",
+                "Cache-Control": "no-store, max-age=0",
             },
         })
     } catch {

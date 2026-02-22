@@ -10,6 +10,28 @@ Schema usato in tutte le release:
 
 ---
 
+## [0.4.0] - 2026-02-22
+
+### Added (Novità per te)
+- Nuovo report UI 360 aggiornato allo stato reale post-sync, con matrice route, finding attivi e chiusure verificate.
+
+### Changed (Miglioramenti per te)
+- Dashboard e Insights hanno ricevuto una revisione ampia su KPI, layout card, leggibilità mobile e consistenza visuale.
+- Financial Lab è stato consolidato su scenari quota espandibili con lettura step-by-step più chiara.
+- Import CSV è stato semplificato con revisione guidata a preset e flusso più lineare tra upload, review e summary.
+- Settings, `/transactions/import` e `/updates` sono stati riallineati al pattern motion comune per ingresso pagina più coerente.
+- Notifiche TopBar e pagina `/updates` ora usano copy orientata agli aggiornamenti app e non più framing beta.
+
+### Fixed (Correzioni)
+- Allineata la pipeline notifiche in-app: le modifiche testuali alla stessa release ora generano nuova notifica tramite fingerprint contenuto.
+- Ridotta la possibilità di feed notifiche non aggiornato per effetto cache API, con risposta changelog impostata `no-store`.
+- Migliorata la coerenza di validazione release/governance tra `CHANGELOG`, feed notifiche e versione pacchetto.
+
+### Removed (Semplificazioni)
+- Rimossi residui UI non più agganciati ai flussi attivi (componenti legacy review/timeline e export superflui).
+
+---
+
 ## [0.3.3] - 2026-02-12
 
 ### Changed (Miglioramenti per te)
@@ -24,11 +46,14 @@ Schema usato in tutte le release:
 - Nel wizard Import CSV, la revisione ora usa preset di soglia rapidi (al posto dello slider continuo) con KPI sintetiche su righe valide, duplicati e righe non leggibili.
 - La pagina `/transactions/import` include una card "Come Funziona Numa" dedicata al flusso di import.
 - Uniformato il pattern `NumaEngineCard` con titolo canonico condiviso e migliorata la consistenza dei componenti espandibili.
+- In Impostazioni, i tab ora sono ottimizzati per mobile con layout a griglia e label più leggibili.
+- Notifiche TopBar e pagina `/updates` ora usano copy orientata agli aggiornamenti app (non più linguaggio beta) e tipografia più leggibile.
 
 ### Fixed (Correzioni)
 - Corretto il calcolo periodo mensile in Dashboard usando range locale, riducendo incoerenze nei passaggi di mese/fuso.
 - Sincronizzati i report audit di governance sul branch (`quick-check` + summary).
 - Corretto il comportamento del link "Apri transazioni filtrate" nel portfolio abbonamenti per evitare side effect di propagazione evento.
+- Le notifiche in-app ora rilevano anche aggiornamenti testuali della stessa release (fingerprint contenuto), evitando feed apparentemente non aggiornato.
 
 ---
 

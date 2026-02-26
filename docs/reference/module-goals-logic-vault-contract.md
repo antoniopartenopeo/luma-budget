@@ -1,5 +1,11 @@
 # Quota Logic Vault
 
+scope: goals-vault-logic-contract
+owner: feature-goals
+status: reference
+last-verified: 2026-02-26
+canonical-of: none
+
 > **Status**: LOCKED
 > **Role**: Core Domain Logic for Financial Lab quota-mode
 

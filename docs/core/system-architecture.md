@@ -1,5 +1,11 @@
 # Numa Budget Architecture
 
+scope: system-architecture
+owner: engineering
+status: active
+last-verified: 2026-02-26
+canonical-of: architecture
+
 > **Status**: Active
 > **Last update**: 2026-02-22
 > **Principles**: Feature-first, domain isolation, local-first persistence, deterministic narration.

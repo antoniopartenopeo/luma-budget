@@ -12,7 +12,7 @@ Eseguire task cross-layer con standard release-ready, evitando drift tra codice,
 Leggere sempre:
 1. `/.agent/rules/numa-core-rules.md`
 2. `/docs/README.md`
-3. `/docs/ARCHITECTURE.md`
+3. `/docs/core/system-architecture.md`
 
 Classificare il task in una o piu categorie:
 - `UI`: layout, componenti, interaction, motion

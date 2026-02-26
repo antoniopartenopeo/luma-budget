@@ -1,44 +1,83 @@
 # Numa Documentation Hub
 
-Single entrypoint for all Markdown documentation.
+Single source of truth for project documentation structure and governance.
 
-## 1) Fast path (read this order)
+## 1) Documentation Structure (centralized)
 
-1. `/.agent/rules/numa-core-rules.md` (always-on constraints)
-2. `/docs/ARCHITECTURE.md` (system boundaries)
-3. Scope-specific docs from section 3 below
+- `docs/core/`
+  - Core system knowledge (architecture + project context)
+- `docs/governance/`
+  - Policy and standards that guide decisions (UX/UI/motion/semantic)
+- `docs/operations/`
+  - Operational playbooks and audit procedures
+- `docs/reference/`
+  - Module-level technical contracts moved from `src/**/README.md`
 
-## 2) Canonical sources
+## 2) Fast Reading Path
 
-- Runtime governance rules: `/.agent/rules/*`
-- Agent operational skills: `/.agent/skills/*`
-- Human architecture/governance docs: `/docs/*`
-- Product/release notes: `/CHANGELOG.md`
+1. `README.md` (product + setup entrypoint)
+2. `docs/core/system-architecture.md` (system boundaries)
+3. `docs/governance/governance-ux-standards.md`
+4. `docs/governance/governance-motion-principles.md`
+5. `docs/governance/governance-ui-execution-standards.md`
+6. `CHANGELOG.md` (release truth + in-app notifications source)
 
-## 3) Scope map (what/where/when/why)
+## 3) Canonical Sources by Topic
 
-| Scope | Primary file | When | Why |
-|---|---|---|---|
-| Core hard rules | `/.agent/rules/numa-core-rules.md` | Every task | Non-negotiable guardrails |
-| Architecture | `/docs/ARCHITECTURE.md` | Before structural changes | Prevent boundary leaks |
-| UI regression | `/.agent/rules/ui-regression-checklist.md` | Any UI change | Deterministic UI quality gate |
-| Motion governance | `/docs/governance/MOTION_PRINCIPLES.md` | Motion/animation changes | Semantic and performance-safe motion |
-| UX governance | `/docs/governance/UX_STANDARDS.md` | AI/UX interaction changes | Trust patterns (real-processing states, feedback loops) |
-| UI execution standards | `/docs/governance/UI_EXECUTION_STANDARDS.md` | UI implementation and review across features | MUST/SHOULD/NEVER baseline for accessibility, interaction and performance |
-| Semantic ADR | `/docs/governance/adr/ADR-005-Semantic-Shift-Rhythm.md` | Copy/narration changes | Budget -> Rhythm language contract |
-| Audit process | `/docs/audit/README.md` | Pre-merge/release checks | Governance quick-check workflow |
-| Financial Lab runtime contract | `/src/features/simulator/README.md` | Changes on `/simulator` or goals overlay | Preserve read-only advisory behavior and quota derivation invariants |
-| Release + in-app updates feed | `/CHANGELOG.md` | Every release note change | Canonical source for `/updates` and TopBar notifications |
-| Governance operations | Global skill `$numa-governance-update` | Updating rules/skills/docs policy | Keep docs and agent memory aligned |
+| Topic | Canonical file |
+|---|---|
+| Project architecture | `docs/core/system-architecture.md` |
+| Operational context | `docs/core/project-operational-context.md` |
+| UX governance | `docs/governance/governance-ux-standards.md` |
+| Motion governance | `docs/governance/governance-motion-principles.md` |
+| UI execution standards | `docs/governance/governance-ui-execution-standards.md` |
+| Semantic strategy (ADR) | `docs/governance/governance-semantic-adr-005-rhythm-shift.md` |
+| UI regression checklist bridge | `docs/governance/governance-ui-regression-checklist-bridge.md` |
+| Audit process | `docs/operations/governance-audit-process.md` |
+| Release notes + notifications feed | `CHANGELOG.md` |
 
-## 4) Documentation hygiene policy
+## 4) Naming Standard (mandatory)
 
-- Keep one canonical source per topic.
-- Use bridge files only to redirect to canonical source.
-- Update both `/docs` and `/.agent` only when behavior/policy changes.
-- Avoid adding standalone markdown unless it has a clear owner and lifecycle.
+- All documentation filenames use lowercase `kebab-case`.
+- Filenames must be self-descriptive without opening the file.
 
-## 5) Current special notes
+Examples:
+- `governance-ui-execution-standards.md`
+- `module-goals-logic-vault-contract.md`
 
-- `/docs/ui-regression-checklist.md` is a bridge file. Canonical checklist is `/.agent/rules/ui-regression-checklist.md`.
-- `/docs/audit/quick-check.md` is generated output from `bash scripts/audit/governance-quick-check.sh`.
+## 5) Document Type Contract
+
+- `canonical`: normative source for a topic (single source)
+- `bridge`: redirect-only file, no policy duplication
+- `reference`: supporting technical context
+- `generated`: tool output, non-normative and non-versioned
+
+Priority when documents disagree:
+1. `canonical`
+2. `bridge`
+3. `reference`
+4. `generated`
+
+## 6) Metadata Header Schema (recommended)
+
+Use this header for new/updated docs:
+
+```md
+scope: <topic boundary>
+owner: <team or role>
+status: <active|reference|generated|historical>
+last-verified: <YYYY-MM-DD>
+canonical-of: <topic-id or none>
+```
+
+## 7) Temporary/Legacy Handling
+
+- Temporary and historical docs are removed from repository when no longer needed.
+- Generated audit output is transient (`docs/reports/`) and not versioned.
+- Module contracts are centralized in `docs/reference/`.
+
+## 8) Runtime Governance (outside docs)
+
+- Runtime constraints: `/.agent/rules/numa-core-rules.md`
+- Agent execution rules/skills: `/.agent/skills/*`
+- Governance update workflow: `$numa-governance-update`

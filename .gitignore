@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# generated governance reports (ephemeral)
+docs/reports/generated-governance-quick-check.md
+docs/reports/generated-governance-quick-check-summary.env

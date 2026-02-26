@@ -1,10 +1,16 @@
-# How to navigate the codebase in 30 minutes
+# Codebase Navigation in 30 Minutes
+
+scope: codebase-navigation-playbook
+owner: engineering
+status: reference
+last-verified: 2026-02-26
+canonical-of: none
 
 Obiettivo: capire dove intervenire senza rompere i vincoli finanziari e di governance.
 
 ## Minuti 0-5: mappa ad alto livello
 
-1. Leggi `README.md` e `docs/ARCHITECTURE.md`.
+1. Leggi `README.md` e `docs/core/system-architecture.md`.
 2. Verifica i guardrail in `.agent/rules/numa-core-rules.md`.
 3. Fissa i 4 vincoli chiave: cents-only, Tailwind/no inline style, `filterByRange`, test senza logica simulata.
 

@@ -3,8 +3,8 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-THRESHOLDS_FILE="$ROOT_DIR/docs/audit/governance-thresholds.env"
-SUMMARY_FILE="$ROOT_DIR/docs/audit/quick-check-summary.env"
+THRESHOLDS_FILE="$ROOT_DIR/docs/operations/governance-enforcement-thresholds.env"
+SUMMARY_FILE="$ROOT_DIR/docs/reports/generated-governance-quick-check-summary.env"
 
 if [ ! -f "$THRESHOLDS_FILE" ]; then
     echo "[governance-enforce] Missing thresholds file: $THRESHOLDS_FILE"

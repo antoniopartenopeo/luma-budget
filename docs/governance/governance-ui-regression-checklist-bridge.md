@@ -1,5 +1,11 @@
 # UI Regression Checklist (Bridge)
 
+scope: ui-regression-checklist-bridge
+owner: governance
+status: bridge
+last-verified: 2026-02-26
+canonical-of: none
+
 Canonical source:
 - `/.agent/rules/ui-regression-checklist.md`
 

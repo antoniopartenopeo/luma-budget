@@ -29,12 +29,12 @@ Leggere sempre questi file prima della diagnosi finale:
 5. `/.agent/skills/numa-budget-semantics/SKILL.md`
 6. `/.agent/skills/numa-insights-semantics/SKILL.md`
 7. `/docs/README.md`
-8. `/docs/ARCHITECTURE.md`
-9. `/docs/governance/UX_STANDARDS.md`
-10. `/docs/governance/MOTION_PRINCIPLES.md`
-11. `/docs/governance/adr/ADR-005-Semantic-Shift-Rhythm.md`
-12. `/docs/audit/README.md`
-13. `/docs/audit/quick-check.md` (se presente)
+8. `/docs/core/system-architecture.md`
+9. `/docs/governance/governance-ux-standards.md`
+10. `/docs/governance/governance-motion-principles.md`
+11. `/docs/governance/governance-semantic-adr-005-rhythm-shift.md`
+12. `/docs/operations/governance-audit-process.md`
+13. `/docs/reports/generated-governance-quick-check.md` (se presente)
 
 Se uno di questi riferimenti manca, dichiararlo nel report come rischio di governance/documentation drift.
 

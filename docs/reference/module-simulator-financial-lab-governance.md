@@ -1,5 +1,11 @@
 # Governance: Financial Lab (/simulator)
 
+scope: simulator-financial-lab-contract
+owner: feature-simulator
+status: reference
+last-verified: 2026-02-26
+canonical-of: none
+
 > **Status**: ACTIVE (Advisory Quota Mode)
 > **Role**: Transaction-based tool to estimate sustainable fixed monthly quota
 

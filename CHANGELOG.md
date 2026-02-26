@@ -10,6 +10,26 @@ Schema usato in tutte le release:
 
 ---
 
+## [0.4.1] - 2026-02-26
+
+### Added (Novità per te)
+- Nuova lettura KPI su carte usate nel periodo in Dashboard, con breakdown più chiaro dei metodi di pagamento rilevati.
+- Potenziato il parser transazioni carta per riconoscere in modo più affidabile pattern e intestazioni utili all'analisi.
+
+### Changed (Miglioramenti per te)
+- Rifinita la resa delle card KPI e delle superfici Numa Engine per mantenere maggiore coerenza visuale tra pagine core.
+- TopBar azioni/notifiche resa più robusta, con comportamento più stabile su trigger, badge e stato aggiornamenti.
+- Documentazione progetto centralizzata in una struttura unica con naming coerente e percorso di lettura esplicito.
+
+### Fixed (Correzioni)
+- Allineati script e riferimenti governance per evitare path obsoleti nei check automatici e negli audit.
+- Migliorata la coerenza operativa tra release notes, feed notifiche in-app e versione corrente del pacchetto.
+
+### Removed (Semplificazioni)
+- Rimossi dal flusso documentale attivo i file temporanei/storici non normativi (riclassificati in `docs/archive` e `docs/reports`).
+
+---
+
 ## [0.4.0] - 2026-02-22
 
 ### Added (Novità per te)

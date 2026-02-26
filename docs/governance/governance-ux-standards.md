@@ -1,5 +1,11 @@
 # Numa UX Standards & Patterns
 
+scope: ux-governance
+owner: governance
+status: active
+last-verified: 2026-02-26
+canonical-of: ux-policy
+
 > **Stato:** Active
 > **Versione:** 1.4
 > **Ultimo aggiornamento:** 2026-02-25
@@ -71,6 +77,7 @@ Per processi tecnici estesi (es. training locale Neural Core), mostrare progress
 
 Le regole tecniche MUST/SHOULD/NEVER per interazioni, accessibilita, performance, hydration e theming sono canoniche in:
 
-- `/docs/governance/UI_EXECUTION_STANDARDS.md`
+- `/docs/governance/governance-ui-execution-standards.md`
 
-Questa pagina resta il livello UX strategico (trust, feedback, tone). Il file `UI_EXECUTION_STANDARDS` e il livello operativo per implementazione e review.
+Questa pagina resta il livello UX strategico (trust, feedback, tone).  
+Il file `governance-ui-execution-standards.md` e il livello operativo per implementazione e review.

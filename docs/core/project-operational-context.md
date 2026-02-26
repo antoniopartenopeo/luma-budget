@@ -1,5 +1,11 @@
 # Project Context
 
+scope: operational-reference
+owner: engineering
+status: reference
+last-verified: 2026-02-26
+canonical-of: none
+
 Last updated: 2026-02-22
 Repository root: /Users/acvisuals/.gemini/antigravity/scratch/numa-budget
 Source workflow: numa-governance-update

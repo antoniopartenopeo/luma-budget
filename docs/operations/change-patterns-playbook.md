@@ -1,4 +1,10 @@
-# Common change patterns
+# Change Patterns Playbook
+
+scope: change-patterns-playbook
+owner: engineering
+status: reference
+last-verified: 2026-02-26
+canonical-of: none
 
 Pattern operativi per cambiare il codice in modo conforme alla governance.
 

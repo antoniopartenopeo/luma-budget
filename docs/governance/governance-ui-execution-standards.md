@@ -1,5 +1,11 @@
 # Numa UI Execution Standards (MUST/SHOULD/NEVER)
 
+scope: ui-execution-governance
+owner: governance
+status: active
+last-verified: 2026-02-26
+canonical-of: ui-execution-policy
+
 > **Stato:** Attivo e vincolante
 > **Versione:** 1.0
 > **Ultimo aggiornamento:** 2026-02-25
@@ -165,4 +171,3 @@ Questo documento guida implementation e review tecnica cross-feature.
 - MUST: aumentare contrasto su stati `:hover`, `:active`, `:focus`.
 - SHOULD: browser UI cromaticamente coerente con superficie pagina.
 - SHOULD: evitare banding su gradient scuri (aggiungere texture/noise quando necessario).
-

@@ -4,9 +4,9 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SRC_DIR="$ROOT_DIR/src"
-OUT_DIR="$ROOT_DIR/docs/audit"
-OUT_FILE="$OUT_DIR/quick-check.md"
-SUMMARY_FILE="$OUT_DIR/quick-check-summary.env"
+OUT_DIR="$ROOT_DIR/docs/reports"
+OUT_FILE="$OUT_DIR/generated-governance-quick-check.md"
+SUMMARY_FILE="$OUT_DIR/generated-governance-quick-check-summary.env"
 
 mkdir -p "$OUT_DIR"
 
@@ -156,6 +156,15 @@ EOF
 cat > "$OUT_FILE" <<EOF
 # Governance Quick Check
 
+scope: governance-quick-check-report
+owner: governance
+status: generated
+last-verified: ${now_iso:0:10}
+canonical-of: none
+
+> Generated report (non-normative).  
+> Canonical process reference: \`docs/operations/governance-audit-process.md\`.
+
 Generated at (UTC): $now_iso
 
 Scope:
@@ -262,7 +271,7 @@ Run:
 \
 
 Output:
-- \`docs/audit/quick-check.md\`
+- \`docs/reports/generated-governance-quick-check.md\`
 EOF
 
 echo "[quick-check] report generated: $OUT_FILE"

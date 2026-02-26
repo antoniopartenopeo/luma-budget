@@ -1,5 +1,11 @@
 # Numa Motion Principles & Governance
 
+scope: motion-governance
+owner: governance
+status: active
+last-verified: 2026-02-26
+canonical-of: motion-policy
+
 > **Stato:** Attivo e vincolante
 > **Versione:** 1.4
 > **Ultimo aggiornamento:** 2026-02-22

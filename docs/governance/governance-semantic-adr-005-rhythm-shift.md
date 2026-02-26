@@ -1,5 +1,11 @@
 # ADR 005: Semantic Shift from "Budgeting" to "Rhythm"
 
+scope: semantic-adr-rhythm-shift
+owner: governance-narration
+status: active
+last-verified: 2026-02-26
+canonical-of: adr-005-rhythm-language
+
 ## Status
 Accepted
 

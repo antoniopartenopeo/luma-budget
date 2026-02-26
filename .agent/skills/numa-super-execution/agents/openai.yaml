@@ -1,0 +1,4 @@
+interface:
+  display_name: "Numa Super Execution"
+  short_description: "Cross-layer delivery protocol for Numa tasks"
+  default_prompt: "Use $numa-super-execution to deliver this Numa task end-to-end with governance checks."

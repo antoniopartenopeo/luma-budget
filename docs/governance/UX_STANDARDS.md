@@ -1,8 +1,8 @@
 # Numa UX Standards & Patterns
 
 > **Stato:** Active
-> **Versione:** 1.3
-> **Ultimo aggiornamento:** 2026-02-18
+> **Versione:** 1.4
+> **Ultimo aggiornamento:** 2026-02-25
 
 Linee guida UX ad alto livello per mantenere fiducia, chiarezza e coerenza cross-feature.
 
@@ -64,3 +64,13 @@ Per processi tecnici estesi (es. training locale Neural Core), mostrare progress
 - Nessun branching di experience per device: un solo componente adattivo.
 - I flussi principali devono preservare orientamento verticale e leggibilità delle metriche.
 - Le etichette semantiche finanziarie devono rimanere non giudicanti e contestualizzate nel tempo.
+
+---
+
+## 5. Implementation Baseline
+
+Le regole tecniche MUST/SHOULD/NEVER per interazioni, accessibilita, performance, hydration e theming sono canoniche in:
+
+- `/docs/governance/UI_EXECUTION_STANDARDS.md`
+
+Questa pagina resta il livello UX strategico (trust, feedback, tone). Il file `UI_EXECUTION_STANDARDS` e il livello operativo per implementazione e review.

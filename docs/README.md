@@ -24,6 +24,7 @@ Single entrypoint for all Markdown documentation.
 | UI regression | `/.agent/rules/ui-regression-checklist.md` | Any UI change | Deterministic UI quality gate |
 | Motion governance | `/docs/governance/MOTION_PRINCIPLES.md` | Motion/animation changes | Semantic and performance-safe motion |
 | UX governance | `/docs/governance/UX_STANDARDS.md` | AI/UX interaction changes | Trust patterns (real-processing states, feedback loops) |
+| UI execution standards | `/docs/governance/UI_EXECUTION_STANDARDS.md` | UI implementation and review across features | MUST/SHOULD/NEVER baseline for accessibility, interaction and performance |
 | Semantic ADR | `/docs/governance/adr/ADR-005-Semantic-Shift-Rhythm.md` | Copy/narration changes | Budget -> Rhythm language contract |
 | Audit process | `/docs/audit/README.md` | Pre-merge/release checks | Governance quick-check workflow |
 | Financial Lab runtime contract | `/src/features/simulator/README.md` | Changes on `/simulator` or goals overlay | Preserve read-only advisory behavior and quota derivation invariants |

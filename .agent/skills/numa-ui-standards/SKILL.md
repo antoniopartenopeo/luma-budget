@@ -9,6 +9,14 @@ Questa skill definisce i vincoli operativi per componenti React, layout, styling
 
 ---
 
+## Riferimenti Canonici
+
+- Strategia UX trust/feedback: `/docs/governance/UX_STANDARDS.md`
+- Motion semantico: `/docs/governance/MOTION_PRINCIPLES.md`
+- Baseline tecnica MUST/SHOULD/NEVER: `/docs/governance/UI_EXECUTION_STANDARDS.md`
+
+---
+
 ## Guard di Attivazione
 
 Se la skill non e attiva esplicitamente, fermati e chiedi conferma.
@@ -77,6 +85,8 @@ Le animazioni state-based Radix/Shadcn (`data-[state=*]:animate-*`) sono consent
 - no fake delay per operazioni AI/analisi
 - motion continuo solo su elementi a bassa dominanza visiva
 - rispettare `prefers-reduced-motion`
+- animare preferibilmente solo `transform` e `opacity`
+- vietato `transition: all`
 
 ---
 
@@ -113,6 +123,20 @@ Regole:
 
 ---
 
+## Baseline Non Negoziabile (Estratto Operativo)
+
+- keyboard support completo, focus visibile e gestione focus corretta su overlay
+- target minimi: 24px desktop, 44px mobile
+- mai bloccare paste nei form; errori inline e focus sul primo errore
+- URL deve riflettere stato UI rilevante (tab/filtri/paginazione)
+- navigazione con elementi semantici (`a`/`Link`), mai `div onClick`
+- nessun dead-end: empty/error states con recovery path esplicito
+- ridurre CLS (dimensioni media esplicite) e virtualizzare liste grandi (>50)
+- semantica nativa prima di ARIA custom; icon-only button con `aria-label`
+- layout resilienti a contenuto lungo (`min-w-0`, truncation/break-words)
+
+---
+
 ## Sheet Layout Standardizzato
 
 Pattern obbligatorio:
@@ -142,8 +166,9 @@ Invarianti:
 6. [ ] Typography coerente con scala ufficiale
 7. [ ] Nessun inline style statico non giustificato
 8. [ ] Verifica `/.agent/rules/ui-regression-checklist.md`
+9. [ ] Verifica regole MUST/SHOULD/NEVER in `/docs/governance/UI_EXECUTION_STANDARDS.md`
 
 ---
 
-**Versione**: 1.8.0
-**Ultimo aggiornamento**: 2026-02-22
+**Versione**: 1.9.0
+**Ultimo aggiornamento**: 2026-02-25

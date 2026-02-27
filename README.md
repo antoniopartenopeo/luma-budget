@@ -83,6 +83,76 @@ npm run governance:quick-check
 npm run release:validate
 ```
 
+## PWA installability
+
+The app ships with installable PWA essentials:
+- Web app manifest: `/manifest.webmanifest`
+- Service worker: `/sw.js`
+- Offline fallback route: `/offline`
+- App icons: `/public/pwa/*`
+
+To validate installation locally (production mode):
+
+```bash
+npm run build
+npm run start
+```
+
+Then open the app in a Chromium browser and verify the install prompt/menu.
+For real installs on devices, deploy under HTTPS (for example on Vercel).
+
+## Native app targets (Mobile + Mac)
+
+This repository now includes native wrappers:
+- Mobile: Capacitor (`ios` / `android`)
+- Mac desktop: Electron (`.app` / `.dmg`)
+
+### Prerequisites check
+
+```bash
+npm run native:doctor
+```
+
+### Mobile (Capacitor)
+
+Set frontend URL for native shells (use your deployed HTTPS app):
+
+```bash
+export NUMA_APP_URL="https://your-domain.example"
+```
+
+Initialize platform projects:
+
+```bash
+npm run mobile:add:ios
+npm run mobile:add:android
+npm run mobile:sync
+```
+
+Open native IDE projects:
+
+```bash
+npm run mobile:open:ios
+npm run mobile:open:android
+```
+
+### Mac desktop (Electron)
+
+Local development shell:
+
+```bash
+npm run desktop:dev
+```
+
+Note: this command locks dev server to port `3000` to keep Electron boot deterministic.
+
+Build Mac installers:
+
+```bash
+export NUMA_ELECTRON_START_URL="https://your-domain.example"
+npm run desktop:build:mac
+```
+
 ## Deploy
 
 Standard Next.js deployment (Vercel).

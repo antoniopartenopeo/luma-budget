@@ -1,0 +1,126 @@
+
+
+===== PAGE 1 =====
+EM
+ISSIONE DI CERTIFICATI “DISPOSABLE” 
+MODULO DI RICHIESTA 
+Mod.NAM CA22D_ITA_Rev.10 Pag. 1 di 2 
+Namirial S.p.A.  
+Via Caduti sul Lavoro n. 4, 60019 Senigallia (An) - Italia | Tel. +39 071 63494 
+www.namirial.com | amm.namirial@sicurezzapostale.it | P.IVA IT02046570426 
+C.F. e iscriz. al Reg. Impr. Ancona N. 02046570426 | REA N. AN - 157295
+Codice destinatario T04ZHR3 | Capitale sociale € 8.256.361,60 i.v.
+La informiamo che sta sottoscrivendo un contratto per il rilascio di un certificato di firma elettronica qualificata di tipo disposable 
+da stipularsi tra Lei (il richiedente) e Namirial SpA, con sede legale in Senigallia (AN), CAP 60019, Via Caduti sul Lavoro n. 4, Italia, 
+Registro del Commercio e delle Imprese di Ancona e Codice Fiscale/Partita IVA n. 02046570426 (un fornitore di servizi fiducia ri 
+qualificato ai sensi del regolamento eIDAS). 
+La presente richiesta sarà inoltrata a Namirial dalla Local Registration Authority (come definita nel seguente Quadro A) al fine di 
+fornirLe un certificato di firma elettronica qualificata di tipo disposable (avente l'equivalente effetto legale di una firma autografa) 
+che Le consente di firmare elettronicamente un contratto entro i limiti d'uso definiti nel seguente Quadro C. Secondo le definizioni 
+del presente Contratto di emissione, Lei è nominato Titolare del Certificato.
+ 
+QUADRO A – Dati della LRA / TERZO INTERESSATO (Quadro da compilare da parte della LRA) 
+ N° LRA (Local Registration Authority 
+ denominazione/ragione sociale 
+ con sede in: (città) prov. cap 
+ via 
+ codice fiscale partita Iva 
+ QUADRO B – Dati del Titolare 
+ Il sottoscritto: nome cognome 
+ Codice identificativo personale 
+ e-mail cell. 
+ RICHIEDE quanto indicato nel seguente Quadro C 
+QUADRO C – Fornitura richiesta 
+ 
+Emissione di un certificato di tipo “Disposable”, che si caratterizza per avere una durata di 60 minuti ed il cui utilizzo è limitato al seguente ambito: 
+I
+l costo del servizio verrà sostenuto dalla LRA.  
+QUADRO D – Informazioni al Titolare sulle principali condizioni applicate alla fornitura oggetto del presente contratto  
+ 
+1) La fornitura di quanto indicato nel presente QUADRO C è posta in essere esclusivamente con l’inserimento dei limiti d’uso indicati nel Contratto. 
+2) Il Titolare prende pertanto atto e accetta che è assoluta facoltà del Certificatore procedere alla sospensione e/o alla revoc a del/dei Certificato/i
+em
+esso/i a favore del Titolare medesimo in qualsiasi momento, qualora vengano a mancare i presupposti per i quali esso/i era/no stato/i emesso/i.  
+3) La fornitura di quanto richiesto è posta in essere da Namirial alle condizioni e nei termini indicati nel presente Modulo di richiesta, nelle relative
+Condizioni Generali di Contratto ( Mod.NAM CA01D) e sulla base delle specifiche tecniche indicate nel PDS, documenti che devono intendersi qui
+integralmente richiamati ove non specificamente ed espressamente derogati. 
+4) Il Titolare prende atto ed accetta che l’invio del Modulo di richiesta comporta l’integrale accettazione delle suddette Condi zioni Generali di
+Contratto, del PDS, i quali avranno piena efficacia vincolante nei confronti del Titolare medesimo, indipendente mente dall’intervenuta conclusione
+o meno del presente contratto. Il presente Modulo di registrazione e richiesta, con le suddette Condizioni Generali di Contratto (Mod.NAM CA01D), 
+con il PDS, costituiscono parti integranti, sostanziali e inscindibili di un unico Contratto ed in tal modo devono, pertanto, essere lette ed interpretate.
+5) Per le definizioni dei termini utilizzati nel presente Modulo di richiesta si fa rinvio all’art. 1 (Definizioni) delle Condizioni Generali di Contratto
+(Mod.NAM CA01D). 
+6) L’emissione dei Certificati avrà luogo solo in caso di esito positivo delle necessarie verifiche preventive. In caso di esito  negativo di tali verifiche
+ovvero se basato su un fondamento legittimo, Namirial non sarà obbligata all’emissione dei Certificati. La suddetta mancata emissione di quanto
+richiesto, non farà sorgere alcun obbligo di rimborso o indennità a carico di Namirial.
+7) L’utilizzo dei Certificati è garantito attraverso apposite Credenziali conosciute esclusivamente dal Titolare che possono essere messe da Namirial
+a sua disposizione telematicamente, secondo modalità previste nel PDS, ovvero, diversamente concordate con i l Titolare o ancora, che posson o
+es
+sere inserite per la prima volta direttamente dal Titolare stesso in sede d’emissione del Certificato. 
+8) Il Titolare prende atto che, in caso di parziali difformità o contrasti tra le clausole contenute nel presente Modulo di rich iesta e quelle presenti
+nelle Condizioni Generali di Contratto (Mod.NAM CA01D), le prime prevarranno sulle seconde e dunque dovranno considerarsi una deroga espressa 
+rispetto a quanto indicato nelle Condizioni Generali di Contratto ( Mod.NAM CA01D). 
+9) Trattamento dati.
+10131
+ONFIDO LTD
+London
+EE
+EC2A 1AH
+14-18 Finsbury Square
+120
+GB159239776
+The use of the certificate is technically limited to the signature of the underlying
+documents.
+
+
+===== PAGE 2 =====
+EMISSIONE DI CERTIFICATI “DISPOSABLE” - MODULO DI RICHIESTA 
+Mod.NAM CA22D_ITA_Rev.10 Pag. 2 di 2  
+Il/la sottoscritto/a dichiara di aver preso visione dell’informativa in materia di trattamento dei dati personali 
+(https://support.namirial.com/it/docs/docs-tsp/#docs_data_protection). 
+ 
+ 
+QUADRO E – Autocertificazione e sottoscrizione da parte del Titolare  
+ Il sottoscritto Titolare: nome  cognome  
+ 
+ 
+consapevole delle sanzioni penali previste dall’art 76 del D.P.R. 28/12/2000 n.445, nel caso di mendaci dichiarazioni, falsità negli atti, uso o esibizione 
+di atti falsi o contenenti dati non più rispondenti a verità, ai sensi e per gli effetti dell’art. 46 del medesimo decreto, dichiara sotto la propria personale 
+responsabilità che tutti i dati indicati nei precedenti Quadri B e C del presente Modulo sono esatti e veritieri.  
+ 
+Luogo  
+ 
+ 
+ 
+ 
+ Firma del Titolare 
+ 
+ 
+ 
+   
+ 
+ 
+ 
+ 
+ Data   
+ 
+ 
+QUADRO F – Clausole vessatorie 
+ Ai sensi e per gli effetti degli artt. 1341 e 1342 c.c, il Titolare dichiara di aver compreso e di accettare espressamente le cl ausole contenute nel 
+presente Modulo di Richiesta al QUADRO D – nn. 2 e 6; nonché le clausole contenute nelle Condizioni Generali d i Contratto (Mod.NAM CA01D) di 
+cui ai seguenti articoli: Art. 2 (Struttura del Contratto); Art. 3 (Oggetto); Art. 4 (Conclusione del contratto); Art. 5 (Validità dei Certificati); Art. 6 (Revoca 
+e sospensione dei Certificati); Art. 7 (Durata del Contratto) ; Art. 9 (Obblighi e responsabilità del Titolare); Art. 10 (Garanzia e assistenza); Art. 11 
+(Obblighi e responsabilità del Certificatore); Art. 12 (Clausola risolutiva espressa); Art. 13 (Eccezioni al diritto di recesso in accordo alla Direttiva 
+2011/83/UE e al D. Lgs. 206/2005); Art. 14 (Diposizioni generali); Art. 15 (Legge applicabile); Art. 16 (Foro competente); Art. 17 (Modi fiche al 
+Contratto); Art. 18 (Cessazione dell’attività del Certificatore) e Art. 20 (Sopravvivenza delle clausole).(1)   
+(1) Qualora il presente documento venga sottoscritto in formato digitale, si precisa che le clausole ivi richiamate verranno doppiamente sottoscritte ed accettate esternamente al presente documento. 
+ 
+ 
+ 
+Luogo   Firma del Titolare 
+   
+ 
+ 
+ 
+ 
+ Data

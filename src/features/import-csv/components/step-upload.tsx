@@ -1,9 +1,10 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { Upload, FileUp, X, CheckCircle2, FileText, AlertCircle, ArrowRight, ArrowLeft, Loader2 } from "lucide-react"
+import { useQueryClient } from "@tanstack/react-query"
+import { Upload, FileUp, X, CheckCircle2, AlertCircle, ArrowRight, ArrowLeft, Loader2, Building2, Clock3 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
+import { Badge } from "@/components/ui/badge"
 
 import { processCSV } from "../core/pipeline"
 import { ImportState } from "../core/types"
@@ -11,6 +12,10 @@ import { useTransactions } from "@/features/transactions/api/use-transactions"
 import { cn } from "@/lib/utils"
 import { WizardShell } from "./wizard-shell"
 import { SubSectionCard } from "@/components/patterns/sub-section-card"
+import { ConfirmDialog } from "@/components/patterns/confirm-dialog"
+import { queryKeys } from "@/lib/query-keys"
+import { seedTransactions, __resetTransactionsCache } from "@/features/transactions/api/repository"
+import { __resetCategoriesCache } from "@/features/categories/api/repository"
 
 interface ImportStepUploadProps {
     onContinue: (state: ImportState) => void
@@ -18,11 +23,13 @@ interface ImportStepUploadProps {
 }
 
 export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps) {
+    const queryClient = useQueryClient()
     const [csvContent, setCsvContent] = useState("")
-    const [pastedContent, setPastedContent] = useState("")
     const [fileName, setFileName] = useState<string | null>(null)
     const [error, setError] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(false)
+    const [isDemoLoading, setIsDemoLoading] = useState(false)
+    const [isDemoDialogOpen, setIsDemoDialogOpen] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     const { data: existingTransactions = [] } = useTransactions()
@@ -43,7 +50,6 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
             const text = event.target?.result
             if (typeof text === "string") {
                 setCsvContent(text)
-                setPastedContent("")
                 setIsLoading(false)
             }
         }
@@ -54,27 +60,32 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
         reader.readAsText(file)
     }
 
-    const handleProcess = () => {
-        if (!csvContent.trim()) return
-
+    const processInput = (content: string) => {
+        if (!content.trim()) return false
         setError(null)
         try {
-            const state = processCSV(csvContent, existingTransactions)
+            const state = processCSV(content, existingTransactions)
 
             if (state.errors.length > 0 && state.rows.length === 0) {
                 setError("Questo file non sembra nel formato giusto. Controlla intestazioni e separatore.")
-                return
+                return false
             }
 
             if (state.rows.length === 0) {
                 setError("Nel file non ho trovato movimenti utilizzabili.")
-                return
+                return false
             }
 
             onContinue(state)
+            return true
         } catch {
             setError("Non riesco a completare la lettura. Riprova con un file diverso.")
+            return false
         }
+    }
+
+    const handleProcess = () => {
+        processInput(csvContent)
     }
 
     const clearFile = () => {
@@ -82,6 +93,37 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
         setFileName(null)
         setError(null)
         if (fileInputRef.current) fileInputRef.current.value = ""
+    }
+
+    const invalidateAll = async () => {
+        __resetTransactionsCache()
+        __resetCategoriesCache()
+        await Promise.all([
+            queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.transactions.recent }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.categories.all() }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.categories.active() }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.settings() }),
+            queryClient.invalidateQueries({ queryKey: queryKeys.notifications.state }),
+        ])
+    }
+
+    const handleLoadDemoData = async () => {
+        setIsDemoLoading(true)
+        setError(null)
+
+        try {
+            seedTransactions()
+            await invalidateAll()
+            onClose()
+        } catch (loadError) {
+            console.error("Demo load error:", loadError)
+            setError("Non riesco a caricare i dati demo. Riprova.")
+        } finally {
+            setIsDemoLoading(false)
+            setIsDemoDialogOpen(false)
+        }
     }
 
     // New Drag & Drop Handlers
@@ -152,98 +194,147 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
             footer={footer}
         >
             <div className="space-y-5">
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/60 bg-muted/10 px-4 py-3">
+                    <div className="flex items-center gap-2 text-sm text-foreground">
+                        <span className="font-semibold">Prova veloce</span>
+                        <span className="text-muted-foreground">Carica dati demo in pochi secondi.</span>
+                    </div>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        className="h-9 shrink-0 rounded-xl px-4"
+                        disabled={isDemoLoading || isLoading}
+                        onClick={() => setIsDemoDialogOpen(true)}
+                    >
+                        {isDemoLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                        Carica dati demo
+                    </Button>
+                </div>
+
                 <div className="grid gap-4 md:grid-cols-2">
                     <SubSectionCard
                         label="Carica file"
                         icon={<FileUp className="h-4 w-4" />}
                         className="min-h-[320px]"
                     >
-                        <div
-                            className={cn(
-                                "relative flex h-full min-h-[240px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-8 text-center transition-colors",
-                                fileName && "border-emerald-500/30 bg-emerald-500/5",
-                                !fileName && isDragging && "border-primary/50 bg-primary/10",
-                                !fileName && !isDragging && "border-border bg-muted/10 hover:border-primary/40 hover:bg-muted/20 dark:border-white/20 dark:bg-white/[0.03] dark:hover:border-primary/40 dark:hover:bg-white/[0.06]"
-                            )}
-                            role="button"
-                            tabIndex={fileName ? -1 : 0}
-                            aria-label="Carica file CSV o TXT"
-                            onDragOver={handleDragOver}
-                            onDragLeave={handleDragLeave}
-                            onDrop={handleDrop}
-                            onKeyDown={handleDropZoneKeyDown}
-                            onClick={() => !fileName && fileInputRef.current?.click()}
-                        >
-                            <input
-                                type="file"
-                                accept=".csv,.txt"
-                                className="hidden"
-                                ref={fileInputRef}
-                                onChange={handleFileChange}
-                            />
+                        <div className="flex h-full min-h-[240px] flex-col rounded-xl border border-border/60 bg-gradient-to-br from-primary/[0.08] via-background to-muted/20 p-5 dark:from-primary/[0.14] dark:to-white/[0.03]">
+                            <div className="flex items-center gap-2">
+                                <Badge
+                                    variant="outline"
+                                    className="inline-flex items-center gap-1.5 border-primary/30 bg-primary/10 text-primary"
+                                >
+                                    <FileUp className="h-3.5 w-3.5" />
+                                    CSV o TXT
+                                </Badge>
+                            </div>
 
-                            {isLoading ? (
-                                <div className="space-y-3">
-                                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                                        <Loader2 className="h-6 w-6 animate-spin-slow" />
+                            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+                                Trascina il file o clicca nell&apos;area qui sotto per selezionarlo dal dispositivo.
+                            </p>
+
+                            <div
+                                className={cn(
+                                    "relative mt-4 flex flex-1 min-h-[168px] cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-8 text-center transition-colors",
+                                    fileName && "border-emerald-500/30 bg-emerald-500/5",
+                                    !fileName && isDragging && "border-primary/50 bg-primary/10",
+                                    !fileName && !isDragging && "border-border/70 bg-background/70 hover:border-primary/40 hover:bg-background dark:border-white/20 dark:bg-white/[0.03] dark:hover:border-primary/40 dark:hover:bg-white/[0.06]"
+                                )}
+                                role="button"
+                                tabIndex={fileName ? -1 : 0}
+                                aria-label="Carica file CSV o TXT"
+                                onDragOver={handleDragOver}
+                                onDragLeave={handleDragLeave}
+                                onDrop={handleDrop}
+                                onKeyDown={handleDropZoneKeyDown}
+                                onClick={() => !fileName && fileInputRef.current?.click()}
+                            >
+                                <input
+                                    type="file"
+                                    accept=".csv,.txt"
+                                    className="hidden"
+                                    ref={fileInputRef}
+                                    onChange={handleFileChange}
+                                />
+
+                                {isLoading ? (
+                                    <div className="space-y-3">
+                                        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                            <Loader2 className="h-6 w-6 animate-spin-slow" />
+                                        </div>
+                                        <p className="text-sm font-medium text-foreground">Sto leggendo il file</p>
                                     </div>
-                                    <p className="text-sm font-medium text-foreground">Sto leggendo il file</p>
-                                </div>
-                            ) : fileName ? (
-                                <div className="w-full max-w-md space-y-3">
-                                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-300">
-                                        <CheckCircle2 className="h-6 w-6" />
+                                ) : fileName ? (
+                                    <div className="w-full max-w-md space-y-3">
+                                        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-300">
+                                            <CheckCircle2 className="h-6 w-6" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="truncate text-base font-semibold tracking-tight text-foreground">{fileName}</p>
+                                            <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">File pronto</p>
+                                        </div>
+                                        <div className="pt-1">
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    clearFile()
+                                                }}
+                                                className="rounded-xl text-muted-foreground hover:text-destructive"
+                                            >
+                                                <X className="mr-1.5 h-4 w-4" />
+                                                Rimuovi file
+                                            </Button>
+                                        </div>
                                     </div>
-                                    <div className="space-y-1">
-                                        <p className="truncate text-base font-semibold tracking-tight text-foreground">{fileName}</p>
-                                        <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">File pronto</p>
+                                ) : (
+                                    <div className="pointer-events-none space-y-4">
+                                        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                            <Upload className="h-6 w-6" />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <p className="text-base font-semibold tracking-tight text-foreground">Trascina qui il file CSV</p>
+                                            <p className="text-sm text-muted-foreground">oppure clicca per selezionarlo</p>
+                                        </div>
                                     </div>
-                                    <div className="pt-1">
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                clearFile()
-                                            }}
-                                            className="rounded-xl text-muted-foreground hover:text-destructive"
-                                        >
-                                            <X className="mr-1.5 h-4 w-4" />
-                                            Rimuovi file
-                                        </Button>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="pointer-events-none space-y-4">
-                                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                                        <Upload className="h-6 w-6" />
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <p className="text-base font-semibold tracking-tight text-foreground">Trascina qui il file CSV</p>
-                                        <p className="text-sm text-muted-foreground">oppure clicca per selezionarlo</p>
-                                    </div>
-                                </div>
-                            )}
+                                )}
+                            </div>
                         </div>
                     </SubSectionCard>
 
                     <SubSectionCard
-                        label="Incolla testo"
-                        icon={<FileText className="h-4 w-4" />}
+                        label="Collegamento banca"
+                        icon={<Building2 className="h-4 w-4" />}
                         className="min-h-[320px]"
                     >
-                        <Textarea
-                            className="h-full min-h-[240px] resize-none rounded-xl border-border bg-muted/10 p-4 font-mono text-sm focus-visible:ring-1 dark:border-white/20 dark:bg-white/[0.03]"
-                            placeholder={`Data,Descrizione,Importo\n2024-01-01,Stipendio,2500.00\n...`}
-                            value={pastedContent}
-                            onChange={(e) => {
-                                const value = e.target.value
-                                setPastedContent(value)
-                                setCsvContent(value)
-                                setFileName(null)
-                                setError(null)
-                            }}
-                        />
+                        <div className="flex h-full min-h-[240px] flex-col rounded-xl border border-border/60 bg-gradient-to-br from-primary/[0.08] via-background to-muted/20 p-5 dark:from-primary/[0.14] dark:to-white/[0.03]">
+                            <div className="flex items-center gap-2">
+                                <Badge
+                                    variant="outline"
+                                    className="inline-flex items-center gap-1.5 border-primary/30 bg-primary/10 text-primary"
+                                >
+                                    <Clock3 className="h-3.5 w-3.5" />
+                                    Standby
+                                </Badge>
+                            </div>
+
+                            <div className="mt-4 space-y-2">
+                                <p className="text-sm leading-relaxed text-muted-foreground">
+                                    Stiamo completando la verifica normativa. Appena attivo potrai importare i movimenti in modo automatico.
+                                </p>
+                            </div>
+
+                            <div className="mt-4 space-y-2.5 rounded-lg border border-border/60 bg-background/70 p-3">
+                                <div className="flex items-start gap-2 text-sm text-foreground">
+                                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                                    <span>Autorizzazione sicura direttamente dalla tua banca.</span>
+                                </div>
+                                <div className="flex items-start gap-2 text-sm text-foreground">
+                                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                                    <span>Movimenti importati senza dover scaricare il CSV.</span>
+                                </div>
+                            </div>
+                        </div>
                     </SubSectionCard>
                 </div>
 
@@ -259,6 +350,17 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
                     </div>
                 )}
             </div>
+
+            <ConfirmDialog
+                open={isDemoDialogOpen}
+                onOpenChange={setIsDemoDialogOpen}
+                title="Caricare dati demo?"
+                description="Questa azione sostituisce le transazioni attuali con un dataset di esempio."
+                confirmLabel="Carica demo"
+                cancelLabel="Annulla"
+                onConfirm={handleLoadDemoData}
+                isLoading={isDemoLoading}
+            />
         </WizardShell>
     )
 }

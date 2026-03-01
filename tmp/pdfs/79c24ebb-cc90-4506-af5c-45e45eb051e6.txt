@@ -1,0 +1,373 @@
+
+
+===== PAGE 1 =====
+EMISSIONE DI CERTIFICATI DI FIRMA DISPOSABLE 
+ 
+CONDIZIONI GENERALI DI CONTRATTO 
+ 
+ 
+Mod.NAM CA01D_ITA_Rev.04_03.2023 Pag. 1 di 3  
+Namirial S.p.A.  
+Via Caduti sul Lavoro n. 4, 60019 Senigallia (An) - Italia | Tel. +39 071 63494 
+www.namirial.com | amm.namirial@sicurezzapostale.it | P.IVA IT02046570426 
+C.F. e iscriz. al Reg. Impr. Ancona N. 02046570426 | REA N. AN - 157295 
+Codice destinatario T04ZHR3 | Capitale sociale € 8.238.145,00  i.v. 
+Art. 1 Definizioni 
+Ai fini del presente Contratto e salvo eventuali definizioni indicate altrove e 
+qui non espressamente menzionate, ai termini elencati nel presente articolo 
+saranno assegnati i seguenti significati e saranno utilizzati sempre con lettera 
+maiuscola, sia al singolare che al plurale: 
+• “AgID”: l’Agenzia per l’Italia Digitale, istituita con decreto-legge n. 83/2012, 
+convertito nella legge n. 134/2012; 
+• “Certificato”: il certificato qualificato di firma e lettronica (conforme ai 
+requisiti di cui all’allegato I di eIDAS, rilasciato da un prestatore di servizi 
+fiduciari qualificato ai sensi e per gli effetti del medesimo 
+Regolamento) di tipo disposable avente le caratteristiche indicate nel 
+Contratto ; 
+• “Certificatore”: la NAMIRIAL S.p.A., con sede legale in Senigallia (AN), Via 
+Caduti sul Lavoro n. 4 (di seguito anche solo “Namirial”), società iscritta 
+nell'Elenco Pubblico dei Certificatori accreditati tenuto presso AgID ai sensi 
+e per gli effetti di cui all’art. 29 del Codice, nonché nell’elenco di fiducia dei 
+fornitori di servizi fiduciari quale fornitore di servizi fiduciari ai sensi di eIDAS; 
+• “Chiave privata”: l’elemento della coppia di chiavi asimmetriche, destinato 
+ad essere posseduto s oltanto dal Titolare, mediante il quale si appone la 
+Firma digitale sul Documento informatico;  
+• “Chiave pubblica”: l’elemento della coppia di chiavi asimmetriche destinato 
+ad essere reso pubblico, con il quale si verifica la Firma digitale apposta sul 
+Documento elettronico  dal Titolare; 
+• “Codice”: il codice dell’amministrazione digitale di cui al D. Lgs. 7/03/2005 n. 
+82 e s.m.i.; 
+• “Condizioni generali”: le presenti Condizioni generali di Contratto (Mod.NAM 
+CA01D); 
+•  “Credenziali di autenticazione”: il codice o i codici per l’identificazione del 
+Titolare, c onosciuti esclusivamente da quest’ultimo per l’utilizzo del 
+Certificato sui Documenti informatici; 
+• “Documento elettronico”: qualsiasi contenuto conservato in forma elettronica, 
+in particolare testo o registrazione sonora, visiva o audiovisiva; 
+• “Documento informatico”: il Documento elettronico che contiene la 
+rappresentazione informatica di atti, fatti o dati giuridicamente rilevanti; 
+• “eIDAS: è il Regolamento (UE) N. 910/2014 del Parlamento Europeo e del 
+Consiglio del 23 luglio 2014 in materia di identificazione elettronica e servizi 
+fiduciari per le transazioni elettroniche nel mercato interno e che abroga la 
+direttiva 1999/93/CE e s.m.i.; 
+• “Firma digitale”: la “Firma elettronica qualificata”, basata su un sistema di 
+chiavi asimmetriche a coppia, di cui una pubblica ed una privata, che 
+consente al sottoscrittore (mediante l’utilizzo della Chiave privata) ed al 
+destinatario (mediante l’utilizzo della Chiave pubblica) di rendere manifesta 
+e di verificare la provenienza e l’integrità di un documento elettronico o di 
+un insieme di documenti informatici. La validità della Firma digitale è 
+equivalente a quella della sottoscrizione autografa; 
+• “Firma elettronica”: dati in forma elettronica, acclusi oppure connessi tramite 
+associazione logica ad altri dati elettronici e utilizzati dal Firmatario per 
+firmare; 
+• “Indirizzo E-Mail”: l’indirizzo elettronico (ai sensi dell’art. 45 e ss. del Codice) 
+indicato dal Titolare a cui il Certificatore invierà ogni comunicazione inerente 
+il presente Contratto definito all’Art. 2; 
+• “Local Registration Authority (LRA)”: la persona giuridica autorizzata da 
+Namirial alla distribuzione dei Certificati. 
+• “Manuale operativo”: il manuale operativo certificati di firma disposable  di 
+Namirial, depositato presso AgID, nel quale sono definite le procedure di 
+emissione dei Certificati applicate dal Certificatore nell’ambito della propria 
+attività; 
+• “Modulo di richiesta”: il Mod.NAM CA22D; 
+• “Operazioni di identificazione e registrazione”: le attività di identificazione 
+e registrazione dei Titolari, svolte secondo le modalità previste dal Contratto, 
+conformemente a quanto disposto ai sensi dell’art. 32 del Codice e dall’art. 
+24.1 di eIDAS; 
+• “Reg. UE 2016/679”: è il Regolamento (UE) 2016/679 del Parlamento 
+Europeo e del Consiglio del 27 aprile 2016 relativo alla protezione delle 
+persone fisiche con riguardo al trattamento dei dati personali, nonché alla 
+libera circolazione di tali dati e che abroga la direttiva 95/46/CE 
+(regolamento generale sulla protezione dei dati);  
+• “Registration Authority Operator (RAO)”: ogni persona fisica espressamente 
+incaricata da Namirial allo svolgimento delle Operazioni di identificazione e 
+registrazione del Titolare; 
+• “Terzo interessato”: la persona fisica o giuridica che presta il consenso 
+all’emissione di Certificati nei quali sia riportata l’appartenenza del Titolare 
+alla propria organizzazione, nonché eventuali poteri di rappresentanza, titoli 
+o cariche rivestite da quest’ultimo; 
+• “Titolare”: il “Firmatario”, ovvero una persona fisica che crea una Firma 
+elettronica. 
+Art. 2 Struttura del Contratto 
+Il presente Contratto è costituito dai seguenti documenti, complessivamente e 
+unitamente contenenti la disciplina del rapporto tra le parti: 
+a) le Condizioni generali; 
+b) il Modulo di richiesta; 
+c) Il PKI Disclosure Statement ovvero l’Autorità di certificazione – 
+Dichiarazione di trasparenza (“PDS”), pubblicato nella sua versione più 
+aggiornata, sul sito https://support.na mirial.com/it/docs/docs-tsp-
+firma-qualificata/, al momento dell’invio al Certificatore del Modulo di 
+richiesta. 
+Il Titolare prende atto e accetta che la sottoscrizione del Modulo di richiesta, 
+comporta l’accettazione dell’intero Contratto i cui documenti  avranno piena 
+efficacia vincolante nei confronti del Titolare medesimo. 
+Art. 3 Oggetto 
+Il Contratto ha per oggetto la fornitura dei Certificati, secondo la normativa 
+vigente in materia e le specifiche modalità indicate nel PDS. 
+Art. 4 Conclusione del Contratto 
+Il presente Contratto si considera concluso con la sottoscrizione del Modulo 
+di richiesta da parte del Titolare e la consegna dei Certificati da parte di Namirial 
+o della LRA. L’emissione dei Certificati avrà luogo solo in caso di esito positivo 
+delle necessarie verifiche preventive. 
+Namirial avrà la facoltà di rifiutare la richiesta di emissione dei Certificati in caso 
+di esito negativo delle suddette verifiche ovvero se basato su un fondamento 
+legittimo, tra cui a titolo esemplificativo ma non esaustivo: 
+a) errori durante il processo di registrazione o fornitura di indicazioni false, 
+inesatte, incomplete o non aggiornate in merito alla identità e/o ai dati 
+personali, anche mediante l’utilizzo di documenti personali non veritieri, 
+relativi al Titolare; 
+b) riscontro della violazione degli obblighi posti, dal presente Contratto o 
+dalla legge, a carico del Titolare; 
+c) richiesta proveniente dall’Autorità Giudiziaria; 
+d) violazione della legge applicabile. 
+La suddetta mancata emissione non farà sorgere alcun obbligo di risarcimento o 
+indennità a carico di Namirial. 
+Art. 5 Validità dei Certificati 
+La data di scadenza di ciascun Certificato è quella indicata nell’apposito campo 
+del Certificato stesso. 
+Art. 6 Revoca e sospensione dei Certificati 
+I presupposti, le procedure e le tempistiche per la revoca e la sospensione dei 
+Certificati sono dettagliati nel PDS, e sinteticamente richiamati nel presente 
+articolo. 
+Il Certificatore, nel rispetto delle procedure previste dal PDS provvederà alla 
+revoca ovvero alla sospensione dei Certificati qualora si verifichi almeno una 
+delle seguenti circostanze: 
+a) cessazione o sospensione, per qualunque motivo, dell’attività del 
+Certificatore; 
+b) richiesta proveniente dall’Autorità Giudiziaria; 
+c) richiesta esplicita formulata per iscritto dal Titolare ovvero dal Terzo 
+Interessato nei casi specificamente indicati nel nel PDS; 
+d) riscontro della violazione degli obblighi posti, dal presente Contratto o 
+dalla legge, a carico del Titolare; 
+e) manomissione, rottura e/o compromissione della sicurezza della Chiave 
+privata; 
+f) abusi e falsificazioni. 
+Le liste di revoca e sospensione s ono pubblicate nel Registro dei Certificati 
+emessi dal Certificatore, accessibile telematicamente e aggiornato 
+periodicamente nei termini di legge. 
+In caso di revoca o di sospensione del Certificato, Il Titolare non avrà diritto ad 
+ottenere alcun rimborso. Le somme corrisposte dal Titolare o da una terza parte 
+(es. LRA) per l’emissione del Certificato saranno trattenute dal Certificatore a 
+titolo di rimborso, fatto salvo il diritto del Certificatore al risarcimento di
+
+
+===== PAGE 2 =====
+EMISSIONE DI CERTIFICATI DI FIRMA DISPOSABLE - CONDIZIONI GENERALI DI CONTRATTO 
+Mod.NAM CA01D_ITA_Rev.04_03.2023 Pag. 2 di 3  
+eventuali ulteriori danni patiti. 
+Il Titolare prende atto e acc etta che nulla avrà da pretendere dal Ce rtificatore 
+a ti tolo di rim borso, indennizzo o risarcimento danni per i pro vvedimenti che 
+quest’ultimo dovesse rite nere op portuno adottare, anche per conformarsi ad 
+eIDAS, ove fossero riscontrati inadempimenti ascrivibili al medesimo ovvero la 
+perdita dei requisiti in base ai quali i Certificati erano stati emessi a suo favore. 
+Per tutto quanto non indicato nel presente articolo, si fa rinvio al PDS nella loro 
+versione più aggiornata. 
+Art. 7 Durata del Contratto 
+La durata del Contratto corrisponderà alla durata di validità del Certificato.  
+Art. 8 Prezzo e fatturazione 
+Il servizio fornito con il presente Contratto è interamente gratuito per il Titolare. 
+Tutti i costi saranno sostenuti dalla LRA. 
+Art. 9 Obblighi e responsabilità del Titolare 
+Gli obb lighi del Titolare sono tutti q uelli i ndicati nel presente Co ntratto e 
+nella nor mativa applicabile. Il Ti tolare dichiara di aver pre so integrale visione 
+delle Condizioni generali e del PDS prima de lla s ottoscrizione del Modulo di 
+richiesta e di acc ettarne integralmente i relativi contenuti. 
+Il Ti tolare, nella consa pevolezza c he l’utilizzo di un Ce rtificato co mporta 
+rilevanti effetti giuridici riconducibili alla sua persona, è tenuto ad osservare la 
+massima diligenza nell’utilizzo, conservazione e protezione della Chiave privata 
+e delle Credenziali di autenticazione nel rispetto di quanto indicato nel PDS.  
+I Ce rtificati e le rel ative Cred enziali di aute nticazion e son o strettamente 
+personali e  il Titola re non pu ò cederli o darli in uso, diretta mente o 
+indirettamente a qualsia si titolo, a terzi, r imanendo, in ca so contrario, l’unico 
+responsabile del cor retto utilizzo degli s tessi, ai sen si e per tutti gli e ffetti di 
+legge. 
+Il Terzo interessato ha il diri tto/dovere di rich iedere la revoca del Certificato 
+nel caso in cui m utino i requisiti in base ai quali lo stesso era stato rilasciato al 
+Titolare. 
+Qualora il Titolare: 
+a)   
+abbia fornito indicazioni false, inesatte, incomplete o non aggiornate 
+in merito alla sua identità e/o ai suoi dati anagrafici, anche mediante 
+l’utilizzo di documenti personali non veritieri; 
+b)     non osservi, in generale, gli obblighi posti a proprio carico dal 
+presente Contratto o dalla legge; 
+sarà considerato, ora per allora, personalmente responsabile di tutte le violazioni 
+di cui sopra e si impegna a manlevare e tenere indenni il Certificatore e i delegati 
+di quest’ultimo da ogni responsabilità, spesa , pregiudizio o danno, diretto o 
+indiretto, derivanti da pretese o azioni da parte di terzi nei confronti dei quali il 
+Certificatore e/o i delegati di quest’ultimo siano stati chiamati a rispondere di 
+fatti imputabili al Titolare stesso. 
+I Certificati sono  emessi per l'apposizione di Firme elettroniche qualificate. 
+Eventuali ulteriori limitazioni d’uso dei Certificati verranno specificate nel 
+Modulo di richiesta.   
+Art. 10 Garanzia e assistenza 
+Il Certificatore non presta alcuna garanzia: 
+a) sulla installazione, sul corretto e regolare funzionamento e sulla 
+sicurezza dei sistemi hardware e software utilizzati dal Titolare; 
+b) sul regolare ed efficiente funzionamento delle linee elettriche e 
+telefoniche, dei sistemi di rete e della rete internet in particolare; 
+c) sulla validità e rilevanza (anche probatoria) attribuita da soggetti 
+sottoposti a leggi differenti da quella italiana o da eIDAS ai Certificati e 
+ai relativi Documenti informatici; 
+d) sulla segretezza e/o integrità delle chiavi asimmetriche in caso di loro 
+compromissione dovuta a violazioni rilevabili dal Titolare o dal 
+destinatario dei Documenti informatici mediante l’apposita procedura 
+di verifica. 
+Il servizio di assistenza post-vendita al Titolare è erogato dal Certificatore negli 
+orari e con le modalità previste nel PDS, ai quali si fa rinvio. 
+Il Titolare prende atto ed accetta che in tutte le fasi di assistenza, sia da remoto 
+che diretta, l’addetto incaricato dal Certificatore a prestare il servizio di assistenza 
+può venire a conoscenza dei dati personali del Titolare stesso riscontrabili 
+durante le fasi di collegamento sui dispositivi informatici del medesimo.  
+Art. 11 Obblighi e responsabilità del Certificatore 
+La fornitura dei Certificati è posta in e ssere, da Na mirial, nei limiti di q uanto 
+stabilito nel presente Co ntratto e da lle leggi vige nti in materia di 
+certificazione. Il Certificatore no n assume, pertanto, alcuna responsabilità al di 
+fuori di quanto ivi espressamente stabilito. 
+Namirial si impegna a conservare le informazioni di registrazione dei Titolari ed 
+il g
+iornale degli eventi (event log) relativi al servizio di CA per almeno 20 (venti) 
+anni. 
+Qualora la Chiave Privata sia nella disponibilità di Namirial, quest’ultima si 
+impegna ad utilizzarla esclusivamente nell’ambito dei servizi di Firma Elettronica 
+Qualificata. 
+Il certificatore si impegna a trattare e conservare i dati nel rispetto del Reg. UE 
+2016/679. 
+Salvo il caso di dolo o colpa grave, Namirial non è responsabile per i danni diretti 
+e/o indiretti di qualsiasi natura ed entità che dovessero derivare al Titolare, al Terzo 
+interessato, ai destinatari dei Documenti informatici firmati digitalmente e/o ai 
+terzi. 
+In particolare, il Certificatore non risponderà dei danni cagionati al Titolare e ai 
+terzi a causa di: 
+a) un uso improprio, non corretto e/o illegittimo del Certificato rispetto a 
+quanto stabilito nel PDS e nelle leggi vigenti in materia; 
+b) interventi tecnici sul Certificato o manomissioni effettuati dal Titolare o 
+da terzi non autorizzati dal Certificatore; 
+c) malfunzionamenti, ritardi, sospensioni o blocchi dei sistemi informativi, 
+delle apparecchiature hardware, delle linee elettriche e telefoniche e 
+delle connessioni internet utilizzate dal Titolare; 
+d) mancata attribuzione di validità e rilevanza (anche probatoria) ai 
+Certificati e ai relativi Documenti informatici, da parte di soggetti 
+sottoposti a leggi differenti da quella italiana; 
+e) compromissione della segretezza e/o integrità delle chiavi 
+asimmetriche dovuta a violazioni rilevabili dal Titolare o dal destinatario 
+dei Documenti informatici mediante l’apposita procedura di verifica; 
+f) cause di forza maggiore, caso fortuito ed eventi catastrofici (quali, a 
+titolo esemplificativo e non esaustivo: incendi, alluvioni, esplosioni, 
+terremoti, blocchi su reti elettriche e internet, ecc.); 
+g) ogni evento, nessuno escluso, che non sia stato denunciato per iscritto 
+al Certificatore entro e non oltre 10 (dieci) giorni dall’evento stesso. 
+Il Certificatore non assume resp onsabilità per il m ancato adempimento degli 
+obblighi posti a propri o carico dal presente Contratto e dalla legge dovuto a 
+cause non direttamente imputabili al medesimo. 
+Art. 12 Clausola risolutiva espressa 
+Il presente Contratto si risolve automaticamente, con conseguente sospensione 
+del/i Certificato/i, in caso di revoca del/i Certificato/i, secondo quanto previsto 
+nel PDS nonché in caso di assoggettamento di una delle parti a fallimento o ad 
+altra procedura concorsuale. 
+Il Certificatore ha facoltà ai sensi e per gli effetti dell’art. 1456 Cod.Civ., di 
+risolvere il presente Contratto, con conseguente revoca dei Certificati rilasciati 
+al Titolare, senza alcun preavviso, qualora quest’ultimo violi in tutto o in parte 
+le previsioni contenute nel precedente Art. 9 delle presenti Condizioni generali. 
+Art. 13 Eccezioni al diritto di recesso in accordo alla 
+Direttiva 2011/83/UE e al D. Lgs. 206/2005 
+Poiché il Certificato è un prodotto personalizzato con un breve periodo di validità 
+il Titolare, ai sensi dell’Articolo 16 della Direttiva 2011/83/UE del Parlamento 
+Europeo e del Consiglio del 25 ottobre 2011 sui diritti dei consumatori (“Di r. 
+2011/83/EU”), attuato in Italia tramite l’art. 59 del D. Lgs. 06/09/2005 n. 206 
+(“Codice del consumo”), qualora rientri nella definizione di consumatore di cui 
+all’Articolo 2 della citata direttiva, prende atto ed accetta che non sono applicabili 
+le disposizioni sul diritto di recesso contenute nell’art. 9 della Dir. 2011/83/EU. 
+Art. 14 Disposizioni generali 
+In relazione a quanto stabilito dall’art. 1469 bis Cod.Civ., nel caso in cui qualche 
+previsione contenuta nei precedenti articoli non si a applicabile al Titolare in 
+considerazione della sua qualità di consumatore, rimarranno comunque efficaci 
+e valide le restanti parti del Contratto. 
+Art. 15 Legge applicabile 
+Il presente Contratto è regolato dalla legge italiana. 
+Per quanto non espre ssamente previsto si rinvia a lle disposizi oni del c odice 
+civile ed alle altre norme applicabili in materia. 
+In ogni caso, ai sensi dell’art. 6 del Regolamento (CE) N. 593/2008 - R oma I 
+(“Reg. CE 593/2008”), il Titolare, qualora rientri nella definizione di consumatore 
+così come indicata dal predetto articolo (“Titolare consumatore”), potrà 
+avvalersi anche della protezione assicuratagli dalle disposizioni non derogabili 
+applicabili. In tale ipotesi, il Contratto è regolato sia dalla legge italiana che dalla 
+legge obbligatoria applicabile nel paese in cui il Titolare consumatore ha la sua 
+residenza abituale (come disciplinato nel Reg. CE 593/2008). 
+Il servizio è erogato in conformità alla legge italiana e ad eIDAS. 
+Art. 16 Foro competente 
+Per qualsiasi controversia che dovesse insorgere tra le parti in ordine al presente 
+Contratto e alle sue successive modificazioni ed integrazioni, sarà competente 
+esclusivamente il foro di Ancona.  
+Qualora il Titolare rientri nella definizione di consumatore di cui all’art. 18 del 
+Regolamento (UE) N. 1215/2012 del Parlamento Europeo e del Consiglio del 12 
+dicembre 2012 concernente la competenza giurisdizionale, il riconoscimento e 
+l’esecuzione delle decisioni in materia civile e commerciale, ovvero in quella di 
+cui al Codice del consumo (“Titolare consumatore”), qualsiasi controversia o 
+reclamo relativo al presente Contratto sarà di competenza delle autorità 
+giurisdizionali del luogo in cui è domiciliato o residente (se in Italia) il 
+consumatore.  
+In ogni ca so, il Titolare consumatore avrà la facoltà di instaurare l’eventuale 
+procedimento sia avanti alle autorità del foro di Ancona che avanti alle autorità 
+giurisdizionali del luogo in cui lo stesso è domiciliato o residente. 
+Inoltre, in accordo al Regolamento (Ue) N. 524/2013 del Parlamento Europeo e 
+del Consiglio del 21 maggio 2013 relativo alla risoluzione delle controversie 
+online dei consumatori, è possibile avvalersi della procedura di risoluzione delle 
+controversie online (ODR), istituita dalla Commissione Europea e disponibile al 
+seguente link  ec.europa.eu/consumers/odr
+. 
+Art. 17 Modifiche al Contratto 
+Il Titolare dichiara di essere consapevole e di accettare il fatto che il Certificatore 
+potrà modificare in ogni momento le presenti Condizioni generali, il PDS e le 
+condizioni di erogazione del servizio di assistenza.  
+Tali modifiche saranno comunicate al Titolare tramite email o posta elettronica 
+certificata o pubblicazione sul sito internet 
+https://support.namirial.com/it/docs/docs-tsp-firma-qualificata/
+ ed avranno efficacia 
+decorsi 30 (trenta) giorni dalla loro comunicazione o pubblicazione. Qualora il Titolare 
+non intenda accettare le suddette modifiche avrà la facoltà di recedere dal Contratto 
+entro il termine di efficacia delle stesse tramite comunicazione da effettuarsi al 
+Certificatore nelle modalità indicate al successivo 
+Art. 21.
+
+
+===== PAGE 3 =====
+EMISSIONE DI CERTIFICATI DI FIRMA DISPOSABLE - CONDIZIONI GENERALI DI CONTRATTO 
+Mod.NAM CA01D_ITA_Rev.04_03.2023 Pag. 3 di 3  
+Art. 18 Cessazione dell’attività del Certificatore 
+In caso di cessazione dell’attività da parte del Certificatore, ai sensi dell’art. 37 del 
+Codice nonché dell’articolo 6.4.9 dello standard ETSI EN 319 411- 1 e delle 
+disposizioni di eIDAS, i dati forniti dal Titolare al fine di usufruire dei servizi qui 
+descritti e la relativa documentazione potranno essere depositati presso AgID che 
+ne garantisce la conservazione e la disponibilità. 
+Art. 19 Trattamento dei dati personali 
+Salvo quanto eventualmente pr evisto al riguardo nelle presenti Condizioni 
+Generali, il trattamento dei dati personali del Titolare e dallo stesso comunicati 
+al Certificatore ai fini dell’esecuzione del presente Contratto e della successiva 
+fornitura di Certificati, avverrà in conformità al Reg. UE 2016/679, all’informativa 
+trattamento dati rilasciata dal Certificatore, ovvero dalla LRA, in fase di iscrizione 
+anagrafica ed in forza del consenso al trattamento dei dati manifestato in tale 
+sede dal Titolare. 
+Art. 20 Sopravvivenza delle clausole 
+Le disposizioni contenute nei seguenti articoli resteranno valide ed efficaci tra 
+le parti anche a seguito della cessazione, per qualsiasi causa intervenuta del 
+Contratto: 
+Art. 1 Definizioni; Art. 9 Obblighi e responsabilità del Titolare ; Art. 10 Garanzia 
+e assistenza ; Art. 11 Obblighi e responsabilità del Certificatore ; Art. 14  
+Disposizioni generali; Art. 15 Legge applicabile; Art. 16 Foro competente; Art. 18 
+Cessazione dell’attività del Certificatore; Art. 21 Comunicazioni. 
+Art. 21 Comunicazioni 
+Qualsiasi comunicazione tra le parti inerente al Contratto sarà ritenuta valida se 
+inviata all’altra parte mediante raccomandata postale con avviso di ricevimento 
+oppure via PEC ai rispettivi indirizzi indicati nel Contratto. 
+Tutti gli avvisi, le comunicazioni, le lettere, le raccomandate e, in generale, tutta 
+la corrispondenza inoltrata mediante servizio postale dal Titolare al 
+Certificatore, dovranno essere inviati al seguente indirizzo: Namirial S.p.A., Via 
+Caduti sul lavoro 4, 60019 – Senigallia (AN), ovvero presso altro indirizzo 
+comunicato al Titolare con almeno 30 (trenta) giorni di anticipo. 
+Tutta la corrispondenza elettronica inviata dal Titolare al Certificatore dovrà 
+essere inviata al seguente indirizzo PEC: firmacerta@sicurezzapostale.it, ovvero 
+presso altro indirizzo PEC comunicato al Titolare con almeno 30 (trenta) giorni 
+di anticipo. 
+Nel caso in cui il Titolare richieda l’emissione dei Certificati per il tramite dell a 
+LRA, tutte le comunicazioni potranno essere indirizzate anche a quest’ultimi.

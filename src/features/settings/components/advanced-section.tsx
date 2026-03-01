@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useQueryClient } from "@tanstack/react-query"
-import { Trash2, Database, CheckCircle2, AlertCircle, Loader2, Copy, AlertTriangle, Info } from "lucide-react"
+import { Trash2, CheckCircle2, AlertCircle, Loader2, Copy, AlertTriangle, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/table"
 import { ConfirmDialog } from "@/components/patterns/confirm-dialog"
 import { queryKeys } from "@/lib/query-keys"
-import { seedTransactions, __resetTransactionsCache } from "@/features/transactions/api/repository"
+import { __resetTransactionsCache } from "@/features/transactions/api/repository"
 import { __resetCategoriesCache } from "@/features/categories/api/repository"
 import { resetSettings } from "@/features/settings/api/repository"
 import { resetAllData } from "@/features/settings/backup/backup-utils"
@@ -119,23 +119,6 @@ export function AdvancedSection() {
         } finally {
             setIsLoading(false)
             setResetDialog(null)
-        }
-    }
-
-    const handleSeed = async () => {
-        setIsLoading(true)
-        setStatus(null)
-
-        try {
-            seedTransactions()
-            await invalidateAll()
-            setDiagnostics(buildDiagnosticsSnapshot())
-            setStatus({ type: "success", message: "Dati demo caricati con successo." })
-        } catch (error) {
-            console.error("Seed error:", error)
-            setStatus({ type: "error", message: "Si è verificato un errore durante il caricamento dei dati demo." })
-        } finally {
-            setIsLoading(false)
         }
     }
 
@@ -311,21 +294,6 @@ export function AdvancedSection() {
                                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
                                         Reset totale (Tutto)
                                     </Button>
-
-                                    <div className="h-2"></div>
-
-                                    <Button
-                                        variant="outline"
-                                        onClick={handleSeed}
-                                        disabled={isLoading}
-                                        className="w-full"
-                                    >
-                                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Database className="mr-2 h-4 w-4" />}
-                                        Carica dati demo
-                                    </Button>
-                                    <p className="text-[10px] text-muted-foreground mt-1 text-center">
-                                        Rimuove tutto e carica dati di esempio
-                                    </p>
                                 </div>
                             </div>
                         </div>

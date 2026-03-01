@@ -1,3 +1,5 @@
+import { parseCurrencyToCents } from "@/domain/money/currency"
+
 interface GoCardlessTokenResponse {
     access?: string
 }
@@ -236,20 +238,19 @@ function readAmount(transaction: GoCardlessTransaction): string | null {
     const raw = asString(transaction.transactionAmount?.amount)
     if (!raw) return null
 
-    const normalized = raw.replace(",", ".")
-    const value = Number.parseFloat(normalized)
-    if (!Number.isFinite(value)) return null
+    if (!/\d/.test(raw)) return null
+    const amountCents = parseCurrencyToCents(raw)
 
-    let signed = value
+    let signedCents = amountCents
     const indicator = asString(transaction.creditDebitIndicator)?.toUpperCase()
-    const hasSign = normalized.startsWith("-") || normalized.startsWith("+")
+    const hasSign = raw.startsWith("-") || raw.startsWith("+")
 
     if (!hasSign && indicator) {
-        if (indicator === "DBIT") signed = -Math.abs(value)
-        if (indicator === "CRDT") signed = Math.abs(value)
+        if (indicator === "DBIT") signedCents = -Math.abs(amountCents)
+        if (indicator === "CRDT") signedCents = Math.abs(amountCents)
     }
 
-    return signed.toFixed(2)
+    return (signedCents / 100).toFixed(2)
 }
 
 function escapeCsv(value: string): string {

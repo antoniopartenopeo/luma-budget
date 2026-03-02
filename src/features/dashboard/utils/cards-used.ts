@@ -11,7 +11,7 @@ interface MutableCardAgg {
     confidence: CardParseConfidence
 }
 
-const ACTIVE_WINDOW_MS = 30 * 24 * 60 * 60 * 1000
+const ACTIVE_WINDOW_MONTHS = 3
 
 function buildCardKey(network: CardNetwork, last4: string): string {
     return network === "Unknown"
@@ -35,8 +35,11 @@ function mergeWalletProvider(current: WalletProvider, incoming: WalletProvider):
     return "Other"
 }
 
-function resolveCardStatus(lastSeenTs: number, nowTs: number): CardUsageStatus {
-    return nowTs - lastSeenTs <= ACTIVE_WINDOW_MS ? "active" : "stale"
+function resolveCardStatus(lastSeenTs: number, now: Date): CardUsageStatus {
+    const threshold = new Date(now)
+    threshold.setMonth(threshold.getMonth() - ACTIVE_WINDOW_MONTHS)
+
+    return lastSeenTs >= threshold.getTime() ? "active" : "stale"
 }
 
 function reconcileUnknownNetworks(
@@ -67,7 +70,7 @@ function reconcileUnknownNetworks(
     })
 }
 
-function toDashboardCardUsage(agg: MutableCardAgg, nowTs: number): DashboardCardUsage {
+function toDashboardCardUsage(agg: MutableCardAgg, now: Date): DashboardCardUsage {
     return {
         cardId: agg.cardId,
         last4: agg.last4,
@@ -75,17 +78,17 @@ function toDashboardCardUsage(agg: MutableCardAgg, nowTs: number): DashboardCard
         walletProvider: agg.walletProvider,
         firstSeen: new Date(agg.firstSeenTs).toISOString(),
         lastSeen: new Date(agg.lastSeenTs).toISOString(),
-        status: resolveCardStatus(agg.lastSeenTs, nowTs),
+        status: resolveCardStatus(agg.lastSeenTs, now),
         confidence: agg.confidence
     }
 }
 
-export function buildCardsUsed(rangeTransactions: Transaction[], now: Date = new Date()): DashboardCardUsage[] {
+export function buildCardsUsed(transactions: Transaction[], now: Date = new Date()): DashboardCardUsage[] {
     const byKey = new Map<string, MutableCardAgg>()
     const unknownKeysByLast4 = new Map<string, Set<string>>()
     const knownKeysByLast4 = new Map<string, Set<string>>()
 
-    for (const transaction of rangeTransactions) {
+    for (const transaction of transactions) {
         const parsed = parseCardFromDescription(transaction.description, "balanced")
         if (!parsed) continue
 
@@ -123,9 +126,8 @@ export function buildCardsUsed(rangeTransactions: Transaction[], now: Date = new
 
     reconcileUnknownNetworks(byKey, unknownKeysByLast4, knownKeysByLast4)
 
-    const nowTs = now.getTime()
     return Array.from(byKey.values())
-        .map((agg) => toDashboardCardUsage(agg, nowTs))
+        .map((agg) => toDashboardCardUsage(agg, now))
         .sort((a, b) => {
             const recencyDelta = Date.parse(b.lastSeen) - Date.parse(a.lastSeen)
             if (recencyDelta !== 0) return recencyDelta

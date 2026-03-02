@@ -148,7 +148,7 @@ describe("TrendAnalysisCard", () => {
         expect(html).not.toContain(payload)
     })
 
-    it("anchors projection to current month and disables it when current month is missing", () => {
+    it("anchors projection to current month and keeps it visible when current month has no movements", () => {
         useTrendDataMock.mockReturnValueOnce({
             isLoading: false,
             data: [
@@ -192,8 +192,17 @@ describe("TrendAnalysisCard", () => {
         )
 
         const missingCurrentMonthOption = getLastOption()
-        expect(getSeriesByName(missingCurrentMonthOption, "Uscite stimate fine mese")).toBeUndefined()
-        expect(getXAxisData(missingCurrentMonthOption)).not.toContain("__projection_end__")
+        const projectionSeriesMissingCurrentMonth = getSeriesByName(missingCurrentMonthOption, "Uscite stimate fine mese")
+        expect(projectionSeriesMissingCurrentMonth).toBeDefined()
+        const xAxisMissingCurrentMonth = getXAxisData(missingCurrentMonthOption)
+        const febIndexMissingCurrent = xAxisMissingCurrentMonth.indexOf("Feb")
+        const projectionEndIndexMissingCurrent = xAxisMissingCurrentMonth.indexOf("__projection_end__")
+        const projectionDataMissingCurrent = (projectionSeriesMissingCurrentMonth?.data ?? []) as Array<number | null>
+
+        expect(febIndexMissingCurrent).toBeGreaterThanOrEqual(0)
+        expect(projectionEndIndexMissingCurrent).toBeGreaterThanOrEqual(0)
+        expect(projectionDataMissingCurrent[febIndexMissingCurrent]).toBe(0)
+        expect(projectionDataMissingCurrent[projectionEndIndexMissingCurrent]).toBe(600)
     })
 
     it("orders future milestones by real timestamp", () => {

@@ -109,8 +109,10 @@ describe("detectActiveSubscriptions", () => {
         const now = new Date("2026-04-20T09:00:00.000Z")
         const latest = new Date(now.getTime() - oldWindowDays * DAY_MS)
         const previous = new Date(latest.getTime() - 31 * DAY_MS)
+        const third = new Date(previous.getTime() - 31 * DAY_MS)
 
         const result = detectActiveSubscriptions([
+            tx("SPOTIFY:old-0", 1099, third.toISOString()),
             tx("SPOTIFY:old-1", 1099, previous.toISOString()),
             tx("SPOTIFY:old-2", 1099, latest.toISOString()),
         ], {
@@ -163,11 +165,15 @@ describe("detectActiveSubscriptions", () => {
 
     it("keeps merchant active with adaptive 35-70 day window when latest month is an amount outlier", () => {
         const result = detectActiveSubscriptions([
-            tx("FLEXIA:dec", 13454, "2025-12-05T09:00:00.000Z", {
+            tx("FLEXIA:nov", 13454, "2025-11-05T09:00:00.000Z", {
                 categoryId: "rate_prestiti",
                 categoryLabel: "Rate & Prestiti"
             }),
-            tx("FLEXIA:jan", 13674, "2026-01-05T09:00:00.000Z", {
+            tx("FLEXIA:dec", 13674, "2025-12-05T09:00:00.000Z", {
+                categoryId: "rate_prestiti",
+                categoryLabel: "Rate & Prestiti"
+            }),
+            tx("FLEXIA:jan", 13480, "2026-01-05T09:00:00.000Z", {
                 categoryId: "rate_prestiti",
                 categoryLabel: "Rate & Prestiti"
             }),
@@ -184,7 +190,7 @@ describe("detectActiveSubscriptions", () => {
             description: "FLEXIA",
             categoryId: "rate_prestiti",
             categoryLabel: "Rate & Prestiti",
-            occurrences: 2,
+            occurrences: 3,
         })
     })
 })

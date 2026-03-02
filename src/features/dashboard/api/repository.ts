@@ -75,7 +75,8 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
         percentage: uselessSpendPercent
     } = calculateSuperfluousMetrics(rangeTransactions)
 
-    const cardsUsed = buildCardsUsed(rangeTransactions, new Date())
+    // Cards are derived from the full transaction history; filter affects KPI totals, not card discovery.
+    const cardsUsed = buildCardsUsed(transactions, new Date())
 
 
     // 8. Monthly Data for Charts

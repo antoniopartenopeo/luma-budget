@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react"
 import { CheckCircle2, TrendingUp, TrendingDown, Loader2, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { ImportState, Override } from "../core/types"
 import { generatePayload } from "../core/pipeline"
 import { StateMessage } from "@/components/ui/state-message"
@@ -65,11 +66,6 @@ export function ImportStepSummary({
 
         return { income, expense, count }
     }, [payload])
-
-    const importDiagnostics = useMemo(() => {
-        const discardedRows = importState.summary.parseErrors.length
-        return { discardedRows }
-    }, [importState.summary.parseErrors.length])
 
     const handleConfirm = async () => {
         if (!payload) return
@@ -138,7 +134,7 @@ export function ImportStepSummary({
                 Indietro
             </Button>
             <Button onClick={handleConfirm} disabled={isPending} className="h-12 gap-2 rounded-xl px-6 shadow-lg transition-all hover:shadow-primary/25">
-                {isPending ? <Loader2 className="h-5 w-5 animate-spin-slow" /> : "Aggiungi movimenti"}
+                {isPending ? <Loader2 className="h-5 w-5 animate-spin-slow" /> : "Conferma importazione"}
             </Button>
         </div>
     )
@@ -152,17 +148,17 @@ export function ImportStepSummary({
         >
             <div className="animate-enter-up">
                 <MacroSection contentClassName="space-y-5">
-                    <div className="w-full grid grid-cols-1 gap-4 lg:grid-cols-3">
-                        <KpiCard
-                            compact
-                            title="Movimenti da aggiungere"
-                            value={stats.count}
-                            icon={CheckCircle2}
-                            tone="neutral"
-                            valueClassName="text-2xl sm:text-3xl lg:text-4xl text-foreground"
-                            className="h-full"
-                            description="Confermando aggiungerai questi movimenti."
-                        />
+                    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border/60 bg-muted/10 p-3">
+                        <span className="text-sm text-muted-foreground">Confermando aggiungerai</span>
+                        <Badge variant="outline" className="h-7 rounded-full px-3 text-xs font-semibold normal-case tracking-normal text-foreground">
+                            {stats.count} movimenti
+                        </Badge>
+                        <Badge variant="outline" className="h-7 rounded-full border-primary/30 bg-primary/10 px-3 text-xs font-semibold normal-case tracking-normal text-primary">
+                            Duplicati già esclusi
+                        </Badge>
+                    </div>
+
+                    <div className="w-full grid grid-cols-1 gap-4 lg:grid-cols-2">
                         <KpiCard
                             compact
                             title="Totale entrate"
@@ -185,24 +181,15 @@ export function ImportStepSummary({
                         />
                     </div>
 
-                    {(importDiagnostics.discardedRows > 0 || isSaveError) && (
+                    {isSaveError && (
                         <div className="w-full space-y-3 rounded-xl border border-border/60 bg-muted/15 p-4">
-                            {importDiagnostics.discardedRows > 0 && (
-                                <p className="text-sm text-muted-foreground">
-                                    Righe non leggibili ignorate:{" "}
-                                    <span className="font-semibold tabular-nums text-foreground">{importDiagnostics.discardedRows}</span>
-                                </p>
-                            )}
-
-                            {isSaveError && (
-                                <div className="flex items-center gap-3 rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-left text-destructive">
-                                    <AlertCircle className="h-5 w-5 shrink-0" />
-                                    <div>
-                                        <p className="font-bold text-sm">Errore durante il salvataggio</p>
-                                        <p className="text-xs opacity-90">Ci dispiace, qualcosa è andato storto. Riprova.</p>
-                                    </div>
+                            <div className="flex items-center gap-3 rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-left text-destructive">
+                                <AlertCircle className="h-5 w-5 shrink-0" />
+                                <div>
+                                    <p className="font-bold text-sm">Errore durante il salvataggio</p>
+                                    <p className="text-xs opacity-90">Ci dispiace, qualcosa è andato storto. Riprova.</p>
                                 </div>
-                            )}
+                            </div>
                         </div>
                     )}
                 </MacroSection>

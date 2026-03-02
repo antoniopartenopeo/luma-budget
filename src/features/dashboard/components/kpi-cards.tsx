@@ -212,7 +212,7 @@ export function DashboardKpiGrid({
 
             <MacroSection
                 title="Carte utilizzate"
-                description="Carte rilevate nel periodo selezionato"
+                description="Carte rilevate dallo storico movimenti"
                 contentClassName="pt-5"
                 className="w-full"
             >

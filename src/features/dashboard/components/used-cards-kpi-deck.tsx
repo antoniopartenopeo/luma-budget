@@ -156,7 +156,7 @@ export function UsedCardsKpiDeck({
     cards,
     isLoading = false,
     isPrivacyMode = false,
-    emptyLabel = "Nessuna carta rilevata nel periodo selezionato.",
+    emptyLabel = "Nessuna carta rilevata nello storico movimenti.",
     showHeader = true,
     className
 }: UsedCardsKpiDeckProps) {

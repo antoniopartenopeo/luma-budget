@@ -5,8 +5,9 @@ const MONTHLY_MIN_GAP_DAYS = 25
 const MONTHLY_MAX_GAP_DAYS = 35
 const SINGLE_GAP_MIN_DAYS = 27
 const SINGLE_GAP_MAX_DAYS = 33
+const MIN_SUBSCRIPTION_OCCURRENCES = 3
 const MIN_SUBSCRIPTION_AMOUNT_CENTS = 500
-const MAX_AMOUNT_DRIFT_RATIO = 0.25
+const MAX_AMOUNT_DRIFT_RATIO = 0.1
 const AMOUNT_CLUSTER_TOLERANCE_RATIO = 0.18
 const MIN_CLUSTER_TOLERANCE_CENTS = 100
 const BRIDGE_EXPECTED_DAY_TOLERANCE = 7
@@ -116,7 +117,7 @@ function isWithinMonthlyCadence(sortedDates: number[]): boolean {
 }
 
 function isAmountStable(samples: SubscriptionSample[]): boolean {
-    if (samples.length < 2) return true
+    if (samples.length < MIN_SUBSCRIPTION_OCCURRENCES) return false
 
     const amounts = samples.map((sample) => sample.amountCents)
     const medianAmount = Math.max(1, toMedian(amounts))
@@ -299,13 +300,13 @@ export function detectActiveSubscriptions(
     const subscriptions: DetectedSubscription[] = []
 
     merchantMap.forEach((samples, merchantKey) => {
-        if (samples.length < 2) return
+        if (samples.length < MIN_SUBSCRIPTION_OCCURRENCES) return
 
         const clusters = clusterByAmount(samples)
         const candidates: CandidateSubscription[] = []
 
         clusters.forEach((cluster) => {
-            if (cluster.samples.length < 2) return
+            if (cluster.samples.length < MIN_SUBSCRIPTION_OCCURRENCES) return
             if (!isAmountStable(cluster.samples)) return
 
             const sortedDates = cluster.samples

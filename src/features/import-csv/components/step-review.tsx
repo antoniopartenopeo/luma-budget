@@ -222,7 +222,7 @@ export function ImportStepReview({
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
                     <KpiCard
                         compact
-                        title="Righe valide"
+                        title="Movimenti letti"
                         value={importVisibility.totalValidRows}
                         icon={ListChecks}
                         tone="neutral"
@@ -231,7 +231,7 @@ export function ImportStepReview({
                     />
                     <KpiCard
                         compact
-                        title="Pronte da aggiungere"
+                        title="Pronti da importare"
                         value={importVisibility.importableRows}
                         icon={PlusCircle}
                         tone="positive"
@@ -240,7 +240,7 @@ export function ImportStepReview({
                     />
                     <KpiCard
                         compact
-                        title="Duplicati esclusi"
+                        title="Già presenti"
                         value={importVisibility.duplicatesTotal}
                         icon={Copy}
                         tone="warning"
@@ -248,13 +248,13 @@ export function ImportStepReview({
                         valueClassName="text-2xl sm:text-3xl lg:text-4xl text-amber-700 dark:text-amber-300"
                         description={
                             importVisibility.duplicatesTotal > 0
-                                ? `${importVisibility.duplicatesConfirmed} confermati + ${importVisibility.duplicatesSuspected} da verificare`
+                                ? `${importVisibility.duplicatesConfirmed} certi + ${importVisibility.duplicatesSuspected} da controllare`
                                 : undefined
                         }
                     />
                     <KpiCard
                         compact
-                        title="Righe non leggibili"
+                        title="Non letti"
                         value={parseErrorsCount}
                         icon={CircleAlert}
                         tone="negative"
@@ -275,7 +275,7 @@ export function ImportStepReview({
                         <div className="flex items-start gap-2">
                             <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
                             <div className="text-xs md:text-sm">
-                                Ho trovato <strong>{parseErrorsCount}</strong> righe non leggibili nel file.
+                                Alcune righe non sono state lette (<strong>{parseErrorsCount}</strong>).
                                 I movimenti validi sono già pronti qui sotto.
                             </div>
                         </div>

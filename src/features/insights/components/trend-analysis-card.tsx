@@ -24,7 +24,6 @@ interface TrendProjectionState {
     sourceLabel: "Brain" | "Storico"
     remainingExpenses: number
     projectedEndExpenses: number
-    anchorIndex: number
     anchorYearMonth: string | null
 }
 
@@ -146,30 +145,26 @@ export function TrendAnalysisCard({
     }, [activeData, hasHighSeverityCurrentIssue])
 
     const projection = useMemo<TrendProjectionState>(() => {
-        if (!advisorForecast || activeData.length === 0) {
+        if (!advisorForecast || data.length === 0) {
             return {
                 enabled: false,
                 sourceLabel: "Storico",
                 remainingExpenses: 0,
                 projectedEndExpenses: 0,
-                anchorIndex: -1,
                 anchorYearMonth: null
             }
         }
 
-        const currentMonthIndex = activeData.findIndex((item) => item.yearMonth === currentPeriod)
-        if (currentMonthIndex < 0) {
+        const currentMonth = data.find((item) => item.yearMonth === currentPeriod)
+        if (!currentMonth) {
             return {
                 enabled: false,
                 sourceLabel: "Storico",
                 remainingExpenses: 0,
                 projectedEndExpenses: 0,
-                anchorIndex: -1,
                 anchorYearMonth: null
             }
         }
-
-        const currentMonth = activeData[currentMonthIndex]
         const remainingExpenses = Math.max(0, advisorForecast.predictedRemainingCurrentMonthExpensesCents / 100)
         const projectedEndExpenses = Math.max(
             currentMonth.expenses,
@@ -181,10 +176,9 @@ export function TrendAnalysisCard({
             sourceLabel: advisorForecast.primarySource === "brain" ? "Brain" : "Storico",
             remainingExpenses,
             projectedEndExpenses,
-            anchorIndex: currentMonthIndex,
             anchorYearMonth: currentMonth.yearMonth
         }
-    }, [advisorForecast, activeData, currentPeriod])
+    }, [advisorForecast, data, currentPeriod])
 
     const upcomingChargeMilestones = useMemo<UpcomingChargeMilestone[]>(() => {
         if (advisorSubscriptions.length === 0) return []
@@ -233,9 +227,15 @@ export function TrendAnalysisCard({
     }, [advisorSubscriptions, locale])
 
     const option = useMemo<EChartsOption>(() => {
-        if (!activeData.length) return {}
+        const currentMonthData = data.find((item) => item.yearMonth === currentPeriod) ?? null
+        const hasCurrentMonthInActive = activeData.some((item) => item.yearMonth === currentPeriod)
+        const chartData = projection.enabled && currentMonthData && !hasCurrentMonthInActive
+            ? [...activeData, currentMonthData]
+            : activeData
 
-        const baseMonths = activeData.map((d) => d.month)
+        if (!chartData.length) return {}
+
+        const baseMonths = chartData.map((d) => d.month)
         const hasTimelineMilestones = upcomingChargeMilestones.length > 0
         const projectionTimestamp = projection.enabled && projection.anchorYearMonth
             ? getPeriodEndTimestamp(projection.anchorYearMonth)
@@ -274,8 +274,8 @@ export function TrendAnalysisCard({
             ...futureAxisPoints.map((item) => item.axisKey)
         ]
 
-        const incomeSeriesData: Array<number | null> = activeData.map((d) => d.income)
-        const expensesSeriesData: Array<number | null> = activeData.map((d) => d.expenses)
+        const incomeSeriesData: Array<number | null> = chartData.map((d) => (d.hasTransactions ? d.income : null))
+        const expensesSeriesData: Array<number | null> = chartData.map((d) => (d.hasTransactions ? d.expenses : null))
         const trailingSlots = futureAxisPoints.length
         for (let index = 0; index < trailingSlots; index += 1) {
             incomeSeriesData.push(null)
@@ -287,9 +287,12 @@ export function TrendAnalysisCard({
         )
         const projectionSeriesData: Array<number | null> = xAxisData.map(() => null)
         if (projection.enabled) {
+            const anchorIndex = projection.anchorYearMonth
+                ? chartData.findIndex((item) => item.yearMonth === projection.anchorYearMonth)
+                : -1
             const projectionEndIndex = axisIndexByKey.get(PROJECTION_AXIS_KEY)
-            if (projection.anchorIndex >= 0 && projectionEndIndex !== undefined) {
-                projectionSeriesData[projection.anchorIndex] = activeData[projection.anchorIndex].expenses
+            if (anchorIndex >= 0 && projectionEndIndex !== undefined) {
+                projectionSeriesData[anchorIndex] = chartData[anchorIndex].expenses
                 projectionSeriesData[projectionEndIndex] = projection.projectedEndExpenses
             }
         }
@@ -371,7 +374,7 @@ export function TrendAnalysisCard({
                     const safeTitle = escapeHtml(title)
                     const timelineMilestone = timelineMilestoneByAxisKey.get(axisKey)
                     const isProjectionEnd = projection.enabled && axisKey === PROJECTION_AXIS_KEY
-                    const monthStats = index < activeData.length ? activeData[index] : null
+                    const monthStats = index < chartData.length ? chartData[index] : null
 
                     const valueBySeries = new Map<string, number>()
                     for (const row of rows) {
@@ -429,7 +432,9 @@ export function TrendAnalysisCard({
                     const savingsRate = monthStats?.savingsRateLabel ?? "0.0%"
                     const safeSavingsRate = escapeHtml(savingsRate)
                     const safeSourceLabel = escapeHtml(projection.sourceLabel)
-                    const projectionNote = projection.enabled && index === projection.anchorIndex
+                    const projectionNote = projection.enabled
+                        && projection.anchorYearMonth !== null
+                        && monthStats?.yearMonth === projection.anchorYearMonth
                         ? `
               <div style="display: flex; justify-content: space-between; gap: 24px; margin-top: 4px; padding-top: 4px; border-top: 1px dashed rgba(128,128,128,0.2);">
                 <span style="color: oklch(var(--muted-foreground)); font-size: 12px;">Fine mese stimata</span>
@@ -644,7 +649,7 @@ export function TrendAnalysisCard({
                     : [])
             ]
         }
-    }, [activeData, hasActiveData, currency, locale, isDarkMode, projection, prefersReducedMotion, upcomingChargeMilestones])
+    }, [activeData, data, currentPeriod, hasActiveData, currency, locale, isDarkMode, projection, prefersReducedMotion, upcomingChargeMilestones])
     const trendDescription = trendNarration ?? "Confronto mese per mese tra entrate e uscite."
 
     return (

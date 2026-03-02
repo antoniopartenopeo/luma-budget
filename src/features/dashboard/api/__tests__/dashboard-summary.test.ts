@@ -146,7 +146,7 @@ describe('Dashboard Summary (Real Wiring)', () => {
         expect(summary.netBalance).toBe(-1100)
     })
 
-    it('should extract and deduplicate used cards in a filter-aware way', async () => {
+    it('should extract and deduplicate used cards from full history and mark stale by inactivity', async () => {
         const currentPeriod = getCurrentPeriod() // 2025-05
 
         await createTransaction({
@@ -173,7 +173,7 @@ describe('Dashboard Summary (Real Wiring)', () => {
             category: 'Svago',
         })
 
-        // Previous month: must not appear in current-month cardsUsed (filter-aware behavior)
+        // Previous month: must still appear because cards are history-based.
         vi.setSystemTime(new Date(2025, 3, 5))
         await createTransaction({
             description: 'PAGAMENTO MASTERCARD CARTA *1234 NEGOZIO APRILE',
@@ -183,16 +183,27 @@ describe('Dashboard Summary (Real Wiring)', () => {
             category: 'Cibo',
         })
 
+        // Old movement: should remain visible but marked stale.
+        vi.setSystemTime(new Date(2025, 0, 5))
+        await createTransaction({
+            description: 'PAGAMENTO MASTERCARD CARTA *4455 NEGOZIO GENNAIO',
+            amountCents: 1950,
+            type: 'expense',
+            categoryId: CategoryIds.CIBO,
+            category: 'Cibo',
+        })
+
         vi.setSystemTime(FIXED_DATE)
 
         const summary = await fetchDashboardSummary({ mode: 'month', period: currentPeriod })
 
-        expect(summary.cardsUsed).toHaveLength(3)
-        expect(summary.cardsUsed.every(card => card.last4 === '7298')).toBe(true)
+        expect(summary.cardsUsed).toHaveLength(5)
 
         const mastercard = summary.cardsUsed.find(card => card.cardId === 'mastercard_7298')
         const visa = summary.cardsUsed.find(card => card.cardId === 'visa_7298')
         const unknown = summary.cardsUsed.find(card => card.cardId === 'unk_7298')
+        const aprilCard = summary.cardsUsed.find(card => card.cardId === 'mastercard_1234')
+        const januaryCard = summary.cardsUsed.find(card => card.cardId === 'mastercard_4455')
 
         expect(mastercard).toBeDefined()
         expect(mastercard?.walletProvider).toBe('Apple Pay')
@@ -206,6 +217,12 @@ describe('Dashboard Summary (Real Wiring)', () => {
         expect(unknown).toBeDefined()
         expect(unknown?.network).toBe('Unknown')
         expect(unknown?.status).toBe('active')
+
+        expect(aprilCard).toBeDefined()
+        expect(aprilCard?.status).toBe('active')
+
+        expect(januaryCard).toBeDefined()
+        expect(januaryCard?.status).toBe('stale')
     })
 
     it('should apply local month boundaries consistently', async () => {

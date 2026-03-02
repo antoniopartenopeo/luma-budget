@@ -38,7 +38,7 @@ describe("UsedCardsKpiDeck", () => {
     it("renders empty state", () => {
         render(<UsedCardsKpiDeck cards={[]} />)
 
-        expect(screen.getByText("Nessuna carta rilevata nel periodo selezionato.")).toBeInTheDocument()
+        expect(screen.getByText("Nessuna carta rilevata nello storico movimenti.")).toBeInTheDocument()
     })
 
     it("renders cards with wallet chip and status labels", () => {

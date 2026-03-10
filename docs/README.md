@@ -80,4 +80,6 @@ canonical-of: <topic-id or none>
 
 - Runtime constraints: `/.agent/rules/numa-core-rules.md`
 - Agent execution rules/skills: `/.agent/skills/*`
+- Vendored reference skills pinned in repo: `/.agents/skills/*` + `skills-lock.json`
+- Canonical precedence: `/.agent/*` wins over vendored `.agents/*` when they disagree
 - Governance update workflow: `$numa-governance-update`

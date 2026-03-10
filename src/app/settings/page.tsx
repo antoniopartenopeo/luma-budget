@@ -97,7 +97,7 @@ export default function SettingsPage() {
             <motion.div variants={macroItemVariants}>
                 <PageHeader
                     title="Impostazioni"
-                    description="Configura le preferenze dell'applicazione e gestisci i tuoi dati."
+                    description="Personalizza l'app e gestisci i dati salvati sul dispositivo."
                 />
             </motion.div>
 

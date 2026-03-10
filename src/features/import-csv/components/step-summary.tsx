@@ -81,7 +81,11 @@ export function ImportStepSummary({
     if (isSuccess) {
         const footer = (
             <div className="flex w-full justify-end">
-                <Button onClick={onClose} size="lg" className="h-12 rounded-xl px-8 text-base shadow-lg transition-all hover:shadow-xl">
+                <Button
+                    onClick={onClose}
+                    size="lg"
+                    className="h-12 rounded-xl px-8 text-base shadow-lg transition-[box-shadow,transform,background-color,border-color,color] duration-200 hover:shadow-xl"
+                >
                     Torna a Transazioni
                 </Button>
             </div>
@@ -90,7 +94,7 @@ export function ImportStepSummary({
         return (
             <WizardShell
                 title="Importazione completata"
-                subtitle="I movimenti sono stati aggiunti allo storico."
+                subtitle="I movimenti sono ora nello storico."
                 step="summary"
                 footer={footer}
             >
@@ -133,7 +137,11 @@ export function ImportStepSummary({
             <Button variant="ghost" onClick={isPending ? undefined : onBack} disabled={isPending} className="h-12 px-5 text-muted-foreground hover:text-foreground">
                 Indietro
             </Button>
-            <Button onClick={handleConfirm} disabled={isPending} className="h-12 gap-2 rounded-xl px-6 shadow-lg transition-all hover:shadow-primary/25">
+            <Button
+                onClick={handleConfirm}
+                disabled={isPending}
+                className="h-12 gap-2 rounded-xl px-6 shadow-lg transition-[box-shadow,transform,background-color,border-color,color] duration-200 hover:shadow-primary/25"
+            >
                 {isPending ? <Loader2 className="h-5 w-5 animate-spin-slow" /> : "Conferma importazione"}
             </Button>
         </div>
@@ -142,11 +150,11 @@ export function ImportStepSummary({
     return (
         <WizardShell
             title="Conferma i dati"
-            subtitle="Ultimo controllo prima di aggiungere i movimenti."
+            subtitle="Ultimo controllo prima di aggiungere i movimenti allo storico."
             step="summary"
             footer={footer}
         >
-            <div className="animate-enter-up">
+            <div>
                 <MacroSection contentClassName="space-y-5">
                     <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border/60 bg-muted/10 p-3">
                         <span className="text-sm text-muted-foreground">Confermando aggiungerai</span>

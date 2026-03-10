@@ -44,8 +44,8 @@ export function UpdatesPageContent() {
         <StaggerContainer className="space-y-8 w-full">
             <motion.div variants={macroItemVariants}>
                 <PageHeader
-                    title="Storico Aggiornamenti"
-                    description="Riepilogo completo delle release e dei fix distribuiti nell'app."
+                    title="Cronologia novità"
+                    description="Cosa è cambiato nell'app, versione dopo versione."
                     actions={(
                         <Button
                             variant="outline"
@@ -64,16 +64,16 @@ export function UpdatesPageContent() {
 
             {feedQuery.isLoading && (
                 <motion.div variants={macroItemVariants}>
-                    <div className="glass-card rounded-2xl p-6 text-sm font-medium leading-relaxed text-muted-foreground">
-                        Caricamento aggiornamenti...
+                    <div className="glass-panel rounded-[2rem] p-6 text-sm font-medium leading-relaxed text-muted-foreground">
+                        Sto caricando la cronologia...
                     </div>
                 </motion.div>
             )}
 
             {!feedQuery.isLoading && notifications.length === 0 && (
                 <motion.div variants={macroItemVariants}>
-                    <div className="glass-card rounded-2xl p-6 text-sm font-medium leading-relaxed text-muted-foreground">
-                        Nessun aggiornamento disponibile.
+                    <div className="glass-panel rounded-[2rem] p-6 text-sm font-medium leading-relaxed text-muted-foreground">
+                        Non ci sono ancora novità da mostrare.
                     </div>
                 </motion.div>
             )}
@@ -82,13 +82,13 @@ export function UpdatesPageContent() {
                 <motion.div key={version} variants={macroItemVariants}>
                     <section
                         id={`v-${version.replaceAll(".", "-")}`}
-                        className="glass-card rounded-2xl p-4 sm:p-5 space-y-3"
+                        className="glass-panel rounded-[2rem] p-5 sm:p-6 space-y-4"
                     >
                         <div className="flex items-center justify-between gap-3">
                             <h2 className="text-sm sm:text-base font-black tracking-tight">
                                 Release {version}
                             </h2>
-                            <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
+                            <span className="text-xs font-semibold text-muted-foreground">
                                 {formatItalianDate(items[0].publishedAt)}
                             </span>
                         </div>
@@ -102,24 +102,24 @@ export function UpdatesPageContent() {
                                     <article
                                         key={notification.id}
                                         className={cn(
-                                            "rounded-xl border p-3 space-y-2 transition-colors",
-                                            isRead ? "bg-background/40 border-border/40" : "bg-primary/5 border-primary/20",
+                                            "space-y-2 rounded-[1.25rem] border p-3 transition-[background-color,border-color,box-shadow] duration-200",
+                                            isRead ? "border-white/25 bg-white/40 dark:border-white/10 dark:bg-white/[0.03]" : "border-primary/20 bg-primary/6 shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]",
                                             isCritical && "ring-1 ring-rose-500/25 border-rose-500/25"
                                         )}
                                     >
                                         <div className="flex items-center justify-between gap-2">
                                             <div className="flex items-center gap-2">
-                                                <Badge variant="outline" className={cn("text-[10px] px-2 py-0.5", NOTIFICATION_KIND_CLASS[notification.kind])}>
+                                                <Badge variant="outline" className={cn("px-2.5 py-0.5 text-xs", NOTIFICATION_KIND_CLASS[notification.kind])}>
                                                     {NOTIFICATION_KIND_LABEL[notification.kind]}
                                                 </Badge>
                                                 {isCritical && (
-                                                    <Badge variant="outline" className="text-[10px] px-2 py-0.5 border-rose-500/25 bg-rose-500/15 text-rose-700 dark:text-rose-300">
+                                                    <Badge variant="outline" className="px-2.5 py-0.5 text-xs border-rose-500/25 bg-rose-500/15 text-rose-700 dark:text-rose-300">
                                                         <AlertTriangle className="h-3 w-3 mr-1" />
                                                         Critico
                                                     </Badge>
                                                 )}
                                                 {isRead && (
-                                                    <Badge variant="outline" className="text-[10px] px-2 py-0.5">
+                                                    <Badge variant="outline" className="px-2.5 py-0.5 text-xs">
                                                         Letto
                                                     </Badge>
                                                 )}

@@ -50,7 +50,7 @@ export function TopbarNotifications({ triggerClassName }: TopbarNotificationsPro
                     data-testid="topbar-notifications-trigger"
                     aria-label="Notifiche aggiornamenti"
                     className={cn(
-                        "group relative h-10 w-10 rounded-full border border-primary/20 bg-primary/10 text-primary transition-all duration-300 hover:bg-primary/20 hover:shadow-md hover:-translate-y-[1px] motion-reduce:transform-none",
+                        "group relative h-10 w-10 rounded-full border border-primary/20 bg-primary/10 text-primary transition-[background-color,box-shadow,transform] duration-300 hover:bg-primary/20 hover:shadow-md hover:-translate-y-[1px] motion-reduce:transform-none",
                         triggerClassName
                     )}
                 >
@@ -58,7 +58,7 @@ export function TopbarNotifications({ triggerClassName }: TopbarNotificationsPro
                     {hasUnread && (
                         <span
                             data-testid="topbar-notifications-badge"
-                            className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-black flex items-center justify-center motion-safe:group-hover:animate-pulse-soft motion-safe:group-active:animate-pulse-soft motion-reduce:animate-none"
+                            className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-destructive text-destructive-foreground text-xs font-black flex items-center justify-center motion-safe:group-hover:animate-pulse-soft motion-safe:group-active:animate-pulse-soft motion-reduce:animate-none"
                         >
                             {unreadBadgeText}
                         </span>
@@ -68,14 +68,14 @@ export function TopbarNotifications({ triggerClassName }: TopbarNotificationsPro
 
             <DropdownMenuContent
                 align="end"
-                className="w-[380px] p-0 rounded-2xl border border-white/20 bg-background/95 backdrop-blur-xl"
+                className="glass-panel w-[380px] rounded-[1.75rem] p-0"
             >
                 <div className="px-4 py-3 border-b border-border/50 flex items-center justify-between gap-3">
                     <div className="flex flex-col gap-0.5">
-                        <span className="text-xs font-black uppercase tracking-wider text-foreground">Aggiornamenti App</span>
+                        <span className="text-sm font-bold tracking-tight text-foreground">Novità dell&apos;app</span>
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-medium text-muted-foreground">
-                                {unreadCount} non lett{unreadCount === 1 ? "o" : "i"}
+                                {unreadCount} da leggere
                             </span>
                             {criticalUnreadCount > 0 && (
                                 <span className="inline-flex items-center gap-1 text-xs font-bold text-rose-600 dark:text-rose-300">
@@ -89,27 +89,27 @@ export function TopbarNotifications({ triggerClassName }: TopbarNotificationsPro
                         variant="ghost"
                         size="sm"
                         data-testid="topbar-notifications-mark-all"
-                        className="text-xs uppercase tracking-wider font-bold h-7 px-2"
+                        className="h-7 px-2 text-xs font-semibold"
                         disabled={!hasUnread || markAllAsRead.isPending}
                         onClick={() => markAllAsRead.mutate({
                             ids: notifications.map(notification => notification.id),
                             lastSeenVersion: latestVersion,
                         })}
                     >
-                        Segna tutti come letti
+                        Segna tutto come letto
                     </Button>
                 </div>
 
                 <div className="max-h-[380px] overflow-y-auto p-2 space-y-2">
                     {isLoading && (
                         <div className="px-3 py-6 text-center text-sm text-muted-foreground">
-                            Caricamento notifiche...
+                            Sto caricando le novità...
                         </div>
                     )}
 
                     {!isLoading && notifications.length === 0 && (
                         <div className="px-3 py-6 text-center text-sm text-muted-foreground">
-                            Nessun aggiornamento disponibile.
+                            Non ci sono ancora novità.
                         </div>
                     )}
 
@@ -122,8 +122,8 @@ export function TopbarNotifications({ triggerClassName }: TopbarNotificationsPro
                                 key={notification.id}
                                 data-testid={`notification-item-${notification.id}`}
                                 className={cn(
-                                    "rounded-xl border p-3 space-y-2 transition-colors",
-                                    isUnread ? "bg-primary/5 border-primary/20" : "bg-background/40 border-border/40",
+                                    "glass-card space-y-2 rounded-[1.25rem] border p-3 transition-[background-color,border-color,box-shadow] duration-200",
+                                    isUnread ? "bg-primary/6 border-primary/20" : "bg-white/42 border-white/25 dark:bg-white/[0.03] dark:border-white/10",
                                     isCritical && "ring-1 ring-rose-500/25 border-rose-500/25"
                                 )}
                             >
@@ -131,12 +131,12 @@ export function TopbarNotifications({ triggerClassName }: TopbarNotificationsPro
                                     <div className="flex items-center gap-1.5">
                                         <Badge
                                             variant="outline"
-                                            className={cn("text-[10px] px-2 py-0.5", NOTIFICATION_KIND_CLASS[notification.kind])}
+                                            className={cn("px-2.5 py-0.5 text-xs", NOTIFICATION_KIND_CLASS[notification.kind])}
                                         >
                                             {NOTIFICATION_KIND_LABEL[notification.kind]}
                                         </Badge>
                                         {isCritical && (
-                                            <Badge variant="outline" className="text-[10px] px-2 py-0.5 border-rose-500/25 bg-rose-500/15 text-rose-700 dark:text-rose-300">
+                                            <Badge variant="outline" className="px-2.5 py-0.5 text-xs border-rose-500/25 bg-rose-500/15 text-rose-700 dark:text-rose-300">
                                                 Critico
                                             </Badge>
                                         )}
@@ -148,9 +148,9 @@ export function TopbarNotifications({ triggerClassName }: TopbarNotificationsPro
 
                                 <div className="space-y-1">
                                     <h4 className="text-sm font-bold leading-tight">{notification.title}</h4>
-                                    <p className="text-xs text-muted-foreground leading-relaxed">{notification.body}</p>
+                                    <p className="text-sm font-medium leading-relaxed text-muted-foreground">{notification.body}</p>
                                     {notification.highlights.length > 0 && (
-                                        <ul className="text-[11px] text-muted-foreground/90 space-y-1 list-disc pl-4">
+                                        <ul className="text-xs font-medium leading-relaxed text-muted-foreground/90 space-y-1 list-disc pl-4">
                                             {notification.highlights.slice(0, 3).map((highlight, index) => (
                                                 <li key={`${notification.id}-hl-${index}`}>{highlight}</li>
                                             ))}
@@ -164,14 +164,14 @@ export function TopbarNotifications({ triggerClassName }: TopbarNotificationsPro
                                             variant="ghost"
                                             size="sm"
                                             data-testid={`notification-read-${notification.id}`}
-                                            className="h-7 px-2 text-xs uppercase tracking-wider font-bold"
+                                            className="h-7 px-2 text-xs font-semibold"
                                             onClick={() => markOneAsRead.mutate({
                                                 id: notification.id,
                                                 lastSeenVersion: latestVersion,
                                             })}
                                             disabled={markOneAsRead.isPending}
                                         >
-                                            Segna come letto
+                                            Segna come letta
                                         </Button>
                                     </div>
                                 )}
@@ -181,8 +181,8 @@ export function TopbarNotifications({ triggerClassName }: TopbarNotificationsPro
                 </div>
 
                 <div className="px-3 py-2 border-t border-border/50">
-                    <Button asChild variant="ghost" size="sm" data-testid="topbar-notifications-open-updates" className="w-full justify-center text-xs uppercase tracking-wider font-bold h-8">
-                        <Link href="/updates">Apri storico aggiornamenti</Link>
+                    <Button asChild variant="ghost" size="sm" data-testid="topbar-notifications-open-updates" className="h-8 w-full justify-center text-xs font-semibold">
+                        <Link href="/updates">Apri cronologia completa</Link>
                     </Button>
                 </div>
             </DropdownMenuContent>

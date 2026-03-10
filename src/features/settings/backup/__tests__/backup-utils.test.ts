@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
+    BACKUP_EXPORT_PRIVACY_NOTE,
+    BACKUP_IMPORT_VALIDATION_NOTE,
     buildBackupV1,
     serializeBackup,
     parseAndValidateBackup,
@@ -39,6 +41,11 @@ describe("Backup Utils", () => {
             const backup = buildBackupV1();
 
             expect(backup.version).toBe(BACKUP_VERSION);
+            expect(backup.meta).toEqual({
+                format: "json-cleartext",
+                validation: "strict",
+                containsSensitiveFinancialData: true,
+            });
             expect(backup.payload.transactions).toEqual(mockTransactions);
             expect(backup.payload.budgets).toEqual(mockBudgets);
             expect(backup.exportedAt).toBeDefined();
@@ -83,6 +90,60 @@ describe("Backup Utils", () => {
             expect(result.ok).toBe(false);
             if (!result.ok) {
                 expect(result.error).toMatch(/Versione backup non supportata/);
+            }
+        });
+
+        it("should fail for malformed transaction payloads", () => {
+            const invalidBackup = {
+                version: BACKUP_VERSION,
+                payload: {
+                    transactions: { "user-1": { id: "not-an-array" } },
+                    budgets: null,
+                    categories: null,
+                    settings: null,
+                    portfolio: null,
+                    notifications: null,
+                    privacy: null,
+                },
+                keys: {},
+            };
+
+            const result = parseAndValidateBackup(JSON.stringify(invalidBackup));
+            expect(result.ok).toBe(false);
+            if (!result.ok) {
+                expect(result.error).toMatch(/sezione transactions non riconosciuta/i);
+            }
+        });
+
+        it("should drop unrecognized payload keys and normalize metadata", () => {
+            const result = parseAndValidateBackup(JSON.stringify({
+                version: BACKUP_VERSION,
+                exportedAt: "not-a-date",
+                payload: {
+                    transactions: null,
+                    budgets: null,
+                    categories: null,
+                    settings: null,
+                    portfolio: null,
+                    notifications: null,
+                    privacy: null,
+                    injected: { should: "be ignored" },
+                },
+                keys: {},
+                meta: { format: "something-else" },
+            }));
+
+            expect(result.ok).toBe(true);
+            if (result.ok) {
+                expect(result.backup).toEqual(expect.objectContaining({
+                    version: BACKUP_VERSION,
+                    meta: {
+                        format: "json-cleartext",
+                        validation: "strict",
+                        containsSensitiveFinancialData: true,
+                    },
+                }));
+                expect("injected" in result.backup.payload).toBe(false);
             }
         });
     });
@@ -168,6 +229,13 @@ describe("Backup Utils", () => {
             const summary = getBackupSummary(backup);
             expect(summary.periods.length).toBe(12);
             expect(summary.periods[0]).toBe("2025-12");
+        });
+    });
+
+    describe("backup notes", () => {
+        it("exports privacy and validation notes for the UI", () => {
+            expect(BACKUP_EXPORT_PRIVACY_NOTE).toMatch(/JSON non cifrato/i);
+            expect(BACKUP_IMPORT_VALIDATION_NOTE).toMatch(/sezioni riconosciute/i);
         });
     });
 });

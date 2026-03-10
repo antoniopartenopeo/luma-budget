@@ -99,7 +99,9 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
     const snapshotState = deriveSnapshotState(snapshotFacts)
     const narration = narrateSnapshot(snapshotFacts, snapshotState)
 
-    const blurClass = isPrivate ? "blur-xl select-none opacity-50 transition-all duration-500" : "transition-all duration-500"
+    const blurClass = isPrivate
+        ? "blur-xl select-none opacity-50 transition-[filter,opacity] duration-500"
+        : "transition-[filter,opacity] duration-500"
 
     const containerVariants: Variants = {
         hidden: { opacity: 0, scale: 0.98 },
@@ -160,7 +162,7 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                 <div className="relative z-10 grid grid-cols-2 gap-3 mb-3">
                     {/* Primary Balance Card - Big Square */}
                     <motion.div variants={itemVariants} className="col-span-2 glass-card rounded-2xl p-4 flex flex-col items-center justify-center text-center">
-                        <span className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground mb-1">Saldo Netto</span>
+                        <span className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Saldo Netto</span>
                         <div className={cn("text-3xl font-extrabold text-foreground tracking-tight", blurClass)}>
                             {netBalanceCents >= 0 ? "+" : ""}
                             {formatCents(netBalanceCents, currency, locale).replace(",00", "")}
@@ -190,7 +192,7 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                     <motion.div variants={itemVariants} className="glass-card rounded-2xl p-4">
                         <div className="flex items-center justify-between mb-3">
                             <PiggyBank className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Pressione</span>
+                            <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Pressione</span>
                         </div>
                         <div className={cn("text-lg font-bold text-foreground", blurClass)}>{expensePressurePct}%</div>
                         <div className="h-1.5 bg-muted rounded-full overflow-hidden mt-2">
@@ -205,7 +207,7 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                     <motion.div variants={itemVariants} className="glass-card rounded-2xl p-4">
                         <div className="flex items-center justify-between mb-3">
                             <Target className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Superfluo</span>
+                            <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Superfluo</span>
                         </div>
                         <div className={cn("text-lg font-bold text-foreground", blurClass)}>{uselessSpendPercent ?? 0}%</div>
                         <div className="h-1.5 bg-muted rounded-full overflow-hidden mt-2">
@@ -221,13 +223,13 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                 {/* Top Categories - Compact List */}
                 <motion.div variants={itemVariants} className="relative z-10 glass-card rounded-2xl p-4 mb-3">
                     <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Top Categories</h3>
+                        <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Top categorie</h3>
                     </div>
                     <div className="space-y-2">
                         {top3Categories.map((cat, idx) => (
                             <div key={cat.id} className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <div className="h-5 w-5 rounded-md bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center text-[10px] font-bold text-muted-foreground shadow-sm">
+                                    <div className="flex h-5 w-5 items-center justify-center rounded-md border border-slate-100 bg-white text-xs font-semibold text-muted-foreground shadow-sm dark:border-slate-700 dark:bg-slate-800">
                                         {idx + 1}
                                     </div>
                                     <span className="text-xs font-semibold text-foreground/80">{cat.name}</span>
@@ -242,7 +244,7 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
 
                 {/* Insight - Clean Text */}
                 <motion.div variants={itemVariants} className="relative z-10 mt-auto bg-gradient-to-br from-primary/10 to-cyan-500/10 dark:from-primary/20 dark:to-cyan-500/20 border border-primary/20 rounded-2xl p-4">
-                    <div className="flex items-center gap-1.5 text-[9px] font-bold text-primary mb-1.5 uppercase tracking-widest">
+                    <div className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                         <Sparkles className="h-3 w-3" />
                         Numa Insight
                     </div>
@@ -257,7 +259,7 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                         variant="ghost"
                         size="sm"
                         onClick={() => setIsPrivate(!isPrivate)}
-                        className="rounded-full bg-white/60 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 border border-white/50 dark:border-white/10 text-muted-foreground hover:text-foreground text-[10px] uppercase font-bold tracking-widest px-4 h-7 gap-1.5 shadow-sm transition-all"
+                        className="h-7 gap-1.5 rounded-full border border-white/50 bg-white/60 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground shadow-sm transition-colors hover:bg-white hover:text-foreground dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
                     >
                         {isPrivate ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
                         {isPrivate ? "Mostra" : "Nascondi"}

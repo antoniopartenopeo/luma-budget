@@ -35,7 +35,7 @@ export function SubSectionCard({
 
     return (
         <div className={cn(
-            "relative group rounded-xl p-6 transition-all duration-300 flex flex-col",
+            "relative flex flex-col rounded-xl p-6",
             variants[variant],
             className
         )}>

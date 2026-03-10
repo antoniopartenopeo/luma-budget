@@ -161,7 +161,7 @@ function TransactionDetailSheetContent({
                         <div className="space-y-8">
                             {/* Amount Block */}
                             <div className="flex flex-col gap-1">
-                                <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground px-1">
+                                <span className="px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                                     Importo
                                 </span>
                                 <div className={cn(
@@ -176,7 +176,7 @@ function TransactionDetailSheetContent({
                             {/* Info Grid */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
-                                    <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider text-muted-foreground px-1">
+                                    <div className="flex items-center gap-1.5 px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                                         <Calendar className="h-3 w-3" />
                                         Data
                                     </div>
@@ -185,7 +185,7 @@ function TransactionDetailSheetContent({
                                     </div>
                                 </div>
                                 <div className="space-y-1.5">
-                                    <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider text-muted-foreground px-1">
+                                    <div className="flex items-center gap-1.5 px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                                         <Tag className="h-3 w-3" />
                                         Tipo
                                     </div>
@@ -193,7 +193,7 @@ function TransactionDetailSheetContent({
                                         <Badge
                                             variant="secondary"
                                             className={cn(
-                                                "text-[10px] font-bold uppercase px-2 py-0.5 rounded-md border shadow-none",
+                                                "rounded-md border px-2.5 py-0.5 text-xs font-semibold uppercase tracking-[0.14em] shadow-none",
                                                 transaction.type === "income"
                                                     ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20"
                                                     : "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20"
@@ -208,7 +208,7 @@ function TransactionDetailSheetContent({
                             {/* Status */}
                             {transaction.isSuperfluous && (
                                 <div className="space-y-1.5">
-                                    <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider text-muted-foreground px-1">
+                                    <div className="flex items-center gap-1.5 px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                                         <Info className="h-3 w-3" />
                                         Classificazione
                                     </div>
@@ -217,7 +217,7 @@ function TransactionDetailSheetContent({
                                             <span className="font-bold text-amber-700 dark:text-amber-400">Spesa Superflua</span>
                                             <span className="text-muted-foreground/80">Considerata non essenziale.</span>
                                         </div>
-                                        <Badge className="bg-amber-500/20 text-amber-800 dark:text-amber-300 border-amber-500/20 text-[9px] uppercase font-bold shadow-none rounded-md">
+                                        <Badge className="rounded-md border-amber-500/20 bg-amber-500/20 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-[0.14em] text-amber-800 dark:text-amber-300 shadow-none">
                                             {transaction.classificationSource === "ruleBased" ? "Regola" : "Manuale"}
                                         </Badge>
                                     </div>

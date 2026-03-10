@@ -57,6 +57,9 @@
   --animate-flash-green: flash-green 0.8s ease-out forwards;
   --animate-ping-slow: ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite;
   --animate-spin-slow: spin-slow 8s linear infinite;
+  --animate-ambient-float: ambient-float 18s ease-in-out infinite;
+  --animate-ambient-breathe: ambient-breathe 9s ease-in-out infinite;
+  --animate-ambient-pan: ambient-pan 24s linear infinite;
 
   @keyframes enter-up {
     from {
@@ -113,6 +116,44 @@
 
     to {
       transform: rotate(360deg);
+    }
+  }
+
+  @keyframes ambient-float {
+
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    50% {
+      transform: translate3d(18px, -14px, 0) scale(1.08);
+    }
+  }
+
+  @keyframes ambient-breathe {
+
+    0%,
+    100% {
+      opacity: 0.68;
+      filter: saturate(1) brightness(1);
+    }
+
+    50% {
+      opacity: 0.96;
+      filter: saturate(1.18) brightness(1.08);
+    }
+  }
+
+  @keyframes ambient-pan {
+
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+
+    50% {
+      transform: translate3d(-2%, 1%, 0);
     }
   }
 
@@ -219,16 +260,74 @@
 
 @layer components {
   .glass-panel {
-    @apply bg-white/60 dark:bg-black/60 border border-white/40 dark:border-white/10 backdrop-blur-xl shadow-xl;
+    @apply bg-white/68 dark:bg-black/62 border border-white/45 dark:border-white/12 backdrop-blur-xl shadow-xl;
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.24),
+      0 22px 50px -24px rgba(15, 23, 42, 0.28);
   }
 
   .glass-card {
-    @apply bg-white/50 dark:bg-white/5 border border-white/40 dark:border-white/10 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300;
+    @apply bg-white/56 dark:bg-white/[0.06] border border-white/40 dark:border-white/12 backdrop-blur-md shadow-sm transition-[background-color,border-color,box-shadow,transform] duration-300;
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
+      0 16px 32px -24px rgba(15, 23, 42, 0.22);
   }
 
   .glass-chrome {
     @apply bg-white/60 dark:bg-black/60 backdrop-blur-2xl backdrop-saturate-[180%];
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
+      0 24px 60px -36px rgba(15, 23, 42, 0.3);
+  }
+
+  .surface-subtle {
+    @apply rounded-xl border border-white/35 bg-white/40 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.04];
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.14);
+  }
+
+  .surface-strong {
+    @apply rounded-[2rem] border border-white/45 bg-white/55 backdrop-blur-xl dark:border-white/12 dark:bg-black/40;
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.22),
+      0 24px 50px -36px rgba(15, 23, 42, 0.34);
+  }
+
+  .ambient-grid {
+    background-image:
+      linear-gradient(to right, rgba(124, 142, 161, 0.12) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(124, 142, 161, 0.12) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 0.88), transparent 78%);
+    animation: var(--animate-ambient-pan);
+  }
+
+  .ambient-panel {
+    background-image:
+      radial-gradient(circle at top left, rgba(14, 165, 168, 0.12), transparent 32%),
+      radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.08), transparent 28%);
+  }
+
+  .ambient-orb {
+    position: absolute;
+    border-radius: 9999px;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    filter: blur(96px);
+    animation:
+      var(--animate-ambient-float),
+      var(--animate-ambient-breathe);
+  }
+
+  .ambient-orb-primary {
+    background: radial-gradient(circle, rgba(14, 165, 168, 0.34) 0%, rgba(14, 165, 168, 0.08) 48%, transparent 78%);
+  }
+
+  .ambient-orb-secondary {
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.26) 0%, rgba(56, 189, 248, 0.06) 52%, transparent 80%);
+  }
+
+  .ambient-orb-warm {
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.22) 0%, rgba(251, 191, 36, 0.05) 48%, transparent 76%);
   }
 }
 
@@ -239,6 +338,17 @@
 
   body {
     @apply bg-background text-foreground;
+    background-image:
+      radial-gradient(circle at top left, oklch(0.92 0.04 200 / 0.35), transparent 35%),
+      radial-gradient(circle at bottom right, oklch(0.9 0.03 180 / 0.22), transparent 32%);
+  }
+
+  .dark body {
+    background-image:
+      radial-gradient(circle at top left, oklch(0.46 0.11 200 / 0.3), transparent 28%),
+      radial-gradient(circle at top right, oklch(0.4 0.12 225 / 0.18), transparent 26%),
+      radial-gradient(circle at bottom right, oklch(0.42 0.1 170 / 0.16), transparent 28%),
+      linear-gradient(180deg, rgba(6, 11, 20, 0.96), rgba(1, 4, 9, 1));
   }
 }
 
@@ -254,7 +364,9 @@
   .animate-pulse-soft,
   .animate-flash-green,
   .animate-ping-slow,
-  .animate-spin-slow {
+  .animate-spin-slow,
+  .ambient-grid,
+  .ambient-orb {
     animation: none !important;
   }
 }

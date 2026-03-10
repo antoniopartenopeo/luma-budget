@@ -112,7 +112,7 @@ export function CategoryFormSheet({ open, onOpenChange, categoryToEdit, onSave, 
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent side="right" className="sm:max-w-md w-full flex flex-col p-0 overflow-hidden border-none text-left">
-                <SheetHeader className="p-6 pb-4 border-b border-white/20 shrink-0">
+                <SheetHeader className="shrink-0 border-b border-white/20 pb-4 dark:border-white/10">
                     <div className="flex items-center gap-4">
                         <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
                             {/* Dynamically show selected icon or default Tag */}
@@ -135,19 +135,19 @@ export function CategoryFormSheet({ open, onOpenChange, categoryToEdit, onSave, 
                 <div className="flex-1 overflow-y-auto p-6 space-y-6">
                     {/* Name */}
                     <div className="grid gap-2">
-                        <Label htmlFor="name" className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground px-1">Nome</Label>
+                        <Label htmlFor="name" className="px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Nome</Label>
                         <Input
                             id="name"
                             value={label}
                             onChange={(e) => setLabel(e.target.value)}
                             placeholder="Es. Palestra"
-                            className="h-12 bg-white/50 dark:bg-white/5 border-white/20 rounded-xl"
+                            className="h-12 rounded-xl border-white/25 bg-white/55 dark:border-white/10 dark:bg-white/[0.05]"
                         />
                     </div>
 
                     {/* Kind */}
                     <div className="grid gap-2">
-                        <Label className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground px-1">Tipo</Label>
+                        <Label className="px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Tipo</Label>
                         <div className="flex gap-2">
                             <Button
                                 type="button"
@@ -155,7 +155,7 @@ export function CategoryFormSheet({ open, onOpenChange, categoryToEdit, onSave, 
                                 onClick={() => setKind("expense")}
                                 disabled={!!categoryToEdit}
                                 className={cn(
-                                    "flex-1 h-12 rounded-xl font-bold transition-all",
+                                    "h-12 flex-1 rounded-xl font-bold",
                                     kind === "expense" ? "bg-rose-600 hover:bg-rose-700 shadow-lg shadow-rose-500/20" : "bg-white/50 dark:bg-white/5 border-white/20"
                                 )}
                             >
@@ -167,22 +167,22 @@ export function CategoryFormSheet({ open, onOpenChange, categoryToEdit, onSave, 
                                 onClick={() => setKind("income")}
                                 disabled={!!categoryToEdit}
                                 className={cn(
-                                    "flex-1 h-12 rounded-xl font-bold transition-all",
+                                    "h-12 flex-1 rounded-xl font-bold",
                                     kind === "income" ? "bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-500/20" : "bg-white/50 dark:bg-white/5 border-white/20"
                                 )}
                             >
                                 Entrata
                             </Button>
                         </div>
-                        {!!categoryToEdit && <p className="text-[10px] font-medium text-muted-foreground px-1 italic">Il tipo non può essere modificato dopo la creazione.</p>}
+                        {!!categoryToEdit && <p className="px-1 text-xs font-medium italic text-muted-foreground">Il tipo non può essere modificato dopo la creazione.</p>}
                     </div>
 
                     {/* Spending Nature (Only for Expenses) */}
                     {kind === "expense" && (
                         <div className="grid gap-2">
-                            <Label className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground px-1">Gruppo Spese</Label>
+                            <Label className="px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Gruppo spese</Label>
                             <Select value={spendingNature} onValueChange={(v) => setSpendingNature(v as SpendingNature)}>
-                                <SelectTrigger className="h-12 bg-white/50 dark:bg-white/5 border-white/20 rounded-xl">
+                                <SelectTrigger className="h-12 rounded-xl border-white/25 bg-white/55 dark:border-white/10 dark:bg-white/[0.05]">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -198,14 +198,14 @@ export function CategoryFormSheet({ open, onOpenChange, categoryToEdit, onSave, 
 
                     {/* Color Picker */}
                     <div className="grid gap-3">
-                        <Label className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground px-1">Colore</Label>
+                        <Label className="px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Colore</Label>
                         <div className="flex flex-wrap gap-2 px-1">
                             {COLOR_PALETTE.map((p, idx) => (
                                 <button
                                     key={idx}
                                     type="button"
                                     className={cn(
-                                        "w-8 h-8 rounded-full border-2 transition-all duration-200 hover:scale-110",
+                                        "h-8 w-8 rounded-full border-2 transition-[transform,border-color,box-shadow] duration-200 hover:scale-110",
                                         p.bg,
                                         colorIndex === idx ? "border-foreground ring-2 ring-primary/20 scale-110" : "border-white/20"
                                     )}
@@ -218,8 +218,8 @@ export function CategoryFormSheet({ open, onOpenChange, categoryToEdit, onSave, 
 
                     {/* Icon Picker */}
                     <div className="grid gap-3">
-                        <Label className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground px-1">Icona</Label>
-                        <div className="grid grid-cols-6 gap-2 p-3 bg-white/30 dark:bg-black/20 border border-white/10 rounded-2xl">
+                        <Label className="px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Icona</Label>
+                        <div className="grid grid-cols-6 gap-2 rounded-2xl border border-white/10 bg-white/30 p-3 dark:bg-black/20">
                             {iconKeys.map((key) => {
                                 const Icon = ICON_REGISTRY[key]
                                 const isSelected = iconName === key
@@ -228,7 +228,7 @@ export function CategoryFormSheet({ open, onOpenChange, categoryToEdit, onSave, 
                                         key={key}
                                         type="button"
                                         className={cn(
-                                            "flex items-center justify-center h-10 w-10 rounded-xl transition-all duration-200",
+                                            "flex h-10 w-10 items-center justify-center rounded-xl transition-[background-color,color,box-shadow,transform] duration-200",
                                             isSelected
                                                 ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-110"
                                                 : "text-muted-foreground hover:bg-white/50 dark:hover:bg-white/5 hover:text-foreground"
@@ -244,7 +244,7 @@ export function CategoryFormSheet({ open, onOpenChange, categoryToEdit, onSave, 
                     </div>
                 </div>
 
-                <div className="shrink-0 p-6 bg-white/40 dark:bg-white/5 border-t border-white/20 backdrop-blur-md">
+                <div className="shrink-0 border-t border-white/20 bg-white/40 p-6 backdrop-blur-md dark:border-white/10 dark:bg-white/5">
                     {error && <p className="text-sm text-destructive font-bold mb-4 px-1">{error}</p>}
                     <div className="grid grid-cols-2 gap-3">
                         <Button

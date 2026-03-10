@@ -42,7 +42,7 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
             {/* Header */}
             <PageHeader
                 title="Insights"
-                description="Una lettura chiara di come stai spendendo e dove puoi migliorare."
+                description="Capisci come si sta muovendo il mese e dove puoi intervenire."
             />
 
             {/* Global Motion Orchestration */}
@@ -71,7 +71,7 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
                     {/* Periodic Analysis Section */}
                     <MacroSection
                         title="Analisi del mese"
-                        description={`Cosa sta succedendo nelle tue spese di ${periodLabel}.`}
+                        description={`I segnali utili emersi nei movimenti di ${periodLabel}.`}
                         headerActions={
                             <div className="flex items-center gap-2 md:gap-3">
                                 <Button
@@ -129,8 +129,8 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
                                             title={hasTransactions ? "Tutto regolare" : "Nessuna transazione"}
                                             description={
                                                 hasTransactions
-                                                    ? "Nel periodo selezionato non vedo segnali importanti: il tuo andamento e in linea con il solito."
-                                                    : `Per ${periodLabel} non ci sono ancora movimenti. Aggiungi qualche spesa per attivare gli insight.`
+                                                    ? "Per ora non vedo segnali rilevanti: l'andamento è in linea con il solito."
+                                                    : `Per ${periodLabel} non ci sono ancora movimenti. Appena ne registri qualcuno, qui compariranno gli insight.`
                                             }
                                         />
                                     </motion.div>

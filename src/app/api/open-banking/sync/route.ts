@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { GoCardlessConfigError, syncRequisitionToCsv } from "@/features/import-csv/open-banking/gocardless"
+import { createOpenBankingDisabledResponse, isOpenBankingEnabled } from "../guard"
 
 export const runtime = "nodejs"
 
@@ -8,6 +9,10 @@ interface SyncBody {
 }
 
 export async function POST(request: Request) {
+    if (!isOpenBankingEnabled()) {
+        return createOpenBankingDisabledResponse()
+    }
+
     try {
         const body = (await request.json()) as SyncBody
         const requisitionId = body.requisitionId?.trim()

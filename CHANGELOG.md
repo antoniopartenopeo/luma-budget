@@ -18,6 +18,11 @@ Schema usato in tutte le release:
 
 ### Changed (Miglioramenti per te)
 - Rifinita la resa delle card KPI e delle superfici Numa Engine per mantenere maggiore coerenza visuale tra pagine core.
+- Dashboard con filtri periodo persistenti in URL e anteprima movimenti recenti collegata direttamente all'elenco completo sullo stesso intervallo.
+- La lettura della composizione spese e del ledger movimenti e stata resa piu interattiva e coerente tra preview Dashboard e tabella Transazioni.
+- Import CSV rifinito con linguaggio piu concreto tra upload, review, riepilogo finale e conferma nello storico.
+- Centro novita in TopBar e pagina `/updates` riallineati su copy piu chiara e superfici piu leggibili.
+- Offline, backup, diagnostica e impostazioni avanzate ora spiegano meglio cosa resta locale e quali azioni sono irreversibili.
 - TopBar azioni/notifiche resa più robusta, con comportamento più stabile su trigger, badge e stato aggiornamenti.
 - Documentazione progetto centralizzata in una struttura unica con naming coerente e percorso di lettura esplicito.
 

@@ -61,7 +61,7 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
 
   return (
     <aside className={cn(
-      "flex h-full w-full flex-col glass-chrome text-foreground transition-all duration-300",
+      "flex h-full w-full flex-col border-r border-white/35 text-foreground glass-chrome dark:border-white/8",
       className
     )}>
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
@@ -85,10 +85,10 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
                     variant="ghost"
                     onClick={() => handleParentClick(item.href, hasChildren)}
                     className={cn(
-                      "w-full justify-start gap-3 px-4 py-6 text-sm font-medium transition-all relative overflow-hidden",
+                      "relative w-full justify-start gap-3 overflow-hidden rounded-xl px-4 py-6 text-sm font-medium",
                       isActive
-                        ? "bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary rounded-xl"
-                        : "text-foreground/75 hover:bg-white/50 dark:hover:bg-white/5 hover:text-foreground rounded-xl"
+                        ? "bg-primary/10 text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] hover:bg-primary/15 hover:text-primary"
+                        : "text-foreground/75 hover:bg-white/50 hover:text-foreground dark:hover:bg-white/5"
                     )}
                   >
                     <item.icon className={cn("h-4 w-4", isActive ? "text-primary" : "text-foreground/75")} />
@@ -111,7 +111,7 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
                               variant="ghost"
                               onClick={onNavigate}
                               className={cn(
-                                "w-full justify-start gap-2.5 rounded-lg px-3 py-4 text-xs font-medium",
+                                "w-full justify-start gap-2.5 rounded-xl px-3 py-4 text-xs font-medium",
                                 childActive
                                   ? "bg-primary/10 text-primary hover:bg-primary/15"
                                   : "text-foreground/70 hover:bg-white/40 dark:hover:bg-white/5 hover:text-foreground"

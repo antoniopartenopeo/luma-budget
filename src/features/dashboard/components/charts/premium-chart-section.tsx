@@ -16,7 +16,7 @@ interface PremiumChartSectionProps {
     onEvents?: Record<string, (params: unknown) => void>
     children?: ReactNode
     className?: string
-    chartHeight?: number
+    chartHeight?: number | string
     backgroundType?: 'radar' | 'cartesian'
     status?: "default" | "warning" | "critical"
     showChart?: boolean
@@ -45,7 +45,7 @@ export function PremiumChartSection({
 
     if (isLoading) {
         return (
-            <MacroSection title={title} description="Caricamento in corso..." className={className}>
+            <MacroSection title={title} description="Sto preparando i dati..." className={className}>
                 <div style={{ height: chartHeight }}>
                     <Skeleton className="h-full w-full rounded-3xl" />
                 </div>
@@ -96,7 +96,7 @@ export function PremiumChartSection({
                     <StateMessage
                         variant="empty"
                         title="Nessun dato"
-                        description="I dati appariranno qui quando saranno disponibili."
+                        description="Qui vedrai i dati appena saranno disponibili."
                     />
                 </div>
             ) : (

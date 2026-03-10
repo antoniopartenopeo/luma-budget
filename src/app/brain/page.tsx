@@ -159,7 +159,7 @@ function resolveStage(snapshot: NeuralBrainSnapshot | null): StageState {
         return {
             id: "dormant",
             label: "Spento",
-            summary: "Il Core è spento: avvialo per iniziare a imparare.",
+            summary: "Il Core è spento. Avvialo quando vuoi iniziare a fargli leggere i tuoi dati.",
             badgeVariant: "outline",
         }
     }
@@ -169,7 +169,7 @@ function resolveStage(snapshot: NeuralBrainSnapshot | null): StageState {
         return {
             id: "newborn",
             label: "Nuovo",
-            summary: "Il Core è nato, ma non ha ancora imparato dai tuoi dati.",
+            summary: "Il Core è appena nato e non ha ancora imparato nulla dai tuoi movimenti.",
             badgeVariant: "secondary",
         }
     }
@@ -178,7 +178,7 @@ function resolveStage(snapshot: NeuralBrainSnapshot | null): StageState {
         return {
             id: "imprinting",
             label: "In apprendimento",
-            summary: "Il Core sta imparando le prime abitudini dalle tue spese passate.",
+            summary: "Il Core sta riconoscendo le prime abitudini a partire dai tuoi movimenti passati.",
             badgeVariant: "secondary",
         }
     }
@@ -186,7 +186,7 @@ function resolveStage(snapshot: NeuralBrainSnapshot | null): StageState {
     return {
         id: "adapting",
         label: "Attivo",
-        summary: "Il Core ha una buona base e si aggiorna quando arrivano nuovi dati.",
+        summary: "Il Core ha una base solida e continua ad aggiornarsi quando arrivano nuovi dati.",
         badgeVariant: "secondary",
     }
 }
@@ -202,7 +202,7 @@ function formatEvolutionReason(result: BrainEvolutionResult): { title: string; d
     if (result.reason === "trained") {
         return {
             title: "Apprendimento completato",
-            detail: `Il Core ha concluso ${result.epochsRun} cicli su ${result.sampleCount} campioni (stabilità ${result.averageLoss.toFixed(4)}).`,
+            detail: `Il Core ha completato ${result.epochsRun} cicli su ${result.sampleCount} campioni. Stabilità attuale ${result.averageLoss.toFixed(4)}.`,
             tone: "positive",
         }
     }
@@ -210,7 +210,7 @@ function formatEvolutionReason(result: BrainEvolutionResult): { title: string; d
     if (result.reason === "no-new-data") {
         return {
             title: "Nessun dato nuovo",
-            detail: "I dati sono uguali all'ultima analisi, quindi il Core non si aggiorna.",
+            detail: "Dall'ultima analisi non sono arrivati nuovi dati utili, quindi il Core resta invariato.",
             tone: "neutral",
         }
     }
@@ -218,14 +218,14 @@ function formatEvolutionReason(result: BrainEvolutionResult): { title: string; d
     if (result.reason === "insufficient-data") {
         return {
             title: "Dati insufficienti",
-            detail: `Per imparare servono più dati: mesi validi ${result.monthsAnalyzed}, campioni ${result.sampleCount}.`,
+            detail: `Per imparare meglio servono più dati: mesi validi ${result.monthsAnalyzed}, campioni ${result.sampleCount}.`,
             tone: "warning",
         }
     }
 
     return {
         title: "Core non avviato",
-        detail: "Avvia il Core per attivare analisi e previsioni.",
+        detail: "Avvia il Core per iniziare a costruire analisi e previsioni.",
         tone: "warning",
     }
 }
@@ -296,17 +296,17 @@ export default function BrainPage() {
         snapshotSignatureRef.current = nextSignature
 
         if (reason === "boot") {
-            pushEvent("Core collegato", next ? "Stato caricato dal dispositivo." : "Core non ancora inizializzato.", "neutral")
+            pushEvent("Core collegato", next ? "Stato letto dal dispositivo." : "Il Core non è ancora stato avviato.", "neutral")
             return
         }
 
         if (reason === "storage") {
-            pushEvent("Aggiornamento rilevato", "Lo stato del Core è cambiato in un'altra scheda.", "warning")
+            pushEvent("Aggiornamento rilevato", "Lo stato del Core è cambiato in un'altra scheda aperta.", "warning")
             return
         }
 
         if (hasChanged) {
-            pushEvent("Stato aggiornato", "Il Core ha ricevuto un nuovo stato.", "neutral")
+            pushEvent("Stato aggiornato", "Il Core ha ricevuto un aggiornamento.", "neutral")
         }
     }, [pushEvent])
 
@@ -339,11 +339,11 @@ export default function BrainPage() {
     const runEvolution = useCallback(async () => {
         if (trainingLockRef.current) return
         if (!isInitialized) {
-            pushEvent("Core non attivo", "Avvia il Core prima di eseguire l'analisi.", "warning")
+            pushEvent("Core non attivo", "Avvia il Core prima di lanciare una nuova analisi.", "warning")
             return
         }
         if (isDataLoading) {
-            pushEvent("Dati in caricamento", "Sto ancora caricando transazioni e categorie.", "warning")
+            pushEvent("Dati in caricamento", "Sto ancora leggendo transazioni e categorie.", "warning")
             return
         }
 
@@ -361,7 +361,7 @@ export default function BrainPage() {
 
         pushEvent(
             "Analisi avviata",
-            `Avvio automatico · ${transactions.length} transazioni · ${categories.length} categorie`,
+            `Analisi avviata con ${transactions.length} transazioni e ${categories.length} categorie.`,
             "neutral"
         )
 
@@ -380,7 +380,7 @@ export default function BrainPage() {
 
                     pushEvent(
                         `Ciclo ${progress.epoch}/${progress.totalEpochs}`,
-                        `Campioni ${progress.sampleCount} · stabilità ${progress.averageLoss.toFixed(4)}`,
+                        `Campioni letti ${progress.sampleCount} · stabilità ${progress.averageLoss.toFixed(4)}`,
                         "neutral"
                     )
                 },
@@ -416,7 +416,7 @@ export default function BrainPage() {
         } catch (error) {
             setTraining((prev) => ({ ...prev, isTraining: false }))
             const detail = error instanceof Error ? error.message : "Errore sconosciuto"
-            pushEvent("Errore analisi", detail, "critical")
+            pushEvent("Analisi interrotta", detail, "critical")
         } finally {
             trainingLockRef.current = false
         }
@@ -653,7 +653,7 @@ export default function BrainPage() {
         setSnapshot(newborn)
         setEvolutionHistory([])
         snapshotSignatureRef.current = signatureOf(newborn)
-        pushEvent("Core inizializzato", "Creato un nuovo Core pronto a imparare.", "positive")
+        pushEvent("Core inizializzato", "Ho creato un nuovo Core pronto a imparare.", "positive")
     }, [pushEvent])
 
     const handleReset = useCallback(() => {
@@ -673,7 +673,7 @@ export default function BrainPage() {
         lastAutoSignatureRef.current = ""
         lastAdaptivePolicySignatureRef.current = ""
         snapshotSignatureRef.current = signatureOf(null)
-        pushEvent("Core resettato", "Memoria locale del Core cancellata.", "warning")
+        pushEvent("Core resettato", "La memoria locale del Core è stata cancellata.", "warning")
     }, [pushEvent])
 
     return (
@@ -686,7 +686,7 @@ export default function BrainPage() {
                             Core previsioni
                         </span>
                     }
-                    description="Qui vedi come il Core impara dalle tue spese reali e aggiorna le stime."
+                    description="Qui vedi come il Core cresce dai tuoi movimenti e affina le stime."
                 />
             </motion.div>
 
@@ -697,7 +697,7 @@ export default function BrainPage() {
                 >
                     <div className="space-y-6">
                         <div className="grid gap-6">
-                            <Card className="glass-card border-white/35 order-2">
+                            <Card className="order-2 border-white/35 bg-background/80">
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
                                         <Gauge className="h-5 w-5" />
@@ -714,25 +714,25 @@ export default function BrainPage() {
 
                                     <div className="grid gap-3 sm:grid-cols-3">
                                         <div className="rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5">
-                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Prontezza</p>
+                                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Prontezza</p>
                                             <p className="mt-1 text-sm font-bold tabular-nums">{evolutionProgress}%</p>
-                                            <p className="mt-1 text-[10px] text-muted-foreground">Prontezza complessiva del Core.</p>
+                                            <p className="mt-1 text-xs font-medium text-muted-foreground">Quanto il Core è vicino a una base utile.</p>
                                         </div>
                                         <div className="rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5">
-                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Esperienza</p>
+                                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Esperienza</p>
                                             <p className="mt-1 text-sm font-bold tabular-nums">{experienceProgress}%</p>
-                                            <p className="mt-1 text-[10px] text-muted-foreground">{snapshot?.trainedSamples ?? 0}/{BRAIN_MATURITY_SAMPLE_TARGET} campioni appresi.</p>
+                                            <p className="mt-1 text-xs font-medium text-muted-foreground">{snapshot?.trainedSamples ?? 0}/{BRAIN_MATURITY_SAMPLE_TARGET} campioni già appresi.</p>
                                         </div>
                                         <div className="rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5">
-                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Stabilità</p>
+                                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Stabilità</p>
                                             <p className="mt-1 text-sm font-bold tabular-nums">{stabilityProgress}%</p>
-                                            <p className="mt-1 text-[10px] text-muted-foreground">Stabilità attuale: {liveLoss.toFixed(4)}.</p>
+                                            <p className="mt-1 text-xs font-medium text-muted-foreground">Stabilità attuale {liveLoss.toFixed(4)}.</p>
                                         </div>
                                     </div>
 
                                     {training.isTraining && (
                                         <div className="rounded-xl border border-primary/30 bg-primary/5 p-3">
-                                            <p className="text-[11px] font-bold uppercase tracking-wide text-primary">
+                                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
                                                 Analisi in corso
                                             </p>
                                             <p className="mt-1 text-xs text-muted-foreground">
@@ -743,31 +743,31 @@ export default function BrainPage() {
 
                                     <div className="grid gap-3 sm:grid-cols-3">
                                         <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Ultimo aggiornamento</p>
+                                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Ultimo aggiornamento</p>
                                             <p className="mt-1 text-sm font-bold">{formatUpdatedAt(snapshot?.updatedAt ?? null)}</p>
                                         </div>
                                         <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Affidabilità residuo mese</p>
+                                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Affidabilità residuo del mese</p>
                                             <p className="mt-1 text-sm font-bold tabular-nums">MAE {nowcastMaeLabel} · MAPE {nowcastMapeLabel}</p>
-                                            <p className="mt-1 text-[10px] text-muted-foreground tabular-nums">{nowcastReliabilitySamples} campioni osservati</p>
+                                            <p className="mt-1 text-xs font-medium text-muted-foreground tabular-nums">{nowcastReliabilitySamples} campioni usati per misurarla</p>
                                         </div>
                                         <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Soglia qualità</p>
+                                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Soglia di qualità</p>
                                             <p className="mt-1 text-sm font-bold tabular-nums">{adaptiveNowcastConfidencePercent}%</p>
-                                            <p className="mt-1 text-[10px] text-muted-foreground">Confidenza minima per usare la stima del mese corrente.</p>
+                                            <p className="mt-1 text-xs font-medium text-muted-foreground">Confidenza minima richiesta per usare la stima del mese corrente.</p>
                                         </div>
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            <Card className="glass-card border-white/35 order-1">
+                            <Card className="order-1 border-white/35 bg-background/80">
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
                                         <Activity className="h-5 w-5" />
                                         Comandi Core
                                     </CardTitle>
                                 <CardDescription>
-                                    Azioni base del Core: avvio, analisi e reset.
+                                    Le azioni base del Core: avvio, reset e registro attività.
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
@@ -794,12 +794,12 @@ export default function BrainPage() {
                                     <Accordion type="single" collapsible className="rounded-2xl border border-border/60 bg-background/50 px-4">
                                         <AccordionItem value="technical-events" className="border-none">
                                             <AccordionTrigger className="py-3 text-sm font-semibold text-foreground hover:no-underline">
-                                                Registro eventi tecnici
+                                                Registro attività del Core
                                             </AccordionTrigger>
                                             <AccordionContent className="pb-4">
                                                 <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
                                                     {timeline.length === 0 && (
-                                                        <p className="text-xs text-muted-foreground">Nessun evento per ora.</p>
+                                                        <p className="text-xs text-muted-foreground">Nessuna attività registrata per ora.</p>
                                                     )}
                                                     {timeline.map((event) => (
                                                         <div key={event.id} className="rounded-xl border border-border/50 bg-muted/20 px-3 py-2">
@@ -808,9 +808,9 @@ export default function BrainPage() {
                                                                     <span className={cn("h-2 w-2 rounded-full", eventToneClass(event.tone))} />
                                                                     <p className="text-xs font-bold text-foreground">{event.title}</p>
                                                                 </div>
-                                                                <p className="text-[10px] text-muted-foreground tabular-nums">{formatClock(event.at)}</p>
+                                                                <p className="text-xs font-medium text-muted-foreground tabular-nums">{formatClock(event.at)}</p>
                                                             </div>
-                                                            <p className="mt-1 text-[11px] text-muted-foreground">{event.detail}</p>
+                                                            <p className="mt-1 text-sm font-medium leading-relaxed text-muted-foreground">{event.detail}</p>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -819,8 +819,8 @@ export default function BrainPage() {
                                     </Accordion>
                                 </CardContent>
                                 <CardFooter className="pt-0">
-                                    <p className="text-[11px] text-muted-foreground">
-                                        Dati live: {transactions.length} transazioni, {categories.length} categorie, ultima analisi {formatUpdatedAt(training.lastCompletedAt)}.
+                                    <p className="text-sm font-medium leading-relaxed text-muted-foreground">
+                                        Dati letti ora: {transactions.length} transazioni, {categories.length} categorie, ultima analisi {formatUpdatedAt(training.lastCompletedAt)}.
                                     </p>
                                 </CardFooter>
                             </Card>
@@ -834,7 +834,7 @@ export default function BrainPage() {
                                 trend={evolution?.prediction ? (riskPercent > 65 ? "warning" : "neutral") : "neutral"}
                                 change={evolution?.prediction ? `${confidencePercent}%` : "-"}
                                 comparisonLabel="Affidabilità"
-                                description="Probabilità di aumento spese."
+                                description="Quanto è probabile che la spesa salga."
                                 className={brainKpiCardClassName}
                                 valueClassName={brainKpiValueClassName}
                                 compact
@@ -846,19 +846,19 @@ export default function BrainPage() {
                                 trend={evolution?.prediction ? "up" : "neutral"}
                                 change={evolution?.inferencePeriod ?? "-"}
                                 comparisonLabel="Periodo"
-                                description="Stima spesa del prossimo mese."
+                                description="Quanto il Core si aspetta di vedere nelle spese del prossimo mese."
                                 className={brainKpiCardClassName}
                                 valueClassName={brainKpiMoneyValueClassName}
                                 compact
                             />
                             <KpiCard
-                                title="Residuo mese corrente"
+                                title="Spesa residua del mese"
                                 value={currentMonthRemainingLabel}
                                 icon={CalendarClock}
                                 trend={advisorNowcastReady ? "neutral" : "warning"}
                                 change={advisorNowcastReady ? `${currentMonthConfidencePercent}%` : evolution ? `Soglia ${adaptiveNowcastConfidencePercent}%` : "Non pronta"}
                                 comparisonLabel={advisorNowcastReady ? "Confidenza" : "Soglia qualità"}
-                                description="Stima residua del mese con controllo qualità automatico."
+                                description="Quanto il Core stima che resti ancora da spendere nel mese, con controllo qualità automatico."
                                 className={brainKpiCardClassName}
                                 valueClassName={brainKpiMoneyValueClassName}
                                 compact
@@ -868,39 +868,39 @@ export default function BrainPage() {
                         <Accordion type="single" collapsible className="rounded-2xl border border-border/60 bg-background/40 px-4">
                             <AccordionItem value="technical-details" className="border-none">
                                 <AccordionTrigger className="py-3 text-sm font-semibold text-foreground hover:no-underline">
-                                    Dettagli tecnici (facoltativo)
+                                    Dettagli del Core (facoltativo)
                                 </AccordionTrigger>
                                 <AccordionContent className="pb-4">
                                     <div className="space-y-4">
                                         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                                             <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                                <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Versione Core</p>
+                                                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Versione Core</p>
                                                 <p className="mt-1 text-sm font-bold">{snapshot?.version ?? "-"}</p>
                                             </div>
                                             <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                                <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Schema fattori</p>
+                                                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Schema dei fattori</p>
                                                 <p className="mt-1 text-sm font-bold">{snapshot?.featureSchemaVersion ?? "-"}</p>
                                             </div>
                                             <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                                <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Affidabilità prossimo mese</p>
+                                                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Affidabilità prossimo mese</p>
                                                 <p className="mt-1 text-sm font-bold tabular-nums">MAE {nextMonthMaeLabel} · MAPE {nextMonthMapeLabel}</p>
-                                                <p className="mt-1 text-[10px] text-muted-foreground tabular-nums">{nextMonthReliabilitySamples} campioni osservati</p>
+                                                <p className="mt-1 text-xs font-medium text-muted-foreground tabular-nums">{nextMonthReliabilitySamples} campioni osservati</p>
                                             </div>
                                             <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                                <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Struttura Core</p>
+                                                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Struttura del Core</p>
                                                 <p className="mt-1 text-sm font-bold tabular-nums">{vectorWeights.length} unità · {snapshot?.trainedSamples ?? 0} campioni</p>
-                                                <p className="mt-1 text-[10px] text-muted-foreground tabular-nums">{activeWeightsCount} attive · {silentWeightsCount} neutre</p>
+                                                <p className="mt-1 text-xs font-medium text-muted-foreground tabular-nums">{activeWeightsCount} attive · {silentWeightsCount} neutre</p>
                                             </div>
                                         </div>
 
-                                        <Card className="glass-card">
+                                        <Card className="bg-background/72">
                                             <CardHeader>
                                                 <CardTitle className="flex items-center gap-2">
                                                     <BrainCircuit className="h-5 w-5" />
-                                                    Mappa segnali del Core
+                                                    Mappa dei segnali
                                                 </CardTitle>
                                                 <CardDescription>
-                                                    Ogni barra indica quanto pesa una componente interna del Core sulla stima attuale.
+                                                    Ogni barra mostra quanto pesa una componente interna del Core nella stima attuale.
                                                 </CardDescription>
                                             </CardHeader>
                                             <CardContent className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -913,7 +913,7 @@ export default function BrainPage() {
                                                             className="rounded-xl border border-border/60 bg-muted/20 p-3"
                                                         >
                                                             <div className="flex items-center justify-between gap-2">
-                                                                <p className="text-[11px] font-bold tracking-wide text-foreground/85">
+                                                                <p className="text-sm font-bold tracking-tight text-foreground/85">
                                                                     Neurone {index + 1}
                                                                 </p>
                                                                 <p className="text-xs font-medium tabular-nums text-muted-foreground">
@@ -934,7 +934,7 @@ export default function BrainPage() {
                                             </CardContent>
                                         </Card>
 
-                                        <Card className="glass-card">
+                                        <Card className="bg-background/72">
                                             <CardHeader>
                                                 <CardTitle className="flex items-center gap-2">
                                                     <TrendingUp className="h-5 w-5" />
@@ -959,7 +959,7 @@ export default function BrainPage() {
                                                                         effetto sulla stima {item.contribution.toFixed(4)}
                                                                     </p>
                                                                 </div>
-                                                                <p className="mt-1 text-[11px] text-muted-foreground tabular-nums">
+                                                                <p className="mt-1 text-xs font-medium text-muted-foreground tabular-nums">
                                                                     valore attuale {item.value.toFixed(4)} · peso interno {item.weight.toFixed(4)}
                                                                 </p>
                                                             </div>

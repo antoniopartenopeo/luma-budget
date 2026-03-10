@@ -196,7 +196,7 @@ export function ImportStepReview({
             <Button
                 onClick={() => onContinue({ overrides, excludedGroupIds })}
                 className={cn(
-                    "h-12 gap-1.5 rounded-xl px-6 text-sm shadow-lg transition-all hover:-translate-y-[1px]",
+                    "h-12 gap-1.5 rounded-xl px-6 text-sm shadow-lg transition-[transform,box-shadow,background-color,border-color,color] duration-200 hover:-translate-y-[1px]",
                     stats.total > stats.assigned && "border-amber-200 bg-amber-50 text-amber-900 hover:bg-amber-100 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-200"
                 )}
                 variant={stats.total > stats.assigned ? "outline" : "default"}
@@ -214,7 +214,7 @@ export function ImportStepReview({
     return (
         <WizardShell
             title="Controlla i movimenti"
-            subtitle="Rivedi gruppi e categorie prima del salvataggio."
+            subtitle="Rivedi gruppi, categorie e duplicati prima di salvare."
             step="review"
             footer={footer}
         >

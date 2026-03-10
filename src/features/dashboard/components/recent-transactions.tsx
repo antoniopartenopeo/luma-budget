@@ -1,48 +1,64 @@
-import { CategoryIcon } from "@/features/categories/components/category-icon"
-import { cn } from "@/lib/utils"
-import { calculateDateRangeLocal, filterByRange } from "@/lib/date-ranges"
-import { useRecentTransactions } from "@/features/transactions/api/use-transactions"
-import { StateMessage } from "@/components/ui/state-message"
-import { Skeleton } from "@/components/ui/skeleton"
-import { DashboardTimeFilter } from "../api/types"
-import { useCurrency } from "@/features/settings/api/use-currency"
-import { formatSignedCents } from "@/domain/money"
-import { getSignedCents } from "@/domain/transactions"
-import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { motion, useReducedMotion, type Variants } from "framer-motion"
 import { ChevronRight } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { MacroSection } from "@/components/patterns/macro-section"
-import { usePrivacyStore } from "@/features/privacy/privacy.store"
-import { getPrivacyClass } from "@/features/privacy/privacy-utils"
-import { motion } from "framer-motion"
-import { StaggerContainer } from "@/components/patterns/stagger-container"
-import { macroItemVariants } from "@/components/patterns/macro-section"
+import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
+import { StateMessage } from "@/components/ui/state-message"
+import { useTransactions } from "@/features/transactions/api/use-transactions"
+import { TransactionRowCard } from "@/features/transactions/components/transaction-row-card"
+import { calculateDateRangeLocal, filterByRange } from "@/lib/date-ranges"
+import { buildTransactionsHrefForDashboardFilter } from "../utils/dashboard-filter"
+import { DashboardTimeFilter } from "../api/types"
 
 interface RecentTransactionsProps {
     filter?: DashboardTimeFilter
 }
 
+const rowContainerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: { staggerChildren: 0.05 }
+    }
+}
+
+const rowVariants: Variants = {
+    hidden: { opacity: 0, y: 14 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] }
+    }
+}
+
 export function RecentTransactions({ filter }: RecentTransactionsProps) {
-    const { data: transactions, isLoading, isError, refetch } = useRecentTransactions()
-    const { currency, locale } = useCurrency()
-    const { isPrivacyMode } = usePrivacyStore()
-    const router = useRouter()
+    const { data: transactions, isLoading, isError, refetch } = useTransactions()
+    const prefersReducedMotion = useReducedMotion()
+    const transactionsHref = filter ? buildTransactionsHrefForDashboardFilter(filter) : "/transactions"
 
     if (isLoading) {
-        // ... (rest of the logic remains same as my previous tool call for RecentTransactions body)
         return (
-            <MacroSection title="Transazioni Recenti" description="Caricamento..." className="col-span-3">
-                <div className="space-y-6">
-                    {[...Array(5)].map((_, i) => (
-                        <div key={i} className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <Skeleton className="h-10 w-10 rounded-full" />
+            <MacroSection
+                title="Movimenti recenti"
+                description="Sto preparando l'anteprima del ledger nel periodo attivo..."
+                className="col-span-3"
+                background={<div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(14,165,168,0.08),transparent_36%)]" />}
+            >
+                <div className="space-y-4">
+                    {[...Array(5)].map((_, index) => (
+                        <div key={index} className="glass-card flex items-center justify-between gap-4 rounded-[1.6rem] p-4">
+                            <div className="flex min-w-0 items-center gap-4">
+                                <Skeleton className="h-12 w-12 rounded-[1rem]" />
                                 <div className="space-y-2">
-                                    <Skeleton className="h-4 w-[150px]" />
-                                    <Skeleton className="h-3 w-[100px]" />
+                                    <Skeleton className="h-3 w-[120px]" />
+                                    <Skeleton className="h-4 w-[180px]" />
                                 </div>
                             </div>
-                            <Skeleton className="h-4 w-[60px]" />
+                            <div className="space-y-2 text-right">
+                                <Skeleton className="ml-auto h-5 w-[74px] rounded-full" />
+                                <Skeleton className="ml-auto h-5 w-[86px]" />
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -55,8 +71,8 @@ export function RecentTransactions({ filter }: RecentTransactionsProps) {
             <MacroSection className="col-span-3">
                 <StateMessage
                     variant="error"
-                    title="Errore caricamento transazioni"
-                    description="Non è stato possibile caricare le transazioni recenti."
+                    title="Non riesco a caricare i movimenti"
+                    description="Gli ultimi movimenti non sono disponibili in questo momento."
                     actionLabel="Riprova"
                     onActionClick={() => refetch()}
                 />
@@ -64,28 +80,41 @@ export function RecentTransactions({ filter }: RecentTransactionsProps) {
         )
     }
 
-    // Client-side Filtering
     let filteredTransactions = transactions || []
+
     if (filter) {
         const { startDate, endDate } = calculateDateRangeLocal(
             filter.period,
-            (filter.mode === "range" && filter.months) ? filter.months : 1
+            filter.mode === "range" && filter.months ? filter.months : 1
         )
+
         filteredTransactions = filterByRange(filteredTransactions, startDate, endDate)
     }
 
-    // Sort by date desc (assuming API does, but good to ensure) and take top 5
     const displayedTransactions = filteredTransactions
-        .sort((a, b) => b.timestamp - a.timestamp)
+        .toSorted((a, b) => b.timestamp - a.timestamp)
         .slice(0, 5)
 
     if (displayedTransactions.length === 0) {
         return (
-            <MacroSection title="Transazioni Recenti" description="Nel periodo selezionato" className="col-span-3">
+            <MacroSection
+                title="Movimenti recenti"
+                description="Nel periodo attivo"
+                className="col-span-3"
+                background={<div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(14,165,168,0.08),transparent_36%)]" />}
+                headerActions={
+                    <Button asChild variant="ghost" size="sm" className="gap-1 rounded-full text-primary transition-[background-color,color,box-shadow] duration-200">
+                        <Link href={transactionsHref}>
+                            Apri elenco completo
+                            <ChevronRight className="h-4 w-4" />
+                        </Link>
+                    </Button>
+                }
+            >
                 <StateMessage
                     variant="empty"
-                    title="Nessuna transazione"
-                    description="Nessuna transazione trovata in questo periodo."
+                    title="Nessun movimento"
+                    description="Nel periodo attivo non ci sono ancora movimenti da consultare."
                 />
             </MacroSection>
         )
@@ -93,37 +122,44 @@ export function RecentTransactions({ filter }: RecentTransactionsProps) {
 
     return (
         <MacroSection
-            title="Transazioni Recenti"
-            description="Ultime 5 transazioni del periodo"
+            title="Movimenti recenti"
+            description="Anteprima dei 5 movimenti piu recenti nel periodo attivo"
             className="col-span-3"
+            background={<div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(14,165,168,0.08),transparent_36%)]" />}
             headerActions={
-                <Button variant="ghost" size="sm" className="gap-1 text-primary" onClick={() => router.push("/transactions")}>
-                    Vedi tutte
-                    <ChevronRight className="h-4 w-4" />
+                <Button asChild variant="ghost" size="sm" className="gap-1 rounded-full text-primary transition-[background-color,color,box-shadow] duration-200">
+                    <Link href={transactionsHref}>
+                        Apri elenco completo
+                        <ChevronRight className="h-4 w-4" />
+                    </Link>
                 </Button>
             }
         >
-            <StaggerContainer className="space-y-6">
-                {displayedTransactions.map((transaction) => (
-                    <motion.div key={transaction.id} variants={macroItemVariants} className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <CategoryIcon
-                                categoryName={transaction.category}
-                                size={20}
-                                showBackground
-                                className="border border-border/50"
-                            />
-                            <div className="space-y-1">
-                                <p className="text-sm font-medium leading-none text-foreground">{transaction.description}</p>
-                                <p className="text-xs text-muted-foreground">{transaction.category} • {transaction.date}</p>
-                            </div>
-                        </div>
-                        <div className={cn("font-medium tabular-nums", transaction.type === "income" ? "text-emerald-600" : "text-foreground", getPrivacyClass(isPrivacyMode))}>
-                            {formatSignedCents(getSignedCents(transaction), currency, locale)}
-                        </div>
-                    </motion.div>
+            <motion.ul
+                variants={rowContainerVariants}
+                initial={prefersReducedMotion ? false : "hidden"}
+                animate={prefersReducedMotion ? undefined : "visible"}
+                className="space-y-3"
+            >
+                {displayedTransactions.map((transaction, index) => (
+                    <motion.li
+                        key={transaction.id}
+                        variants={rowVariants}
+                        className="list-none"
+                    >
+                        <TransactionRowCard
+                            transaction={transaction}
+                            primaryAction={{
+                                kind: "link",
+                                href: transactionsHref,
+                                ariaLabel: `Apri elenco movimenti del periodo attivo partendo da ${transaction.description}`
+                            }}
+                            highlight={index === 0}
+                            showChevron
+                        />
+                    </motion.li>
                 ))}
-            </StaggerContainer>
+            </motion.ul>
         </MacroSection>
     )
 }

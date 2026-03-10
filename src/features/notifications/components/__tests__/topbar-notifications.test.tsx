@@ -67,7 +67,7 @@ describe("TopbarNotifications", () => {
         await openNotificationsMenu()
 
         await waitFor(() => {
-            expect(screen.getByText("Aggiornamenti App")).toBeInTheDocument()
+            expect(screen.getByText("Novità dell'app")).toBeInTheDocument()
             expect(screen.getByText("v0.3.0 · Nuove funzionalita")).toBeInTheDocument()
         })
     })
@@ -121,8 +121,10 @@ describe("TopbarNotifications", () => {
         })
 
         const item = screen.getByTestId("notification-item-release-0.3.0-20260204-feature")
-        expect(item.className).toContain("bg-background/40")
+        expect(item.className).toContain("border-white/25")
+        expect(item.className).not.toContain("border-primary/20")
         expect(item.className).not.toContain("bg-primary/5")
+        expect(item.className).not.toContain("bg-primary/6")
         expect(screen.queryByTestId("topbar-notifications-badge")).not.toBeInTheDocument()
         expect(screen.queryByTestId("notification-read-release-0.3.0-20260204-feature")).not.toBeInTheDocument()
     })
@@ -133,7 +135,7 @@ describe("TopbarNotifications", () => {
 
         await waitFor(() => {
             expect(screen.getByTestId("topbar-notifications-open-updates")).toBeInTheDocument()
-            expect(screen.getByRole("link", { name: "Apri storico aggiornamenti" })).toHaveAttribute("href", "/updates")
+            expect(screen.getByRole("link", { name: "Apri cronologia completa" })).toHaveAttribute("href", "/updates")
         })
     })
 })

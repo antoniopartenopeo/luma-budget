@@ -17,7 +17,7 @@ export default function TransactionsImportPage() {
             <motion.div variants={macroItemVariants}>
                 <PageHeader
                     title="Importa CSV"
-                    description="Carica un estratto conto e valida le transazioni prima dell'import."
+                    description="Carica il file della banca e controlla i movimenti prima di aggiungerli."
                 />
             </motion.div>
 

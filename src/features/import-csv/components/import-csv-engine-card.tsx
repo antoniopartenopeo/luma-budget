@@ -10,7 +10,7 @@ const IMPORT_FLOW_STEPS = [
         bgClass: "bg-primary/10",
         stepLabel: "Passo 1",
         title: "Controllo iniziale",
-        description: "Leggo il file e tengo solo i movimenti validi."
+        description: "Leggo il file e tengo solo i movimenti che posso usare davvero."
     },
     {
         icon: Upload,
@@ -18,7 +18,7 @@ const IMPORT_FLOW_STEPS = [
         bgClass: "bg-amber-500/10",
         stepLabel: "Passo 2",
         title: "Raggruppamento movimenti",
-        description: "Unisco i movimenti simili per velocizzare la revisione."
+        description: "Raggruppo i movimenti simili per rendere la revisione più veloce."
     },
     {
         icon: ShieldCheck,
@@ -26,7 +26,7 @@ const IMPORT_FLOW_STEPS = [
         bgClass: "bg-emerald-500/10",
         stepLabel: "Passo 3",
         title: "Conferma finale",
-        description: "Prima di salvare vedi un riepilogo chiaro e completo."
+        description: "Prima di salvare controlli un riepilogo semplice e completo."
     }
 ] as const
 
@@ -44,8 +44,8 @@ export function ImportCsvEngineCard() {
                 description: step.description
             }))}
             certificationTitle="Controllo e trasparenza"
-            certificationSubtitle="Lettura guidata, privacy locale"
-            transparencyNote="Durante questa fase il file resta nel browser: nulla viene inviato fuori dal tuo dispositivo."
+            certificationSubtitle="Import CSV locale e revisione guidata"
+            transparencyNote="Nel flusso CSV attivo il file resta nel browser fino alla conferma finale."
             auditStats={[
                 {
                     label: "Righe controllate",
@@ -60,12 +60,12 @@ export function ImportCsvEngineCard() {
                 {
                     label: "Revisione",
                     value: "Guidata",
-                    subValue: "Trovi i gruppi già ordinati per completare la conferma più in fretta."
+                    subValue: "Trovi i gruppi già ordinati per confermare tutto più in fretta."
                 },
                 {
                     label: "Privacy",
                     value: "Locale",
-                    subValue: "I dati non escono dal browser durante questo passaggio."
+                    subValue: "Nel flusso CSV attivo i dati restano nel browser durante la revisione."
                 }
             ]}
         />

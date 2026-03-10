@@ -176,7 +176,7 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
                 onClick={handleProcess}
                 disabled={!canContinue}
                 className={cn(
-                    "h-11 gap-2 rounded-xl px-6 font-semibold shadow-md transition-all",
+                    "h-11 gap-2 rounded-xl px-6 font-semibold shadow-md transition-[transform,box-shadow,background-color,border-color,color] duration-200",
                     canContinue && "hover:shadow-primary/25 hover:-translate-y-[1px]"
                 )}
             >
@@ -189,7 +189,7 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
     return (
         <WizardShell
             title="Carica i movimenti"
-            subtitle="Importa il file della banca e ti guidiamo passo passo."
+            subtitle="Importa il file della banca e ti accompagno passo dopo passo."
             step="upload"
             footer={footer}
         >
@@ -197,7 +197,7 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
                 <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/60 bg-muted/10 px-4 py-3">
                     <div className="flex items-center gap-2 text-sm text-foreground">
                         <span className="font-semibold">Prova veloce</span>
-                        <span className="text-muted-foreground">Carica dati demo in pochi secondi.</span>
+                        <span className="text-muted-foreground">Usa dati demo per vedere il flusso in pochi secondi.</span>
                     </div>
                     <Button
                         type="button"
@@ -314,24 +314,24 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
                                     className="inline-flex items-center gap-1.5 border-primary/30 bg-primary/10 text-primary"
                                 >
                                     <Clock3 className="h-3.5 w-3.5" />
-                                    Standby
+                                    Non disponibile
                                 </Badge>
                             </div>
 
                             <div className="mt-4 space-y-2">
                                 <p className="text-sm leading-relaxed text-muted-foreground">
-                                    Stiamo completando la verifica normativa. Appena attivo potrai importare i movimenti in modo automatico.
+                                    Il collegamento banca e disattivato in questa build. Per ora puoi usare solo l&apos;import CSV locale.
                                 </p>
                             </div>
 
                             <div className="mt-4 space-y-2.5 rounded-lg border border-border/60 bg-background/70 p-3">
                                 <div className="flex items-start gap-2 text-sm text-foreground">
                                     <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                                    <span>Autorizzazione sicura direttamente dalla tua banca.</span>
+                                    <span>Nessun collegamento bancario remoto e attivo in questo ambiente.</span>
                                 </div>
                                 <div className="flex items-start gap-2 text-sm text-foreground">
                                     <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                                    <span>Movimenti importati senza dover scaricare il CSV.</span>
+                                    <span>Quando verra riattivato, il flusso dichiarera in modo esplicito i passaggi remoti.</span>
                                 </div>
                             </div>
                         </div>

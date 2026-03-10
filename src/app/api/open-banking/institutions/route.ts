@@ -1,9 +1,14 @@
 import { NextResponse } from "next/server"
 import { GoCardlessConfigError, listInstitutions } from "@/features/import-csv/open-banking/gocardless"
+import { createOpenBankingDisabledResponse, isOpenBankingEnabled } from "../guard"
 
 export const runtime = "nodejs"
 
 export async function GET(request: Request) {
+    if (!isOpenBankingEnabled()) {
+        return createOpenBankingDisabledResponse()
+    }
+
     const { searchParams } = new URL(request.url)
     const country = (searchParams.get("country") || "IT").toUpperCase()
 

@@ -117,8 +117,8 @@ export function CategoriesSection() {
     const renderCategoryList = (categories: Category[], emptyMessage: string) => {
         if (categories.length === 0) {
             return (
-                <div className="text-center py-12 text-muted-foreground bg-muted/30 rounded-xl border border-dashed">
-                    <p>{searchQuery ? "Nessuna categoria trovata" : emptyMessage}</p>
+                <div className="surface-subtle py-12 text-center text-muted-foreground">
+                    <p className="text-sm font-medium">{searchQuery ? "Nessuna categoria trovata" : emptyMessage}</p>
                 </div>
             )
         }
@@ -129,8 +129,8 @@ export function CategoriesSection() {
                     <div
                         key={cat.id}
                         className={cn(
-                            "group flex items-center justify-between p-3 rounded-xl border bg-card hover:bg-accent/50 transition-colors",
-                            cat.archived && "opacity-50 grayscale bg-muted/50"
+                            "group flex items-center justify-between rounded-[1.25rem] border border-white/35 bg-white/55 p-3 backdrop-blur-md transition-[background-color,border-color,box-shadow,opacity] duration-200 hover:bg-white/75 dark:border-white/10 dark:bg-white/[0.05] dark:hover:bg-white/[0.08]",
+                            cat.archived && "bg-white/40 opacity-55 grayscale dark:bg-white/[0.03]"
                         )}
                     >
                         <div className="flex items-center gap-4 overflow-hidden">
@@ -144,17 +144,17 @@ export function CategoriesSection() {
                                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                     {cat.kind === "expense" && cat.spendingNature && (
                                         <span className={cn(
-                                            "capitalize px-1.5 py-0.5 rounded-md bg-muted font-medium",
-                                            cat.spendingNature === "essential" && "text-emerald-600 bg-emerald-50",
-                                            cat.spendingNature === "comfort" && "text-blue-600 bg-blue-50",
-                                            cat.spendingNature === "superfluous" && "text-amber-600 bg-amber-50"
+                                            "rounded-full px-2 py-0.5 font-semibold",
+                                            cat.spendingNature === "essential" && "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+                                            cat.spendingNature === "comfort" && "bg-primary/10 text-primary",
+                                            cat.spendingNature === "superfluous" && "bg-amber-500/10 text-amber-700 dark:text-amber-300"
                                         )}>
                                             {cat.spendingNature === "essential" ? "Essenziale" :
                                                 cat.spendingNature === "comfort" ? "Benessere" : "Superfluo"}
                                         </span>
                                     )}
                                     {cat.archived && (
-                                        <span className="text-[10px] font-bold uppercase tracking-wider bg-zinc-100 text-zinc-500 px-1.5 py-0.5 rounded">
+                                        <span className="rounded-full bg-zinc-500/10 px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.14em] text-zinc-600 dark:text-zinc-300">
                                             Archiviata
                                         </span>
                                     )}
@@ -189,7 +189,7 @@ export function CategoriesSection() {
 
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100">
+                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 opacity-0 transition-opacity focus:opacity-100 group-hover:opacity-100">
                                         <MoreHorizontal className="h-4 w-4" />
                                     </Button>
                                 </DropdownMenuTrigger>
@@ -222,11 +222,11 @@ export function CategoriesSection() {
 
             <MacroSection
                 title="Categorie"
-                description="Organizza le tue entrate e uscite"
+                description="Organizza entrate e uscite nel modo più adatto a te."
                 headerActions={
                     <Button onClick={handleCreateClick} size="sm" className="w-full sm:w-auto gap-2 rounded-full font-bold shadow-lg shadow-primary/20">
                         <Plus className="h-4 w-4" />
-                        Nuova Categoria
+                        Nuova categoria
                     </Button>
                 }
                 contentClassName="px-0 sm:px-6"
@@ -248,10 +248,10 @@ export function CategoriesSection() {
                                         placeholder="Cerca categoria..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="pl-9 h-9 bg-muted/50 border-none rounded-xl"
+                                        className="h-10 rounded-xl border-white/30 bg-white/55 pl-9 dark:border-white/10 dark:bg-white/[0.05]"
                                     />
                                 </div>
-                                <div className="flex items-center justify-between sm:justify-end gap-3 bg-muted/30 p-2 sm:p-0 rounded-lg sm:bg-transparent">
+                                <div className="surface-subtle flex items-center justify-between gap-3 p-2 sm:justify-end sm:bg-transparent sm:p-0 sm:shadow-none">
                                     <Label htmlFor="show-archived" className="text-sm cursor-pointer text-muted-foreground font-medium pl-2 sm:pl-0">
                                         Mostra archiviate
                                     </Label>
@@ -267,24 +267,24 @@ export function CategoriesSection() {
 
                         {/* Tabs & List */}
                         <Tabs defaultValue="expense" value={activeTab} onValueChange={setActiveTab} className="w-full">
-                            <TabsList className="grid w-full grid-cols-2 rounded-xl h-10 p-1 bg-muted/50">
-                                <TabsTrigger value="expense" className="rounded-lg font-bold text-xs data-[state=active]:bg-background data-[state=active]:text-rose-600 data-[state=active]:shadow-sm transition-all duration-300">
+                            <TabsList className="grid h-11 w-full grid-cols-2 rounded-xl border border-white/30 bg-white/45 p-1 dark:border-white/10 dark:bg-white/[0.04]">
+                                <TabsTrigger value="expense" className="rounded-lg text-xs font-bold data-[state=active]:bg-background data-[state=active]:text-rose-600 data-[state=active]:shadow-sm transition-colors duration-300">
                                     Uscite ({expenseCategories.length})
                                 </TabsTrigger>
-                                <TabsTrigger value="income" className="rounded-lg font-bold text-xs data-[state=active]:bg-background data-[state=active]:text-emerald-600 data-[state=active]:shadow-sm transition-all duration-300">
+                                <TabsTrigger value="income" className="rounded-lg text-xs font-bold data-[state=active]:bg-background data-[state=active]:text-emerald-600 data-[state=active]:shadow-sm transition-colors duration-300">
                                     Entrate ({incomeCategories.length})
                                 </TabsTrigger>
                             </TabsList>
                             <TabsContent value="expense" className="mt-6 focus-visible:outline-none animate-enter-up">
                                 <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Lista Uscite</h3>
+                                    <h3 className="text-sm font-bold uppercase tracking-[0.16em] text-muted-foreground">Lista uscite</h3>
                                     <span className="text-xs text-muted-foreground">{expenseCategories.length} trovate</span>
                                 </div>
                                 {renderCategoryList(expenseCategories, "Nessuna categoria di spesa.")}
                             </TabsContent>
                             <TabsContent value="income" className="mt-6 focus-visible:outline-none animate-enter-up">
                                 <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Lista Entrate</h3>
+                                    <h3 className="text-sm font-bold uppercase tracking-[0.16em] text-muted-foreground">Lista entrate</h3>
                                     <span className="text-xs text-muted-foreground">{incomeCategories.length} trovate</span>
                                 </div>
                                 {renderCategoryList(incomeCategories, "Nessuna categoria di entrata.")}
@@ -292,7 +292,7 @@ export function CategoriesSection() {
                         </Tabs>
 
                         {/* Reset Action */}
-                        <div className="flex justify-center pt-8 border-t">
+                        <div className="flex justify-center border-t border-white/20 pt-8 dark:border-white/10">
                             <Button
                                 variant="ghost"
                                 size="sm"

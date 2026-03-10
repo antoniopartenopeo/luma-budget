@@ -21,7 +21,7 @@ export function TopBar() {
     const [isQuickAddOpen, setIsQuickAddOpen] = useState(false)
 
     return (
-        <header className="sticky top-0 z-30 glass-chrome lg:pl-64">
+        <header className="sticky top-0 z-30 border-b border-white/30 glass-chrome dark:border-white/8 lg:pl-64">
             <div className="flex min-h-[80px] lg:min-h-[80px] h-auto flex-col">
                 <div className="flex h-20 items-center justify-between gap-4 px-4 md:px-8">
                     <div className="flex items-center gap-2">
@@ -76,7 +76,7 @@ export function TopBar() {
                 {/* Mobile QuickAdd - Revealed on toggle */}
                 {!isSettingsPage && (
                     <div className={cn(
-                        "sm:hidden overflow-hidden transition-all duration-300 ease-in-out",
+                        "overflow-hidden sm:hidden transition-[max-height,opacity,padding] duration-300 ease-in-out",
                         isQuickAddOpen ? "max-h-96 opacity-100 pb-4" : "max-h-0 opacity-0"
                     )}>
                         <div className="px-4 flex justify-center border-t pt-4">

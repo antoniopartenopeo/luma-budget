@@ -124,12 +124,12 @@ function TransactionsPageContent() {
             <div className="space-y-6">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Transazioni</h1>
-                    <p className="text-muted-foreground">Gestisci e monitora le tue entrate e uscite.</p>
+                    <p className="text-muted-foreground">Controlla i tuoi movimenti e rivedili con calma.</p>
                 </div>
                 <StateMessage
                     variant="error"
                     title="Impossibile caricare le transazioni"
-                    description="Si è verificato un problema durante il recupero dei dati."
+                    description="Non riesco a leggere i movimenti in questo momento."
                     actionLabel="Riprova"
                     onActionClick={() => refetch()}
                 />
@@ -143,14 +143,14 @@ function TransactionsPageContent() {
             <motion.div variants={macroItemVariants}>
                 <PageHeader
                     title="Transazioni"
-                    description="Analisi dettagliata del tuo flusso di cassa."
+                    description="Tutti i tuoi movimenti, con filtri e dettagli utili."
                 />
             </motion.div>
 
             {/* MacroSection for Main Content */}
             <MacroSection
                 title="Elenco Movimenti"
-                description="Tutte le transazioni del periodo"
+                description="I movimenti del periodo selezionato."
                 headerActions={
                     <TransactionsFilterBar
                         searchValue={search}
@@ -204,7 +204,7 @@ function TransactionsPageContent() {
                         </div>
                         <h3 className="text-xl font-bold tracking-tight mb-2 text-foreground">Nessun risultato</h3>
                         <p className="text-muted-foreground font-medium mb-8 leading-relaxed">
-                            Non abbiamo trovato transazioni che corrispondano ai criteri selezionati.
+                            Non trovo movimenti che corrispondano ai filtri attivi.
                         </p>
                         <Button
                             onClick={resetFilters}
@@ -230,7 +230,7 @@ function TransactionsPageContent() {
             <ConfirmDialog
                 open={!!exportError}
                 onOpenChange={(open) => !open && setExportError(null)}
-                title="Errore di Esportazione"
+                title="Esportazione non riuscita"
                 description={exportError}
                 confirmLabel="OK"
                 cancelLabel="Chiudi"
@@ -242,7 +242,7 @@ function TransactionsPageContent() {
                 open={!!transactionToDelete}
                 onOpenChange={(open) => !open && setTransactionToDelete(null)}
                 title="Conferma eliminazione"
-                description={`Sei sicuro di voler eliminare la transazione "${transactionToDelete?.description}"? Questa azione non può essere annullata.`}
+                description={`Vuoi davvero eliminare "${transactionToDelete?.description}"? Questa azione non si può annullare.`}
                 confirmLabel="Elimina"
                 cancelLabel="Annulla"
                 onConfirm={confirmDelete}

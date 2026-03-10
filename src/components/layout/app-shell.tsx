@@ -10,14 +10,17 @@ export function AppShell({ children }: AppShellProps) {
         <div className="min-h-screen bg-background selection:bg-primary/20">
             {/* Ambient Background Mesh */}
             <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
-                <div className="absolute top-0 left-[10%] w-[720px] h-[720px] bg-primary/12 dark:bg-primary/8 rounded-full blur-[96px] mix-blend-multiply dark:mix-blend-screen opacity-40" />
-                <div className="absolute bottom-0 right-[10%] w-[640px] h-[640px] bg-teal-500/12 dark:bg-teal-500/8 rounded-full blur-[90px] mix-blend-multiply dark:mix-blend-screen opacity-35" />
+                <div className="ambient-grid absolute inset-0 opacity-30 dark:opacity-60" />
+                <div className="ambient-orb ambient-orb-primary left-[4%] top-[-10%] h-[34rem] w-[34rem] opacity-80" />
+                <div className="ambient-orb ambient-orb-secondary right-[2%] top-[8%] h-[28rem] w-[28rem] opacity-60 [animation-delay:-6s]" />
+                <div className="ambient-orb ambient-orb-warm bottom-[-18%] right-[10%] h-[30rem] w-[30rem] opacity-45 [animation-delay:-12s]" />
+                <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-white/40 to-transparent dark:from-white/[0.04]" />
             </div>
 
             <Sidebar className="fixed left-0 top-0 z-50 hidden h-screen w-64 lg:block" />
-            <div className="w-full min-h-screen transition-all duration-300 relative">
+            <div className="relative min-h-screen w-full">
                 <TopBar />
-                <main className="w-full px-4 md:px-8 pb-8 lg:pl-72 space-y-8 min-h-[calc(100vh-80px)]">
+                <main className="min-h-[calc(100vh-80px)] w-full space-y-8 px-4 pb-10 md:px-8 lg:pl-72">
                     {children}
                 </main>
             </div>

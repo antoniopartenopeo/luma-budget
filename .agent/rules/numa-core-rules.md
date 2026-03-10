@@ -16,6 +16,14 @@ In caso di conflitto tra:
 
 ---
 
+## Superficie Governance Canonica
+
+- `/.agent/rules/*` e `/.agent/skills/*` sono la superficie canonica di governance del progetto.
+- `/.agents/skills/*` e `skills-lock.json` sono asset vendorizzati di riferimento: possono integrare il lavoro, ma non sostituiscono le regole di progetto.
+- In caso di conflitto tra materiale vendorizzato e governance locale, prevale sempre `/.agent/*`.
+
+---
+
 ## Divieti Assoluti (MAI)
 
 | # | Divieto | Motivazione |
@@ -84,5 +92,5 @@ src/
 
 ---
 
-**Versione**: 2.3.0
-**Ultimo aggiornamento**: 2026-02-11
+**Versione**: 2.4.0
+**Ultimo aggiornamento**: 2026-03-09

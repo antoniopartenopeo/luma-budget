@@ -60,7 +60,7 @@ describe("UpdatesPageContent", () => {
         renderWithQueryClient()
 
         await waitFor(() => {
-            expect(screen.getByText("Storico Aggiornamenti")).toBeInTheDocument()
+            expect(screen.getByText("Cronologia novità")).toBeInTheDocument()
             expect(screen.getByText("Release 0.3.0")).toBeInTheDocument()
             expect(screen.getByText("Release 0.2.5")).toBeInTheDocument()
         })

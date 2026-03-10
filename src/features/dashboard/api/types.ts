@@ -31,6 +31,7 @@ export interface DashboardSummary {
     allTimeIncomeCents: number
     allTimeExpensesCents: number
     netBalanceAllTimeCents: number
+    periodNetBalanceCents: number
     totalSpentCents: number
     totalIncomeCents: number
     totalExpensesCents: number
@@ -38,6 +39,7 @@ export interface DashboardSummary {
     allTimeIncome: number
     allTimeExpenses: number
     netBalanceAllTime: number
+    periodNetBalance: number
     totalSpent: number
     totalIncome: number
     totalExpenses: number

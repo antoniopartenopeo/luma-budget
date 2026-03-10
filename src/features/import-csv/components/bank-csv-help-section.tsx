@@ -7,7 +7,7 @@ import { ExpandableCard } from "@/components/patterns/expandable-card"
 
 export function BankCsvHelpSection() {
     return (
-        <div className="w-full mt-2 animate-enter-up">
+        <div className="w-full mt-2">
             <ExpandableCard
                 icon={<HelpCircle className="h-5 w-5 text-primary" />}
                 indicatorColor="bg-primary"

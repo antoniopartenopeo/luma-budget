@@ -5,7 +5,7 @@ type PlanBasis = QuotaScenarioResult["planBasis"]
 export const FINANCIAL_LAB_COPY = {
     page: {
         title: "Financial Lab",
-        description: "Qui vedi la quota fissa aggiuntiva sostenibile. Insights mostra invece il saldo stimato di fine mese.",
+        description: "Qui vedi quale quota mensile aggiuntiva puoi sostenere. In Insights trovi invece il saldo totale stimato del mese.",
         loading: "Sto preparando Financial Lab..."
     },
     scenarioDeck: {
@@ -17,22 +17,22 @@ export const FINANCIAL_LAB_COPY = {
         steps: [
             {
                 stepLabel: "1. Base Storica",
-                title: "Guardo quanto ti resta",
-                description: "Partiamo da entrate e uscite reali per capire il margine medio mensile."
+                title: "Parto da ciò che ti resta",
+                description: "Guardo entrate e uscite reali per capire il margine medio del mese."
             },
             {
                 stepLabel: "2. Correzione Live",
                 title: "Aggiorno il breve periodo",
-                description: "Per i prossimi mesi applichiamo una correzione prudente con i dati piu recenti."
+                description: "Se serve, correggo la base con i segnali più recenti in modo prudente."
             },
             {
                 stepLabel: "3. Quota Sostenibile",
-                title: "Ti dico la rata fissa",
-                description: "Ti mostriamo la quota aggiuntiva che puoi sostenere ogni mese."
+                title: "Ti mostro la quota fissa",
+                description: "Alla fine ottieni la quota aggiuntiva che puoi reggere ogni mese."
             }
         ],
         certificationTitle: "Motore deterministico locale",
-        certificationSubtitle: "Calcolo base stabile con overlay live prudenziale nel breve periodo.",
+        certificationSubtitle: "Calcolo locale basato sullo storico, con correzione prudente sul breve periodo.",
         transparencyNote: "La base storica resta il riferimento: Brain e live correggono solo i prossimi mesi.",
         audit: {
             depthLabel: "Profondita Audit",
@@ -49,11 +49,11 @@ export const FINANCIAL_LAB_COPY = {
     },
     resultsPanel: {
         title: "Come nasce la quota",
-        intro: "Qui vedi, passo per passo, come arriviamo alla tua quota mensile.",
+        intro: "Qui vedi, passo dopo passo, come arriviamo alla tua quota mensile.",
         liveStepLabelBase: "Correzione live",
         updatedMarginLabel: "Margine aggiornato",
         noLiveNarrative: "Nessuna correzione live attiva: usiamo solo la base storica.",
-        liveNarrative: "Aggiorniamo il margine usando i segnali piu recenti, per mantenere la quota prudente."
+        liveNarrative: "Aggiorniamo il margine con i segnali più recenti, così la quota resta prudente."
     },
     planBasis: {
         brain: "Fonte Core",

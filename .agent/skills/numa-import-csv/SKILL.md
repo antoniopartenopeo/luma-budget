@@ -67,6 +67,16 @@ Ordine vincolante:
 
 ---
 
+## Contratto UX del wizard
+
+- `step-upload`: guida al file locale o al dataset demo, con copy concreta su cosa viene letto.
+- `step-review`: revisione esplicita di gruppi merchant, categorie suggerite e duplicati prima del salvataggio.
+- `step-summary`: ultima conferma prima che i movimenti entrino nello storico.
+- Il lessico UI deve restare concreto e operativo (`movimenti`, `duplicati`, `storico`), evitando formule vaghe o troppo tecniche.
+- Motion e CTA devono usare transizioni esplicite sulle proprieta rilevanti; evitare `transition-all`.
+
+---
+
 ## Regole monetarie
 
 - Lavorare in `amountCents` integer signed nel core import.
@@ -128,5 +138,5 @@ Override gerarchici (UI review step):
 
 ---
 
-**Versione**: 1.2.0
-**Ultimo aggiornamento**: 2026-02-11
+**Versione**: 1.3.0
+**Ultimo aggiornamento**: 2026-03-09

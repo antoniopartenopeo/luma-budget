@@ -54,12 +54,12 @@ export function PreferencesSection() {
     return (
         <MacroSection
             title="Preferenze"
-            description="Personalizza aspetto e comportamento dell'applicazione."
+            description="Personalizza l'app e il modo in cui accompagna i tuoi movimenti."
             headerActions={
                 <div className="text-sm font-normal">
                     {saveStatus === "saving" && (
                         <span className="text-muted-foreground flex items-center">
-                            <Loader2 className="h-3 w-3 mr-2 animate-spin-slow" /> Salvataggio...
+                            <Loader2 className="h-3 w-3 mr-2 animate-spin-slow" /> Sto salvando...
                         </span>
                     )}
                     {saveStatus === "success" && (
@@ -90,9 +90,9 @@ export function PreferencesSection() {
                 <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />
                     <AlertTitle>Errore</AlertTitle>
-                    <AlertDescription>
-                        Impossibile caricare le preferenze. Verranno usati i valori predefiniti.
-                    </AlertDescription>
+                        <AlertDescription>
+                        Non riesco a caricare le preferenze. Per ora uso i valori predefiniti.
+                        </AlertDescription>
                 </Alert>
             ) : (
                 <div className="space-y-8">
@@ -139,8 +139,8 @@ export function PreferencesSection() {
                                         className="pl-9"
                                     />
                                 </div>
-                                <p className="text-[10px] text-muted-foreground">
-                                    L&apos;avatar in topbar mostrerà le iniziali Nome + Cognome.
+                                <p className="text-xs font-medium text-muted-foreground">
+                                    In alto vedrai le iniziali del nome e del cognome.
                                 </p>
                             </div>
 
@@ -217,8 +217,8 @@ export function PreferencesSection() {
                                     />
                                     <span className="text-sm text-muted-foreground font-medium">%</span>
                                 </div>
-                                <p className="text-[10px] text-muted-foreground">
-                                    Soglia massima consigliata per gli acquisti non essenziali.
+                                <p className="text-xs font-medium text-muted-foreground">
+                                    La soglia consigliata per tenere sotto controllo le spese non essenziali.
                                 </p>
                             </div>
 
@@ -241,12 +241,12 @@ export function PreferencesSection() {
                                         <SelectItem value="high">Alta (Più avvisi)</SelectItem>
                                     </SelectContent>
                                 </Select>
-                                <p className="text-[10px] text-muted-foreground">
+                                <p className="text-xs font-medium text-muted-foreground">
                                     {settings?.insightsSensitivity === "low"
-                                        ? "Mostra solo cambiamenti grandi."
+                                        ? "Mostra solo cambiamenti molto evidenti."
                                         : settings?.insightsSensitivity === "high"
-                                            ? "Più avvisi, anche per cambiamenti piccoli."
-                                            : "Livello bilanciato consigliato."}
+                                            ? "Ti avvisa anche quando i cambiamenti sono piccoli."
+                                            : "Livello bilanciato per l'uso quotidiano."}
                                 </p>
                             </div>
                         </div>

@@ -81,7 +81,7 @@ export function TransactionsFilterBar({
                                 periodValue !== "all" ? "text-primary font-bold" : "text-muted-foreground"
                             )}>
                                 <div className="flex items-center gap-2 flex-1 min-w-0">
-                                    <div className="truncate text-left uppercase tracking-wide">
+                                    <div className="truncate text-left">
                                         <SelectValue placeholder="Periodo" />
                                     </div>
                                 </div>
@@ -106,7 +106,7 @@ export function TransactionsFilterBar({
                                 typeValue !== "all" ? "text-primary font-bold" : "text-muted-foreground"
                             )}>
                                 <div className="flex items-center gap-2 flex-1 min-w-0">
-                                    <div className="truncate text-left uppercase tracking-wide">
+                                    <div className="truncate text-left">
                                         <SelectValue placeholder="Tipo" />
                                     </div>
                                 </div>
@@ -129,7 +129,7 @@ export function TransactionsFilterBar({
                                 categoryValue !== "all" ? "text-primary font-bold" : "text-muted-foreground"
                             )}>
                                 <div className="flex items-center gap-2 flex-1 min-w-0">
-                                    <div className="truncate text-left uppercase tracking-wide">
+                                    <div className="truncate text-left">
                                         <SelectValue placeholder="Categoria" />
                                     </div>
                                 </div>
@@ -138,7 +138,7 @@ export function TransactionsFilterBar({
                                 <SelectItem value="all">Tutte le categorie</SelectItem>
                                 {allGroupedCategories.map((group) => (
                                     <div key={group.key}>
-                                        <div className="px-2 py-1.5 text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest mt-2">
+                                        <div className="mt-2 px-2 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground/70">
                                             {group.label}
                                         </div>
                                         {group.categories.map((category) => (
@@ -174,7 +174,7 @@ export function TransactionsFilterBar({
             {periodValue === "custom" && (
                 <div className="flex items-center gap-3 p-3 bg-muted/5 border border-muted-foreground/10 rounded-xl animate-enter-up">
                     <div className="flex flex-col gap-1.5 flex-1">
-                        <label className="text-[10px] uppercase font-bold text-muted-foreground/60 px-1">Dal</label>
+                        <label className="px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground/70">Dal</label>
                         <DatePicker
                             value={dateRange.from ? new Date(dateRange.from) : undefined}
                             onChange={(d) => onDateRangeChange({ ...dateRange, from: d ? formatDateLocalISO(d) : undefined })}
@@ -183,7 +183,7 @@ export function TransactionsFilterBar({
                         />
                     </div>
                     <div className="flex flex-col gap-1.5 flex-1">
-                        <label className="text-[10px] uppercase font-bold text-muted-foreground/60 px-1">Al</label>
+                        <label className="px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground/70">Al</label>
                         <DatePicker
                             value={dateRange.to ? new Date(dateRange.to) : undefined}
                             onChange={(d) => onDateRangeChange({ ...dateRange, to: d ? formatDateLocalISO(d) : undefined })}

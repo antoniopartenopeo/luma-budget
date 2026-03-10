@@ -61,7 +61,7 @@ export function MerchantGroupCard({
         <AccordionItem
             value={group.id}
             className={cn(
-                "group/merchant relative overflow-hidden rounded-2xl border border-border/70 bg-card/70 shadow-sm transition-all",
+                "group/merchant relative overflow-hidden rounded-2xl border border-border/70 bg-card/70 shadow-sm transition-[background-color,border-color,box-shadow] duration-200",
                 "data-[state=open]:border-primary/35 data-[state=open]:bg-card/85 data-[state=open]:shadow-md",
                 isHighImpact && "border-primary/35"
             )}

@@ -116,8 +116,8 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
             <form
                 onSubmit={handleSubmit}
                 className={cn(
-                    "flex flex-col sm:flex-row items-stretch sm:items-center gap-2 rounded-2xl h-auto sm:h-12 p-2 sm:p-1 transition-all glass-card",
-                    isFocused && "ring-2 ring-primary/20 bg-background/60 dark:bg-black/40 shadow-lg",
+                    "glass-card flex h-auto flex-col items-stretch gap-2 rounded-[1.4rem] p-2 sm:h-12 sm:flex-row sm:items-center sm:p-1",
+                    isFocused && "bg-background/60 ring-2 ring-primary/20 shadow-lg dark:bg-black/40",
                     hasError && "border-destructive/50 shadow-destructive/10"
                 )}
                 onFocus={() => setIsFocused(true)}
@@ -131,12 +131,12 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                 {/* Mobile: Row 1 (Type + Description) | Desktop: Horizontal flow */}
                 <div className="flex items-center gap-1 flex-1">
                     {/* Type Toggle */}
-                    <div className="flex bg-muted/50 rounded-full p-0.5 shrink-0">
+                    <div className="shrink-0 rounded-full border border-white/35 bg-white/55 p-0.5 shadow-sm dark:border-white/10 dark:bg-white/[0.05]">
                         <button
                             type="button"
                             onClick={() => handleTypeChange("expense")}
                             className={cn(
-                                "p-1.5 rounded-full transition-all",
+                                "rounded-full p-1.5 transition-[background-color,color,box-shadow,transform] duration-200",
                                 type === "expense" ? "bg-background text-red-500 shadow-sm" : "text-muted-foreground hover:text-foreground"
                             )}
                             title="Uscita"
@@ -148,7 +148,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                             type="button"
                             onClick={() => handleTypeChange("income")}
                             className={cn(
-                                "p-1.5 rounded-full transition-all",
+                                "rounded-full p-1.5 transition-[background-color,color,box-shadow,transform] duration-200",
                                 type === "income" ? "bg-background text-green-500 shadow-sm" : "text-muted-foreground hover:text-foreground"
                             )}
                             title="Entrata"
@@ -252,7 +252,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                         type="submit"
                         disabled={isPending}
                         className={cn(
-                            "h-8 md:h-9 rounded-full px-3 md:px-4 transition-all ml-auto sm:ml-1 shrink-0 bg-primary text-primary-foreground",
+                            "ml-auto h-8 shrink-0 rounded-full bg-primary px-3 text-primary-foreground md:h-9 md:px-4 sm:ml-1",
                             isSuccess && "bg-emerald-600 hover:bg-emerald-700 text-white"
                         )}
                     >
@@ -299,4 +299,3 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
         </div>
     )
 }
-

@@ -3,7 +3,7 @@
 scope: governance-audit-process
 owner: governance
 status: active
-last-verified: 2026-02-26
+last-verified: 2026-03-10
 canonical-of: audit-process
 
 Stato: attivo (guardrail non negoziabili)
@@ -36,6 +36,7 @@ Questo pacchetto rende operativo l'audit tecnico senza cambiare la logica di pro
 - Soglie baseline anti-regressione: `docs/operations/governance-enforcement-thresholds.env`
 - Hook locale: `.githooks/pre-push` (attivabile con `bash scripts/setup.sh`)
 - CI: workflow `.github/workflows/doe-verify.yml` (push + pull_request)
+- Artifact CI: `docs/reports/generated-governance-quick-check.md` + `docs/reports/generated-governance-quick-check-summary.env`
 - Coerenza release/changelog notifiche: `npm run release:validate`
 
 ## Regola di intervento

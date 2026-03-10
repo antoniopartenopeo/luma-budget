@@ -7,14 +7,14 @@ Local-first persistence, deterministic narration, and rhythm-based planning.
 
 | Module | Status | Description |
 |---|---|---|
-| Dashboard | Stable | KPI finanziari, composizione spese, movimenti recenti, ritmo attivo, filtri periodo a pill (`Mese/3M/6M/12M`) |
-| Transactions | Stable | CRUD, filtri periodo/range, export CSV, quick add da TopBar |
-| Import CSV | Stable | Wizard multi-step con parse/normalize/dedupe/enrich/grouping merchant + review guidata con preset soglia |
+| Dashboard | Stable | KPI finanziari, composizione spese interattiva, movimenti recenti collegati all'elenco completo, filtri periodo persistenti in URL (`Mese/3M/6M/12M`) |
+| Transactions | Stable | Ledger responsive a row card/table, filtri periodo/range, export CSV, quick add da TopBar |
+| Import CSV | Stable | Wizard multi-step con parse/normalize/dedupe/enrich/grouping merchant + review guidata di gruppi, categorie e duplicati prima del salvataggio |
 | Insights | Stable | Trend analysis + AI Advisor (`Core`/`Storico`) + portfolio abbonamenti e timeline prossimi addebiti |
 | Financial Lab (`/simulator`) | Stable | Scenari baseline/balanced/aggressive in card espandibili con breakdown step-by-step della quota sostenibile |
 | Neural Core (`/brain`) | Active | Training locale del modello, nowcast mese corrente, timeline maturità |
-| Settings | Stable | Preferenze, categorie, backup/restore, diagnostica tecnica |
-| Notifications + Updates | Stable | Feed aggiornamenti in-app da `CHANGELOG.md`, badge unread, pagina `/updates` |
+| Settings | Stable | Preferenze, categorie, backup/restore locale con validazione sezioni riconosciute, diagnostica locale e azioni avanzate di reset |
+| Notifications + Updates | Stable | Feed novità in-app da `CHANGELOG.md`, badge unread, campanella TopBar e pagina `/updates` |
 | Privacy + Flash | Stable | Privacy mode globale e overlay snapshot rapido |
 
 ## Architecture
@@ -26,7 +26,7 @@ src/
 ├── brain/                # Local neural core (dataset, training, prediction)
 ├── domain/               # Pure domain logic (money, transactions, narration, categories)
 ├── features/             # Feature modules (dashboard, insights, import-csv, ...)
-├── VAULT/                # Isolated high-value logic (goals, budget)
+├── VAULT/                # Isolated high-value logic (goals + legacy compatibility boundaries)
 └── lib/                  # Shared utilities (storage keys, date ranges, runtime metadata)
 ```
 
@@ -38,18 +38,20 @@ src/
 - `/settings`
 - `/updates`
 - `/brain`
+- `/offline`
 
 ### Data flow
 - Repository layer -> `localStorage` persistence
 - React Query -> cache + invalidation
+- Dashboard filters -> URL/search params -> deep-link coerenti verso `/transactions`
 - Cross-tab sync -> `storage` listeners on registered keys
 - `CHANGELOG.md` -> `/api/notifications/changelog` -> feed notifiche in TopBar e `/updates`
+- Open banking routes -> present in codebase but disabled by default unless `NUMA_ENABLE_OPEN_BANKING=true`
 - Narration layer -> deterministic copy from domain facts/state
 
 ### Persistence keys
-`src/lib/storage-keys.ts` is the registry source of truth for app-level keys:
+Active registry keys from `src/lib/storage-keys.ts`:
 - `luma_transactions_v1`
-- `luma_budget_plans_v1`
 - `luma_categories_v1`
 - `luma_settings_v1`
 - `numa_goal_portfolio_v1`
@@ -59,12 +61,17 @@ src/
 - `numa-privacy-storage`
 - `numa_brain_adaptive_policy_v1`
 
+Legacy compatibility key kept for backup/reset and one-shot migrations:
+- `luma_budget_plans_v1`
+
 Neural core storage is managed separately in `src/brain/storage.ts`:
 - `numa_neural_core_v1`
 
 ## Governance
 
 - Canonical runtime constraints: `/.agent/rules/numa-core-rules.md`
+- Canonical project skills/rules: `/.agent/*`
+- Vendored reference skills pinned in repo: `/.agents/skills/*` + `skills-lock.json`
 - Canonical documentation hub: `/docs/README.md`
 - Governance update workflow: `$numa-governance-update`
 
@@ -82,6 +89,10 @@ npm run validate
 npm run governance:quick-check
 npm run release:validate
 ```
+
+Backup note:
+- exported backups are cleartext JSON files and should be treated as sensitive financial data
+- restore imports only recognized backup sections and rejects malformed payloads
 
 ## PWA installability
 

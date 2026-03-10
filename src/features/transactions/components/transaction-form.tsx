@@ -125,7 +125,7 @@ export function TransactionForm({
                     type="button"
                     onClick={() => handleTypeChange("expense")}
                     className={cn(
-                        "flex items-center justify-center gap-2 py-2.5 text-sm font-bold rounded-lg transition-all duration-300",
+                        "flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-bold transition-[background-color,color,box-shadow,transform] duration-300",
                         type === "expense"
                             ? "bg-white dark:bg-white/10 text-destructive shadow-md scale-[1.02]"
                             : "text-muted-foreground hover:bg-white/10 hover:text-foreground"
@@ -138,7 +138,7 @@ export function TransactionForm({
                     type="button"
                     onClick={() => handleTypeChange("income")}
                     className={cn(
-                        "flex items-center justify-center gap-2 py-2.5 text-sm font-bold rounded-lg transition-all duration-300",
+                        "flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-bold transition-[background-color,color,box-shadow,transform] duration-300",
                         type === "income"
                             ? "bg-white dark:bg-white/10 text-emerald-600 shadow-md scale-[1.02]"
                             : "text-muted-foreground hover:bg-white/10 hover:text-foreground"
@@ -150,7 +150,7 @@ export function TransactionForm({
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="description" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground pl-1">Descrizione</Label>
+                <Label htmlFor="description" className="pl-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Descrizione</Label>
                 <Input
                     id="description"
                     placeholder="es. Spesa settimanale"
@@ -162,7 +162,7 @@ export function TransactionForm({
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="amount" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground pl-1">Importo</Label>
+                <Label htmlFor="amount" className="pl-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Importo</Label>
                 <div className="relative">
                     <span className="absolute left-3 top-2.5 text-muted-foreground font-medium">€</span>
                     <Input
@@ -181,7 +181,7 @@ export function TransactionForm({
             </div>
 
             <div className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground pl-1">Data</Label>
+                <Label className="pl-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Data</Label>
                 <div className="h-11">
                     <DatePicker
                         value={date}
@@ -192,7 +192,7 @@ export function TransactionForm({
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="category" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground pl-1">Categoria</Label>
+                <Label htmlFor="category" className="pl-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Categoria</Label>
                 <CategoryPicker
                     value={categoryId}
                     onChange={handleCategoryChange}

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { createRequisition, GoCardlessConfigError } from "@/features/import-csv/open-banking/gocardless"
+import { createOpenBankingDisabledResponse, isOpenBankingEnabled } from "../guard"
 
 export const runtime = "nodejs"
 
@@ -19,6 +20,10 @@ function buildDefaultRedirect(request: Request): string {
 }
 
 export async function POST(request: Request) {
+    if (!isOpenBankingEnabled()) {
+        return createOpenBankingDisabledResponse()
+    }
+
     try {
         const body = (await request.json()) as SessionBody
         const institutionId = body.institutionId?.trim()

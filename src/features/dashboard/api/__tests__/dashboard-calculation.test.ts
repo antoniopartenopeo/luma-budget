@@ -74,6 +74,7 @@ describe('Dashboard Calculation Regression Test', () => {
         expect(summary.totalIncome).toBe(10)
         // Spent: 5.00 (Should include End Boundary, Exclude OutOfRange)
         expect(summary.totalSpent).toBe(5)
+        expect(summary.periodNetBalance).toBe(5)
 
         // Net Balance is GLOBAL (All Time).
         // 10 (Inc) - 5 (Exp) - 99.99 (Exp Feb 1) = -94.99
@@ -98,6 +99,7 @@ describe('Dashboard Calculation Regression Test', () => {
 
         // Should be +20.00 spent
         expect(summary.totalSpent).toBe(20)
+        expect(summary.periodNetBalance).toBe(-20)
         expect(summary.netBalance).toBe(-20)
     })
 })

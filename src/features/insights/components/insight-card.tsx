@@ -167,11 +167,14 @@ export function InsightCard({ insight }: InsightCardProps) {
                                     const impactWidthClass = resolveImpactBarWidthClass(impactPct)
 
                                     return (
-                                        <div key={driver.id} className="group/driver relative overflow-hidden p-3 rounded-2xl glass-card border-white/10 hover:bg-white/60 dark:hover:bg-white/10 transition-all duration-300">
+                                        <div
+                                            key={driver.id}
+                                            className="group/driver relative overflow-hidden p-3 rounded-2xl glass-card border-white/10 transition-[background-color,border-color,box-shadow] duration-300 hover:bg-white/60 dark:hover:bg-white/10"
+                                        >
                                             {/* Impact Bar Background */}
                                             <div
                                                 className={cn(
-                                                    "absolute left-0 top-0 bottom-0 opacity-[0.08] transition-all duration-1000 ease-out",
+                                                    "absolute left-0 top-0 bottom-0 opacity-[0.08] transition-[opacity,transform] duration-1000 ease-out",
                                                     impactWidthClass,
                                                     insight.severity === 'high' ? "bg-rose-500" : insight.severity === 'medium' ? "bg-amber-500" : "bg-primary"
                                                 )}

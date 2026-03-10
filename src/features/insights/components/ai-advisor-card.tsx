@@ -37,15 +37,15 @@ export function NumaAdvisorHowItWorksCard({ forecast, facts, className }: NumaAd
                     bgClass: "bg-primary/10",
                     stepLabel: "1. Base + residuo",
                     title: "Formula chiara",
-                    description: "Partiamo dal saldo base totale e sottraiamo la spesa residua stimata fino a fine mese."
+                    description: "Partiamo dal saldo totale di base e togliamo la spesa ancora attesa fino a fine mese."
                 },
                 {
                     icon: Search,
                     colorClass: "text-emerald-500",
                     bgClass: "bg-emerald-500/10",
                     stepLabel: "2. Fonte stima",
-                    title: "Core quando pronto",
-                    description: "Se il Core è pronto usiamo il nowcast reale; altrimenti usiamo una stima storica prudente."
+                    title: "Da dove arriva la stima",
+                    description: "Se il Core è pronto usiamo il nowcast del mese corrente, altrimenti una stima storica prudente."
                 },
                 {
                     icon: Lock,
@@ -53,32 +53,32 @@ export function NumaAdvisorHowItWorksCard({ forecast, facts, className }: NumaAd
                     bgClass: "bg-slate-500/10",
                     stepLabel: "3. Segnali utili",
                     title: "Abbonamenti e rincari",
-                    description: "Evidenziamo ricorrenze e possibili aumenti prezzo per aiutarti ad agire in anticipo."
+                    description: "Mettiamo in evidenza ricorrenze e possibili aumenti di prezzo per aiutarti a decidere in anticipo."
                 }
             ]}
-            transparencyNote="I tuoi dati finanziari vengono analizzati solo sul dispositivo. Nessuna informazione personale viene inviata al cloud per questa funzione."
+            transparencyNote="Questa lettura avviene solo sul tuo dispositivo. Nessun dato personale viene inviato al cloud per questa funzione."
             auditStats={[
                 {
                     label: "Formula",
                     value: "Saldo base - residuo",
-                    subValue: "Metrica principale della card."
+                    subValue: "La metrica principale di questa sezione."
                 },
                 {
                     label: "Fonte attiva",
                     value: forecast?.primarySource === "brain" ? "Core" : "Storico",
                     subValue: forecast?.primarySource === "brain"
-                        ? "Nowcast del Core sul mese corrente."
-                        : "Residuo storico (con backup run-rate)."
+                        ? "Stima del Core sul mese corrente."
+                        : "Stima storica con protezione prudente."
                 },
                 {
                     label: "Esecuzione",
                     value: "Locale",
-                    subValue: "Calcolo fatto in locale, senza API esterne."
+                    subValue: "Calcolo locale, senza servizi esterni."
                 },
                 ...(facts ? [{
                     label: "Mesi storici",
                     value: `${facts.historicalMonthsCount} Mesi`,
-                    subValue: "Storico usato per la stima attuale."
+                    subValue: "Mesi osservati per costruire la stima."
                 }] : [])
             ]}
         />
@@ -173,7 +173,7 @@ function AIAdvisorCardView({ forecast, subscriptions, isLoading: aiLoading }: AI
                         </div>
                     </div>
                     <p className="text-sm font-medium leading-relaxed text-muted-foreground animate-pulse-soft">
-                        Sto preparando la stima...
+                        Sto leggendo i dati più recenti...
                     </p>
                 </div>
             </MacroSection>
@@ -189,7 +189,7 @@ function AIAdvisorCardView({ forecast, subscriptions, isLoading: aiLoading }: AI
                     </div>
                     <div>
                         <h3 className="font-semibold text-lg">Dati ancora insufficienti</h3>
-                        <p className="max-w-[300px] text-sm font-medium leading-relaxed text-muted-foreground">Servono più movimenti per stimare in modo affidabile il saldo totale del mese.</p>
+                        <p className="max-w-[300px] text-sm font-medium leading-relaxed text-muted-foreground">Servono ancora più movimenti per stimare con affidabilità il saldo totale del mese.</p>
                     </div>
                 </div>
             </MacroSection>
@@ -201,7 +201,7 @@ function AIAdvisorCardView({ forecast, subscriptions, isLoading: aiLoading }: AI
             variant="premium"
             status={advisorStatus}
             title="Numa Advisor"
-            description="Sintesi semplice dei tuoi dati recenti"
+            description="Una sintesi leggibile del mese in corso"
         >
             <motion.div
                 variants={containerVariants}

@@ -10,9 +10,6 @@ import { buildCardsUsed } from "../utils/cards-used"
 import { sumExpensesInCents, sumIncomeInCents } from "@/domain/money"
 
 export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promise<DashboardSummary> => {
-    // Simulate network delay
-
-
     // 1. Determine date range for filtered metrics
     const { startDate, endDate } = calculateDateRangeLocal(
         filter.period,
@@ -38,6 +35,7 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
     // 5. Calculate Metrics based on range
     const totalExpensesCents = sumExpensesInCents(rangeTransactions)
     const totalIncomeCents = sumIncomeInCents(rangeTransactions)
+    const periodNetBalanceCents = totalIncomeCents - totalExpensesCents
 
     const totalSpentCents = totalExpensesCents
     const totalIncomeCentsSafe = totalIncomeCents
@@ -115,6 +113,7 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
         allTimeIncomeCents,
         allTimeExpensesCents,
         netBalanceAllTimeCents: netBalanceCents,
+        periodNetBalanceCents,
         totalSpentCents,
         totalIncomeCents: totalIncomeCentsSafe,
         totalExpensesCents: totalSpentCents,
@@ -123,6 +122,7 @@ export const fetchDashboardSummary = async (filter: DashboardTimeFilter): Promis
         allTimeIncome: allTimeIncomeCents / 100,
         allTimeExpenses: allTimeExpensesCents / 100,
         netBalanceAllTime: netBalanceCents / 100,
+        periodNetBalance: periodNetBalanceCents / 100,
         totalSpent: totalSpentCents / 100,
         totalIncome: totalIncomeCentsSafe / 100,
         totalExpenses: totalSpentCents / 100,

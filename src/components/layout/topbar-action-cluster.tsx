@@ -90,7 +90,7 @@ function getAvatarInitials(profile?: { firstName?: string; lastName?: string; di
 }
 
 const segmentButtonClass =
-    "group relative h-10 w-10 rounded-full border border-primary/15 bg-transparent text-muted-foreground transition-all duration-300 hover:bg-primary/10 hover:text-primary hover:-translate-y-[1px] hover:shadow-md active:bg-primary/15 active:text-primary active:scale-[0.98] motion-reduce:transform-none focus-visible:ring-2 focus-visible:ring-primary/25"
+    "group relative h-10 w-10 rounded-full border border-primary/15 bg-transparent text-muted-foreground transition-[background-color,color,border-color,box-shadow,transform] duration-300 hover:bg-primary/10 hover:text-primary hover:-translate-y-[1px] hover:shadow-md active:bg-primary/15 active:text-primary active:scale-[0.98] motion-reduce:transform-none focus-visible:ring-2 focus-visible:ring-primary/25"
 
 const themeCapsuleSurfaceClass =
     "bg-white/45 dark:bg-white/[0.07] backdrop-blur-xl"
@@ -203,7 +203,7 @@ export function TopbarActionCluster() {
     return (
         <div
             data-testid="topbar-action-cluster"
-            className="group relative overflow-visible rounded-full p-1 glass-card bg-white/45 dark:bg-white/[0.07] border-white/50 dark:border-white/15 transition-all duration-300 hover:shadow-lg motion-reduce:transform-none"
+            className="group relative overflow-visible rounded-full border-white/50 p-1 glass-card bg-white/45 hover:shadow-lg motion-reduce:transform-none dark:border-white/15 dark:bg-white/[0.07]"
         >
             <div className="absolute inset-0 bg-gradient-to-br from-white/35 dark:from-white/[0.08] via-transparent to-transparent pointer-events-none" />
 
@@ -244,7 +244,7 @@ export function TopbarActionCluster() {
                         )}
                     </Button>
 
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-primary text-[10px] font-black border border-primary/20 transition-all duration-300 group-hover:scale-[1.02] group-active:scale-[1.02] motion-reduce:transform-none">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full border border-primary/20 bg-primary/15 text-[10px] font-black text-primary transition-transform duration-300 group-hover:scale-[1.02] group-active:scale-[1.02] motion-reduce:transform-none">
                         {initials}
                     </div>
                 </div>

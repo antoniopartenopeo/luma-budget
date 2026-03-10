@@ -37,7 +37,7 @@ export function WizardShell({
     className
 }: WizardShellProps) {
     return (
-        <div className="flex min-h-[70vh] flex-col animate-enter-up">
+        <div className="flex min-h-[70vh] flex-col">
             <div className="shrink-0 border-b border-border/60">
                 <div className="px-4 py-4 sm:px-6 sm:py-5">
                     <div className="flex flex-wrap items-start justify-between gap-3">

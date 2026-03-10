@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
  * Applies a blur filter, reduces opacity, and prevents text selection.
  * Includes a smooth transition.
  */
-export const PRIVACY_BLUR_CLASS = "blur-md select-none opacity-50 transition-all duration-300"
+export const PRIVACY_BLUR_CLASS = "blur-md select-none opacity-50 transition-[filter,opacity] duration-300"
 
 /**
  * Helper to conditionally apply the privacy blur.
@@ -13,5 +13,5 @@ export const PRIVACY_BLUR_CLASS = "blur-md select-none opacity-50 transition-all
  * @param className - Optional additional classes
  */
 export function getPrivacyClass(isPrivate: boolean, className?: string) {
-    return cn(isPrivate ? PRIVACY_BLUR_CLASS : "transition-all duration-300", className)
+    return cn(isPrivate ? PRIVACY_BLUR_CLASS : "transition-[filter,opacity] duration-300", className)
 }

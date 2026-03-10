@@ -1,14 +1,23 @@
 "use client"
 
 import * as React from "react"
-import { cn } from "@/lib/utils"
-import { LucideIcon, ChevronDown, ChevronUp, ShieldCheck, Sparkles } from "lucide-react"
+import { motion, useReducedMotion, useTransform } from "framer-motion"
+import { ChevronDown, ChevronUp, ShieldCheck, Sparkles, type LucideIcon } from "lucide-react"
+import { InteractiveCardGhostIcon } from "@/components/patterns/interactive-card-ghost-icon"
+import {
+    INTERACTIVE_CARD_HOVER_STATE,
+    INTERACTIVE_CARD_TRANSITION,
+    resolveInteractiveSurfaceStyle,
+    useInteractiveTilt,
+    withAlpha
+} from "@/components/patterns/interactive-surface"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 export interface EngineStep {
     icon: LucideIcon
-    colorClass: string // e.g. "text-primary", "text-amber-500"
-    bgClass: string // e.g. "bg-primary/10"
+    colorClass: string
+    bgClass: string
     stepLabel: string
     title: string
     description: string
@@ -32,18 +41,17 @@ interface NumaEngineCardProps {
 }
 
 const NUMA_ENGINE_UNIVERSAL_TITLE = "Come Funziona Numa"
-const NUMA_ENGINE_AUDIT_OPEN_LABEL = "Apri dettagli tecnici"
+const NUMA_ENGINE_AUDIT_OPEN_LABEL = "Apri dettagli"
 const NUMA_ENGINE_AUDIT_CLOSE_LABEL = "Chiudi dettagli"
+const ENGINE_ACCENT_COLOR = "#0ea5a8"
 
-/**
- * NumaEngineCard
- * ==============
- * The canonical representation of the "Numa Method" or "Numa AI Engine".
- * Features:
- * 1. Glass Panel Styling
- * 2. 3-Step Visual Process (Always Visible)
- * 3. Expandable "Audit" Section (Footer) with strict Grid Layout
- */
+function resolveEngineStepColor(colorClass: string): string {
+    if (colorClass.includes("emerald")) return "#10b981"
+    if (colorClass.includes("amber")) return "#f59e0b"
+    if (colorClass.includes("slate")) return "#64748b"
+    return ENGINE_ACCENT_COLOR
+}
+
 export function NumaEngineCard({
     icon: BackgroundIcon,
     steps,
@@ -54,71 +62,151 @@ export function NumaEngineCard({
     className
 }: NumaEngineCardProps) {
     const [isExpanded, setIsExpanded] = React.useState(false)
-
-    // Helper to render stats
-    const hasAudit = auditStats && auditStats.length > 0
+    const [activeStep, setActiveStep] = React.useState(0)
+    const prefersReducedMotion = useReducedMotion()
+    const hasAudit = Boolean(auditStats && auditStats.length > 0)
+    const {
+        depthX,
+        depthY,
+        isInteractive,
+        isPrimed,
+        handlePointerEnter,
+        handlePointerMove,
+        handlePointerLeave
+    } = useInteractiveTilt({
+        pointerSpring: { damping: 24, stiffness: 230, mass: 0.5 },
+        depthSpring: { damping: 30, stiffness: 270, mass: 0.42 }
+    })
+    const rotateX = useTransform(depthY, [-0.5, 0.5], [4.6, -4.6])
+    const rotateY = useTransform(depthX, [-0.5, 0.5], [-5.8, 5.8])
+    const contentShiftX = useTransform(depthX, [-0.5, 0.5], [-3, 3])
+    const contentShiftY = useTransform(depthY, [-0.5, 0.5], [-2, 2])
 
     return (
-        <div className={cn(
-            "relative overflow-hidden glass-panel backdrop-blur-2xl rounded-[2.5rem] p-8 sm:p-10",
-            className
-        )}>
-            {/* Background Decor */}
-            <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
-                <BackgroundIcon className="h-32 w-32 text-primary" />
-            </div>
+        <motion.div
+            className={cn(
+                "group/engine relative overflow-hidden rounded-[2.5rem] surface-strong p-6 [transform-style:preserve-3d] transition-[transform,border-color,box-shadow,background-color] duration-300 sm:p-7",
+                className
+            )}
+            onMouseEnter={handlePointerEnter}
+            onMouseMove={handlePointerMove}
+            onMouseLeave={handlePointerLeave}
+            whileHover={isInteractive ? INTERACTIVE_CARD_HOVER_STATE : undefined}
+            transition={INTERACTIVE_CARD_TRANSITION}
+            style={isInteractive ? { rotateX, rotateY } : undefined}
+        >
+            <InteractiveCardGhostIcon
+                icon={BackgroundIcon}
+                isActive={isPrimed}
+                floatDelay={0.06}
+                className="right-2 top-0 inset-y-auto"
+                wrapperClassName="h-28 w-28 sm:h-32 sm:w-32"
+                iconClassName="h-20 w-20 opacity-70 sm:h-24 sm:w-24"
+                tintStyle={{ color: withAlpha(ENGINE_ACCENT_COLOR, isPrimed ? 0.24 : 0.16) }}
+                visibility="always"
+            />
 
-            {/* Header */}
-            <div className="relative z-10">
-                <div className="mb-8 flex items-center gap-2">
+            <motion.div
+                className="relative z-10"
+                style={isInteractive ? { x: contentShiftX, y: contentShiftY } : undefined}
+            >
+                <div className="mb-5 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
-                        <div className="h-1 w-8 bg-primary rounded-full" />
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-foreground/80">{NUMA_ENGINE_UNIVERSAL_TITLE}</h4>
+                        <div className="h-1 w-8 rounded-full bg-primary" />
+                        <h4 className="text-xs font-black uppercase tracking-[0.18em] text-foreground/80">
+                            {NUMA_ENGINE_UNIVERSAL_TITLE}
+                        </h4>
                     </div>
+                    <span className="rounded-full border border-white/40 bg-white/44 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-foreground/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.24)] dark:border-white/12 dark:bg-white/[0.05]">
+                        Motore di lettura
+                    </span>
                 </div>
 
-                {/* 3 Visual Steps */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 relative">
-                    {steps.map((step, idx) => (
-                        <React.Fragment key={idx}>
-                            <div className="space-y-3 relative group">
-                                <div className={cn(
-                                    "h-10 w-10 rounded-xl flex items-center justify-center mb-4 transition-colors duration-200",
-                                    step.bgClass,
-                                    step.colorClass
-                                )}>
-                                    <step.icon className="h-5 w-5" />
+                <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-3 sm:gap-4">
+                    {steps.map((step, idx) => {
+                        const isActive = activeStep === idx
+                        const StepIcon = step.icon
+                        const stepColor = resolveEngineStepColor(step.colorClass)
+                        const stepSurfaceStyle = resolveInteractiveSurfaceStyle(
+                            stepColor,
+                            isActive ? "active" : "rest",
+                            "neutral"
+                        )
+
+                        return (
+                            <motion.article
+                                key={idx}
+                                className="group/step relative overflow-hidden rounded-xl border glass-card p-4 [transform-style:preserve-3d] transition-[transform,border-color,box-shadow,background-color] duration-300"
+                                style={{
+                                    borderColor: stepSurfaceStyle.borderColor,
+                                    backgroundColor: stepSurfaceStyle.backgroundColor,
+                                    boxShadow: stepSurfaceStyle.boxShadow
+                                }}
+                                whileHover={prefersReducedMotion ? undefined : { y: -2, scale: 1.01 }}
+                                transition={INTERACTIVE_CARD_TRANSITION}
+                                onMouseEnter={() => setActiveStep(idx)}
+                                onFocusCapture={() => setActiveStep(idx)}
+                            >
+                                <div className="pointer-events-none absolute inset-0 opacity-[0.92]" style={{ backgroundImage: stepSurfaceStyle.backgroundImage }} />
+                                <div className="pointer-events-none absolute inset-[1px] rounded-[calc(theme(borderRadius.xl)-1px)] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02)_34%,transparent_62%)] opacity-80" />
+
+                                {idx < steps.length - 1 ? (
+                                    <div className="pointer-events-none absolute right-[-1.4rem] top-8 hidden h-px w-6 sm:block">
+                                        <div className="h-px w-full bg-border/55" />
+                                    </div>
+                                ) : null}
+
+                                <InteractiveCardGhostIcon
+                                    icon={StepIcon}
+                                    isActive={isActive}
+                                    enableFloat={false}
+                                    floatDelay={idx * 0.08}
+                                    className="bottom-[-0.2rem] right-1 inset-y-auto"
+                                    wrapperClassName="h-24 w-24"
+                                    iconClassName="h-16 w-16 opacity-75"
+                                    tintStyle={{ color: withAlpha(stepColor, isActive ? 0.22 : 0.16) }}
+                                />
+
+                                <div className="relative z-10">
+                                    <div
+                                        className={cn(
+                                            "mb-3 flex h-10 w-10 items-center justify-center rounded-[1.1rem] border transition-[background-color,color,transform,border-color] duration-200",
+                                            step.bgClass,
+                                            step.colorClass,
+                                            isActive && "scale-[1.04] border-current/10"
+                                        )}
+                                    >
+                                        <StepIcon className="h-4 w-4" />
+                                    </div>
+                                    <p className={cn("text-[11px] font-black uppercase tracking-[0.16em] opacity-80", step.colorClass)}>
+                                        {step.stepLabel}
+                                    </p>
+                                    <p className="text-sm font-black leading-tight text-foreground">
+                                        {step.title}
+                                    </p>
+                                    <p className="text-xs font-medium leading-relaxed text-muted-foreground/90">
+                                        {step.description}
+                                    </p>
                                 </div>
-                                <p className={cn("text-xs font-black uppercase tracking-wide opacity-80", step.colorClass)}>
-                                    {step.stepLabel}
-                                </p>
-                                <p className="text-sm font-bold text-foreground leading-tight">
-                                    {step.title}
-                                </p>
-                                <p className="text-xs text-muted-foreground/90 leading-relaxed font-medium">
-                                    {step.description}
-                                </p>
-                            </div>
-
-                            {/* Arrow for Desktop (between steps) */}
-                            {idx < steps.length - 1 && (
-                                <div className="hidden sm:block absolute top-5 right-[-12px] w-6 h-[1px] bg-border/60" />
-                            )}
-                        </React.Fragment>
-                    ))}
+                            </motion.article>
+                        )
+                    })}
                 </div>
-            </div>
+            </motion.div>
 
-            {/* Expandable Footer (Audit) */}
-            <div className="mt-10 pt-8 border-t border-border/40 relative z-10">
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="relative z-10 mt-6 border-t border-border/40 pt-5">
+                <div className="surface-subtle flex flex-col items-center justify-between gap-4 rounded-xl p-4 sm:flex-row">
                     <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-[1rem] border border-primary/16 bg-primary/10 text-primary">
                             <ShieldCheck className="h-5 w-5" />
                         </div>
                         <div className="text-left">
-                            <p className="text-xs font-bold uppercase tracking-wide text-foreground">{certificationTitle}</p>
-                            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{certificationSubtitle}</p>
+                            <p className="text-xs font-black uppercase tracking-[0.16em] text-foreground">
+                                {certificationTitle}
+                            </p>
+                            <p className="text-sm font-medium leading-relaxed text-muted-foreground">
+                                {certificationSubtitle}
+                            </p>
                         </div>
                     </div>
 
@@ -126,7 +214,7 @@ export function NumaEngineCard({
                         variant="outline"
                         size="sm"
                         onClick={() => setIsExpanded(!isExpanded)}
-                        className="w-full sm:w-auto text-xs font-black uppercase tracking-wide h-8 rounded-full border-primary/20 hover:bg-primary/5 transition-all group"
+                        className="h-9 w-full rounded-full border-primary/18 bg-white/62 text-xs font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.24)] transition-[background-color,border-color,transform,color] sm:w-auto dark:bg-white/[0.06]"
                         disabled={!hasAudit}
                     >
                         {isExpanded ? <ChevronUp className="mr-2 h-3 w-3" /> : <ChevronDown className="mr-2 h-3 w-3" />}
@@ -134,35 +222,41 @@ export function NumaEngineCard({
                     </Button>
                 </div>
 
-                {/* Expanded Content */}
-                {isExpanded && hasAudit && (
-                    <div className="mt-6 p-6 rounded-2xl bg-primary/[0.03] border border-primary/10 animate-enter-up">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {isExpanded && hasAudit && auditStats ? (
+                    <motion.div
+                        className="glass-card mt-5 rounded-[2rem] border border-white/35 p-5"
+                        initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
+                        animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+                        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                             {auditStats.map((stat, idx) => (
                                 <div key={idx} className="space-y-1">
-                                    <div className="flex items-center gap-2 text-primary mb-2">
+                                    <div className="mb-2 flex items-center gap-2 text-primary">
                                         {stat.icon ? <stat.icon className="h-3 w-3" /> : <div className="h-1.5 w-1.5 rounded-full bg-primary" />}
-                                        <span className="text-xs font-black uppercase tracking-tight">{stat.label}</span>
+                                        <span className="text-xs font-bold uppercase tracking-[0.14em]">{stat.label}</span>
                                     </div>
-                                    <p className="text-xl font-black text-foreground tabular-nums tracking-tighter">{stat.value}</p>
-                                    <p className="text-xs text-muted-foreground/90 leading-tight font-medium">
+                                    <p className="text-xl font-black tracking-tighter text-foreground tabular-nums">
+                                        {stat.value}
+                                    </p>
+                                    <p className="text-xs font-medium leading-tight text-muted-foreground/90">
                                         {stat.subValue}
                                     </p>
                                 </div>
                             ))}
                         </div>
 
-                        {transparencyNote && (
-                            <div className="mt-6 flex items-start gap-2 p-3 rounded-xl bg-background/40 border border-border/40">
-                                <Sparkles className="h-3 w-3 text-primary shrink-0 mt-0.5" />
-                                <p className="text-xs text-muted-foreground/90 leading-relaxed font-medium">
+                        {transparencyNote ? (
+                            <div className="surface-subtle mt-6 flex items-start gap-2 rounded-xl p-3">
+                                <Sparkles className="mt-0.5 h-3 w-3 shrink-0 text-primary" />
+                                <p className="text-xs font-medium leading-relaxed text-muted-foreground/90">
                                     <strong>Nota di Trasparenza:</strong> {transparencyNote}
                                 </p>
                             </div>
-                        )}
-                    </div>
-                )}
+                        ) : null}
+                    </motion.div>
+                ) : null}
             </div>
-        </div>
+        </motion.div>
     )
 }

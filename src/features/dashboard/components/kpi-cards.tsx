@@ -21,6 +21,7 @@ import { formatPeriodLabel, getCurrentPeriod } from "@/lib/date-ranges"
 import { NumaEngineCard } from "@/components/patterns/numa-engine-card"
 import { BrainCircuit, ShieldCheck, Hourglass, TrendingUp, PiggyBank, Zap } from "lucide-react"
 import { UsedCardsKpiDeck } from "./used-cards-kpi-deck"
+import { cn } from "@/lib/utils"
 
 interface DashboardKpiGridProps {
     totalSpentCents?: number
@@ -45,7 +46,7 @@ function resolveBrainSignalDisplay(advisorData: ReturnType<typeof useAIAdvisor>)
     if (advisorData.isLoading) {
         return {
             value: "Analizzo",
-            message: "Sto aggiornando il mese",
+            message: "Sto rileggendo il mese",
             trend: "neutral",
             tone: "neutral",
             confidence: "N/D",
@@ -56,7 +57,7 @@ function resolveBrainSignalDisplay(advisorData: ReturnType<typeof useAIAdvisor>)
     if (!advisorData.forecast) {
         return {
             value: "In avvio",
-            message: "Servono più movimenti",
+            message: "Servono ancora più movimenti",
             trend: "neutral",
             tone: "warning",
             confidence: "N/D",
@@ -75,7 +76,7 @@ function resolveBrainSignalDisplay(advisorData: ReturnType<typeof useAIAdvisor>)
     if (advisorData.forecast.predictedTotalEstimatedBalanceCents < 0) {
         return {
             value: "Critico",
-            message: "Possibile saldo negativo",
+            message: "Saldo stimato sotto zero",
             trend: "down",
             tone: "negative",
             confidence,
@@ -96,7 +97,7 @@ function resolveBrainSignalDisplay(advisorData: ReturnType<typeof useAIAdvisor>)
 
     return {
         value: "Stabile",
-        message: "Nessun allarme ora",
+        message: "Nessun segnale critico",
         trend: "up",
         tone: "positive",
         confidence,
@@ -178,24 +179,24 @@ export function DashboardKpiGrid({
                             colorClass: "text-emerald-500",
                             bgClass: "bg-emerald-500/10",
                             stepLabel: "Passo 1",
-                            title: "Quanto puoi spendere ora",
-                            description: "Il saldo del periodo mostra quanta liquidità reale resta dopo entrate e uscite."
+                            title: "Quanto ti resta oggi",
+                            description: "Il saldo del periodo mostra quanta liquidità resta dopo entrate e uscite."
                         },
                         {
                             icon: PiggyBank,
                             colorClass: "text-amber-500",
                             bgClass: "bg-amber-500/10",
                             stepLabel: "Passo 2",
-                            title: "Cosa fa migliorare il margine",
-                            description: "Se riduci le Spese Extra, il margine residuo migliora automaticamente."
+                            title: "Cosa migliora il margine",
+                            description: "Se riduci le spese extra, il margine residuo migliora in modo diretto."
                         },
                         {
                             icon: Hourglass,
                             colorClass: "text-primary",
                             bgClass: "bg-primary/10",
                             stepLabel: "Passo 3",
-                            title: "Quando si aggiorna",
-                            description: "Ogni nuovo movimento aggiorna stima, velocità e direzione del mese."
+                            title: "Quando cambia la stima",
+                            description: "Ogni nuovo movimento aggiorna lettura, ritmo e direzione del mese."
                         }
                     ]}
                     auditStats={[
@@ -204,7 +205,7 @@ export function DashboardKpiGrid({
                         { label: "Dati usati", value: "Transazioni reali", subValue: "Nessuna stima manuale richiesta.", icon: BrainCircuit },
                         { label: "Privacy", value: "Locale", subValue: "I calcoli restano sul dispositivo.", icon: ShieldCheck },
                     ]}
-                    transparencyNote="Questa card non inventa regole: mostra solo lo stato reale del mese usando i tuoi movimenti."
+                    transparencyNote="Questa card non inventa regole: ti mostra lo stato reale del mese usando i tuoi movimenti."
                     certificationTitle="Controllo e trasparenza"
                     certificationSubtitle="Logica chiara, dati reali, privacy locale"
                 />
@@ -212,9 +213,12 @@ export function DashboardKpiGrid({
 
             <MacroSection
                 title="Carte utilizzate"
-                description="Carte rilevate dallo storico movimenti"
+                description="Rilevate nello storico completo, indipendenti dal periodo attivo"
                 contentClassName="pt-5"
                 className="w-full"
+                background={
+                    <div className="absolute inset-0 bg-[linear-gradient(145deg,rgba(14,165,168,0.08),transparent_34%),linear-gradient(330deg,rgba(148,163,184,0.08),transparent_36%)]" />
+                }
             >
                 <UsedCardsKpiDeck
                     cards={cardsUsed || []}
@@ -229,20 +233,26 @@ export function DashboardKpiGrid({
                 description={isLoading ? undefined : contextText}
                 headerActions={headerActions}
                 className="w-full"
+                background={
+                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),transparent_32%),radial-gradient(circle_at_top_right,rgba(14,165,168,0.09),transparent_28%),linear-gradient(140deg,rgba(148,163,184,0.06),transparent_38%)] dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.05),transparent_32%),radial-gradient(circle_at_top_right,rgba(14,165,168,0.11),transparent_28%),linear-gradient(140deg,rgba(148,163,184,0.09),transparent_38%)]" />
+                }
+                contentClassName="pt-5"
             >
-                {/* Animated Grid Container for Soft Transitions */}
                 <StaggerContainer
                     key={filter?.period || "default"}
-                    className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4 pt-4"
+                    className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4"
                 >
                     <motion.div variants={macroItemVariants} className="h-full">
                         <KpiCard
-                            title="Saldo"
+                            title="Saldo complessivo"
                             value={isLoading ? 0 : formatValue(netBalanceCents || 0)}
                             animatedValue={netBalanceCents || 0}
                             formatFn={formatValue}
-                            valueClassName={getPrivacyClass(isPrivacyMode)}
-                            comparisonLabel="Totale storico"
+                            valueClassName={cn(
+                                getPrivacyClass(isPrivacyMode),
+                                "max-w-full whitespace-nowrap text-[clamp(1.85rem,3.2vw,2.95rem)] leading-[0.95]"
+                            )}
+                            comparisonLabel="Storico completo"
                             tone={saldoTone}
                             icon={CreditCard}
                             isLoading={isLoading}
@@ -255,7 +265,10 @@ export function DashboardKpiGrid({
                             value={isLoading ? 0 : formatValue(totalSpentCents || 0)}
                             animatedValue={totalSpentCents || 0}
                             formatFn={formatValue}
-                            valueClassName={getPrivacyClass(isPrivacyMode)}
+                            valueClassName={cn(
+                                getPrivacyClass(isPrivacyMode),
+                                "max-w-full whitespace-nowrap text-[clamp(1.85rem,3.2vw,2.95rem)] leading-[0.95]"
+                            )}
                             icon={Wallet}
                             isLoading={isLoading}
                             onClick={() => router.push("/transactions")}

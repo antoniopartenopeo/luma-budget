@@ -80,6 +80,7 @@ describe('Dashboard Summary (Real Wiring)', () => {
         expect(summary.totalSpent).toBe(250)
         // totalIncome: only current month income (100)
         expect(summary.totalIncome).toBe(100)
+        expect(summary.periodNetBalance).toBe(-150)
 
         // netBalance (ALL TIME): income(100) - expenses(250 + 500) = 100 - 750 = -650
         expect(summary.netBalance).toBe(-650)
@@ -141,6 +142,7 @@ describe('Dashboard Summary (Real Wiring)', () => {
 
         // Should include T1(100)+T2(200)+T3(300) = 600
         expect(summary.totalSpent).toBe(600)
+        expect(summary.periodNetBalance).toBe(-600)
 
         // Net Balance is all time (100+200+300+500 = 1100 -> -1100)
         expect(summary.netBalance).toBe(-1100)

@@ -150,24 +150,24 @@ export function AdvancedSection() {
         <>
             <div className="space-y-6">
                 <div className="space-y-6">
-                    <Alert className="border-amber-500/20 bg-amber-500/5 text-amber-700 dark:text-amber-300">
+                    <Alert className="border-amber-500/20 bg-amber-500/6 text-amber-700 dark:text-amber-300">
                         <Info className="h-4 w-4" />
                         <AlertTitle>Sezione tecnica</AlertTitle>
                         <AlertDescription>
-                            Queste opzioni sono pensate per developer e tester avanzati. Se usi NUMA normalmente, non è necessario intervenire qui.
+                            Questa area serve per controlli e reset avanzati. Se usi Numa ogni giorno, nella maggior parte dei casi puoi ignorarla.
                         </AlertDescription>
                     </Alert>
 
                     {/* Diagnostics */}
                     <MacroSection
-                        title="About & Diagnostics"
-                        description="Informazioni tecniche sulla versione e sullo stato dei dati locali."
+                        title="Diagnostica locale"
+                        description="Versione app, stato dello storage e riepilogo dei dati salvati sul dispositivo."
                     >
                         {diagnostics ? (
                             <div className="space-y-4">
                                 <DiagnosticsMetaStrip diagnostics={diagnostics} />
 
-                                <div className="rounded-md border">
+                                <div className="rounded-[1.75rem] border border-white/25 bg-white/35 p-2 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.03]">
                                     <Table>
                                         <TableHeader>
                                             <TableRow>
@@ -205,7 +205,7 @@ export function AdvancedSection() {
                                         variant="outline"
                                         size="sm"
                                         onClick={handleCopyDiagnostics}
-                                        className="gap-2"
+                                        className="gap-2 rounded-full border-white/30 bg-white/55 dark:border-white/12 dark:bg-white/[0.06]"
                                         disabled={copyFeedback !== "idle"}
                                     >
                                         {copyFeedback === "success" ? (
@@ -227,13 +227,13 @@ export function AdvancedSection() {
                                     </Button>
                                 </div>
 
-                                <div className="text-[10px] text-muted-foreground">
-                                    Generated at: {diagnostics.generatedAt}
+                                <div className="text-xs font-medium text-muted-foreground">
+                                    Generato alle: {diagnostics.generatedAt}
                                 </div>
                             </div>
                         ) : (
                             <div className="text-sm text-muted-foreground">
-                                Caricamento diagnostica in corso... (disponibile solo nel browser)
+                                Sto preparando la diagnostica locale... disponibile solo nel browser.
                             </div>
                         )}
                     </MacroSection>
@@ -241,8 +241,8 @@ export function AdvancedSection() {
                     {/* Danger Zone */}
                     <MacroSection
                         status="critical"
-                        title="Gestione Dati e Ripristino"
-                        description="Azioni distruttive per rimuovere i dati dall'applicazione."
+                        title="Reset e pulizia dati"
+                        description="Azioni irreversibili sui dati salvati nell'app."
                     >
                         {status && (
                             <Alert variant={status.type === "success" ? "default" : "destructive"} className={`mb-6 ${status.type === "success" ? "border-green-500/20 bg-green-500/5 text-green-600 dark:text-green-400" : ""}`}>
@@ -252,10 +252,10 @@ export function AdvancedSection() {
                             </Alert>
                         )}
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
                             {/* Granular Resets */}
-                            <div className="space-y-4">
-                                <h3 className="text-sm font-medium">Reset Granulare</h3>
+                            <div className="surface-subtle space-y-4 p-5">
+                                <h3 className="text-sm font-bold tracking-tight">Reset Granulare</h3>
 
                                 <div className="flex flex-col gap-2">
                                     <Button
@@ -281,8 +281,8 @@ export function AdvancedSection() {
                             </div>
 
                             {/* Full Reset / Seed */}
-                            <div className="space-y-4 border-t sm:border-t-0 sm:border-l pt-4 sm:pt-0 sm:pl-8">
-                                <h3 className="text-sm font-medium">Azioni Globali</h3>
+                            <div className="surface-subtle space-y-4 p-5">
+                                <h3 className="text-sm font-bold tracking-tight">Azioni Globali</h3>
 
                                 <div className="flex flex-col gap-2">
                                     <Button
@@ -304,7 +304,7 @@ export function AdvancedSection() {
                         <AlertCircle className="h-4 w-4" />
                         <AlertTitle>Nota sulla privacy</AlertTitle>
                         <AlertDescription>
-                            NUMA Budget è un&apos;applicazione &quot;local-first&quot;. I tuoi dati non lasciano mai questo dispositivo e non vengono inviati a nessun server esterno.
+                            NUMA Budget salva e legge i dati locali di questa app sul dispositivo. Se una futura integrazione remota verra abilitata, il relativo flusso dovra dichiararlo in modo esplicito.
                         </AlertDescription>
                     </Alert>
                 </div>

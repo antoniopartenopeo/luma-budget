@@ -7,11 +7,18 @@ import {
     STORAGE_KEY_PRIVACY,
     STORAGE_KEYS_REGISTRY,
     STORAGE_KEY_SETTINGS,
-    STORAGE_KEY_TRANSACTIONS
+    STORAGE_KEY_TRANSACTIONS,
 } from "@/lib/storage-keys";
 
 export const BACKUP_VERSION = 2 as const;
 export const BACKUP_LEGACY_VERSION = 1 as const;
+export const BACKUP_EXPORT_PRIVACY_NOTE =
+    "Il backup esportato e un file JSON non cifrato: trattalo come dati finanziari sensibili.";
+export const BACKUP_IMPORT_VALIDATION_NOTE =
+    "Durante il ripristino Numa importa solo le sezioni riconosciute del backup e rifiuta payload malformati.";
+
+type BackupJsonPrimitive = string | number | boolean | null;
+type BackupJsonValue = BackupJsonPrimitive | BackupJsonValue[] | { [key: string]: BackupJsonValue };
 
 export const STORAGE_KEYS = {
     TRANSACTIONS: STORAGE_KEY_TRANSACTIONS,
@@ -21,6 +28,12 @@ export const STORAGE_KEYS = {
     PORTFOLIO: STORAGE_KEY_LEGACY_PORTFOLIO,
     NOTIFICATIONS: STORAGE_KEY_NOTIFICATIONS,
     PRIVACY: STORAGE_KEY_PRIVACY,
+};
+
+export type BackupMetaV2 = {
+    format: "json-cleartext";
+    validation: "strict";
+    containsSensitiveFinancialData: true;
 };
 
 export type BackupV1 = {
@@ -43,6 +56,7 @@ export type BackupV1 = {
 export type BackupV2 = {
     version: 2;
     exportedAt: string;
+    meta: BackupMetaV2;
     keys: {
         transactionsKey: typeof STORAGE_KEYS.TRANSACTIONS;
         budgetsKey: typeof STORAGE_KEYS.BUDGETS;
@@ -65,13 +79,136 @@ export type BackupV2 = {
 
 export type BackupFile = BackupV1 | BackupV2;
 
+function buildBackupMeta(): BackupMetaV2 {
+    return {
+        format: "json-cleartext",
+        validation: "strict",
+        containsSensitiveFinancialData: true,
+    };
+}
+
+function nowIso(): string {
+    return new Date().toISOString();
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+    const prototype = Object.getPrototypeOf(value);
+    return prototype === Object.prototype || prototype === null;
+}
+
+function isJsonRecord(value: BackupJsonValue): value is { [key: string]: BackupJsonValue } {
+    return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function sanitizeJsonValue(value: unknown, depth = 0): BackupJsonValue | undefined {
+    if (depth > 12) return undefined;
+    if (value === null) return null;
+
+    if (typeof value === "string" || typeof value === "boolean") {
+        return value;
+    }
+
+    if (typeof value === "number") {
+        return Number.isFinite(value) ? value : undefined;
+    }
+
+    if (Array.isArray(value)) {
+        const sanitizedItems = value
+            .map((item) => sanitizeJsonValue(item, depth + 1))
+            .filter((item): item is BackupJsonValue => typeof item !== "undefined");
+        return sanitizedItems;
+    }
+
+    if (!isPlainObject(value)) {
+        return undefined;
+    }
+
+    const sanitizedEntries = Object.entries(value)
+        .map(([key, entryValue]) => [key, sanitizeJsonValue(entryValue, depth + 1)] as const)
+        .filter(([, entryValue]) => typeof entryValue !== "undefined");
+
+    return Object.fromEntries(sanitizedEntries) as { [key: string]: BackupJsonValue };
+}
+
+function normalizeExportedAt(value: unknown): string {
+    if (typeof value !== "string") return nowIso();
+    const timestamp = new Date(value).getTime();
+    return Number.isFinite(timestamp) ? value : nowIso();
+}
+
+function invalidBackupField(field: string): { ok: false; error: string } {
+    return {
+        ok: false,
+        error: `Dati non validi: sezione ${field} non riconosciuta nel backup.`,
+    };
+}
+
+function normalizeTransactionsPayload(value: unknown): BackupV1["payload"]["transactions"] | undefined {
+    if (value === null || typeof value === "undefined") return null;
+    const sanitized = sanitizeJsonValue(value);
+    if (!sanitized) return undefined;
+
+    if (Array.isArray(sanitized)) {
+        return sanitized.every(isJsonRecord) ? sanitized : undefined;
+    }
+
+    if (!isJsonRecord(sanitized)) return undefined;
+    const isRecordOfTransactionArrays = Object.values(sanitized).every(
+        (entry) => Array.isArray(entry) && entry.every(isJsonRecord)
+    );
+    return isRecordOfTransactionArrays ? sanitized : undefined;
+}
+
+function normalizeBudgetsPayload(value: unknown): BackupV1["payload"]["budgets"] | undefined {
+    if (value === null || typeof value === "undefined") return null;
+    const sanitized = sanitizeJsonValue(value);
+    if (!sanitized) return undefined;
+
+    if (Array.isArray(sanitized)) {
+        return sanitized.every(isJsonRecord) ? sanitized : undefined;
+    }
+
+    if (!isJsonRecord(sanitized)) return undefined;
+    const isRecordOfBudgetObjects = Object.values(sanitized).every(isJsonRecord);
+    return isRecordOfBudgetObjects ? sanitized : undefined;
+}
+
+function normalizeCategoriesPayload(value: unknown): BackupV1["payload"]["categories"] | undefined {
+    if (value === null || typeof value === "undefined") return null;
+    const sanitized = sanitizeJsonValue(value);
+    if (!sanitized) return undefined;
+
+    if (Array.isArray(sanitized)) {
+        return sanitized.every(isJsonRecord) ? sanitized : undefined;
+    }
+
+    if (!isJsonRecord(sanitized)) return undefined;
+    const categories = sanitized.categories;
+    if (!Array.isArray(categories) || !categories.every(isJsonRecord)) return undefined;
+
+    return {
+        version: 1,
+        categories,
+        updatedAt: typeof sanitized.updatedAt === "string" ? sanitized.updatedAt : nowIso(),
+    };
+}
+
+function normalizePlainObjectPayload(value: unknown): Record<string, BackupJsonValue> | null | undefined {
+    if (value === null || typeof value === "undefined") return null;
+    const sanitized = sanitizeJsonValue(value);
+    if (!sanitized || !isJsonRecord(sanitized)) return undefined;
+    return sanitized;
+}
+
 /**
  * Builds a BackupV2 object from current localStorage data.
  */
 export const buildBackupV2 = (): BackupV2 => {
     return {
         version: BACKUP_VERSION,
-        exportedAt: new Date().toISOString(),
+        exportedAt: nowIso(),
+        meta: buildBackupMeta(),
         keys: {
             transactionsKey: STORAGE_KEYS.TRANSACTIONS,
             budgetsKey: STORAGE_KEYS.BUDGETS,
@@ -106,11 +243,11 @@ export const serializeBackup = (backup: BackupFile): string => {
 };
 
 function normalizeV1Backup(data: Record<string, unknown>): BackupV1 {
-    const payload = (data.payload ?? {}) as Record<string, unknown>;
+    const payload = data.payload as Record<string, unknown>;
 
     return {
         version: 1,
-        exportedAt: typeof data.exportedAt === "string" ? data.exportedAt : new Date().toISOString(),
+        exportedAt: normalizeExportedAt(data.exportedAt),
         keys: {
             transactionsKey: STORAGE_KEYS.TRANSACTIONS,
             budgetsKey: STORAGE_KEYS.BUDGETS,
@@ -118,20 +255,21 @@ function normalizeV1Backup(data: Record<string, unknown>): BackupV1 {
             settingsKey: STORAGE_KEYS.SETTINGS,
         },
         payload: {
-            transactions: payload.transactions ?? null,
-            budgets: payload.budgets ?? null,
-            categories: payload.categories ?? null,
-            settings: payload.settings ?? null,
+            transactions: normalizeTransactionsPayload(payload.transactions),
+            budgets: normalizeBudgetsPayload(payload.budgets),
+            categories: normalizeCategoriesPayload(payload.categories),
+            settings: normalizePlainObjectPayload(payload.settings),
         },
     };
 }
 
 function normalizeV2Backup(data: Record<string, unknown>): BackupV2 {
-    const payload = (data.payload ?? {}) as Record<string, unknown>;
+    const payload = data.payload as Record<string, unknown>;
 
     return {
         version: 2,
-        exportedAt: typeof data.exportedAt === "string" ? data.exportedAt : new Date().toISOString(),
+        exportedAt: normalizeExportedAt(data.exportedAt),
+        meta: buildBackupMeta(),
         keys: {
             transactionsKey: STORAGE_KEYS.TRANSACTIONS,
             budgetsKey: STORAGE_KEYS.BUDGETS,
@@ -142,13 +280,13 @@ function normalizeV2Backup(data: Record<string, unknown>): BackupV2 {
             privacyKey: STORAGE_KEYS.PRIVACY,
         },
         payload: {
-            transactions: payload.transactions ?? null,
-            budgets: payload.budgets ?? null,
-            categories: payload.categories ?? null,
-            settings: payload.settings ?? null,
-            portfolio: payload.portfolio ?? null,
-            notifications: payload.notifications ?? null,
-            privacy: payload.privacy ?? null,
+            transactions: normalizeTransactionsPayload(payload.transactions),
+            budgets: normalizeBudgetsPayload(payload.budgets),
+            categories: normalizeCategoriesPayload(payload.categories),
+            settings: normalizePlainObjectPayload(payload.settings),
+            portfolio: normalizePlainObjectPayload(payload.portfolio),
+            notifications: normalizePlainObjectPayload(payload.notifications),
+            privacy: normalizePlainObjectPayload(payload.privacy),
         },
     };
 }
@@ -158,14 +296,18 @@ function normalizeV2Backup(data: Record<string, unknown>): BackupV2 {
  */
 export const parseAndValidateBackup = (json: string): { ok: true; backup: BackupFile } | { ok: false; error: string } => {
     try {
+        if (json.trim().length === 0) {
+            return { ok: false, error: "Dati non validi: il file e vuoto." };
+        }
+
         const parsed = JSON.parse(json);
 
-        if (!parsed || typeof parsed !== "object") {
+        if (!isPlainObject(parsed)) {
             return { ok: false, error: "Dati non validi: il file non contiene un oggetto JSON." };
         }
 
         const data = parsed as Record<string, unknown>;
-        if (!data.payload || typeof data.payload !== "object") {
+        if (!isPlainObject(data.payload)) {
             return { ok: false, error: "Dati non validi: payload mancante o malformato." };
         }
 
@@ -175,11 +317,46 @@ export const parseAndValidateBackup = (json: string): { ok: true; backup: Backup
         }
 
         if (data.version === BACKUP_LEGACY_VERSION) {
-            return { ok: true, backup: normalizeV1Backup(data) };
+            const normalizedBackup = normalizeV1Backup(data);
+            if (typeof normalizedBackup.payload.transactions === "undefined") {
+                return invalidBackupField("transactions");
+            }
+            if (typeof normalizedBackup.payload.budgets === "undefined") {
+                return invalidBackupField("budgets");
+            }
+            if (typeof normalizedBackup.payload.categories === "undefined") {
+                return invalidBackupField("categories");
+            }
+            if (typeof normalizedBackup.payload.settings === "undefined") {
+                return invalidBackupField("settings");
+            }
+            return { ok: true, backup: normalizedBackup };
         }
 
         if (data.version === BACKUP_VERSION) {
-            return { ok: true, backup: normalizeV2Backup(data) };
+            const normalizedBackup = normalizeV2Backup(data);
+            if (typeof normalizedBackup.payload.transactions === "undefined") {
+                return invalidBackupField("transactions");
+            }
+            if (typeof normalizedBackup.payload.budgets === "undefined") {
+                return invalidBackupField("budgets");
+            }
+            if (typeof normalizedBackup.payload.categories === "undefined") {
+                return invalidBackupField("categories");
+            }
+            if (typeof normalizedBackup.payload.settings === "undefined") {
+                return invalidBackupField("settings");
+            }
+            if (typeof normalizedBackup.payload.portfolio === "undefined") {
+                return invalidBackupField("portfolio");
+            }
+            if (typeof normalizedBackup.payload.notifications === "undefined") {
+                return invalidBackupField("notifications");
+            }
+            if (typeof normalizedBackup.payload.privacy === "undefined") {
+                return invalidBackupField("privacy");
+            }
+            return { ok: true, backup: normalizedBackup };
         }
 
         return {
@@ -241,10 +418,10 @@ export const resetBudgets = (): void => {
  */
 export const resetAllData = (): void => {
     const keys = new Set([
-        ...STORAGE_KEYS_REGISTRY.map(config => config.key),
+        ...STORAGE_KEYS_REGISTRY.map((config) => config.key),
         STORAGE_KEYS.BUDGETS, // Legacy key: keep cleanup deterministic even after budget feature removal.
     ]);
-    keys.forEach(key => storage.remove(key));
+    keys.forEach((key) => storage.remove(key));
 };
 
 export type BackupSummary = {
@@ -264,7 +441,6 @@ export const getBackupSummary = (backup: BackupFile): BackupSummary => {
     const transactions = backup.payload.transactions;
     const budgets = backup.payload.budgets;
 
-    // Helper to extract period YYYY-MM
     const extractPeriod = (item: Record<string, unknown>): string | null => {
         if (!item || typeof item !== "object") return null;
 
@@ -287,41 +463,38 @@ export const getBackupSummary = (backup: BackupFile): BackupSummary => {
         return null;
     };
 
-    // Calculate Transaction Count & Periods
     if (Array.isArray(transactions)) {
         txCount = transactions.length;
-        transactions.forEach(t => {
-            const p = extractPeriod(t);
-            if (p) periodsSet.add(p);
+        transactions.forEach((transaction) => {
+            const period = extractPeriod(transaction);
+            if (period) periodsSet.add(period);
         });
     } else if (transactions && typeof transactions === "object") {
-        Object.values(transactions).forEach(val => {
-            if (Array.isArray(val)) {
-                txCount += val.length;
-                val.forEach(t => {
-                    const p = extractPeriod(t);
-                    if (p) periodsSet.add(p);
+        Object.values(transactions).forEach((value) => {
+            if (Array.isArray(value)) {
+                txCount += value.length;
+                value.forEach((transaction) => {
+                    const period = extractPeriod(transaction);
+                    if (period) periodsSet.add(period);
                 });
             }
         });
     }
 
-    // Calculate Budget Count & Periods
     if (Array.isArray(budgets)) {
         budgetCount = budgets.length;
-        budgets.forEach(b => {
-            const p = extractPeriod(b);
-            if (p) periodsSet.add(p);
+        budgets.forEach((budget) => {
+            const period = extractPeriod(budget);
+            if (period) periodsSet.add(period);
         });
     } else if (budgets && typeof budgets === "object") {
         const entries = Object.entries(budgets);
         budgetCount = entries.length;
-        entries.forEach(([key, val]) => {
-            const p = extractPeriod(val);
-            if (p) {
-                periodsSet.add(p);
+        entries.forEach(([key, value]) => {
+            const period = extractPeriod(value);
+            if (period) {
+                periodsSet.add(period);
             } else {
-                // Try to extract from key if it looks like userId:YYYY-MM
                 const match = key.match(/\d{4}-\d{2}$/);
                 if (match) periodsSet.add(match[0]);
             }

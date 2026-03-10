@@ -15,6 +15,7 @@ describe("UI execution standards baseline", () => {
 
         expect(button).toHaveClass("outline-none")
         expect(button).toHaveClass("focus-visible:border-ring", "focus-visible:ring-[3px]")
+        expect(button).not.toHaveClass("transition-all")
     })
 
     it("keeps mobile non-zoom typography contract on inputs", () => {
@@ -40,6 +41,7 @@ describe("UI execution standards baseline", () => {
         expect(css).toContain(".animate-flash-green")
         expect(css).toContain(".animate-ping-slow")
         expect(css).toContain(".animate-spin-slow")
+        expect(css).toContain(".ambient-grid")
+        expect(css).toContain(".ambient-orb")
     })
 })
-

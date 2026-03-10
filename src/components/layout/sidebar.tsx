@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { LayoutDashboard, LineChart, Settings, FlaskConical, Receipt, FileSpreadsheet, Download, ChevronDown } from "lucide-react"
+import { LayoutDashboard, LineChart, Settings, FlaskConical, Receipt, FileSpreadsheet, Download, ChevronDown, ShieldCheck } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { BrandLogo } from "@/components/ui/brand-logo"
@@ -129,6 +129,17 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
               )
             })}
           </nav>
+        </div>
+
+        {/* Trust Badge Footer */}
+        <div className="p-4 mt-auto mb-2">
+          <div className="flex items-center gap-3 rounded-xl border border-primary/25 bg-primary/10 px-3 py-3 text-primary dark:border-primary/20 dark:bg-primary/5">
+            <ShieldCheck className="h-5 w-5 shrink-0 opacity-90" />
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[10px] font-bold uppercase tracking-wider">Local AI &bull; Encrypted</span>
+              <span className="text-[9px] font-medium opacity-85 leading-tight text-foreground/80 dark:text-muted-foreground">Privacy on-device</span>
+            </div>
+          </div>
         </div>
 
       </div>

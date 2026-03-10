@@ -257,6 +257,7 @@ export function DashboardKpiGrid({
                             icon={CreditCard}
                             isLoading={isLoading}
                             description={isLoading ? undefined : buildNarration("balance", netBalanceCents || 0, saldoTone)}
+                            explainabilityText="Differenza matematica tra entrate e uscite nel periodo attivo."
                         />
                     </motion.div>
                     <motion.div variants={macroItemVariants} className="h-full">
@@ -273,6 +274,7 @@ export function DashboardKpiGrid({
                             isLoading={isLoading}
                             onClick={() => router.push("/transactions")}
                             description={isLoading ? undefined : buildNarration("expenses", totalSpentCents || 0, spesaTone)}
+                            explainabilityText="Somma totale delle uscite (esclusi trasferimenti interni) nel periodo selezionato."
                         />
                     </motion.div>
                     <motion.div variants={macroItemVariants} className="h-full">
@@ -287,6 +289,7 @@ export function DashboardKpiGrid({
                             isLoading={isLoading}
                             onClick={() => router.push("/transactions?filter=wants")}
                             description={isLoading ? undefined : buildNarration("superfluous", uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—", superflueTone, uselessSpendPercent ?? undefined)}
+                            explainabilityText={`Percentuale di spese "Wants" sul totale. Target ideale: < ${superfluousTarget}%`}
                         />
                     </motion.div>
                     <motion.div variants={macroItemVariants} className="h-full">
@@ -299,6 +302,7 @@ export function DashboardKpiGrid({
                             isLoading={false}
                             onClick={() => router.push("/insights")}
                             description={brainSignal.message}
+                            explainabilityText="Proiezione generata dal Core Neurale basata sul tuo ritmo di spesa attuale."
                         />
                     </motion.div>
                 </StaggerContainer>

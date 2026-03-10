@@ -333,7 +333,11 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
+  }
+
+  *:focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
 
   body {
@@ -368,5 +372,35 @@
   .ambient-grid,
   .ambient-orb {
     animation: none !important;
+  }
+}
+
+@layer utilities {
+  .reduce-effects *, .reduce-effects *::before, .reduce-effects *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reduce-effects .animate-enter-up,
+  .reduce-effects .animate-pulse-soft,
+  .reduce-effects .animate-flash-green,
+  .reduce-effects .animate-ping-slow,
+  .reduce-effects .animate-spin-slow,
+  .reduce-effects .ambient-grid,
+  .reduce-effects .ambient-orb {
+    animation: none !important;
+  }
+
+  .reduce-effects .ambient-grid,
+  .reduce-effects .ambient-orb {
+    display: none !important;
+  }
+
+  .reduce-effects .glass-panel,
+  .reduce-effects .glass-chrome,
+  .reduce-effects .surface-strong {
+    backdrop-filter: blur(8px) !important;
   }
 }

@@ -1,9 +1,10 @@
 import type { ElementType, ReactNode } from "react"
 import { motion, useTransform } from "framer-motion"
-import { ArrowDownIcon, ArrowUpIcon } from "lucide-react"
+import { ArrowDownIcon, ArrowUpIcon, Info } from "lucide-react"
 import { AnimatedNumber } from "@/components/ui/animated-number"
 import { InteractiveCardGhostIcon } from "@/components/patterns/interactive-card-ghost-icon"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import {
     INTERACTIVE_CARD_HOVER_STATE,
     INTERACTIVE_CARD_TRANSITION,
@@ -33,6 +34,7 @@ export interface KpiCardProps {
     valueMeta?: string
     valueMetaClassName?: string
     description?: string
+    explainabilityText?: string
     animatedValue?: number
     formatFn?: (value: number) => string
     compact?: boolean
@@ -76,6 +78,7 @@ export function KpiCard({
     valueMeta,
     valueMetaClassName,
     description,
+    explainabilityText,
     animatedValue,
     formatFn,
     compact = false,
@@ -162,8 +165,20 @@ export function KpiCard({
                     )}
                 >
                     <div className={cn("min-w-0 space-y-1.5", compact ? "max-w-[82%]" : "max-w-[74%]")}>
-                        <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">
+                        <CardTitle className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">
                             {title}
+                            {explainabilityText && (
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <div className="cursor-help text-muted-foreground/60 transition-colors hover:text-muted-foreground">
+                                            <Info className="h-3 w-3" />
+                                        </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="top" align="center" className="max-w-[240px] text-xs font-medium leading-relaxed">
+                                        {explainabilityText}
+                                    </TooltipContent>
+                                </Tooltip>
+                            )}
                         </CardTitle>
                         {badge && <div className="flex flex-wrap">{badge}</div>}
                         {subtitle && (

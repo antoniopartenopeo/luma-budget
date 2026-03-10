@@ -40,6 +40,8 @@ export const viewport: Viewport = {
   themeColor: "#0ea5a8",
 };
 
+import { TooltipProvider } from "@/components/ui/tooltip";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -55,8 +57,10 @@ export default function RootLayout({
         <QueryProvider>
           <ThemeApplier />
           <PwaRegister />
-          <AppShell>{children}</AppShell>
-          <Toaster />
+          <TooltipProvider delayDuration={300}>
+            <AppShell>{children}</AppShell>
+            <Toaster />
+          </TooltipProvider>
         </QueryProvider>
       </body>
     </html>

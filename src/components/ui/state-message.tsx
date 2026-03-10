@@ -7,9 +7,10 @@ interface StateMessageProps {
     description?: string
     actionLabel?: string
     onActionClick?: () => void
+    primaryAction?: React.ReactNode // Permette inserimento di bottoni complessi (es. asChild con Link)
 }
 
-export function StateMessage({ variant, title, description, actionLabel, onActionClick }: StateMessageProps) {
+export function StateMessage({ variant, title, description, actionLabel, onActionClick, primaryAction }: StateMessageProps) {
     const Icon = variant === "error" ? AlertCircle : Smile
     const iconColor = variant === "error" ? "text-destructive" : "text-primary"
     const bgColor = variant === "error" ? "bg-destructive/12" : "bg-primary/10"
@@ -28,7 +29,9 @@ export function StateMessage({ variant, title, description, actionLabel, onActio
                         </p>
                     )}
                 </div>
-                {actionLabel && onActionClick && (
+                {primaryAction ? (
+                    <div className="mt-2">{primaryAction}</div>
+                ) : actionLabel && onActionClick && (
                     <Button
                         variant={variant === "error" ? "destructive" : "default"}
                         size="sm"

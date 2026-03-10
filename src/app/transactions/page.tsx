@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState, Suspense } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -178,8 +179,8 @@ function TransactionsPageContent() {
                 {/* Main Content: Table or Empty State */}
                 {isLoading ? (
                     <div className="space-y-4">
-                        <Skeleton className="h-20 w-full rounded-2xl" />
-                        <Skeleton className="h-64 w-full rounded-3xl" />
+                        <Skeleton staggerIndex={0} className="h-20 w-full rounded-2xl" />
+                        <Skeleton staggerIndex={1} className="h-64 w-full rounded-3xl" />
                     </div>
                 ) : filteredList.length > 0 ? (
                     <TransactionsTable
@@ -197,6 +198,19 @@ function TransactionsPageContent() {
                         totalPages={totalPages}
                         onPageChange={(p) => updateParams({ p: p.toString() })}
                     />
+                ) : transactions.length === 0 ? (
+                    <div className="py-20 flex h-full items-center justify-center">
+                        <StateMessage
+                            variant="empty"
+                            title="Nessun movimento"
+                            description="Il tuo ledger è vuoto. Inizia importando i tuoi dati."
+                            primaryAction={
+                                <Button asChild size="sm" variant="default" className="mt-2 shadow-lg shadow-primary/15">
+                                    <Link href="/import">Importa CSV</Link>
+                                </Button>
+                            }
+                        />
+                    </div>
                 ) : (
                     <div className="py-20 flex flex-col items-center justify-center text-center max-w-md mx-auto">
                         <div className="w-20 h-20 rounded-full bg-muted/50 flex items-center justify-center mb-6">
@@ -258,16 +272,16 @@ export default function TransactionsPage() {
         <Suspense fallback={
             <div className="space-y-8 animate-enter-up">
                 <div>
-                    <Skeleton className="h-10 w-64 rounded-xl" />
-                    <Skeleton className="h-4 w-48 mt-2 rounded-lg" />
+                    <Skeleton staggerIndex={0} className="h-10 w-64 rounded-xl" />
+                    <Skeleton staggerIndex={1} className="h-4 w-48 mt-2 rounded-lg" />
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <Skeleton className="h-24 rounded-2xl" />
-                    <Skeleton className="h-24 rounded-2xl" />
-                    <Skeleton className="h-24 rounded-2xl" />
-                    <Skeleton className="h-24 rounded-2xl" />
+                    <Skeleton staggerIndex={2} className="h-24 rounded-2xl" />
+                    <Skeleton staggerIndex={3} className="h-24 rounded-2xl" />
+                    <Skeleton staggerIndex={4} className="h-24 rounded-2xl" />
+                    <Skeleton staggerIndex={5} className="h-24 rounded-2xl" />
                 </div>
-                <Skeleton className="h-96 w-full rounded-2xl" />
+                <Skeleton staggerIndex={6} className="h-96 w-full rounded-2xl" />
             </div>
         }>
             <TransactionsPageContent />

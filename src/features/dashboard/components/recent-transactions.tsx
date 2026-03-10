@@ -115,6 +115,11 @@ export function RecentTransactions({ filter }: RecentTransactionsProps) {
                     variant="empty"
                     title="Nessun movimento"
                     description="Nel periodo attivo non ci sono ancora movimenti da consultare."
+                    primaryAction={
+                        <Button asChild size="sm" variant="default" className="mt-2 shadow-lg shadow-primary/15">
+                            <Link href="/import">Importa CSV</Link>
+                        </Button>
+                    }
                 />
             </MacroSection>
         )

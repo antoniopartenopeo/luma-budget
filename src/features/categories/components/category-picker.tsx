@@ -15,6 +15,10 @@ interface CategoryPickerProps {
     compact?: boolean
     /** Size variant */
     size?: "default" | "sm"
+    /** Visual treatment */
+    variant?: "default" | "premium"
+    /** Density override */
+    density?: "default" | "compact"
     /** Disabled state */
     disabled?: boolean
     /** Custom class */
@@ -35,6 +39,8 @@ export function CategoryPicker({
     type = "expense",
     compact = false,
     size = "default",
+    variant = "default",
+    density,
     disabled = false,
     className
 }: CategoryPickerProps) {
@@ -48,9 +54,12 @@ export function CategoryPicker({
 
     return (
         <Select value={value} onValueChange={onChange} disabled={disabled}>
-            <SelectTrigger className={cn(
+            <SelectTrigger
+                variant={variant}
+                density={density}
+                size={size}
+                className={cn(
                 "w-full transition-colors",
-                size === "sm" ? "h-7 text-xs" : size === "default" ? "h-9 text-sm" : "h-10",
                 compact && "bg-muted/20 border-transparent hover:border-input",
                 !value && "text-muted-foreground/70",
                 className
@@ -73,7 +82,7 @@ export function CategoryPicker({
                     )}
                 </div>
             </SelectTrigger>
-            <SelectContent className="max-h-[300px]">
+            <SelectContent variant={variant} className="max-h-[300px]">
                 {showGrouped && groupedCategories?.map((group) => (
                     <div key={group.key}>
                         <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">

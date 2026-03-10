@@ -1,0 +1,113 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - link "NUMA Budget" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img "NUMA Budget" [ref=e8]
+        - navigation [ref=e10]:
+          - button "Dashboard" [ref=e12]:
+            - img
+            - generic [ref=e13]: Dashboard
+          - generic [ref=e14]:
+            - button "Transazioni" [ref=e15]:
+              - img
+              - generic [ref=e16]: Transazioni
+              - img
+            - generic [ref=e18]:
+              - link "Importa CSV" [ref=e19] [cursor=pointer]:
+                - /url: /transactions/import
+                - button "Importa CSV" [ref=e20]:
+                  - img
+                  - generic [ref=e21]: Importa CSV
+              - link "Esporta CSV" [ref=e22] [cursor=pointer]:
+                - /url: /transactions?action=export
+                - button "Esporta CSV" [ref=e23]:
+                  - img
+                  - generic [ref=e24]: Esporta CSV
+          - button "Insights" [ref=e26]:
+            - img
+            - generic [ref=e27]: Insights
+          - button "Financial Lab" [ref=e29]:
+            - img
+            - generic [ref=e30]: Financial Lab
+          - button "Impostazioni" [ref=e32]:
+            - img
+            - generic [ref=e33]: Impostazioni
+    - generic [ref=e34]:
+      - banner [ref=e35]:
+        - generic [ref=e37]:
+          - generic [ref=e40]:
+            - generic [ref=e41]:
+              - generic [ref=e42]:
+                - button "Registra come Uscita" [ref=e43]:
+                  - img [ref=e44]
+                - button "Registra come Entrata" [ref=e47]:
+                  - img [ref=e48]
+              - textbox "Cosa hai comprato?" [ref=e52]
+            - generic [ref=e54]:
+              - generic [ref=e55]:
+                - generic [ref=e56]: €
+                - spinbutton [ref=e57]
+              - button "10/03/2026" [ref=e59]:
+                - img
+              - combobox [ref=e60]:
+                - generic [ref=e61]: Categoria
+                - img
+              - combobox [ref=e62]
+              - button "Aggiungi" [ref=e63]:
+                - generic [ref=e64]: Aggiungi
+            - button "Necessaria" [ref=e67]
+          - generic [ref=e70]:
+            - button "Apri Numa Flash" [ref=e71]:
+              - img
+            - generic [ref=e73]:
+              - button "Nascondi importi" [ref=e74]:
+                - img
+              - generic [ref=e75]: "N"
+            - generic [ref=e77]:
+              - 'button "Tema: Sistema" [ref=e79]':
+                - img
+              - generic:
+                - radio [checked]:
+                  - img
+                - radio:
+                  - img
+                - radio:
+                  - img
+            - link "Apri Neural Core (0% esperienza acquisita)" [ref=e81] [cursor=pointer]:
+              - /url: /brain
+              - img
+              - img
+              - generic: 0%
+            - button "Notifiche aggiornamenti" [ref=e83]:
+              - img
+      - main [ref=e84]:
+        - generic [ref=e85]:
+          - generic [ref=e88]:
+            - heading "Transazioni" [level=1] [ref=e89]
+            - paragraph [ref=e90]: Tutti i tuoi movimenti, con filtri e dettagli utili.
+          - generic [ref=e94]:
+            - generic [ref=e95]:
+              - generic [ref=e96]: Elenco Movimenti
+              - generic [ref=e97]: I movimenti del periodo selezionato.
+            - generic [ref=e100]:
+              - generic [ref=e101]:
+                - img [ref=e102]
+                - textbox "Cerca..." [ref=e105]
+              - generic [ref=e106]:
+                - generic [ref=e107]:
+                  - combobox [ref=e108]:
+                    - img
+                  - combobox [ref=e109]
+                - generic [ref=e110]:
+                  - combobox [ref=e111]:
+                    - img
+                  - combobox [ref=e112]
+                - generic [ref=e113]:
+                  - combobox [ref=e114]:
+                    - img
+                  - combobox [ref=e115]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e155] [cursor=pointer]:
+    - img [ref=e156]

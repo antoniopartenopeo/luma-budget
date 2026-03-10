@@ -1,0 +1,145 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - link "NUMA Budget" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img "NUMA Budget" [ref=e8]
+        - navigation [ref=e10]:
+          - button "Dashboard" [ref=e12]:
+            - img
+            - generic [ref=e13]: Dashboard
+          - button "Transazioni" [ref=e15]:
+            - img
+            - generic [ref=e16]: Transazioni
+            - img
+          - button "Insights" [ref=e18]:
+            - img
+            - generic [ref=e19]: Insights
+          - button "Financial Lab" [ref=e22]:
+            - img
+            - generic [ref=e23]: Financial Lab
+          - button "Impostazioni" [ref=e25]:
+            - img
+            - generic [ref=e26]: Impostazioni
+    - generic [ref=e27]:
+      - banner [ref=e28]:
+        - generic [ref=e30]:
+          - generic [ref=e33]:
+            - generic [ref=e34]:
+              - generic [ref=e35]:
+                - button "Registra come Uscita" [ref=e36]:
+                  - img [ref=e37]
+                - button "Registra come Entrata" [ref=e40]:
+                  - img [ref=e41]
+              - textbox "Cosa hai comprato?" [ref=e44]
+            - generic [ref=e46]:
+              - generic [ref=e47]:
+                - generic [ref=e48]: €
+                - spinbutton [ref=e49]
+              - button "10/03/2026" [ref=e51]:
+                - img
+              - combobox [ref=e52]:
+                - generic [ref=e53]: Categoria
+                - img
+              - combobox [ref=e54]
+              - button "Aggiungi" [ref=e55]:
+                - generic [ref=e56]: Aggiungi
+            - button "Necessaria" [ref=e59]
+          - generic [ref=e62]:
+            - button "Apri Numa Flash" [ref=e63]:
+              - img
+            - generic [ref=e65]:
+              - button "Nascondi importi" [ref=e66]:
+                - img
+              - generic [ref=e67]: "N"
+            - generic [ref=e69]:
+              - 'button "Tema: Sistema" [ref=e71]':
+                - img
+              - generic:
+                - radio [checked]:
+                  - img
+                - radio:
+                  - img
+                - radio:
+                  - img
+            - link "Apri Neural Core (0% esperienza acquisita)" [ref=e73] [cursor=pointer]:
+              - /url: /brain
+              - img
+              - img
+              - generic: 0%
+            - button "Notifiche aggiornamenti" [ref=e75]:
+              - img
+      - main [ref=e76]:
+        - generic [ref=e77]:
+          - generic [ref=e79]:
+            - heading "Insights" [level=1] [ref=e80]
+            - paragraph [ref=e81]: Capisci come si sta muovendo il mese e dove puoi intervenire.
+          - generic [ref=e82]:
+            - generic [ref=e84]:
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - img
+              - generic [ref=e85]:
+                - generic [ref=e86]:
+                  - heading "Come Funziona Numa" [level=4] [ref=e89]
+                  - generic [ref=e90]: Motore di lettura
+                - generic [ref=e91]:
+                  - article [ref=e92]:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - generic:
+                            - img
+                    - generic [ref=e93]:
+                      - img [ref=e95]
+                      - paragraph [ref=e98]: 1. Base + residuo
+                      - paragraph [ref=e99]: Formula chiara
+                      - paragraph [ref=e100]: Partiamo dal saldo totale di base e togliamo la spesa ancora attesa fino a fine mese.
+                  - article [ref=e101]:
+                    - generic [ref=e102]:
+                      - img [ref=e104]
+                      - paragraph [ref=e107]: 2. Fonte stima
+                      - paragraph [ref=e108]: Da dove arriva la stima
+                      - paragraph [ref=e109]: Se il Core è pronto usiamo il nowcast del mese corrente, altrimenti una stima storica prudente.
+                  - article [ref=e110]:
+                    - generic [ref=e111]:
+                      - img [ref=e113]
+                      - paragraph [ref=e116]: 3. Segnali utili
+                      - paragraph [ref=e117]: Abbonamenti e rincari
+                      - paragraph [ref=e118]: Mettiamo in evidenza ricorrenze e possibili aumenti di prezzo per aiutarti a decidere in anticipo.
+              - generic [ref=e120]:
+                - generic [ref=e121]:
+                  - img [ref=e123]
+                  - generic [ref=e126]:
+                    - paragraph [ref=e127]: Certificazione Privacy
+                    - paragraph [ref=e128]: Analisi 100% Locale e Verificata.
+                - button "Apri dettagli" [ref=e129]:
+                  - img
+                  - text: Apri dettagli
+            - generic [ref=e131]:
+              - generic [ref=e134]:
+                - generic [ref=e135]: Numa Advisor
+                - generic [ref=e136]: Sto analizzando i tuoi dati...
+              - generic [ref=e138]:
+                - img [ref=e142]
+                - paragraph [ref=e145]: Sto leggendo i dati più recenti...
+            - generic [ref=e146]:
+              - generic [ref=e151]:
+                - generic [ref=e152]: Andamento entrate e uscite
+                - generic [ref=e153]: Sto preparando i dati...
+              - generic [ref=e160]:
+                - generic [ref=e161]:
+                  - generic [ref=e162]: Analisi del mese
+                  - generic [ref=e163]: I segnali utili emersi nei movimenti di Marzo 2026.
+                - generic [ref=e165]:
+                  - button [ref=e166]:
+                    - img
+                  - generic [ref=e168]: Marzo 2026
+                  - button [disabled]:
+                    - img
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e180] [cursor=pointer]:
+    - img [ref=e181]

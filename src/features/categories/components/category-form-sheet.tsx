@@ -11,6 +11,7 @@ import { ICON_REGISTRY } from "../icon-registry"
 import { cn } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
 import { generateCategoryId } from "../api/repository"
+import { premiumFieldLabelClassName } from "@/components/ui/control-styles"
 
 // Curated colors from default categories
 const COLOR_PALETTE = [
@@ -135,19 +136,20 @@ export function CategoryFormSheet({ open, onOpenChange, categoryToEdit, onSave, 
                 <div className="flex-1 overflow-y-auto p-6 space-y-6">
                     {/* Name */}
                     <div className="grid gap-2">
-                        <Label htmlFor="name" className="px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Nome</Label>
+                        <Label htmlFor="name" className={premiumFieldLabelClassName}>Nome</Label>
                         <Input
                             id="name"
+                            variant="premium"
                             value={label}
                             onChange={(e) => setLabel(e.target.value)}
                             placeholder="Es. Palestra"
-                            className="h-12 rounded-xl border-white/25 bg-white/55 dark:border-white/10 dark:bg-white/[0.05]"
+                            className="h-12 rounded-[1rem]"
                         />
                     </div>
 
                     {/* Kind */}
                     <div className="grid gap-2">
-                        <Label className="px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Tipo</Label>
+                        <Label className={premiumFieldLabelClassName}>Tipo</Label>
                         <div className="flex gap-2">
                             <Button
                                 type="button"
@@ -180,12 +182,12 @@ export function CategoryFormSheet({ open, onOpenChange, categoryToEdit, onSave, 
                     {/* Spending Nature (Only for Expenses) */}
                     {kind === "expense" && (
                         <div className="grid gap-2">
-                            <Label className="px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Gruppo spese</Label>
+                            <Label className={premiumFieldLabelClassName}>Gruppo spese</Label>
                             <Select value={spendingNature} onValueChange={(v) => setSpendingNature(v as SpendingNature)}>
-                                <SelectTrigger className="h-12 rounded-xl border-white/25 bg-white/55 dark:border-white/10 dark:bg-white/[0.05]">
+                                <SelectTrigger variant="premium" className="h-12 w-full rounded-[1rem]">
                                     <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent>
+                                <SelectContent variant="premium">
                                     <SelectItem value="essential">Essenziali (Necessità)</SelectItem>
                                     <SelectItem value="comfort">Benessere (Qualità della vita)</SelectItem>
                                     <SelectItem value="superfluous">Superflue (Non essenziali)</SelectItem>
@@ -198,7 +200,7 @@ export function CategoryFormSheet({ open, onOpenChange, categoryToEdit, onSave, 
 
                     {/* Color Picker */}
                     <div className="grid gap-3">
-                        <Label className="px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Colore</Label>
+                        <Label className={premiumFieldLabelClassName}>Colore</Label>
                         <div className="flex flex-wrap gap-2 px-1">
                             {COLOR_PALETTE.map((p, idx) => (
                                 <button
@@ -218,7 +220,7 @@ export function CategoryFormSheet({ open, onOpenChange, categoryToEdit, onSave, 
 
                     {/* Icon Picker */}
                     <div className="grid gap-3">
-                        <Label className="px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Icona</Label>
+                        <Label className={premiumFieldLabelClassName}>Icona</Label>
                         <div className="grid grid-cols-6 gap-2 rounded-2xl border border-white/10 bg-white/30 p-3 dark:bg-black/20">
                             {iconKeys.map((key) => {
                                 const Icon = ICON_REGISTRY[key]

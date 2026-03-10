@@ -6,6 +6,8 @@ import { motion } from "framer-motion"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
+import { StateMessage } from "@/components/ui/state-message"
 import { cn } from "@/lib/utils"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
 import { macroItemVariants } from "@/components/patterns/macro-section"
@@ -64,16 +66,27 @@ export function UpdatesPageContent() {
 
             {feedQuery.isLoading && (
                 <motion.div variants={macroItemVariants}>
-                    <div className="glass-panel rounded-[2rem] p-6 text-sm font-medium leading-relaxed text-muted-foreground">
-                        Sto caricando la cronologia...
+                    <div className="glass-panel space-y-4 rounded-[2rem] p-5 sm:p-6">
+                        <div className="flex items-center justify-between gap-3">
+                            <Skeleton className="h-4 w-28 rounded-full" />
+                            <Skeleton className="h-4 w-20 rounded-full" />
+                        </div>
+                        <div className="space-y-3">
+                            <Skeleton className="h-28 w-full rounded-[1.5rem]" />
+                            <Skeleton className="h-24 w-full rounded-[1.5rem]" />
+                        </div>
                     </div>
                 </motion.div>
             )}
 
             {!feedQuery.isLoading && notifications.length === 0 && (
                 <motion.div variants={macroItemVariants}>
-                    <div className="glass-panel rounded-[2rem] p-6 text-sm font-medium leading-relaxed text-muted-foreground">
-                        Non ci sono ancora novità da mostrare.
+                    <div className="glass-panel overflow-hidden rounded-[2rem]">
+                        <StateMessage
+                            variant="empty"
+                            title="Nessuna novita da mostrare"
+                            description="Le nuove release compariranno qui, con highlights e note utili per tenere il passo."
+                        />
                     </div>
                 </motion.div>
             )}
@@ -85,7 +98,7 @@ export function UpdatesPageContent() {
                         className="glass-panel rounded-[2rem] p-5 sm:p-6 space-y-4"
                     >
                         <div className="flex items-center justify-between gap-3">
-                            <h2 className="text-sm sm:text-base font-black tracking-tight">
+                            <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-muted-foreground/80 sm:text-base">
                                 Release {version}
                             </h2>
                             <span className="text-xs font-semibold text-muted-foreground">

@@ -136,7 +136,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                             type="button"
                             onClick={() => handleTypeChange("expense")}
                             className={cn(
-                                "rounded-full p-1.5 transition-[background-color,color,box-shadow,transform] duration-200",
+                                "rounded-full p-1.5 transition-[background-color,color,box-shadow] duration-200",
                                 type === "expense" ? "bg-background text-red-500 shadow-sm" : "text-muted-foreground hover:text-foreground"
                             )}
                             title="Uscita"
@@ -148,7 +148,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                             type="button"
                             onClick={() => handleTypeChange("income")}
                             className={cn(
-                                "rounded-full p-1.5 transition-[background-color,color,box-shadow,transform] duration-200",
+                                "rounded-full p-1.5 transition-[background-color,color,box-shadow] duration-200",
                                 type === "income" ? "bg-background text-green-500 shadow-sm" : "text-muted-foreground hover:text-foreground"
                             )}
                             title="Entrata"
@@ -228,7 +228,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                                 <SelectValue placeholder="Categoria" />
                             </div>
                         </SelectTrigger>
-                        <SelectContent className="max-h-[300px]">
+                        <SelectContent variant="premium" className="max-h-[300px]">
                             {groupedCategories.map((group) => (
                                 <div key={group.key}>
                                     <div className="px-2 py-1.5 text-[10px] md:text-xs font-semibold text-muted-foreground uppercase tracking-wide">

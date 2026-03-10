@@ -162,12 +162,12 @@ export function KpiCard({
                     )}
                 >
                     <div className={cn("min-w-0 space-y-1.5", compact ? "max-w-[82%]" : "max-w-[74%]")}>
-                        <CardTitle className="text-[11px] font-black uppercase tracking-[0.18em] text-foreground/72">
+                        <CardTitle className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">
                             {title}
                         </CardTitle>
                         {badge && <div className="flex flex-wrap">{badge}</div>}
                         {subtitle && (
-                            <p className="text-[11px] font-medium leading-snug text-muted-foreground/78">
+                            <p className="text-xs font-medium leading-snug text-muted-foreground/80">
                                 {subtitle}
                             </p>
                         )}
@@ -199,7 +199,7 @@ export function KpiCard({
                                         {valueMeta && (
                                             <span
                                                 className={cn(
-                                                    "text-sm font-bold tracking-normal text-muted-foreground/78 sm:text-base",
+                                                    "text-sm font-semibold tracking-normal text-muted-foreground/78 sm:text-base",
                                                     valueMetaClassName
                                                 )}
                                             >
@@ -213,7 +213,7 @@ export function KpiCard({
                                         {valueMeta && (
                                             <span
                                                 className={cn(
-                                                    "text-sm font-bold tracking-normal text-muted-foreground/78 sm:text-base",
+                                                    "text-sm font-semibold tracking-normal text-muted-foreground/78 sm:text-base",
                                                     valueMetaClassName
                                                 )}
                                             >
@@ -227,7 +227,7 @@ export function KpiCard({
                             {change ? (
                                 <div
                                     className={cn(
-                                        "hidden shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] sm:inline-flex",
+                                        "hidden shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] sm:inline-flex",
                                         trend === "up"
                                             ? "border-emerald-500/16 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
                                             : trend === "down"
@@ -248,14 +248,14 @@ export function KpiCard({
                     <div className={cn(compact ? "pt-3" : "mt-auto pt-5")}>
                         <div className="flex flex-wrap items-center gap-2">
                             {comparisonLabel ? (
-                                <span className="rounded-full border border-white/42 bg-white/44 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-foreground/72 shadow-[inset_0_1px_0_rgba(255,255,255,0.24)] dark:border-white/10 dark:bg-white/[0.05] dark:text-foreground/80">
+                                <span className="rounded-full border border-white/42 bg-white/44 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.24)] dark:border-white/10 dark:bg-white/[0.05] dark:text-foreground/80">
                                     {comparisonLabel}
                                 </span>
                             ) : null}
                             {change ? (
                                 <span
                                     className={cn(
-                                        "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] sm:hidden",
+                                        "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] sm:hidden",
                                         trend === "up"
                                             ? "border-emerald-500/16 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
                                             : trend === "down"
@@ -273,7 +273,7 @@ export function KpiCard({
                         </div>
 
                         {description ? (
-                            <p className="mt-3 max-w-[34ch] text-[11px] leading-relaxed text-muted-foreground/76 transition-[opacity,transform,color] duration-300 group-hover/kpi:translate-y-0 group-hover/kpi:text-foreground/78 group-hover/kpi:opacity-100 group-focus-within/kpi:translate-y-0 group-focus-within/kpi:text-foreground/78 group-focus-within/kpi:opacity-100">
+                            <p className="mt-3 max-w-[34ch] text-xs font-medium leading-relaxed text-muted-foreground/76 transition-[opacity,transform,color] duration-300 group-hover/kpi:translate-y-0 group-hover/kpi:text-foreground/78 group-hover/kpi:opacity-100 group-focus-within/kpi:translate-y-0 group-focus-within/kpi:text-foreground/78 group-focus-within/kpi:opacity-100">
                                 {description}
                             </p>
                         ) : null}

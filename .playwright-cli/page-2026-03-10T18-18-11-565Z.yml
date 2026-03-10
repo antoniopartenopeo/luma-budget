@@ -1,0 +1,53 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e6]:
+        - button [ref=e8]:
+          - img
+        - generic [ref=e11]:
+          - button "Apri Numa Flash" [ref=e12]:
+            - img
+          - generic [ref=e14]:
+            - button "Nascondi importi" [ref=e15]:
+              - img
+            - generic [ref=e16]: "N"
+          - generic [ref=e18]:
+            - 'button "Tema: Sistema" [ref=e20]':
+              - img
+            - generic:
+              - radio [checked]:
+                - img
+              - radio:
+                - img
+              - radio:
+                - img
+          - link "Apri Neural Core (0% esperienza acquisita)" [ref=e22] [cursor=pointer]:
+            - /url: /brain
+            - img
+            - img
+            - generic: 0%
+          - button "Notifiche aggiornamenti" [ref=e24]:
+            - img
+    - main [ref=e25]:
+      - generic [ref=e26]:
+        - generic [ref=e29]:
+          - heading "Impostazioni" [level=1] [ref=e30]
+          - paragraph [ref=e31]: Personalizza l'app e gestisci i dati salvati sul dispositivo.
+        - generic [ref=e33]:
+          - tablist [ref=e34]:
+            - tab "Preferenze" [selected] [ref=e35]:
+              - generic [ref=e36]: Preferenze
+            - tab "Categorie" [ref=e37]:
+              - generic [ref=e38]: Categorie
+            - tab "Backup" [ref=e39]:
+              - generic [ref=e40]: Backup
+            - tab "Avanzate (sezione tecnica)" [ref=e41]:
+              - generic [ref=e42]: Avanzate
+          - tabpanel "Preferenze" [ref=e43]:
+            - generic [ref=e48]:
+              - generic [ref=e49]: Preferenze
+              - generic [ref=e50]: Personalizza l'app e il modo in cui accompagna i tuoi movimenti.
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e64] [cursor=pointer]:
+    - img [ref=e65]
+  - alert [ref=e68]

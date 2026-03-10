@@ -32,6 +32,18 @@ describe("UI execution standards baseline", () => {
         expect(textarea).toHaveClass("text-base", "md:text-sm")
     })
 
+    it("exposes premium shared chrome on inputs and textareas without breaking defaults", () => {
+        render(
+            <>
+                <Input aria-label="Premium input" variant="premium" density="compact" />
+                <Textarea aria-label="Premium textarea" variant="premium" />
+            </>
+        )
+
+        expect(screen.getByRole("textbox", { name: "Premium input" })).toHaveClass("backdrop-blur-md", "h-8")
+        expect(screen.getByRole("textbox", { name: "Premium textarea" })).toHaveClass("backdrop-blur-md", "min-h-[96px]")
+    })
+
     it("preserves reduced-motion safety net for global animation primitives", () => {
         const css = readFileSync(GLOBALS_CSS_PATH, "utf-8")
 

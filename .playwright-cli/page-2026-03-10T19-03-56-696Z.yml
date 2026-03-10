@@ -1,0 +1,168 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - link "NUMA Budget" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img "NUMA Budget" [ref=e8]
+        - navigation [ref=e10]:
+          - button "Dashboard" [ref=e12]:
+            - img
+            - generic [ref=e13]: Dashboard
+          - button "Transazioni" [ref=e15]:
+            - img
+            - generic [ref=e16]: Transazioni
+            - img
+          - button "Insights" [ref=e18]:
+            - img
+            - generic [ref=e19]: Insights
+          - button "Financial Lab" [ref=e21]:
+            - img
+            - generic [ref=e22]: Financial Lab
+          - button "Impostazioni" [ref=e24]:
+            - img
+            - generic [ref=e25]: Impostazioni
+    - generic [ref=e26]:
+      - banner [ref=e27]:
+        - generic [ref=e29]:
+          - generic [ref=e32]:
+            - generic [ref=e33]:
+              - generic [ref=e34]:
+                - button "Registra come Uscita" [ref=e35]:
+                  - img [ref=e36]
+                - button "Registra come Entrata" [ref=e39]:
+                  - img [ref=e40]
+              - textbox "Cosa hai comprato?" [ref=e43]
+            - generic [ref=e45]:
+              - generic [ref=e46]:
+                - generic [ref=e47]: €
+                - spinbutton [ref=e48]
+              - button "10/03/2026" [ref=e50]:
+                - img
+              - combobox [ref=e51]:
+                - generic [ref=e52]: Categoria
+                - img
+              - combobox [ref=e53]
+              - button "Aggiungi" [ref=e54]:
+                - generic [ref=e55]: Aggiungi
+            - button "Necessaria" [ref=e58]
+          - generic [ref=e61]:
+            - button "Apri Numa Flash" [ref=e62]:
+              - img
+            - generic [ref=e64]:
+              - button "Nascondi importi" [ref=e65]:
+                - img
+              - generic [ref=e66]: "N"
+            - generic [ref=e68]:
+              - 'button "Tema: Sistema" [ref=e70]':
+                - img
+              - generic:
+                - radio [checked]:
+                  - img
+                - radio:
+                  - img
+                - radio:
+                  - img
+            - link "Apri Neural Core (0% esperienza acquisita)" [ref=e72] [cursor=pointer]:
+              - /url: /brain
+              - img
+              - img
+              - generic: 0%
+            - button "Notifiche aggiornamenti" [ref=e74]:
+              - img
+      - main [ref=e75]:
+        - generic [ref=e76]:
+          - generic [ref=e79]:
+            - heading "Core previsioni" [level=1] [ref=e80]:
+              - generic [ref=e81]:
+                - img [ref=e82]
+                - text: Core previsioni
+            - paragraph [ref=e94]: Qui vedi come il Core cresce dai tuoi movimenti e affina le stime.
+          - generic [ref=e99]:
+            - generic [ref=e100]:
+              - generic [ref=e101]:
+                - generic [ref=e102]:
+                  - generic [ref=e103]:
+                    - img [ref=e104]
+                    - text: Indice evoluzione
+                  - generic [ref=e107]: Il Core è spento. Avvialo quando vuoi iniziare a fargli leggere i tuoi dati.
+                - generic [ref=e108]:
+                  - generic [ref=e115]:
+                    - generic [ref=e116]:
+                      - paragraph [ref=e117]: Prontezza
+                      - paragraph [ref=e118]: 0%
+                      - paragraph [ref=e119]: Quanto il Core è vicino a una base utile.
+                    - generic [ref=e120]:
+                      - paragraph [ref=e121]: Esperienza
+                      - paragraph [ref=e122]: 0%
+                      - paragraph [ref=e123]: 0/120 campioni già appresi.
+                    - generic [ref=e124]:
+                      - paragraph [ref=e125]: Stabilita
+                      - paragraph [ref=e126]: 100%
+                      - paragraph [ref=e127]: Stabilità attuale 0.0000.
+                  - generic [ref=e128]:
+                    - generic [ref=e129]:
+                      - paragraph [ref=e130]: Ultimo aggiornamento
+                      - paragraph [ref=e131]: "-"
+                    - generic [ref=e132]:
+                      - paragraph [ref=e133]: Affidabilita residuo del mese
+                      - paragraph [ref=e134]: MAE - · MAPE -
+                      - paragraph [ref=e135]: 0 campioni usati per misurarla
+                    - generic [ref=e136]:
+                      - paragraph [ref=e137]: Soglia di qualita
+                      - paragraph [ref=e138]: 78%
+                      - paragraph [ref=e139]: Confidenza minima richiesta per usare la stima del mese corrente.
+              - generic [ref=e140]:
+                - generic [ref=e141]:
+                  - generic [ref=e142]:
+                    - img [ref=e143]
+                    - text: Comandi Core
+                  - generic [ref=e145]: "Le azioni base del Core: avvio, reset e registro attività."
+                - generic [ref=e146]:
+                  - generic [ref=e147]:
+                    - button "Avvia Core" [ref=e148]:
+                      - img
+                      - text: Avvia Core
+                    - button "Resetta Core" [disabled]:
+                      - img
+                      - text: Resetta Core
+                  - heading "Registro attività del Core" [level=3] [ref=e151]:
+                    - button "Registro attività del Core" [ref=e152]:
+                      - text: Registro attività del Core
+                      - img [ref=e153]
+                - paragraph [ref=e156]: "Dati letti ora: 0 transazioni, 0 categorie, ultima analisi -."
+            - generic [ref=e157]:
+              - generic [ref=e159]:
+                - generic [ref=e162]: Rischio
+                - generic [ref=e163]:
+                  - generic [ref=e165]:
+                    - generic [ref=e166]: "-"
+                    - generic [ref=e167]: "-"
+                  - generic [ref=e168]:
+                    - generic [ref=e170]: Affidabilità
+                    - paragraph [ref=e171]: Quanto è probabile che la spesa salga.
+              - generic [ref=e173]:
+                - generic [ref=e176]: Spesa prossimo mese
+                - generic [ref=e177]:
+                  - generic [ref=e179]:
+                    - generic [ref=e180]: "-"
+                    - generic [ref=e181]: "-"
+                  - generic [ref=e182]:
+                    - generic [ref=e184]: Periodo
+                    - paragraph [ref=e185]: Quanto il Core si aspetta di vedere nelle spese del prossimo mese.
+              - generic [ref=e187]:
+                - generic [ref=e190]: Spesa residua del mese
+                - generic [ref=e191]:
+                  - generic [ref=e193]:
+                    - generic [ref=e194]: "-"
+                    - generic [ref=e195]: Non pronta
+                  - generic [ref=e196]:
+                    - generic [ref=e198]: Soglia qualità
+                    - paragraph [ref=e199]: Quanto il Core stima che resti ancora da spendere nel mese, con controllo qualità automatico.
+            - heading "Dettagli del Core (facoltativo)" [level=3] [ref=e202]:
+              - button "Dettagli del Core (facoltativo)" [ref=e203]:
+                - text: Dettagli del Core (facoltativo)
+                - img [ref=e204]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e211] [cursor=pointer]:
+    - img [ref=e212]

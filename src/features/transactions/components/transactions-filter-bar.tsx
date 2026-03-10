@@ -15,6 +15,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
+import { premiumFieldLabelClassName } from "@/components/ui/control-styles"
 
 export type PeriodPreset = "1m" | "3m" | "6m" | "1y" | "all" | "custom"
 
@@ -64,8 +65,9 @@ export function TransactionsFilterBar({
                 <div className="relative w-full">
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
                     <Input
+                        variant="premium"
                         placeholder="Cerca..."
-                        className="pl-10 h-10 rounded-xl bg-muted/5 border-muted-foreground/10 focus-visible:ring-primary/20"
+                        className="h-11 rounded-[1rem] pl-10"
                         value={searchValue}
                         onChange={(e) => onSearchChange(e.target.value)}
                     />
@@ -74,86 +76,89 @@ export function TransactionsFilterBar({
                 {/* Zone 2: Filters */}
                 <div className="grid grid-cols-1 xs:grid-cols-2 sm:flex sm:flex-wrap lg:flex-nowrap items-center gap-2 overflow-visible">
                     {/* Period */}
-                    <div className="glass-card p-1 rounded-xl">
-                        <Select value={periodValue} onValueChange={(v) => onPeriodChange(v as PeriodPreset)}>
-                            <SelectTrigger className={cn(
-                                "w-full sm:w-[140px] lg:w-[150px] flex-shrink-0 h-9 px-3 border-0 bg-transparent shadow-none focus:ring-0 transition-colors outline-none text-xs md:text-sm font-medium",
-                                periodValue !== "all" ? "text-primary font-bold" : "text-muted-foreground"
-                            )}>
-                                <div className="flex items-center gap-2 flex-1 min-w-0">
-                                    <div className="truncate text-left">
-                                        <SelectValue placeholder="Periodo" />
-                                    </div>
+                    <Select value={periodValue} onValueChange={(v) => onPeriodChange(v as PeriodPreset)}>
+                        <SelectTrigger
+                            variant="premium"
+                            className={cn(
+                                "w-full sm:w-[140px] lg:w-[150px] flex-shrink-0 h-11 px-3 text-xs md:text-sm",
+                                periodValue !== "all" ? "text-primary font-semibold" : "text-muted-foreground"
+                            )}
+                        >
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                                <div className="truncate text-left">
+                                    <SelectValue placeholder="Periodo" />
                                 </div>
-                            </SelectTrigger>
-                            <SelectContent className="rounded-xl border-white/5 backdrop-blur-xl bg-white/80 dark:bg-slate-950/80">
-                                <SelectItem value="all">Tutto il tempo</SelectItem>
-                                <SelectItem value="1m">Ultimo mese</SelectItem>
-                                <SelectItem value="3m">Ultimi 3 mesi</SelectItem>
-                                <SelectItem value="6m">Ultimi 6 mesi</SelectItem>
-                                <SelectItem value="1y">Ultimo anno</SelectItem>
-                                <Separator className="my-1 opacity-50" />
-                                <SelectItem value="custom">Periodo personalizzato</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
+                            </div>
+                        </SelectTrigger>
+                        <SelectContent variant="premium">
+                            <SelectItem value="all">Tutto il tempo</SelectItem>
+                            <SelectItem value="1m">Ultimo mese</SelectItem>
+                            <SelectItem value="3m">Ultimi 3 mesi</SelectItem>
+                            <SelectItem value="6m">Ultimi 6 mesi</SelectItem>
+                            <SelectItem value="1y">Ultimo anno</SelectItem>
+                            <Separator className="my-1 opacity-50" />
+                            <SelectItem value="custom">Periodo personalizzato</SelectItem>
+                        </SelectContent>
+                    </Select>
 
                     {/* Type */}
-                    <div className="glass-card p-1 rounded-xl">
-                        <Select value={typeValue} onValueChange={onTypeChange}>
-                            <SelectTrigger className={cn(
-                                "w-full sm:w-[120px] lg:w-[130px] flex-shrink-0 h-9 px-3 border-0 bg-transparent shadow-none focus:ring-0 transition-colors outline-none text-xs md:text-sm font-medium",
-                                typeValue !== "all" ? "text-primary font-bold" : "text-muted-foreground"
-                            )}>
-                                <div className="flex items-center gap-2 flex-1 min-w-0">
-                                    <div className="truncate text-left">
-                                        <SelectValue placeholder="Tipo" />
-                                    </div>
+                    <Select value={typeValue} onValueChange={onTypeChange}>
+                        <SelectTrigger
+                            variant="premium"
+                            className={cn(
+                                "w-full sm:w-[120px] lg:w-[130px] flex-shrink-0 h-11 px-3 text-xs md:text-sm",
+                                typeValue !== "all" ? "text-primary font-semibold" : "text-muted-foreground"
+                            )}
+                        >
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                                <div className="truncate text-left">
+                                    <SelectValue placeholder="Tipo" />
                                 </div>
-                            </SelectTrigger>
-                            <SelectContent className="rounded-xl border-white/5 backdrop-blur-xl bg-white/80 dark:bg-slate-950/80">
-                                <SelectItem value="all">Tutti i tipi</SelectItem>
-                                <SelectItem value="income">Entrate</SelectItem>
-                                <SelectItem value="expense">Uscite</SelectItem>
-                                <Separator className="my-1 opacity-50" />
-                                <SelectItem value="superfluous">Superflue</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
+                            </div>
+                        </SelectTrigger>
+                        <SelectContent variant="premium">
+                            <SelectItem value="all">Tutti i tipi</SelectItem>
+                            <SelectItem value="income">Entrate</SelectItem>
+                            <SelectItem value="expense">Uscite</SelectItem>
+                            <Separator className="my-1 opacity-50" />
+                            <SelectItem value="superfluous">Superflue</SelectItem>
+                        </SelectContent>
+                    </Select>
 
                     {/* Category */}
-                    <div className="glass-card p-1 rounded-xl">
-                        <Select value={categoryValue} onValueChange={onCategoryChange}>
-                            <SelectTrigger className={cn(
-                                "w-full sm:w-[140px] lg:w-[150px] flex-shrink-0 h-9 px-3 border-0 bg-transparent shadow-none focus:ring-0 transition-colors outline-none text-xs md:text-sm font-medium",
-                                categoryValue !== "all" ? "text-primary font-bold" : "text-muted-foreground"
-                            )}>
-                                <div className="flex items-center gap-2 flex-1 min-w-0">
-                                    <div className="truncate text-left">
-                                        <SelectValue placeholder="Categoria" />
-                                    </div>
+                    <Select value={categoryValue} onValueChange={onCategoryChange}>
+                        <SelectTrigger
+                            variant="premium"
+                            className={cn(
+                                "w-full sm:w-[140px] lg:w-[150px] flex-shrink-0 h-11 px-3 text-xs md:text-sm",
+                                categoryValue !== "all" ? "text-primary font-semibold" : "text-muted-foreground"
+                            )}
+                        >
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                                <div className="truncate text-left">
+                                    <SelectValue placeholder="Categoria" />
                                 </div>
-                            </SelectTrigger>
-                            <SelectContent className="max-h-[300px] rounded-xl border-white/5 backdrop-blur-xl bg-white/80 dark:bg-slate-950/80">
-                                <SelectItem value="all">Tutte le categorie</SelectItem>
-                                {allGroupedCategories.map((group) => (
-                                    <div key={group.key}>
-                                        <div className="mt-2 px-2 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground/70">
-                                            {group.label}
-                                        </div>
-                                        {group.categories.map((category) => (
-                                            <SelectItem key={category.id} value={category.id} className="rounded-lg">
-                                                <div className="flex items-center gap-2">
-                                                    <CategoryIcon categoryName={category.label} size={14} />
-                                                    <span>{category.label}</span>
-                                                </div>
-                                            </SelectItem>
-                                        ))}
+                            </div>
+                        </SelectTrigger>
+                        <SelectContent variant="premium" className="max-h-[300px]">
+                            <SelectItem value="all">Tutte le categorie</SelectItem>
+                            {allGroupedCategories.map((group) => (
+                                <div key={group.key}>
+                                    <div className={cn("mt-2 px-2 py-1.5", premiumFieldLabelClassName)}>
+                                        {group.label}
                                     </div>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                                    {group.categories.map((category) => (
+                                        <SelectItem key={category.id} value={category.id} className="rounded-lg">
+                                            <div className="flex items-center gap-2">
+                                                <CategoryIcon categoryName={category.label} size={14} />
+                                                <span>{category.label}</span>
+                                            </div>
+                                        </SelectItem>
+                                    ))}
+                                </div>
+                            ))}
+                        </SelectContent>
+                    </Select>
 
 
                     {hasActiveFilters && onResetFilters && (
@@ -172,23 +177,25 @@ export function TransactionsFilterBar({
 
             {/* Custom Date Range Inputs */}
             {periodValue === "custom" && (
-                <div className="flex items-center gap-3 p-3 bg-muted/5 border border-muted-foreground/10 rounded-xl animate-enter-up">
+                <div className="surface-subtle flex items-center gap-3 rounded-[1.25rem] p-3 animate-enter-up">
                     <div className="flex flex-col gap-1.5 flex-1">
-                        <label className="px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground/70">Dal</label>
+                        <label className={premiumFieldLabelClassName}>Dal</label>
                         <DatePicker
                             value={dateRange.from ? new Date(dateRange.from) : undefined}
                             onChange={(d) => onDateRangeChange({ ...dateRange, from: d ? formatDateLocalISO(d) : undefined })}
                             placeholder="Data inizio"
                             dateFormat="dd/MM/yyyy"
+                            className="h-11 rounded-[1rem] border-white/30 bg-white/58 shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_18px_36px_-28px_rgba(15,23,42,0.42)] hover:bg-white/72 dark:border-white/12 dark:bg-white/[0.06] dark:hover:bg-white/[0.09]"
                         />
                     </div>
                     <div className="flex flex-col gap-1.5 flex-1">
-                        <label className="px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground/70">Al</label>
+                        <label className={premiumFieldLabelClassName}>Al</label>
                         <DatePicker
                             value={dateRange.to ? new Date(dateRange.to) : undefined}
                             onChange={(d) => onDateRangeChange({ ...dateRange, to: d ? formatDateLocalISO(d) : undefined })}
                             placeholder="Data fine"
                             dateFormat="dd/MM/yyyy"
+                            className="h-11 rounded-[1rem] border-white/30 bg-white/58 shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_18px_36px_-28px_rgba(15,23,42,0.42)] hover:bg-white/72 dark:border-white/12 dark:bg-white/[0.06] dark:hover:bg-white/[0.09]"
                         />
                     </div>
                 </div>

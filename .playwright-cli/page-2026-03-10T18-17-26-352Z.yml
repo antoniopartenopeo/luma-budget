@@ -1,0 +1,101 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - link "NUMA Budget" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img "NUMA Budget" [ref=e8]
+        - navigation [ref=e10]:
+          - button "Dashboard" [ref=e12]:
+            - img
+            - generic [ref=e13]: Dashboard
+          - button "Transazioni" [ref=e15]:
+            - img
+            - generic [ref=e16]: Transazioni
+            - img
+          - button "Insights" [ref=e18]:
+            - img
+            - generic [ref=e19]: Insights
+          - button "Financial Lab" [ref=e21]:
+            - img
+            - generic [ref=e22]: Financial Lab
+          - button "Impostazioni" [ref=e24]:
+            - img
+            - generic [ref=e25]: Impostazioni
+    - generic [ref=e26]:
+      - banner [ref=e27]:
+        - generic [ref=e29]:
+          - generic [ref=e32]:
+            - generic [ref=e33]:
+              - generic [ref=e34]:
+                - button "Registra come Uscita" [ref=e35]:
+                  - img [ref=e36]
+                - button "Registra come Entrata" [ref=e39]:
+                  - img [ref=e40]
+              - textbox "Cosa hai comprato?" [ref=e44]
+            - generic [ref=e46]:
+              - generic [ref=e47]:
+                - generic [ref=e48]: €
+                - spinbutton [ref=e49]
+              - button "10/03/2026" [ref=e51]:
+                - img
+              - combobox [ref=e52]:
+                - generic [ref=e53]: Categoria
+                - img
+              - combobox [ref=e54]
+              - button "Aggiungi" [ref=e55]:
+                - generic [ref=e56]: Aggiungi
+            - button "Necessaria" [ref=e59]
+          - generic [ref=e62]:
+            - button "Apri Numa Flash" [ref=e63]:
+              - img
+            - generic [ref=e65]:
+              - button "Nascondi importi" [ref=e66]:
+                - img
+              - generic [ref=e67]: "N"
+            - generic [ref=e69]:
+              - 'button "Tema: Sistema" [ref=e71]':
+                - img
+              - generic:
+                - radio [checked]:
+                  - img
+                - radio:
+                  - img
+                - radio:
+                  - img
+            - link "Apri Neural Core (0% esperienza acquisita)" [ref=e73] [cursor=pointer]:
+              - /url: /brain
+              - img
+              - img
+              - generic: 0%
+            - button "Notifiche aggiornamenti" [ref=e75]:
+              - img
+      - main [ref=e76]:
+        - generic [ref=e79]:
+          - generic [ref=e80]:
+            - img [ref=e82]
+            - generic [ref=e89]:
+              - paragraph [ref=e90]: Modalita offline
+              - heading "La connessione non e disponibile." [level=1] [ref=e91]
+              - paragraph [ref=e92]: Alcune aree restano accessibili in locale, ma le sezioni che dipendono dalla rete o dal refresh dei dati potrebbero mostrare informazioni non aggiornate finche la connessione non torna stabile.
+            - generic [ref=e93]:
+              - link "Torna alla dashboard" [ref=e94] [cursor=pointer]:
+                - /url: /
+                - img
+                - text: Torna alla dashboard
+              - link "Apri transazioni locali" [ref=e95] [cursor=pointer]:
+                - /url: /transactions
+          - generic [ref=e98]:
+            - generic [ref=e99]:
+              - paragraph [ref=e100]: Cosa puoi fare ora
+              - heading "Continuita locale protetta" [level=2] [ref=e101]
+            - generic [ref=e102]:
+              - generic [ref=e103]:
+                - paragraph [ref=e104]: Consultazione
+                - paragraph [ref=e105]: Le schermate gia presenti sul dispositivo restano navigabili.
+              - generic [ref=e106]:
+                - paragraph [ref=e107]: Ripresa automatica
+                - paragraph [ref=e108]: Appena la rete torna disponibile, la sincronizzazione riprende al prossimo refresh utile.
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e114] [cursor=pointer]:
+    - img [ref=e115]

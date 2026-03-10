@@ -37,6 +37,7 @@ import { CategoryFormSheet } from "@/features/categories/components/category-for
 import { Plus, Pencil } from "lucide-react"
 import { Category } from "@/features/categories/config"
 import { cn } from "@/lib/utils"
+import { premiumFieldLabelClassName } from "@/components/ui/control-styles"
 
 export function CategoriesSection() {
     const { data: allCategories = [], isLoading: isCategoriesLoading } = useCategories({ includeArchived: true })
@@ -245,10 +246,11 @@ export function CategoriesSection() {
                                 <div className="relative w-full sm:max-w-xs">
                                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                     <Input
+                                        variant="premium"
                                         placeholder="Cerca categoria..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="h-10 rounded-xl border-white/30 bg-white/55 pl-9 dark:border-white/10 dark:bg-white/[0.05]"
+                                        className="h-11 rounded-[1rem] pl-10"
                                     />
                                 </div>
                                 <div className="surface-subtle flex items-center justify-between gap-3 p-2 sm:justify-end sm:bg-transparent sm:p-0 sm:shadow-none">
@@ -267,24 +269,32 @@ export function CategoriesSection() {
 
                         {/* Tabs & List */}
                         <Tabs defaultValue="expense" value={activeTab} onValueChange={setActiveTab} className="w-full">
-                            <TabsList className="grid h-11 w-full grid-cols-2 rounded-xl border border-white/30 bg-white/45 p-1 dark:border-white/10 dark:bg-white/[0.04]">
-                                <TabsTrigger value="expense" className="rounded-lg text-xs font-bold data-[state=active]:bg-background data-[state=active]:text-rose-600 data-[state=active]:shadow-sm transition-colors duration-300">
+                            <TabsList variant="premium" className="grid w-full grid-cols-2 gap-2">
+                                <TabsTrigger
+                                    value="expense"
+                                    variant="premium"
+                                    className="text-xs font-bold data-[state=active]:text-rose-600"
+                                >
                                     Uscite ({expenseCategories.length})
                                 </TabsTrigger>
-                                <TabsTrigger value="income" className="rounded-lg text-xs font-bold data-[state=active]:bg-background data-[state=active]:text-emerald-600 data-[state=active]:shadow-sm transition-colors duration-300">
+                                <TabsTrigger
+                                    value="income"
+                                    variant="premium"
+                                    className="text-xs font-bold data-[state=active]:text-emerald-600"
+                                >
                                     Entrate ({incomeCategories.length})
                                 </TabsTrigger>
                             </TabsList>
                             <TabsContent value="expense" className="mt-6 focus-visible:outline-none animate-enter-up">
                                 <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-sm font-bold uppercase tracking-[0.16em] text-muted-foreground">Lista uscite</h3>
+                                    <h3 className={premiumFieldLabelClassName}>Lista uscite</h3>
                                     <span className="text-xs text-muted-foreground">{expenseCategories.length} trovate</span>
                                 </div>
                                 {renderCategoryList(expenseCategories, "Nessuna categoria di spesa.")}
                             </TabsContent>
                             <TabsContent value="income" className="mt-6 focus-visible:outline-none animate-enter-up">
                                 <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-sm font-bold uppercase tracking-[0.16em] text-muted-foreground">Lista entrate</h3>
+                                    <h3 className={premiumFieldLabelClassName}>Lista entrate</h3>
                                     <span className="text-xs text-muted-foreground">{incomeCategories.length} trovate</span>
                                 </div>
                                 {renderCategoryList(incomeCategories, "Nessuna categoria di entrata.")}

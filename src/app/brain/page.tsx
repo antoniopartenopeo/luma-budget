@@ -714,17 +714,17 @@ export default function BrainPage() {
 
                                     <div className="grid gap-3 sm:grid-cols-3">
                                         <div className="rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5">
-                                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Prontezza</p>
+                                            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">Prontezza</p>
                                             <p className="mt-1 text-sm font-bold tabular-nums">{evolutionProgress}%</p>
                                             <p className="mt-1 text-xs font-medium text-muted-foreground">Quanto il Core è vicino a una base utile.</p>
                                         </div>
                                         <div className="rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5">
-                                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Esperienza</p>
+                                            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">Esperienza</p>
                                             <p className="mt-1 text-sm font-bold tabular-nums">{experienceProgress}%</p>
                                             <p className="mt-1 text-xs font-medium text-muted-foreground">{snapshot?.trainedSamples ?? 0}/{BRAIN_MATURITY_SAMPLE_TARGET} campioni già appresi.</p>
                                         </div>
                                         <div className="rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5">
-                                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Stabilità</p>
+                                            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">Stabilita</p>
                                             <p className="mt-1 text-sm font-bold tabular-nums">{stabilityProgress}%</p>
                                             <p className="mt-1 text-xs font-medium text-muted-foreground">Stabilità attuale {liveLoss.toFixed(4)}.</p>
                                         </div>
@@ -732,7 +732,7 @@ export default function BrainPage() {
 
                                     {training.isTraining && (
                                         <div className="rounded-xl border border-primary/30 bg-primary/5 p-3">
-                                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                                            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-primary/90">
                                                 Analisi in corso
                                             </p>
                                             <p className="mt-1 text-xs text-muted-foreground">
@@ -743,16 +743,16 @@ export default function BrainPage() {
 
                                     <div className="grid gap-3 sm:grid-cols-3">
                                         <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Ultimo aggiornamento</p>
+                                            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">Ultimo aggiornamento</p>
                                             <p className="mt-1 text-sm font-bold">{formatUpdatedAt(snapshot?.updatedAt ?? null)}</p>
                                         </div>
                                         <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Affidabilità residuo del mese</p>
+                                            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">Affidabilita residuo del mese</p>
                                             <p className="mt-1 text-sm font-bold tabular-nums">MAE {nowcastMaeLabel} · MAPE {nowcastMapeLabel}</p>
                                             <p className="mt-1 text-xs font-medium text-muted-foreground tabular-nums">{nowcastReliabilitySamples} campioni usati per misurarla</p>
                                         </div>
                                         <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Soglia di qualità</p>
+                                            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">Soglia di qualita</p>
                                             <p className="mt-1 text-sm font-bold tabular-nums">{adaptiveNowcastConfidencePercent}%</p>
                                             <p className="mt-1 text-xs font-medium text-muted-foreground">Confidenza minima richiesta per usare la stima del mese corrente.</p>
                                         </div>
@@ -874,20 +874,20 @@ export default function BrainPage() {
                                     <div className="space-y-4">
                                         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                                             <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Versione Core</p>
+                                                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">Versione Core</p>
                                                 <p className="mt-1 text-sm font-bold">{snapshot?.version ?? "-"}</p>
                                             </div>
                                             <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Schema dei fattori</p>
+                                                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">Schema dei fattori</p>
                                                 <p className="mt-1 text-sm font-bold">{snapshot?.featureSchemaVersion ?? "-"}</p>
                                             </div>
                                             <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Affidabilità prossimo mese</p>
+                                                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">Affidabilita prossimo mese</p>
                                                 <p className="mt-1 text-sm font-bold tabular-nums">MAE {nextMonthMaeLabel} · MAPE {nextMonthMapeLabel}</p>
                                                 <p className="mt-1 text-xs font-medium text-muted-foreground tabular-nums">{nextMonthReliabilitySamples} campioni osservati</p>
                                             </div>
                                             <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Struttura del Core</p>
+                                                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">Struttura del Core</p>
                                                 <p className="mt-1 text-sm font-bold tabular-nums">{vectorWeights.length} unità · {snapshot?.trainedSamples ?? 0} campioni</p>
                                                 <p className="mt-1 text-xs font-medium text-muted-foreground tabular-nums">{activeWeightsCount} attive · {silentWeightsCount} neutre</p>
                                             </div>

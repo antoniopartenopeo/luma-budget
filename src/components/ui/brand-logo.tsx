@@ -16,17 +16,21 @@ export function BrandLogo({
 }: BrandLogoProps) {
     const isSmart = variant === "smart"
 
-    // Default dimensions if not provided
-    const defaultWidth = isSmart ? 32 : 120
-    const defaultHeight = isSmart ? 32 : 40
+    // Match the intrinsic asset ratios so Next/Image does not flag
+    // single-dimension resizing as aspect-ratio distortion.
+    const defaultWidth = isSmart ? 504 : 1024
+    const defaultHeight = isSmart ? 395 : 321
+    const aspectRatio = defaultWidth / defaultHeight
+    const resolvedWidth = width ?? (height ? Math.round(height * aspectRatio) : defaultWidth)
+    const resolvedHeight = height ?? (width ? Math.round(width / aspectRatio) : defaultHeight)
 
     return (
         <div className={cn("relative flex items-center justify-center", className)}>
             <Image
                 src={isSmart ? "/brand/numa-logo-smart.png" : "/brand/numa-logo-full.png"}
                 alt="NUMA Budget"
-                width={width || defaultWidth}
-                height={height || defaultHeight}
+                width={resolvedWidth}
+                height={resolvedHeight}
                 className="object-contain"
                 priority
                 unoptimized

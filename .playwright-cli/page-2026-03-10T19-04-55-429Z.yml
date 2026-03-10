@@ -1,0 +1,64 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - button [ref=e8]:
+            - img
+          - generic [ref=e9]:
+            - button "+" [ref=e10]:
+              - generic [ref=e11]: +
+            - generic [ref=e13]:
+              - button "Apri Numa Flash" [ref=e14]:
+                - img
+              - generic [ref=e16]:
+                - button "Nascondi importi" [ref=e17]:
+                  - img
+                - generic [ref=e18]: "N"
+              - generic [ref=e20]:
+                - 'button "Tema: Sistema" [ref=e22]':
+                  - img
+                - generic:
+                  - radio [checked]:
+                    - img
+                  - radio:
+                    - img
+                  - radio:
+                    - img
+              - link "Apri Neural Core (0% esperienza acquisita)" [ref=e24] [cursor=pointer]:
+                - /url: /brain
+                - img
+                - img
+                - generic: 0%
+              - button "Notifiche aggiornamenti" [ref=e26]:
+                - img
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e32]:
+              - button "Registra come Uscita" [ref=e33]:
+                - img [ref=e34]
+              - button "Registra come Entrata" [ref=e37]:
+                - img [ref=e38]
+            - textbox "Cosa hai comprato?" [ref=e41]
+          - generic [ref=e43]:
+            - generic [ref=e44]:
+              - generic [ref=e45]: €
+              - spinbutton [ref=e46]
+            - button "10/03/2026" [ref=e47]:
+              - img
+            - combobox [ref=e48]:
+              - generic [ref=e49]: Categoria
+              - img
+            - combobox [ref=e50]
+            - button "Aggiungi" [ref=e51]:
+              - generic [ref=e52]: Aggiungi
+    - main [ref=e53]:
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - heading "Cronologia novità" [level=1] [ref=e58]
+          - paragraph [ref=e59]: Cosa è cambiato nell'app, versione dopo versione.
+        - generic [ref=e60]:
+          - button "Segna tutto come letto" [disabled]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e74] [cursor=pointer]:
+    - img [ref=e75]

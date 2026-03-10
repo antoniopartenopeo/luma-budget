@@ -1,0 +1,169 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - link "NUMA Budget" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img "NUMA Budget" [ref=e8]
+        - navigation [ref=e10]:
+          - button "Dashboard" [ref=e12]:
+            - img
+            - generic [ref=e13]: Dashboard
+          - button "Transazioni" [ref=e16]:
+            - img
+            - generic [ref=e17]: Transazioni
+            - img
+          - button "Insights" [ref=e19]:
+            - img
+            - generic [ref=e20]: Insights
+          - button "Financial Lab" [ref=e22]:
+            - img
+            - generic [ref=e23]: Financial Lab
+          - button "Impostazioni" [ref=e25]:
+            - img
+            - generic [ref=e26]: Impostazioni
+    - generic [ref=e27]:
+      - banner [ref=e28]:
+        - generic [ref=e30]:
+          - generic [ref=e33]:
+            - generic [ref=e34]:
+              - generic [ref=e35]:
+                - button "Registra come Uscita" [ref=e36]:
+                  - img [ref=e37]
+                - button "Registra come Entrata" [ref=e40]:
+                  - img [ref=e41]
+              - textbox "Cosa hai comprato?" [ref=e45]
+            - generic [ref=e47]:
+              - generic [ref=e48]:
+                - generic [ref=e49]: €
+                - spinbutton [ref=e50]
+              - button "10/03/2026" [ref=e52]:
+                - img
+              - combobox [ref=e53]:
+                - generic [ref=e54]: Categoria
+                - img
+              - combobox [ref=e55]
+              - button "Aggiungi" [ref=e56]:
+                - generic [ref=e57]: Aggiungi
+            - button "Necessaria" [ref=e60]
+          - generic [ref=e63]:
+            - button "Apri Numa Flash" [ref=e64]:
+              - img
+            - generic [ref=e66]:
+              - button "Nascondi importi" [ref=e67]:
+                - img
+              - generic [ref=e68]: "N"
+            - generic [ref=e70]:
+              - 'button "Tema: Sistema" [ref=e72]':
+                - img
+              - generic:
+                - radio [checked]:
+                  - img
+                - radio:
+                  - img
+                - radio:
+                  - img
+            - link "Apri Neural Core (0% esperienza acquisita)" [ref=e74] [cursor=pointer]:
+              - /url: /brain
+              - img
+              - img
+              - generic: 0%
+            - button "Notifiche aggiornamenti" [ref=e76]:
+              - img
+      - main [ref=e77]:
+        - generic [ref=e78]:
+          - generic [ref=e80]:
+            - heading "Dashboard" [level=1] [ref=e81]
+            - paragraph [ref=e82]: Il punto di riferimento per capire come stanno andando le tue finanze.
+          - generic [ref=e83]:
+            - generic [ref=e84]:
+              - generic [ref=e86]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - img
+                - generic [ref=e87]:
+                  - generic [ref=e88]:
+                    - heading "Come Funziona Numa" [level=4] [ref=e91]
+                    - generic [ref=e92]: Motore di lettura
+                  - generic [ref=e93]:
+                    - article [ref=e94]:
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - img
+                      - generic [ref=e95]:
+                        - img [ref=e97]
+                        - paragraph [ref=e99]: Passo 1
+                        - paragraph [ref=e100]: Quanto ti resta oggi
+                        - paragraph [ref=e101]: Il saldo del periodo mostra quanta liquidità resta dopo entrate e uscite.
+                    - article [ref=e102]:
+                      - generic [ref=e103]:
+                        - img [ref=e105]
+                        - paragraph [ref=e108]: Passo 2
+                        - paragraph [ref=e109]: Cosa migliora il margine
+                        - paragraph [ref=e110]: Se riduci le spese extra, il margine residuo migliora in modo diretto.
+                    - article [ref=e111]:
+                      - generic [ref=e112]:
+                        - img [ref=e114]
+                        - paragraph [ref=e117]: Passo 3
+                        - paragraph [ref=e118]: Quando cambia la stima
+                        - paragraph [ref=e119]: Ogni nuovo movimento aggiorna lettura, ritmo e direzione del mese.
+                - generic [ref=e121]:
+                  - generic [ref=e122]:
+                    - img [ref=e124]
+                    - generic [ref=e127]:
+                      - paragraph [ref=e128]: Controllo e trasparenza
+                      - paragraph [ref=e129]: Logica chiara, dati reali, privacy locale
+                  - button "Apri dettagli" [ref=e130]:
+                    - img
+                    - text: Apri dettagli
+              - generic [ref=e132]:
+                - generic [ref=e135]:
+                  - generic [ref=e136]: Carte utilizzate
+                  - generic [ref=e137]: Rilevate nello storico completo, indipendenti dal periodo attivo
+                - region "Carte utilizzate" [ref=e139]
+              - generic [ref=e152]:
+                - generic [ref=e154]:
+                  - generic [ref=e156]: Panoramica del periodo
+                  - generic [ref=e158]:
+                    - generic [ref=e159]:
+                      - button [ref=e160]:
+                        - img
+                      - generic [ref=e161]:
+                        - paragraph [ref=e162]: Periodo attivo
+                        - generic [ref=e163]:
+                          - img [ref=e164]
+                          - generic [ref=e166]: Marzo 2026
+                      - button [ref=e167]:
+                        - img
+                    - generic [ref=e168]:
+                      - paragraph [ref=e169]: Profondita lettura
+                      - generic [ref=e170]:
+                        - button "Mese" [pressed] [ref=e171]:
+                          - generic [ref=e173]: Mese
+                        - button "3M" [ref=e174]:
+                          - generic [ref=e175]: 3M
+                        - button "6M" [ref=e176]:
+                          - generic [ref=e177]: 6M
+                        - button "12M" [ref=e178]:
+                          - generic [ref=e179]: 12M
+                - generic [ref=e208] [cursor=pointer]:
+                  - generic [ref=e211]: Segnale del mese
+                  - generic [ref=e212]:
+                    - generic [ref=e215]: Analizzo
+                    - generic [ref=e216]:
+                      - generic [ref=e218]: "Fonte: in aggiornamento · Affidabilità N/D"
+                      - paragraph [ref=e219]: Sto rileggendo il mese
+            - generic [ref=e220]:
+              - generic [ref=e225]:
+                - generic [ref=e226]: Distribuzione Risorse
+                - generic [ref=e227]: Sto preparando la composizione del periodo...
+              - generic [ref=e258]:
+                - generic [ref=e259]: Movimenti recenti
+                - generic [ref=e260]: Sto preparando l'anteprima del ledger nel periodo attivo...
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e313] [cursor=pointer]:
+    - img [ref=e314]

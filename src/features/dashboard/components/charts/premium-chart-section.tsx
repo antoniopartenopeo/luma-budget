@@ -46,8 +46,8 @@ export function PremiumChartSection({
     if (isLoading) {
         return (
             <MacroSection title={title} description="Sto preparando i dati..." className={className}>
-                <div style={{ height: chartHeight }}>
-                    <Skeleton className="h-full w-full rounded-3xl" />
+                <div className="surface-subtle p-4 sm:p-5" style={{ height: chartHeight }}>
+                    <Skeleton className="h-full w-full rounded-[1.75rem]" />
                 </div>
             </MacroSection>
         )
@@ -102,11 +102,13 @@ export function PremiumChartSection({
             ) : (
                 <div className="flex flex-col items-center justify-center relative z-10">
                     {showChart && (
-                        <div className="w-full relative text-foreground" style={{ height: chartHeight }}>
-                            <EChartsWrapper
-                                option={option}
-                                onEvents={onEvents}
-                            />
+                        <div className="w-full relative p-4 sm:p-5" style={{ height: chartHeight }}>
+                            <div className="surface-subtle h-full overflow-hidden rounded-[1.9rem] p-3 sm:p-4 text-foreground">
+                                <EChartsWrapper
+                                    option={option}
+                                    onEvents={onEvents}
+                                />
+                            </div>
                         </div>
                     )}
 

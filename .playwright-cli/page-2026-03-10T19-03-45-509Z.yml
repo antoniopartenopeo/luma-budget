@@ -1,0 +1,111 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - link "NUMA Budget" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img "NUMA Budget" [ref=e8]
+        - navigation [ref=e10]:
+          - button "Dashboard" [ref=e12]:
+            - img
+            - generic [ref=e13]: Dashboard
+          - generic [ref=e14]:
+            - button "Transazioni" [ref=e15]:
+              - img
+              - generic [ref=e16]: Transazioni
+              - img
+            - generic [ref=e18]:
+              - link "Importa CSV" [ref=e19] [cursor=pointer]:
+                - /url: /transactions/import
+                - button "Importa CSV" [ref=e20]:
+                  - img
+                  - generic [ref=e21]: Importa CSV
+              - link "Esporta CSV" [ref=e22] [cursor=pointer]:
+                - /url: /transactions?action=export
+                - button "Esporta CSV" [ref=e23]:
+                  - img
+                  - generic [ref=e24]: Esporta CSV
+          - button "Insights" [ref=e26]:
+            - img
+            - generic [ref=e27]: Insights
+          - button "Financial Lab" [ref=e29]:
+            - img
+            - generic [ref=e30]: Financial Lab
+          - button "Impostazioni" [ref=e32]:
+            - img
+            - generic [ref=e33]: Impostazioni
+    - generic [ref=e34]:
+      - banner [ref=e35]:
+        - generic [ref=e37]:
+          - generic [ref=e40]:
+            - generic [ref=e41]:
+              - generic [ref=e42]:
+                - button "Registra come Uscita" [ref=e43]:
+                  - img [ref=e44]
+                - button "Registra come Entrata" [ref=e47]:
+                  - img [ref=e48]
+              - textbox "Cosa hai comprato?" [ref=e51]
+            - generic [ref=e53]:
+              - generic [ref=e54]:
+                - generic [ref=e55]: €
+                - spinbutton [ref=e56]
+              - button "10/03/2026" [ref=e58]:
+                - img
+              - combobox [ref=e59]:
+                - generic [ref=e60]: Categoria
+                - img
+              - combobox [ref=e61]
+              - button "Aggiungi" [ref=e62]:
+                - generic [ref=e63]: Aggiungi
+            - button "Necessaria" [ref=e66]
+          - generic [ref=e69]:
+            - button "Apri Numa Flash" [ref=e70]:
+              - img
+            - generic [ref=e72]:
+              - button "Nascondi importi" [ref=e73]:
+                - img
+              - generic [ref=e74]: "N"
+            - generic [ref=e76]:
+              - 'button "Tema: Sistema" [ref=e78]':
+                - img
+              - generic:
+                - radio [checked]:
+                  - img
+                - radio:
+                  - img
+                - radio:
+                  - img
+            - link "Apri Neural Core (0% esperienza acquisita)" [ref=e80] [cursor=pointer]:
+              - /url: /brain
+              - img
+              - img
+              - generic: 0%
+            - button "Notifiche aggiornamenti" [ref=e82]:
+              - img
+      - main [ref=e83]:
+        - generic [ref=e84]:
+          - generic [ref=e87]:
+            - heading "Transazioni" [level=1] [ref=e88]
+            - paragraph [ref=e89]: Tutti i tuoi movimenti, con filtri e dettagli utili.
+          - generic [ref=e93]:
+            - generic [ref=e94]:
+              - generic [ref=e95]: Elenco Movimenti
+              - generic [ref=e96]: I movimenti del periodo selezionato.
+            - generic [ref=e99]:
+              - generic [ref=e100]:
+                - img [ref=e101]
+                - textbox "Cerca..." [ref=e104]
+              - generic [ref=e105]:
+                - combobox [ref=e106]:
+                  - img
+                - combobox [ref=e107]
+                - combobox [ref=e108]:
+                  - img
+                - combobox [ref=e109]
+                - combobox [ref=e110]:
+                  - img
+                - combobox [ref=e111]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e151] [cursor=pointer]:
+    - img [ref=e152]
+  - alert [ref=e155]

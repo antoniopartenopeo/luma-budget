@@ -43,20 +43,43 @@ function SettingsContent() {
 
     return (
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="mb-8 grid w-full grid-cols-2 gap-1 rounded-xl bg-muted/20 p-1 sm:grid-cols-4">
-                <TabsTrigger value="preferences" className="min-w-0 gap-2 px-2 py-2 text-xs sm:text-sm" aria-label="Preferenze">
+            <TabsList
+                variant="premium"
+                className="mb-8 grid w-full grid-cols-2 gap-2 sm:grid-cols-4"
+            >
+                <TabsTrigger
+                    value="preferences"
+                    variant="premium"
+                    className="min-w-0 gap-2 px-2 py-2 text-xs sm:text-sm"
+                    aria-label="Preferenze"
+                >
                     <Settings2 className="h-4 w-4 hidden xs:block" aria-hidden="true" />
                     <span className="truncate">Preferenze</span>
                 </TabsTrigger>
-                <TabsTrigger value="categories" className="min-w-0 gap-2 px-2 py-2 text-xs sm:text-sm" aria-label="Categorie">
+                <TabsTrigger
+                    value="categories"
+                    variant="premium"
+                    className="min-w-0 gap-2 px-2 py-2 text-xs sm:text-sm"
+                    aria-label="Categorie"
+                >
                     <Database className="h-4 w-4 hidden xs:block" aria-hidden="true" />
                     <span className="truncate">Categorie</span>
                 </TabsTrigger>
-                <TabsTrigger value="backup" className="min-w-0 gap-2 px-2 py-2 text-xs sm:text-sm" aria-label="Backup">
+                <TabsTrigger
+                    value="backup"
+                    variant="premium"
+                    className="min-w-0 gap-2 px-2 py-2 text-xs sm:text-sm"
+                    aria-label="Backup"
+                >
                     <Download className="h-4 w-4 hidden xs:block" aria-hidden="true" />
                     <span className="truncate">Backup</span>
                 </TabsTrigger>
-                <TabsTrigger value="advanced" className="min-w-0 gap-2 px-2 py-2 text-xs sm:text-sm" aria-label="Avanzate (sezione tecnica)">
+                <TabsTrigger
+                    value="advanced"
+                    variant="premium"
+                    className="min-w-0 gap-2 px-2 py-2 text-xs sm:text-sm"
+                    aria-label="Avanzate (sezione tecnica)"
+                >
                     <Wrench className="h-4 w-4 hidden xs:block" aria-hidden="true" />
                     <span className="truncate">Avanzate</span>
                 </TabsTrigger>

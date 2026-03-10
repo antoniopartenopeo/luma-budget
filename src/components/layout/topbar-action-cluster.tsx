@@ -31,16 +31,11 @@ function clampPercent(value: number): number {
 function resolveOrbitPalette(percent: number): {
     primaryFill: string
     primaryGlow: string
-    secondaryFill: string
-    secondaryGlow: string
 } {
     const normalized = clampPercent(percent) / 100
     const baseHue = 220 - normalized * 72
     const baseSaturation = 90 - normalized * 6
     const primaryLightness = 66 - normalized * 2
-    const secondaryHue = baseHue + 16
-    const secondarySaturation = Math.max(78, baseSaturation - 6)
-    const secondaryLightness = 73 - normalized * 3
 
     return {
         primaryFill: `hsl(${baseHue} ${baseSaturation}% ${primaryLightness}%)`,
@@ -49,13 +44,6 @@ function resolveOrbitPalette(percent: number): {
             `0 0 6px hsl(${baseHue} ${baseSaturation}% ${primaryLightness}% / 0.96)`,
             `0 0 12px hsl(${baseHue} ${baseSaturation}% ${primaryLightness}% / 0.82)`,
             `0 0 20px hsl(${baseHue} ${baseSaturation}% ${primaryLightness}% / 0.62)`,
-        ].join(", "),
-        secondaryFill: `hsl(${secondaryHue} ${secondarySaturation}% ${secondaryLightness}%)`,
-        secondaryGlow: [
-            `0 0 1px hsl(${secondaryHue} ${secondarySaturation}% ${secondaryLightness}% / 1)`,
-            `0 0 5px hsl(${secondaryHue} ${secondarySaturation}% ${secondaryLightness}% / 0.92)`,
-            `0 0 10px hsl(${secondaryHue} ${secondarySaturation}% ${secondaryLightness}% / 0.74)`,
-            `0 0 16px hsl(${secondaryHue} ${secondarySaturation}% ${secondaryLightness}% / 0.56)`,
         ].join(", "),
     }
 }
@@ -90,7 +78,7 @@ function getAvatarInitials(profile?: { firstName?: string; lastName?: string; di
 }
 
 const segmentButtonClass =
-    "group relative h-10 w-10 rounded-full border border-primary/15 bg-transparent text-muted-foreground transition-[background-color,color,border-color,box-shadow,transform] duration-300 hover:bg-primary/10 hover:text-primary hover:-translate-y-[1px] hover:shadow-md active:bg-primary/15 active:text-primary active:scale-[0.98] motion-reduce:transform-none focus-visible:ring-2 focus-visible:ring-primary/25"
+    "group relative h-10 w-10 rounded-full border border-primary/15 bg-transparent text-muted-foreground transition-[background-color,color,border-color,box-shadow] duration-200 hover:bg-primary/10 hover:text-primary hover:shadow-md active:bg-primary/15 active:text-primary focus-visible:ring-2 focus-visible:ring-primary/25"
 
 const themeCapsuleSurfaceClass =
     "bg-white/45 dark:bg-white/[0.07] backdrop-blur-xl"
@@ -103,12 +91,12 @@ function themeLabel(theme: ThemePreference): string {
 
 function ThemeIcon({ theme }: { theme: ThemePreference }) {
     if (theme === "dark") {
-        return <Moon className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 group-active:scale-110 motion-reduce:transform-none" />
+        return <Moon className="h-4 w-4" />
     }
     if (theme === "light") {
-        return <Sun className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 group-active:scale-110 motion-reduce:transform-none" />
+        return <Sun className="h-4 w-4" />
     }
-    return <Monitor className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 group-active:scale-110 motion-reduce:transform-none" />
+    return <Monitor className="h-4 w-4" />
 }
 
 const themeOptions: Array<{ value: ThemePreference; label: string; icon: React.ElementType; ariaLabel: string }> = [
@@ -217,7 +205,7 @@ export function TopbarActionCluster() {
                             className={cn(segmentButtonClass, "border-none hover:shadow-none text-primary")}
                         >
                             <span className="pointer-events-none absolute inset-0 rounded-full border border-primary/30 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-active:opacity-100 motion-reduce:animate-none" />
-                            <Sparkles className="h-5 w-5 fill-primary transition-transform duration-300 group-hover:rotate-6 group-active:rotate-6 motion-reduce:transform-none" />
+                            <Sparkles className="h-5 w-5 fill-primary" />
                         </Button>
                     }
                 />
@@ -238,13 +226,13 @@ export function TopbarActionCluster() {
                         aria-label={isPrivacyMode ? "Mostra importi" : "Nascondi importi"}
                     >
                         {isPrivacyMode ? (
-                            <Eye className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 group-active:scale-110 motion-reduce:transform-none" />
+                            <Eye className="h-4 w-4" />
                         ) : (
-                            <EyeOff className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 group-active:scale-110 motion-reduce:transform-none" />
+                            <EyeOff className="h-4 w-4" />
                         )}
                     </Button>
 
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full border border-primary/20 bg-primary/15 text-[10px] font-black text-primary transition-transform duration-300 group-hover:scale-[1.02] group-active:scale-[1.02] motion-reduce:transform-none">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full border border-primary/20 bg-primary/15 text-[10px] font-bold text-primary">
                         {initials}
                     </div>
                 </div>
@@ -289,7 +277,7 @@ export function TopbarActionCluster() {
                         className={cn(
                             segmentButtonClass,
                             "relative z-50 border-transparent bg-transparent hover:shadow-none text-primary",
-                            isThemePanelOpen && "hover:-translate-y-0 active:scale-100 hover:bg-transparent bg-transparent"
+                            isThemePanelOpen && "hover:bg-transparent bg-transparent"
                         )}
                     >
                         <ThemeIcon theme={theme} />
@@ -326,7 +314,7 @@ export function TopbarActionCluster() {
                                         onClick={() => handleThemeChange(option.value)}
                                         className={cn(
                                             "flex h-8 w-8 items-center justify-center rounded-full",
-                                            "transition-[background-color,color,transform,border-color] duration-200 hover:bg-primary/10 hover:text-primary active:scale-[0.98] motion-reduce:transform-none",
+                                            "transition-[background-color,color,border-color] duration-200 hover:bg-primary/10 hover:text-primary",
                                             isActive
                                                 ? "bg-primary/16 text-primary border border-primary/35 shadow-[0_0_0_1px_rgba(0,205,255,0.12)]"
                                                 : "text-foreground/80 border border-transparent"
@@ -387,25 +375,10 @@ export function TopbarActionCluster() {
                         </span>
                         <span
                             aria-hidden="true"
-                            className="pointer-events-none absolute inset-[8px] motion-safe:animate-spin-slow motion-safe:[animation-duration:10s] motion-safe:[animation-direction:reverse] motion-reduce:animate-none"
-                        >
-                            <span
-                                className="absolute left-1/2 top-0 h-1 w-1 -translate-x-1/2 rounded-full"
-                                style={{
-                                    backgroundColor: orbitPalette.secondaryFill,
-                                    boxShadow: orbitPalette.secondaryGlow,
-                                    border: "1px solid hsl(0 0% 100% / 0.66)",
-                                    filter: "saturate(1.24) brightness(1.12)",
-                                    transition: "background-color 640ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 640ms cubic-bezier(0.22, 1, 0.36, 1)",
-                                }}
-                            />
-                        </span>
-                        <span
-                            aria-hidden="true"
                             className="pointer-events-none absolute inset-[6px] rounded-full border border-primary/25"
                         />
 
-                        <BrainCircuit className="relative z-10 h-[18px] w-[18px] transition-transform duration-300 group-hover:scale-105 group-active:scale-105 motion-reduce:transform-none" />
+                        <BrainCircuit className="relative z-10 h-[18px] w-[18px]" />
 
                         <span
                             data-testid="topbar-brain-percent"

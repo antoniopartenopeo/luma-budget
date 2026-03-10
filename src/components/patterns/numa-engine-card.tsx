@@ -113,11 +113,11 @@ export function NumaEngineCard({
                 <div className="mb-5 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
                         <div className="h-1 w-8 rounded-full bg-primary" />
-                        <h4 className="text-xs font-black uppercase tracking-[0.18em] text-foreground/80">
+                        <h4 className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">
                             {NUMA_ENGINE_UNIVERSAL_TITLE}
                         </h4>
                     </div>
-                    <span className="rounded-full border border-white/40 bg-white/44 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-foreground/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.24)] dark:border-white/12 dark:bg-white/[0.05]">
+                    <span className="rounded-full border border-white/40 bg-white/44 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.24)] dark:border-white/12 dark:bg-white/[0.05]">
                         Motore di lettura
                     </span>
                 </div>
@@ -178,10 +178,10 @@ export function NumaEngineCard({
                                     >
                                         <StepIcon className="h-4 w-4" />
                                     </div>
-                                    <p className={cn("text-[11px] font-black uppercase tracking-[0.16em] opacity-80", step.colorClass)}>
+                                    <p className={cn("text-[10px] font-bold uppercase tracking-[0.14em] opacity-80", step.colorClass)}>
                                         {step.stepLabel}
                                     </p>
-                                    <p className="text-sm font-black leading-tight text-foreground">
+                                    <p className="text-sm font-bold leading-tight text-foreground">
                                         {step.title}
                                     </p>
                                     <p className="text-xs font-medium leading-relaxed text-muted-foreground/90">
@@ -201,7 +201,7 @@ export function NumaEngineCard({
                             <ShieldCheck className="h-5 w-5" />
                         </div>
                         <div className="text-left">
-                            <p className="text-xs font-black uppercase tracking-[0.16em] text-foreground">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">
                                 {certificationTitle}
                             </p>
                             <p className="text-sm font-medium leading-relaxed text-muted-foreground">
@@ -234,7 +234,7 @@ export function NumaEngineCard({
                                 <div key={idx} className="space-y-1">
                                     <div className="mb-2 flex items-center gap-2 text-primary">
                                         {stat.icon ? <stat.icon className="h-3 w-3" /> : <div className="h-1.5 w-1.5 rounded-full bg-primary" />}
-                                        <span className="text-xs font-bold uppercase tracking-[0.14em]">{stat.label}</span>
+                                        <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground/80">{stat.label}</span>
                                     </div>
                                     <p className="text-xl font-black tracking-tighter text-foreground tabular-nums">
                                         {stat.value}

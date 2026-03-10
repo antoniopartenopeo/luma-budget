@@ -12,6 +12,10 @@ import { useCategories } from "@/features/categories/api/use-categories"
 import { parseCurrencyToCents } from "@/domain/money"
 import { CategoryPicker } from "@/features/categories/components/category-picker"
 import { CreateTransactionDTO } from "@/features/transactions/api/types"
+import {
+    premiumFieldLabelClassName,
+    premiumHelperTextClassName,
+} from "@/components/ui/control-styles"
 
 interface TransactionFormProps {
     defaultValues?: Partial<CreateTransactionDTO>
@@ -125,9 +129,9 @@ export function TransactionForm({
                     type="button"
                     onClick={() => handleTypeChange("expense")}
                     className={cn(
-                        "flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-bold transition-[background-color,color,box-shadow,transform] duration-300",
+                        "flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-[background-color,color,box-shadow] duration-200",
                         type === "expense"
-                            ? "bg-white dark:bg-white/10 text-destructive shadow-md scale-[1.02]"
+                            ? "bg-white dark:bg-white/10 text-destructive shadow-md"
                             : "text-muted-foreground hover:bg-white/10 hover:text-foreground"
                     )}
                 >
@@ -138,9 +142,9 @@ export function TransactionForm({
                     type="button"
                     onClick={() => handleTypeChange("income")}
                     className={cn(
-                        "flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-bold transition-[background-color,color,box-shadow,transform] duration-300",
+                        "flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-[background-color,color,box-shadow] duration-200",
                         type === "income"
-                            ? "bg-white dark:bg-white/10 text-emerald-600 shadow-md scale-[1.02]"
+                            ? "bg-white dark:bg-white/10 text-emerald-600 shadow-md"
                             : "text-muted-foreground hover:bg-white/10 hover:text-foreground"
                     )}
                 >
@@ -150,27 +154,29 @@ export function TransactionForm({
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="description" className="pl-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Descrizione</Label>
+                <Label htmlFor="description" className={premiumFieldLabelClassName}>Descrizione</Label>
                 <Input
                     id="description"
+                    variant="premium"
                     placeholder="es. Spesa settimanale"
                     value={description}
                     onChange={(e) => handleFieldChange(setDescription, e.target.value)}
-                    className={cn("h-11", errors.description ? "border-destructive focus-visible:ring-destructive" : "")}
+                    className={cn("h-11 rounded-[1rem]", errors.description ? "border-destructive focus-visible:ring-destructive" : "")}
                 />
                 {errors.description && <p className="text-xs text-destructive">{errors.description}</p>}
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="amount" className="pl-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Importo</Label>
+                <Label htmlFor="amount" className={premiumFieldLabelClassName}>Importo</Label>
                 <div className="relative">
                     <span className="absolute left-3 top-2.5 text-muted-foreground font-medium">€</span>
                     <Input
                         id="amount"
+                        variant="premium"
                         type="number"
                         placeholder="0.00"
                         className={cn(
-                            "pl-7 h-11 text-lg font-bold tracking-tight",
+                            "h-11 rounded-[1rem] pl-7 text-lg font-black tracking-tight tabular-nums",
                             errors.amount ? "border-destructive focus-visible:ring-destructive" : ""
                         )}
                         value={amount}
@@ -181,24 +187,26 @@ export function TransactionForm({
             </div>
 
             <div className="space-y-2">
-                <Label className="pl-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Data</Label>
+                <Label className={premiumFieldLabelClassName}>Data</Label>
                 <div className="h-11">
                     <DatePicker
                         value={date}
                         onChange={(d) => d && setDate(d)}
                         disabled={isLoading}
+                        className="h-11 rounded-[1rem] border-white/30 bg-white/58 shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_18px_36px_-28px_rgba(15,23,42,0.42)] hover:bg-white/72 dark:border-white/12 dark:bg-white/[0.06] dark:hover:bg-white/[0.09]"
                     />
                 </div>
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="category" className="pl-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Categoria</Label>
+                <Label htmlFor="category" className={premiumFieldLabelClassName}>Categoria</Label>
                 <CategoryPicker
                     value={categoryId}
                     onChange={handleCategoryChange}
                     type={type}
+                    variant="premium"
                     disabled={isLoading}
-                    className={cn("h-11", errors.category ? "border-destructive ring-destructive" : "")}
+                    className={cn("h-11 rounded-[1rem]", errors.category ? "border-destructive ring-destructive" : "")}
                 />
                 {errors.category && <p className="text-xs text-destructive">{errors.category}</p>}
             </div>
@@ -225,11 +233,11 @@ export function TransactionForm({
                     <div className="flex flex-col gap-0.5">
                         <Label
                             htmlFor="isSuperfluous"
-                            className="font-medium cursor-pointer text-sm"
+                            className="cursor-pointer text-sm font-semibold"
                         >
                             Segna come spesa superflua
                         </Label>
-                        <span className="text-xs text-muted-foreground">
+                        <span className={premiumHelperTextClassName}>
                             Spese non essenziali da monitorare per ridurle nel tempo
                         </span>
                     </div>

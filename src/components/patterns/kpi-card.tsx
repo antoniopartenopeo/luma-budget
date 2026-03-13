@@ -102,6 +102,12 @@ export function KpiCard({
     const valueShiftY = useTransform(depthY, [-0.5, 0.5], [-4, 4])
     const toneStyle = TONE_STYLES[tone]
     const surfaceStyle = resolveInteractiveSurfaceStyle(toneStyle.rawColor, isPrimed ? "active" : "rest", "neutral")
+    const cardStyle = {
+        borderColor: surfaceStyle.borderColor,
+        backgroundColor: surfaceStyle.backgroundColor,
+        boxShadow: surfaceStyle.boxShadow,
+    }
+    const surfaceBackgroundStyle = { backgroundImage: surfaceStyle.backgroundImage }
 
     if (isLoading) {
         return (
@@ -136,15 +142,11 @@ export function KpiCard({
                     !compact && "hover:-translate-y-0.5 hover:border-white/55 hover:shadow-[0_22px_44px_-28px_rgba(15,23,42,0.4)]",
                     className
                 )}
-                style={{
-                    borderColor: surfaceStyle.borderColor,
-                    backgroundColor: surfaceStyle.backgroundColor,
-                    boxShadow: surfaceStyle.boxShadow
-                }}
+                style={cardStyle}
                 onClick={onClick}
             >
                 <div className="pointer-events-none absolute inset-0">
-                    <div className="absolute inset-0 opacity-[0.92]" style={{ backgroundImage: surfaceStyle.backgroundImage }} />
+                    <div className="absolute inset-0 opacity-[0.92]" style={surfaceBackgroundStyle} />
                     <div className="absolute inset-[1px] rounded-[calc(theme(borderRadius.xl)-1px)] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02)_34%,transparent_62%)] opacity-80" />
                 </div>
 

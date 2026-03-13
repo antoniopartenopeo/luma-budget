@@ -45,6 +45,7 @@ const NUMA_ENGINE_UNIVERSAL_TITLE = "Come Funziona Numa"
 const NUMA_ENGINE_AUDIT_OPEN_LABEL = "Apri dettagli"
 const NUMA_ENGINE_AUDIT_CLOSE_LABEL = "Chiudi dettagli"
 const ENGINE_ACCENT_COLOR = "#0ea5a8"
+const NOISE_TEXTURE_BACKGROUND = "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")"
 
 function resolveEngineStepColor(colorClass: string): string {
     if (colorClass.includes("emerald")) return "#10b981"
@@ -133,28 +134,29 @@ export function NumaEngineCard({
                             isActive ? "active" : "rest",
                             "neutral"
                         )
+                        const stepCardStyle = {
+                            borderColor: stepSurfaceStyle.borderColor,
+                            backgroundColor: stepSurfaceStyle.backgroundColor,
+                            boxShadow: stepSurfaceStyle.boxShadow,
+                        }
+                        const stepBackgroundStyle = { backgroundImage: stepSurfaceStyle.backgroundImage }
+                        const stepNoiseStyle = { backgroundImage: NOISE_TEXTURE_BACKGROUND }
 
                         return (
                             <motion.article
                                 key={idx}
                                 className="group/step relative overflow-hidden rounded-xl border glass-card p-4 [transform-style:preserve-3d] transition-[transform,border-color,box-shadow,background-color] duration-300"
-                                style={{
-                                    borderColor: stepSurfaceStyle.borderColor,
-                                    backgroundColor: stepSurfaceStyle.backgroundColor,
-                                    boxShadow: stepSurfaceStyle.boxShadow
-                                }}
+                                style={stepCardStyle}
                                 whileHover={prefersReducedMotion ? undefined : { y: -2, scale: 1.01 }}
                                 transition={INTERACTIVE_CARD_TRANSITION}
                                 onMouseEnter={() => setActiveStep(idx)}
                                 onFocusCapture={() => setActiveStep(idx)}
                             >
-                                <div className="pointer-events-none absolute inset-0 opacity-[0.92]" style={{ backgroundImage: stepSurfaceStyle.backgroundImage }} />
+                                <div className="pointer-events-none absolute inset-0 opacity-[0.92]" style={stepBackgroundStyle} />
                                 {isActive && (
                                     <div
                                         className="pointer-events-none absolute inset-0 opacity-[0.25] mix-blend-overlay dark:mix-blend-plus-lighter dark:opacity-[0.12]"
-                                        style={{
-                                            backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")",
-                                        }}
+                                        style={stepNoiseStyle}
                                     />
                                 )}
                                 <div className="pointer-events-none absolute inset-[1px] rounded-[calc(theme(borderRadius.xl)-1px)] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02)_34%,transparent_62%)] opacity-80" />

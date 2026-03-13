@@ -107,6 +107,23 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
 
     const themeColor = netBalanceCents >= 0 ? "#10b981" : "#f43f5e" // Emerald for positive, Rose for negative
     const interactiveStyle = resolveInteractiveSurfaceStyle(themeColor, "active")
+    const containerStyle = {
+        backgroundColor: interactiveStyle.backgroundColor,
+        borderColor: interactiveStyle.borderColor,
+        backgroundImage: `linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%), ${interactiveStyle.backgroundImage}`,
+        boxShadow: interactiveStyle.boxShadow,
+    }
+    const glareStyle = {
+        backgroundImage: `linear-gradient(90deg, transparent, ${withAlpha(themeColor, 0.6)}, transparent)`,
+    }
+    const expensePressureBarStyle = {
+        backgroundColor: expensePressurePct > 90 ? "#f43f5e" : "var(--foreground)",
+        opacity: expensePressurePct > 90 ? 1 : 0.8,
+    }
+    const superfluousBarStyle = {
+        backgroundColor: isSuperfluousOver ? "#f43f5e" : "var(--foreground)",
+        opacity: isSuperfluousOver ? 1 : 0.8,
+    }
 
     const containerVariants: Variants = {
         hidden: { opacity: 0, scale: 0.98 },
@@ -136,19 +153,12 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                 initial="hidden"
                 animate="visible"
                 className="relative w-full max-w-[22rem] overflow-hidden rounded-[2.15rem] border shadow-2xl"
-                style={{
-                    backgroundColor: interactiveStyle.backgroundColor,
-                    borderColor: interactiveStyle.borderColor,
-                    backgroundImage: `linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%), ${interactiveStyle.backgroundImage}`,
-                    boxShadow: interactiveStyle.boxShadow
-                }}
+                style={containerStyle}
             >
                 {/* Glare effect at the top */}
                 <div
                     className="pointer-events-none absolute inset-x-[15%] top-0 h-px"
-                    style={{
-                        backgroundImage: `linear-gradient(90deg, transparent, ${withAlpha(themeColor, 0.6)}, transparent)`
-                    }}
+                    style={glareStyle}
                 />
 
                 <InteractiveCardGhostIcon
@@ -218,7 +228,7 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                                     initial={{ width: 0 }}
                                     animate={{ width: `${Math.min(expensePressurePct, 100)}%` }}
                                     className="h-full rounded-full"
-                                    style={{ backgroundColor: expensePressurePct > 90 ? "#f43f5e" : "var(--foreground)", opacity: expensePressurePct > 90 ? 1 : 0.8 }}
+                                    style={expensePressureBarStyle}
                                 />
                             </div>
                         </div>
@@ -230,7 +240,7 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                                     initial={{ width: 0 }}
                                     animate={{ width: `${Math.min(uselessSpendPercent ?? 0, 100)}%` }}
                                     className="h-full rounded-full"
-                                    style={{ backgroundColor: isSuperfluousOver ? "#f43f5e" : "var(--foreground)", opacity: isSuperfluousOver ? 1 : 0.8 }}
+                                    style={superfluousBarStyle}
                                 />
                             </div>
                         </div>
@@ -248,7 +258,7 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
                                         <div
                                             className="flex h-4 w-4 items-center justify-center rounded-sm text-[9px] font-black bg-foreground/15 text-foreground"
                                         >
-                                            <span style={{ opacity: 5 }}>{idx + 1}</span>
+                                            <span className="opacity-100">{idx + 1}</span>
                                         </div>
                                         <span className="text-[11px] font-bold text-foreground/80 tracking-wide uppercase truncate max-w-[130px] sm:max-w-[160px]">{cat.name}</span>
                                     </div>

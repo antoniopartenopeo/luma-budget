@@ -553,9 +553,15 @@ export default function BrainPage() {
     const nextMonthMaeLabel = evolution && evolution.nextMonthReliability.sampleCount > 0
         ? formatRatioAsPercent(evolution.nextMonthReliability.mae)
         : "-"
+    const nextMonthMaePercent = evolution && evolution.nextMonthReliability.sampleCount > 0
+        ? evolution.nextMonthReliability.mae * 100
+        : null
     const nextMonthMapeLabel = evolution && evolution.nextMonthReliability.mapeSampleCount > 0
         ? formatRatioAsPercent(evolution.nextMonthReliability.mape)
         : "-"
+    const nextMonthMapePercent = evolution && evolution.nextMonthReliability.mapeSampleCount > 0
+        ? evolution.nextMonthReliability.mape * 100
+        : null
     const nextMonthReliabilitySamples = evolution?.nextMonthReliability.sampleCount ?? 0
     const adaptiveNowcastConfidenceThreshold = resolveAdaptiveNowcastConfidenceThreshold({
         baseThreshold: adaptivePolicy.minNowcastConfidence,
@@ -763,9 +769,9 @@ export default function BrainPage() {
                             value={nextMonthMaeLabel}
                             icon={Crosshair}
                             tone={
-                                nextMonthMaeLabel === "-" ? "neutral"
-                                    : parseFloat(nextMonthMaeLabel) <= 15 ? "positive"
-                                        : parseFloat(nextMonthMaeLabel) <= 30 ? "neutral"
+                                nextMonthMaePercent === null ? "neutral"
+                                    : nextMonthMaePercent <= 15 ? "positive"
+                                        : nextMonthMaePercent <= 30 ? "neutral"
                                             : "warning"
                             }
                             change={`${nextMonthReliabilitySamples} mesi`}
@@ -781,9 +787,9 @@ export default function BrainPage() {
                             value={nextMonthMapeLabel}
                             icon={ShieldCheck}
                             tone={
-                                nextMonthMapeLabel === "-" ? "neutral"
-                                    : parseFloat(nextMonthMapeLabel) <= 15 ? "positive"
-                                        : parseFloat(nextMonthMapeLabel) <= 30 ? "neutral"
+                                nextMonthMapePercent === null ? "neutral"
+                                    : nextMonthMapePercent <= 15 ? "positive"
+                                        : nextMonthMapePercent <= 30 ? "neutral"
                                             : "warning"
                             }
                             description="Di quanto, in percentuale, la stima può sbagliare."

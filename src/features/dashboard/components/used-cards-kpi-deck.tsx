@@ -103,6 +103,20 @@ function UsedCardTile({
     const rotateY = useTransform(depthX, [-0.5, 0.5], [-10.4, 10.4])
     const contentShiftX = useTransform(depthX, [-0.5, 0.5], [-5, 5])
     const contentShiftY = useTransform(depthY, [-0.5, 0.5], [-4, 4])
+    const articleStyle = {
+        ...surfaceStyle,
+        ...(isInteractive ? { rotateX, rotateY } : {}),
+    }
+    const networkStyle = { color: withAlpha(rawColor, 0.82) }
+    const walletBadgeStyle = {
+        borderColor: withAlpha(rawColor, 0.18),
+        backgroundColor: withAlpha(rawColor, 0.1),
+        color: withAlpha(rawColor, 0.92),
+    }
+    const signalBadgeStyle = {
+        borderColor: withAlpha(rawColor, 0.18),
+        backgroundColor: withAlpha(rawColor, 0.12),
+    }
 
     return (
         <motion.article
@@ -111,10 +125,7 @@ function UsedCardTile({
                 "group/card relative min-h-[9.75rem] overflow-hidden rounded-[1.9rem] border px-5 py-4 [transform-style:preserve-3d]",
                 resolveInteractiveTileLayoutClass(index, total)
             )}
-            style={{
-                ...surfaceStyle,
-                ...(isInteractive ? { rotateX, rotateY } : {})
-            }}
+            style={articleStyle}
             onMouseEnter={handlePointerEnter}
             onMouseMove={handlePointerMove}
             onMouseLeave={handlePointerLeave}
@@ -141,7 +152,7 @@ function UsedCardTile({
                     <div className="min-w-0 max-w-[72%] space-y-1">
                         <p
                             className="text-[10px] font-black uppercase tracking-[0.2em]"
-                            style={{ color: withAlpha(rawColor, 0.82) }}
+                            style={networkStyle}
                         >
                             {card.network}
                         </p>
@@ -178,21 +189,14 @@ function UsedCardTile({
                             {card.walletProvider !== "Unknown" ? (
                                 <span
                                     className="rounded-full border px-2 py-0.5 text-[10px] font-bold"
-                                    style={{
-                                        borderColor: withAlpha(rawColor, 0.18),
-                                        backgroundColor: withAlpha(rawColor, 0.1),
-                                        color: withAlpha(rawColor, 0.92)
-                                    }}
+                                    style={walletBadgeStyle}
                                 >
                                     {card.walletProvider}
                                 </span>
                             ) : null}
                             <div
                                 className="rounded-full border p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]"
-                                style={{
-                                    borderColor: withAlpha(rawColor, 0.18),
-                                    backgroundColor: withAlpha(rawColor, 0.12)
-                                }}
+                                style={signalBadgeStyle}
                             >
                                 <Wifi className="h-3.5 w-3.5 rotate-90 text-foreground/72" aria-hidden />
                             </div>

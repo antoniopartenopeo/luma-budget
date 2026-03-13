@@ -82,6 +82,7 @@ function resolveSignalColor(contribution: number): string {
 // ── Helpers ─────────────────────────────────────────────────────────────
 
 const POINTER_SPRING = { stiffness: 520, damping: 42, mass: 0.18 } as const
+const NOISE_TEXTURE_BACKGROUND = "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")"
 
 function clamp(value: number, min: number, max: number): number {
     return Math.max(min, Math.min(max, value))
@@ -140,6 +141,17 @@ function SignalTile({
     const rawColor = resolveSignalColor(signal.contribution)
     const surfaceStyle = resolveInteractiveSurfaceStyle(rawColor, "rest")
     const intensity = Math.min(1, Math.abs(signal.contribution) * 5)
+    const accentLineStyle = {
+        backgroundImage: `linear-gradient(90deg, transparent, ${withAlpha(rawColor, 0.42)}, transparent)`,
+    }
+    const accentBarStyle = { backgroundColor: withAlpha(rawColor, 0.7) }
+    const labelStyle = { color: withAlpha(rawColor, 0.8) }
+    const trackStyle = { backgroundColor: withAlpha(rawColor, 0.12) }
+    const fillStyle = {
+        width: `${Math.max(intensity * 100, 8)}%`,
+        backgroundColor: withAlpha(rawColor, 0.72),
+    }
+    const valueStyle = { color: withAlpha(rawColor, 0.68) }
 
     return (
         <motion.button
@@ -162,9 +174,7 @@ function SignalTile({
             {/* Top accent line */}
             <div
                 className="pointer-events-none absolute inset-x-4 top-0 h-px"
-                style={{
-                    backgroundImage: `linear-gradient(90deg, transparent, ${withAlpha(rawColor, 0.42)}, transparent)`,
-                }}
+                style={accentLineStyle}
             />
 
             <InteractiveCardGhostIcon
@@ -180,27 +190,24 @@ function SignalTile({
                 {/* Accent bar */}
                 <div
                     className="h-8 w-1 shrink-0 rounded-full"
-                    style={{ backgroundColor: withAlpha(rawColor, 0.7) }}
+                    style={accentBarStyle}
                 />
 
                 {/* Label + bar */}
                 <div className="min-w-0 flex-1 space-y-1.5">
                     <span
                         className="text-[10px] font-black uppercase leading-tight tracking-[0.22em]"
-                        style={{ color: withAlpha(rawColor, 0.8) }}
+                        style={labelStyle}
                     >
                         {resolveLabel(signal.feature)}
                     </span>
                     <div
                         className="h-1 rounded-full"
-                        style={{ backgroundColor: withAlpha(rawColor, 0.12) }}
+                        style={trackStyle}
                     >
                         <div
                             className="h-full rounded-full transition-[width] duration-700 ease-out"
-                            style={{
-                                width: `${Math.max(intensity * 100, 8)}%`,
-                                backgroundColor: withAlpha(rawColor, 0.72),
-                            }}
+                            style={fillStyle}
                         />
                     </div>
                 </div>
@@ -208,7 +215,7 @@ function SignalTile({
                 {/* Value */}
                 <span
                     className="shrink-0 text-[11px] font-semibold tabular-nums"
-                    style={{ color: withAlpha(rawColor, 0.68) }}
+                    style={valueStyle}
                 >
                     {signal.contribution >= 0 ? "+" : ""}{signal.contribution.toFixed(4)}
                 </span>
@@ -259,6 +266,27 @@ function ActiveSignalOverlay({
         radial-gradient(circle at ${lightX}% ${lightY}%, ${withAlpha(rawColor, 0.34)} 0%, ${withAlpha(rawColor, 0.22)} 32%, ${withAlpha(rawColor, 0.1)} 60%, transparent 84%),
         linear-gradient(132deg, ${withAlpha(rawColor, 0.32)} 0%, ${withAlpha(rawColor, 0.18)} 46%, transparent 80%)
     `
+    const overlayShellStyle = {
+        top: targetFrame.top,
+        left: targetFrame.left,
+        width: targetFrame.width,
+        height: targetFrame.height,
+        transformStyle: "preserve-3d" as const,
+        transformOrigin: "center center" as const,
+        rotateX,
+        rotateY,
+    }
+    const overlaySurfaceStyle = {
+        borderColor: surfaceStyle.borderColor,
+        backgroundColor: surfaceStyle.backgroundColor,
+        backgroundImage,
+        boxShadow: surfaceStyle.boxShadow,
+    }
+    const noiseTextureStyle = { backgroundImage: NOISE_TEXTURE_BACKGROUND }
+    const bottomAccentStyle = {
+        backgroundImage: `linear-gradient(90deg, transparent, ${withAlpha(rawColor, 0.3)}, transparent)`,
+    }
+    const progressStrokeStyle = { stroke: withAlpha(rawColor, 0.85) }
 
     if (typeof document === "undefined") return null
 
@@ -282,41 +310,23 @@ function ActiveSignalOverlay({
                     y: enterDeltaY * 0.45,
                 }}
                 transition={INTERACTIVE_CARD_TRANSITION}
-                style={{
-                    top: targetFrame.top,
-                    left: targetFrame.left,
-                    width: targetFrame.width,
-                    height: targetFrame.height,
-                    transformStyle: "preserve-3d",
-                    transformOrigin: "center center",
-                    rotateX,
-                    rotateY,
-                }}
+                style={overlayShellStyle}
             >
                 <motion.div
                     className="relative h-full w-full overflow-hidden rounded-[1.8rem] border"
-                    style={{
-                        borderColor: surfaceStyle.borderColor,
-                        backgroundColor: surfaceStyle.backgroundColor,
-                        backgroundImage,
-                        boxShadow: surfaceStyle.boxShadow,
-                    }}
+                    style={overlaySurfaceStyle}
                 >
                     {/* Noise texture */}
                     <div
                         className="pointer-events-none absolute inset-0 opacity-[0.25] mix-blend-overlay dark:mix-blend-plus-lighter dark:opacity-[0.12]"
-                        style={{
-                            backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")",
-                        }}
+                        style={noiseTextureStyle}
                     />
                     <div className="absolute inset-[1px] rounded-[calc(1.8rem-1px)] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),transparent_36%)]" />
 
                     {/* Bottom accent */}
                     <div
                         className="absolute inset-x-[9%] bottom-4 h-px"
-                        style={{
-                            backgroundImage: `linear-gradient(90deg, transparent, ${withAlpha(rawColor, 0.3)}, transparent)`,
-                        }}
+                        style={bottomAccentStyle}
                     />
 
                     <InteractiveCardGhostIcon
@@ -385,7 +395,7 @@ function ActiveSignalOverlay({
                                         x1="0" y1="4"
                                         x2={`${Math.max(intensity * 100, 14)}%`} y2="4"
                                         strokeWidth="8" strokeLinecap="round"
-                                        style={{ stroke: withAlpha(rawColor, 0.85) }}
+                                        style={progressStrokeStyle}
                                         initial={{ pathLength: 0 }}
                                         animate={{ pathLength: 1 }}
                                         transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}

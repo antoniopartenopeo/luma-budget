@@ -83,7 +83,7 @@ describe('Dashboard Calculation Regression Test', () => {
 
     it('should correctly sum negative expenses (Absolute Storage invariant)', async () => {
         // Ensure that even if we send negative amountCents in DTO (which shouldn't happen but...)
-        // createBatchTransactions forces Math.abs().
+        // createBatchTransactions forces absolute amounts.
 
         await createBatchTransactions([{
             description: 'Negative Input',

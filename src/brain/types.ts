@@ -1,3 +1,7 @@
+import type { HoltWintersResult } from "./forecaster"
+
+export type { HoltWintersResult }
+
 export const NEURAL_BRAIN_VERSION = 2 as const
 export const FEATURE_SCHEMA_VERSION = 2 as const
 export const NEURAL_BRAIN_VECTOR_SIZE = 8 as const
@@ -76,6 +80,7 @@ export interface BrainDataset {
     currentMonthInferenceInput: BrainCurrentMonthInferenceInput | null
     fingerprint: string
     months: number
+    monthlyExpenseSeries: Array<{ period: string; expensesCents: number }>
 }
 
 export type BrainEvolutionReason =
@@ -118,4 +123,5 @@ export interface BrainEvolutionResult {
     currentMonthNowcastReady: boolean
     nextMonthReliability: BrainReliabilityMetrics
     nowcastReliability: BrainReliabilityMetrics
+    hwForecast: HoltWintersResult | null
 }

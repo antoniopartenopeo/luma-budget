@@ -44,7 +44,7 @@ describe("Global Semantic Anti-Regression", () => {
     // SCENARIO 2: MICRO-SURPLUS (Buffer < 5%)
     // ==========================================
     describe("Scenario: MICRO-SURPLUS (0 < Buffer < 5%)", () => {
-        // Income 1000, Exp 970 => Balance 30. Buffer = 30/1000 = 3%
+        // Income 1000, Exp 970 => Balance 30. Buffer = 30 out of 1000 = 3%
         const income = 100000
         const balance = 3000
 
@@ -94,7 +94,7 @@ describe("Global Semantic Anti-Regression", () => {
     // SCENARIO 3: SOLID SURPLUS (Buffer >= 5%)
     // ==========================================
     describe("Scenario: SOLID SURPLUS (Buffer >= 5%)", () => {
-        // Income 1000, Exp 940 => Balance 60. Buffer = 60/1000 = 6%
+        // Income 1000, Exp 940 => Balance 60. Buffer = 60 out of 1000 = 6%
         const income = 100000
         const balance = 6000
 

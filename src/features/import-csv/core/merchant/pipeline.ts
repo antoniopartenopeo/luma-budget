@@ -125,10 +125,21 @@ function extractSepaCreditorCandidate(text: string): string | null {
  * Main pipeline function
  * Extracts a normalized merchant key from a transaction description
  */
+// --- CACHE LAYER for O(1) deduplicated matching ---
+const extractionCache = new Map<string, string>();
+const MAX_CACHE_SIZE = 5000;
+
 export function extractMerchantKey(description: string): string {
     if (!description || description.trim().length === 0) {
         return "ALTRO";
     }
+
+    const rawKey = description.trim();
+    if (extractionCache.has(rawKey)) {
+        return extractionCache.get(rawKey)!;
+    }
+
+    // --- PIPELINE LOGIC ---
 
     // Step 1: Normalize
     const normalized = normalize(description);
@@ -136,6 +147,7 @@ export function extractMerchantKey(description: string): string {
     // Step 0: Overrides (Priority 1)
     const override = getOverride(normalized);
     if (override) {
+        _setCache(rawKey, override);
         return override;
     }
 
@@ -157,11 +169,11 @@ export function extractMerchantKey(description: string): string {
     text = text.replace(/^\*+|\*+$/g, "").trim();
 
     const sepaCreditor = extractSepaCreditorCandidate(text);
-    if (sepaCreditor) return sepaCreditor;
+    if (sepaCreditor) return _setCache(rawKey, sepaCreditor);
 
     // If practically empty after cleaning (and stripping rail), evaluate fallback
     if (text.length < 2) {
-        return paymentRail ? "UNRESOLVED" : "ALTRO";
+        return _setCache(rawKey, paymentRail ? "UNRESOLVED" : "ALTRO");
     }
 
     // Step 4: Sub-Merchant / Explicit Extraction
@@ -186,7 +198,7 @@ export function extractMerchantKey(description: string): string {
         }
     }
 
-    if (candidateKey) return candidateKey;
+    if (candidateKey) return _setCache(rawKey, candidateKey);
 
     if (subMerchant && subMerchant.length > 2) {
         // If we found a sub-merchant candidate, prioritize it
@@ -213,29 +225,29 @@ export function extractMerchantKey(description: string): string {
         }
     }
 
-    if (candidateKey) return candidateKey;
+    if (candidateKey) return _setCache(rawKey, candidateKey);
 
     // Step 5: Token Analysis & Scoring (on the cleaned text)
     const tokens = tokenize(text);
-    if (tokens.length === 0) return paymentRail ? "UNRESOLVED" : "ALTRO";
+    if (tokens.length === 0) return _setCache(rawKey, paymentRail ? "UNRESOLVED" : "ALTRO");
 
     // 5a. Direct Brand Match (Trigram, Bigram, Unigram)
     // Trigram
     for (let i = 0; i < tokens.length - 2; i++) {
         const trigram = `${tokens[i]} ${tokens[i + 1]} ${tokens[i + 2]}`;
-        if (BRAND_DICT[trigram]) return BRAND_DICT[trigram];
+        if (BRAND_DICT[trigram]) return _setCache(rawKey, BRAND_DICT[trigram]);
     }
     // Bigram
     for (let i = 0; i < tokens.length - 1; i++) {
         const bigram = `${tokens[i]} ${tokens[i + 1]}`;
-        if (BRAND_DICT[bigram]) return BRAND_DICT[bigram];
+        if (BRAND_DICT[bigram]) return _setCache(rawKey, BRAND_DICT[bigram]);
     }
     // Unigram (including split variants for hyphenated/noisy tokens)
     const expandedTokens = Array.from(
         new Set(tokens.flatMap((token) => token.split(/[^A-Z0-9]+/).filter(Boolean)))
     );
     for (const token of expandedTokens) {
-        if (BRAND_DICT[token]) return BRAND_DICT[token];
+        if (BRAND_DICT[token]) return _setCache(rawKey, BRAND_DICT[token]);
     }
 
     // 5b: Fuzzy Match (NEW - for typos/variations)
@@ -244,13 +256,13 @@ export function extractMerchantKey(description: string): string {
     for (const token of expandedTokens) {
         if (token.length >= 4) { // Only fuzzy match tokens with 4+ chars
             const fuzzyResult = fuzzyMatch(token, brandKeys, { threshold: 0.85 });
-            if (fuzzyResult) return BRAND_DICT[fuzzyResult];
+            if (fuzzyResult) return _setCache(rawKey, BRAND_DICT[fuzzyResult]);
         }
     }
     // Also try the assembled text
     if (text.length >= 5) {
         const fuzzyResult = fuzzyMatch(text, brandKeys, { threshold: 0.85 });
-        if (fuzzyResult) return BRAND_DICT[fuzzyResult];
+        if (fuzzyResult) return _setCache(rawKey, BRAND_DICT[fuzzyResult]);
     }
 
     // 5c. Scoring (Winner takes all)
@@ -262,25 +274,34 @@ export function extractMerchantKey(description: string): string {
     if (topTokens.length > 0) {
         // Low-confidence fallback: prefer unresolved over noisy pseudo-merchants.
         if (bestScore < 140 && !isMarketplaceRail) {
-            return paymentRail ? "UNRESOLVED" : "ALTRO";
+            return _setCache(rawKey, paymentRail ? "UNRESOLVED" : "ALTRO");
         }
 
         const assembledKey = topTokens.join(" ");
 
         // Final check if assembled key is in dict
-        if (BRAND_DICT[assembledKey]) return BRAND_DICT[assembledKey];
-        if (BRAND_DICT[topTokens[0]]) return BRAND_DICT[topTokens[0]];
+        if (BRAND_DICT[assembledKey]) return _setCache(rawKey, BRAND_DICT[assembledKey]);
+        if (BRAND_DICT[topTokens[0]]) return _setCache(rawKey, BRAND_DICT[topTokens[0]]);
 
-        return assembledKey;
+        return _setCache(rawKey, assembledKey);
     }
 
     // Step 6: Final Fallback
     // If we have a Rail but no valid Merchant token => UNRESOLVED
     if (paymentRail) {
-        return "UNRESOLVED";
+        return _setCache(rawKey, "UNRESOLVED");
     }
 
-    return "ALTRO";
+    return _setCache(rawKey, "ALTRO");
+}
+
+function _setCache(rawKey: string, result: string): string {
+    if (extractionCache.size >= MAX_CACHE_SIZE) {
+        // Simple LRU: clear completely or clear oldest (clearing completely is safer/faster for CSV batch processing)
+        extractionCache.clear();
+    }
+    extractionCache.set(rawKey, result);
+    return result;
 }
 
 // Re-export for backward compatibility

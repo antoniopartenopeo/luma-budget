@@ -60,6 +60,28 @@ export const calculateSuperfluousStatus = (
 }
 
 /**
+ * Core pure function to resolve the budget group natively without a full transaction object.
+ */
+export function resolveBudgetGroup(
+    isSuperfluous?: boolean,
+    categoryNature?: "essential" | "comfort" | "superfluous"
+): "essential" | "comfort" | "superfluous" {
+    // 1. Manual override: if marked as superfluous, it ALWAYS goes to 'superfluous'
+    if (isSuperfluous === true) {
+        return "superfluous"
+    }
+
+    // 2. Manual override: if marked as NOT superfluous BUT category is superfluous,
+    // we de-escalate it to 'comfort' (standard behavior for non-useless svago/altro).
+    if (isSuperfluous === false && categoryNature === "superfluous") {
+        return "comfort"
+    }
+
+    // 3. Fallback to category nature, with 'essential' as default for safety/unknowns
+    return categoryNature || "essential"
+}
+
+/**
  * Resolve the budget group for a transaction, taking into account manual overrides.
  * Aligns budget actuals with the "isSuperfluous" logic used in Dashboard/KPIs.
  */
@@ -67,17 +89,5 @@ export function resolveBudgetGroupForTransaction(
     transaction: Transaction,
     categoryNature?: "essential" | "comfort" | "superfluous"
 ): "essential" | "comfort" | "superfluous" {
-    // 1. Manual override: if marked as superfluous, it ALWAYS goes to 'superfluous'
-    if (transaction.isSuperfluous === true) {
-        return "superfluous"
-    }
-
-    // 2. Manual override: if marked as NOT superfluous BUT category is superfluous,
-    // we de-escalate it to 'comfort' (standard behavior for non-useless svago/altro).
-    if (transaction.isSuperfluous === false && categoryNature === "superfluous") {
-        return "comfort"
-    }
-
-    // 3. Fallback to category nature, with 'essential' as default for safety/unknowns
-    return categoryNature || "essential"
+    return resolveBudgetGroup(transaction.isSuperfluous, categoryNature)
 }

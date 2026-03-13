@@ -1,6 +1,6 @@
 ---
 name: vercel-react-best-practices
-description: React and Next.js performance optimization guidelines from Vercel Engineering. This skill should be used when writing, reviewing, or refactoring React/Next.js code to ensure optimal performance patterns. Triggers on tasks involving React components, Next.js pages, data fetching, bundle optimization, or performance improvements.
+description: React and Next.js performance optimization guidelines from Vercel Engineering. Use ONLY when explicitly requested for performance tuning, resolving rendering bottlenecks, fixing waterfalls, or bundle size optimization. DO NOT apply routinely for standard React component creation or refactoring, as it may lead to premature optimization and reduced code readability.
 license: MIT
 metadata:
   author: vercel
@@ -13,12 +13,18 @@ Comprehensive performance optimization guide for React and Next.js applications,
 
 ## When to Apply
 
-Reference these guidelines when:
-- Writing new React components or Next.js pages
-- Implementing data fetching (client or server-side)
-- Reviewing code for performance issues
-- Refactoring existing React/Next.js code
-- Optimizing bundle size or load times
+**WARNING: DO NOT APPLY THESE RULES BLINDLY.** Applying all these rules to standard code can lead to premature optimization, verbosity, and reduced code readability (Clean Code). Rely on your native React/Next.js knowledge for standard development.
+
+ONLY reference these guidelines when:
+- The user explicitly asks to optimize performance, resolve UI "jank", or fix a bottleneck.
+- Reviewing code specifically for performance issues.
+- Optimizing bundle size, load times, or fixing request waterfalls in Server Components.
+- Implementing complex, heavy-rendering components (e.g., large data grids, complex animations).
+
+DO NOT reference these guidelines for:
+- Routine UI component creation or basic refactoring.
+- Standard state management unless a specific re-render bottleneck is identified.
+- Simple conditional rendering (prefer readable code like `!!isValid && <Comp/>` over forced ternaries when performance isn't critical).
 
 ## Rule Categories by Priority
 

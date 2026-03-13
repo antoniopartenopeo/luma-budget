@@ -1,4 +1,5 @@
 import { buildBrainDataset, BrainCategoryLike, BrainTransactionLike } from "./features"
+import { forecastHoltWinters, type HoltWintersResult } from "./forecaster"
 import {
     finalizeCurrentMonthTrainingSnapshot,
     finalizeTrainingSnapshot,
@@ -96,14 +97,18 @@ function resolveReliabilityState(
     }
 }
 
-function resolvePredictionResult(snapshot: NeuralBrainSnapshot, inferenceInput: ReturnType<typeof buildBrainDataset>["inferenceInput"]) {
+function resolvePredictionResult(
+    snapshot: NeuralBrainSnapshot,
+    inferenceInput: ReturnType<typeof buildBrainDataset>["inferenceInput"],
+    hwForecast: HoltWintersResult | null
+) {
     if (!inferenceInput || snapshot.trainedSamples < MIN_SAMPLES_FOR_PREDICTION) {
         return {
             prediction: null,
             currentIncomeCents: inferenceInput?.currentIncomeCents ?? 0,
             currentExpensesCents: inferenceInput?.currentExpensesCents ?? 0,
             inferredPeriod: inferenceInput?.period ?? null,
-            predictedExpensesNextMonthCents: 0,
+            predictedExpensesNextMonthCents: hwForecast?.forecastCents ?? 0,
         }
     }
 
@@ -113,14 +118,20 @@ function resolvePredictionResult(snapshot: NeuralBrainSnapshot, inferenceInput: 
         inferenceInput.names
     )
 
-    const incomeBaseline = inferenceInput.currentIncomeCents > 0
-        ? inferenceInput.currentIncomeCents
-        : inferenceInput.currentExpensesCents
-
-    const predictedExpensesNextMonthCents = Math.max(
-        0,
-        Math.round(prediction.predictedExpenseRatio * Math.max(incomeBaseline, 1))
-    )
+    // Prefer Holt-Winters for amount prediction (more accurate for time series)
+    // Fall back to LR-based prediction if HW is unavailable
+    let predictedExpensesNextMonthCents: number
+    if (hwForecast) {
+        predictedExpensesNextMonthCents = hwForecast.forecastCents
+    } else {
+        const incomeBaseline = inferenceInput.currentIncomeCents > 0
+            ? inferenceInput.currentIncomeCents
+            : inferenceInput.currentExpensesCents
+        predictedExpensesNextMonthCents = Math.max(
+            0,
+            Math.round(prediction.predictedExpenseRatio * Math.max(incomeBaseline, 1))
+        )
+    }
 
     return {
         prediction,
@@ -198,6 +209,9 @@ async function evolveBrainFromHistoryInternal(
     const combinedSampleCount = dataset.samples.length + dataset.nowcastSamples.length
 
     if (!snapshot) {
+        const hwForecast = forecastHoltWinters(
+            dataset.monthlyExpenseSeries.map((m) => ({ period: m.period, valueCents: m.expensesCents }))
+        )
         return {
             reason: "uninitialized",
             snapshot: null,
@@ -211,16 +225,21 @@ async function evolveBrainFromHistoryInternal(
             inferencePeriod: dataset.inferenceInput?.period ?? null,
             currentIncomeCents: dataset.inferenceInput?.currentIncomeCents ?? 0,
             currentExpensesCents: dataset.inferenceInput?.currentExpensesCents ?? 0,
-            predictedExpensesNextMonthCents: 0,
+            predictedExpensesNextMonthCents: hwForecast?.forecastCents ?? 0,
             predictedCurrentMonthRemainingExpensesCents: 0,
             currentMonthNowcastConfidence: 0,
             currentMonthNowcastReady: false,
             nextMonthReliability: EMPTY_RELIABILITY,
             nowcastReliability: EMPTY_RELIABILITY,
+            hwForecast,
         }
     }
 
-    const predictionState = resolvePredictionResult(snapshot, dataset.inferenceInput)
+    const hwForecast = forecastHoltWinters(
+        dataset.monthlyExpenseSeries.map((m) => ({ period: m.period, valueCents: m.expensesCents }))
+    )
+
+    const predictionState = resolvePredictionResult(snapshot, dataset.inferenceInput, hwForecast)
     const nowcastState = resolveCurrentMonthNowcastResult(
         snapshot,
         dataset.currentMonthInferenceInput,
@@ -251,6 +270,7 @@ async function evolveBrainFromHistoryInternal(
             currentMonthNowcastReady: nowcastState.currentMonthNowcastReady,
             nextMonthReliability: reliabilityState.nextMonth,
             nowcastReliability: reliabilityState.nowcast,
+            hwForecast,
         }
     }
 
@@ -274,6 +294,7 @@ async function evolveBrainFromHistoryInternal(
             currentMonthNowcastReady: nowcastState.currentMonthNowcastReady,
             nextMonthReliability: reliabilityState.nextMonth,
             nowcastReliability: reliabilityState.nowcast,
+            hwForecast,
         }
     }
 
@@ -300,6 +321,7 @@ async function evolveBrainFromHistoryInternal(
             currentMonthNowcastReady: nowcastState.currentMonthNowcastReady,
             nextMonthReliability: reliabilityState.nextMonth,
             nowcastReliability: reliabilityState.nowcast,
+            hwForecast,
         }
     }
 
@@ -399,13 +421,14 @@ async function evolveBrainFromHistoryInternal(
             currentMonthNowcastReady: nowcastState.currentMonthNowcastReady,
             nextMonthReliability: reliabilityState.nextMonth,
             nowcastReliability: reliabilityState.nowcast,
+            hwForecast,
         }
     }
 
     const averageLoss = clamp(cumulativePhaseLoss / trainedPhases, 0, 10)
     saveBrainSnapshot(working)
 
-    const predictionAfterTraining = resolvePredictionResult(working, dataset.inferenceInput)
+    const predictionAfterTraining = resolvePredictionResult(working, dataset.inferenceInput, hwForecast)
     const nowcastAfterTraining = resolveCurrentMonthNowcastResult(
         working,
         dataset.currentMonthInferenceInput,
@@ -432,6 +455,7 @@ async function evolveBrainFromHistoryInternal(
         currentMonthNowcastReady: nowcastAfterTraining.currentMonthNowcastReady,
         nextMonthReliability: reliabilityAfterTraining.nextMonth,
         nowcastReliability: reliabilityAfterTraining.nowcast,
+        hwForecast,
     }
 }
 

@@ -81,36 +81,63 @@ function calculateScore(row: ParsedRow, tx: Transaction, rowMerchantKey: string)
     return score;
 }
 
+/**
+ * Generate a deterministic signature for O(1) exact matching.
+ */
+export function generateSignature(timestamp: number, amountCents: number, type: "income" | "expense", description: string): string {
+    const cleanDesc = description.trim().replace(/\s+/g, " ").toLowerCase();
+    return `${timestamp}::${Math.abs(amountCents)}::${type}::${cleanDesc}`;
+}
+
 export function detectDuplicates(
     parsedRows: ParsedRow[],
     existingTransactions: Transaction[]
 ): EnrichedRow[] {
+
+    // 1. Build an O(1) lookup map of existing transactions' signatures
+    const historyMap = new Map<string, string>(); // signature -> tx.id
+    for (const tx of existingTransactions) {
+        const sig = generateSignature(tx.timestamp, tx.amountCents, tx.type as "income" | "expense", tx.description);
+        historyMap.set(sig, tx.id);
+    }
+
     return parsedRows.map(row => {
-        let bestScore = 0;
-        let bestMatchId: string | undefined = undefined;
         const rowMerchantKey = extractMerchantKey(row.description);
         const rowType = row.amountCents > 0 ? "income" : "expense";
-
-        // Candidate pre-filter: same type + temporal proximity
-        const candidates = existingTransactions.filter(tx => {
-            if (tx.type !== rowType) return false;
-            const days = Math.abs(differenceInCalendarDays(new Date(row.timestamp), new Date(tx.timestamp)));
-            return days <= 3;
-        });
-
-        for (const tx of candidates) {
-            const score = calculateScore(row, tx, rowMerchantKey);
-            if (score > bestScore) {
-                bestScore = score;
-                bestMatchId = tx.id;
-            }
-        }
+        const sig = generateSignature(row.timestamp, row.amountCents, rowType, row.description);
 
         let status: DuplicateStatus = "unique";
-        if (bestScore >= SCORE_THRESHOLDS.CONFIRMED) {
+        let bestMatchId: string | undefined = undefined;
+
+        // O(1) Exact Match Check
+        if (historyMap.has(sig)) {
             status = "confirmed";
-        } else if (bestScore >= SCORE_THRESHOLDS.SUSPECTED) {
-            status = "suspected";
+            bestMatchId = historyMap.get(sig);
+        } else {
+            // Fallback: Fuzzy / Heuristic Check for "Suspected" matches
+            let bestScore = 0;
+            const rowType = row.amountCents > 0 ? "income" : "expense";
+
+            // Candidate pre-filter: same type + temporal proximity
+            const candidates = existingTransactions.filter(tx => {
+                if (tx.type !== rowType) return false;
+                const days = Math.abs(differenceInCalendarDays(new Date(row.timestamp), new Date(tx.timestamp)));
+                return days <= 3;
+            });
+
+            for (const tx of candidates) {
+                const score = calculateScore(row, tx, rowMerchantKey);
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMatchId = tx.id;
+                }
+            }
+
+            if (bestScore >= SCORE_THRESHOLDS.CONFIRMED) {
+                status = "confirmed";
+            } else if (bestScore >= SCORE_THRESHOLDS.SUSPECTED) {
+                status = "suspected";
+            }
         }
 
         return {

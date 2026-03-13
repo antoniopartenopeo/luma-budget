@@ -6,7 +6,7 @@ import { describe, test, expect } from "vitest"
 describe("Sustainability Guard Logic (Granular)", () => {
     // Standard inputs
     const income = 200000 // 2000€
-    const essential = 100000 // 1000€
+    const essential = 100000 // one thousand euros
     const essentialSavings = 0 // Not testing reductions here, testing FCF
 
     test("SECURE: Should be secure if buffer > 20%", () => {

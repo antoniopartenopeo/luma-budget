@@ -5,6 +5,7 @@ import { useSpring, useMotionValue } from "framer-motion"
 
 interface AnimatedNumberProps {
     value: number
+    initialValue?: number
     formatFn?: (value: number) => string
     className?: string
     springOptions?: {
@@ -16,12 +17,14 @@ interface AnimatedNumberProps {
 
 export function AnimatedNumber({
     value,
+    initialValue,
     formatFn = (v) => Math.round(v).toString(),
     className,
     springOptions = { stiffness: 100, damping: 30, mass: 1 }
 }: AnimatedNumberProps) {
     const ref = useRef<HTMLSpanElement>(null)
-    const motionValue = useMotionValue(value)
+    const startValue = initialValue !== undefined ? initialValue : value
+    const motionValue = useMotionValue(startValue)
     const springValue = useSpring(motionValue, springOptions)
 
     useEffect(() => {
@@ -37,12 +40,5 @@ export function AnimatedNumber({
         return () => unsubscribe()
     }, [springValue, formatFn])
 
-    // Initial render
-    useEffect(() => {
-        if (ref.current) {
-            ref.current.textContent = formatFn(value)
-        }
-    }, [value, formatFn])
-
-    return <span ref={ref} className={className} />
+    return <span ref={ref} className={className}>{formatFn(startValue)}</span>
 }

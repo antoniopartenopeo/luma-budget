@@ -12,6 +12,7 @@ import {
     CircleAlert,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { Accordion } from "@/components/ui/accordion"
 import { KpiCard } from "@/components/patterns/kpi-card"
 import { ImportState, Override, Group, Subgroup } from "../core/types"
@@ -19,7 +20,7 @@ import { resolveCategory } from "../core/overrides"
 import { getIncludedGroups } from "../core/filters"
 import { cn } from "@/lib/utils"
 import { ReviewResult } from "./csv-import-wizard"
-import { WizardShell } from "./wizard-shell"
+import { brainCategorizer } from "@/brain/categorizer"
 
 // Sub-components
 import {
@@ -188,13 +189,40 @@ export function ImportStepReview({
     // Render Helpers
     // ============================================
 
+    // ============================================
+    // Main Render
+    // ============================================
+
+    const handleContinue = () => {
+        // Online Learning Feedback Loop
+        // We train the Brain Categorizer with the FINAL confirmed categories 
+        // to adapt to the user's specific choices instantly.
+        filteredGroups.forEach((g: Group) => {
+            g.subgroups.forEach((sg: Subgroup) => {
+                sg.rowIds.forEach((rid: string) => {
+                    const row = rowsById.get(rid)
+                    if (row && row.isSelected) {
+                        const finalCatId = resolveCategory(row, sg, g, overrides)
+                        if (finalCatId) {
+                            // The Brain learns from the original string what category was actually chosen
+                            brainCategorizer.learn(row.description, finalCatId)
+                        }
+                    }
+                })
+            })
+        })
+
+        // Proceed to next step
+        onContinue({ overrides, excludedGroupIds })
+    }
+
     const footer = (
         <div className="flex w-full justify-between items-center gap-4">
             <Button variant="ghost" onClick={onBack} className="h-12 px-5 gap-1.5 text-sm">
                 <ArrowLeft className="h-4 w-4" /> Indietro
             </Button>
             <Button
-                onClick={() => onContinue({ overrides, excludedGroupIds })}
+                onClick={handleContinue}
                 className={cn(
                     "h-12 gap-1.5 rounded-xl px-6 text-sm shadow-lg transition-[transform,box-shadow,background-color,border-color,color] duration-200 hover:-translate-y-[1px]",
                     stats.total > stats.assigned && "border-amber-200 bg-amber-50 text-amber-900 hover:bg-amber-100 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-200"
@@ -207,104 +235,108 @@ export function ImportStepReview({
         </div>
     )
 
-    // ============================================
-    // Main Render
-    // ============================================
-
     return (
-        <WizardShell
-            title="Controlla i movimenti"
-            subtitle="Rivedi gruppi, categorie e duplicati prima di salvare."
-            step="review"
-            footer={footer}
-        >
-            <div className="space-y-5">
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                    <KpiCard
-                        compact
-                        title="Movimenti letti"
-                        value={importVisibility.totalValidRows}
-                        icon={ListChecks}
-                        tone="neutral"
-                        className="h-full"
-                        valueClassName="text-2xl sm:text-3xl lg:text-4xl text-foreground"
-                    />
-                    <KpiCard
-                        compact
-                        title="Pronti da importare"
-                        value={importVisibility.importableRows}
-                        icon={PlusCircle}
-                        tone="positive"
-                        className="h-full"
-                        valueClassName="text-2xl sm:text-3xl lg:text-4xl text-emerald-700 dark:text-emerald-300"
-                    />
-                    <KpiCard
-                        compact
-                        title="Già presenti"
-                        value={importVisibility.duplicatesTotal}
-                        icon={Copy}
-                        tone="warning"
-                        className="h-full"
-                        valueClassName="text-2xl sm:text-3xl lg:text-4xl text-amber-700 dark:text-amber-300"
-                        description={
-                            importVisibility.duplicatesTotal > 0
-                                ? `${importVisibility.duplicatesConfirmed} certi + ${importVisibility.duplicatesSuspected} da controllare`
-                                : undefined
-                        }
-                    />
-                    <KpiCard
-                        compact
-                        title="Non letti"
-                        value={parseErrorsCount}
-                        icon={CircleAlert}
-                        tone="negative"
-                        className="h-full"
-                        valueClassName="text-2xl sm:text-3xl lg:text-4xl text-rose-700 dark:text-rose-300"
-                    />
+        <div className="flex flex-col gap-6">
+            {/* Header Area */}
+            <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="space-y-1">
+                    <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
+                        Controlla i movimenti
+                    </h2>
+                    <p className="text-sm font-medium text-muted-foreground">
+                        Rivedi gruppi, categorie e duplicati prima di salvare.
+                    </p>
                 </div>
+            </div>
 
-                <section>
-                    <ThresholdPresetSelector
-                        thresholdCents={thresholdCents}
-                        onCommit={onThresholdChange}
-                    />
-                </section>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                <KpiCard
+                    compact
+                    title="Movimenti letti"
+                    value={importVisibility.totalValidRows}
+                    icon={ListChecks}
+                    tone="neutral"
+                    className="h-full"
+                    valueClassName="text-2xl sm:text-3xl lg:text-4xl text-foreground"
+                />
+                <KpiCard
+                    compact
+                    title="Pronti da importare"
+                    value={importVisibility.importableRows}
+                    icon={PlusCircle}
+                    tone="positive"
+                    className="h-full"
+                    valueClassName="text-2xl sm:text-3xl lg:text-4xl text-emerald-700 dark:text-emerald-300"
+                />
+                <KpiCard
+                    compact
+                    title="Già presenti"
+                    value={importVisibility.duplicatesTotal}
+                    icon={Copy}
+                    tone="warning"
+                    className="h-full"
+                    valueClassName="text-2xl sm:text-3xl lg:text-4xl text-amber-700 dark:text-amber-300"
+                    description={
+                        importVisibility.duplicatesTotal > 0
+                            ? `${importVisibility.duplicatesConfirmed} certi + ${importVisibility.duplicatesSuspected} da controllare`
+                            : undefined
+                    }
+                />
+                <KpiCard
+                    compact
+                    title="Non letti"
+                    value={parseErrorsCount}
+                    icon={CircleAlert}
+                    tone="negative"
+                    className="h-full"
+                    valueClassName="text-2xl sm:text-3xl lg:text-4xl text-rose-700 dark:text-rose-300"
+                />
+            </div>
 
-                {parseErrorsCount > 0 && (
-                    <div className="rounded-xl border border-amber-300/50 bg-amber-50/60 dark:bg-amber-950/20 p-3 text-amber-900 dark:text-amber-200">
-                        <div className="flex items-start gap-2">
-                            <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
-                            <div className="text-xs md:text-sm">
-                                Alcune righe non sono state lette (<strong>{parseErrorsCount}</strong>).
-                                I movimenti validi sono già pronti qui sotto.
-                            </div>
+            <section>
+                <ThresholdPresetSelector
+                    thresholdCents={thresholdCents}
+                    onCommit={onThresholdChange}
+                />
+            </section>
+
+            {parseErrorsCount > 0 && (
+                <div className="rounded-xl border border-amber-300/50 bg-amber-50/60 dark:bg-amber-950/20 p-4 text-amber-900 dark:text-amber-200 shadow-sm backdrop-blur-md">
+                    <div className="flex items-start gap-3">
+                        <AlertTriangle className="h-5 w-5 mt-0.5 shrink-0" />
+                        <div className="text-sm">
+                            Alcune righe non sono state lette in modo corretto (<strong>{parseErrorsCount}</strong>).
+                            I movimenti validi sono già pronti nell'elenco qui sotto.
                         </div>
                     </div>
-                )}
+                </div>
+            )}
 
-                {filteredGroups.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-10 text-center">
-                        <Filter className="h-10 w-10 text-muted-foreground/50 mb-3" />
-                        <p className="text-muted-foreground text-sm">Con il filtro attuale non vedo gruppi disponibili</p>
-                        <Button variant="ghost" size="sm" className="mt-2" onClick={() => onThresholdChange(0)}>
-                            Mostra tutti
-                        </Button>
-                    </div>
-                ) : (
-                    <div className="space-y-5">
-                        {directionSections.map((section) => (
-                            section.groups.length > 0 ? (
-                                <div key={section.key} className="space-y-2">
-                                    <div className="flex items-center justify-between">
-                                        <h4 className="text-base font-semibold text-foreground">
-                                            {section.title}
-                                        </h4>
-                                        <span className="text-xs text-muted-foreground">{section.groups.length} gruppi</span>
-                                    </div>
-                                    <Accordion type="multiple" className="space-y-2">
-                                        {section.groups.map((group, index) => (
+            {filteredGroups.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 text-center rounded-[2rem] border border-border/50 bg-background/50">
+                    <Filter className="h-10 w-10 text-muted-foreground/30 mb-4" />
+                    <p className="text-muted-foreground font-medium">Con il filtro attuale non vedo gruppi disponibili</p>
+                    <Button variant="secondary" size="sm" className="mt-4 h-9 rounded-xl px-4" onClick={() => onThresholdChange(0)}>
+                        Mostra tutti
+                    </Button>
+                </div>
+            ) : (
+                <div className="space-y-8">
+                    {directionSections.map((section) => (
+                        section.groups.length > 0 ? (
+                            <div key={section.key} className="space-y-4">
+                                <div className="flex items-center justify-between border-b border-border/40 pb-2">
+                                    <h4 className="text-lg font-bold tracking-tight text-foreground flex items-center gap-2">
+                                        {section.title}
+                                        <Badge variant="outline" className="font-semibold text-muted-foreground border-border/50 bg-transparent">
+                                            {section.groups.length}
+                                        </Badge>
+                                    </h4>
+                                </div>
+                                <Accordion type="multiple" className="space-y-3">
+                                    {section.groups.map((group, index) => (
+                                        <div key={group.id} className="rounded-2xl border border-border/50 bg-background/50 shadow-sm overflow-hidden">
                                             <MerchantGroupCard
-                                                key={group.id}
                                                 group={group}
                                                 index={index}
                                                 totalGroups={section.groups.length}
@@ -314,14 +346,34 @@ export function ImportStepReview({
                                                 getSubgroupEffectiveCategory={(sg) => getSubgroupEffectiveCategory(sg, group)}
                                                 getRowById={getRowById}
                                             />
-                                        ))}
-                                    </Accordion>
-                                </div>
-                            ) : null
-                        ))}
-                    </div>
-                )}
+                                        </div>
+                                    ))}
+                                </Accordion>
+                            </div>
+                        ) : null
+                    ))}
+                </div>
+            )}
+
+            {/* Footer Actions */}
+            <div className="mt-6 flex w-full items-center justify-between border-t border-border/40 pt-6">
+                <Button variant="ghost" onClick={onBack} className="h-12 rounded-xl px-5 text-muted-foreground hover:bg-muted/50 hover:text-foreground">
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Indietro
+                </Button>
+                <Button
+                    onClick={() => onContinue({ overrides, excludedGroupIds })}
+                    className={cn(
+                        "h-12 gap-2 rounded-xl px-8 font-semibold shadow-lg transition-all duration-200",
+                        stats.total > stats.assigned
+                            ? "border-amber-200 bg-amber-50 text-amber-900 hover:bg-amber-100 border hover:shadow-amber-500/10 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-200"
+                            : "hover:-translate-y-[1px] hover:shadow-primary/25"
+                    )}
+                    variant={stats.total > stats.assigned ? "outline" : "default"}
+                >
+                    Continua
+                    <ArrowRight className="h-4 w-4" />
+                </Button>
             </div>
-        </WizardShell>
+        </div>
     )
 }

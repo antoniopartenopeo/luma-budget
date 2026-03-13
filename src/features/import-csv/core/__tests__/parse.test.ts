@@ -62,8 +62,8 @@ describe("parseCSV", () => {
         const result = parseCSV(csv);
         expect(result.errors).toHaveLength(0);
         expect(result.rows).toHaveLength(2);
-        expect(result.rows[0].raw.amount).toBe("-12,50");
-        expect(result.rows[1].raw.amount).toBe("100,00");
+        expect(result.rows[0].raw.amountCents).toBe("-1250");
+        expect(result.rows[1].raw.amountCents).toBe("10000");
     });
 
     it("flags rows where both debit and credit are filled", () => {
@@ -74,7 +74,7 @@ describe("parseCSV", () => {
         expect(result.rows).toHaveLength(1);
         expect(result.errors.length).toBeGreaterThan(0);
         expect(result.errors[0].message).toContain("Both debit and credit");
-        expect(result.rows[0].raw.amount).toBe("-6.00");
+        expect(result.rows[0].raw.amountCents).toBe("-600");
     });
 
     it("rejects row when required amount cell is missing", () => {
@@ -84,6 +84,6 @@ describe("parseCSV", () => {
         const result = parseCSV(csv);
         expect(result.rows).toHaveLength(0);
         expect(result.errors.length).toBeGreaterThan(0);
-        expect(result.errors[0].message).toContain("insufficient columns");
+        expect(result.errors.some(e => e.message.includes("insufficient columns"))).toBe(true);
     });
 });

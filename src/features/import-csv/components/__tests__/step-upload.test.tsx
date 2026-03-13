@@ -21,15 +21,12 @@ describe("ImportStepUpload", () => {
     it("marks bank sync as unavailable in the current build", () => {
         renderUploadStep()
 
-        expect(screen.getByText("Non disponibile")).toBeInTheDocument()
+        expect(screen.getByText("Prossimamente")).toBeInTheDocument()
         expect(
-            screen.getByText("Il collegamento banca e disattivato in questa build. Per ora puoi usare solo l'import CSV locale.")
+            screen.getByText(/In futuro potrai collegare il tuo conto bancario per sincronizzare le transazioni in automatico/i)
         ).toBeInTheDocument()
         expect(
-            screen.getByText("Nessun collegamento bancario remoto e attivo in questo ambiente.")
-        ).toBeInTheDocument()
-        expect(
-            screen.queryByText(/Autorizzazione sicura direttamente dalla tua banca/i)
+            screen.queryByText(/Autorizzazione sicura direttamente/i)
         ).not.toBeInTheDocument()
     })
 })

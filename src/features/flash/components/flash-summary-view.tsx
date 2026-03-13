@@ -22,6 +22,8 @@ import { formatCents } from "@/domain/money"
 import { calculateSharePct } from "@/domain/money"
 import { narrateSnapshot, deriveSnapshotState, SnapshotFacts } from "@/domain/narration"
 import { getDaysElapsedInMonth, getDaysInMonth } from "@/lib/date-ranges"
+import { InteractiveCardGhostIcon } from "@/components/patterns/interactive-card-ghost-icon"
+import { resolveInteractiveSurfaceStyle, withAlpha } from "@/components/patterns/interactive-surface"
 import { cn } from "@/lib/utils"
 
 interface FlashSummaryViewProps {
@@ -103,6 +105,9 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
         ? "blur-xl select-none opacity-50 transition-[filter,opacity] duration-500"
         : "transition-[filter,opacity] duration-500"
 
+    const themeColor = netBalanceCents >= 0 ? "#10b981" : "#f43f5e" // Emerald for positive, Rose for negative
+    const interactiveStyle = resolveInteractiveSurfaceStyle(themeColor, "active")
+
     const containerVariants: Variants = {
         hidden: { opacity: 0, scale: 0.98 },
         visible: {
@@ -125,146 +130,161 @@ export function FlashSummaryView({ onClose }: FlashSummaryViewProps) {
     }
 
     return (
-        <div className="w-full h-full flex items-center justify-center overflow-auto py-8">
+        <div className="w-full h-full flex items-center justify-center overflow-auto py-6 sm:py-8 px-4">
             <motion.div
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
-                className="relative w-full max-w-md overflow-hidden rounded-[2rem] glass-chrome drop-shadow-2xl flex flex-col p-6"
+                className="relative w-full max-w-[22rem] overflow-hidden rounded-[2.15rem] border shadow-2xl"
+                style={{
+                    backgroundColor: interactiveStyle.backgroundColor,
+                    borderColor: interactiveStyle.borderColor,
+                    backgroundImage: `linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%), ${interactiveStyle.backgroundImage}`,
+                    boxShadow: interactiveStyle.boxShadow
+                }}
             >
-                {/* Visual Glass Reflection Accent */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/40 dark:from-white/5 to-transparent pointer-events-none" />
+                {/* Glare effect at the top */}
+                <div
+                    className="pointer-events-none absolute inset-x-[15%] top-0 h-px"
+                    style={{
+                        backgroundImage: `linear-gradient(90deg, transparent, ${withAlpha(themeColor, 0.6)}, transparent)`
+                    }}
+                />
 
-                {/* Header Branding & Close */}
-                <motion.div variants={itemVariants} className="relative z-10 flex items-start justify-between mb-4">
-                    <div className="flex flex-col">
-                        <div className="flex items-center gap-1.5 text-foreground font-bold tracking-tight text-lg">
-                            <Sparkles className="h-4 w-4 fill-primary text-primary" />
-                            Numa Flash
+                <InteractiveCardGhostIcon
+                    visibility="always"
+                    isActive={true}
+                    className="absolute -right-16 top-1/2 -translate-y-1/2 opacity-[0.12]"
+                    wrapperClassName="h-96 w-96"
+                    tintStyle={{ color: "var(--foreground)" }}
+                    icon={netBalanceCents >= 0 ? TrendingUp : TrendingDown}
+                />
+
+                <div className="relative z-10 flex flex-col p-6 sm:p-7 space-y-6">
+                    {/* Header */}
+                    <motion.div variants={itemVariants} className="flex items-start justify-between">
+                        <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-1.5 font-black uppercase tracking-[0.2em] text-[10px] text-foreground">
+                                <Sparkles className="h-3 w-3" />
+                                Numa Flash
+                            </div>
+                            <h2 className="text-[12px] font-bold text-foreground/70 tracking-wide uppercase">
+                                {formatPeriodLabel(period)}
+                            </h2>
                         </div>
-                        <h2 className="text-sm font-medium text-muted-foreground">
-                            {formatPeriodLabel(period)}
-                        </h2>
-                    </div>
-                    {onClose && (
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={onClose}
-                            className="rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-muted-foreground hover:text-foreground h-8 w-8"
-                        >
-                            <X className="h-4 w-4" />
-                        </Button>
-                    )}
-                </motion.div>
+                        {onClose && (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={onClose}
+                                className="h-8 w-8 rounded-full -mr-2 -mt-1 hover:bg-black/5 dark:hover:bg-white/10 text-muted-foreground transition-colors"
+                            >
+                                <X className="h-4 w-4" />
+                            </Button>
+                        )}
+                    </motion.div>
 
-                {/* Main Bento Grid */}
-                <div className="relative z-10 grid grid-cols-2 gap-3 mb-3">
-                    {/* Primary Balance Card - Big Square */}
-                    <motion.div variants={itemVariants} className="col-span-2 glass-card rounded-2xl p-4 flex flex-col items-center justify-center text-center">
-                        <span className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Saldo Netto</span>
-                        <div className={cn("text-3xl font-extrabold text-foreground tracking-tight", blurClass)}>
+                    {/* Main KPI */}
+                    <motion.div variants={itemVariants} className="flex flex-col">
+                        <span className="mb-1 text-[10px] font-black uppercase tracking-[0.22em] text-foreground/80">Saldo Netto</span>
+                        <div className={cn("text-[2.75rem] leading-[1.1] font-black tabular-nums tracking-tighter text-foreground", blurClass)}>
                             {netBalanceCents >= 0 ? "+" : ""}
                             {formatCents(netBalanceCents, currency, locale).replace(",00", "")}
                         </div>
-                        <div className="flex items-center gap-4 mt-3 w-full justify-center">
-                            <div className="flex items-center gap-1.5">
-                                <div className="p-1 rounded-full bg-emerald-100/50 dark:bg-emerald-900/30">
-                                    <TrendingUp className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
-                                </div>
-                                <span className={cn("text-xs font-semibold text-emerald-700 dark:text-emerald-400", blurClass)}>
+                        <div className="flex items-center gap-3 mt-3">
+                            <div className="flex items-center gap-1.5 opacity-90">
+                                <TrendingUp className="h-3.5 w-3.5 text-foreground" />
+                                <span className={cn("text-xs font-bold tabular-nums text-foreground", blurClass)}>
                                     {formatCents(totalIncomeCents, currency, locale).replace(",00", "")}
                                 </span>
                             </div>
-                            <div className="w-px h-3 bg-border" />
-                            <div className="flex items-center gap-1.5">
-                                <div className="p-1 rounded-full bg-rose-100/50 dark:bg-rose-900/30">
-                                    <TrendingDown className="h-3 w-3 text-rose-600 dark:text-rose-400" />
-                                </div>
-                                <span className={cn("text-xs font-semibold text-rose-700 dark:text-rose-400", blurClass)}>
+                            <div className="w-px h-3 bg-foreground/20" />
+                            <div className="flex items-center gap-1.5 opacity-90">
+                                <TrendingDown className="h-3.5 w-3.5 text-foreground" />
+                                <span className={cn("text-xs font-bold tabular-nums text-foreground", blurClass)}>
                                     {formatCents(totalExpensesCents, currency, locale).replace(",00", "")}
                                 </span>
                             </div>
                         </div>
                     </motion.div>
 
-                    {/* Pressure & Superfluous - Half width */}
-                    <motion.div variants={itemVariants} className="glass-card rounded-2xl p-4">
-                        <div className="flex items-center justify-between mb-3">
-                            <PiggyBank className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Pressione</span>
+                    {/* Pressure & Superfluous Grid */}
+                    <motion.div variants={itemVariants} className="grid grid-cols-2 gap-5 pt-1">
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-black uppercase tracking-[0.22em] mb-1.5 text-foreground/80">Pressione</span>
+                            <div className={cn("text-2xl font-black tabular-nums tracking-tighter text-foreground mb-2", blurClass)}>{expensePressurePct}%</div>
+                            <div className="h-[3px] rounded-full overflow-hidden w-2/3 bg-foreground/[0.16]">
+                                <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${Math.min(expensePressurePct, 100)}%` }}
+                                    className="h-full rounded-full"
+                                    style={{ backgroundColor: expensePressurePct > 90 ? "#f43f5e" : "var(--foreground)", opacity: expensePressurePct > 90 ? 1 : 0.8 }}
+                                />
+                            </div>
                         </div>
-                        <div className={cn("text-lg font-bold text-foreground", blurClass)}>{expensePressurePct}%</div>
-                        <div className="h-1.5 bg-muted rounded-full overflow-hidden mt-2">
-                            <motion.div
-                                initial={{ width: 0 }}
-                                animate={{ width: `${Math.min(expensePressurePct, 100)}%` }}
-                                className={cn("h-full", expensePressurePct > 90 ? "bg-rose-500" : "bg-primary")}
-                            />
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-black uppercase tracking-[0.22em] mb-1.5 text-foreground/80">Superfluo</span>
+                            <div className={cn("text-2xl font-black tabular-nums tracking-tighter text-foreground mb-2", blurClass)}>{uselessSpendPercent ?? 0}%</div>
+                            <div className="h-[3px] rounded-full overflow-hidden w-2/3 bg-foreground/[0.16]">
+                                <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${Math.min(uselessSpendPercent ?? 0, 100)}%` }}
+                                    className="h-full rounded-full"
+                                    style={{ backgroundColor: isSuperfluousOver ? "#f43f5e" : "var(--foreground)", opacity: isSuperfluousOver ? 1 : 0.8 }}
+                                />
+                            </div>
                         </div>
                     </motion.div>
 
-                    <motion.div variants={itemVariants} className="glass-card rounded-2xl p-4">
-                        <div className="flex items-center justify-between mb-3">
-                            <Target className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Superfluo</span>
+                    <div className="h-px w-full bg-foreground/15" />
+
+                    {/* Top Categories */}
+                    <motion.div variants={itemVariants} className="flex flex-col space-y-3.5">
+                        <span className="text-[10px] font-black uppercase tracking-[0.22em] text-foreground/80">Top categorie</span>
+                        <div className="flex flex-col space-y-3">
+                            {top3Categories.map((cat, idx) => (
+                                <div key={cat.id} className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2.5">
+                                        <div
+                                            className="flex h-4 w-4 items-center justify-center rounded-sm text-[9px] font-black bg-foreground/15 text-foreground"
+                                        >
+                                            <span style={{ opacity: 5 }}>{idx + 1}</span>
+                                        </div>
+                                        <span className="text-[11px] font-bold text-foreground/80 tracking-wide uppercase truncate max-w-[130px] sm:max-w-[160px]">{cat.name}</span>
+                                    </div>
+                                    <div className={cn("text-xs font-black tabular-nums text-foreground", blurClass)}>
+                                        {formatCents(cat.valueCents, currency, locale).replace(",00", "")}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                        <div className={cn("text-lg font-bold text-foreground", blurClass)}>{uselessSpendPercent ?? 0}%</div>
-                        <div className="h-1.5 bg-muted rounded-full overflow-hidden mt-2">
-                            <motion.div
-                                initial={{ width: 0 }}
-                                animate={{ width: `${Math.min(uselessSpendPercent ?? 0, 100)}%` }}
-                                className={cn("h-full", isSuperfluousOver ? "bg-rose-500" : "bg-primary")}
-                            />
+                    </motion.div>
+
+                    <div className="h-px w-full bg-foreground/15" />
+
+                    {/* Insight Text */}
+                    <motion.div variants={itemVariants} className="flex flex-col space-y-2">
+                        <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-foreground/80">
+                            Numa Insight
                         </div>
+                        <p className={cn("text-sm font-medium leading-relaxed text-foreground/90", blurClass)}>
+                            {narration.text}
+                        </p>
+                    </motion.div>
+
+                    {/* Privacy Toggle */}
+                    <motion.div variants={itemVariants} className="flex justify-center pt-2">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setIsPrivate(!isPrivate)}
+                            className="h-8 gap-1.5 rounded-full px-4 text-[10px] font-black uppercase tracking-[0.2em] transition-colors bg-foreground/10 text-foreground"
+                        >
+                            {isPrivate ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
+                            {isPrivate ? "Mostra" : "Nascondi"}
+                        </Button>
                     </motion.div>
                 </div>
-
-                {/* Top Categories - Compact List */}
-                <motion.div variants={itemVariants} className="relative z-10 glass-card rounded-2xl p-4 mb-3">
-                    <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Top categorie</h3>
-                    </div>
-                    <div className="space-y-2">
-                        {top3Categories.map((cat, idx) => (
-                            <div key={cat.id} className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <div className="flex h-5 w-5 items-center justify-center rounded-md border border-slate-100 bg-white text-xs font-semibold text-muted-foreground shadow-sm dark:border-slate-700 dark:bg-slate-800">
-                                        {idx + 1}
-                                    </div>
-                                    <span className="text-xs font-semibold text-foreground/80">{cat.name}</span>
-                                </div>
-                                <div className={cn("text-xs font-bold text-foreground", blurClass)}>
-                                    {formatCents(cat.valueCents, currency, locale).replace(",00", "")}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </motion.div>
-
-                {/* Insight - Clean Text */}
-                <motion.div variants={itemVariants} className="relative z-10 mt-auto bg-gradient-to-br from-primary/10 to-cyan-500/10 dark:from-primary/20 dark:to-cyan-500/20 border border-primary/20 rounded-2xl p-4">
-                    <div className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-                        <Sparkles className="h-3 w-3" />
-                        Numa Insight
-                    </div>
-                    <p className="text-xs font-medium text-foreground/90 leading-snug">
-                        {narration.text}
-                    </p>
-                </motion.div>
-
-                {/* Privacy Toggle */}
-                <motion.div variants={itemVariants} className="relative z-10 mt-4 flex justify-center">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setIsPrivate(!isPrivate)}
-                        className="h-7 gap-1.5 rounded-full border border-white/50 bg-white/60 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground shadow-sm transition-colors hover:bg-white hover:text-foreground dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
-                    >
-                        {isPrivate ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
-                        {isPrivate ? "Mostra" : "Nascondi"}
-                    </Button>
-                </motion.div>
             </motion.div>
         </div>
     )

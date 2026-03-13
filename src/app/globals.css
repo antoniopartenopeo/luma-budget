@@ -260,36 +260,64 @@
 
 @layer components {
   .glass-panel {
-    @apply bg-white/68 dark:bg-black/62 border border-white/45 dark:border-white/12 backdrop-blur-xl shadow-xl;
+    @apply bg-white/68 dark:bg-[#0a0a0a]/65 border border-white/45 dark:border-white/12 backdrop-blur-xl dark:backdrop-saturate-[180%] shadow-xl;
     box-shadow:
       inset 0 1px 0 0 rgba(255, 255, 255, 0.24),
       0 22px 50px -24px rgba(15, 23, 42, 0.28);
   }
 
+  .dark .glass-panel {
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+      0 22px 50px -24px rgba(0, 0, 0, 0.5);
+  }
+
   .glass-card {
-    @apply bg-white/56 dark:bg-white/[0.06] border border-white/40 dark:border-white/12 backdrop-blur-md shadow-sm transition-[background-color,border-color,box-shadow,transform] duration-300;
+    @apply bg-white/56 dark:bg-[#0a0a0a]/50 border border-white/40 dark:border-white/12 backdrop-blur-md dark:backdrop-saturate-[180%] shadow-sm transition-all duration-300;
     box-shadow:
       inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
       0 16px 32px -24px rgba(15, 23, 42, 0.22);
   }
 
+  .dark .glass-card {
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+      0 16px 32px -24px rgba(0, 0, 0, 0.5);
+  }
+
   .glass-chrome {
-    @apply bg-white/60 dark:bg-black/60 backdrop-blur-2xl backdrop-saturate-[180%];
+    @apply bg-white/60 dark:bg-[#0a0a0a]/60 backdrop-blur-2xl backdrop-saturate-[180%];
     box-shadow:
       inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
       0 24px 60px -36px rgba(15, 23, 42, 0.3);
   }
 
+  .dark .glass-chrome {
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+      0 24px 60px -36px rgba(0, 0, 0, 0.5);
+  }
+
   .surface-subtle {
-    @apply rounded-xl border border-white/35 bg-white/40 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.04];
+    @apply rounded-xl border border-white/35 bg-white/40 backdrop-blur-md dark:border-white/10 dark:bg-[#0a0a0a]/40 dark:backdrop-saturate-[180%];
     box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.14);
   }
 
+  .dark .surface-subtle {
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+  }
+
   .surface-strong {
-    @apply rounded-[2rem] border border-white/45 bg-white/55 backdrop-blur-xl dark:border-white/12 dark:bg-black/40;
+    @apply rounded-[2rem] border border-white/45 bg-white/55 backdrop-blur-xl dark:border-white/12 dark:bg-[#0a0a0a]/60 dark:backdrop-saturate-[180%];
     box-shadow:
       inset 0 1px 0 0 rgba(255, 255, 255, 0.22),
       0 24px 50px -36px rgba(15, 23, 42, 0.34);
+  }
+
+  .dark .surface-strong {
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+      0 24px 50px -36px rgba(0, 0, 0, 0.5);
   }
 
   .ambient-grid {
@@ -357,7 +385,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -376,7 +407,10 @@
 }
 
 @layer utilities {
-  .reduce-effects *, .reduce-effects *::before, .reduce-effects *::after {
+
+  .reduce-effects *,
+  .reduce-effects *::before,
+  .reduce-effects *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

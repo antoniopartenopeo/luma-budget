@@ -1,4 +1,4 @@
-import { resolveBudgetGroupForTransaction } from "@/domain/transactions/utils"
+import { resolveBudgetGroup } from "@/domain/transactions/utils"
 import {
     BRAIN_FEATURE_NAMES,
     BrainCurrentMonthInferenceInput,
@@ -92,17 +92,7 @@ function summarizeSignalForTransactions(
             summary.expensesCents += amount
 
             const categoryNature = categoryNatureMap.get(transaction.categoryId)
-            const budgetGroup = resolveBudgetGroupForTransaction(
-                {
-                    ...transaction,
-                    id: "__brain__",
-                    date: "",
-                    description: "",
-                    category: "",
-                    classificationSource: "ruleBased",
-                },
-                categoryNature
-            )
+            const budgetGroup = resolveBudgetGroup(transaction.isSuperfluous, categoryNature)
 
             if (budgetGroup === "superfluous") summary.superfluousCents += amount
             if (budgetGroup === "comfort") summary.comfortCents += amount
@@ -145,17 +135,7 @@ function aggregateMonthlySignals(
             current.expensesCents += amount
 
             const categoryNature = categoryNatureMap.get(transaction.categoryId)
-            const budgetGroup = resolveBudgetGroupForTransaction(
-                {
-                    ...transaction,
-                    id: "__brain__",
-                    date: "",
-                    description: "",
-                    category: "",
-                    classificationSource: "ruleBased",
-                },
-                categoryNature
-            )
+            const budgetGroup = resolveBudgetGroup(transaction.isSuperfluous, categoryNature)
 
             if (budgetGroup === "superfluous") current.superfluousCents += amount
             if (budgetGroup === "comfort") current.comfortCents += amount
@@ -356,6 +336,7 @@ export function buildBrainDataset(
             currentMonthInferenceInput: null,
             fingerprint,
             months: months.length,
+            monthlyExpenseSeries: [],
         }
     }
 
@@ -436,5 +417,9 @@ export function buildBrainDataset(
         currentMonthInferenceInput,
         fingerprint,
         months: months.length,
+        monthlyExpenseSeries: months.map((m) => ({
+            period: m.period,
+            expensesCents: m.expensesCents,
+        })),
     }
 }

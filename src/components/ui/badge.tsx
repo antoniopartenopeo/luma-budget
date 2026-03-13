@@ -11,6 +11,8 @@ const badgeVariants = cva(
       variant: {
         default:
           "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
+        pulse:
+          "border-transparent bg-primary/20 text-primary animate-pulse shadow-[0_0_10px_rgba(14,165,168,0.3)]",
         secondary:
           "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
         destructive:

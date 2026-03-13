@@ -16,8 +16,13 @@ export function normalizeRows(rows: RawRow[]): { valid: ParsedRow[]; errors: Par
                 throw new Error(`Invalid date format: ${row.raw.date}`);
             }
 
-            const amountCents = parseAmount(row.raw.amount);
-            if (isNaN(amountCents)) throw new Error(`Invalid amount format: ${row.raw.amount}`);
+            let amountCents: number;
+            if (row.raw.amountCents !== undefined) {
+                amountCents = parseInt(row.raw.amountCents, 10);
+            } else {
+                amountCents = parseAmount(row.raw.amount);
+            }
+            if (isNaN(amountCents)) throw new Error(`Invalid amount format: ${row.raw.amountCents || row.raw.amount}`);
 
             if (amountCents === 0) {
                 continue;

@@ -195,4 +195,4 @@ describe("detectActiveSubscriptions", () => {
     })
 })
 
-const DAY_MS = 24 * 60 * 60 * 1000
+const DAY_MS = 86400000 // 24 hours in ms

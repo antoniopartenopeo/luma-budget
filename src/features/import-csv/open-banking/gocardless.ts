@@ -234,7 +234,7 @@ function readDescription(transaction: GoCardlessTransaction): string {
     return "Movimento bancario"
 }
 
-function readAmount(transaction: GoCardlessTransaction): string | null {
+function readAmount(transaction: GoCardlessTransaction): number | null {
     const raw = asString(transaction.transactionAmount?.amount)
     if (!raw) return null
 
@@ -250,7 +250,7 @@ function readAmount(transaction: GoCardlessTransaction): string | null {
         if (indicator === "CRDT") signedCents = Math.abs(amountCents)
     }
 
-    return (signedCents / 100).toFixed(2)
+    return signedCents
 }
 
 function escapeCsv(value: string): string {
@@ -258,10 +258,10 @@ function escapeCsv(value: string): string {
     return `"${value.replace(/"/g, "\"\"")}"`
 }
 
-function toCsv(rows: Array<{ date: string; description: string; amount: string }>): string {
-    const header = "Data,Descrizione,Importo"
+function toCsv(rows: Array<{ date: string; description: string; amountCents: number }>): string {
+    const header = "Data,Descrizione,amountCents"
     const body = rows.map(row =>
-        `${escapeCsv(row.date)},${escapeCsv(row.description)},${escapeCsv(row.amount)}`
+        `${escapeCsv(row.date)},${escapeCsv(row.description)},${row.amountCents}`
     )
     return [header, ...body].join("\n")
 }
@@ -281,7 +281,7 @@ export async function syncRequisitionToCsv(requisitionId: string): Promise<BankC
         }
     }
 
-    const rows: Array<{ date: string; description: string; amount: string; fingerprint: string }> = []
+    const rows: Array<{ date: string; description: string; amountCents: number; fingerprint: string }> = []
 
     for (const accountId of accountIds) {
         const accountTransactions = await getAccountTransactions(accountId)
@@ -290,25 +290,25 @@ export async function syncRequisitionToCsv(requisitionId: string): Promise<BankC
 
         for (const transaction of booked) {
             const date = readDate(transaction)
-            const amount = readAmount(transaction)
-            if (!date || !amount) continue
+            const amountCents = readAmount(transaction)
+            if (!date || amountCents === null) continue
 
             const description = readDescription(transaction)
             const fingerprint = [
                 accountId,
                 transaction.transactionId || "",
                 date,
-                amount,
+                amountCents.toString(),
                 description,
             ].join("|")
 
-            rows.push({ date, description, amount, fingerprint })
+            rows.push({ date, description, amountCents, fingerprint })
         }
     }
 
     const dedupedRows = Array.from(
         new Map(rows.map(row => [row.fingerprint, row])).values()
-    ).map(({ date, description, amount }) => ({ date, description, amount }))
+    ).map(({ date, description, amountCents }) => ({ date, description, amountCents }))
 
     dedupedRows.sort((a, b) => b.date.localeCompare(a.date))
 

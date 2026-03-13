@@ -6,19 +6,21 @@ import { parseCurrencyToCents } from "@/domain/money"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DatePicker } from "@/components/ui/date-picker"
 import { cn } from "@/lib/utils"
 
 import { useCreateTransaction } from "@/features/transactions/api/use-transactions"
 import { Transaction } from "@/features/transactions/api/types"
-import { getGroupedCategories, getCategoryById } from "@/features/categories/config"
+import { getGroupedCategories, getCategoryById, Category } from "@/features/categories/config"
 import { useCategories } from "@/features/categories/api/use-categories"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
 
 interface QuickExpenseInputProps {
     onExpenseCreated?: (transaction: Transaction) => void
 }
+
+const EMPTY_ARRAY: Category[] = []
 
 export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) {
     const [description, setDescription] = useState("")
@@ -27,7 +29,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
     const [date, setDate] = useState<Date>(new Date())
     const [type, setType] = useState<"expense" | "income">("expense")
 
-    const { data: categories = [] } = useCategories()
+    const { data: categories = EMPTY_ARRAY } = useCategories()
     const [isFocused, setIsFocused] = useState(false)
     const [validationError, setValidationError] = useState<string | null>(null)
 
@@ -37,8 +39,10 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
 
     const { mutate: create, isPending, isSuccess, isError } = useCreateTransaction()
 
-    // Get grouped categories based on current transaction type
-    const groupedCategories = getGroupedCategories(categories, type)
+    // Get grouped categories based on current transaction type (memoized)
+    const groupedCategories = useMemo(() => {
+        return getGroupedCategories(categories, type)
+    }, [categories, type])
 
     // Derive isSuperfluous based on category (rule-based), unless manually overridden
     const isSuperfluous = useMemo(() => {
@@ -230,10 +234,10 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                         </SelectTrigger>
                         <SelectContent variant="premium" className="max-h-[300px]">
                             {groupedCategories.map((group) => (
-                                <div key={group.key}>
-                                    <div className="px-2 py-1.5 text-[10px] md:text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                <SelectGroup key={group.key}>
+                                    <SelectLabel className="px-2 py-1.5 text-[10px] md:text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                                         {group.label}
-                                    </div>
+                                    </SelectLabel>
                                     {group.categories.map((cat) => (
                                         <SelectItem key={cat.id} value={cat.id}>
                                             <div className="flex items-center gap-2">
@@ -242,7 +246,7 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
                                             </div>
                                         </SelectItem>
                                     ))}
-                                </div>
+                                </SelectGroup>
                             ))}
                         </SelectContent>
                     </Select>

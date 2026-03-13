@@ -2,15 +2,14 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
-    Activity,
-    BrainCircuit,
+    Brain,
     CalendarClock,
+    Crosshair,
     Gauge,
-    RotateCcw,
     ShieldCheck,
     Sparkles,
+    Target,
     TrendingUp,
-    Zap,
 } from "lucide-react"
 import { motion } from "framer-motion"
 import {
@@ -31,61 +30,33 @@ import { useCurrency } from "@/features/settings/api/use-currency"
 import {
     adaptBrainAdaptivePolicy,
     type BrainAdaptivePolicy,
+    DEFAULT_BRAIN_ADAPTIVE_POLICY,
     loadBrainAdaptivePolicy,
     saveBrainAdaptivePolicy,
 } from "@/features/insights/brain-auto-tune"
 import { resolveAdaptiveNowcastConfidenceThreshold } from "@/features/insights/brain-adaptive-thresholds"
 import { formatCents } from "@/domain/money"
 import { PageHeader } from "@/components/ui/page-header"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { MacroSection, macroItemVariants } from "@/components/patterns/macro-section"
 import { KpiCard } from "@/components/patterns/kpi-card"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
-import { EChartsWrapper } from "@/features/dashboard/components/charts/echarts-wrapper"
 import type { EChartsOption } from "echarts"
-import { cn } from "@/lib/utils"
 import { getCurrentPeriod } from "@/lib/date-ranges"
+
+import { NeuralFieldBackground } from "./_components/neural-field-background"
+import { BrainHeroSection } from "./_components/brain-hero-section"
+import { SignalMatrix } from "./_components/signal-matrix"
+import {
+    EventTone,
+    EvolutionPoint,
+    StageState,
+    SyncReason,
+    TimelineEvent,
+    TrainingState,
+} from "./types"
 
 const STABILITY_LOSS_TARGET = 0.12
 const POLL_INTERVAL_MS = 5000
-
-type StageId = "dormant" | "newborn" | "imprinting" | "adapting"
-type SyncReason = "boot" | "poll" | "storage"
-type EventTone = "neutral" | "positive" | "warning" | "critical"
-
-interface TimelineEvent {
-    id: string
-    title: string
-    detail: string
-    at: string
-    tone: EventTone
-}
-
-interface StageState {
-    id: StageId
-    label: string
-    summary: string
-    badgeVariant: "outline" | "secondary"
-}
-
-interface TrainingState {
-    isTraining: boolean
-    epoch: number
-    totalEpochs: number
-    progress: number
-    currentLoss: number
-    sampleCount: number
-    lastCompletedAt: string | null
-}
-
-interface EvolutionPoint {
-    at: number
-    readiness: number
-    experience: number
-    stability: number
-}
 
 function formatUpdatedAt(value: string | null): string {
     if (!value) return "-"
@@ -112,23 +83,6 @@ function clampPercent(value: number): number {
 
 function formatRatioAsPercent(value: number): string {
     return `${(value * 100).toFixed(1)}%`
-}
-
-function formatFeatureLabel(feature: string): string {
-    const labels: Record<string, string> = {
-        expense_income_ratio: "Rapporto spese/entrate",
-        superfluous_share: "Quota spese non essenziali",
-        comfort_share: "Quota spese di comfort",
-        txn_density: "Frequenza transazioni",
-        expense_momentum: "Tendenza recente delle spese",
-        income_momentum: "Tendenza recente delle entrate",
-        discretionary_pressure: "Pressione spese discrezionali",
-        expense_gap_ratio: "Divario tra spese ed entrate",
-    }
-
-    if (labels[feature]) return labels[feature]
-    const fallback = feature.replace(/_/g, " ")
-    return fallback.charAt(0).toUpperCase() + fallback.slice(1)
 }
 
 function isSameAdaptivePolicy(a: BrainAdaptivePolicy, b: BrainAdaptivePolicy): boolean {
@@ -191,13 +145,6 @@ function resolveStage(snapshot: NeuralBrainSnapshot | null): StageState {
     }
 }
 
-function eventToneClass(tone: EventTone): string {
-    if (tone === "positive") return "bg-success"
-    if (tone === "warning") return "bg-warning"
-    if (tone === "critical") return "bg-destructive"
-    return "bg-primary/70"
-}
-
 function formatEvolutionReason(result: BrainEvolutionResult): { title: string; detail: string; tone: EventTone } {
     if (result.reason === "trained") {
         return {
@@ -230,17 +177,6 @@ function formatEvolutionReason(result: BrainEvolutionResult): { title: string; d
     }
 }
 
-function NeuralFieldBackground() {
-    return (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,oklch(0.72_0.14_200_/_.22),transparent_46%),radial-gradient(circle_at_82%_10%,oklch(0.68_0.15_160_/_.16),transparent_34%),radial-gradient(circle_at_50%_86%,oklch(0.62_0.13_220_/_.12),transparent_42%)]" />
-            <div className="absolute left-1/3 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/25 animate-pulse-soft" />
-            <div className="absolute left-1/3 top-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/15 animate-ping-slow" />
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#7c8ea11a_1px,transparent_1px),linear-gradient(to_bottom,#7c8ea11a_1px,transparent_1px)] bg-[size:26px_26px] opacity-35" />
-        </div>
-    )
-}
-
 export default function BrainPage() {
     const { data: transactions = [], isLoading: isTransactionsLoading } = useTransactions()
     const { data: categories = [], isLoading: isCategoriesLoading } = useCategories({ includeArchived: true })
@@ -248,7 +184,7 @@ export default function BrainPage() {
 
     const [snapshot, setSnapshot] = useState<NeuralBrainSnapshot | null>(null)
     const [evolution, setEvolution] = useState<BrainEvolutionResult | null>(null)
-    const [adaptivePolicy, setAdaptivePolicy] = useState(() => loadBrainAdaptivePolicy())
+    const [adaptivePolicy, setAdaptivePolicy] = useState<BrainAdaptivePolicy>(() => ({ ...DEFAULT_BRAIN_ADAPTIVE_POLICY }))
     const [timeline, setTimeline] = useState<TimelineEvent[]>([])
     const [evolutionHistory, setEvolutionHistory] = useState<EvolutionPoint[]>([])
     const [training, setTraining] = useState<TrainingState>({
@@ -621,13 +557,6 @@ export default function BrainPage() {
         ? formatRatioAsPercent(evolution.nextMonthReliability.mape)
         : "-"
     const nextMonthReliabilitySamples = evolution?.nextMonthReliability.sampleCount ?? 0
-    const nowcastMaeLabel = evolution && evolution.nowcastReliability.sampleCount > 0
-        ? formatRatioAsPercent(evolution.nowcastReliability.mae)
-        : "-"
-    const nowcastMapeLabel = evolution && evolution.nowcastReliability.mapeSampleCount > 0
-        ? formatRatioAsPercent(evolution.nowcastReliability.mape)
-        : "-"
-    const nowcastReliabilitySamples = evolution?.nowcastReliability.sampleCount ?? 0
     const adaptiveNowcastConfidenceThreshold = resolveAdaptiveNowcastConfidenceThreshold({
         baseThreshold: adaptivePolicy.minNowcastConfidence,
         maturityScore: Math.max(
@@ -644,9 +573,6 @@ export default function BrainPage() {
         && currentMonthConfidencePercent >= adaptiveNowcastConfidencePercent
     )
     const currentMonthRemainingLabel = advisorNowcastReady ? rawCurrentMonthRemainingLabel : "-"
-    const brainKpiCardClassName = "h-auto"
-    const brainKpiValueClassName = "text-[clamp(1.65rem,2.1vw,2.5rem)] leading-none break-normal"
-    const brainKpiMoneyValueClassName = "text-[clamp(1.6rem,2vw,2.35rem)] leading-none break-normal whitespace-nowrap"
 
     const handleInitialize = useCallback(() => {
         const newborn = initializeBrain()
@@ -680,300 +606,199 @@ export default function BrainPage() {
         <StaggerContainer className="space-y-8 pb-20 md:pb-10">
             <motion.div variants={macroItemVariants}>
                 <PageHeader
-                    title={
-                        <span className="flex items-center gap-3">
-                            <BrainCircuit className="h-8 w-8" />
-                            Core previsioni
-                        </span>
-                    }
+                    title="Core previsioni"
                     description="Qui vedi come il Core cresce dai tuoi movimenti e affina le stime."
                 />
             </motion.div>
 
+            {/* Hero section: chart + forecast + actions */}
             <motion.div variants={macroItemVariants}>
                 <MacroSection
                     variant="premium"
                     background={<NeuralFieldBackground />}
+                    contentClassName="pt-5"
                 >
-                    <div className="space-y-6">
-                        <div className="grid gap-6">
-                            <Card className="order-2 border-white/35 bg-background/80">
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <Gauge className="h-5 w-5" />
-                                        Indice evoluzione
-                                    </CardTitle>
-                                    <CardDescription>{stage.summary}</CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-5">
-                                    <div className="rounded-2xl border border-border/60 bg-background/60 p-3">
-                                        <div className="h-[260px] w-full">
-                                            <EChartsWrapper option={evolutionChartOption} />
-                                        </div>
-                                    </div>
-
-                                    <div className="grid gap-3 sm:grid-cols-3">
-                                        <div className="rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5">
-                                            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">Prontezza</p>
-                                            <p className="mt-1 text-sm font-bold tabular-nums">{evolutionProgress}%</p>
-                                            <p className="mt-1 text-xs font-medium text-muted-foreground">Quanto il Core è vicino a una base utile.</p>
-                                        </div>
-                                        <div className="rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5">
-                                            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">Esperienza</p>
-                                            <p className="mt-1 text-sm font-bold tabular-nums">{experienceProgress}%</p>
-                                            <p className="mt-1 text-xs font-medium text-muted-foreground">{snapshot?.trainedSamples ?? 0}/{BRAIN_MATURITY_SAMPLE_TARGET} campioni già appresi.</p>
-                                        </div>
-                                        <div className="rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5">
-                                            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">Stabilita</p>
-                                            <p className="mt-1 text-sm font-bold tabular-nums">{stabilityProgress}%</p>
-                                            <p className="mt-1 text-xs font-medium text-muted-foreground">Stabilità attuale {liveLoss.toFixed(4)}.</p>
-                                        </div>
-                                    </div>
-
-                                    {training.isTraining && (
-                                        <div className="rounded-xl border border-primary/30 bg-primary/5 p-3">
-                                            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-primary/90">
-                                                Analisi in corso
-                                            </p>
-                                            <p className="mt-1 text-xs text-muted-foreground">
-                                                Ciclo {training.epoch}/{training.totalEpochs} · campioni {training.sampleCount} · stabilità {training.currentLoss.toFixed(4)}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    <div className="grid gap-3 sm:grid-cols-3">
-                                        <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">Ultimo aggiornamento</p>
-                                            <p className="mt-1 text-sm font-bold">{formatUpdatedAt(snapshot?.updatedAt ?? null)}</p>
-                                        </div>
-                                        <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">Affidabilita residuo del mese</p>
-                                            <p className="mt-1 text-sm font-bold tabular-nums">MAE {nowcastMaeLabel} · MAPE {nowcastMapeLabel}</p>
-                                            <p className="mt-1 text-xs font-medium text-muted-foreground tabular-nums">{nowcastReliabilitySamples} campioni usati per misurarla</p>
-                                        </div>
-                                        <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">Soglia di qualita</p>
-                                            <p className="mt-1 text-sm font-bold tabular-nums">{adaptiveNowcastConfidencePercent}%</p>
-                                            <p className="mt-1 text-xs font-medium text-muted-foreground">Confidenza minima richiesta per usare la stima del mese corrente.</p>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            <Card className="order-1 border-white/35 bg-background/80">
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <Activity className="h-5 w-5" />
-                                        Comandi Core
-                                    </CardTitle>
-                                <CardDescription>
-                                    Le azioni base del Core: avvio, reset e registro attività.
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                    <div className="flex flex-wrap gap-3">
-                                        <Button
-                                            onClick={handleInitialize}
-                                            disabled={isInitialized || training.isTraining}
-                                            className="min-w-[170px]"
-                                        >
-                                            <Zap className="h-4 w-4" />
-                                            Avvia Core
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            onClick={handleReset}
-                                            disabled={!isInitialized || training.isTraining}
-                                            className="min-w-[170px]"
-                                        >
-                                            <RotateCcw className="h-4 w-4" />
-                                            Resetta Core
-                                        </Button>
-                                    </div>
-
-                                    <Accordion type="single" collapsible className="rounded-2xl border border-border/60 bg-background/50 px-4">
-                                        <AccordionItem value="technical-events" className="border-none">
-                                            <AccordionTrigger className="py-3 text-sm font-semibold text-foreground hover:no-underline">
-                                                Registro attività del Core
-                                            </AccordionTrigger>
-                                            <AccordionContent className="pb-4">
-                                                <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
-                                                    {timeline.length === 0 && (
-                                                        <p className="text-xs text-muted-foreground">Nessuna attività registrata per ora.</p>
-                                                    )}
-                                                    {timeline.map((event) => (
-                                                        <div key={event.id} className="rounded-xl border border-border/50 bg-muted/20 px-3 py-2">
-                                                            <div className="flex items-center justify-between gap-3">
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className={cn("h-2 w-2 rounded-full", eventToneClass(event.tone))} />
-                                                                    <p className="text-xs font-bold text-foreground">{event.title}</p>
-                                                                </div>
-                                                                <p className="text-xs font-medium text-muted-foreground tabular-nums">{formatClock(event.at)}</p>
-                                                            </div>
-                                                            <p className="mt-1 text-sm font-medium leading-relaxed text-muted-foreground">{event.detail}</p>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </AccordionContent>
-                                        </AccordionItem>
-                                    </Accordion>
-                                </CardContent>
-                                <CardFooter className="pt-0">
-                                    <p className="text-sm font-medium leading-relaxed text-muted-foreground">
-                                        Dati letti ora: {transactions.length} transazioni, {categories.length} categorie, ultima analisi {formatUpdatedAt(training.lastCompletedAt)}.
-                                    </p>
-                                </CardFooter>
-                            </Card>
-                        </div>
-
-                        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                            <KpiCard
-                                title="Rischio"
-                                value={evolution?.prediction ? `${riskPercent}%` : "-"}
-                                icon={ShieldCheck}
-                                trend={evolution?.prediction ? (riskPercent > 65 ? "warning" : "neutral") : "neutral"}
-                                change={evolution?.prediction ? `${confidencePercent}%` : "-"}
-                                comparisonLabel="Affidabilità"
-                                description="Quanto è probabile che la spesa salga."
-                                className={brainKpiCardClassName}
-                                valueClassName={brainKpiValueClassName}
-                                compact
-                            />
-                            <KpiCard
-                                title="Spesa prossimo mese"
-                                value={predictedExpensesLabel}
-                                icon={Sparkles}
-                                trend={evolution?.prediction ? "up" : "neutral"}
-                                change={evolution?.inferencePeriod ?? "-"}
-                                comparisonLabel="Periodo"
-                                description="Quanto il Core si aspetta di vedere nelle spese del prossimo mese."
-                                className={brainKpiCardClassName}
-                                valueClassName={brainKpiMoneyValueClassName}
-                                compact
-                            />
-                            <KpiCard
-                                title="Spesa residua del mese"
-                                value={currentMonthRemainingLabel}
-                                icon={CalendarClock}
-                                trend={advisorNowcastReady ? "neutral" : "warning"}
-                                change={advisorNowcastReady ? `${currentMonthConfidencePercent}%` : evolution ? `Soglia ${adaptiveNowcastConfidencePercent}%` : "Non pronta"}
-                                comparisonLabel={advisorNowcastReady ? "Confidenza" : "Soglia qualità"}
-                                description="Quanto il Core stima che resti ancora da spendere nel mese, con controllo qualità automatico."
-                                className={brainKpiCardClassName}
-                                valueClassName={brainKpiMoneyValueClassName}
-                                compact
-                            />
-                        </div>
-
-                        <Accordion type="single" collapsible className="rounded-2xl border border-border/60 bg-background/40 px-4">
-                            <AccordionItem value="technical-details" className="border-none">
-                                <AccordionTrigger className="py-3 text-sm font-semibold text-foreground hover:no-underline">
-                                    Dettagli del Core (facoltativo)
-                                </AccordionTrigger>
-                                <AccordionContent className="pb-4">
-                                    <div className="space-y-4">
-                                        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                                            <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">Versione Core</p>
-                                                <p className="mt-1 text-sm font-bold">{snapshot?.version ?? "-"}</p>
-                                            </div>
-                                            <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">Schema dei fattori</p>
-                                                <p className="mt-1 text-sm font-bold">{snapshot?.featureSchemaVersion ?? "-"}</p>
-                                            </div>
-                                            <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">Affidabilita prossimo mese</p>
-                                                <p className="mt-1 text-sm font-bold tabular-nums">MAE {nextMonthMaeLabel} · MAPE {nextMonthMapeLabel}</p>
-                                                <p className="mt-1 text-xs font-medium text-muted-foreground tabular-nums">{nextMonthReliabilitySamples} campioni osservati</p>
-                                            </div>
-                                            <div className="rounded-xl border border-border/60 bg-muted/30 px-3 py-2.5">
-                                                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80">Struttura del Core</p>
-                                                <p className="mt-1 text-sm font-bold tabular-nums">{vectorWeights.length} unità · {snapshot?.trainedSamples ?? 0} campioni</p>
-                                                <p className="mt-1 text-xs font-medium text-muted-foreground tabular-nums">{activeWeightsCount} attive · {silentWeightsCount} neutre</p>
-                                            </div>
-                                        </div>
-
-                                        <Card className="bg-background/72">
-                                            <CardHeader>
-                                                <CardTitle className="flex items-center gap-2">
-                                                    <BrainCircuit className="h-5 w-5" />
-                                                    Mappa dei segnali
-                                                </CardTitle>
-                                                <CardDescription>
-                                                    Ogni barra mostra quanto pesa una componente interna del Core nella stima attuale.
-                                                </CardDescription>
-                                            </CardHeader>
-                                            <CardContent className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                                                {vectorWeights.map((weight, index) => {
-                                                    const intensity = clampPercent(Math.abs(weight) * 28)
-                                                    const intensityScale = Math.max(0, Math.min(1, intensity / 100))
-                                                    return (
-                                                        <div
-                                                            key={`weight-${index}`}
-                                                            className="rounded-xl border border-border/60 bg-muted/20 p-3"
-                                                        >
-                                                            <div className="flex items-center justify-between gap-2">
-                                                                <p className="text-sm font-bold tracking-tight text-foreground/85">
-                                                                    Neurone {index + 1}
-                                                                </p>
-                                                                <p className="text-xs font-medium tabular-nums text-muted-foreground">
-                                                                    {weight.toFixed(4)}
-                                                                </p>
-                                                            </div>
-                                                            <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-background/70">
-                                                                <motion.div
-                                                                    className="h-full w-full origin-left transform-gpu rounded-full bg-gradient-to-r from-primary via-info to-success"
-                                                                    initial={{ scaleX: 0 }}
-                                                                    animate={{ scaleX: intensityScale }}
-                                                                    transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    )
-                                                })}
-                                            </CardContent>
-                                        </Card>
-
-                                        <Card className="bg-background/72">
-                                            <CardHeader>
-                                                <CardTitle className="flex items-center gap-2">
-                                                    <TrendingUp className="h-5 w-5" />
-                                                    Fattori principali della stima
-                                                </CardTitle>
-                                                <CardDescription>
-                                                    Qui vedi i fattori che stanno alzando o abbassando la stima in questo momento.
-                                                </CardDescription>
-                                            </CardHeader>
-                                            <CardContent>
-                                                {contributorsTop.length === 0 ? (
-                                                    <p className="text-sm text-muted-foreground">
-                                                        Stima non ancora pronta: servono più dati o una nuova analisi completa.
-                                                    </p>
-                                                ) : (
-                                                    <div className="space-y-2">
-                                                        {contributorsTop.map((item) => (
-                                                            <div key={item.feature} className="rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5">
-                                                                <div className="flex items-center justify-between gap-2">
-                                                                    <p className="text-xs font-bold text-foreground tracking-wide">{formatFeatureLabel(item.feature)}</p>
-                                                                    <p className="text-xs text-muted-foreground tabular-nums">
-                                                                        effetto sulla stima {item.contribution.toFixed(4)}
-                                                                    </p>
-                                                                </div>
-                                                                <p className="mt-1 text-xs font-medium text-muted-foreground tabular-nums">
-                                                                    valore attuale {item.value.toFixed(4)} · peso interno {item.weight.toFixed(4)}
-                                                                </p>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                )}
-                                            </CardContent>
-                                        </Card>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-                    </div>
+                    <BrainHeroSection
+                        evolutionChartOption={evolutionChartOption}
+                        hwForecast={evolution?.hwForecast ?? null}
+                        currency={currency}
+                        locale={locale}
+                        training={training}
+                        isInitialized={isInitialized}
+                        handleInitialize={handleInitialize}
+                        handleReset={handleReset}
+                        timeline={timeline}
+                        formatClock={formatClock}
+                        transactionsCount={transactions.length}
+                        categoriesCount={categories.length}
+                        updatedAtLabel={formatUpdatedAt(training.lastCompletedAt)}
+                    />
                 </MacroSection>
+            </motion.div>
+
+            {/* KPI mosaic grid — uniform premium cards */}
+            <MacroSection
+                title="Stato del Core"
+                description={stage.summary}
+                contentClassName="pt-5"
+                background={
+                    <div className="absolute inset-0 bg-[linear-gradient(145deg,rgba(14,165,168,0.06),transparent_30%),linear-gradient(330deg,rgba(148,163,184,0.06),transparent_30%)]" />
+                }
+            >
+                <StaggerContainer className="grid gap-3 sm:gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                    <motion.div variants={macroItemVariants} className="h-full">
+                        <KpiCard
+                            title="Prontezza"
+                            value={`${evolutionProgress}%`}
+                            animatedValue={evolutionProgress}
+                            formatFn={(v) => `${Math.round(v)}%`}
+                            icon={Gauge}
+                            tone={evolutionProgress >= 80 ? "positive" : evolutionProgress >= 40 ? "neutral" : "warning"}
+                            description="Quanto il Core è vicino alla piena operatività."
+                            explainabilityText="Percentuale di dati raccolti rispetto al minimo necessario per previsioni affidabili."
+                        />
+                    </motion.div>
+                    <motion.div variants={macroItemVariants} className="h-full">
+                        <KpiCard
+                            title="Esperienza"
+                            value={`${experienceProgress}%`}
+                            animatedValue={experienceProgress}
+                            formatFn={(v) => `${Math.round(v)}%`}
+                            icon={TrendingUp}
+                            tone={experienceProgress >= 80 ? "positive" : "neutral"}
+                            change={`${snapshot?.trainedSamples ?? 0}/${BRAIN_MATURITY_SAMPLE_TARGET}`}
+                            comparisonLabel="Campioni"
+                            description="Campioni appresi rispetto all'obiettivo."
+                            explainabilityText="Misura quanti pattern di spesa il Core ha osservato e memorizzato."
+                        />
+                    </motion.div>
+                    <motion.div variants={macroItemVariants} className="h-full">
+                        <KpiCard
+                            title="Stabilità"
+                            value={`${stabilityProgress}%`}
+                            animatedValue={stabilityProgress}
+                            formatFn={(v) => `${Math.round(v)}%`}
+                            icon={ShieldCheck}
+                            tone={stabilityProgress >= 70 ? "positive" : stabilityProgress >= 30 ? "neutral" : "warning"}
+                            description="Quanto sono coerenti le previsioni tra un ciclo e l'altro."
+                            explainabilityText={`Valore attuale: ${liveLoss.toFixed(4)}. Più basso = più stabile.`}
+                        />
+                    </motion.div>
+                    <motion.div variants={macroItemVariants} className="h-full">
+                        <KpiCard
+                            title="Rischio"
+                            value={evolution?.prediction ? `${riskPercent}%` : "-"}
+                            icon={ShieldCheck}
+                            trend={evolution?.prediction ? (riskPercent > 65 ? "warning" : "neutral") : "neutral"}
+                            change={evolution?.prediction ? `${confidencePercent}%` : "-"}
+                            comparisonLabel="Affidabilità"
+                            description="Quanto è probabile che la spesa salga."
+                            explainabilityText="Score prodotto dalla Logistic Regression del Core basato su 8 segnali finanziari."
+                        />
+                    </motion.div>
+                    <motion.div variants={macroItemVariants} className="h-full">
+                        <KpiCard
+                            title="Spesa prossimo mese"
+                            value={predictedExpensesLabel}
+                            icon={Sparkles}
+                            trend={evolution?.prediction ? "up" : "neutral"}
+                            change={evolution?.inferencePeriod ?? "-"}
+                            comparisonLabel="Periodo"
+                            description="Stima basata su trend e stagionalità."
+                            explainabilityText="Previsione Holt-Winters con fallback alla Logistic Regression del Core."
+                        />
+                    </motion.div>
+                    <motion.div variants={macroItemVariants} className="h-full">
+                        <KpiCard
+                            title="Spesa residua del mese"
+                            value={currentMonthRemainingLabel}
+                            icon={CalendarClock}
+                            trend={advisorNowcastReady ? "neutral" : "warning"}
+                            change={advisorNowcastReady ? `${currentMonthConfidencePercent}%` : evolution ? `Soglia ${adaptiveNowcastConfidencePercent}%` : "Non pronta"}
+                            comparisonLabel={advisorNowcastReady ? "Confidenza" : "Soglia qualità"}
+                            description="Quanto il Core stima che resti da spendere."
+                            explainabilityText="Nowcast intra-mese con soglia adattiva per il controllo qualità."
+                        />
+                    </motion.div>
+                </StaggerContainer>
+            </MacroSection>
+
+            {/* Core internals — clear KPIs */}
+            <MacroSection
+                title="Sotto il cofano"
+                description="Metriche interne del Core."
+                contentClassName="pt-5"
+                background={
+                    <div className="absolute inset-0 bg-[linear-gradient(160deg,rgba(148,163,184,0.05),transparent_28%),linear-gradient(340deg,rgba(14,165,168,0.04),transparent_28%)]" />
+                }
+            >
+                <StaggerContainer className="grid gap-3 sm:gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                    <motion.div variants={macroItemVariants} className="h-full">
+                        <KpiCard
+                            title="Neuroni attivi"
+                            value={`${activeWeightsCount}/${vectorWeights.length}`}
+                            icon={Brain}
+                            tone={activeWeightsCount === vectorWeights.length ? "positive" : "neutral"}
+                            description="Quanti segnali contribuiscono attivamente alla stima."
+                            explainabilityText="Un neurone 'neutro' ha peso zero e non influenza la previsione. Tutti attivi = il Core usa ogni informazione disponibile."
+                            compact
+                        />
+                    </motion.div>
+                    <motion.div variants={macroItemVariants} className="h-full">
+                        <KpiCard
+                            title="Campioni appresi"
+                            value={`${snapshot?.trainedSamples ?? 0}`}
+                            animatedValue={snapshot?.trainedSamples ?? 0}
+                            formatFn={(v) => `${Math.round(v)}`}
+                            icon={Target}
+                            tone={(snapshot?.trainedSamples ?? 0) >= 60 ? "positive" : "neutral"}
+                            description="Quante 'fotografie' del tuo comportamento il Core ha memorizzato."
+                            explainabilityText="Ogni ciclo di addestramento aggiunge campioni. Più ne ha, più la stima si affina."
+                            compact
+                        />
+                    </motion.div>
+                    <motion.div variants={macroItemVariants} className="h-full">
+                        <KpiCard
+                            title="Precisione"
+                            value={nextMonthMaeLabel}
+                            icon={Crosshair}
+                            tone={
+                                nextMonthMaeLabel === "-" ? "neutral"
+                                    : parseFloat(nextMonthMaeLabel) <= 15 ? "positive"
+                                        : parseFloat(nextMonthMaeLabel) <= 30 ? "neutral"
+                                            : "warning"
+                            }
+                            change={`${nextMonthReliabilitySamples} mesi`}
+                            comparisonLabel="Misurato su"
+                            description="Errore medio della previsione rispetto alla spesa reale."
+                            explainabilityText="MAE — Media dell'errore assoluto. Più basso è, più la previsione è vicina alla realtà. Obiettivo: sotto il 15%."
+                            compact
+                        />
+                    </motion.div>
+                    <motion.div variants={macroItemVariants} className="h-full">
+                        <KpiCard
+                            title="Margine d'errore"
+                            value={nextMonthMapeLabel}
+                            icon={ShieldCheck}
+                            tone={
+                                nextMonthMapeLabel === "-" ? "neutral"
+                                    : parseFloat(nextMonthMapeLabel) <= 15 ? "positive"
+                                        : parseFloat(nextMonthMapeLabel) <= 30 ? "neutral"
+                                            : "warning"
+                            }
+                            description="Di quanto, in percentuale, la stima può sbagliare."
+                            explainabilityText="MAPE — Se mostra 30%, una previsione di €1000 significa che la spesa reale sarà tra €700 e €1300."
+                            compact
+                        />
+                    </motion.div>
+                </StaggerContainer>
+            </MacroSection>
+
+            {/* Signal Matrix — signals detail */}
+            <motion.div variants={macroItemVariants}>
+                <SignalMatrix
+                    contributorsTop={contributorsTop}
+                />
             </motion.div>
         </StaggerContainer>
     )

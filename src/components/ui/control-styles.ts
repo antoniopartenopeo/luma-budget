@@ -16,7 +16,7 @@ const premiumControlChrome =
   "border-white/30 bg-white/58 shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_18px_36px_-28px_rgba(15,23,42,0.42)] backdrop-blur-md hover:bg-white/72 focus-visible:border-primary/35 focus-visible:ring-primary/15 dark:border-white/12 dark:bg-white/[0.06] dark:hover:bg-white/[0.09] dark:focus-visible:border-primary/40"
 
 export const inputControlVariants = cva(
-  "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground w-full min-w-0 rounded-[var(--radius-md)] border px-3 py-1 text-base shadow-xs outline-none transition-[background-color,color,border-color,box-shadow] duration-200 md:text-sm touch-manipulation file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground w-full min-w-0 rounded-[var(--radius-md)] border px-3 py-1 text-base shadow-xs outline-none transition-all duration-300 ease-out md:text-sm touch-manipulation file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
@@ -37,7 +37,7 @@ export const inputControlVariants = cva(
 )
 
 export const textareaControlVariants = cva(
-  "w-full rounded-[var(--radius-md)] border px-3 py-2 text-base shadow-xs outline-none transition-[background-color,color,border-color,box-shadow] duration-200 md:text-sm touch-manipulation placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "w-full rounded-[var(--radius-md)] border px-3 py-2 text-base shadow-xs outline-none transition-all duration-300 ease-out md:text-sm touch-manipulation placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
@@ -58,7 +58,7 @@ export const textareaControlVariants = cva(
 )
 
 export const selectTriggerVariants = cva(
-  "flex w-fit items-center justify-between gap-2 rounded-[var(--radius-md)] border px-3 whitespace-nowrap outline-none transition-[background-color,color,border-color,box-shadow] duration-200 touch-manipulation disabled:cursor-not-allowed disabled:opacity-50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2",
+  "flex w-fit items-center justify-between gap-2 rounded-[var(--radius-md)] border px-3 whitespace-nowrap outline-none transition-all duration-300 ease-out touch-manipulation disabled:cursor-not-allowed disabled:opacity-50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2",
   {
     variants: {
       variant: {
@@ -126,7 +126,7 @@ export const tabsTriggerVariants = cva(
         default:
           "h-[calc(100%-1px)] rounded-md border border-transparent px-2 py-1 text-sm font-medium text-foreground transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring data-[state=active]:bg-background data-[state=active]:shadow-sm dark:text-muted-foreground dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 dark:data-[state=active]:text-foreground",
         premium:
-          "rounded-[1rem] border border-transparent px-3 py-2 text-sm font-semibold text-muted-foreground transition-[background-color,color,border-color,box-shadow] duration-200 hover:text-foreground focus-visible:border-primary/25 focus-visible:ring-primary/15 data-[state=active]:border-white/30 data-[state=active]:bg-background/92 data-[state=active]:text-foreground data-[state=active]:shadow-[0_18px_32px_-24px_rgba(15,23,42,0.42)] dark:data-[state=active]:border-white/10 dark:data-[state=active]:bg-white/[0.08]",
+          "rounded-[1rem] border border-transparent px-3 py-2 text-sm font-semibold text-muted-foreground transition-all duration-300 ease-out hover:text-foreground focus-visible:border-primary/25 focus-visible:ring-primary/15 data-[state=active]:border-white/30 data-[state=active]:bg-background/92 data-[state=active]:text-foreground data-[state=active]:shadow-[0_18px_32px_-24px_rgba(15,23,42,0.42)] dark:data-[state=active]:border-white/10 dark:data-[state=active]:bg-white/[0.08]",
       },
       density: {
         default: "min-h-[2.75rem]",

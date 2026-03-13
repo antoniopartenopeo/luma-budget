@@ -1,6 +1,7 @@
 "use client"
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Badge } from "@/components/ui/badge"
 import { CategoryPicker } from "@/features/categories/components/category-picker"
 import { useCategories } from "@/features/categories/api/use-categories"
 import { Group, Subgroup, EnrichedRow } from "../../core/types"
@@ -8,6 +9,7 @@ import { cn } from "@/lib/utils"
 import { formatCents } from "@/domain/money"
 import { Category, getCategoryById } from "@/domain/categories"
 import { RowsList } from "./rows-list"
+import { BrainCircuit } from "lucide-react"
 
 interface MerchantGroupCardProps {
     group: Group
@@ -61,9 +63,9 @@ export function MerchantGroupCard({
         <AccordionItem
             value={group.id}
             className={cn(
-                "group/merchant relative overflow-hidden rounded-2xl border border-border/70 bg-card/70 shadow-sm transition-[background-color,border-color,box-shadow] duration-200",
-                "data-[state=open]:border-primary/35 data-[state=open]:bg-card/85 data-[state=open]:shadow-md",
-                isHighImpact && "border-primary/35"
+                "group/merchant relative overflow-hidden rounded-2xl border bg-background transition-all duration-300",
+                "data-[state=open]:border-primary/20 data-[state=open]:bg-muted/10 data-[state=open]:shadow-sm",
+                isHighImpact ? "border-primary/30" : "border-border/60"
             )}
         >
             <div
@@ -72,13 +74,13 @@ export function MerchantGroupCard({
                     groupStripeHex
                         ? ""
                         : isHighImpact
-                        ? "bg-primary/70"
-                        : "bg-border group-data-[state=open]/merchant:bg-primary/45"
+                            ? "bg-primary/70"
+                            : "bg-border group-data-[state=open]/merchant:bg-primary/45"
                 )}
                 style={groupStripeHex ? { backgroundColor: groupStripeHex } : undefined}
             />
 
-            <div className="grid gap-3 px-4 py-3 sm:grid-cols-[minmax(0,1fr)_1px_10.5rem] sm:items-start sm:gap-4">
+            <div className="grid gap-3 px-4 py-3 sm:grid-cols-[1fr_auto_minmax(160px,200px)] sm:items-center sm:gap-4 md:px-5">
                 <AccordionTrigger className="w-full rounded-xl px-2 py-2 hover:bg-muted/25 hover:no-underline [&>svg]:mt-1">
                     <div className="flex w-full min-w-0 items-start justify-between gap-3 pr-2">
                         <div className="min-w-0 flex-1 text-left">
@@ -108,18 +110,26 @@ export function MerchantGroupCard({
                     </div>
                 </AccordionTrigger>
 
-                <div className="hidden h-6 w-px self-center justify-self-center bg-border/50 sm:block" aria-hidden="true" />
+                <div className="hidden h-8 w-px self-center justify-self-center bg-border/50 sm:block" aria-hidden="true" />
 
-                <div className="space-y-1 sm:pt-1">
-                    <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                        Categoria
-                    </p>
+                <div className="col-span-full space-y-1.5 pt-2 sm:col-span-1 sm:pt-0">
+                    <div className="flex items-center justify-between px-1">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                            Categoria
+                        </p>
+                        {/* Show AI Badge if the source is from Brain */}
+                        {singleSubgroupRows[0]?.suggestedCategorySource === "ai" && (
+                            <Badge variant="outline" className="h-5 px-1.5 text-[9px] border-primary/20 bg-primary/5 text-primary flex items-center gap-1">
+                                <BrainCircuit className="h-2.5 w-2.5" /> IA
+                            </Badge>
+                        )}
+                    </div>
                     <CategoryPicker
                         value={effectiveCategoryId || ""}
                         onChange={(val) => onGroupCategoryChange(group.id, val)}
                         type="all"
                         compact
-                        className="border-border/60 bg-background/85"
+                        className="w-full bg-background"
                     />
                 </div>
             </div>
@@ -175,7 +185,7 @@ function SubgroupList({
                     <AccordionItem
                         key={sg.id}
                         value={sg.id}
-                        className="relative overflow-hidden rounded-xl border border-border/60 bg-background/55 data-[state=open]:bg-background/75"
+                        className="relative overflow-hidden rounded-xl border border-border/50 bg-muted/5 data-[state=open]:bg-background transition-colors"
                     >
                         <div
                             className={cn(
@@ -185,8 +195,8 @@ function SubgroupList({
                             style={subgroupStripeHex ? { backgroundColor: subgroupStripeHex } : undefined}
                         />
 
-                        <div className="grid gap-2 px-3 py-2 sm:grid-cols-[minmax(0,1fr)_1px_7.5rem] sm:items-start">
-                            <AccordionTrigger className="w-full rounded-lg px-2 py-1.5 text-sm hover:bg-muted/20 hover:no-underline [&>svg]:mt-0.5">
+                        <div className="grid gap-2 px-3 py-2 sm:grid-cols-[1fr_auto_minmax(140px,180px)] sm:items-center">
+                            <AccordionTrigger className="w-full rounded-lg px-2 py-1.5 text-sm hover:bg-muted/30 hover:no-underline [&>svg]:mt-0.5">
                                 <div className="flex min-w-0 flex-1 items-center justify-between gap-2 pr-2">
                                     <span className="truncate text-sm font-medium text-foreground">{sg.label}</span>
                                     <span className="text-xs font-medium tabular-nums text-muted-foreground">
@@ -197,14 +207,25 @@ function SubgroupList({
 
                             <div className="hidden h-5 w-px self-center justify-self-center bg-border/50 sm:block" aria-hidden="true" />
 
-                            <div className="sm:pt-0.5">
+                            <div className="col-span-full sm:col-span-1">
+                                <div className="flex items-center justify-between px-1 mb-1">
+                                    <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                                        Categoria
+                                    </p>
+                                    {/* Show AI Badge if the source is from Brain */}
+                                    {sgRows[0]?.suggestedCategorySource === "ai" && (
+                                        <Badge variant="outline" className="h-5 px-1.5 text-[9px] border-primary/20 bg-primary/5 text-primary flex items-center gap-1">
+                                            <BrainCircuit className="h-2.5 w-2.5" /> IA
+                                        </Badge>
+                                    )}
+                                </div>
                                 <CategoryPicker
                                     value={sgCatId || ""}
                                     onChange={(val) => onSubgroupCategoryChange(sg.id, val)}
                                     type="all"
                                     compact
                                     size="sm"
-                                    className="border-border/60 bg-background/80"
+                                    className="w-full bg-background"
                                 />
                             </div>
                         </div>

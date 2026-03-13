@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import Link from "next/link"
 import { motion, useReducedMotion, type Variants } from "framer-motion"
 import { ChevronRight } from "lucide-react"
@@ -36,6 +37,22 @@ export function RecentTransactions({ filter }: RecentTransactionsProps) {
     const { data: transactions, isLoading, isError, refetch } = useTransactions()
     const prefersReducedMotion = useReducedMotion()
     const transactionsHref = filter ? buildTransactionsHrefForDashboardFilter(filter) : "/transactions"
+
+    const displayedTransactions = useMemo(() => {
+        let items = transactions || []
+
+        if (filter) {
+            const { startDate, endDate } = calculateDateRangeLocal(
+                filter.period,
+                filter.mode === "range" && filter.months ? filter.months : 1
+            )
+            items = filterByRange(items, startDate, endDate)
+        }
+
+        return items
+            .toSorted((a, b) => b.timestamp - a.timestamp)
+            .slice(0, 5)
+    }, [transactions, filter])
 
     if (isLoading) {
         return (
@@ -79,21 +96,6 @@ export function RecentTransactions({ filter }: RecentTransactionsProps) {
             </MacroSection>
         )
     }
-
-    let filteredTransactions = transactions || []
-
-    if (filter) {
-        const { startDate, endDate } = calculateDateRangeLocal(
-            filter.period,
-            filter.mode === "range" && filter.months ? filter.months : 1
-        )
-
-        filteredTransactions = filterByRange(filteredTransactions, startDate, endDate)
-    }
-
-    const displayedTransactions = filteredTransactions
-        .toSorted((a, b) => b.timestamp - a.timestamp)
-        .slice(0, 5)
 
     if (displayedTransactions.length === 0) {
         return (

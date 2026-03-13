@@ -31,7 +31,7 @@ export interface EnrichedRow extends ParsedRow {
     duplicateOf?: string; // ID of existing transaction
     merchantKey: string;
     suggestedCategoryId: string | null;
-    suggestedCategorySource: "history" | "pattern" | null;
+    suggestedCategorySource: "history" | "pattern" | "ai" | null;
     isSelected: boolean;
 }
 

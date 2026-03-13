@@ -45,7 +45,7 @@ export function ThresholdPresetSelector({
     }
 
     return (
-        <div className={cn("rounded-2xl border border-border/60 bg-background/70 p-4 sm:p-5", className)}>
+        <div className={cn("rounded-2xl border border-border bg-card/60 dark:bg-card/40 shadow-sm p-4 sm:p-5", className)}>
             <div className="flex items-center gap-4 overflow-x-auto">
                 <div className="inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-foreground">
                     <Filter className="h-4 w-4 text-primary" />

@@ -23,6 +23,7 @@ import {
     resolveInteractiveTileLayoutClass,
     withAlpha
 } from "@/components/patterns/interactive-surface"
+import { AnimatedNumber } from "@/components/ui/animated-number"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StateMessage } from "@/components/ui/state-message"
 import { CategoryIcon } from "@/features/categories/components/category-icon"
@@ -201,7 +202,8 @@ function SpendingTile({
             onFocus={(event) => onFocusStart(event.currentTarget, tile.id, index)}
             onBlur={onHoverEnd}
             onClick={(event) => onTogglePin(event, tile.id, index)}
-            whileHover={prefersReducedMotion ? undefined : INTERACTIVE_CARD_HOVER_STATE}
+            whileHover={prefersReducedMotion ? undefined : { ...INTERACTIVE_CARD_HOVER_STATE, scale: 0.985 }}
+            whileTap={prefersReducedMotion ? undefined : { scale: 0.96 }}
             transition={INTERACTIVE_CARD_TRANSITION}
         >
             <div
@@ -346,6 +348,14 @@ function ActiveTileOverlay({
                         boxShadow: surfaceStyle.boxShadow
                     }}
                 >
+                    {/* Noise Texture Layer */}
+                    <div
+                        className="pointer-events-none absolute inset-0 opacity-[0.25] mix-blend-overlay dark:mix-blend-plus-lighter dark:opacity-[0.12]"
+                        style={{
+                            backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")",
+                        }}
+                    />
+
                     <div className="absolute inset-[1px] rounded-[calc(2.15rem-1px)] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),transparent_36%)]" />
                     <div
                         className="absolute inset-x-[9%] bottom-5 h-px"
@@ -390,7 +400,11 @@ function ActiveTileOverlay({
                                 transition={{ duration: 0.28, delay: 0.03, ease: [0.22, 1, 0.36, 1] }}
                                 className="text-[clamp(2rem,2.8vw,3.2rem)] font-black tracking-tighter text-foreground tabular-nums"
                             >
-                                {formatCents(tile.value, currency, locale)}
+                                <AnimatedNumber
+                                    value={tile.value}
+                                    initialValue={0}
+                                    formatFn={(val) => formatCents(val, currency, locale)}
+                                />
                             </motion.div>
                         </div>
 
@@ -414,17 +428,31 @@ function ActiveTileOverlay({
                                 animate={{ opacity: 1, scaleX: 1, y: 0 }}
                                 exit={{ opacity: 0, scaleX: 0.7, y: 8 }}
                                 transition={{ duration: 0.28, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                                className="flex-1"
+                                className="flex-1 pb-2"
                             >
-                                <div className="h-2 rounded-full bg-black/7 dark:bg-white/[0.08]">
-                                    <div
-                                        className="h-full rounded-full"
-                                        style={{
-                                            width: `${Math.max(tile.percentValue, 14)}%`,
-                                            backgroundColor: withAlpha(tile.rawColor, 0.85)
-                                        }}
+                                <svg className="h-2 w-full overflow-visible" preserveAspectRatio="none">
+                                    <line
+                                        x1="0"
+                                        y1="4"
+                                        x2="100%"
+                                        y2="4"
+                                        className="stroke-black/7 dark:stroke-white/[0.08]"
+                                        strokeWidth="8"
+                                        strokeLinecap="round"
                                     />
-                                </div>
+                                    <motion.line
+                                        x1="0"
+                                        y1="4"
+                                        x2={`${Math.max(tile.percentValue, 14)}%`}
+                                        y2="4"
+                                        strokeWidth="8"
+                                        strokeLinecap="round"
+                                        style={{ stroke: withAlpha(tile.rawColor, 0.85) }}
+                                        initial={{ pathLength: 0 }}
+                                        animate={{ pathLength: 1 }}
+                                        transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                                    />
+                                </svg>
                             </motion.div>
                         </div>
                     </div>

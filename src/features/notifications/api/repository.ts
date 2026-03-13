@@ -2,11 +2,9 @@ import { storage } from "@/lib/storage-utils"
 import {
     ChangelogNotification,
     NotificationKind,
-    NotificationsStateV1,
     NotificationsStateV2
 } from "../types"
 
-export const LEGACY_NOTIFICATIONS_STATE_STORAGE_KEY = "numa_notifications_state_v1"
 export const NOTIFICATIONS_STATE_STORAGE_KEY = "numa_notifications_state_v2"
 export const CHANGELOG_NOTIFICATIONS_API_PATH = "/api/notifications/changelog"
 
@@ -106,17 +104,7 @@ function normalizeStateV2(candidate: Partial<NotificationsStateV2>): Notificatio
     }
 }
 
-function parseLegacyStateV1(raw: unknown): NotificationsStateV1 | null {
-    if (!raw || typeof raw !== "object") return null
-    const candidate = raw as Partial<NotificationsStateV1>
-    if (candidate.version !== 1) return null
 
-    return {
-        version: 1,
-        readIds: sanitizeReadIds(candidate.readIds),
-        updatedAt: typeof candidate.updatedAt === "string" ? candidate.updatedAt : nowIso(),
-    }
-}
 
 export async function fetchChangelogNotifications(): Promise<ChangelogNotification[]> {
     let feed: unknown = []
@@ -160,19 +148,6 @@ export async function fetchNotificationsState(): Promise<NotificationsStateV2> {
         }
     }
 
-    const rawV1 = storage.get<unknown>(LEGACY_NOTIFICATIONS_STATE_STORAGE_KEY, null)
-    const legacy = parseLegacyStateV1(rawV1)
-    if (legacy) {
-        const migrated: NotificationsStateV2 = {
-            version: 2,
-            readIds: legacy.readIds,
-            lastSeenVersion: null,
-            updatedAt: legacy.updatedAt || nowIso(),
-        }
-        storage.set(NOTIFICATIONS_STATE_STORAGE_KEY, migrated)
-        return migrated
-    }
-
     return createDefaultState()
 }
 
@@ -212,5 +187,4 @@ export async function markAllNotificationsAsRead(ids: string[], lastSeenVersion?
 
 export function resetNotificationsState(): void {
     storage.remove(NOTIFICATIONS_STATE_STORAGE_KEY)
-    storage.remove(LEGACY_NOTIFICATIONS_STATE_STORAGE_KEY)
 }

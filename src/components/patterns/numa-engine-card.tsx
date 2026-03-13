@@ -11,6 +11,7 @@ import {
     useInteractiveTilt,
     withAlpha
 } from "@/components/patterns/interactive-surface"
+import { AnimatedNumber } from "@/components/ui/animated-number"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -148,6 +149,14 @@ export function NumaEngineCard({
                                 onFocusCapture={() => setActiveStep(idx)}
                             >
                                 <div className="pointer-events-none absolute inset-0 opacity-[0.92]" style={{ backgroundImage: stepSurfaceStyle.backgroundImage }} />
+                                {isActive && (
+                                    <div
+                                        className="pointer-events-none absolute inset-0 opacity-[0.25] mix-blend-overlay dark:mix-blend-plus-lighter dark:opacity-[0.12]"
+                                        style={{
+                                            backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")",
+                                        }}
+                                    />
+                                )}
                                 <div className="pointer-events-none absolute inset-[1px] rounded-[calc(theme(borderRadius.xl)-1px)] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02)_34%,transparent_62%)] opacity-80" />
 
                                 {idx < steps.length - 1 ? (
@@ -236,9 +245,23 @@ export function NumaEngineCard({
                                         {stat.icon ? <stat.icon className="h-3 w-3" /> : <div className="h-1.5 w-1.5 rounded-full bg-primary" />}
                                         <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground/80">{stat.label}</span>
                                     </div>
-                                    <p className="text-xl font-black tracking-tighter text-foreground tabular-nums">
-                                        {stat.value}
-                                    </p>
+                                    <div className="flex items-baseline gap-1">
+                                        <p className="text-xl font-black tracking-tighter text-foreground tabular-nums">
+                                            {Number.isNaN(Number.parseInt(stat.value.replace(/\D/g, ""), 10)) ? (
+                                                stat.value
+                                            ) : (
+                                                <AnimatedNumber
+                                                    value={Number(stat.value.replace(/[^\d.,]/g, "").replace(",", "."))}
+                                                    initialValue={0}
+                                                    formatFn={(val) => {
+                                                        const cleanVal = Math.round(val)
+                                                        const suffix = stat.value.replace(/[\d.,]/g, "").trim()
+                                                        return suffix ? `${cleanVal}${suffix.startsWith("%") ? "" : " "}${suffix}` : `${cleanVal}`
+                                                    }}
+                                                />
+                                            )}
+                                        </p>
+                                    </div>
                                     <p className="text-xs font-medium leading-tight text-muted-foreground/90">
                                         {stat.subValue}
                                     </p>

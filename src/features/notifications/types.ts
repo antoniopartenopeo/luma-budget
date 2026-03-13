@@ -16,11 +16,7 @@ export interface ChangelogNotification {
     link?: string
 }
 
-export interface NotificationsStateV1 {
-    version: 1
-    readIds: string[]
-    updatedAt: string
-}
+
 
 export interface NotificationsStateV2 {
     version: 2

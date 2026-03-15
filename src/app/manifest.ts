@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "NUMA Budget",
     short_name: "NUMA",
     description: "Gestisci le tue finanze con semplicità",
-    start_url: "/",
+    start_url: "/dashboard",
     display: "standalone",
     scope: "/",
     background_color: "#ffffff",

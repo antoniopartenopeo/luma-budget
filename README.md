@@ -46,7 +46,8 @@ src/
 Canonical system overview: `03_architecture/SYSTEM_OVERVIEW.md`
 
 ### Runtime routes
-- `/` Dashboard
+- `/` Public landing page
+- `/dashboard` Dashboard
 - `/transactions`
 - `/insights`
 - `/simulator`

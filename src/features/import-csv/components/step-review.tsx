@@ -306,7 +306,7 @@ export function ImportStepReview({
                         <AlertTriangle className="h-5 w-5 mt-0.5 shrink-0" />
                         <div className="text-sm">
                             Alcune righe non sono state lette in modo corretto (<strong>{parseErrorsCount}</strong>).
-                            I movimenti validi sono già pronti nell'elenco qui sotto.
+                            I movimenti validi sono già pronti nell&apos;elenco qui sotto.
                         </div>
                     </div>
                 </div>

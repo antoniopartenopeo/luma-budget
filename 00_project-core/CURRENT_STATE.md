@@ -14,6 +14,7 @@ canonical-of: project-current-state
 
 ## What Is Stable
 
+- Public landing page now exposed at `/` with the operational dashboard moved to `/dashboard`
 - Feature-first application structure under `src/features/*`
 - Pure domain boundaries under `src/domain/*`
 - Sensitive financial scenario logic isolated in `src/VAULT/*`

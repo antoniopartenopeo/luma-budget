@@ -22,7 +22,7 @@ export default function OfflinePage() {
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild className="rounded-full px-5 shadow-lg shadow-primary/15">
-                <Link href="/">
+                <Link href="/dashboard">
                   <RotateCcw className="h-4 w-4" />
                   Torna alla dashboard
                 </Link>

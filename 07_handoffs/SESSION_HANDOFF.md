@@ -11,6 +11,7 @@ canonical-of: session-handoff
 - Root scaffold migration completed on 2026-03-15
 - Governance, specialist context, playbooks, and ADRs now live entirely inside the root scaffold
 - Legacy `.agent/*` and `docs/*` governance surfaces were retired
+- Public landing page now lives at `/` and the operational dashboard now lives at `/dashboard`
 
 ## Read First to Restart Work
 

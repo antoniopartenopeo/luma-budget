@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AppShell } from "@/components/layout/app-shell";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { ThemeApplier } from "@/components/providers/theme-applier";
 import { PwaRegister } from "@/components/providers/pwa-register";
 import { Toaster } from "sonner";
+import { RouteShell } from "@/components/layout/route-shell";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "NUMA Budget",
-  description: "Gestisci le tue finanze con semplicità",
+  description: "App locale-first per capire spese, margine, insight e scenari senza dipendere dal cloud.",
   applicationName: "NUMA Budget",
   manifest: "/manifest.webmanifest",
   icons: {
@@ -57,8 +57,14 @@ export default function RootLayout({
         <QueryProvider>
           <ThemeApplier />
           <PwaRegister />
+          <a
+            href="#main-content"
+            className="sr-only fixed left-4 top-4 z-[100] rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-lg focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-primary/30"
+          >
+            Vai al contenuto
+          </a>
           <TooltipProvider delayDuration={300}>
-            <AppShell>{children}</AppShell>
+            <RouteShell>{children}</RouteShell>
             <Toaster />
           </TooltipProvider>
         </QueryProvider>

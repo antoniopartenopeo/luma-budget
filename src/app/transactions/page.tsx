@@ -206,7 +206,7 @@ function TransactionsPageContent() {
                             description="Il tuo ledger è vuoto. Inizia importando i tuoi dati."
                             primaryAction={
                                 <Button asChild size="sm" variant="default" className="mt-2 shadow-lg shadow-primary/15">
-                                    <Link href="/import">Importa CSV</Link>
+                                    <Link href="/transactions/import">Importa CSV</Link>
                                 </Button>
                             }
                         />

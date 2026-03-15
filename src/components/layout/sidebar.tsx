@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { BrandLogo } from "@/components/ui/brand-logo"
 
 const sidebarItems = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/" },
+  { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
   {
     icon: Receipt,
     label: "Transazioni",
@@ -67,7 +67,7 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
         {/* Logo Area */}
         <div className="flex h-20 items-center px-6">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/dashboard" className="flex items-center gap-2">
             <BrandLogo variant="full" height={28} />
           </Link>
         </div>

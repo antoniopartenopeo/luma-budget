@@ -30,7 +30,8 @@ src/
 
 Primary pages:
 
-- `/` Dashboard
+- `/` Public landing page
+- `/dashboard` Dashboard
 - `/transactions`
 - `/insights`
 - `/simulator`

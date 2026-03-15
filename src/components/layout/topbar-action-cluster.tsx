@@ -1,9 +1,9 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { BrainCircuit, Eye, EyeOff, Monitor, Moon, Sparkles, Sun } from "lucide-react"
-import { BRAIN_MATURITY_SAMPLE_TARGET, getBrainSnapshot } from "@/brain"
+import { BRAIN_MATURITY_SAMPLE_TARGET } from "@/brain"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { usePrivacyStore } from "@/features/privacy/privacy.store"
@@ -11,18 +11,8 @@ import { useSettings, useUpsertSettings } from "@/features/settings/api/use-sett
 import { ThemePreference } from "@/features/settings/api/types"
 import { FlashOverlay } from "@/features/flash/components/flash-overlay"
 import { TopbarNotifications } from "@/features/notifications/components/topbar-notifications"
-
-const BRAIN_PROGRESS_POLL_INTERVAL_MS = 2500
-
-interface BrainExperienceState {
-    percent: number
-    trainedSamples: number
-}
-
-const INITIAL_BRAIN_EXPERIENCE_STATE: BrainExperienceState = {
-    percent: 0,
-    trainedSamples: 0,
-}
+import { formatBrainTopbarAriaLabel, formatBrainTopbarTitle } from "@/features/insights/brain-copy"
+import { useBrainRuntimeState } from "@/features/insights/brain-runtime"
 
 function clampPercent(value: number): number {
     return Math.max(0, Math.min(100, Math.round(value)))
@@ -45,14 +35,6 @@ function resolveOrbitPalette(percent: number): {
             `0 0 12px hsl(${baseHue} ${baseSaturation}% ${primaryLightness}% / 0.82)`,
             `0 0 20px hsl(${baseHue} ${baseSaturation}% ${primaryLightness}% / 0.62)`,
         ].join(", "),
-    }
-}
-
-function resolveBrainExperienceState(): BrainExperienceState {
-    const trainedSamples = getBrainSnapshot()?.trainedSamples ?? 0
-    return {
-        percent: clampPercent((trainedSamples / BRAIN_MATURITY_SAMPLE_TARGET) * 100),
-        trainedSamples,
     }
 }
 
@@ -109,9 +91,9 @@ export function TopbarActionCluster() {
     const { isPrivacyMode, togglePrivacy } = usePrivacyStore()
     const upsertSettings = useUpsertSettings()
     const { data: settings } = useSettings()
+    const { brainReadinessPercent, snapshot } = useBrainRuntimeState()
     const theme = settings?.theme ?? "system"
     const initials = getAvatarInitials(settings?.profile)
-    const [brainExperience, setBrainExperience] = useState<BrainExperienceState>(INITIAL_BRAIN_EXPERIENCE_STATE)
     const [isThemePanelOpen, setIsThemePanelOpen] = useState(false)
 
     const handleThemeChange = (nextTheme: string) => {
@@ -123,37 +105,6 @@ export function TopbarActionCluster() {
         }
         setIsThemePanelOpen(false)
     }
-
-    const syncBrainExperience = useCallback(() => {
-        const next = resolveBrainExperienceState()
-        setBrainExperience((prev) => {
-            if (prev.percent === next.percent && prev.trainedSamples === next.trainedSamples) {
-                return prev
-            }
-            return next
-        })
-    }, [])
-
-    useEffect(() => {
-        const frameId = window.requestAnimationFrame(syncBrainExperience)
-        const intervalId = window.setInterval(syncBrainExperience, BRAIN_PROGRESS_POLL_INTERVAL_MS)
-        const handleStorage = () => syncBrainExperience()
-        const handleVisibility = () => {
-            if (document.visibilityState === "visible") {
-                syncBrainExperience()
-            }
-        }
-
-        window.addEventListener("storage", handleStorage)
-        document.addEventListener("visibilitychange", handleVisibility)
-
-        return () => {
-            window.cancelAnimationFrame(frameId)
-            window.clearInterval(intervalId)
-            window.removeEventListener("storage", handleStorage)
-            document.removeEventListener("visibilitychange", handleVisibility)
-        }
-    }, [syncBrainExperience])
 
     useEffect(() => {
         if (!isThemePanelOpen) return
@@ -185,8 +136,9 @@ export function TopbarActionCluster() {
     }, [isThemePanelOpen])
 
     const brainProgressCircumference = 2 * Math.PI * 14
-    const brainProgressOffset = brainProgressCircumference * (1 - brainExperience.percent / 100)
-    const orbitPalette = resolveOrbitPalette(brainExperience.percent)
+    const brainProgressOffset = brainProgressCircumference * (1 - brainReadinessPercent / 100)
+    const orbitPalette = resolveOrbitPalette(brainReadinessPercent)
+    const brainTrainedSamples = snapshot?.trainedSamples ?? 0
 
     return (
         <div
@@ -339,8 +291,8 @@ export function TopbarActionCluster() {
                     <Link
                         href="/brain"
                         data-testid="topbar-brain-trigger"
-                        title={`Neural Core · Esperienza ${brainExperience.percent}% (${brainExperience.trainedSamples}/${BRAIN_MATURITY_SAMPLE_TARGET} campioni)`}
-                        aria-label={`Apri Neural Core (${brainExperience.percent}% esperienza acquisita)`}
+                        title={formatBrainTopbarTitle(brainReadinessPercent, brainTrainedSamples, BRAIN_MATURITY_SAMPLE_TARGET)}
+                        aria-label={formatBrainTopbarAriaLabel(brainReadinessPercent)}
                     >
                         <svg
                             viewBox="0 0 40 40"
@@ -384,7 +336,7 @@ export function TopbarActionCluster() {
                             data-testid="topbar-brain-percent"
                             className="pointer-events-none absolute -right-2 -top-1.5 min-w-[30px] rounded-full border border-primary/40 bg-background/95 px-1.5 py-0.5 text-center text-[9px] font-black tabular-nums leading-none text-primary shadow-sm"
                         >
-                            {brainExperience.percent}%
+                            {brainReadinessPercent}%
                         </span>
                     </Link>
                 </Button>

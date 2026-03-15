@@ -10,6 +10,7 @@ import { SubSectionCard } from "@/components/patterns/sub-section-card"
 import { NumaEngineCard } from "@/components/patterns/numa-engine-card"
 import { KpiCard } from "@/components/patterns/kpi-card"
 import { SubscriptionPortfolioCard } from "@/components/patterns/subscription-portfolio-card"
+import { resolveBrainSourceLabel } from "../brain-copy"
 import { buildTransactionsUrl } from "../utils"
 
 const PORTFOLIO_MAX_ITEMS = 6
@@ -45,7 +46,7 @@ export function NumaAdvisorHowItWorksCard({ forecast, facts, className }: NumaAd
                     bgClass: "bg-emerald-500/10",
                     stepLabel: "2. Fonte stima",
                     title: "Da dove arriva la stima",
-                    description: "Se il Core è pronto usiamo il nowcast del mese corrente, altrimenti una stima storica prudente."
+                    description: "Se il Brain è pronto usiamo il nowcast del mese corrente, altrimenti una stima storica prudente."
                 },
                 {
                     icon: Lock,
@@ -65,9 +66,9 @@ export function NumaAdvisorHowItWorksCard({ forecast, facts, className }: NumaAd
                 },
                 {
                     label: "Fonte attiva",
-                    value: forecast?.primarySource === "brain" ? "Core" : "Storico",
+                    value: resolveBrainSourceLabel(forecast?.primarySource ?? "fallback"),
                     subValue: forecast?.primarySource === "brain"
-                        ? "Stima del Core sul mese corrente."
+                        ? "Stima del Brain sul mese corrente."
                         : "Stima storica con protezione prudente."
                 },
                 {
@@ -223,7 +224,7 @@ function AIAdvisorCardView({ forecast, subscriptions, isLoading: aiLoading }: AI
                                             ? "bg-primary/10 text-primary border-primary/20"
                                             : "bg-muted text-muted-foreground border-border"
                                     )}>
-                                        {forecast.primarySource === "brain" ? "Fonte Core" : "Fonte Storico"}
+                                        {forecast.primarySource === "brain" ? "Fonte Brain" : "Fonte Storico"}
                                     </div>
                                     <div className={cn(
                                         "px-3 py-1.5 rounded-xl border text-[10px] font-bold uppercase tracking-wider",

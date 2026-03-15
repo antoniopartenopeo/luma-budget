@@ -23,6 +23,7 @@ export const STORAGE_KEY_LEGACY_ACTIVE_COMMIT = "numa_active_goal_v1"
 export const STORAGE_KEY_NOTIFICATIONS = "numa_notifications_state_v2"
 export const STORAGE_KEY_PRIVACY = "numa-privacy-storage"
 export const STORAGE_KEY_FINLAB_HARD_SWITCH_DONE = "numa_finlab_hard_switch_v1_done"
+export const STORAGE_KEY_BRAIN_SNAPSHOT = "numa_neural_core_v1"
 export const STORAGE_KEY_BRAIN_ADAPTIVE_POLICY = "numa_brain_adaptive_policy_v1"
 
 function countTransactions(raw: unknown): number {
@@ -111,6 +112,10 @@ export const STORAGE_KEYS_REGISTRY: StorageKeyConfig[] = [
     {
         key: STORAGE_KEY_FINLAB_HARD_SWITCH_DONE,
         label: "Financial Lab Hard Switch Marker",
+    },
+    {
+        key: STORAGE_KEY_BRAIN_SNAPSHOT,
+        label: "Snapshot Brain",
     },
     {
         key: STORAGE_KEY_BRAIN_ADAPTIVE_POLICY,

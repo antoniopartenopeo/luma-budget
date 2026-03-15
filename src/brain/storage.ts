@@ -1,7 +1,7 @@
 import { migrateBrainSnapshot } from "./model"
 import { NeuralBrainSnapshot } from "./types"
-
-const BRAIN_STORAGE_KEY = "numa_neural_core_v1"
+import { STORAGE_KEY_BRAIN_SNAPSHOT } from "@/lib/storage-keys"
+import { STORAGE_MUTATION_EVENT, type StorageMutationDetail } from "@/lib/storage-utils"
 
 let memorySnapshot: NeuralBrainSnapshot | null = null
 
@@ -19,7 +19,7 @@ export function loadBrainSnapshot(): NeuralBrainSnapshot | null {
     if (!hasLocalStorage()) return migrateInMemorySnapshot()
 
     try {
-        const raw = window.localStorage.getItem(BRAIN_STORAGE_KEY)
+        const raw = window.localStorage.getItem(STORAGE_KEY_BRAIN_SNAPSHOT)
         if (!raw) return migrateInMemorySnapshot()
 
         const parsed = JSON.parse(raw)
@@ -30,7 +30,7 @@ export function loadBrainSnapshot(): NeuralBrainSnapshot | null {
 
         const serializedMigrated = JSON.stringify(migrated)
         if (raw !== serializedMigrated) {
-            window.localStorage.setItem(BRAIN_STORAGE_KEY, serializedMigrated)
+            window.localStorage.setItem(STORAGE_KEY_BRAIN_SNAPSHOT, serializedMigrated)
         }
 
         return migrated
@@ -44,7 +44,13 @@ export function saveBrainSnapshot(snapshot: NeuralBrainSnapshot): void {
     if (!hasLocalStorage()) return
 
     try {
-        window.localStorage.setItem(BRAIN_STORAGE_KEY, JSON.stringify(snapshot))
+        window.localStorage.setItem(STORAGE_KEY_BRAIN_SNAPSHOT, JSON.stringify(snapshot))
+        window.dispatchEvent(new CustomEvent<StorageMutationDetail>(STORAGE_MUTATION_EVENT, {
+            detail: {
+                key: STORAGE_KEY_BRAIN_SNAPSHOT,
+                operation: "set",
+            },
+        }))
     } catch {
         // Ignore quota/storage failures and keep in-memory fallback.
     }
@@ -55,7 +61,13 @@ export function resetBrainSnapshot(): void {
     if (!hasLocalStorage()) return
 
     try {
-        window.localStorage.removeItem(BRAIN_STORAGE_KEY)
+        window.localStorage.removeItem(STORAGE_KEY_BRAIN_SNAPSHOT)
+        window.dispatchEvent(new CustomEvent<StorageMutationDetail>(STORAGE_MUTATION_EVENT, {
+            detail: {
+                key: STORAGE_KEY_BRAIN_SNAPSHOT,
+                operation: "remove",
+            },
+        }))
     } catch {
         // noop
     }

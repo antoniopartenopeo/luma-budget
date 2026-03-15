@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useMemo } from "react"
 import {
     Brain,
     CalendarClock,
@@ -8,58 +8,43 @@ import {
     Gauge,
     ShieldCheck,
     Sparkles,
-    Target,
     TrendingUp,
 } from "lucide-react"
 import { motion } from "framer-motion"
 import {
     BRAIN_MATURITY_SAMPLE_TARGET,
-    BrainEvolutionResult,
-    BrainTrainingProgress,
     NEURAL_BRAIN_VECTOR_SIZE,
-    NeuralBrainSnapshot,
-    computeBrainInputSignature,
-    evolveBrainFromHistory,
-    getBrainSnapshot,
-    initializeBrain,
-    resetBrain,
 } from "@/brain"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
 import { useCategories } from "@/features/categories/api/use-categories"
 import { useCurrency } from "@/features/settings/api/use-currency"
-import {
-    adaptBrainAdaptivePolicy,
-    type BrainAdaptivePolicy,
-    DEFAULT_BRAIN_ADAPTIVE_POLICY,
-    loadBrainAdaptivePolicy,
-    saveBrainAdaptivePolicy,
-} from "@/features/insights/brain-auto-tune"
 import { resolveAdaptiveNowcastConfidenceThreshold } from "@/features/insights/brain-adaptive-thresholds"
+import {
+    BRAIN_CONSISTENCY_LABEL,
+    BRAIN_HISTORY_LABEL,
+    BRAIN_READY_LABEL,
+} from "@/features/insights/brain-copy"
+import { useBrainRuntime } from "@/features/insights/brain-runtime"
 import { formatCents } from "@/domain/money"
 import { PageHeader } from "@/components/ui/page-header"
 import { MacroSection, macroItemVariants } from "@/components/patterns/macro-section"
 import { KpiCard } from "@/components/patterns/kpi-card"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
-import type { EChartsOption } from "echarts"
 import { getCurrentPeriod } from "@/lib/date-ranges"
 
 import { NeuralFieldBackground } from "./_components/neural-field-background"
 import { BrainHeroSection } from "./_components/brain-hero-section"
 import { SignalMatrix } from "./_components/signal-matrix"
-import {
-    EventTone,
-    EvolutionPoint,
-    StageState,
-    SyncReason,
-    TimelineEvent,
-    TrainingState,
-} from "./types"
 
 const STABILITY_LOSS_TARGET = 0.12
-const POLL_INTERVAL_MS = 5000
+const LONG_STATUS_VALUE_CLASS_NAME = "text-lg sm:text-xl lg:text-[1.7rem] leading-tight"
+const UNAVAILABLE_LABEL = "Non disponibile"
+const PREPARING_FORECAST_LABEL = "Sto stimando"
+const VERIFYING_LABEL = "Sto verificando"
+const NOT_RELIABLE_YET_LABEL = "Non ancora affidabile"
 
 function formatUpdatedAt(value: string | null): string {
-    if (!value) return "-"
+    if (!value) return UNAVAILABLE_LABEL
     const parsed = new Date(value)
     if (Number.isNaN(parsed.getTime())) return value
 
@@ -71,7 +56,8 @@ function formatUpdatedAt(value: string | null): string {
 
 function formatClock(value: string): string {
     const parsed = new Date(value)
-    if (Number.isNaN(parsed.getTime())) return "-"
+    if (Number.isNaN(parsed.getTime())) return UNAVAILABLE_LABEL
+
     return new Intl.DateTimeFormat("it-IT", {
         timeStyle: "medium",
     }).format(parsed)
@@ -85,294 +71,20 @@ function formatRatioAsPercent(value: number): string {
     return `${(value * 100).toFixed(1)}%`
 }
 
-function isSameAdaptivePolicy(a: BrainAdaptivePolicy, b: BrainAdaptivePolicy): boolean {
-    return a.version === b.version
-        && a.minNowcastConfidence === b.minNowcastConfidence
-        && a.outlierMinConfidence === b.outlierMinConfidence
-        && a.primaryBlendThreshold === b.primaryBlendThreshold
-        && a.overshootDeltaCents === b.overshootDeltaCents
-        && a.rollingQuality === b.rollingQuality
-        && a.steps === b.steps
-        && a.updatedAt === b.updatedAt
-}
-
-function signatureOf(snapshot: NeuralBrainSnapshot | null): string {
-    if (!snapshot) return "not-initialized"
-    return [
-        snapshot.version,
-        snapshot.featureSchemaVersion,
-        snapshot.trainedSamples,
-        snapshot.lossEma,
-        snapshot.updatedAt,
-        snapshot.dataFingerprint,
-    ].join(":")
-}
-
-function resolveStage(snapshot: NeuralBrainSnapshot | null): StageState {
-    if (!snapshot) {
-        return {
-            id: "dormant",
-            label: "Spento",
-            summary: "Il Core è spento. Avvialo quando vuoi iniziare a fargli leggere i tuoi dati.",
-            badgeVariant: "outline",
-        }
-    }
-
-    const trained = snapshot.trainedSamples
-    if (trained === 0) {
-        return {
-            id: "newborn",
-            label: "Nuovo",
-            summary: "Il Core è appena nato e non ha ancora imparato nulla dai tuoi movimenti.",
-            badgeVariant: "secondary",
-        }
-    }
-
-    if (trained < 36) {
-        return {
-            id: "imprinting",
-            label: "In apprendimento",
-            summary: "Il Core sta riconoscendo le prime abitudini a partire dai tuoi movimenti passati.",
-            badgeVariant: "secondary",
-        }
-    }
-
-    return {
-        id: "adapting",
-        label: "Attivo",
-        summary: "Il Core ha una base solida e continua ad aggiornarsi quando arrivano nuovi dati.",
-        badgeVariant: "secondary",
-    }
-}
-
-function formatEvolutionReason(result: BrainEvolutionResult): { title: string; detail: string; tone: EventTone } {
-    if (result.reason === "trained") {
-        return {
-            title: "Apprendimento completato",
-            detail: `Il Core ha completato ${result.epochsRun} cicli su ${result.sampleCount} campioni. Stabilità attuale ${result.averageLoss.toFixed(4)}.`,
-            tone: "positive",
-        }
-    }
-
-    if (result.reason === "no-new-data") {
-        return {
-            title: "Nessun dato nuovo",
-            detail: "Dall'ultima analisi non sono arrivati nuovi dati utili, quindi il Core resta invariato.",
-            tone: "neutral",
-        }
-    }
-
-    if (result.reason === "insufficient-data") {
-        return {
-            title: "Dati insufficienti",
-            detail: `Per imparare meglio servono più dati: mesi validi ${result.monthsAnalyzed}, campioni ${result.sampleCount}.`,
-            tone: "warning",
-        }
-    }
-
-    return {
-        title: "Core non avviato",
-        detail: "Avvia il Core per iniziare a costruire analisi e previsioni.",
-        tone: "warning",
-    }
-}
-
 export default function BrainPage() {
-    const { data: transactions = [], isLoading: isTransactionsLoading } = useTransactions()
-    const { data: categories = [], isLoading: isCategoriesLoading } = useCategories({ includeArchived: true })
+    const currentPeriod = getCurrentPeriod()
+    const { data: transactions = [] } = useTransactions()
+    const { data: categories = [] } = useCategories({ includeArchived: true })
     const { currency, locale } = useCurrency()
+    const brainRuntime = useBrainRuntime({ mode: "active", preferredPeriod: currentPeriod })
 
-    const [snapshot, setSnapshot] = useState<NeuralBrainSnapshot | null>(null)
-    const [evolution, setEvolution] = useState<BrainEvolutionResult | null>(null)
-    const [adaptivePolicy, setAdaptivePolicy] = useState<BrainAdaptivePolicy>(() => ({ ...DEFAULT_BRAIN_ADAPTIVE_POLICY }))
-    const [timeline, setTimeline] = useState<TimelineEvent[]>([])
-    const [evolutionHistory, setEvolutionHistory] = useState<EvolutionPoint[]>([])
-    const [training, setTraining] = useState<TrainingState>({
-        isTraining: false,
-        epoch: 0,
-        totalEpochs: 0,
-        progress: 0,
-        currentLoss: 0,
-        sampleCount: 0,
-        lastCompletedAt: null,
-    })
-
-    const eventCounterRef = useRef(0)
-    const snapshotSignatureRef = useRef("boot")
-    const trainingLockRef = useRef(false)
-    const lastAutoSignatureRef = useRef("")
-    const lastAdaptivePolicySignatureRef = useRef("")
-
-    const pushEvent = useCallback((title: string, detail: string, tone: EventTone = "neutral") => {
-        const nextId = `event-${eventCounterRef.current}`
-        eventCounterRef.current += 1
-        const event: TimelineEvent = {
-            id: nextId,
-            title,
-            detail,
-            at: new Date().toISOString(),
-            tone,
-        }
-        setTimeline((prev) => [event, ...prev].slice(0, 12))
-    }, [])
-
-    const syncSnapshot = useCallback((reason: SyncReason) => {
-        const next = getBrainSnapshot()
-        const nextSignature = signatureOf(next)
-        const hasChanged = nextSignature !== snapshotSignatureRef.current
-
-        setSnapshot(next)
-        setAdaptivePolicy((prev) => {
-            const loaded = loadBrainAdaptivePolicy()
-            return isSameAdaptivePolicy(prev, loaded) ? prev : loaded
-        })
-
-        if (!hasChanged && reason === "poll") return
-
-        snapshotSignatureRef.current = nextSignature
-
-        if (reason === "boot") {
-            pushEvent("Core collegato", next ? "Stato letto dal dispositivo." : "Il Core non è ancora stato avviato.", "neutral")
-            return
-        }
-
-        if (reason === "storage") {
-            pushEvent("Aggiornamento rilevato", "Lo stato del Core è cambiato in un'altra scheda aperta.", "warning")
-            return
-        }
-
-        if (hasChanged) {
-            pushEvent("Stato aggiornato", "Il Core ha ricevuto un aggiornamento.", "neutral")
-        }
-    }, [pushEvent])
-
-    useEffect(() => {
-        const frame = window.requestAnimationFrame(() => {
-            syncSnapshot("boot")
-        })
-        const interval = window.setInterval(() => {
-            syncSnapshot("poll")
-        }, POLL_INTERVAL_MS)
-        const onStorage = () => {
-            syncSnapshot("storage")
-        }
-
-        window.addEventListener("storage", onStorage)
-        return () => {
-            window.cancelAnimationFrame(frame)
-            window.clearInterval(interval)
-            window.removeEventListener("storage", onStorage)
-        }
-    }, [syncSnapshot])
-
-    const isInitialized = snapshot !== null
-    const isDataLoading = isTransactionsLoading || isCategoriesLoading
-    const inputSignature = useMemo(
-        () => computeBrainInputSignature(transactions, categories, getCurrentPeriod()),
-        [categories, transactions]
-    )
-
-    const runEvolution = useCallback(async () => {
-        if (trainingLockRef.current) return
-        if (!isInitialized) {
-            pushEvent("Core non attivo", "Avvia il Core prima di lanciare una nuova analisi.", "warning")
-            return
-        }
-        if (isDataLoading) {
-            pushEvent("Dati in caricamento", "Sto ancora leggendo transazioni e categorie.", "warning")
-            return
-        }
-
-        trainingLockRef.current = true
-        const baselineLoss = getBrainSnapshot()?.lossEma ?? 0
-        setTraining((prev) => ({
-            ...prev,
-            isTraining: true,
-            epoch: 0,
-            totalEpochs: 0,
-            progress: 0,
-            currentLoss: baselineLoss,
-            sampleCount: 0,
-        }))
-
-        pushEvent(
-            "Analisi avviata",
-            `Analisi avviata con ${transactions.length} transazioni e ${categories.length} categorie.`,
-            "neutral"
-        )
-
-        try {
-            const result = await evolveBrainFromHistory(transactions, categories, {
-                onProgress: (progress: BrainTrainingProgress) => {
-                    setTraining((prev) => ({
-                        ...prev,
-                        isTraining: true,
-                        epoch: progress.epoch,
-                        totalEpochs: progress.totalEpochs,
-                        progress: clampPercent((progress.epoch / progress.totalEpochs) * 100),
-                        currentLoss: progress.averageLoss,
-                        sampleCount: progress.sampleCount,
-                    }))
-
-                    pushEvent(
-                        `Ciclo ${progress.epoch}/${progress.totalEpochs}`,
-                        `Campioni letti ${progress.sampleCount} · stabilità ${progress.averageLoss.toFixed(4)}`,
-                        "neutral"
-                    )
-                },
-            })
-
-            setEvolution(result)
-            if (result.snapshot) {
-                setSnapshot(result.snapshot)
-                snapshotSignatureRef.current = signatureOf(result.snapshot)
-            }
-            if (lastAdaptivePolicySignatureRef.current !== inputSignature) {
-                lastAdaptivePolicySignatureRef.current = inputSignature
-                setAdaptivePolicy((currentPolicy) => {
-                    const nextPolicy = adaptBrainAdaptivePolicy(currentPolicy, result)
-                    saveBrainAdaptivePolicy(nextPolicy)
-                    return nextPolicy
-                })
-            }
-
-            setTraining((prev) => ({
-                ...prev,
-                isTraining: false,
-                epoch: result.epochsRun,
-                totalEpochs: result.epochsRun,
-                progress: result.didTrain ? 100 : prev.progress,
-                currentLoss: result.averageLoss,
-                sampleCount: result.sampleCount,
-                lastCompletedAt: new Date().toISOString(),
-            }))
-
-            const summary = formatEvolutionReason(result)
-            pushEvent(summary.title, summary.detail, summary.tone)
-        } catch (error) {
-            setTraining((prev) => ({ ...prev, isTraining: false }))
-            const detail = error instanceof Error ? error.message : "Errore sconosciuto"
-            pushEvent("Analisi interrotta", detail, "critical")
-        } finally {
-            trainingLockRef.current = false
-        }
-    }, [
-        categories,
-        inputSignature,
-        isDataLoading,
-        isInitialized,
-        pushEvent,
-        transactions,
-    ])
-
-    useEffect(() => {
-        if (!isInitialized || isDataLoading) return
-        if (lastAutoSignatureRef.current === inputSignature) return
-        lastAutoSignatureRef.current = inputSignature
-        void runEvolution()
-    }, [inputSignature, isInitialized, isDataLoading, runEvolution])
-
-    const stage = useMemo(() => resolveStage(snapshot), [snapshot])
+    const snapshot = brainRuntime.snapshot
+    const evolution = brainRuntime.evolution
+    const training = brainRuntime.training
+    const stage = brainRuntime.stage
+    const adaptivePolicy = brainRuntime.adaptivePolicy
+    const timeline = brainRuntime.timeline
+    const isInitialized = brainRuntime.isInitialized
 
     const experienceProgress = useMemo(() => {
         const trainedSamples = snapshot?.trainedSamples ?? 0
@@ -386,183 +98,49 @@ export default function BrainPage() {
         return clampPercent((1 - normalizedLoss) * 100)
     }, [liveLoss])
 
-    const evolutionProgress = useMemo(() => {
+    const brainReadiness = useMemo(() => {
         if (!snapshot) return 0
         const learned = clampPercent(experienceProgress * 0.72 + stabilityProgress * 0.28)
         return training.isTraining ? Math.max(learned, training.progress) : learned
     }, [experienceProgress, snapshot, stabilityProgress, training.isTraining, training.progress])
 
-    useEffect(() => {
-        const nextPoint: EvolutionPoint = {
-            at: Date.now(),
-            readiness: evolutionProgress,
-            experience: experienceProgress,
-            stability: stabilityProgress,
-        }
-        setEvolutionHistory((prev) => {
-            const last = prev[prev.length - 1]
-            if (
-                last &&
-                last.readiness === nextPoint.readiness &&
-                last.experience === nextPoint.experience &&
-                last.stability === nextPoint.stability
-            ) {
-                return prev
-            }
-            const next = [...prev, nextPoint]
-            if (next.length > 36) next.shift()
-            return next
-        })
-    }, [evolutionProgress, experienceProgress, stabilityProgress])
-
-    const evolutionChartSeries = useMemo(() => {
-        const points = evolutionHistory.length > 0
-            ? evolutionHistory
-            : [{ at: 0, readiness: evolutionProgress, experience: experienceProgress, stability: stabilityProgress }]
-
-        const timeFormatter = new Intl.DateTimeFormat("it-IT", {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-        })
-
-        return {
-            labels: points.map((point) => point.at === 0 ? "Adesso" : timeFormatter.format(point.at)),
-            readiness: points.map((point) => point.readiness),
-            experience: points.map((point) => point.experience),
-            stability: points.map((point) => point.stability),
-        }
-    }, [evolutionHistory, evolutionProgress, experienceProgress, stabilityProgress])
-
-    const evolutionChartOption = useMemo<EChartsOption>(() => {
-        return {
-            backgroundColor: "transparent",
-            animationDuration: 650,
-            animationDurationUpdate: 480,
-            tooltip: {
-                trigger: "axis",
-                backgroundColor: "rgba(15, 23, 42, 0.95)",
-                borderColor: "rgba(255, 255, 255, 0.1)",
-                borderWidth: 1,
-                textStyle: { color: "#f8fafc", fontSize: 12 },
-                formatter: (params: unknown) => {
-                    const points = params as Array<{ axisValue: string; seriesName: string; value: number }>
-                    const axisValue = points[0]?.axisValue ?? ""
-                    const rows = points
-                        .map((point) => `<div style="display:flex;justify-content:space-between;gap:16px;"><span>${point.seriesName}</span><strong>${Math.round(point.value)}%</strong></div>`)
-                        .join("")
-                    return `<div style="display:flex;flex-direction:column;gap:6px;"><div style="font-weight:700;font-size:11px;color:#94a3b8;">${axisValue}</div>${rows}</div>`
-                },
-            },
-            legend: {
-                top: 0,
-                itemWidth: 10,
-                itemHeight: 10,
-                textStyle: {
-                    color: "#94a3b8",
-                    fontSize: 11,
-                    fontWeight: 700,
-                },
-                data: ["Prontezza", "Esperienza", "Stabilità"],
-            },
-            grid: {
-                left: "4%",
-                right: "4%",
-                bottom: "10%",
-                top: "18%",
-                containLabel: true,
-            },
-            xAxis: {
-                type: "category",
-                boundaryGap: false,
-                data: evolutionChartSeries.labels,
-                axisLine: { lineStyle: { color: "rgba(148,163,184,0.2)" } },
-                axisTick: { show: false },
-                axisLabel: { color: "#94a3b8", fontSize: 10, fontWeight: 700 },
-            },
-            yAxis: {
-                type: "value",
-                min: 0,
-                max: 100,
-                splitLine: { lineStyle: { type: "dashed", color: "rgba(148,163,184,0.2)" } },
-                axisLabel: {
-                    color: "#94a3b8",
-                    fontSize: 10,
-                    fontWeight: 700,
-                    formatter: (value: number) => `${value}%`,
-                },
-            },
-            series: [
-                {
-                    name: "Prontezza",
-                    type: "line",
-                    smooth: 0.35,
-                    showSymbol: false,
-                    lineStyle: { width: 3, color: "#3b82f6" },
-                    areaStyle: { color: "rgba(59,130,246,0.12)" },
-                    data: evolutionChartSeries.readiness,
-                },
-                {
-                    name: "Esperienza",
-                    type: "line",
-                    smooth: 0.35,
-                    showSymbol: false,
-                    lineStyle: { width: 3, color: "#10b981" },
-                    areaStyle: { color: "rgba(16,185,129,0.12)" },
-                    data: evolutionChartSeries.experience,
-                },
-                {
-                    name: "Stabilità",
-                    type: "line",
-                    smooth: 0.35,
-                    showSymbol: false,
-                    lineStyle: { width: 3, color: "#f59e0b" },
-                    areaStyle: { color: "rgba(245,158,11,0.1)" },
-                    data: evolutionChartSeries.stability,
-                },
-            ],
-        }
-    }, [evolutionChartSeries])
-
     const vectorWeights = useMemo(
         () => snapshot?.weights ?? new Array(NEURAL_BRAIN_VECTOR_SIZE).fill(0),
         [snapshot?.weights]
     )
-
-    const silentWeightsCount = useMemo(
-        () => vectorWeights.filter((weight) => weight === 0).length,
+    const activeWeightsCount = useMemo(
+        () => vectorWeights.filter((weight) => weight !== 0).length,
         [vectorWeights]
     )
 
-    const activeWeightsCount = vectorWeights.length - silentWeightsCount
-
-    const riskPercent = evolution?.prediction ? Math.round(evolution.prediction.riskScore * 100) : 0
-    const confidencePercent = evolution?.prediction ? Math.round(evolution.prediction.confidence * 100) : 0
-
-    const predictedExpensesLabel = evolution?.prediction
-        ? formatCents(evolution.predictedExpensesNextMonthCents, currency, locale)
-        : "-"
-    const rawCurrentMonthRemainingLabel = evolution && evolution.currentMonthNowcastReady
-        ? formatCents(evolution.predictedCurrentMonthRemainingExpensesCents, currency, locale)
-        : "-"
+    const confidencePercent = evolution?.prediction
+        ? Math.round(evolution.prediction.confidence * 100)
+        : 0
     const currentMonthConfidencePercent = evolution
         ? Math.round(evolution.currentMonthNowcastConfidence * 100)
         : 0
 
-    const contributorsTop = evolution?.prediction?.contributors.slice(0, 3) ?? []
+    const predictedExpensesLabel = evolution?.prediction
+        ? formatCents(evolution.predictedExpensesNextMonthCents, currency, locale)
+        : "-"
+    const rawCurrentMonthRemainingLabel = evolution?.currentMonthNowcastReady
+        ? formatCents(evolution.predictedCurrentMonthRemainingExpensesCents, currency, locale)
+        : "-"
+
     const nextMonthMaeLabel = evolution && evolution.nextMonthReliability.sampleCount > 0
         ? formatRatioAsPercent(evolution.nextMonthReliability.mae)
+        : "-"
+    const nextMonthMapeLabel = evolution && evolution.nextMonthReliability.mapeSampleCount > 0
+        ? formatRatioAsPercent(evolution.nextMonthReliability.mape)
         : "-"
     const nextMonthMaePercent = evolution && evolution.nextMonthReliability.sampleCount > 0
         ? evolution.nextMonthReliability.mae * 100
         : null
-    const nextMonthMapeLabel = evolution && evolution.nextMonthReliability.mapeSampleCount > 0
-        ? formatRatioAsPercent(evolution.nextMonthReliability.mape)
-        : "-"
     const nextMonthMapePercent = evolution && evolution.nextMonthReliability.mapeSampleCount > 0
         ? evolution.nextMonthReliability.mape * 100
         : null
     const nextMonthReliabilitySamples = evolution?.nextMonthReliability.sampleCount ?? 0
+
     const adaptiveNowcastConfidenceThreshold = resolveAdaptiveNowcastConfidenceThreshold({
         baseThreshold: adaptivePolicy.minNowcastConfidence,
         maturityScore: Math.max(
@@ -578,195 +156,197 @@ export default function BrainPage() {
         evolution?.currentMonthNowcastReady
         && currentMonthConfidencePercent >= adaptiveNowcastConfidencePercent
     )
-    const currentMonthRemainingLabel = advisorNowcastReady ? rawCurrentMonthRemainingLabel : "-"
 
-    const handleInitialize = useCallback(() => {
-        const newborn = initializeBrain()
-        setSnapshot(newborn)
-        setEvolutionHistory([])
-        snapshotSignatureRef.current = signatureOf(newborn)
-        pushEvent("Core inizializzato", "Ho creato un nuovo Core pronto a imparare.", "positive")
-    }, [pushEvent])
-
-    const handleReset = useCallback(() => {
-        resetBrain()
-        setSnapshot(null)
-        setEvolution(null)
-        setEvolutionHistory([])
-        setTraining({
-            isTraining: false,
-            epoch: 0,
-            totalEpochs: 0,
-            progress: 0,
-            currentLoss: 0,
-            sampleCount: 0,
-            lastCompletedAt: null,
-        })
-        lastAutoSignatureRef.current = ""
-        lastAdaptivePolicySignatureRef.current = ""
-        snapshotSignatureRef.current = signatureOf(null)
-        pushEvent("Core resettato", "La memoria locale del Core è stata cancellata.", "warning")
-    }, [pushEvent])
+    const predictedExpensesDisplayLabel = evolution?.prediction
+        ? predictedExpensesLabel
+        : brainRuntime.isLoading
+            ? PREPARING_FORECAST_LABEL
+            : UNAVAILABLE_LABEL
+    const currentMonthRemainingDisplayLabel = advisorNowcastReady
+        ? rawCurrentMonthRemainingLabel
+        : evolution
+            ? NOT_RELIABLE_YET_LABEL
+            : VERIFYING_LABEL
+    const forecastConfidenceDisplayLabel = evolution?.prediction
+        ? `${confidencePercent}%`
+        : brainRuntime.isLoading
+            ? VERIFYING_LABEL
+            : UNAVAILABLE_LABEL
+    const nextMonthMaeDisplayLabel = nextMonthMaeLabel === "-" ? UNAVAILABLE_LABEL : nextMonthMaeLabel
+    const nextMonthMapeDisplayLabel = nextMonthMapeLabel === "-" ? UNAVAILABLE_LABEL : nextMonthMapeLabel
+    const updatedAtLabel = formatUpdatedAt(training.lastCompletedAt ?? snapshot?.updatedAt ?? null)
+    const contributors = evolution?.prediction?.contributors ?? []
 
     return (
         <StaggerContainer className="space-y-8 pb-20 md:pb-10">
             <motion.div variants={macroItemVariants}>
                 <PageHeader
-                    title="Core previsioni"
-                    description="Qui vedi come il Core cresce dai tuoi movimenti e affina le stime."
+                    title="Brain"
+                    description="Qui vedi cosa sta leggendo il Brain, quali stime sta producendo e da quali segnali dipendono."
                 />
             </motion.div>
 
-            {/* Hero section: chart + forecast + actions */}
             <motion.div variants={macroItemVariants}>
                 <MacroSection
                     variant="premium"
                     background={<NeuralFieldBackground />}
-                    contentClassName="pt-5"
+                    contentClassName="pt-4"
                 >
                     <BrainHeroSection
-                        evolutionChartOption={evolutionChartOption}
                         hwForecast={evolution?.hwForecast ?? null}
                         currency={currency}
                         locale={locale}
                         training={training}
                         isInitialized={isInitialized}
-                        handleInitialize={handleInitialize}
-                        handleReset={handleReset}
+                        handleInitialize={brainRuntime.initialize}
+                        handleReset={brainRuntime.reset}
                         timeline={timeline}
                         formatClock={formatClock}
-                        transactionsCount={transactions.length}
-                        categoriesCount={categories.length}
-                        updatedAtLabel={formatUpdatedAt(training.lastCompletedAt)}
+                        transactionsCount={brainRuntime.transactionsCount || transactions.length}
+                        categoriesCount={brainRuntime.categoriesCount || categories.length}
+                        updatedAtLabel={updatedAtLabel}
+                        stageLabel={stage.label}
+                        stageSummary={stage.summary}
                     />
                 </MacroSection>
             </motion.div>
 
-            {/* KPI mosaic grid — uniform premium cards */}
             <MacroSection
-                title="Stato del Core"
-                description={stage.summary}
+                title="Stato del Brain"
+                description="Le stime principali del Brain e quanto sono affidabili in questo momento."
                 contentClassName="pt-5"
                 background={
-                    <div className="absolute inset-0 bg-[linear-gradient(145deg,rgba(14,165,168,0.06),transparent_30%),linear-gradient(330deg,rgba(148,163,184,0.06),transparent_30%)]" />
+                    <div className="absolute inset-0 bg-[linear-gradient(145deg,rgba(14,165,168,0.06),transparent_30%),linear-gradient(330deg,rgba(148,163,184,0.06),transparent_35%)]" />
                 }
             >
-                <StaggerContainer className="grid gap-3 sm:gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                    <motion.div variants={macroItemVariants} className="h-full">
-                        <KpiCard
-                            title="Prontezza"
-                            value={`${evolutionProgress}%`}
-                            animatedValue={evolutionProgress}
-                            formatFn={(v) => `${Math.round(v)}%`}
-                            icon={Gauge}
-                            tone={evolutionProgress >= 80 ? "positive" : evolutionProgress >= 40 ? "neutral" : "warning"}
-                            description="Quanto il Core è vicino alla piena operatività."
-                            explainabilityText="Percentuale di dati raccolti rispetto al minimo necessario per previsioni affidabili."
-                        />
-                    </motion.div>
-                    <motion.div variants={macroItemVariants} className="h-full">
-                        <KpiCard
-                            title="Esperienza"
-                            value={`${experienceProgress}%`}
-                            animatedValue={experienceProgress}
-                            formatFn={(v) => `${Math.round(v)}%`}
-                            icon={TrendingUp}
-                            tone={experienceProgress >= 80 ? "positive" : "neutral"}
-                            change={`${snapshot?.trainedSamples ?? 0}/${BRAIN_MATURITY_SAMPLE_TARGET}`}
-                            comparisonLabel="Campioni"
-                            description="Campioni appresi rispetto all'obiettivo."
-                            explainabilityText="Misura quanti pattern di spesa il Core ha osservato e memorizzato."
-                        />
-                    </motion.div>
-                    <motion.div variants={macroItemVariants} className="h-full">
-                        <KpiCard
-                            title="Stabilità"
-                            value={`${stabilityProgress}%`}
-                            animatedValue={stabilityProgress}
-                            formatFn={(v) => `${Math.round(v)}%`}
-                            icon={ShieldCheck}
-                            tone={stabilityProgress >= 70 ? "positive" : stabilityProgress >= 30 ? "neutral" : "warning"}
-                            description="Quanto sono coerenti le previsioni tra un ciclo e l'altro."
-                            explainabilityText={`Valore attuale: ${liveLoss.toFixed(4)}. Più basso = più stabile.`}
-                        />
-                    </motion.div>
-                    <motion.div variants={macroItemVariants} className="h-full">
-                        <KpiCard
-                            title="Rischio"
-                            value={evolution?.prediction ? `${riskPercent}%` : "-"}
-                            icon={ShieldCheck}
-                            trend={evolution?.prediction ? (riskPercent > 65 ? "warning" : "neutral") : "neutral"}
-                            change={evolution?.prediction ? `${confidencePercent}%` : "-"}
-                            comparisonLabel="Affidabilità"
-                            description="Quanto è probabile che la spesa salga."
-                            explainabilityText="Score prodotto dalla Logistic Regression del Core basato su 8 segnali finanziari."
-                        />
-                    </motion.div>
-                    <motion.div variants={macroItemVariants} className="h-full">
-                        <KpiCard
-                            title="Spesa prossimo mese"
-                            value={predictedExpensesLabel}
-                            icon={Sparkles}
-                            trend={evolution?.prediction ? "up" : "neutral"}
-                            change={evolution?.inferencePeriod ?? "-"}
-                            comparisonLabel="Periodo"
-                            description="Stima basata su trend e stagionalità."
-                            explainabilityText="Previsione Holt-Winters con fallback alla Logistic Regression del Core."
-                        />
-                    </motion.div>
-                    <motion.div variants={macroItemVariants} className="h-full">
-                        <KpiCard
-                            title="Spesa residua del mese"
-                            value={currentMonthRemainingLabel}
-                            icon={CalendarClock}
-                            trend={advisorNowcastReady ? "neutral" : "warning"}
-                            change={advisorNowcastReady ? `${currentMonthConfidencePercent}%` : evolution ? `Soglia ${adaptiveNowcastConfidencePercent}%` : "Non pronta"}
-                            comparisonLabel={advisorNowcastReady ? "Confidenza" : "Soglia qualità"}
-                            description="Quanto il Core stima che resti da spendere."
-                            explainabilityText="Nowcast intra-mese con soglia adattiva per il controllo qualità."
-                        />
-                    </motion.div>
-                </StaggerContainer>
+                <div className="space-y-4">
+                    <StaggerContainer className="grid gap-4 lg:grid-cols-3">
+                        <motion.div variants={macroItemVariants} className="h-full">
+                            <KpiCard
+                                title="Spesa prossimo mese"
+                                value={predictedExpensesDisplayLabel}
+                                valueClassName={evolution?.prediction ? undefined : LONG_STATUS_VALUE_CLASS_NAME}
+                                icon={Sparkles}
+                                trend={evolution?.prediction ? "up" : "neutral"}
+                                change={evolution?.inferencePeriod ?? PREPARING_FORECAST_LABEL}
+                                comparisonLabel="Periodo"
+                                description="Quanto potresti spendere il mese prossimo."
+                                explainabilityText="Il Brain usa storico, ritmo recente e periodo dell'anno per stimare il totale del prossimo mese."
+                            />
+                        </motion.div>
+
+                        <motion.div variants={macroItemVariants} className="h-full">
+                            <KpiCard
+                                title="Residuo stimato del mese"
+                                value={currentMonthRemainingDisplayLabel}
+                                valueClassName={advisorNowcastReady ? undefined : LONG_STATUS_VALUE_CLASS_NAME}
+                                icon={CalendarClock}
+                                trend={advisorNowcastReady ? "neutral" : "warning"}
+                                change={advisorNowcastReady ? `${currentMonthConfidencePercent}%` : `Soglia ${adaptiveNowcastConfidencePercent}%`}
+                                comparisonLabel={advisorNowcastReady ? "Affidabilità" : "Soglia qualità"}
+                                description={advisorNowcastReady
+                                    ? "Quanto potresti ancora spendere da qui a fine mese."
+                                    : "Il numero compare solo quando supera il controllo di qualità."}
+                                explainabilityText="Il Brain mostra questo dato solo quando lo considera abbastanza affidabile."
+                            />
+                        </motion.div>
+
+                        <motion.div variants={macroItemVariants} className="h-full">
+                            <KpiCard
+                                title="Affidabilità della stima"
+                                value={forecastConfidenceDisplayLabel}
+                                valueClassName={evolution?.prediction ? undefined : LONG_STATUS_VALUE_CLASS_NAME}
+                                icon={ShieldCheck}
+                                tone={
+                                    !evolution?.prediction ? "neutral"
+                                        : confidencePercent >= 75 ? "positive"
+                                            : confidencePercent >= 45 ? "neutral"
+                                                : "warning"
+                                }
+                                change={evolution?.prediction ? `${nextMonthReliabilitySamples} mesi` : stage.label}
+                                comparisonLabel={evolution?.prediction ? "Storico" : "Stato"}
+                                description="Quanto il Brain si fida della previsione del prossimo mese."
+                                explainabilityText="Più il valore è alto, più la previsione è stabile e coerente con lo storico già visto."
+                            />
+                        </motion.div>
+                    </StaggerContainer>
+
+                    <StaggerContainer className="grid gap-4 lg:grid-cols-2">
+                        <motion.div variants={macroItemVariants} className="h-full">
+                            <KpiCard
+                                title={BRAIN_READY_LABEL}
+                                value={`${brainReadiness}%`}
+                                animatedValue={brainReadiness}
+                                formatFn={(value) => `${Math.round(value)}%`}
+                                icon={Gauge}
+                                tone={brainReadiness >= 80 ? "positive" : brainReadiness >= 40 ? "neutral" : "warning"}
+                                change={stage.label}
+                                comparisonLabel="Fase"
+                                description="Quanto il Brain ha dati e stabilità sufficienti per lavorare bene."
+                                explainabilityText="Tiene insieme quantità di storico letto e regolarità dell'apprendimento."
+                                compact
+                            />
+                        </motion.div>
+
+                        <motion.div variants={macroItemVariants} className="h-full">
+                            <KpiCard
+                                title={BRAIN_HISTORY_LABEL}
+                                value={`${experienceProgress}%`}
+                                animatedValue={experienceProgress}
+                                formatFn={(value) => `${Math.round(value)}%`}
+                                icon={TrendingUp}
+                                tone={experienceProgress >= 80 ? "positive" : "neutral"}
+                                change={`${snapshot?.trainedSamples ?? 0}/${BRAIN_MATURITY_SAMPLE_TARGET} dati`}
+                                comparisonLabel="Dati letti"
+                                description="Quanto storico utile il Brain ha già imparato a leggere."
+                                explainabilityText="Confronta i dati già letti con il livello considerato maturo per produrre stime più solide."
+                                compact
+                            />
+                        </motion.div>
+                    </StaggerContainer>
+                </div>
             </MacroSection>
 
-            {/* Core internals — clear KPIs */}
             <MacroSection
-                title="Sotto il cofano"
-                description="Metriche interne del Core."
+                title="Dettagli tecnici del Brain"
+                description="Indicatori interni utili per capire come sta lavorando il Brain, separati dalle stime principali."
                 contentClassName="pt-5"
                 background={
-                    <div className="absolute inset-0 bg-[linear-gradient(160deg,rgba(148,163,184,0.05),transparent_28%),linear-gradient(340deg,rgba(14,165,168,0.04),transparent_28%)]" />
+                    <div className="absolute inset-0 bg-[linear-gradient(145deg,rgba(255,255,255,0.08),transparent_24%),radial-gradient(circle_at_top_right,rgba(14,165,168,0.08),transparent_26%),linear-gradient(330deg,rgba(148,163,184,0.06),transparent_36%)] dark:bg-[linear-gradient(145deg,rgba(255,255,255,0.04),transparent_24%),radial-gradient(circle_at_top_right,rgba(14,165,168,0.1),transparent_26%),linear-gradient(330deg,rgba(148,163,184,0.08),transparent_36%)]" />
                 }
             >
-                <StaggerContainer className="grid gap-3 sm:gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <StaggerContainer className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                     <motion.div variants={macroItemVariants} className="h-full">
                         <KpiCard
-                            title="Neuroni attivi"
+                            title={BRAIN_CONSISTENCY_LABEL}
+                            value={`${stabilityProgress}%`}
+                            animatedValue={stabilityProgress}
+                            formatFn={(value) => `${Math.round(value)}%`}
+                            icon={ShieldCheck}
+                            tone={stabilityProgress >= 70 ? "positive" : stabilityProgress >= 30 ? "neutral" : "warning"}
+                            description="Indice tecnico di quanto il Brain sta imparando in modo regolare."
+                            explainabilityText={`Si basa su un indicatore interno di errore. Valore attuale ${liveLoss.toFixed(4)}: più è basso, più l'apprendimento è stabile.`}
+                            compact
+                        />
+                    </motion.div>
+
+                    <motion.div variants={macroItemVariants} className="h-full">
+                        <KpiCard
+                            title="Segnali interni attivi"
                             value={`${activeWeightsCount}/${vectorWeights.length}`}
                             icon={Brain}
                             tone={activeWeightsCount === vectorWeights.length ? "positive" : "neutral"}
-                            description="Quanti segnali contribuiscono attivamente alla stima."
-                            explainabilityText="Un neurone 'neutro' ha peso zero e non influenza la previsione. Tutti attivi = il Core usa ogni informazione disponibile."
+                            description="Quanti segnali interni stanno partecipando alla stima."
+                            explainabilityText="Non sono categorie di spesa: sono indicatori tecnici che il Brain combina per arrivare al risultato."
                             compact
                         />
                     </motion.div>
+
                     <motion.div variants={macroItemVariants} className="h-full">
                         <KpiCard
-                            title="Campioni appresi"
-                            value={`${snapshot?.trainedSamples ?? 0}`}
-                            animatedValue={snapshot?.trainedSamples ?? 0}
-                            formatFn={(v) => `${Math.round(v)}`}
-                            icon={Target}
-                            tone={(snapshot?.trainedSamples ?? 0) >= 60 ? "positive" : "neutral"}
-                            description="Quante 'fotografie' del tuo comportamento il Core ha memorizzato."
-                            explainabilityText="Ogni ciclo di addestramento aggiunge campioni. Più ne ha, più la stima si affina."
-                            compact
-                        />
-                    </motion.div>
-                    <motion.div variants={macroItemVariants} className="h-full">
-                        <KpiCard
-                            title="Precisione"
-                            value={nextMonthMaeLabel}
+                            title="Scarto medio storico"
+                            value={nextMonthMaeDisplayLabel}
+                            valueClassName={nextMonthMaeLabel === "-" ? LONG_STATUS_VALUE_CLASS_NAME : undefined}
                             icon={Crosshair}
                             tone={
                                 nextMonthMaePercent === null ? "neutral"
@@ -775,16 +355,18 @@ export default function BrainPage() {
                                             : "warning"
                             }
                             change={`${nextMonthReliabilitySamples} mesi`}
-                            comparisonLabel="Misurato su"
-                            description="Errore medio della previsione rispetto alla spesa reale."
-                            explainabilityText="MAE — Media dell'errore assoluto. Più basso è, più la previsione è vicina alla realtà. Obiettivo: sotto il 15%."
+                            comparisonLabel="Mesi utili"
+                            description="Di quanto, in media, le vecchie stime si sono allontanate dal valore reale."
+                            explainabilityText="È un indicatore tecnico: più è basso, più il Brain ci ha preso nelle previsioni già verificate."
                             compact
                         />
                     </motion.div>
+
                     <motion.div variants={macroItemVariants} className="h-full">
                         <KpiCard
-                            title="Margine d'errore"
-                            value={nextMonthMapeLabel}
+                            title="Errore percentuale storico"
+                            value={nextMonthMapeDisplayLabel}
+                            valueClassName={nextMonthMapeLabel === "-" ? LONG_STATUS_VALUE_CLASS_NAME : undefined}
                             icon={ShieldCheck}
                             tone={
                                 nextMonthMapePercent === null ? "neutral"
@@ -792,20 +374,24 @@ export default function BrainPage() {
                                         : nextMonthMapePercent <= 30 ? "neutral"
                                             : "warning"
                             }
-                            description="Di quanto, in percentuale, la stima può sbagliare."
-                            explainabilityText="MAPE — Se mostra 30%, una previsione di €1000 significa che la spesa reale sarà tra €700 e €1300."
+                            description="Quanto pesava in percentuale l'errore medio sulle stime già verificate."
+                            explainabilityText="Esempio: 15% significa che lo scarto medio era circa il 15% del totale stimato."
                             compact
                         />
                     </motion.div>
                 </StaggerContainer>
             </MacroSection>
 
-            {/* Signal Matrix — signals detail */}
-            <motion.div variants={macroItemVariants}>
-                <SignalMatrix
-                    contributorsTop={contributorsTop}
-                />
-            </motion.div>
+            <MacroSection
+                title="Segnali del Brain"
+                description="Qui vedi i fattori che in questo momento stanno pesando di più sulla stima. Selezionane uno per capire come influisce."
+                contentClassName="pt-5"
+                background={
+                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.12),transparent_28%),radial-gradient(circle_at_top_left,rgba(14,165,168,0.08),transparent_30%),linear-gradient(140deg,rgba(148,163,184,0.06),transparent_42%)] dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.04),transparent_28%),radial-gradient(circle_at_top_left,rgba(14,165,168,0.11),transparent_30%),linear-gradient(140deg,rgba(148,163,184,0.08),transparent_42%)]" />
+                }
+            >
+                <SignalMatrix contributors={contributors} />
+            </MacroSection>
         </StaggerContainer>
     )
 }

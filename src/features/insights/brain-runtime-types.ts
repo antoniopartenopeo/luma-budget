@@ -1,6 +1,6 @@
-export type StageId = "dormant" | "newborn" | "imprinting" | "adapting"
-export type SyncReason = "boot" | "poll" | "storage"
+export type BrainRuntimeMode = "active" | "readonly"
 export type EventTone = "neutral" | "positive" | "warning" | "critical"
+export type StageId = "dormant" | "newborn" | "imprinting" | "adapting"
 
 export interface TimelineEvent {
     id: string

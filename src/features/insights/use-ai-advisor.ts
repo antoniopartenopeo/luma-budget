@@ -1,28 +1,18 @@
-import { useMemo, useState, useEffect, useRef } from "react"
+import { useMemo } from "react"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
 import { sumExpensesInCents } from "@/domain/money"
 import { AdvisorFacts } from "@/domain/narration"
 import { useDashboardSummary } from "@/features/dashboard/api/use-dashboard"
 import { useCategories } from "@/features/categories/api/use-categories"
-import {
-    BRAIN_MATURITY_SAMPLE_TARGET,
-    computeBrainInputSignature,
-    evolveBrainFromHistory,
-    initializeBrain,
-    type BrainEvolutionResult
-} from "@/brain"
+import { BRAIN_MATURITY_SAMPLE_TARGET } from "@/brain"
 import { getCurrentPeriod, getDaysElapsedInMonth, getDaysInMonth, getPreviousMonths } from "@/lib/date-ranges"
-import {
-    adaptBrainAdaptivePolicy,
-    loadBrainAdaptivePolicy,
-    saveBrainAdaptivePolicy,
-} from "./brain-auto-tune"
 import {
     resolveAdaptiveNowcastConfidenceThreshold,
     resolveAdaptiveOutlierBlendConfidence,
 } from "./brain-adaptive-thresholds"
 import { filterTransactionsByMonth } from "./utils"
 import { detectActiveSubscriptions, type DetectedSubscription } from "./subscription-detection"
+import { useBrainRuntime } from "./brain-runtime"
 
 export type AISubscription = DetectedSubscription
 
@@ -157,7 +147,6 @@ function resolveOutlierBrainBlendWeight(params: {
 
 export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
     const advisorMode = options.mode || "active"
-    const isReadOnlyMode = advisorMode === "readonly"
     const currentPeriod = getCurrentPeriod()
     const { data: transactions = [], isLoading: isTransactionsLoading } = useTransactions()
     const { data: categories = [], isLoading: isCategoriesLoading } = useCategories({ includeArchived: true })
@@ -165,79 +154,10 @@ export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
         mode: "month",
         period: currentPeriod,
     })
-
-    const [brainEvolution, setBrainEvolution] = useState<BrainEvolutionResult | null>(null)
-    const [brainEvolutionSignature, setBrainEvolutionSignature] = useState("")
-    const [adaptivePolicy, setAdaptivePolicy] = useState(() => loadBrainAdaptivePolicy())
-    const lastBrainSignatureRef = useRef("")
-    const lastAdaptiveTuneSignatureRef = useRef("")
-
-    const brainInputSignature = useMemo(
-        () => computeBrainInputSignature(transactions, categories, currentPeriod),
-        [categories, currentPeriod, transactions]
-    )
-
-    useEffect(() => {
-        if (isTransactionsLoading || isCategoriesLoading) return
-        if (transactions.length < 2 || categories.length === 0) return
-
-        if (lastBrainSignatureRef.current === brainInputSignature) return
-        lastBrainSignatureRef.current = brainInputSignature
-
-        const brainTransactions = transactions.map((tx) => ({
-            amountCents: Math.abs(tx.amountCents || 0),
-            type: tx.type,
-            timestamp: tx.timestamp,
-            categoryId: tx.categoryId,
-            isSuperfluous: tx.isSuperfluous,
-        }))
-        const brainCategories = categories.map((category) => ({
-            id: category.id,
-            spendingNature: category.spendingNature,
-        }))
-
-        let cancelled = false
-        if (!isReadOnlyMode) {
-            initializeBrain()
-        }
-
-        void evolveBrainFromHistory(brainTransactions, brainCategories, {
-            preferredPeriod: currentPeriod,
-            allowTraining: !isReadOnlyMode
-        })
-            .then((result) => {
-                if (!cancelled) {
-                    setBrainEvolution(result)
-                    setBrainEvolutionSignature(brainInputSignature)
-                    if (!isReadOnlyMode && lastAdaptiveTuneSignatureRef.current !== brainInputSignature) {
-                        lastAdaptiveTuneSignatureRef.current = brainInputSignature
-                        setAdaptivePolicy((currentPolicy) => {
-                            const nextPolicy = adaptBrainAdaptivePolicy(currentPolicy, result)
-                            saveBrainAdaptivePolicy(nextPolicy)
-                            return nextPolicy
-                        })
-                    }
-                }
-            })
-            .catch(() => {
-                if (!cancelled) {
-                    setBrainEvolution(null)
-                    setBrainEvolutionSignature("")
-                }
-            })
-
-        return () => {
-            cancelled = true
-        }
-    }, [
-        brainInputSignature,
-        categories,
-        currentPeriod,
-        isReadOnlyMode,
-        isCategoriesLoading,
-        isTransactionsLoading,
-        transactions,
-    ])
+    const brainRuntime = useBrainRuntime({
+        mode: advisorMode,
+        preferredPeriod: currentPeriod,
+    })
 
     const computation = useMemo(() => {
         if (isTransactionsLoading || transactions.length < 2) {
@@ -272,7 +192,9 @@ export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
         const baseBalanceCents = dashboardSummary?.netBalanceAllTimeCents
             ?? dashboardSummary?.netBalanceCents
             ?? 0
-        const brainResultIsCurrent = brainEvolutionSignature === brainInputSignature
+        const brainEvolution = brainRuntime.evolution
+        const brainResultIsCurrent = brainRuntime.periodState.evolutionSignature !== ""
+            && brainRuntime.periodState.evolutionSignature === brainRuntime.periodState.inputSignature
         const brainNowcastReady = brainResultIsCurrent && brainEvolution?.currentMonthNowcastReady === true
         const brainPrediction = brainResultIsCurrent ? (brainEvolution?.prediction ?? null) : null
         const brainNowcastConfidenceScore = brainResultIsCurrent
@@ -283,7 +205,11 @@ export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
             )
             : 0
         const brainMaturityScore = clamp(
-            (brainEvolution?.snapshot?.currentMonthHead?.trainedSamples ?? 0) / BRAIN_MATURITY_SAMPLE_TARGET,
+            (
+                brainEvolution?.snapshot?.currentMonthHead?.trainedSamples
+                ?? brainRuntime.snapshot?.currentMonthHead?.trainedSamples
+                ?? 0
+            ) / BRAIN_MATURITY_SAMPLE_TARGET,
             0,
             1
         )
@@ -291,7 +217,7 @@ export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
         const nowcastReliabilityMape = brainEvolution?.nowcastReliability?.mape ?? 0
         const nowcastReliabilityMae = brainEvolution?.nowcastReliability?.mae ?? 0
         const adaptiveNowcastConfidenceThreshold = resolveAdaptiveNowcastConfidenceThreshold({
-            baseThreshold: adaptivePolicy.minNowcastConfidence,
+            baseThreshold: brainRuntime.adaptivePolicy.minNowcastConfidence,
             maturityScore: brainMaturityScore,
             reliabilitySampleCount: nowcastReliabilitySampleCount,
             reliabilityMape: nowcastReliabilityMape,
@@ -300,7 +226,7 @@ export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
         const adaptiveOutlierBlendConfidence = resolveAdaptiveOutlierBlendConfidence({
             adaptiveNowcastThreshold: adaptiveNowcastConfidenceThreshold,
             reliabilitySampleCount: nowcastReliabilitySampleCount,
-            baseOutlierConfidence: adaptivePolicy.outlierMinConfidence
+            baseOutlierConfidence: brainRuntime.adaptivePolicy.outlierMinConfidence
         })
         const brainRemainingCurrentMonthExpensesCents = Math.max(
             0,
@@ -312,7 +238,7 @@ export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
             : 1
         const allowedOvershootRatio = resolveAllowedBrainOvershootRatio(brainNowcastConfidenceScore)
         const allowedOvershootDeltaCents = Math.max(
-            adaptivePolicy.overshootDeltaCents,
+            brainRuntime.adaptivePolicy.overshootDeltaCents,
             Math.round(overshootAnchorCents * 0.45)
         )
         const isBrainOutlier = brainNowcastReady
@@ -340,9 +266,9 @@ export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
                     fallbackRemainingCurrentMonthExpensesCents
                     + ((brainRemainingCurrentMonthExpensesCents - fallbackRemainingCurrentMonthExpensesCents) * brainBlendWeight)
                 )
-            )
+                )
             : fallbackRemainingCurrentMonthExpensesCents
-        const canUseBrainNowcast = brainBlendWeight >= adaptivePolicy.primaryBlendThreshold
+        const canUseBrainNowcast = brainBlendWeight >= brainRuntime.adaptivePolicy.primaryBlendThreshold
         const primarySource: AIForecast["primarySource"] = canUseBrainNowcast ? "brain" : "fallback"
         const predictedTotalEstimatedBalanceCents = baseBalanceCents - predictedRemainingCurrentMonthExpensesCents
         const fallbackRiskScore = currentMonthExpensesCents > 0
@@ -419,10 +345,11 @@ export function useAIAdvisor(options: UseAIAdvisorOptions = {}) {
             brainSignal
         }
     }, [
-        brainEvolution,
-        brainEvolutionSignature,
-        brainInputSignature,
-        adaptivePolicy,
+        brainRuntime.adaptivePolicy,
+        brainRuntime.evolution,
+        brainRuntime.periodState.evolutionSignature,
+        brainRuntime.periodState.inputSignature,
+        brainRuntime.snapshot?.currentMonthHead?.trainedSamples,
         categories,
         currentPeriod,
         dashboardSummary?.netBalanceAllTimeCents,

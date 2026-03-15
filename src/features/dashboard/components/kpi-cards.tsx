@@ -66,7 +66,7 @@ function resolveBrainSignalDisplay(advisorData: ReturnType<typeof useAIAdvisor>)
     }
 
     const isBrainSource = advisorData.forecast.primarySource === "brain"
-    const source = isBrainSource ? "Fonte: Core" : "Fonte: Storico"
+    const source = isBrainSource ? "Fonte: Brain" : "Fonte: Storico"
     const confidence = advisorData.forecast.confidence === "high"
         ? "Alta"
         : advisorData.forecast.confidence === "medium"
@@ -302,7 +302,7 @@ export function DashboardKpiGrid({
                             isLoading={false}
                             onClick={() => router.push("/insights")}
                             description={brainSignal.message}
-                            explainabilityText="Proiezione generata dal Core Neurale basata sul tuo ritmo di spesa attuale."
+                            explainabilityText="Proiezione generata dal Brain basata sul tuo ritmo di spesa attuale."
                         />
                     </motion.div>
                 </StaggerContainer>

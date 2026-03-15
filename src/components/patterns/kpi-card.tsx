@@ -126,7 +126,7 @@ export function KpiCard({
 
     return (
         <motion.div
-            className={cn(compact ? undefined : "h-full [perspective:1400px]")}
+            className={cn("h-full", !compact && "[perspective:1400px]")}
             onMouseEnter={handlePointerEnter}
             onMouseMove={handlePointerMove}
             onMouseLeave={handlePointerLeave}
@@ -136,8 +136,8 @@ export function KpiCard({
         >
             <Card
                 className={cn(
-                    "group/kpi relative overflow-hidden rounded-xl glass-card [transform-style:preserve-3d] transition-[transform,border-color,box-shadow,background-color] duration-300",
-                    compact ? "gap-3 py-3" : "h-full",
+                    "group/kpi relative flex flex-col overflow-hidden rounded-xl glass-card [transform-style:preserve-3d] transition-[transform,border-color,box-shadow,background-color] duration-300 h-full",
+                    compact && "gap-3 py-3",
                     onClick && "cursor-pointer active:scale-[0.98]",
                     !compact && "hover:-translate-y-0.5 hover:border-white/55 hover:shadow-[0_22px_44px_-28px_rgba(15,23,42,0.4)]",
                     className

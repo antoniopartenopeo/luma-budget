@@ -1,13 +1,13 @@
 import { useEffect } from "react"
 import { act, render } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { DEFAULT_BRAIN_ADAPTIVE_POLICY } from "../brain-auto-tune"
 import { useAIAdvisor, type AIAdvisorResult } from "../use-ai-advisor"
 
 const useTransactionsMock = vi.fn()
 const useCategoriesMock = vi.fn()
 const useDashboardSummaryMock = vi.fn()
-const initializeBrainMock = vi.fn()
-const evolveBrainFromHistoryMock = vi.fn()
+const useBrainRuntimeMock = vi.fn()
 
 vi.mock("@/features/transactions/api/use-transactions", () => ({
     useTransactions: () => useTransactionsMock(),
@@ -21,23 +21,12 @@ vi.mock("@/features/dashboard/api/use-dashboard", () => ({
     useDashboardSummary: () => useDashboardSummaryMock(),
 }))
 
+vi.mock("../brain-runtime", () => ({
+    useBrainRuntime: (...args: unknown[]) => useBrainRuntimeMock(...args),
+}))
+
 vi.mock("@/brain", () => ({
     BRAIN_MATURITY_SAMPLE_TARGET: 120,
-    computeBrainInputSignature: (
-        transactions: Array<{ timestamp: number; amountCents: number; categoryId: string; type: string; isSuperfluous?: boolean }>,
-        categories: Array<{ id: string; spendingNature: string }>,
-        period: string
-    ) => {
-        const txSignature = transactions
-            .map((tx) => `${tx.timestamp}:${tx.amountCents}:${tx.categoryId}:${tx.type}:${tx.isSuperfluous === true ? 1 : tx.isSuperfluous === false ? 0 : "u"}`)
-            .join("|")
-        const categoriesSignature = categories
-            .map((category) => `${category.id}:${category.spendingNature}`)
-            .join("|")
-        return `${period}:${txSignature}:${categoriesSignature}`
-    },
-    initializeBrain: (...args: unknown[]) => initializeBrainMock(...args),
-    evolveBrainFromHistory: (...args: unknown[]) => evolveBrainFromHistoryMock(...args),
 }))
 
 function ts(isoDate: string): number {
@@ -100,7 +89,7 @@ const categoriesFixture = [
     { id: "income", spendingNature: "essential" as const },
 ]
 
-function buildBrainResult(overrides: Record<string, unknown> = {}) {
+function buildBrainEvolution(overrides: Record<string, unknown> = {}) {
     return {
         reason: "trained",
         snapshot: null,
@@ -118,6 +107,71 @@ function buildBrainResult(overrides: Record<string, unknown> = {}) {
         predictedCurrentMonthRemainingExpensesCents: 60000,
         currentMonthNowcastConfidence: 0.78,
         currentMonthNowcastReady: true,
+        nowcastReliability: {
+            sampleCount: 0,
+            mae: 0,
+            mape: 0,
+            mapeSampleCount: 0,
+        },
+        nextMonthReliability: {
+            sampleCount: 0,
+            mae: 0,
+            mape: 0,
+            mapeSampleCount: 0,
+        },
+        ...overrides,
+    }
+}
+
+function buildBrainRuntimeValue(overrides: Record<string, unknown> = {}) {
+    const evolution = (overrides.evolution as ReturnType<typeof buildBrainEvolution> | null | undefined)
+        ?? buildBrainEvolution()
+    const snapshot = (overrides.snapshot as Record<string, unknown> | null | undefined)
+        ?? evolution?.snapshot
+        ?? null
+    const preferredPeriod = (overrides.preferredPeriod as string | undefined) ?? "2026-02"
+    const mode = (overrides.mode as "active" | "readonly" | undefined) ?? "active"
+
+    return {
+        snapshot,
+        adaptivePolicy: DEFAULT_BRAIN_ADAPTIVE_POLICY,
+        training: {
+            isTraining: false,
+            epoch: 0,
+            totalEpochs: 0,
+            progress: 0,
+            currentLoss: 0,
+            sampleCount: 0,
+            lastCompletedAt: null,
+        },
+        timeline: [],
+        evolutionHistory: [],
+        transactionsCount: 0,
+        categoriesCount: 0,
+        periods: {},
+        preferredPeriod,
+        mode,
+        stage: {
+            id: "adapting",
+            label: "Attivo",
+            summary: "Il Brain è attivo.",
+            badgeVariant: "secondary",
+        },
+        periodState: {
+            preferredPeriod,
+            inputSignature: "sig-current",
+            evolutionSignature: "sig-current",
+            evolution,
+            isLoading: false,
+            error: null,
+            mode,
+        },
+        evolution,
+        isInitialized: snapshot !== null,
+        isLoading: false,
+        initialize: vi.fn(),
+        reset: vi.fn(),
+        runEvolution: vi.fn(),
         ...overrides,
     }
 }
@@ -127,7 +181,6 @@ describe("useAIAdvisor", () => {
         vi.clearAllMocks()
         vi.useFakeTimers()
         vi.setSystemTime(new Date("2026-02-15T10:00:00.000Z"))
-        window.localStorage.clear()
 
         useTransactionsMock.mockReturnValue({
             data: transactionsFixture,
@@ -141,8 +194,7 @@ describe("useAIAdvisor", () => {
             data: { netBalanceCents: 500000 },
             isLoading: false,
         })
-        initializeBrainMock.mockImplementation(() => undefined)
-        evolveBrainFromHistoryMock.mockResolvedValue(buildBrainResult())
+        useBrainRuntimeMock.mockReturnValue(buildBrainRuntimeValue())
     })
 
     afterEach(() => {
@@ -150,6 +202,17 @@ describe("useAIAdvisor", () => {
     })
 
     it("uses canonical dashboard balance and Brain nowcast when ready", async () => {
+        useBrainRuntimeMock.mockReturnValue(buildBrainRuntimeValue({
+            evolution: buildBrainEvolution({
+                prediction: {
+                    predictedExpenseRatio: 0.62,
+                    riskScore: 0.44,
+                    confidence: 0.78,
+                    contributors: [],
+                },
+            }),
+        }))
+
         let latest: AIAdvisorResult | null = null
 
         render(<HookHarness onValue={(value) => { latest = value }} />)
@@ -162,7 +225,6 @@ describe("useAIAdvisor", () => {
         const value = latest as AIAdvisorResult | null
 
         expect(value?.isLoading).toBe(false)
-        expect(evolveBrainFromHistoryMock).toHaveBeenCalledTimes(1)
         expect(value?.forecast?.primarySource).toBe("brain")
         expect(value?.forecast?.baseBalanceCents).toBe(500000)
         expect(value?.forecast?.predictedRemainingCurrentMonthExpensesCents).toBe(60000)
@@ -172,12 +234,12 @@ describe("useAIAdvisor", () => {
     })
 
     it("falls back to run-rate when Brain nowcast is not ready", async () => {
-        evolveBrainFromHistoryMock.mockResolvedValue(
-            buildBrainResult({
+        useBrainRuntimeMock.mockReturnValue(buildBrainRuntimeValue({
+            evolution: buildBrainEvolution({
                 currentMonthNowcastReady: false,
                 predictedCurrentMonthRemainingExpensesCents: 999999,
-            })
-        )
+            }),
+        }))
 
         let latest: AIAdvisorResult | null = null
 
@@ -199,8 +261,8 @@ describe("useAIAdvisor", () => {
     })
 
     it("falls back when Brain confidence is below quality threshold", async () => {
-        evolveBrainFromHistoryMock.mockResolvedValue(
-            buildBrainResult({
+        useBrainRuntimeMock.mockReturnValue(buildBrainRuntimeValue({
+            evolution: buildBrainEvolution({
                 currentMonthNowcastReady: true,
                 currentMonthNowcastConfidence: 0.61,
                 predictedCurrentMonthRemainingExpensesCents: 120000,
@@ -208,10 +270,10 @@ describe("useAIAdvisor", () => {
                     predictedExpenseRatio: 0.7,
                     riskScore: 0.45,
                     confidence: 0.61,
-                    contributors: []
+                    contributors: [],
                 },
-            })
-        )
+            }),
+        }))
 
         let latest: AIAdvisorResult | null = null
 
@@ -232,8 +294,8 @@ describe("useAIAdvisor", () => {
     })
 
     it("falls back when Brain nowcast is an outlier vs historical anchor", async () => {
-        evolveBrainFromHistoryMock.mockResolvedValue(
-            buildBrainResult({
+        useBrainRuntimeMock.mockReturnValue(buildBrainRuntimeValue({
+            evolution: buildBrainEvolution({
                 currentMonthNowcastReady: true,
                 currentMonthNowcastConfidence: 0.84,
                 predictedCurrentMonthRemainingExpensesCents: 150000,
@@ -241,10 +303,10 @@ describe("useAIAdvisor", () => {
                     predictedExpenseRatio: 1.1,
                     riskScore: 0.76,
                     confidence: 0.84,
-                    contributors: []
+                    contributors: [],
                 },
-            })
-        )
+            }),
+        }))
 
         let latest: AIAdvisorResult | null = null
 
@@ -266,8 +328,30 @@ describe("useAIAdvisor", () => {
     })
 
     it("keeps Brain as primary on outlier when confidence and maturity are both high", async () => {
-        evolveBrainFromHistoryMock.mockResolvedValue(
-            buildBrainResult({
+        const highMaturitySnapshot = {
+            version: 2,
+            featureSchemaVersion: 2,
+            weights: [0, 0, 0, 0, 0, 0, 0, 0],
+            bias: 0,
+            learningRate: 0.03,
+            trainedSamples: 160,
+            lossEma: 0.08,
+            absErrorEma: 0.12,
+            currentMonthHead: {
+                weights: [0, 0, 0, 0, 0, 0, 0, 0],
+                bias: 0,
+                learningRate: 0.03,
+                trainedSamples: 160,
+                lossEma: 0.08,
+                absErrorEma: 0.12,
+            },
+            dataFingerprint: "brain-v2-test-high-maturity",
+            updatedAt: "2026-02-15T10:00:00.000Z",
+        }
+
+        useBrainRuntimeMock.mockReturnValue(buildBrainRuntimeValue({
+            snapshot: highMaturitySnapshot,
+            evolution: buildBrainEvolution({
                 currentMonthNowcastReady: true,
                 currentMonthNowcastConfidence: 0.95,
                 predictedCurrentMonthRemainingExpensesCents: 170000,
@@ -275,30 +359,11 @@ describe("useAIAdvisor", () => {
                     predictedExpenseRatio: 1.2,
                     riskScore: 0.84,
                     confidence: 0.95,
-                    contributors: []
+                    contributors: [],
                 },
-                snapshot: {
-                    version: 2,
-                    featureSchemaVersion: 2,
-                    weights: [0, 0, 0, 0, 0, 0, 0, 0],
-                    bias: 0,
-                    learningRate: 0.03,
-                    trainedSamples: 160,
-                    lossEma: 0.08,
-                    absErrorEma: 0.12,
-                    currentMonthHead: {
-                        weights: [0, 0, 0, 0, 0, 0, 0, 0],
-                        bias: 0,
-                        learningRate: 0.03,
-                        trainedSamples: 160,
-                        lossEma: 0.08,
-                        absErrorEma: 0.12,
-                    },
-                    dataFingerprint: "brain-v2-test-high-maturity",
-                    updatedAt: "2026-02-15T10:00:00.000Z"
-                }
-            })
-        )
+                snapshot: highMaturitySnapshot,
+            }),
+        }))
 
         let latest: AIAdvisorResult | null = null
 
@@ -318,13 +383,16 @@ describe("useAIAdvisor", () => {
         expect(value?.brainSignal.source).toBe("brain")
     })
 
-    it("re-runs evolution when transaction classification changes", async () => {
+    it("recomputes derived output when transaction classification changes", async () => {
         let latest: AIAdvisorResult | null = null
         let currentTransactions: TestTransaction[] = transactionsFixture
 
         useTransactionsMock.mockImplementation(() => ({
             data: currentTransactions,
             isLoading: false,
+        }))
+        useBrainRuntimeMock.mockReturnValue(buildBrainRuntimeValue({
+            evolution: buildBrainEvolution({ currentMonthNowcastReady: false }),
         }))
 
         const view = render(<HookHarness onValue={(value) => { latest = value }} />)
@@ -334,9 +402,8 @@ describe("useAIAdvisor", () => {
             await Promise.resolve()
         })
 
-        const value = latest as AIAdvisorResult | null
-        expect(value?.isLoading).toBe(false)
-        expect(evolveBrainFromHistoryMock).toHaveBeenCalledTimes(1)
+        const first = latest as AIAdvisorResult | null
+        expect(first?.subscriptions.length).toBe(0)
 
         currentTransactions = transactionsCategoryShiftFixture
         view.rerender(<HookHarness onValue={(value) => { latest = value }} />)
@@ -346,10 +413,12 @@ describe("useAIAdvisor", () => {
             await Promise.resolve()
         })
 
-        expect(evolveBrainFromHistoryMock).toHaveBeenCalledTimes(2)
+        const second = latest as AIAdvisorResult | null
+        expect(second?.isLoading).toBe(false)
+        expect(second?.forecast?.predictedRemainingCurrentMonthExpensesCents).toBe(35000)
     })
 
-    it("supports read-only mode without training side effects", async () => {
+    it("passes readonly mode through to the Brain runtime", async () => {
         let latest: AIAdvisorResult | null = null
 
         render(<HookHarness mode="readonly" onValue={(value) => { latest = value }} />)
@@ -359,16 +428,10 @@ describe("useAIAdvisor", () => {
             await Promise.resolve()
         })
 
-        const value = latest as AIAdvisorResult | null
-        expect(value?.isLoading).toBe(false)
-        expect(initializeBrainMock).not.toHaveBeenCalled()
-        expect(evolveBrainFromHistoryMock).toHaveBeenCalledTimes(1)
-        expect(evolveBrainFromHistoryMock).toHaveBeenLastCalledWith(
-            expect.any(Array),
-            expect.any(Array),
-            expect.objectContaining({
-                allowTraining: false
-            })
-        )
+        expect((latest as AIAdvisorResult | null)?.isLoading).toBe(false)
+        expect(useBrainRuntimeMock).toHaveBeenCalledWith({
+            mode: "readonly",
+            preferredPeriod: "2026-02",
+        })
     })
 })

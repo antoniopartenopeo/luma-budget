@@ -7,8 +7,8 @@ import { SubSectionCard } from "../sub-section-card"
 
 // UI governance regression tests.
 // References:
-// - /.agent/rules/ui-regression-checklist.md
-// - /docs/governance/governance-ui-execution-standards.md
+// - /01_rules/UI_REGRESSION_CHECKLIST.md
+// - /01_rules/UI_EXECUTION_STANDARDS.md
 
 describe("UI Governance Compliance (Premium 3D)", () => {
     describe("MacroSection", () => {

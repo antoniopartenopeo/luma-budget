@@ -10,9 +10,11 @@ Eseguire task cross-layer con standard release-ready, evitando drift tra codice,
 ## 1) Preflight obbligatorio
 
 Leggere sempre:
-1. `/.agent/rules/numa-core-rules.md`
-2. `/docs/README.md`
-3. `/docs/core/system-architecture.md`
+1. `/01_rules/NUMA_CORE_RULES.md`
+2. `/AGENTS.md`
+3. `/00_project-core/CURRENT_STATE.md`
+4. `/03_architecture/SYSTEM_OVERVIEW.md`
+5. `/04_execution/GOVERNANCE_AUDIT_PROCESS.md`
 
 Classificare il task in una o piu categorie:
 - `UI`: layout, componenti, interaction, motion
@@ -24,11 +26,11 @@ Classificare il task in una o piu categorie:
 ## 2) Routing skill specialistica
 
 Attivare in sequenza minima solo le skill necessarie:
-- `UI` -> `/.agent/skills/numa-ui-standards/SKILL.md`
-- `Financial` -> `/.agent/skills/numa-financial-logic/SKILL.md`
-- `Semantics budget` -> `/.agent/skills/numa-budget-semantics/SKILL.md`
-- `Semantics insights` -> `/.agent/skills/numa-insights-semantics/SKILL.md`
-- `Import CSV` -> `/.agent/skills/numa-import-csv/SKILL.md`
+- `UI` -> `/05_specialists/NUMA_UI_STANDARDS.md`
+- `Financial` -> `/05_specialists/NUMA_FINANCIAL_LOGIC.md`
+- `Semantics budget` -> `/05_specialists/NUMA_BUDGET_SEMANTICS.md`
+- `Semantics insights` -> `/05_specialists/NUMA_INSIGHTS_SEMANTICS.md`
+- `Import CSV` -> `/05_specialists/NUMA_IMPORT_CSV.md`
 - `Governance update` -> skill globale `$numa-governance-update`
 
 Se nessuna categoria specialistica e coinvolta, applicare solo questo protocollo + core rules.

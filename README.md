@@ -3,6 +3,19 @@
 Personal finance app built with **Next.js 16**, **React 19**, and **Tailwind CSS 4**.
 Local-first persistence, deterministic narration, and rhythm-based planning.
 
+## Project Context
+
+Canonical live project context now lives in:
+
+- `AGENTS.md`
+- `00_project-core/*`
+- `01_rules/*`
+- `03_architecture/SYSTEM_OVERVIEW.md`
+- `04_execution/*`
+- `05_specialists/*`
+- `06_decisions/*`
+- `07_handoffs/*`
+
 ## Features
 
 | Module | Status | Description |
@@ -29,6 +42,8 @@ src/
 ├── VAULT/                # Isolated high-value logic (goals + legacy compatibility boundaries)
 └── lib/                  # Shared utilities (storage keys, date ranges, runtime metadata)
 ```
+
+Canonical system overview: `03_architecture/SYSTEM_OVERVIEW.md`
 
 ### Runtime routes
 - `/` Dashboard
@@ -69,10 +84,15 @@ Neural core storage is managed separately in `src/brain/storage.ts`:
 
 ## Governance
 
-- Canonical runtime constraints: `/.agent/rules/numa-core-rules.md`
-- Canonical project skills/rules: `/.agent/*`
+- AI and operator entrypoint: `/AGENTS.md`
+- Canonical live project context: `/00_project-core/*`
+- Canonical rules and governance standards: `/01_rules/*`
+- Canonical system overview and module contracts: `/03_architecture/*`
+- Canonical execution playbooks and audit outputs: `/04_execution/*`
+- Canonical specialist operating contexts: `/05_specialists/*`
+- Canonical decisions and ADRs: `/06_decisions/*`
+- Canonical handoff state: `/07_handoffs/*`
 - Vendored reference skills pinned in repo: `/.agents/skills/*` + `skills-lock.json`
-- Canonical documentation hub: `/docs/README.md`
 - Governance update workflow: `$numa-governance-update`
 
 ## Getting started

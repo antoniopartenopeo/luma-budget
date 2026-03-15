@@ -4,14 +4,14 @@ import { describe, expect, it } from "vitest"
 import { STORAGE_KEY_BUDGET_PLANS } from "@/lib/storage-keys"
 
 const README_PATH = join(process.cwd(), "README.md")
-const SYSTEM_ARCHITECTURE_PATH = join(process.cwd(), "docs/core/system-architecture.md")
-const AUDIT_PROCESS_PATH = join(process.cwd(), "docs/operations/governance-audit-process.md")
+const SYSTEM_ARCHITECTURE_PATH = join(process.cwd(), "03_architecture/SYSTEM_OVERVIEW.md")
+const AUDIT_PROCESS_PATH = join(process.cwd(), "04_execution/GOVERNANCE_AUDIT_PROCESS.md")
 const QUICK_CHECK_SCRIPT_PATH = join(process.cwd(), "scripts/audit/governance-quick-check.sh")
 const DOE_VERIFY_WORKFLOW_PATH = join(process.cwd(), ".github/workflows/doe-verify.yml")
 const OPEN_BANKING_GUARD_PATH = join(process.cwd(), "src/app/api/open-banking/guard.ts")
 
-const GENERATED_REPORT_PATH = "docs/reports/generated-governance-quick-check.md"
-const GENERATED_SUMMARY_PATH = "docs/reports/generated-governance-quick-check-summary.env"
+const GENERATED_REPORT_PATH = "04_execution/reports/generated-governance-quick-check.md"
+const GENERATED_SUMMARY_PATH = "04_execution/reports/generated-governance-quick-check-summary.env"
 const OPEN_BANKING_ENV_FLAG = "NUMA_ENABLE_OPEN_BANKING"
 
 describe("Governance runtime contract", () => {
@@ -20,7 +20,7 @@ describe("Governance runtime contract", () => {
         const auditProcess = readFileSync(AUDIT_PROCESS_PATH, "utf-8")
         const workflow = readFileSync(DOE_VERIFY_WORKFLOW_PATH, "utf-8")
 
-        expect(quickCheckScript).toContain('OUT_DIR="$ROOT_DIR/docs/reports"')
+        expect(quickCheckScript).toContain('OUT_DIR="$ROOT_DIR/04_execution/reports"')
         expect(quickCheckScript).toContain('OUT_FILE="$OUT_DIR/generated-governance-quick-check.md"')
         expect(quickCheckScript).toContain('SUMMARY_FILE="$OUT_DIR/generated-governance-quick-check-summary.env"')
 

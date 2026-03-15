@@ -4,7 +4,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SRC_DIR="$ROOT_DIR/src"
-OUT_DIR="$ROOT_DIR/docs/reports"
+OUT_DIR="$ROOT_DIR/04_execution/reports"
 OUT_FILE="$OUT_DIR/generated-governance-quick-check.md"
 SUMMARY_FILE="$OUT_DIR/generated-governance-quick-check-summary.env"
 
@@ -163,7 +163,7 @@ last-verified: ${now_iso:0:10}
 canonical-of: none
 
 > Generated report (non-normative).  
-> Canonical process reference: \`docs/operations/governance-audit-process.md\`.
+> Canonical process reference: \`04_execution/GOVERNANCE_AUDIT_PROCESS.md\`.
 
 Generated at (UTC): $now_iso
 
@@ -271,7 +271,7 @@ Run:
 \
 
 Output:
-- \`docs/reports/generated-governance-quick-check.md\`
+- \`04_execution/reports/generated-governance-quick-check.md\`
 EOF
 
 echo "[quick-check] report generated: $OUT_FILE"

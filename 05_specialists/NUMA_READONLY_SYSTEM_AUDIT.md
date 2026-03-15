@@ -22,19 +22,19 @@ Produrre una diagnosi profonda e scomoda dello stato reale del sistema, basata s
 
 Leggere sempre questi file prima della diagnosi finale:
 
-1. `/.agent/rules/numa-core-rules.md`
-2. `/.agent/rules/ui-regression-checklist.md`
-3. `/.agent/skills/numa-ui-standards/SKILL.md` (attivazione esplicita obbligatoria)
-4. `/.agent/skills/numa-financial-logic/SKILL.md`
-5. `/.agent/skills/numa-budget-semantics/SKILL.md`
-6. `/.agent/skills/numa-insights-semantics/SKILL.md`
-7. `/docs/README.md`
-8. `/docs/core/system-architecture.md`
-9. `/docs/governance/governance-ux-standards.md`
-10. `/docs/governance/governance-motion-principles.md`
-11. `/docs/governance/governance-semantic-adr-005-rhythm-shift.md`
-12. `/docs/operations/governance-audit-process.md`
-13. `/docs/reports/generated-governance-quick-check.md` (se presente)
+1. `/01_rules/NUMA_CORE_RULES.md`
+2. `/01_rules/UI_REGRESSION_CHECKLIST.md`
+3. `/05_specialists/NUMA_UI_STANDARDS.md` (attivazione esplicita obbligatoria)
+4. `/05_specialists/NUMA_FINANCIAL_LOGIC.md`
+5. `/05_specialists/NUMA_BUDGET_SEMANTICS.md`
+6. `/05_specialists/NUMA_INSIGHTS_SEMANTICS.md`
+7. `/AGENTS.md`
+8. `/03_architecture/SYSTEM_OVERVIEW.md`
+9. `/01_rules/UX_GOVERNANCE.md`
+10. `/01_rules/MOTION_PRINCIPLES.md`
+11. `/06_decisions/ADR_005_SEMANTIC_SHIFT_RHYTHM.md`
+12. `/04_execution/GOVERNANCE_AUDIT_PROCESS.md`
+13. `/04_execution/reports/generated-governance-quick-check.md` (se presente)
 
 Se uno di questi riferimenti manca, dichiararlo nel report come rischio di governance/documentation drift.
 
@@ -88,8 +88,8 @@ Se uno di questi riferimenti manca, dichiararlo nel report come rischio di gover
 
 ## Formato Output Obbligatorio
 
-Seguire il template in `references/report-template.md`.
-Usare anche la scala in `references/scoring-rubrics.md`.
+Seguire il template in `support/NUMA_READONLY_SYSTEM_AUDIT/REPORT_TEMPLATE.md`.
+Usare anche la scala in `support/NUMA_READONLY_SYSTEM_AUDIT/SCORING_RUBRICS.md`.
 
 Vincoli finali:
 

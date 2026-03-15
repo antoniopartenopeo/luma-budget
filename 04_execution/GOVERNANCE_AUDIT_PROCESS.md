@@ -19,24 +19,24 @@ Questo pacchetto rende operativo l'audit tecnico senza cambiare la logica di pro
 
 ## Documenti
 
-- [Codebase navigation in 30 minutes](./codebase-navigation-30-min.md)
-- [Change patterns playbook](./change-patterns-playbook.md)
-- Generated output runtime: `docs/reports/generated-governance-quick-check.md` (non versionato)
+- [Codebase navigation in 30 minutes](./CODEBASE_NAVIGATION_30_MIN.md)
+- [Change patterns playbook](./CHANGE_PATTERNS_PLAYBOOK.md)
+- Generated output runtime: `04_execution/reports/generated-governance-quick-check.md` (non versionato)
 
 ## Quick start audit
 
 1. Esegui `bash scripts/audit/governance-quick-check.sh`.
-2. Leggi il report generato in `docs/reports/generated-governance-quick-check.md`.
+2. Leggi il report generato in `04_execution/reports/generated-governance-quick-check.md`.
 3. Se hai toccato `CHANGELOG.md` (feed notifiche in-app), esegui anche `npm run release:validate`.
 4. Se trovi violazioni con impatto su behavior o logica, apri backlog (non fix diretto in hot pass).
 
 ## Enforcement automatico
 
 - Comando enforcement: `bash scripts/audit/governance-enforce.sh`
-- Soglie baseline anti-regressione: `docs/operations/governance-enforcement-thresholds.env`
+- Soglie baseline anti-regressione: `04_execution/GOVERNANCE_ENFORCEMENT_THRESHOLDS.env`
 - Hook locale: `.githooks/pre-push` (attivabile con `bash scripts/setup.sh`)
 - CI: workflow `.github/workflows/doe-verify.yml` (push + pull_request)
-- Artifact CI: `docs/reports/generated-governance-quick-check.md` + `docs/reports/generated-governance-quick-check-summary.env`
+- Artifact CI: `04_execution/reports/generated-governance-quick-check.md` + `04_execution/reports/generated-governance-quick-check-summary.env`
 - Coerenza release/changelog notifiche: `npm run release:validate`
 
 ## Regola di intervento

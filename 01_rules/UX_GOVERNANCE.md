@@ -77,7 +77,7 @@ Per processi tecnici estesi (es. training locale Neural Core), mostrare progress
 
 Le regole tecniche MUST/SHOULD/NEVER per interazioni, accessibilita, performance, hydration e theming sono canoniche in:
 
-- `/docs/governance/governance-ui-execution-standards.md`
+- `/01_rules/UI_EXECUTION_STANDARDS.md`
 
 Questa pagina resta il livello UX strategico (trust, feedback, tone).  
-Il file `governance-ui-execution-standards.md` e il livello operativo per implementazione e review.
+Il file `UI_EXECUTION_STANDARDS.md` e il livello operativo per implementazione e review.

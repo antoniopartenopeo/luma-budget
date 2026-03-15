@@ -18,9 +18,9 @@ In caso di conflitto tra:
 
 ## Superficie Governance Canonica
 
-- `/.agent/rules/*` e `/.agent/skills/*` sono la superficie canonica di governance del progetto.
+- `/01_rules/*`, `/04_execution/*`, `/05_specialists/*` e `/06_decisions/*` sono la superficie canonica di governance del progetto.
 - `/.agents/skills/*` e `skills-lock.json` sono asset vendorizzati di riferimento: possono integrare il lavoro, ma non sostituiscono le regole di progetto.
-- In caso di conflitto tra materiale vendorizzato e governance locale, prevale sempre `/.agent/*`.
+- In caso di conflitto tra materiale vendorizzato e governance locale, prevale sempre la root scaffold governance.
 
 ---
 
@@ -48,8 +48,8 @@ In caso di conflitto tra:
 | 3 | **SEMPRE** usare util condivise per filtri periodo/range | `@/lib/date-ranges.ts` |
 | 4 | **SEMPRE** registrare nuove storage keys app in `STORAGE_KEYS_REGISTRY` | `@/lib/storage-keys.ts` |
 | 5 | **SEMPRE** allineare `getAppVersion()` con `package.json` prima del rilascio | release hygiene |
-| 6 | **SEMPRE** usare `Sheet` per detail/edit e `Dialog` per overlay/wizard | `.agent/skills/numa-ui-standards` |
-| 7 | **SEMPRE** passare la checklist UI canonica prima di chiudere un task UI | `.agent/rules/ui-regression-checklist.md` |
+| 6 | **SEMPRE** usare `Sheet` per detail/edit e `Dialog` per overlay/wizard | `05_specialists/NUMA_UI_STANDARDS.md` |
+| 7 | **SEMPRE** passare la checklist UI canonica prima di chiudere un task UI | `01_rules/UI_REGRESSION_CHECKLIST.md` |
 | 8 | **SEMPRE** aderire alle skill semantiche (`numa-*-semantics`) per copy/insight | determinismo narrativo |
 | 9 | **SEMPRE** sviluppare su branch `codex/*` e promuovere su `main` solo con release approvata | flusso release |
 

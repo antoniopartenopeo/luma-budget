@@ -47,8 +47,8 @@ yarn-error.log*
 next-env.d.ts
 
 # generated governance reports (ephemeral)
-docs/reports/generated-governance-quick-check.md
-docs/reports/generated-governance-quick-check-summary.env
+04_execution/reports/generated-governance-quick-check.md
+04_execution/reports/generated-governance-quick-check-summary.env
 
 # generated browser automation artifacts
 .playwright-cli/

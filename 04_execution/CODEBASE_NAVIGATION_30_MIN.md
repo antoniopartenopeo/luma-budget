@@ -10,9 +10,10 @@ Obiettivo: capire dove intervenire senza rompere i vincoli finanziari e di gover
 
 ## Minuti 0-5: mappa ad alto livello
 
-1. Leggi `README.md` e `docs/core/system-architecture.md`.
-2. Verifica i guardrail in `.agent/rules/numa-core-rules.md`.
-3. Fissa i 4 vincoli chiave: cents-only, Tailwind/no inline style, `filterByRange`, test senza logica simulata.
+1. Leggi `README.md` e `AGENTS.md`.
+2. Leggi `00_project-core/CURRENT_STATE.md` e `03_architecture/SYSTEM_OVERVIEW.md`.
+3. Verifica i guardrail in `01_rules/NUMA_CORE_RULES.md`.
+4. Fissa i 4 vincoli chiave: cents-only, Tailwind/no inline style, `filterByRange`, test senza logica simulata.
 
 ## Minuti 5-12: data model e denaro
 

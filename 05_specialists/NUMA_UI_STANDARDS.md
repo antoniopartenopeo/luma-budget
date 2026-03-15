@@ -11,9 +11,9 @@ Questa skill definisce i vincoli operativi per componenti React, layout, styling
 
 ## Riferimenti Canonici
 
-- Strategia UX trust/feedback: `/docs/governance/governance-ux-standards.md`
-- Motion semantico: `/docs/governance/governance-motion-principles.md`
-- Baseline tecnica MUST/SHOULD/NEVER: `/docs/governance/governance-ui-execution-standards.md`
+- Strategia UX trust/feedback: `/01_rules/UX_GOVERNANCE.md`
+- Motion semantico: `/01_rules/MOTION_PRINCIPLES.md`
+- Baseline tecnica MUST/SHOULD/NEVER: `/01_rules/UI_EXECUTION_STANDARDS.md`
 
 ---
 
@@ -165,8 +165,8 @@ Invarianti:
 5. [ ] Etichette fonte previsione coerenti (`Fonte Core` o `Fonte Storico`)
 6. [ ] Typography coerente con scala ufficiale
 7. [ ] Nessun inline style statico non giustificato
-8. [ ] Verifica `/.agent/rules/ui-regression-checklist.md`
-9. [ ] Verifica regole MUST/SHOULD/NEVER in `/docs/governance/governance-ui-execution-standards.md`
+8. [ ] Verifica `01_rules/UI_REGRESSION_CHECKLIST.md`
+9. [ ] Verifica regole MUST/SHOULD/NEVER in `01_rules/UI_EXECUTION_STANDARDS.md`
 
 ---
 

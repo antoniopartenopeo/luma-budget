@@ -10,11 +10,14 @@ import {
   Sparkles,
   WalletCards
 } from "lucide-react"
-import { CategoryIds } from "@/domain/categories"
-import type { CategorySummary } from "@/features/dashboard/api/types"
-import type { Transaction } from "@/features/transactions/api/types"
 
 export interface LandingHeroPoint {
+  icon: LucideIcon
+  title: string
+  description: string
+}
+
+export interface LandingStoryPoint {
   icon: LucideIcon
   title: string
   description: string
@@ -25,12 +28,6 @@ export interface LandingDifferentItem {
   title: string
   marketLabel: string
   numaLabel: string
-}
-
-export interface LandingStoryPoint {
-  icon: LucideIcon
-  title: string
-  description: string
 }
 
 export interface LandingDemoStep {
@@ -54,71 +51,102 @@ export interface LandingOutcome {
   description: string
 }
 
+export interface DemoImportSignal {
+  label: string
+  detail: string
+}
+
+export interface DemoOverviewMetric {
+  label: string
+  value: string
+  note: string
+}
+
+export interface DemoOverviewBreakdown {
+  label: string
+  value: string
+  share: number
+}
+
+export interface DemoOverviewMovement {
+  label: string
+  category: string
+  amount: string
+}
+
+export interface DemoBrainState {
+  title: string
+  description: string
+}
+
+export interface DemoBrainMetric {
+  label: string
+  value: string
+  note: string
+}
+
+export interface DemoScenario {
+  label: string
+  quota: string
+  note: string
+  example: string
+  accentClassName: string
+}
+
 export const LANDING_HERO_POINTS: LandingHeroPoint[] = [
   {
-    icon: CloudOff,
-    title: "Dati locali per default",
-    description: "Numa preferisce lavorare sul dispositivo: storico, letture e scenari non partono dal cloud."
-  },
-  {
-    icon: FileSpreadsheet,
-    title: "Import guidato",
-    description: "Porti dentro il CSV, controlli i punti dubbi e confermi solo quando il dato ha senso."
+    icon: ArrowDownUp,
+    title: "Capisci come sta andando il mese",
+    description: "Non solo elenco spese: Numa ti aiuta a leggere cosa pesa davvero e dove si sta stringendo il margine."
   },
   {
     icon: BrainCircuit,
-    title: "Brain interno",
-    description: "Quando ha dati sufficienti, stima il resto del mese e la spesa del mese prossimo con fonte dichiarata."
+    title: "Vedi una stima futura leggibile",
+    description: "Quando il Brain e pronto, ti mostra fine mese e mese successivo con una fonte chiara, non con promesse vaghe."
   },
   {
     icon: FlaskConical,
-    title: "Scenari separati",
-    description: "Financial Lab ti dice quale quota mensile aggiuntiva puoi reggere se vuoi aggiungere rata, abbonamento o altra spesa fissa."
+    title: "Capisci se una nuova spesa ci sta",
+    description: "Financial Lab ti dice quale quota mensile aggiuntiva puoi sostenere prima di impegnarti."
   }
 ]
 
 export const LANDING_STORY_POINTS: LandingStoryPoint[] = [
   {
     icon: WalletCards,
-    title: "Nasce da un problema molto semplice",
-    description: "Molte app mostrano categorie e totali, ma non ti aiutano davvero a capire il mese che stai vivendo."
+    title: "Parte da una frustrazione reale",
+    description: "Molte app registrano bene le spese, ma non aiutano davvero a capire il mese che stai vivendo."
   },
   {
-    icon: CloudOff,
-    title: "Parte dalla privacy, non dal cloud",
-    description: "Numa preferisce trattare i dati finanziari sul dispositivo, perche sono sensibili e non dovrebbero essere l'ultimo pensiero."
+    icon: ShieldCheck,
+    title: "Mette la privacy all'inizio",
+    description: "I dati restano locali per default, perche la finanza personale non dovrebbe essere utile solo se passa dal cloud."
   },
   {
     icon: BrainCircuit,
-    title: "Unisce presente e futuro nello stesso prodotto",
-    description: "Dashboard per leggere adesso, Brain per stimare fine mese e mese successivo, Financial Lab per capire quale nuova quota fissa puoi sostenere."
+    title: "Separa lettura, stima e decisione",
+    description: "Prima capisci il presente, poi vedi il possibile dopo, e solo alla fine valuti una nuova spesa fissa."
   }
 ]
 
 export const LANDING_DIFFERENTIATORS: LandingDifferentItem[] = [
   {
     icon: CloudOff,
-    title: "Non parte dal cloud",
-    marketLabel: "Molte app note puntano su sincronizzazione remota, account collegati e dati ospitati fuori dal tuo dispositivo.",
-    numaLabel: "Numa sceglie una base locale-first: piu privacy, piu controllo, meno dipendenza da promesse esterne."
+    title: "La privacy non e una postilla",
+    marketLabel: "Molte app partono da cloud sync, account collegati e dati ospitati fuori dal tuo dispositivo.",
+    numaLabel: "Numa parte dal locale: piu controllo sul dato, meno dipendenza da servizi esterni."
   },
   {
     icon: WalletCards,
-    title: "Non ti impone un metodo rigido",
-    marketLabel: "Molti tracker ti chiedono di seguire un rituale preciso o di adattarti al loro modello prima ancora di leggere il mese.",
-    numaLabel: "Numa parte dai tuoi movimenti: ti aiuta a capire cosa pesa davvero senza trasformare ogni spesa in una colpa."
+    title: "Non ti costringe a seguire un rito",
+    marketLabel: "Molti tracker ti chiedono prima metodo, budget o regole, e solo dopo provano a spiegarti il mese.",
+    numaLabel: "Numa parte dai movimenti che hai gia e li rende leggibili senza trasformare tutto in un esercizio."
   },
   {
-    icon: BrainCircuit,
-    title: "Non usa l'AI come slogan",
-    marketLabel: "Sul mercato e pieno di promesse vaghe: automazione totale, consigli magici, etichette intelligenti che non spiegano nulla.",
-    numaLabel: "Numa usa un brain interno per stime future concrete: resto del mese, mese prossimo, fonte dichiarata e controlli di affidabilita."
-  },
-  {
-    icon: ShieldCheck,
-    title: "Non promette miracoli",
-    marketLabel: "Molte soluzioni ti vendono il risultato prima ancora di mostrarti il problema reale.",
-    numaLabel: "Numa fa una promessa piu onesta: capire il tuo mese in tempo, vedere dove intervenire e provare un correttivo credibile."
+    icon: Sparkles,
+    title: "Ti dice cose precise, non slogan",
+    marketLabel: "Sul mercato ci sono tante promesse generiche su AI, automazioni e simulazioni, ma spesso non e chiaro cosa facciano davvero.",
+    numaLabel: "In Numa il Brain stima fine mese e mese prossimo. Financial Lab dice quale quota fissa puoi sostenere."
   }
 ]
 
@@ -126,226 +154,205 @@ export const LANDING_DEMO_STEPS: LandingDemoStep[] = [
   {
     id: "import",
     icon: FileSpreadsheet,
-    eyebrow: "Passo 1",
-    title: "Porti dentro lo storico e lo controlli prima",
-    description: "Il CSV non entra alla cieca: Numa legge, raggruppa, segnala i casi dubbi e ti fa confermare tutto in modo semplice.",
+    eyebrow: "Momento 1",
+    title: "Importi lo storico senza caos",
+    description: "Il CSV non entra alla cieca: Numa legge, raggruppa, segnala i casi dubbi e ti fa confermare il risultato.",
     outcome: "Il dato entra pulito e resta tuo."
   },
   {
     id: "overview",
     icon: LayoutDashboard,
-    eyebrow: "Passo 2",
-    title: "Il mese si legge da una sola schermata",
-    description: "Dashboard, composizione spese e movimenti parlano la stessa lingua, nello stesso periodo, senza salti inutili.",
-    outcome: "Capisci subito dove si stringe il margine."
+    eyebrow: "Momento 2",
+    title: "Capisci il mese da una sola schermata",
+    description: "Saldo, composizione delle spese e movimenti parlano la stessa lingua, nello stesso periodo.",
+    outcome: "Capisci subito dove si sta stringendo il margine."
   },
   {
     id: "insights",
     icon: BrainCircuit,
-    eyebrow: "Passo 3",
-    title: "Il Brain stima fine mese e mese prossimo",
-    description: "Quando ha abbastanza dati, produce stime future su quanto potresti ancora spendere da qui a fine mese e su quanto potresti spendere il mese prossimo.",
-    outcome: "Vedi una stima futura con fonte e affidabilita."
+    eyebrow: "Momento 3",
+    title: "Vedi quanto potrebbe restarti",
+    description: "Quando ha abbastanza dati, il Brain stima il resto del mese e il mese successivo. Se non e pronto, Numa lo dichiara.",
+    outcome: "La stima futura resta chiara e onesta."
   },
   {
     id: "scenarios",
     icon: FlaskConical,
-    eyebrow: "Passo 4",
-    title: "Financial Lab ti dice quale quota fissa puoi sostenere",
-    description: "Se stai valutando rata, abbonamento o altra spesa mensile ricorrente, parte dal tuo margine e restituisce la quota aggiuntiva sostenibile.",
-    outcome: "Capisci quanto puoi permetterti ogni mese."
+    eyebrow: "Momento 4",
+    title: "Scopri se una nuova spesa ci sta davvero",
+    description: "Se stai pensando a rata, abbonamento o altra quota fissa, Financial Lab ti restituisce la quota mensile aggiuntiva sostenibile.",
+    outcome: "Decidi prima di impegnarti."
   }
 ]
 
 export const LANDING_FLOW_STEPS: LandingFlowStep[] = [
   {
     stepLabel: "01",
-    title: "Importa quello che hai gia",
-    description: "Parti dal tuo CSV, non da una pagina vuota e non da una banca collegata per forza."
+    title: "Porti dentro il tuo storico",
+    description: "Parti da dati reali, non da una pagina vuota e non da un conto da collegare per forza."
   },
   {
     stepLabel: "02",
-    title: "Leggi il mese in pochi secondi",
-    description: "KPI, categorie e movimenti restano allineati, cosi il punto si capisce subito."
+    title: "Numa ti aiuta a leggere il mese",
+    description: "Vedi subito cosa sta pesando, cosa e flessibile e dove si sta comprimendo il margine."
   },
   {
     stepLabel: "03",
-    title: "Guarda una stima futura affidabile",
-    description: "Il Brain lavora su fine mese e mese successivo. Se non e pronto, Numa passa allo storico e lo dichiara."
+    title: "Se la stima e pronta, ti mostra il dopo",
+    description: "Il Brain lavora su fine mese e mese successivo e dichiara sempre quando usa lo storico."
   },
   {
     stepLabel: "04",
-    title: "Capisci quale quota fissa puoi reggere",
-    description: "Financial Lab ti aiuta a valutare rata, abbonamento o nuova spesa ricorrente senza toccare il ledger."
+    title: "Valuti una nuova spesa senza improvvisare",
+    description: "Financial Lab ti dice quale quota mensile aggiuntiva puoi sostenere senza confondere simulazione e operativita."
   }
 ]
 
 export const LANDING_OUTCOMES: LandingOutcome[] = [
   {
     icon: ArrowDownUp,
-    title: "Sai cosa pesa davvero",
-    description: "Vedi subito se il problema sono spese essenziali, comfort ricorrenti o extra che si stanno accumulando."
+    title: "Meno rumore",
+    description: "Capisci cosa conta senza perderti tra categorie, schermate e rituali da seguire."
   },
   {
     icon: ShieldCheck,
-    title: "Proteggi la privacy",
-    description: "Il dato finanziario resta locale per default: Numa non ti chiede di partire cedendo tutto al cloud."
-  },
-  {
-    icon: BrainCircuit,
-    title: "Hai stime future piu oneste",
-    description: "Il Brain non gioca a fare il mago: stima fine mese e mese prossimo, e mostra sempre quando una fonte e davvero pronta."
+    title: "Piu controllo",
+    description: "I dati restano locali per default e il prodotto non parte chiedendoti di cederli al cloud."
   },
   {
     icon: Sparkles,
-    title: "Decidi prima della fine del mese",
-    description: "Capisci il problema mentre si sta formando e puoi testare una correzione prima del consuntivo finale."
+    title: "Decisioni piu prudenti",
+    description: "Prima leggi il mese, poi guardi la stima, poi capisci se una nuova spesa fissa e davvero sostenibile."
   }
 ]
 
-export const HERO_TRANSACTIONS: Transaction[] = [
+export const DEMO_IMPORT_SIGNALS: DemoImportSignal[] = [
   {
-    id: "hero-rent",
-    description: "Affitto casa",
-    amountCents: 72000,
-    type: "expense",
-    category: "Affitto o Mutuo",
-    categoryId: CategoryIds.AFFITTO_MUTUO,
-    date: "2026-04-02T08:00:00.000Z",
-    timestamp: new Date("2026-04-02T08:00:00.000Z").getTime(),
-    classificationSource: "manual"
+    label: "78 movimenti letti",
+    detail: "Numa separa subito i movimenti utili dal rumore."
   },
   {
-    id: "hero-grocery",
-    description: "Supermercato quartiere",
-    amountCents: 6840,
-    type: "expense",
-    category: "Spesa Alimentare",
-    categoryId: CategoryIds.CIBO,
-    date: "2026-04-07T18:10:00.000Z",
-    timestamp: new Date("2026-04-07T18:10:00.000Z").getTime(),
-    classificationSource: "ruleBased"
+    label: "3 gruppi da rivedere",
+    detail: "I casi dubbi vengono raccolti in modo leggibile prima del salvataggio."
   },
   {
-    id: "hero-streaming",
-    description: "Streaming annuale",
-    amountCents: 1599,
-    type: "expense",
-    category: "Streaming & Media",
-    categoryId: CategoryIds.ABBONAMENTI,
-    date: "2026-04-10T09:15:00.000Z",
-    timestamp: new Date("2026-04-10T09:15:00.000Z").getTime(),
-    classificationSource: "ruleBased"
+    label: "3 duplicati fermati",
+    detail: "I doppioni non entrano nel ledger se non hanno senso."
   }
 ]
 
-export const DEMO_TRANSACTIONS: Transaction[] = [
+export const DEMO_OVERVIEW_METRICS: DemoOverviewMetric[] = [
   {
-    id: "demo-food",
-    description: "Spesa settimanale",
-    amountCents: 9320,
-    type: "expense",
-    category: "Spesa Alimentare",
-    categoryId: CategoryIds.CIBO,
-    date: "2026-04-11T10:00:00.000Z",
-    timestamp: new Date("2026-04-11T10:00:00.000Z").getTime(),
-    classificationSource: "ruleBased"
+    label: "Disponibile nel mese",
+    value: "EUR 1842",
+    note: "La fotografia di partenza e immediata."
   },
   {
-    id: "demo-subscription",
-    description: "Toolkit design",
-    amountCents: 2290,
-    type: "expense",
-    category: "Streaming & Media",
-    categoryId: CategoryIds.ABBONAMENTI,
-    date: "2026-04-12T12:00:00.000Z",
-    timestamp: new Date("2026-04-12T12:00:00.000Z").getTime(),
-    classificationSource: "ruleBased"
+    label: "Spese flessibili",
+    value: "27%",
+    note: "La parte che puoi alleggerire si riconosce subito."
   },
   {
-    id: "demo-micro",
-    description: "Upgrade in-app",
-    amountCents: 890,
-    type: "expense",
-    category: "Acquisti In-App & Digitale",
-    categoryId: CategoryIds.MICRO_DIGITALI,
-    isSuperfluous: true,
-    date: "2026-04-13T21:20:00.000Z",
-    timestamp: new Date("2026-04-13T21:20:00.000Z").getTime(),
-    classificationSource: "ai"
+    label: "Extra ricorrenti",
+    value: "12%",
+    note: "I piccoli pesi ripetuti emergono prima che diventino abitudine."
   }
 ]
 
-export const DEMO_CATEGORY_SUMMARY: CategorySummary[] = [
+export const DEMO_OVERVIEW_BREAKDOWN: DemoOverviewBreakdown[] = [
   {
-    id: CategoryIds.AFFITTO_MUTUO,
-    name: "Affitto o Mutuo",
-    valueCents: 72000,
-    value: 720,
-    color: "#0f766e"
+    label: "Casa",
+    value: "61%",
+    share: 61
   },
   {
-    id: CategoryIds.CIBO,
-    name: "Spesa Alimentare",
-    valueCents: 28900,
-    value: 289,
-    color: "#ea580c"
+    label: "Spesa alimentare",
+    value: "24%",
+    share: 24
   },
   {
-    id: CategoryIds.RISTORANTI,
-    name: "Ristoranti & Take-away",
-    valueCents: 12400,
-    value: 124,
-    color: "#f97316"
+    label: "Ristoranti e take-away",
+    value: "10%",
+    share: 10
   },
   {
-    id: CategoryIds.ABBONAMENTI,
-    name: "Streaming & Media",
-    valueCents: 3600,
-    value: 36,
-    color: "#0ea5e9"
-  },
-  {
-    id: CategoryIds.MICRO_DIGITALI,
-    name: "Acquisti In-App & Digitale",
-    valueCents: 1790,
-    value: 17.9,
-    color: "#14b8a6"
+    label: "Abbonamenti ed extra",
+    value: "5%",
+    share: 5
   }
 ]
 
-export const DEMO_BRAIN_STATES = [
+export const DEMO_OVERVIEW_MOVEMENTS: DemoOverviewMovement[] = [
   {
-    title: "Spesa prossimo mese",
-    description: "Quanto potresti spendere il mese prossimo in base a storico, ritmo recente e periodo dell'anno."
+    label: "Spesa settimanale",
+    category: "Cibo",
+    amount: "- EUR 93"
   },
   {
-    title: "Residuo stimato del mese",
-    description: "Quanto potresti ancora spendere da qui a fine mese quando il Brain supera il controllo di qualita."
+    label: "Toolkit design",
+    category: "Abbonamenti",
+    amount: "- EUR 23"
   },
   {
-    title: "Affidabilita della stima",
-    description: "La stima viene mostrata in primo piano solo quando e considerata abbastanza solida."
+    label: "Upgrade in-app",
+    category: "Extra digitale",
+    amount: "- EUR 9"
   }
-] as const
+]
 
-export const DEMO_SCENARIOS = [
+export const DEMO_BRAIN_STATES: DemoBrainState[] = [
+  {
+    title: "Stima di fine mese",
+    description: "Il Brain prova a stimare quanto potresti ancora spendere da qui a fine mese."
+  },
+  {
+    title: "Stima del mese prossimo",
+    description: "Quando ha abbastanza storico, il Brain prova a leggere il ritmo del mese successivo."
+  },
+  {
+    title: "Controllo di affidabilita",
+    description: "Se la stima non e abbastanza solida, Numa torna allo storico e lo dichiara."
+  }
+]
+
+export const DEMO_BRAIN_METRICS: DemoBrainMetric[] = [
+  {
+    label: "Fine mese",
+    value: "EUR 430",
+    note: "Quanto potresti ancora spendere nel mese in corso."
+  },
+  {
+    label: "Mese prossimo",
+    value: "EUR 1540",
+    note: "Una lettura sintetica del mese che arriva."
+  },
+  {
+    label: "Affidabilita",
+    value: "78%",
+    note: "La stima viene messa in primo piano solo quando supera il controllo di qualita."
+  }
+]
+
+export const DEMO_SCENARIOS: DemoScenario[] = [
   {
     label: "Baseline",
-    quota: "€ 240",
-    note: "Se mantieni il ritmo attuale, questa e la quota fissa aggiuntiva che puoi sostenere.",
+    quota: "EUR 240",
+    note: "Con il ritmo attuale, questa e la quota fissa aggiuntiva sostenibile.",
+    example: "Esempio: un piccolo abbonamento annuale spalmato sul mese o una rata leggera.",
     accentClassName: "border-primary/20 bg-primary/10 text-primary"
   },
   {
     label: "Balanced",
-    quota: "€ 380",
-    note: "Se alleggerisci una parte del comfort, la quota mensile sostenibile sale.",
+    quota: "EUR 380",
+    note: "Se alleggerisci una parte del comfort, la quota sostenibile sale.",
+    example: "Esempio: un corso, un servizio ricorrente o una rata media.",
     accentClassName: "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
   },
   {
     label: "Focused",
-    quota: "€ 520",
-    note: "Se stringi anche gli extra, puoi reggere una quota fissa ancora piu alta.",
+    quota: "EUR 520",
+    note: "Se stringi anche gli extra, puoi sostenere una quota fissa ancora piu alta.",
+    example: "Esempio: una rata piu impegnativa, ma solo con un margine piu disciplinato.",
     accentClassName: "border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-300"
   }
 ] as const

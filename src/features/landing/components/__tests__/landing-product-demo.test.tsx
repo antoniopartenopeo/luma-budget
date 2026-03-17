@@ -26,13 +26,13 @@ describe("LandingProductDemo", () => {
   it("starts from the first step, keeps the experience inside the landing, and updates the active step on focus", () => {
     render(<LandingProductDemo />)
 
-    expect(screen.getByText(/Step attivo: Porti dentro lo storico e lo controlli prima/i)).toBeInTheDocument()
+    expect(screen.getByText(/Step attivo: Importi lo storico senza caos/i)).toBeInTheDocument()
     expect(screen.getByTestId("preview-import")).toHaveTextContent("active")
     expect(screen.queryByRole("link")).not.toBeInTheDocument()
 
     fireEvent.focus(screen.getByTestId("landing-demo-step-overview"))
 
-    expect(screen.getByText(/Step attivo: Il mese si legge da una sola schermata/i)).toBeInTheDocument()
+    expect(screen.getByText(/Step attivo: Capisci il mese da una sola schermata/i)).toBeInTheDocument()
     expect(screen.getByTestId("preview-overview")).toHaveTextContent("active")
   })
 })

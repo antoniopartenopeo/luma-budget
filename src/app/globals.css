@@ -437,4 +437,8 @@
   .reduce-effects .surface-strong {
     backdrop-filter: blur(8px) !important;
   }
+
+  .perspective-2000 {
+    perspective: 2000px;
+  }
 }

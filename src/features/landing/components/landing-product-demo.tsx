@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from "react"
 import { motion } from "framer-motion"
+import { Zap } from "lucide-react"
+import { cn } from "@/lib/utils"
 import { LANDING_DEMO_STEPS } from "../data"
 import { LandingStepPreview } from "./landing-previews"
-import { cn } from "@/lib/utils"
 
 export function LandingProductDemo() {
   const [activeIndex, setActiveIndex] = useState(0)
@@ -50,45 +51,30 @@ export function LandingProductDemo() {
 
   return (
     <div className="space-y-5">
-      <div className="surface-subtle p-4 sm:p-5">
-        <div className="space-y-3">
-          <div className="space-y-1">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">Scroll guidato</p>
-            <p className="text-sm font-medium leading-relaxed text-muted-foreground">
-              Ogni blocco sotto corrisponde a una feature reale gia presente nell&apos;app. Qui non stai vedendo slide finte: stai vedendo il prodotto spiegarsi da solo.
-            </p>
-          </div>
+      <div className="space-y-3">
+        <p className="text-sm font-medium leading-relaxed text-muted-foreground">
+          Quattro momenti reali del prodotto, in ordine. Resti sempre dentro la landing, ma vedi chiaramente come Numa accompagna dal dato iniziale alla decisione finale.
+        </p>
 
-          <div className="space-y-2">
-            {LANDING_DEMO_STEPS.map((step, index) => {
-              const isCurrent = index === activeIndex
+        <div className="flex flex-wrap gap-2">
+          {LANDING_DEMO_STEPS.map((step, index) => {
+            const isCurrent = index === activeIndex
 
-              return (
-                <div
-                  key={step.id}
-                  className={cn(
-                    "rounded-[1.3rem] border px-3.5 py-3 transition-[background-color,border-color,box-shadow] duration-300",
-                    isCurrent
-                      ? "border-primary/20 bg-primary/10 shadow-lg shadow-primary/10"
-                      : "border-white/24 bg-white/55 dark:border-white/10 dark:bg-white/[0.04]"
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={cn(
-                        "h-2.5 w-2.5 rounded-full",
-                        isCurrent ? "bg-primary animate-ping-slow" : "bg-muted-foreground/45"
-                      )}
-                    />
-                    <div className="min-w-0">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary">{step.eyebrow}</p>
-                      <p className="text-sm font-semibold leading-snug text-foreground">{step.title}</p>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
+            return (
+              <div
+                key={step.id}
+                className={cn(
+                  "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] transition-[background-color,border-color,opacity] duration-300",
+                  isCurrent
+                    ? "border-primary/20 bg-primary/10 text-primary"
+                    : "border-white/24 bg-white/55 text-muted-foreground dark:border-white/10 dark:bg-white/[0.04]"
+                )}
+              >
+                <span className={cn("h-2 w-2 rounded-full", isCurrent ? "bg-primary animate-ping-slow" : "bg-muted-foreground/45")} />
+                {step.eyebrow}
+              </div>
+            )
+          })}
         </div>
       </div>
 
@@ -117,8 +103,8 @@ export function LandingProductDemo() {
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
               className={cn(
-                "surface-strong scroll-mt-24 p-5 outline-none transition-[box-shadow,border-color,background-color] duration-300 sm:p-6",
-                isActive && "ring-1 ring-primary/20 shadow-2xl shadow-primary/10"
+                "surface-strong scroll-mt-24 p-5 outline-none transition-[box-shadow,border-color,background-color,opacity] duration-300 sm:p-6",
+                isActive ? "opacity-100 ring-1 ring-primary/20 shadow-2xl shadow-primary/10" : "opacity-85"
               )}
               aria-labelledby={`landing-demo-title-${step.id}`}
               aria-describedby={`landing-demo-description-${step.id}`}
@@ -139,7 +125,7 @@ export function LandingProductDemo() {
 
                     <div className="space-y-1.5">
                       <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary">{step.eyebrow}</p>
-                      <h3 id={`landing-demo-title-${step.id}`} className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
+                      <h3 id={`landing-demo-title-${step.id}`} className="max-w-[18ch] text-2xl font-black tracking-tight text-foreground sm:text-3xl">
                         {step.title}
                       </h3>
                     </div>
@@ -153,7 +139,10 @@ export function LandingProductDemo() {
                   </p>
 
                   <div className="rounded-[1.35rem] border border-primary/14 bg-primary/10 px-4 py-3">
-                    <p className="text-sm font-semibold text-foreground">{step.outcome}</p>
+                    <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                      <Zap className="h-4 w-4 text-primary" />
+                      {step.outcome}
+                    </p>
                   </div>
                 </div>
 

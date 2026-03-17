@@ -22,9 +22,10 @@ describe("LandingPage", () => {
   it("renders the revised public value proposition and keeps navigation constrained to the landing plus app entry", () => {
     render(<LandingPage />)
 
-    expect(screen.getByRole("heading", { name: /Capisci il tuo mese prima che ti sfugga/i })).toBeInTheDocument()
-    expect(screen.getByText(/Perche Numa convince piu di un tracker classico/i)).toBeInTheDocument()
-    expect(screen.getByText(/Scorrendo capisci il prodotto, non una presentazione/i)).toBeInTheDocument()
+    expect(screen.getAllByTestId("brand-logo").length).toBeGreaterThan(0)
+    expect(screen.getByRole("heading", { name: /L'app che ti aiuta a capire il mese, non solo a registrare spese/i })).toBeInTheDocument()
+    expect(screen.getByText(/Perche e diversa da molti tracker/i)).toBeInTheDocument()
+    expect(screen.getByText(/Guardala in 4 momenti/i)).toBeInTheDocument()
 
     const hrefs = screen.getAllByRole("link").map((link) => link.getAttribute("href"))
     expect(hrefs.length).toBeGreaterThan(0)

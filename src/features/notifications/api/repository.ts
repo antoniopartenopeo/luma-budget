@@ -6,6 +6,7 @@ import {
 } from "../types"
 
 export const NOTIFICATIONS_STATE_STORAGE_KEY = "numa_notifications_state_v2"
+export const LEGACY_NOTIFICATIONS_STATE_STORAGE_KEY = "numa_notifications_state_v1"
 export const CHANGELOG_NOTIFICATIONS_API_PATH = "/api/notifications/changelog"
 
 const VALID_KINDS: NotificationKind[] = ["feature", "fix", "improvement", "breaking"]
@@ -104,7 +105,17 @@ function normalizeStateV2(candidate: Partial<NotificationsStateV2>): Notificatio
     }
 }
 
-
+function normalizeLegacyStateV1(candidate: {
+    readIds?: unknown
+    updatedAt?: unknown
+}): NotificationsStateV2 {
+    return {
+        version: 2,
+        readIds: sanitizeReadIds(candidate.readIds),
+        lastSeenVersion: null,
+        updatedAt: typeof candidate.updatedAt === "string" ? candidate.updatedAt : nowIso(),
+    }
+}
 
 export async function fetchChangelogNotifications(): Promise<ChangelogNotification[]> {
     let feed: unknown = []
@@ -144,6 +155,16 @@ export async function fetchNotificationsState(): Promise<NotificationsStateV2> {
             ) {
                 storage.set(NOTIFICATIONS_STATE_STORAGE_KEY, normalized)
             }
+            return normalized
+        }
+    }
+
+    const rawLegacy = storage.get<unknown>(LEGACY_NOTIFICATIONS_STATE_STORAGE_KEY, null)
+    if (rawLegacy && typeof rawLegacy === "object") {
+        const candidate = rawLegacy as Partial<{ version: number; readIds: unknown; updatedAt: unknown }>
+        if (candidate.version === 1) {
+            const normalized = normalizeLegacyStateV1(candidate)
+            storage.set(NOTIFICATIONS_STATE_STORAGE_KEY, normalized)
             return normalized
         }
     }

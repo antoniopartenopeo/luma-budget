@@ -11,6 +11,16 @@ vi.mock("@/features/settings/api/use-settings", () => ({
     useSettings: () => ({ data: { theme: "light" } })
 }))
 
+vi.mock("@/components/ui/animated-number", () => ({
+    AnimatedNumber: ({
+        value,
+        formatFn
+    }: {
+        value: number
+        formatFn?: (value: number) => string
+    }) => <span>{formatFn ? formatFn(value) : value}</span>
+}))
+
 vi.mock("@/components/patterns/macro-section", () => ({
     MacroSection: ({
         title,
@@ -133,9 +143,12 @@ describe("SpendingCompositionCard", () => {
 
         fireEvent.mouseEnter(foodTile)
 
-        expect(screen.getByText(/275,00/)).toBeInTheDocument()
-        expect(screen.getByTestId("category-icon-cibo")).toBeInTheDocument()
-        expect(screen.getAllByText("18%").length).toBeGreaterThan(1)
+        await screen.findByTestId("spending-composition-overlay")
+        await waitFor(() => {
+            expect(screen.getByText(/275,00/)).toBeInTheDocument()
+            expect(screen.getByTestId("category-icon-cibo")).toBeInTheDocument()
+            expect(screen.getAllByText("18%").length).toBeGreaterThan(1)
+        })
 
         fireEvent.pointerMove(window, { clientX: 0, clientY: 0 })
 
@@ -157,9 +170,12 @@ describe("SpendingCompositionCard", () => {
         const rentTile = screen.getByRole("button", { name: /Affitto o Mutuo/i })
 
         fireEvent.click(rentTile)
-        expect(screen.getByText(/920,00/)).toBeInTheDocument()
-        expect(rentTile).toHaveAttribute("aria-pressed", "true")
-        expect(screen.getAllByText("59%").length).toBeGreaterThan(1)
+        await screen.findByTestId("spending-composition-overlay")
+        await waitFor(() => {
+            expect(screen.getByText(/920,00/)).toBeInTheDocument()
+            expect(rentTile).toHaveAttribute("aria-pressed", "true")
+            expect(screen.getAllByText("59%").length).toBeGreaterThan(1)
+        })
 
         fireEvent.mouseLeave(rentTile)
         expect(screen.getByText(/920,00/)).toBeInTheDocument()

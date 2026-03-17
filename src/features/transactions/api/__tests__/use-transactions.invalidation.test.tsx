@@ -6,16 +6,20 @@ import { useCreateTransaction } from "../use-transactions"
 import type { CreateTransactionDTO } from "../types"
 import { CategoryIds } from "@/domain/categories"
 
-const createTransactionMock = vi.fn(async (_data: CreateTransactionDTO) => ({
-    id: "tx-1",
-    amountCents: 1000,
-    date: new Date().toISOString(),
-    description: "Test",
-    category: "Cibo",
-    categoryId: CategoryIds.CIBO,
-    type: "expense" as const,
-    timestamp: Date.now(),
-}))
+const createTransactionMock = vi.fn(async (data: CreateTransactionDTO) => {
+    void data
+
+    return {
+        id: "tx-1",
+        amountCents: 1000,
+        date: new Date().toISOString(),
+        description: "Test",
+        category: "Cibo",
+        categoryId: CategoryIds.CIBO,
+        type: "expense" as const,
+        timestamp: Date.now(),
+    }
+})
 
 vi.mock("../repository", () => ({
     fetchTransactions: vi.fn(async () => []),

@@ -240,14 +240,14 @@ describe("brain-runtime", () => {
     })
 
     it("syncs same-tab snapshot updates without polling", async () => {
-        let latestState: ReturnType<typeof useBrainRuntimeState> | null = null
+        let latestState!: ReturnType<typeof useBrainRuntimeState>
 
         render(<RuntimeStateHarness onValue={(value) => { latestState = value }} />)
 
         await flushRuntime()
 
-        expect(latestState?.snapshot).toBeNull()
-        expect(latestState?.brainExperiencePercent).toBe(0)
+        expect(latestState.snapshot).toBeNull()
+        expect(latestState.brainExperiencePercent).toBe(0)
 
         getBrainSnapshotMock.mockReturnValue(buildSnapshot({ trainedSamples: 64, currentMonthHead: { weights: [0, 0, 0, 0, 0, 0, 0, 0], bias: 0, learningRate: 0.03, trainedSamples: 64, lossEma: 0.05, absErrorEma: 0.09 } }))
 
@@ -261,7 +261,7 @@ describe("brain-runtime", () => {
             await Promise.resolve()
         })
 
-        expect(latestState?.snapshot?.trainedSamples).toBe(64)
-        expect(latestState?.brainExperiencePercent).toBe(53)
+        expect(latestState.snapshot?.trainedSamples).toBe(64)
+        expect(latestState.brainExperiencePercent).toBe(53)
     })
 })

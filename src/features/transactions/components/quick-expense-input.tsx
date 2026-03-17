@@ -51,7 +51,6 @@ export function QuickExpenseInput({ onExpenseCreated }: QuickExpenseInputProps) 
 
         const cat = getCategoryById(category, categories)
         return cat?.spendingNature === "superfluous"
-        // eslint-disable-next-line react-hooks/preserve-manual-memoization
     }, [category, isManualOverride, isSuperfluousManual, type, categories])
 
     const handleTypeChange = (newType: "expense" | "income") => {

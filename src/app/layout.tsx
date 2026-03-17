@@ -17,10 +17,24 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+function resolveMetadataBase(): URL {
+  const candidate =
+    process.env.NEXT_PUBLIC_APP_URL ??
+    process.env.NUMA_APP_URL ??
+    "http://localhost:3000";
+
+  try {
+    return new URL(candidate);
+  } catch {
+    return new URL("http://localhost:3000");
+  }
+}
+
 export const metadata: Metadata = {
   title: "NUMA Budget",
   description: "App locale-first per capire spese, margine, insight e scenari senza dipendere dal cloud.",
   applicationName: "NUMA Budget",
+  metadataBase: resolveMetadataBase(),
   manifest: "/manifest.webmanifest",
   icons: {
     icon: [

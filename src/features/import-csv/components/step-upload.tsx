@@ -10,7 +10,6 @@ import { processCSV } from "../core/pipeline"
 import { ImportState } from "../core/types"
 import { useTransactions } from "@/features/transactions/api/use-transactions"
 import { cn } from "@/lib/utils"
-import { SubSectionCard } from "@/components/patterns/sub-section-card"
 import { ConfirmDialog } from "@/components/patterns/confirm-dialog"
 import { queryKeys } from "@/lib/query-keys"
 import { seedTransactions, __resetTransactionsCache } from "@/features/transactions/api/repository"
@@ -159,31 +158,6 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
 
     const hasInput = csvContent.trim().length > 0
     const canContinue = hasInput && !isLoading
-
-    const footer = (
-        <div className="flex w-full flex-wrap items-center justify-between gap-3">
-            <Button
-                variant="ghost"
-                className="h-11 rounded-xl px-4 text-muted-foreground hover:text-foreground"
-                onClick={onClose}
-            >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Chiudi
-            </Button>
-
-            <Button
-                onClick={handleProcess}
-                disabled={!canContinue}
-                className={cn(
-                    "h-11 gap-2 rounded-xl px-6 font-semibold shadow-md transition-[transform,box-shadow,background-color,border-color,color] duration-200",
-                    canContinue && "hover:shadow-primary/25 hover:-translate-y-[1px]"
-                )}
-            >
-                Continua
-                <ArrowRight className="h-4 w-4" />
-            </Button>
-        </div>
-    )
 
     return (
         <div className="flex flex-col gap-6">

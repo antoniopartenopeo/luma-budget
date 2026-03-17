@@ -60,6 +60,7 @@ function buildEvolution(overrides: Partial<BrainEvolutionResult> = {}): BrainEvo
             mape: 0.18,
             mapeSampleCount: 20,
         },
+        hwForecast: null,
         ...overrides,
     }
 }

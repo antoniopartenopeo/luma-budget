@@ -10,7 +10,6 @@ import { generatePayload } from "../core/pipeline"
 import { StateMessage } from "@/components/ui/state-message"
 import { useCreateBatchTransactions } from "@/features/transactions/api/use-transactions"
 import { useCategories } from "@/features/categories/api/use-categories"
-import { MacroSection } from "@/components/patterns/macro-section"
 import { formatCents } from "@/domain/money"
 import { KpiCard } from "@/components/patterns/kpi-card"
 

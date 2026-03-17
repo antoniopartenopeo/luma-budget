@@ -8,29 +8,6 @@ import { brainCategorizer } from "@/brain/categorizer";
 const PATTERN_RULES = CATEGORY_ENRICHMENT_RULES;
 
 /**
- * Suggest category based on rules and history
- */
-function suggestCategory(
-    merchantKey: string,
-    history: Map<string, string>
-): { id: string | null; source: "history" | "pattern" | null } {
-    // 1. History match
-    if (history.has(merchantKey)) {
-        return { id: history.get(merchantKey)!, source: "history" };
-    }
-
-    // 2. Pattern match
-    const lowerKey = merchantKey.toLowerCase();
-    for (const [keywords, catId] of PATTERN_RULES) {
-        if (keywords.some(k => lowerKey.includes(k))) {
-            return { id: catId, source: "pattern" };
-        }
-    }
-
-    return { id: null, source: null };
-}
-
-/**
  * Main enrichment function
  * 
  * Flow:

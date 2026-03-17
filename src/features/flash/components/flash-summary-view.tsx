@@ -4,8 +4,6 @@ import { useState } from "react"
 import {
     TrendingUp,
     TrendingDown,
-    PiggyBank,
-    Target,
     Eye,
     EyeOff,
     Sparkles,

@@ -20,7 +20,6 @@ import { resolveCategory } from "../core/overrides"
 import { getIncludedGroups } from "../core/filters"
 import { cn } from "@/lib/utils"
 import { ReviewResult } from "./csv-import-wizard"
-import { brainCategorizer } from "@/brain/categorizer"
 
 // Sub-components
 import {
@@ -192,48 +191,6 @@ export function ImportStepReview({
     // ============================================
     // Main Render
     // ============================================
-
-    const handleContinue = () => {
-        // Online Learning Feedback Loop
-        // We train the Brain Categorizer with the FINAL confirmed categories 
-        // to adapt to the user's specific choices instantly.
-        filteredGroups.forEach((g: Group) => {
-            g.subgroups.forEach((sg: Subgroup) => {
-                sg.rowIds.forEach((rid: string) => {
-                    const row = rowsById.get(rid)
-                    if (row && row.isSelected) {
-                        const finalCatId = resolveCategory(row, sg, g, overrides)
-                        if (finalCatId) {
-                            // The Brain learns from the original string what category was actually chosen
-                            brainCategorizer.learn(row.description, finalCatId)
-                        }
-                    }
-                })
-            })
-        })
-
-        // Proceed to next step
-        onContinue({ overrides, excludedGroupIds })
-    }
-
-    const footer = (
-        <div className="flex w-full justify-between items-center gap-4">
-            <Button variant="ghost" onClick={onBack} className="h-12 px-5 gap-1.5 text-sm">
-                <ArrowLeft className="h-4 w-4" /> Indietro
-            </Button>
-            <Button
-                onClick={handleContinue}
-                className={cn(
-                    "h-12 gap-1.5 rounded-xl px-6 text-sm shadow-lg transition-[transform,box-shadow,background-color,border-color,color] duration-200 hover:-translate-y-[1px]",
-                    stats.total > stats.assigned && "border-amber-200 bg-amber-50 text-amber-900 hover:bg-amber-100 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-200"
-                )}
-                variant={stats.total > stats.assigned ? "outline" : "default"}
-            >
-                Continua
-                <ArrowRight className="h-4 w-4" />
-            </Button>
-        </div>
-    )
 
     return (
         <div className="flex flex-col gap-6">

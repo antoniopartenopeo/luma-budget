@@ -11,6 +11,7 @@ import {
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { formatSignedCents } from "@/domain/money/currency"
 import {
   DEMO_BRAIN_METRICS,
   DEMO_BRAIN_STATES,
@@ -167,12 +168,12 @@ function BreakdownRow({
 function MovementRow({
   label,
   category,
-  amount,
+  amountCents,
   isActive
 }: {
   label: string
   category: string
-  amount: string
+  amountCents: number
   isActive?: boolean
 }) {
   return (
@@ -191,7 +192,7 @@ function MovementRow({
           <p className="truncate text-sm font-semibold text-foreground">{label}</p>
           <p className="truncate text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground/72">{category}</p>
         </div>
-        <p className="shrink-0 text-sm font-black tracking-tight text-foreground">{amount}</p>
+        <p className="shrink-0 text-sm font-black tracking-tight text-foreground">{formatSignedCents(amountCents)}</p>
       </div>
     </motion.div>
   )
@@ -361,7 +362,7 @@ function OverviewPreview({ isActive }: { isActive: boolean }) {
               key={movement.label}
               label={movement.label}
               category={movement.category}
-              amount={movement.amount}
+              amountCents={movement.amountCents}
               isActive={index === activeMovement}
             />
           ))}
@@ -465,7 +466,7 @@ function ScenarioPreview({ isActive }: { isActive: boolean }) {
           </div>
           <div className="space-y-2">
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/72">Quota mensile aggiuntiva sostenibile</p>
-            <p className="text-4xl font-black tracking-tight text-foreground">{scenario.quota}</p>
+            <p className="text-4xl font-black tracking-tight text-foreground">{formatSignedCents(scenario.quotaCents)}</p>
             <p className="text-sm font-medium leading-relaxed text-muted-foreground">{scenario.note}</p>
           </div>
         </div>

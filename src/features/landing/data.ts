@@ -71,7 +71,7 @@ export interface DemoOverviewBreakdown {
 export interface DemoOverviewMovement {
   label: string
   category: string
-  amount: string
+  amountCents: number
 }
 
 export interface DemoBrainState {
@@ -87,7 +87,7 @@ export interface DemoBrainMetric {
 
 export interface DemoScenario {
   label: string
-  quota: string
+  quotaCents: number
   note: string
   example: string
   accentClassName: string
@@ -286,17 +286,17 @@ export const DEMO_OVERVIEW_MOVEMENTS: DemoOverviewMovement[] = [
   {
     label: "Spesa settimanale",
     category: "Cibo",
-    amount: "- EUR 93"
+    amountCents: -9300
   },
   {
     label: "Toolkit design",
     category: "Abbonamenti",
-    amount: "- EUR 23"
+    amountCents: -2300
   },
   {
     label: "Upgrade in-app",
     category: "Extra digitale",
-    amount: "- EUR 9"
+    amountCents: -900
   }
 ]
 
@@ -336,23 +336,23 @@ export const DEMO_BRAIN_METRICS: DemoBrainMetric[] = [
 export const DEMO_SCENARIOS: DemoScenario[] = [
   {
     label: "Baseline",
-    quota: "EUR 240",
+    quotaCents: 24000,
     note: "Con il ritmo attuale, questa e la quota fissa aggiuntiva sostenibile.",
     example: "Esempio: un piccolo abbonamento annuale spalmato sul mese o una rata leggera.",
     accentClassName: "border-primary/20 bg-primary/10 text-primary"
   },
   {
     label: "Balanced",
-    quota: "EUR 380",
+    quotaCents: 38000,
     note: "Se alleggerisci una parte del comfort, la quota sostenibile sale.",
     example: "Esempio: un corso, un servizio ricorrente o una rata media.",
     accentClassName: "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
   },
   {
     label: "Focused",
-    quota: "EUR 520",
+    quotaCents: 52000,
     note: "Se stringi anche gli extra, puoi sostenere una quota fissa ancora piu alta.",
-    example: "Esempio: una rata piu impegnativa, ma solo con un margine piu disciplinato.",
+    example: "Esempio: una rata piu impegnativa, masolo con un margine piu disciplinato.",
     accentClassName: "border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-300"
   }
 ] as const

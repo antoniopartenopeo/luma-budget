@@ -12,6 +12,8 @@ canonical-of: session-handoff
 - Governance, specialist context, playbooks, and ADRs now live entirely inside the root scaffold
 - Legacy `.agent/*` and `docs/*` governance surfaces were retired
 - Public landing page now lives at `/` and the operational dashboard now lives at `/dashboard`
+- Premium UI utilities (`PullToRefresh`, `ScrollToTop`) implemented and integrated into root layout.
+- Landing page evolved with interactive previews (Mar 17).
 
 ## Read First to Restart Work
 

@@ -11,6 +11,7 @@ canonical-of: project-current-state
 - Product maturity: established codebase with working feature modules, tests, governance, and release tooling
 - Current phase: active maintenance and iterative evolution, not greenfield bootstrap
 - Context migration status: root scaffold adopted as canonical live context on 2026-03-15
+- Premium UI Phase: `PullToRefresh` and `ScrollToTop` utilities integrated into global layout (Mar 17)
 
 ## What Is Stable
 

@@ -35,9 +35,9 @@ function renderWithQueryClient() {
 
 async function openNotificationsMenu() {
     const trigger = screen.getByTestId("topbar-notifications-trigger")
-    fireEvent.pointerDown(trigger, { button: 0, ctrlKey: false })
+    fireEvent.click(trigger)
     await waitFor(() => {
-        expect(trigger).toHaveAttribute("data-state", "open")
+        expect(trigger).toHaveAttribute("aria-expanded", "true")
     })
 }
 
@@ -67,38 +67,48 @@ describe("TopbarNotifications", () => {
         await openNotificationsMenu()
 
         await waitFor(() => {
-            expect(screen.getByText("Novità dell'app")).toBeInTheDocument()
-            expect(screen.getByText("v0.3.0 · Nuove funzionalita")).toBeInTheDocument()
+            const panel = screen.getByTestId("topbar-notifications-panel")
+            const currentNotification = screen.getByTestId("notification-item-release-0.3.0-20260204-feature")
+            expect(panel).toHaveAttribute("aria-label", "Novità dell'app")
+            expect(screen.getByText("Novità")).toBeInTheDocument()
+            expect(screen.getByTestId("topbar-notifications-ticker")).toBeInTheDocument()
+            expect(currentNotification).toHaveTextContent("v0.3.0 · Nuove funzionalita")
         })
     })
 
-    it("segnando una notifica come letta decrementa il badge", async () => {
+    it("chiude la preview inline cliccando fuori", async () => {
         renderWithQueryClient()
         await openNotificationsMenu()
 
-        await waitFor(() => {
-            expect(screen.getByTestId("notification-read-release-0.3.0-20260204-feature")).toBeInTheDocument()
-        })
-
-        fireEvent.click(screen.getByTestId("notification-read-release-0.3.0-20260204-feature"))
+        fireEvent.mouseDown(document.body)
 
         await waitFor(() => {
-            expect(screen.queryByTestId("topbar-notifications-badge")).not.toBeInTheDocument()
+            expect(screen.queryByTestId("topbar-notifications-panel")).not.toBeInTheDocument()
+            expect(screen.getByTestId("topbar-notifications-trigger")).toHaveAttribute("aria-expanded", "false")
         })
     })
 
-    it("segnando tutto come letto azzera il badge", async () => {
+    it("riapre la preview senza perdere il trigger campanella", async () => {
         renderWithQueryClient()
-        await openNotificationsMenu()
 
+        const trigger = screen.getByTestId("topbar-notifications-trigger")
+
+        fireEvent.click(trigger)
         await waitFor(() => {
-            expect(screen.getByTestId("topbar-notifications-mark-all")).toBeEnabled()
+            expect(trigger).toHaveAttribute("aria-expanded", "true")
+            expect(screen.getByTestId("topbar-notifications-panel")).toBeInTheDocument()
         })
 
-        fireEvent.click(screen.getByTestId("topbar-notifications-mark-all"))
-
+        fireEvent.click(trigger)
         await waitFor(() => {
-            expect(screen.queryByTestId("topbar-notifications-badge")).not.toBeInTheDocument()
+            expect(trigger).toHaveAttribute("aria-expanded", "false")
+            expect(screen.queryByTestId("topbar-notifications-panel")).not.toBeInTheDocument()
+        })
+
+        fireEvent.click(trigger)
+        await waitFor(() => {
+            expect(trigger).toHaveAttribute("aria-expanded", "true")
+            expect(screen.getByTestId("topbar-notifications-panel")).toBeInTheDocument()
         })
     })
 
@@ -120,13 +130,8 @@ describe("TopbarNotifications", () => {
             expect(screen.getByTestId("notification-item-release-0.3.0-20260204-feature")).toBeInTheDocument()
         })
 
-        const item = screen.getByTestId("notification-item-release-0.3.0-20260204-feature")
-        expect(item.className).toContain("border-white/25")
-        expect(item.className).not.toContain("border-primary/20")
-        expect(item.className).not.toContain("bg-primary/5")
-        expect(item.className).not.toContain("bg-primary/6")
+        expect(screen.queryByLabelText("Non letta")).not.toBeInTheDocument()
         expect(screen.queryByTestId("topbar-notifications-badge")).not.toBeInTheDocument()
-        expect(screen.queryByTestId("notification-read-release-0.3.0-20260204-feature")).not.toBeInTheDocument()
     })
 
     it("mostra CTA verso lo storico aggiornamenti", async () => {
@@ -135,7 +140,17 @@ describe("TopbarNotifications", () => {
 
         await waitFor(() => {
             expect(screen.getByTestId("topbar-notifications-open-updates")).toBeInTheDocument()
-            expect(screen.getByRole("link", { name: "Apri cronologia completa" })).toHaveAttribute("href", "/updates")
+            expect(screen.getByRole("link", { name: "Apri cronologia novità" })).toHaveAttribute("href", "/updates")
+        })
+    })
+
+    it("usa una tipografia compatta e coerente nel ticker inline", async () => {
+        renderWithQueryClient()
+        await openNotificationsMenu()
+
+        await waitFor(() => {
+            const ticker = screen.getByTestId("topbar-notifications-ticker")
+            expect(ticker).toHaveClass("text-[13px]", "font-medium", "leading-none")
         })
     })
 })

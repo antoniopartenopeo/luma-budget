@@ -9,6 +9,8 @@ import { QuickExpenseInput } from "@/features/transactions/components/quick-expe
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Sidebar } from "./sidebar"
 import { TopbarActionCluster } from "./topbar-action-cluster"
+import { type TopbarPanelId } from "./topbar-panel-id"
+import { TopbarQuickTransaction } from "./topbar-quick-transaction"
 
 /**
  * TopBar: Streamlined for actions. 
@@ -19,11 +21,17 @@ export function TopBar() {
     const isSettingsPage = pathname === "/settings"
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [isQuickAddOpen, setIsQuickAddOpen] = useState(false)
+    const [activeDesktopPanel, setActiveDesktopPanel] = useState<TopbarPanelId | null>(null)
 
     return (
-        <header className="sticky top-0 z-30 border-b border-white/30 glass-chrome dark:border-white/8 lg:pl-64">
+        <header
+            className={cn(
+                "sticky top-0 z-30 border-b border-white/30 glass-chrome dark:border-white/8 lg:pl-64",
+                "sm:border-none sm:bg-transparent sm:backdrop-blur-none sm:[box-shadow:none] sm:dark:bg-transparent"
+            )}
+        >
             <div className="flex min-h-[80px] lg:min-h-[80px] h-auto flex-col">
-                <div className="flex h-20 items-center justify-between gap-4 px-4 md:px-8">
+                <div className="flex h-20 items-center gap-4 px-4 md:px-8">
                     <div className="flex items-center gap-2">
                         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                             <SheetTrigger asChild>
@@ -42,16 +50,37 @@ export function TopBar() {
                         </Sheet>
                     </div>
 
-                    {!isSettingsPage && (
-                        <>
-                            {/* Desktop Quick Expense */}
-                            <div className="flex-1 hidden sm:block">
-                                <QuickExpenseInput />
-                            </div>
-                        </>
-                    )}
+                    <div className="hidden min-w-0 flex-1 sm:flex">
+                        <div
+                            data-testid="topbar-desktop-capsule"
+                            className="group relative flex h-12 min-w-0 flex-1 items-center rounded-full border border-white/50 bg-white/45 p-1 shadow-sm backdrop-blur-xl transition-[border-color,box-shadow,background-color] duration-300 focus-within:border-primary/30 focus-within:shadow-lg dark:border-white/15 dark:bg-white/[0.07]"
+                        >
+                            <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-br from-white/35 via-transparent to-transparent dark:from-white/[0.08]" />
 
-                    <div className="flex items-center gap-3 shrink-0">
+                            <div className="relative z-10 flex min-w-0 flex-1 items-center">
+                                {!isSettingsPage && (
+                                    <>
+                                        <TopbarQuickTransaction
+                                            activePanel={activeDesktopPanel}
+                                            onActivePanelChange={setActiveDesktopPanel}
+                                            surface="embedded"
+                                        />
+                                        <div className="mx-1 h-6 w-px shrink-0 bg-border/50" />
+                                    </>
+                                )}
+
+                                <div className={cn("min-w-0 shrink-0", isSettingsPage && "ml-auto")}>
+                                    <TopbarActionCluster
+                                        activePanel={activeDesktopPanel}
+                                        onActivePanelChange={setActiveDesktopPanel}
+                                        surface="embedded"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="ml-auto flex min-w-0 items-center justify-end gap-3 sm:hidden">
                         {/* Mobile Toggle Button */}
                         {!isSettingsPage && (
                             <Button

@@ -29,6 +29,10 @@ export interface DatePickerProps {
     variant?: "default" | "icon"
     /** Additional class names for the trigger button */
     className?: string
+    /** Accessible label for the trigger button */
+    triggerAriaLabel?: string
+    /** Test id for the trigger button */
+    triggerTestId?: string
     /** Alignment of the popover */
     align?: "start" | "center" | "end"
 }
@@ -41,6 +45,8 @@ export function DatePicker({
     disabled = false,
     variant = "default",
     className,
+    triggerAriaLabel,
+    triggerTestId,
     align = "start",
 }: DatePickerProps) {
     const [open, setOpen] = React.useState(false)
@@ -62,6 +68,8 @@ export function DatePicker({
                         variant="ghost"
                         size="icon"
                         disabled={disabled}
+                        aria-label={triggerAriaLabel ?? (value ? format(value, "P", { locale: it }) : placeholder)}
+                        data-testid={triggerTestId}
                         className={cn(
                             "h-8 w-8 rounded-full shrink-0 text-muted-foreground hover:text-foreground hover:bg-muted/50",
                             value && !isToday && "text-primary bg-primary/10",

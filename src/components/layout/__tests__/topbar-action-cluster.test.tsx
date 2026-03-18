@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from "@testing-library/react"
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { beforeEach, describe, expect, it } from "vitest"
 import { TopbarActionCluster } from "../topbar-action-cluster"
@@ -71,12 +71,21 @@ describe("TopbarActionCluster", () => {
         expect(notificationsButton).toHaveClass("h-10", "w-10")
     })
 
-    it("usa link semantico per navigare alla pagina brain", async () => {
+    it("integra la preview brain dentro la capsula madre e mantiene CTA verso /brain", async () => {
         await renderWithQueryClient()
 
-        const brainLink = screen.getByTestId("topbar-brain-trigger")
-        expect(brainLink.tagName.toLowerCase()).toBe("a")
-        expect(brainLink).toHaveAttribute("href", "/brain")
+        const cluster = screen.getByTestId("topbar-action-cluster")
+        const trigger = screen.getByTestId("topbar-brain-trigger")
+
+        fireEvent.click(trigger)
+
+        const panel = screen.getByTestId("topbar-brain-panel")
+        const link = screen.getByTestId("topbar-brain-open-link")
+
+        expect(cluster).toContainElement(panel)
+        expect(trigger.tagName.toLowerCase()).toBe("button")
+        expect(link.tagName.toLowerCase()).toBe("a")
+        expect(link).toHaveAttribute("href", "/brain")
     })
 
     it("aggiorna aria-label del toggle privacy dopo click", async () => {
@@ -94,15 +103,111 @@ describe("TopbarActionCluster", () => {
     it("espone menu tema con opzioni sistema, chiaro, scuro", async () => {
         await renderWithQueryClient()
 
+        const cluster = screen.getByTestId("topbar-action-cluster")
         const themeButton = screen.getByRole("button", { name: "Tema: Sistema" })
-        const panel = screen.getByTestId("topbar-theme-panel")
-        expect(panel).toHaveAttribute("aria-hidden", "true")
+        
+        expect(screen.queryByTestId("topbar-theme-panel")).not.toBeInTheDocument()
 
         fireEvent.click(themeButton)
-        expect(panel).toHaveAttribute("aria-hidden", "false")
+
+        const openedPanel = screen.getByTestId("topbar-theme-panel")
+        expect(openedPanel).toBeInTheDocument()
+        expect(cluster).toContainElement(openedPanel)
 
         expect(screen.getByTestId("topbar-theme-option-system")).toBeInTheDocument()
         expect(screen.getByTestId("topbar-theme-option-light")).toBeInTheDocument()
         expect(screen.getByTestId("topbar-theme-option-dark")).toBeInTheDocument()
+    })
+
+    it("integra la preview notifiche dentro la capsula madre del cluster", async () => {
+        await renderWithQueryClient()
+
+        const cluster = screen.getByTestId("topbar-action-cluster")
+        const trigger = screen.getByTestId("topbar-notifications-trigger")
+
+        fireEvent.click(trigger)
+
+        const panel = screen.getByTestId("topbar-notifications-panel")
+        expect(cluster).toContainElement(panel)
+        expect(screen.queryByTestId("topbar-notifications-capsule")).not.toBeInTheDocument()
+    })
+
+    it("integra la preview flash dentro la capsula madre del cluster", async () => {
+        await renderWithQueryClient()
+
+        const cluster = screen.getByTestId("topbar-action-cluster")
+        const rightRail = screen.getByTestId("topbar-right-rail")
+        const trigger = screen.getByTestId("topbar-flash-trigger")
+        const notificationTrigger = screen.getByTestId("topbar-notifications-trigger")
+
+        fireEvent.click(trigger)
+
+        const panel = screen.getByTestId("topbar-flash-panel")
+        expect(cluster).toContainElement(panel)
+        expect(rightRail).toContainElement(notificationTrigger)
+        expect(trigger).toHaveAttribute("aria-expanded", "true")
+        expect(panel.compareDocumentPosition(trigger) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    })
+
+    it("mantiene il trigger tema come rail destro rendendo il pannello prima del trigger", async () => {
+        await renderWithQueryClient()
+
+        const trigger = screen.getByTestId("topbar-theme-trigger")
+
+        fireEvent.click(trigger)
+
+        const panel = screen.getByTestId("topbar-theme-panel")
+        expect(panel.compareDocumentPosition(trigger) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    })
+
+    it("mantiene il trigger brain come rail destro rendendo il pannello prima del trigger", async () => {
+        await renderWithQueryClient()
+
+        const trigger = screen.getByTestId("topbar-brain-trigger")
+
+        fireEvent.click(trigger)
+
+        const panel = screen.getByTestId("topbar-brain-panel")
+        expect(panel.compareDocumentPosition(trigger) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    })
+
+    it("mantiene un solo pannello aperto alla volta nel cluster", async () => {
+        await renderWithQueryClient()
+
+        fireEvent.click(screen.getByTestId("topbar-theme-trigger"))
+        expect(screen.getByTestId("topbar-theme-panel")).toBeInTheDocument()
+
+        fireEvent.click(screen.getByTestId("topbar-flash-trigger"))
+
+        await waitFor(() => {
+            expect(screen.getByTestId("topbar-flash-panel")).toBeInTheDocument()
+            expect(screen.queryByTestId("topbar-theme-panel")).not.toBeInTheDocument()
+        })
+    })
+
+    it("non aggiunge separatori di bordo extra nei pannelli inline", async () => {
+        await renderWithQueryClient()
+
+        fireEvent.click(screen.getByTestId("topbar-flash-trigger"))
+        const flashPanel = screen.getByTestId("topbar-flash-panel")
+        expect(flashPanel.querySelector(".h-6.w-px")).toBeNull()
+
+        fireEvent.click(screen.getByTestId("topbar-flash-trigger"))
+
+        fireEvent.click(screen.getByTestId("topbar-theme-trigger"))
+        const themePanel = screen.getByTestId("topbar-theme-panel")
+        expect(themePanel.querySelector(".h-6.w-px")).toBeNull()
+
+        fireEvent.click(screen.getByTestId("topbar-theme-trigger"))
+
+        fireEvent.click(screen.getByTestId("topbar-brain-trigger"))
+        const brainPanel = screen.getByTestId("topbar-brain-panel")
+        expect(brainPanel.querySelector(".h-6.w-px")).toBeNull()
+
+        fireEvent.click(screen.getByTestId("topbar-brain-trigger"))
+
+        fireEvent.click(screen.getByTestId("topbar-notifications-trigger"))
+        const notificationsPanel = screen.getByTestId("topbar-notifications-panel")
+        expect(notificationsPanel.querySelector(".h-6.w-px")).toBeNull()
     })
 })

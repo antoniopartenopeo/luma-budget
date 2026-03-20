@@ -1,10 +1,9 @@
 "use client"
 
 import Link from "next/link"
-import { motion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
 import { AmbientBackdrop } from "@/components/layout/ambient-backdrop"
-import { MacroSection, macroItemVariants } from "@/components/patterns/macro-section"
+import { MacroSection } from "@/components/patterns/macro-section"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
 import { Badge } from "@/components/ui/badge"
 import { BrandLogo } from "@/components/ui/brand-logo"
@@ -33,9 +32,9 @@ export function LandingPage() {
 
       <main id="main-content" className="relative pb-16 pt-8 sm:pt-10">
         <StaggerContainer className="space-y-10 sm:space-y-14">
-          <motion.section variants={macroItemVariants} className="px-4" aria-labelledby="landing-hero-title">
+          <section className="px-4" aria-labelledby="landing-hero-title">
             <div className="mx-auto max-w-5xl">
-              <MacroSection contentClassName="space-y-8 pt-8 sm:pt-12">
+              <MacroSection disableAnimation contentClassName="space-y-8 pt-8 sm:pt-12">
                 <div className="flex flex-col items-center text-center">
                   <BrandLogo
                     variant="full"
@@ -83,11 +82,12 @@ export function LandingPage() {
                 </div>
               </MacroSection>
             </div>
-          </motion.section>
+          </section>
 
-          <motion.section variants={macroItemVariants} id="why-numa" className="px-4 scroll-mt-24" aria-labelledby="landing-origin-title">
+          <section id="why-numa" className="px-4 scroll-mt-24" aria-labelledby="landing-origin-title">
             <div className="mx-auto max-w-6xl">
               <MacroSection
+                disableAnimation
                 title={<span id="landing-origin-title">Perche nasce Numa</span>}
                 description="Non per aggiungere altre schermate alla tua finanza personale, ma per renderla finalmente piu leggibile."
                 contentClassName="space-y-5 pt-5"
@@ -118,11 +118,12 @@ export function LandingPage() {
                 </div>
               </MacroSection>
             </div>
-          </motion.section>
+          </section>
 
-          <motion.section variants={macroItemVariants} id="different" className="px-4 scroll-mt-24" aria-labelledby="landing-different-title">
+          <section id="different" className="px-4 scroll-mt-24" aria-labelledby="landing-different-title">
             <div className="mx-auto max-w-6xl">
               <MacroSection
+                disableAnimation
                 title={<span id="landing-different-title">Perche e diversa da molti tracker</span>}
                 description="La maggior parte delle app ti chiede prima cloud, metodo o automazioni promesse. Numa prova a fare il contrario: spiegarti il mese con piu chiarezza."
                 contentClassName="space-y-3 pt-5"
@@ -149,11 +150,12 @@ export function LandingPage() {
                 ))}
               </MacroSection>
             </div>
-          </motion.section>
+          </section>
 
-          <motion.section variants={macroItemVariants} id="product-demo" className="px-4 scroll-mt-24" aria-labelledby="landing-demo-title">
+          <section id="product-demo" className="px-4 scroll-mt-24" aria-labelledby="landing-demo-title">
             <div className="mx-auto max-w-6xl">
               <MacroSection
+                disableAnimation
                 title={<span id="landing-demo-title">Guardala in 4 momenti</span>}
                 description="Qui non stai vedendo un video o slide generiche. Stai vedendo una versione controllata del prodotto, resa piu semplice da capire mentre scorri."
                 contentClassName="pt-5"
@@ -161,11 +163,12 @@ export function LandingPage() {
                 <LandingProductDemo />
               </MacroSection>
             </div>
-          </motion.section>
+          </section>
 
-          <motion.section variants={macroItemVariants} id="how-it-works" className="px-4 scroll-mt-24" aria-labelledby="landing-how-title">
+          <section id="how-it-works" className="px-4 scroll-mt-24" aria-labelledby="landing-how-title">
             <div className="mx-auto max-w-6xl">
               <MacroSection
+                disableAnimation
                 title={<span id="landing-how-title">Come inizi</span>}
                 description="Il percorso e lineare: dai dati che hai gia a una decisione piu chiara su come spendere."
                 contentClassName="space-y-3 pt-5"
@@ -185,11 +188,12 @@ export function LandingPage() {
                 ))}
               </MacroSection>
             </div>
-          </motion.section>
+          </section>
 
-          <motion.section variants={macroItemVariants} className="px-4" aria-labelledby="landing-outcomes-title">
+          <section className="px-4" aria-labelledby="landing-outcomes-title">
             <div className="mx-auto max-w-6xl">
               <MacroSection
+                disableAnimation
                 title={<span id="landing-outcomes-title">Cosa cambia davvero</span>}
                 description="L'obiettivo non e impressionarti per cinque minuti. E aiutarti a prendere decisioni migliori sul tuo denaro mese dopo mese."
                 contentClassName="space-y-3 pt-5"
@@ -209,9 +213,9 @@ export function LandingPage() {
                 ))}
               </MacroSection>
             </div>
-          </motion.section>
+          </section>
 
-          <motion.section variants={macroItemVariants} id="open-app" className="px-4 scroll-mt-24" aria-labelledby="landing-cta-title">
+          <section id="open-app" className="px-4 scroll-mt-24" aria-labelledby="landing-cta-title">
             <div className="mx-auto max-w-6xl">
               <div className="surface-strong overflow-hidden p-6 sm:p-8 lg:p-10">
                 <div className="space-y-4">
@@ -232,7 +236,7 @@ export function LandingPage() {
                 </div>
               </div>
             </div>
-          </motion.section>
+          </section>
         </StaggerContainer>
       </main>
 

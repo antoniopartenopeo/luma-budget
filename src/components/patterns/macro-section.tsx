@@ -15,6 +15,7 @@ interface MacroSectionProps extends Omit<HTMLMotionProps<"div">, "title" | "chil
     className?: string
     contentClassName?: string
     background?: React.ReactNode
+    disableAnimation?: boolean
 }
 
 export const macroItemVariants: Variants = {
@@ -40,6 +41,7 @@ export function MacroSection({
     className,
     contentClassName,
     background,
+    disableAnimation = false,
     ...props
 }: MacroSectionProps) {
     const prefersReducedMotion = useReducedMotion()
@@ -49,9 +51,9 @@ export function MacroSection({
 
     return (
         <motion.div
-            variants={macroItemVariants}
-            initial={prefersReducedMotion ? false : "hidden"}
-            animate={prefersReducedMotion ? undefined : "visible"}
+            variants={disableAnimation ? undefined : macroItemVariants}
+            initial={disableAnimation || prefersReducedMotion ? false : "hidden"}
+            animate={disableAnimation || prefersReducedMotion ? undefined : "visible"}
             className={cn("w-full relative", className)}
             {...props}
         >

@@ -3,7 +3,7 @@
 scope: decision-log
 owner: engineering
 status: active
-last-verified: 2026-03-15
+last-verified: 2026-03-22
 canonical-of: decision-log
 
 | Date | Decision | Status | Why | Alternatives rejected |
@@ -13,3 +13,5 @@ canonical-of: decision-log
 | 2026-03-15 | Consolidate specialist governance into `05_specialists/*` | accepted | Keep domain-specific operating context close to the rest of the root scaffold and remove competing agent-only paths | Preserve `.agent/*` as a second canonical layer |
 | 2026-03-15 | Keep open banking fail-closed by default | accepted | Preserve the local-first product baseline until remote integration is explicitly hardened | Enable remote banking flows by default |
 | 2026-03-15 | Expose the public landing page at `/` and move the in-app dashboard to `/dashboard` | accepted | Separate acquisition and product surfaces while keeping the existing app shell and internal modules intact | Keep the dashboard at `/` and force the landing into a secondary route that users may never see |
+| 2026-03-22 | Treat the public landing as a product-truth acquisition surface with constrained navigation | accepted | Keep public promise, motion language, and entrypoints aligned with real modules instead of generic marketing patterns | Turn `/` into a broad marketing hub with loose routing, speculative claims, or signup-first CTA |
+| 2026-03-22 | Allow one immersive Brain explainer on the landing only as a forecast-stage deep dive | accepted | Explain Brain readiness and forecast trust without turning `/` into a separate AI-first promise or breaking local-first positioning | Add multiple immersive module spotlights or position Brain as an unconditional prediction engine |

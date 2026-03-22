@@ -1,6 +1,7 @@
 "use client"
 
-import { motion, Variants } from "framer-motion"
+import { motion, Variants, useReducedMotion } from "framer-motion"
+import { cn } from "@/lib/utils"
 
 interface CinematicTextRevealProps {
   text: string
@@ -9,8 +10,12 @@ interface CinematicTextRevealProps {
 }
 
 export function CinematicTextReveal({ text, className, delay = 0 }: CinematicTextRevealProps) {
-  // Split into words for staggered reveal
+  const prefersReducedMotion = useReducedMotion()
   const words = text.split(" ")
+
+  if (prefersReducedMotion) {
+    return <span className={className}>{text}</span>
+  }
 
   const container: Variants = {
     hidden: { opacity: 0 },
@@ -42,11 +47,10 @@ export function CinematicTextReveal({ text, className, delay = 0 }: CinematicTex
       variants={container}
       initial="hidden"
       animate="visible"
-      className={className}
-      style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.25em" }}
+      className={cn("flex flex-wrap justify-center gap-[0.25em]", className)}
     >
       {words.map((word, index) => (
-        <motion.span key={index} variants={child} style={{ display: "inline-block" }}>
+        <motion.span key={index} variants={child} className="inline-block">
           {word}
         </motion.span>
       ))}

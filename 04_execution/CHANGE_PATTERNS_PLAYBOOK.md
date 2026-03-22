@@ -111,6 +111,28 @@ Guardrail:
 - Conservare distinzione chiara tra `duplicati confermati` e `possibili duplicati`.
 - Nessun invio remoto dati: il flusso resta local-first.
 
+## 8) Evolvere la landing pubblica (`/`) senza perdere trust
+
+Intento: iterare la superficie pubblica mantenendo coerenza tra promessa esterna, feature reali e governance interna.
+
+Passi minimi:
+1. Aggiorna la storia canonica in `src/features/landing/data.ts` prima di cambiare la UI.
+2. Aggiorna la struttura in `src/features/landing/landing-page.tsx` mantenendo hero, sezioni anchor e CTA finale.
+3. Aggiorna la demo in `src/features/landing/components/landing-product-demo.tsx` e `src/features/landing/components/landing-previews.tsx` solo con preview veritiere rispetto al prodotto reale.
+4. Se introduci un interludio dedicato a Brain o ad altri moduli, trattalo come deep-dive della narrativa esistente, non come nuova promessa prodotto.
+5. Se il Brain hero usa spring/parallax/reveal finale, documenta esplicitamente fallback reduced-motion, profondita blur consentita e copy finale di rientro al controllo umano.
+6. Sincronizza `02_specs/REQUIREMENTS.md`, `01_rules/UX_GOVERNANCE.md`, `01_rules/MOTION_PRINCIPLES.md` e `05_specialists/NUMA_UI_STANDARDS.md`.
+7. Riallinea i test landing per coprire ordine narrativo, vincoli di navigazione pubblica, step demo e eventuali explainers immersivi.
+
+Guardrail:
+- Nessun claim pubblico su funzionalita non presenti nei moduli attivi.
+- Nessun routing pubblico dispersivo: anchor interne e entrypoint app intenzionali soltanto.
+- Mantieni la sequenza canonica `import -> mese -> stima -> decisione`.
+- Un eventuale focus Brain deve restare readiness-aware, local-first e privo di implicazioni su sync remoti attivi di default.
+- Il reveal finale del Brain hero deve riportare il messaggio verso controllo e calma, non sostituire la CTA di prodotto.
+- Nessun dato reale utente nella landing; solo preview e semantica prodotto.
+- Le eccezioni motion della landing devono restare isolate e con fallback reduced-motion.
+
 ## Definition of done minima
 
 1. `npm run test:run` passa.

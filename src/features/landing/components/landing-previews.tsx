@@ -1,53 +1,21 @@
 "use client"
 
-import { useEffect, useState, type ReactNode } from "react"
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
+import type { ReactNode } from "react"
+import { motion } from "framer-motion"
 import {
   BrainCircuit,
-  CalendarClock,
   CheckCircle2,
   FileSpreadsheet,
   FlaskConical,
   LayoutDashboard,
-  ShieldCheck,
   Sparkles,
   WalletCards
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
-import { formatSignedCents } from "@/domain/money/currency"
 import {
-  DEMO_BRAIN_METRICS,
-  DEMO_BRAIN_STATES,
-  DEMO_IMPORT_SIGNALS,
-  DEMO_OVERVIEW_BREAKDOWN,
-  DEMO_OVERVIEW_METRICS,
-  DEMO_OVERVIEW_MOVEMENTS,
-  DEMO_SCENARIOS,
   LANDING_STORY_POINTS,
   type LandingDemoStep
 } from "../data"
-
-function useCycleIndex(total: number, isActive = true) {
-  const prefersReducedMotion = useReducedMotion()
-  const [activeIndex, setActiveIndex] = useState(0)
-
-  useEffect(() => {
-    if (!isActive || prefersReducedMotion || total <= 1) {
-      return
-    }
-
-    const intervalId = window.setInterval(() => {
-      setActiveIndex((currentIndex) => (currentIndex + 1) % total)
-    }, 2400)
-
-    return () => {
-      window.clearInterval(intervalId)
-    }
-  }, [isActive, prefersReducedMotion, total])
-
-  return activeIndex
-}
 
 function PreviewFrame({
   eyebrow,
@@ -79,115 +47,6 @@ function PreviewFrame({
         </div>
       ) : null}
     </div>
-  )
-}
-
-function AnimatedMessage({ message }: { message: string }) {
-  return (
-    <AnimatePresence mode="wait">
-      <motion.p
-        key={message}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -8 }}
-        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-        className="text-sm font-semibold leading-relaxed text-foreground"
-      >
-        {message}
-      </motion.p>
-    </AnimatePresence>
-  )
-}
-
-function SimpleMetric({
-  label,
-  value,
-  note,
-  isActive
-}: {
-  label: string
-  value: string
-  note: string
-  isActive?: boolean
-}) {
-  return (
-    <motion.div
-      animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0.82, y: 0 }}
-      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-      className={cn(
-        "rounded-[1.35rem] border border-white/28 bg-white/60 p-4 dark:border-white/10 dark:bg-white/[0.04]",
-        isActive && "ring-1 ring-primary/20 shadow-lg shadow-primary/10"
-      )}
-    >
-      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/72">{label}</p>
-      <p className="mt-2 text-2xl font-black tracking-tight text-foreground">{value}</p>
-      <p className="mt-2 text-sm font-medium leading-relaxed text-muted-foreground">{note}</p>
-    </motion.div>
-  )
-}
-
-function BreakdownRow({
-  label,
-  value,
-  share,
-  isActive
-}: {
-  label: string
-  value: string
-  share: number
-  isActive?: boolean
-}) {
-  return (
-    <motion.div
-      animate={isActive ? { opacity: 1, x: 0 } : { opacity: 0.8, x: 0 }}
-      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-      className="space-y-2"
-    >
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-sm font-semibold text-foreground">{label}</p>
-        <p className={cn("text-sm font-black tracking-tight", isActive ? "text-primary" : "text-foreground")}>{value}</p>
-      </div>
-      <div className="h-2.5 overflow-hidden rounded-full bg-white/55 dark:bg-white/[0.05]">
-        <motion.div
-          className={cn("h-full rounded-full", isActive ? "bg-primary" : "bg-foreground/18")}
-          animate={{ width: `${share}%` }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-        />
-      </div>
-    </motion.div>
-  )
-}
-
-function MovementRow({
-  label,
-  category,
-  amountCents,
-  isActive
-}: {
-  label: string
-  category: string
-  amountCents: number
-  isActive?: boolean
-}) {
-  return (
-    <motion.div
-      animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0.8, y: 0 }}
-      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-      className={cn(
-        "rounded-[1.25rem] border px-3.5 py-3",
-        isActive
-          ? "border-primary/20 bg-primary/10 shadow-lg shadow-primary/10"
-          : "border-white/24 bg-white/55 dark:border-white/10 dark:bg-white/[0.04]"
-      )}
-    >
-      <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-foreground">{label}</p>
-          <p className="truncate text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground/72">{category}</p>
-        </div>
-        <p className="shrink-0 text-sm font-black tracking-tight text-foreground">{formatSignedCents(amountCents)}</p>
-      </div>
-    </motion.div>
   )
 }
 

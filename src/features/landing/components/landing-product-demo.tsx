@@ -18,13 +18,11 @@ export function LandingProductDemo() {
 
   useEffect(() => {
     return scrollYProgress.on("change", (latest) => {
-      const mappedIndex = Math.floor(latest * 4)
-      const newIndex = Math.min(Math.max(0, mappedIndex), 3)
-      if (newIndex !== activeIndex) {
-        setActiveIndex(newIndex)
-      }
+      const mappedIndex = Math.floor(latest * LANDING_DEMO_STEPS.length)
+      const newIndex = Math.min(Math.max(0, mappedIndex), LANDING_DEMO_STEPS.length - 1)
+      setActiveIndex((currentIndex) => (currentIndex === newIndex ? currentIndex : newIndex))
     })
-  }, [scrollYProgress, activeIndex])
+  }, [scrollYProgress])
 
   return (
     <div ref={containerRef} className="relative h-[400vh] w-full">
@@ -35,14 +33,24 @@ export function LandingProductDemo() {
         <div className="relative z-10 flex h-full w-full max-w-6xl flex-col gap-4 px-4 pb-4 pt-10 md:gap-8 md:py-24 lg:grid lg:grid-cols-2 lg:items-center">
           {/* Left Side: Copy */}
           <div className="w-full shrink-0 space-y-4 sm:space-y-6 lg:mt-0 lg:space-y-8">
+            <p className="sr-only" aria-live="polite">
+              Step attivo: {LANDING_DEMO_STEPS[activeIndex]?.title}
+            </p>
+
             <div className="hidden flex-wrap gap-2 lg:flex">
               {LANDING_DEMO_STEPS.map((step, index) => {
                 const isCurrent = index === activeIndex
                 return (
-                  <div
+                  <button
                     key={step.id}
+                    type="button"
+                    data-testid={`landing-demo-step-${step.id}`}
+                    aria-current={isCurrent ? "step" : undefined}
+                    aria-label={`${step.eyebrow}: ${step.title}`}
+                    onFocus={() => setActiveIndex(index)}
+                    onClick={() => setActiveIndex(index)}
                     className={cn(
-                      "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] transition-all duration-300",
+                      "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                       isCurrent
                         ? "scale-100 border-primary/20 bg-primary/10 text-primary opacity-100"
                         : "scale-95 border-white/24 bg-white/55 text-muted-foreground opacity-50 dark:border-white/10 dark:bg-white/[0.04]"
@@ -55,7 +63,7 @@ export function LandingProductDemo() {
                       )}
                     />
                     {step.eyebrow}
-                  </div>
+                  </button>
                 )
               })}
             </div>

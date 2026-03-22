@@ -15,6 +15,7 @@ import {
 } from "./data"
 import { LandingHeroConsole } from "./components/landing-previews"
 import { LandingProductDemo } from "./components/landing-product-demo"
+import { LandingBrainHero } from "./components/landing-brain-hero"
 import { CinematicTextReveal } from "./components/motion-primitives"
 
 export function LandingPage() {
@@ -31,8 +32,8 @@ export function LandingPage() {
         </nav>
       </div>
 
-      <main id="main-content" className="relative pb-16">
-        <StaggerContainer className="space-y-16 sm:space-y-24">
+      <main id="main-content" className="relative pb-32">
+        <StaggerContainer className="space-y-32 sm:space-y-48">
           
           {/* SECTION 1: HERO IMMERSIVE */}
           <section
@@ -101,24 +102,24 @@ export function LandingPage() {
                 disableAnimation
                 title={<span id="landing-different-title">La differenza con Numa</span>}
                 description="La maggior parte delle app ti chiede prima cloud, metodo o automazioni. Numa prova a fare il contrario: spiegarti il mese con piu chiarezza."
-                contentClassName="space-y-3 pt-5"
+                contentClassName="grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3 pt-12"
               >
                 {LANDING_DIFFERENTIATORS.map((item) => (
-                  <article key={item.title} className="surface-subtle p-5">
-                    <div className="space-y-4">
-                      <div className="flex items-start gap-3">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] border border-primary/18 bg-primary/10 text-primary">
-                          <item.icon className="h-5 w-5" />
+                  <article key={item.title} className="flex flex-col gap-6">
+                    <div className="space-y-5">
+                      <div className="flex flex-col gap-4">
+                        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary shadow-[0_0_30px_rgba(var(--primary),0.15)]">
+                          <item.icon className="h-6 w-6" />
                         </div>
-                        <div className="space-y-1.5">
-                          <h3 className="text-lg font-bold tracking-tight text-foreground">{item.title}</h3>
-                          <p className="text-sm font-medium leading-relaxed text-muted-foreground">{item.marketLabel}</p>
+                        <div className="space-y-2">
+                          <h3 className="text-xl font-bold tracking-tight text-foreground">{item.title}</h3>
+                          <p className="text-base font-medium leading-relaxed text-muted-foreground">{item.marketLabel}</p>
                         </div>
                       </div>
 
-                      <div className="rounded-[1.4rem] border border-primary/14 bg-primary/10 px-4 py-4">
+                      <div className="mt-2 border-l-2 border-primary/30 pl-5 py-1">
                         <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary">Con Numa</p>
-                        <p className="mt-2 text-sm font-medium leading-relaxed text-foreground">{item.numaLabel}</p>
+                        <p className="mt-1 text-sm font-semibold leading-relaxed text-foreground">{item.numaLabel}</p>
                       </div>
                     </div>
                   </article>
@@ -132,6 +133,11 @@ export function LandingPage() {
              <LandingProductDemo />
           </section>
 
+          {/* SECTION 4.5: TEMPORAL CORE (BRAIN AI HERO) */}
+          <section id="brain-hero" aria-labelledby="landing-brain-hero-title">
+             <LandingBrainHero />
+          </section>
+
           {/* SECTION 5: COME FUNZIONA */}
           <section id="come-funziona" className="px-4 scroll-mt-24" aria-labelledby="landing-how-title">
             <div className="mx-auto max-w-6xl">
@@ -139,18 +145,16 @@ export function LandingPage() {
                 disableAnimation
                 title={<span id="landing-how-title">Come inizi</span>}
                 description="Il percorso e lineare: dai dati che hai gia a una decisione piu chiara su come spendere."
-                contentClassName="space-y-3 pt-5"
+                contentClassName="grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-4 pt-12"
               >
                 {LANDING_FLOW_STEPS.map((step) => (
-                  <article key={step.stepLabel} className="surface-subtle p-5">
-                    <div className="flex items-start gap-4">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-primary/18 bg-primary/10 text-sm font-black tracking-tight text-primary">
-                        {step.stepLabel}
-                      </div>
-                      <div className="space-y-1.5">
-                        <h3 className="text-lg font-bold tracking-tight text-foreground">{step.title}</h3>
-                        <p className="text-sm font-medium leading-relaxed text-muted-foreground">{step.description}</p>
-                      </div>
+                  <article key={step.stepLabel} className="flex flex-col gap-5">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-xl font-black tracking-tight text-primary shadow-[0_0_30px_rgba(var(--primary),0.15)]">
+                      {step.stepLabel}
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-bold tracking-tight text-foreground">{step.title}</h3>
+                      <p className="text-base font-medium leading-relaxed text-muted-foreground">{step.description}</p>
                     </div>
                   </article>
                 ))}
@@ -165,18 +169,16 @@ export function LandingPage() {
                 disableAnimation
                 title={<span id="landing-outcomes-title">Cosa cambia davvero</span>}
                 description="L'obiettivo non e impressionarti per cinque minuti. E aiutarti a prendere decisioni migliori sul tuo denaro mese dopo mese."
-                contentClassName="space-y-3 pt-5"
+                contentClassName="grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3 pt-12"
               >
                 {LANDING_OUTCOMES.map((outcome) => (
-                  <article key={outcome.title} className="surface-subtle p-5">
-                    <div className="flex items-start gap-3">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] border border-primary/18 bg-primary/10 text-primary">
-                        <outcome.icon className="h-5 w-5" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <h3 className="text-lg font-bold tracking-tight text-foreground">{outcome.title}</h3>
-                        <p className="text-sm font-medium leading-relaxed text-muted-foreground">{outcome.description}</p>
-                      </div>
+                  <article key={outcome.title} className="flex flex-col gap-5">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary shadow-[0_0_30px_rgba(var(--primary),0.15)]">
+                      <outcome.icon className="h-6 w-6" />
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-bold tracking-tight text-foreground">{outcome.title}</h3>
+                      <p className="text-base font-medium leading-relaxed text-muted-foreground">{outcome.description}</p>
                     </div>
                   </article>
                 ))}
@@ -187,21 +189,21 @@ export function LandingPage() {
           {/* SECTION 7: CTA FINALE */}
           <section id="open-app" className="px-4 scroll-mt-24" aria-labelledby="landing-cta-title">
             <div className="mx-auto max-w-6xl">
-              <div className="surface-strong overflow-hidden p-6 sm:p-8 lg:p-10">
-                <div className="space-y-4">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">Dati locali. Stime future. Quota sostenibile.</p>
-                  <h2 id="landing-cta-title" className="max-w-[16ch] text-3xl font-black tracking-tight text-foreground sm:text-4xl">
+              <div className="flex flex-col items-center justify-center text-center py-24 sm:py-40">
+                <div className="flex flex-col items-center space-y-6">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+                    Dati locali. Stime future. Quota sostenibile.
+                  </p>
+                  <h2 id="landing-cta-title" className="max-w-[20ch] text-5xl font-black tracking-tighter text-foreground sm:text-7xl">
                     Se vuoi una lettura piu chiara dei tuoi soldi, entra in Numa.
                   </h2>
-                  <p className="max-w-3xl text-sm font-medium leading-relaxed text-muted-foreground sm:text-base">
-                    Nessuna promessa gonfiata. Solo un prodotto che ti aiuta a capire il mese, vedere il possibile dopo e valutare una nuova spesa fissa con piu prudenza.
+                  <p className="max-w-xl text-base font-medium leading-relaxed text-muted-foreground sm:text-xl">
+                    Inizia calcolando il tuo budget di base. Zero cloud, nessun account richiesto per la prima scansione.
                   </p>
-
-                  <Button asChild size="lg" className="rounded-full px-6 shadow-lg shadow-primary/15">
-                    <Link href="/dashboard">
-                      Apri l&apos;app
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
+                </div>
+                <div className="mt-12">
+                  <Button asChild size="lg" className="rounded-full px-12 py-7 text-lg font-bold shadow-2xl shadow-primary/20">
+                    <Link href="/dashboard">Inizia Ora</Link>
                   </Button>
                 </div>
               </div>

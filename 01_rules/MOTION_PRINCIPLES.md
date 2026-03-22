@@ -3,12 +3,12 @@
 scope: motion-governance
 owner: governance
 status: active
-last-verified: 2026-02-26
+last-verified: 2026-03-22
 canonical-of: motion-policy
 
 > **Stato:** Attivo e vincolante
-> **Versione:** 1.4
-> **Ultimo aggiornamento:** 2026-02-22
+> **Versione:** 1.5
+> **Ultimo aggiornamento:** 2026-03-22
 
 Il motion in Numa comunica stato e priorità. Non è decorazione autonoma.
 
@@ -59,6 +59,21 @@ Le animazioni continue non devono occupare più del 5% della viewport in modo do
 ### Eccezione controllata: Radix/Shadcn state animations
 Per overlay Radix (`Dialog`, `Sheet`, `Popover`, `Dropdown`, `Select`) sono consentite classi `data-[state=*]:animate-*` e transition utility già presenti nei primitives UI.
 
+### Eccezione controllata: Landing narrativa pubblica
+Sulla landing pubblica (`/`) sono ammesse tre eccezioni aggiuntive quando restano semanticamente collegate al prodotto:
+- reveal testuale cinematico in ingresso per il titolo hero;
+- demo sticky/scrollytelling che attiva un solo step per volta;
+- micro-animazioni interne a preview frame isolati (progress fill, shimmer, check state, orbite a bassa dominanza);
+- un solo interludio immersivo dedicato al Brain con parallax/lens effect se rimane nella fase forecast e non introduce nuova navigazione.
+
+Guardrail obbligatori:
+- le eccezioni valgono solo per superfici pubbliche narrative e preview isolate, non per il prodotto operativo;
+- `blur/filter` sono ammessi solo come transizione iniziale breve, non come stato persistente;
+- animazioni su `width` sono ammesse solo dentro frame fissi che non causano reflow del layout circostante;
+- l'interludio Brain puo usare `useSpring` e blur di profondita sui layer retrostanti per ottenere separazione cinematica, ma il layer di lettura principale deve restare leggibile e il reveal finale non deve diventare una nuova CTA autonoma;
+- i layer della landing non devono dipendere da asset remoti di texture o da claim non verificabili;
+- ogni eccezione deve avere fallback `prefers-reduced-motion`.
+
 ---
 
 ## 4. Zoning
@@ -68,6 +83,7 @@ Per overlay Radix (`Dialog`, `Sheet`, `Popover`, `Dropdown`, `Select`) sono cons
 - Insights: stati advisor/trend.
 - Simulator/Goals: feedback su scenario e derivazione quota sostenibile.
 - Neural Core: progresso e stato evolutivo.
+- Landing pubblica: hero immersivo e demo step-based che raccontano il flusso prodotto senza imitare dati live utente.
 
 ### Zone Static-First
 - Tabelle dense e liste transazioni: motion minimo, orientato a entrata/focus, non a distrazione.
@@ -79,6 +95,12 @@ Per overlay Radix (`Dialog`, `Sheet`, `Popover`, `Dropdown`, `Select`) sono cons
 
 ### Prefers Reduced Motion
 `prefers-reduced-motion: reduce` deve disattivare animazioni e accorciare transizioni.
+
+Sulla landing questo implica:
+- hero text senza blur persistente;
+- demo step con cambio stato immediato o fade minimo;
+- interludio Brain convertito in card/surface statica;
+- nessun loop continuo dominante fuori dai preview frame.
 
 ### Performance
 Animare solo proprietà composite (`transform`, `opacity`). Evitare animazioni su proprietà layout (`width`, `height`, `margin`, `padding`) salvo casi tecnici strettamente necessari.

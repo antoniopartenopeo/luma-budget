@@ -3,7 +3,7 @@
 scope: execution-work-log
 owner: engineering
 status: active
-last-verified: 2026-03-15
+last-verified: 2026-03-22
 canonical-of: execution-work-log
 
 ## 2026-03-15
@@ -23,3 +23,11 @@ canonical-of: execution-work-log
 - Standardized Root Layout to include UI utility registries.
 - Evolved landing page with interactive previews and product demo enhancements.
 - Audited repository for governance alignment and identified drift in documentation and coding standards (amount cents).
+
+## 2026-03-22
+
+- Audited the public landing page at code and runtime level as the canonical acquisition surface for Numa.
+- Realigned requirements, UX/motion rules, architecture overview, specialist UI guidance, and execution playbooks around the landing's product-truth narrative.
+- Updated landing verification artifacts so tests now track public-link constraints and the step-based demo story.
+- Folded the new Brain explainer into the same governance layer, tightening its local-first copy, motion constraints, and verification coverage.
+- Refreshed docs again after the latest landing iteration to capture the longer Brain interlude and the zero-cloud/no-account closing CTA.

@@ -3,7 +3,7 @@
 scope: system-architecture
 owner: engineering
 status: active
-last-verified: 2026-03-15
+last-verified: 2026-03-22
 canonical-of: architecture
 
 > Principles: feature-first modules, domain isolation, local-first persistence, explicitly gated remote integrations, deterministic narration.
@@ -21,7 +21,7 @@ src/
 │   ├── categories/              # Category model and enrichment logic
 │   ├── narration/               # Deterministic copy derivation and orchestrators
 │   └── simulation/              # Savings and scenario math support
-├── features/                    # User-facing business modules
+├── features/                    # User-facing business modules, including the public landing
 ├── VAULT/                       # Isolated high-value financial scenario logic
 └── lib/                         # Shared runtime utilities and registries
 ```
@@ -30,7 +30,7 @@ src/
 
 Primary pages:
 
-- `/` Public landing page
+- `/` Public landing and acquisition surface
 - `/dashboard` Dashboard
 - `/transactions`
 - `/insights`
@@ -50,6 +50,14 @@ Primary API endpoints:
 Open banking routes are present in codebase but remain fail-closed unless `NUMA_ENABLE_OPEN_BANKING=true`.
 
 ## 3) Domain Boundaries
+
+### Landing (`src/features/landing/*`)
+
+- Public acquisition layer, separate from the authenticated or operational app shell
+- Uses curated story data and preview models to explain live product capabilities without requiring user data
+- May include isolated immersive explainers for specific modules such as Brain, but those explainers still operate on curated public preview state
+- The current Brain explainer is a dedicated scroll interlude with layered motion and final reveal copy, still scoped as presentation-only and not backed by live forecast repositories
+- May reuse pure domain formatters for product-truth rendering, but does not read repositories or mutate persisted financial state
 
 ### Domain (`src/domain/*`)
 
@@ -75,12 +83,13 @@ Open banking routes are present in codebase but remain fail-closed unless `NUMA_
 
 ## 4) Data and State Flow
 
-1. Repositories read and write local storage.
-2. Feature hooks expose state through React Query.
-3. URL-backed filters preserve deep-linkable temporal context where relevant.
-4. Storage events and registry keys drive cross-tab synchronization.
-5. Backup restore accepts only recognized sections before local overwrite.
-6. UI components render computed values and narration outputs without embedding business formulas.
+1. The landing uses curated static story data and preview components to explain the product without loading live user repositories.
+2. Repositories read and write local storage.
+3. Feature hooks expose state through React Query.
+4. URL-backed filters preserve deep-linkable temporal context where relevant.
+5. Storage events and registry keys drive cross-tab synchronization.
+6. Backup restore accepts only recognized sections before local overwrite.
+7. UI components render computed values and narration outputs without embedding business formulas.
 
 ## 5) Storage Contracts
 

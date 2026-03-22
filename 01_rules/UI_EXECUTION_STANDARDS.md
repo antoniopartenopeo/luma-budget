@@ -3,12 +3,12 @@
 scope: ui-execution-governance
 owner: governance
 status: active
-last-verified: 2026-02-26
+last-verified: 2026-03-22
 canonical-of: ui-execution-policy
 
 > **Stato:** Attivo e vincolante
-> **Versione:** 1.0
-> **Ultimo aggiornamento:** 2026-02-25
+> **Versione:** 1.1
+> **Ultimo aggiornamento:** 2026-03-22
 
 Regole operative concise per costruire interfacce accessibili, veloci e credibili.
 Questo documento guida implementation e review tecnica cross-feature.
@@ -52,6 +52,7 @@ Questo documento guida implementation e review tecnica cross-feature.
 - MUST: Back/Forward ripristina posizione di scroll.
 - MUST: navigazione con `<a>`/`<Link>` (Cmd/Ctrl/middle-click devono funzionare).
 - NEVER: usare `<div onClick>` per navigazione.
+- MUST: le superfici pubbliche di acquisizione espongono solo anchor interne e route rese intenzionalmente pubbliche.
 
 ### Feedback
 - SHOULD: optimistic UI quando utile, con rollback/Undo in caso di failure.
@@ -77,6 +78,7 @@ Questo documento guida implementation e review tecnica cross-feature.
 - SHOULD: preferire CSS, poi Web Animations API, poi librerie JS.
 - MUST: animare solo `transform` e `opacity` salvo eccezioni tecniche motivate.
 - NEVER: animare proprieta layout (`top`, `left`, `width`, `height`).
+- EXCEPTION: preview frame isolati su superfici narrative pubbliche possono animare `width` o `filter` solo se il moto rappresenta uno stato prodotto verificabile, non causa reflow esterno, e ha fallback reduced-motion.
 - NEVER: usare `transition: all`; dichiarare proprieta esplicite.
 - SHOULD: animare solo per chiarire causa/effetto o feedback intenzionale.
 - SHOULD: easing coerente con distanza/tipo trigger.

@@ -3,7 +3,7 @@
 scope: session-handoff
 owner: engineering
 status: active
-last-verified: 2026-03-15
+last-verified: 2026-03-22
 canonical-of: session-handoff
 
 ## Current State
@@ -14,6 +14,9 @@ canonical-of: session-handoff
 - Public landing page now lives at `/` and the operational dashboard now lives at `/dashboard`
 - Premium UI utilities (`PullToRefresh`, `ScrollToTop`) implemented and integrated into root layout.
 - Landing page evolved with interactive previews (Mar 17).
+- Landing governance now treats `/` as a constrained acquisition surface with anchored navigation, sticky step demo, and product-truth copy.
+- A dedicated Brain explainer now lives inside the landing forecast stage and is governed as an immersive but reduced-motion-safe deep dive.
+- The latest landing revision also emphasizes the closing zero-cloud/no-account CTA and a longer Brain interlude with reveal copy that returns focus to month control.
 
 ## Read First to Restart Work
 
@@ -26,3 +29,4 @@ canonical-of: session-handoff
 ## Next Expected Maintenance
 
 - Keep scripts, tests, CI, and specialist files aligned with the root scaffold paths.
+- Re-audit landing reduced-motion behavior and public-link constraints whenever `src/features/landing/*` changes materially.

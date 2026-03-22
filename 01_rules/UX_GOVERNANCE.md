@@ -3,12 +3,12 @@
 scope: ux-governance
 owner: governance
 status: active
-last-verified: 2026-02-26
+last-verified: 2026-03-22
 canonical-of: ux-policy
 
 > **Stato:** Active
-> **Versione:** 1.4
-> **Ultimo aggiornamento:** 2026-02-25
+> **Versione:** 1.5
+> **Ultimo aggiornamento:** 2026-03-22
 
 Linee guida UX ad alto livello per mantenere fiducia, chiarezza e coerenza cross-feature.
 
@@ -65,7 +65,19 @@ Per processi tecnici estesi (es. training locale Neural Core), mostrare progress
 
 ---
 
-## 4. UX Invariants
+## 4. Public Acquisition Surface (`/`)
+
+- La landing pubblica e una trust surface, non una pagina marketing generica.
+- Il copy pubblico deve descrivere solo capacita verificabili nei moduli attivi del prodotto, evitando hype su AI, cloud o automazioni non dimostrate.
+- L'ordine narrativo canonico resta: dati gia posseduti -> lettura del mese -> stima se pronta -> decisione su nuova spesa fissa.
+- Eventuali interludi dedicati al Brain devono rafforzare trasparenza di readiness e fallback, non spostare la promessa su predizioni assolute.
+- La CTA primaria resta l'ingresso nell'app (`/dashboard`), non signup forzato o routing dispersivo.
+- La CTA finale della landing puo esplicitare local-first, zero-cloud e assenza di account obbligatorio per la prima scansione, ma senza promettere piu di quanto l'app faccia davvero.
+- La navigazione pubblica deve rimanere contenuta in anchor interne e route esplicitamente pubbliche.
+- La landing deve mantenere tono calmo e non punitivo: niente FOMO, urgenza artificiale o framing colpevolizzante.
+- La landing non deve implicare open banking o sync remoti come baseline se il prodotto resta local-first e fail-closed di default.
+
+## 5. UX Invariants
 
 - Nessun branching di experience per device: un solo componente adattivo.
 - I flussi principali devono preservare orientamento verticale e leggibilità delle metriche.
@@ -73,7 +85,7 @@ Per processi tecnici estesi (es. training locale Neural Core), mostrare progress
 
 ---
 
-## 5. Implementation Baseline
+## 6. Implementation Baseline
 
 Le regole tecniche MUST/SHOULD/NEVER per interazioni, accessibilita, performance, hydration e theming sono canoniche in:
 

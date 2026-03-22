@@ -20,6 +20,7 @@ Canonical live project context now lives in:
 
 | Module | Status | Description |
 |---|---|---|
+| Landing (`/`) | Stable | Superficie pubblica di acquisizione con hero immersivo, demo narrativa in 4 momenti, interludio Brain multilayer e CTA finale zero-cloud/no-account verso `/dashboard` |
 | Dashboard | Stable | KPI finanziari, composizione spese interattiva, movimenti recenti collegati all'elenco completo, filtri periodo persistenti in URL (`Mese/3M/6M/12M`) |
 | Transactions | Stable | Ledger responsive a row card/table, filtri periodo/range, export CSV, quick add da TopBar |
 | Import CSV | Stable | Wizard multi-step con parse/normalize/dedupe/enrich/grouping merchant + review guidata di gruppi, categorie e duplicati prima del salvataggio |

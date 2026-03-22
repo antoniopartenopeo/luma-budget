@@ -46,7 +46,7 @@ Regole:
 
 ## Gerarchia Layout
 
-Per pagine core (`/`, `/transactions`, `/insights`, `/simulator`, `/settings`, `/brain`):
+Per pagine core app (`/dashboard`, `/transactions`, `/insights`, `/simulator`, `/settings`, `/brain`, `/updates`):
 1. `PageHeader`
 2. `StaggerContainer`
 3. una macro-surface dominante (`MacroSection` o card equivalente)
@@ -57,6 +57,28 @@ Vincoli:
 - usare il container di sistema di `AppShell`
 - favorire flusso verticale e leggibilita dei numeri
 - su `/simulator` usare `ScenarioDeck` come superficie dominante, evitando pannelli risultati separati duplicati
+
+## Landing Pubblica (`/`)
+
+`/` non e una pagina core app e non deve imitare `AppShell` o `PageHeader`.
+
+Pattern richiesto:
+1. hero immersivo con promessa prodotto verificabile
+2. anchor nav desktop compatta e non dispersiva
+3. sezioni esplicative a blocchi (`MacroSection`) con motion minimo
+4. demo sticky/scrollytelling che mostra un solo step attivo per volta
+5. opzionalmente un solo explainer immersivo dedicato al Brain come approfondimento della fase forecast
+6. CTA finale esplicita su local-first / zero-cloud / no account obbligatorio per la prima scansione
+7. CTA finale diretta all'app (`/dashboard`)
+
+Invarianti:
+- ordine narrativo bloccato: import -> lettura del mese -> stima -> decisione su nuova fissa
+- un eventuale focus Brain appartiene alla fase "stima", non apre una quinta promessa autonoma
+- copy pubblico solo su feature reali, niente hype generico
+- preview veritiere e isolate, mai dati utente reali
+- navigazione pubblica limitata a anchor interne e app entry intenzionali
+- su mobile il primo viewport deve mantenere leggibile promessa, descrizione e CTA principale
+- il reveal finale del Brain hero deve richiudere il messaggio su controllo del mese e calma, non su promessa autonoma di AI
 
 ---
 
@@ -87,6 +109,8 @@ Le animazioni state-based Radix/Shadcn (`data-[state=*]:animate-*`) sono consent
 - rispettare `prefers-reduced-motion`
 - animare preferibilmente solo `transform` e `opacity`
 - vietato `transition: all`
+- eccezione landing: reveal testuale, sticky demo e progress fill sono ammessi solo dentro la narrativa pubblica e frame preview isolati
+- l'explainer Brain puo usare spring-smoothed parallax, blur di profondita e lens reveal solo se resta reduced-motion-safe, senza asset remoti e con surface finale leggibile
 
 ---
 
@@ -170,5 +194,5 @@ Invarianti:
 
 ---
 
-**Versione**: 1.9.0
-**Ultimo aggiornamento**: 2026-02-25
+**Versione**: 2.0.0
+**Ultimo aggiornamento**: 2026-03-22

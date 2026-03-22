@@ -81,16 +81,18 @@ src/
 
 ---
 
-## Skill di Approfondimento
+## Contesti Specialistici
 
-| Contesto | Skill |
+| Contesto | File Canonico |
 |---|---|
-| Calcoli monetari, KPI, ritmi | `numa-financial-logic` |
-| Componenti React/layout/motion | `numa-ui-standards` |
-| Import CSV ed enrichment | `numa-import-csv` |
-| Governance/docs/rules/changelog | `numa-governance-update` |
+| Calcoli monetari, KPI, ritmi | `/05_specialists/NUMA_FINANCIAL_LOGIC.md` |
+| Componenti React, layout, motion | `/05_specialists/NUMA_UI_STANDARDS.md` |
+| Pacing Temporale e semantica narrativa | `/05_specialists/NUMA_BUDGET_SEMANTICS.md` |
+| Import CSV ed enrichment | `/05_specialists/NUMA_IMPORT_CSV.md` |
+| Read-only System Audit | `/05_specialists/NUMA_READONLY_SYSTEM_AUDIT.md` |
+| Cross-layer Execution | `/05_specialists/NUMA_SUPER_EXECUTION.md` |
 
 ---
 
-**Versione**: 2.4.0
-**Ultimo aggiornamento**: 2026-03-09
+**Versione**: 2.5.0
+**Ultimo aggiornamento**: 2026-03-22

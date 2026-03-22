@@ -1,9 +1,10 @@
----
-name: numa-financial-logic
-description: Use when modifying transaction calculations, budget logic, KPI formulas, or any code handling monetary values (amountCents, formatCents, signed values).
----
-
 # Logica Finanziaria di Numa Budget
+
+scope: financial-logic
+owner: engineering
+status: active
+last-verified: 2026-03-22
+canonical-of: financial-logic-specialist
 
 Skill operativa per calcoli monetari, KPI, ritmo budget e proiezioni.
 
@@ -129,5 +130,5 @@ formatCents(amountCents)
 
 ---
 
-**Versione**: 1.4.0
-**Ultimo aggiornamento**: 2026-02-11
+**Versione**: 1.5.0
+**Ultimo aggiornamento**: 2026-03-22

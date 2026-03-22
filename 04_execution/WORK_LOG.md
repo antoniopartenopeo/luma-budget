@@ -31,3 +31,4 @@ canonical-of: execution-work-log
 - Updated landing verification artifacts so tests now track public-link constraints and the step-based demo story.
 - Folded the new Brain explainer into the same governance layer, tightening its local-first copy, motion constraints, and verification coverage.
 - Refreshed docs again after the latest landing iteration to capture the longer Brain interlude and the zero-cloud/no-account closing CTA.
+- Created `AppleFluidMesh` primitive and re-engineered the landing Hero to use an Apple Premium immersive animated SVG background.

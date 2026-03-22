@@ -1,5 +1,11 @@
 # UI Regression Checklist: Automation-Ready
 
+scope: ui-regression
+owner: governance
+status: active
+last-verified: 2026-03-22
+canonical-of: ui-regression-checklist
+
 Questa checklist definisce controlli **deterministici** per garantire l'integrità del design system Numa Premium. È progettata per essere integrata in test E2E (Playwright) o Unit (Vitest/Testing Library).
 
 ---

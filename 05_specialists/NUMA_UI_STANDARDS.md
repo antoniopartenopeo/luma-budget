@@ -100,6 +100,9 @@ Invarianti:
 - `animate-ping-slow`
 - `animate-spin-slow`
 
+### Primitive React Centralizzate
+- `AppleFluidMesh`: Per background immersivi, mesh gradient volumetrici animati nativamente in SVG. Usare con parsimonia (`z-0`, `pointer-events-none`) per mantenere l'estetica Apple Premium senza affaticamento cognitivo.
+
 ### Eccezione ammessa
 Le animazioni state-based Radix/Shadcn (`data-[state=*]:animate-*`) sono consentite per `Dialog`, `Sheet`, `Popover`, `Dropdown`, `Select`.
 

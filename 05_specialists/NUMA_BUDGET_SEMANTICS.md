@@ -1,9 +1,10 @@
----
-name: numa-budget-semantics
-description: Regole semantiche vincolanti per la gestione del Pacing Temporale (ex Budget).
----
-
 # Pacing Temporale: Regole Semantiche e Invarianti
+
+scope: budget-semantics
+owner: engineering
+status: active
+last-verified: 2026-03-22
+canonical-of: budget-semantics-specialist
 
 Regole obbligatorie per copy e stati legati a ritmo/budget.
 
@@ -59,5 +60,5 @@ Vincolante per:
 
 ---
 
-**Versione**: 1.2.1
-**Ultimo aggiornamento**: 2026-02-11
+**Versione**: 1.3.0
+**Ultimo aggiornamento**: 2026-03-22

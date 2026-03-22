@@ -12,6 +12,7 @@ canonical-of: project-current-state
 - Current phase: active maintenance and iterative evolution, not greenfield bootstrap
 - Context migration status: root scaffold adopted as canonical live context on 2026-03-15
 - Premium UI Phase: `PullToRefresh` and `ScrollToTop` utilities integrated into global layout (Mar 17)
+- Premium UI Phase: `AppleFluidMesh` primitive implemented for zero-weight mathematical mesh gradients (Mar 22)
 - Public landing governance now aligned as a dedicated acquisition surface with anchored narrative, sticky demo, and constrained public navigation (Mar 22)
 
 ## What Is Stable

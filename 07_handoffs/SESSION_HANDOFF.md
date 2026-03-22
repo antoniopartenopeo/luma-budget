@@ -12,7 +12,7 @@ canonical-of: session-handoff
 - Governance, specialist context, playbooks, and ADRs now live entirely inside the root scaffold
 - Legacy `.agent/*` and `docs/*` governance surfaces were retired
 - Public landing page now lives at `/` and the operational dashboard now lives at `/dashboard`
-- Premium UI utilities (`PullToRefresh`, `ScrollToTop`) implemented and integrated into root layout.
+- Premium UI utilities (`PullToRefresh`, `ScrollToTop`, `AppleFluidMesh`) implemented and integrated into root layout and landing primitives.
 - Landing page evolved with interactive previews (Mar 17).
 - Landing governance now treats `/` as a constrained acquisition surface with anchored navigation, sticky step demo, and product-truth copy.
 - A dedicated Brain explainer now lives inside the landing forecast stage and is governed as an immersive but reduced-motion-safe deep dive.

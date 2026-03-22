@@ -60,14 +60,16 @@ Le animazioni continue non devono occupare più del 5% della viewport in modo do
 Per overlay Radix (`Dialog`, `Sheet`, `Popover`, `Dropdown`, `Select`) sono consentite classi `data-[state=*]:animate-*` e transition utility già presenti nei primitives UI.
 
 ### Eccezione controllata: Landing narrativa pubblica
-Sulla landing pubblica (`/`) sono ammesse tre eccezioni aggiuntive quando restano semanticamente collegate al prodotto:
+Sulla landing pubblica (`/`) sono ammesse eccezioni aggiuntive quando restano semanticamente collegate al prodotto e tutelano il limite cognitivo:
+- Primitive mesh matematiche (es. `AppleFluidMesh`) come SVG background animati nativamente, obbligatoriamente isolate con `pointer-events-none` e posizionate sullo strato visuale di fondo (`z-0`);
 - reveal testuale cinematico in ingresso per il titolo hero;
 - demo sticky/scrollytelling che attiva un solo step per volta;
 - micro-animazioni interne a preview frame isolati (progress fill, shimmer, check state, orbite a bassa dominanza);
 - un solo interludio immersivo dedicato al Brain con parallax/lens effect se rimane nella fase forecast e non introduce nuova navigazione.
 
 Guardrail obbligatori:
-- le eccezioni valgono solo per superfici pubbliche narrative e preview isolate, non per il prodotto operativo;
+- le primitive di pura immersione spaziale o ambientale (es. background mesh) sfuggono alla Legge del 5% perché non richiedono parsing cognitivo, a condizione che non ostacolino testi e grafici;
+- le eccezioni tematiche valgono solo per superfici pubbliche narrative e preview isolate, non per i pannelli operativi del prodotto live;
 - `blur/filter` sono ammessi solo come transizione iniziale breve, non come stato persistente;
 - animazioni su `width` sono ammesse solo dentro frame fissi che non causano reflow del layout circostante;
 - l'interludio Brain puo usare `useSpring` e blur di profondita sui layer retrostanti per ottenere separazione cinematica, ma il layer di lettura principale deve restare leggibile e il reveal finale non deve diventare una nuova CTA autonoma;

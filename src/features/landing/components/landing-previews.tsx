@@ -3,11 +3,15 @@
 import { useEffect, useState, type ReactNode } from "react"
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import {
+  BrainCircuit,
   CalendarClock,
   CheckCircle2,
   FileSpreadsheet,
   FlaskConical,
-  ShieldCheck
+  LayoutDashboard,
+  ShieldCheck,
+  Sparkles,
+  WalletCards
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
@@ -47,42 +51,31 @@ function useCycleIndex(total: number, isActive = true) {
 
 function PreviewFrame({
   eyebrow,
-  title,
-  description,
   statusLabel,
   footerNote,
   children
 }: {
   eyebrow: string
-  title: string
-  description: string
   statusLabel: string
   footerNote?: string
   children: ReactNode
 }) {
   return (
-    <div className="surface-strong overflow-hidden p-5 sm:p-6">
-      <div className="space-y-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary">
-            {eyebrow}
-          </Badge>
-          <Badge variant="outline" className="border-white/35 bg-white/50 dark:border-white/12 dark:bg-white/[0.05]">
-            {statusLabel}
-          </Badge>
-        </div>
-
-        <div className="space-y-1.5">
-          <h3 className="text-xl font-black tracking-tight text-foreground sm:text-2xl">{title}</h3>
-          <p className="text-sm font-medium leading-relaxed text-muted-foreground sm:text-base">{description}</p>
-        </div>
+    <div className="surface-strong flex h-[440px] w-full flex-col overflow-hidden p-4 sm:p-5 lg:h-[460px] lg:p-6">
+      <div className="flex shrink-0 flex-wrap items-center gap-2">
+        <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary">
+          {eyebrow}
+        </Badge>
+        <Badge variant="outline" className="border-white/35 bg-white/50 dark:border-white/12 dark:bg-white/[0.05]">
+          {statusLabel}
+        </Badge>
       </div>
 
-      <div className="mt-5 space-y-4">{children}</div>
+      <div className="my-4 flex-1 space-y-3 overflow-hidden">{children}</div>
 
       {footerNote ? (
-        <div className="mt-5 rounded-[1.4rem] border border-primary/12 bg-primary/10 px-4 py-3">
-          <p className="text-sm font-semibold leading-relaxed text-foreground">{footerNote}</p>
+        <div className="mt-auto shrink-0 rounded-[1.2rem] border border-primary/12 bg-primary/10 px-4 py-3">
+          <p className="text-[13px] font-semibold leading-relaxed text-foreground">{footerNote}</p>
         </div>
       ) : null}
     </div>
@@ -251,118 +244,101 @@ export function LandingHeroConsole() {
 }
 
 function ImportPreview({ isActive }: { isActive: boolean }) {
-  const activeStage = useCycleIndex(DEMO_IMPORT_SIGNALS.length, isActive)
-
   return (
     <PreviewFrame
       eyebrow="Import"
-      title="Il dato entra solo dopo un controllo leggibile"
-      description="La revisione non e un dettaglio tecnico: e il primo modo in cui Numa ti evita confusione."
       statusLabel="Controllo locale"
-      footerNote="L'import non entra alla cieca: prima si pulisce, poi si conferma."
+      footerNote="L'import csv non entra alla cieca: prima si pulisce in automatico, poi lo confermi."
     >
-      <div className="rounded-[1.5rem] border border-white/28 bg-white/60 p-4 dark:border-white/10 dark:bg-white/[0.04]">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/72">File in revisione</p>
-            <p className="mt-1 text-base font-black text-foreground">estratto-aprile.csv</p>
-          </div>
-          <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary">
-            Prima revisioni, poi salvi
-          </Badge>
+      <div className="flex h-full flex-col items-center justify-center py-6">
+        <motion.div 
+          animate={isActive ? { scale: 1, opacity: 1 } : { scale: 0.9, opacity: 0 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="relative flex h-24 w-24 items-center justify-center rounded-3xl border border-primary/20 bg-primary/10 shadow-inner"
+        >
+          <FileSpreadsheet className="h-10 w-10 text-primary" />
+          <motion.div 
+             initial={{ scale: 0 }}
+             animate={isActive ? { scale: 1 } : { scale: 0 }}
+             transition={{ delay: 0.3, type: "spring", stiffness: 300, damping: 20 }}
+             className="absolute -bottom-3 -right-3 flex h-10 w-10 items-center justify-center rounded-full border-4 border-background bg-emerald-500 text-white dark:border-[#0a0a0a]"
+          >
+            <CheckCircle2 className="h-5 w-5" />
+          </motion.div>
+        </motion.div>
+        
+        <div className="mt-8 space-y-2 px-4 text-center">
+          <h4 className="text-xl font-black tracking-tight text-foreground">estratto-conto.csv</h4>
+          <p className="mx-auto max-w-[24ch] text-sm font-medium leading-relaxed text-muted-foreground">
+            78 movimenti elaborati, 3 duplicati scartati automaticamente.
+          </p>
         </div>
-      </div>
 
-      <div className="space-y-2">
-        {DEMO_IMPORT_SIGNALS.map((signal, index) => {
-          const isCurrent = index === activeStage
-
-          return (
-            <motion.div
-              key={signal.label}
-              animate={isCurrent ? { opacity: 1, y: 0 } : { opacity: 0.8, y: 0 }}
-              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-              className={cn(
-                "rounded-[1.3rem] border px-4 py-3",
-                isCurrent
-                  ? "border-primary/20 bg-primary/10 shadow-lg shadow-primary/10"
-                  : "border-white/24 bg-white/55 dark:border-white/10 dark:bg-white/[0.04]"
-              )}
-            >
-              <div className="flex items-start gap-3">
-                <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-[1rem] border border-primary/18 bg-primary/10 text-primary">
-                  {isCurrent ? <CheckCircle2 className="h-4 w-4" /> : <FileSpreadsheet className="h-4 w-4" />}
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-bold text-foreground">{signal.label}</p>
-                  <p className="text-sm font-medium leading-relaxed text-muted-foreground">{signal.detail}</p>
-                </div>
-              </div>
-            </motion.div>
-          )
-        })}
+        <div className="mt-8 flex w-full max-w-[200px] flex-col gap-2">
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-black/5 dark:bg-white/10">
+            <motion.div 
+               className="h-full rounded-full bg-primary" 
+               initial={{ width: "0%" }} 
+               animate={isActive ? { width: "100%" } : { width: "0%" }} 
+               transition={{ delay: 0.1, duration: 1.2, ease: "easeOut" }} 
+            />
+          </div>
+          <p className="text-center text-[10px] font-bold uppercase tracking-[0.16em] text-primary">Pronto per il ledger</p>
+        </div>
       </div>
     </PreviewFrame>
   )
 }
 
 function OverviewPreview({ isActive }: { isActive: boolean }) {
-  const activeMetric = useCycleIndex(DEMO_OVERVIEW_METRICS.length, isActive)
-  const activeMovement = activeMetric % DEMO_OVERVIEW_MOVEMENTS.length
-
   return (
     <PreviewFrame
       eyebrow="Mese in corso"
-      title="Qui il mese non si spezza in dieci schermate"
-      description="La pagina non ti chiede di interpretare il prodotto. Ti fa leggere subito cosa sta succedendo."
       statusLabel="Una lettura sola"
-      footerNote="Il punto non e mostrarti piu dati. E farti capire il mese prima."
+      footerNote="Non devi aprire dieci tab per capire come sta andando il tuo mese in lettura."
     >
-      <div className="rounded-[1.6rem] border border-white/28 bg-white/60 p-4 dark:border-white/10 dark:bg-white/[0.04]">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/72">Aprile 2026</p>
-            <h4 className="mt-1 text-xl font-black tracking-tight text-foreground">Mese in lettura</h4>
+      <div className="flex h-full flex-col justify-center gap-3 py-1">
+        <motion.div 
+          animate={isActive ? { y: 0, opacity: 1 } : { y: 10, opacity: 0 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="rounded-[1.5rem] border border-white/28 bg-white/60 p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.04]"
+        >
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/72">Disponibile Mensile</p>
+          <p className="mt-1 text-4xl sm:text-5xl font-black tracking-tighter text-foreground">€ 1.842</p>
+          
+          <div className="mt-5 space-y-2">
+            <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider">
+              <span className="text-foreground">Spese fisse (61%)</span>
+              <span className="text-primary">Flessibile (39%)</span>
+            </div>
+            <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-black/5 dark:bg-white/5">
+              <motion.div initial={{ width: 0 }} animate={isActive ? { width: "61%" } : { width: 0 }} transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }} className="h-full bg-foreground/20 dark:bg-white/20" />
+              <motion.div initial={{ width: 0 }} animate={isActive ? { width: "39%" } : { width: 0 }} transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }} className="relative h-full overflow-hidden bg-primary">
+                 <motion.div initial={{ x: "-100%" }} animate={isActive ? { x: "200%" } : { x: "-100%" }} transition={{ delay: 0.8, duration: 1.5, repeat: Infinity, repeatDelay: 3 }} className="absolute inset-0 w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+              </motion.div>
+            </div>
           </div>
-          <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary">
-            Dati gia allineati
-          </Badge>
-        </div>
+        </motion.div>
 
-        <div className="mt-4 grid gap-3">
-          {DEMO_OVERVIEW_METRICS.map((metric, index) => (
-            <SimpleMetric
-              key={metric.label}
-              label={metric.label}
-              value={metric.value}
-              note={metric.note}
-              isActive={index === activeMetric}
-            />
-          ))}
-        </div>
-
-        <div className="mt-4 space-y-3">
-          {DEMO_OVERVIEW_BREAKDOWN.map((row, index) => (
-            <BreakdownRow
-              key={row.label}
-              label={row.label}
-              value={row.value}
-              share={row.share}
-              isActive={index === activeMetric}
-            />
-          ))}
-        </div>
-
-        <div className="mt-4 space-y-2">
-          {DEMO_OVERVIEW_MOVEMENTS.map((movement, index) => (
-            <MovementRow
-              key={movement.label}
-              label={movement.label}
-              category={movement.category}
-              amountCents={movement.amountCents}
-              isActive={index === activeMovement}
-            />
-          ))}
+        <div className="flex gap-2">
+          <motion.div 
+            animate={isActive ? { y: 0, opacity: 1 } : { y: 10, opacity: 0 }}
+            transition={{ delay: 0.1, duration: 0.4 }}
+            className="flex-1 rounded-[1.2rem] border border-primary/20 bg-primary/10 p-3.5"
+          >
+            <LayoutDashboard className="mb-2 h-5 w-5 text-primary" />
+            <p className="text-sm font-bold text-foreground">Focus Cibo</p>
+            <p className="mt-1 text-[11px] font-bold uppercase tracking-widest text-primary">-93 € sttim.</p>
+          </motion.div>
+          <motion.div 
+            animate={isActive ? { y: 0, opacity: 1 } : { y: 10, opacity: 0 }}
+            transition={{ delay: 0.15, duration: 0.4 }}
+            className="flex-1 rounded-[1.2rem] border border-white/28 bg-white/60 p-3.5 dark:border-white/10 dark:bg-white/[0.04]"
+          >
+            <WalletCards className="mb-2 h-5 w-5 text-muted-foreground/50" />
+            <p className="text-sm font-bold text-foreground">Abitudini</p>
+            <p className="mt-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">In linea</p>
+          </motion.div>
         </div>
       </div>
     </PreviewFrame>
@@ -370,115 +346,91 @@ function OverviewPreview({ isActive }: { isActive: boolean }) {
 }
 
 function BrainPreview({ isActive }: { isActive: boolean }) {
-  const activeState = useCycleIndex(DEMO_BRAIN_STATES.length, isActive)
-
   return (
     <PreviewFrame
       eyebrow="Brain"
-      title="Il Brain lavora solo su stime future precise"
-      description="Non e un'etichetta generica: serve a leggere fine mese e mese successivo, e dichiara quando deve tornare allo storico."
-      statusLabel="Fine mese + mese prossimo"
-      footerNote="Se la stima non e pronta, Numa non finge sicurezza: mostra lo storico e lo dice."
+      statusLabel="Stime in corso"
+      footerNote="Il calcolo e puramente probabilistico: se l'affidabilita scende, torna allo storico."
     >
-      <div className="rounded-[1.5rem] border border-white/28 bg-white/60 p-4 dark:border-white/10 dark:bg-white/[0.04]">
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary">
-            Fonte Brain quando pronto
-          </Badge>
-          <Badge variant="outline" className="border-white/35 bg-white/50 dark:border-white/12 dark:bg-white/[0.05]">
-            Storico quando serve
-          </Badge>
-        </div>
+      <div className="flex h-full flex-col justify-center py-2">
+        <motion.div 
+          animate={isActive ? { scale: 1, opacity: 1 } : { scale: 0.95, opacity: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="relative overflow-hidden rounded-[2rem] border border-primary/30 bg-gradient-to-br from-primary/15 to-transparent p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"
+        >
+          <motion.div 
+             animate={isActive ? { rotate: 360 } : { rotate: 0 }}
+             transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+             className="absolute -right-12 -top-12 opacity-[0.04] dark:opacity-[0.08]"
+          >
+             <BrainCircuit className="h-48 w-48 text-primary" />
+          </motion.div>
+          <div className="relative z-10 space-y-8">
+            <div>
+              <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-primary">
+                <Sparkles className="h-3.5 w-3.5" /> Predizione Brain
+              </p>
+              <p className="mt-3 text-5xl font-black tracking-tighter text-foreground">€ 1.540</p>
+              <p className="mt-2 text-sm font-medium leading-relaxed text-muted-foreground">
+                Stima del margine disponibile alla fine del mese prossimo.
+              </p>
+            </div>
 
-        <div className="mt-3">
-          <AnimatedMessage message={DEMO_BRAIN_STATES[activeState]?.description ?? DEMO_BRAIN_STATES[0].description} />
-        </div>
-      </div>
-
-      <div className="grid gap-3">
-        {DEMO_BRAIN_METRICS.map((metric, index) => (
-          <SimpleMetric
-            key={metric.label}
-            label={metric.label}
-            value={metric.value}
-            note={metric.note}
-            isActive={index === activeState}
-          />
-        ))}
-      </div>
-
-      <div className="rounded-[1.5rem] border border-white/28 bg-white/60 p-4 dark:border-white/10 dark:bg-white/[0.04]">
-        <div className="flex items-start gap-3">
-          <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-[1rem] border border-primary/18 bg-primary/10 text-primary">
-            <CalendarClock className="h-4 w-4" />
+            <div className="rounded-[1.2rem] border border-white/40 bg-white/70 p-4 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-black/40">
+              <div className="mb-2.5 flex items-center justify-between">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">Affidabilita Modello</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Alta (78%)</span>
+              </div>
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-black/5 dark:bg-white/10">
+                <motion.div 
+                  initial={{ width: 0 }} 
+                  animate={isActive ? { width: "78%" } : { width: 0 }} 
+                  transition={{ delay: 0.3, duration: 1.5, ease: [0.22, 1, 0.36, 1] }} 
+                  className="h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" 
+                />
+              </div>
+            </div>
           </div>
-          <div className="space-y-1.5">
-            <p className="text-sm font-bold text-foreground">Promessa chiara</p>
-            <p className="text-sm font-medium leading-relaxed text-muted-foreground">
-              Il Brain non decide per te e non finge precisione assoluta. Ti mostra una stima futura solo quando ha basi sufficienti.
-            </p>
-          </div>
-        </div>
+        </motion.div>
       </div>
     </PreviewFrame>
   )
 }
 
 function ScenarioPreview({ isActive }: { isActive: boolean }) {
-  const activeScenario = useCycleIndex(DEMO_SCENARIOS.length, isActive)
-  const scenario = DEMO_SCENARIOS[activeScenario] ?? DEMO_SCENARIOS[0]
-
   return (
     <PreviewFrame
       eyebrow="Financial Lab"
-      title="Prima di aggiungere una nuova spesa, ti dice se ci stai dentro"
-      description="Financial Lab non vende ottimismo: restituisce una quota mensile aggiuntiva sostenibile per rata, abbonamento o altra spesa fissa."
-      statusLabel="Quota sostenibile"
-      footerNote="Qui la domanda e concreta: quanto puoi permetterti ogni mese senza esporti troppo."
+      statusLabel="Quota in eccesso"
+      footerNote="La domanda qui non e quanto puoi spendere, ma quanto puoi bloccarti a lungo termine."
     >
-      <div className="flex flex-wrap gap-2">
-        {DEMO_SCENARIOS.map((item, index) => {
-          const isCurrent = index === activeScenario
+      <div className="flex h-full flex-col justify-center gap-4 py-1">
+        
+        <motion.div 
+          animate={isActive ? { y: 0, opacity: 1 } : { y: -10, opacity: 0 }}
+          className="flex w-full items-center justify-between rounded-full border border-white/28 bg-white/60 p-1.5 shadow-sm dark:border-white/10 dark:bg-white/[0.04]"
+        >
+           <div className="rounded-full bg-foreground px-4 py-1 text-[10px] font-bold uppercase tracking-wider text-background shadow-sm">Baseline</div>
+           <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Balanced</div>
+           <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Focused</div>
+        </motion.div>
 
-          return (
-            <motion.div
-              key={item.label}
-              animate={isCurrent ? { opacity: 1, scale: 1 } : { opacity: 0.72, scale: 0.98 }}
-              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-              className={cn(
-                "inline-flex rounded-full border px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em]",
-                isCurrent ? item.accentClassName : "border-white/24 bg-white/55 text-muted-foreground dark:border-white/10 dark:bg-white/[0.04]"
-              )}
-            >
-              {item.label}
-            </motion.div>
-          )
-        })}
-      </div>
+        <motion.div 
+          animate={isActive ? { scale: 1, opacity: 1 } : { scale: 0.95, opacity: 0 }}
+          transition={{ delay: 0.1, duration: 0.4 }}
+          className="flex flex-col items-center justify-center rounded-[2rem] border border-primary/20 bg-primary/5 py-7 shadow-inner"
+        >
+           <motion.div 
+              animate={isActive ? { scale: [1, 1.05, 1] } : {}} 
+              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+           >
+             <FlaskConical className="mb-3 h-8 w-8 text-primary opacity-90 drop-shadow-md" />
+           </motion.div>
+           <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary">Nuova Fissa Sostenibile</p>
+           <h3 className="mt-1 text-5xl font-black tracking-tighter text-foreground">+240 €</h3>
+           <p className="mt-1.5 text-sm font-medium text-muted-foreground">aggiuntivi ogni mese</p>
+        </motion.div>
 
-      <div className="rounded-[1.6rem] border border-white/28 bg-white/60 p-5 dark:border-white/10 dark:bg-white/[0.04]">
-        <div className="flex items-start gap-3">
-          <div className="mt-0.5 flex h-11 w-11 items-center justify-center rounded-[1rem] border border-primary/18 bg-primary/10 text-primary">
-            <FlaskConical className="h-5 w-5" />
-          </div>
-          <div className="space-y-2">
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/72">Quota mensile aggiuntiva sostenibile</p>
-            <p className="text-4xl font-black tracking-tight text-foreground">{formatSignedCents(scenario.quotaCents)}</p>
-            <p className="text-sm font-medium leading-relaxed text-muted-foreground">{scenario.note}</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-[1.5rem] border border-primary/14 bg-primary/10 p-4">
-        <div className="flex items-start gap-3">
-          <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-[1rem] border border-primary/18 bg-white/70 text-primary dark:bg-white/[0.08]">
-            <ShieldCheck className="h-4 w-4" />
-          </div>
-          <div className="space-y-1.5">
-            <p className="text-sm font-bold text-foreground">{scenario.label}</p>
-            <AnimatedMessage message={scenario.example} />
-          </div>
-        </div>
       </div>
     </PreviewFrame>
   )

@@ -15,87 +15,92 @@ import {
 } from "./data"
 import { LandingHeroConsole } from "./components/landing-previews"
 import { LandingProductDemo } from "./components/landing-product-demo"
-
-function SectionEyebrow({ children }: { children: string }) {
-  return (
-    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
-      {children}
-    </p>
-  )
-}
+import { CinematicTextReveal } from "./components/motion-primitives"
 
 export function LandingPage() {
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-background selection:bg-primary/20">
+    <div className="relative min-h-screen overflow-x-clip bg-background selection:bg-primary/20">
       <AmbientBackdrop />
 
-      <main id="main-content" className="relative pb-16 pt-8 sm:pt-10">
-        <StaggerContainer className="space-y-10 sm:space-y-14">
-          <section className="px-4" aria-labelledby="landing-hero-title">
-            <div className="mx-auto max-w-5xl">
-              <MacroSection disableAnimation contentClassName="space-y-8 pt-8 sm:pt-12">
-                <div className="flex flex-col items-center text-center">
-                  <BrandLogo
-                    variant="full"
-                    height={72}
-                    className="w-auto max-w-[250px] sm:max-w-[320px] lg:max-w-[360px]"
-                  />
+      <div className="sticky top-4 z-50 mx-auto hidden w-fit px-4 md:block">
+        <nav className="flex items-center gap-1 rounded-full border border-white/20 bg-white/60 px-2 py-1.5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md dark:border-white/10 dark:bg-black/40">
+          <a href="#problema" className="rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10">Il Problema</a>
+          <a href="#differenza" className="rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10">Differenza</a>
+          <a href="#demo" className="rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10">Demo</a>
+          <a href="#come-funziona" className="rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10">Come funziona</a>
+        </nav>
+      </div>
 
-                  <div className="mt-6 space-y-4">
-                    <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary">
-                      App di finanza personale locale-first
-                    </Badge>
+      <main id="main-content" className="relative pb-16">
+        <StaggerContainer className="space-y-16 sm:space-y-24">
+          
+          {/* SECTION 1: HERO IMMERSIVE */}
+          <section
+            className="relative flex min-h-[90vh] w-full flex-col items-center justify-center overflow-hidden px-4 py-20"
+            aria-labelledby="landing-hero-title"
+          >
+            {/* Immersive background layer */}
+            <div className="absolute inset-0 z-0 bg-background pointer-events-none" />
+            <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background pointer-events-none" />
 
-                    <h1
-                      id="landing-hero-title"
-                      className="mx-auto max-w-[14ch] text-4xl font-black tracking-tight text-foreground sm:text-5xl lg:text-6xl"
-                    >
-                      L&apos;app che ti aiuta a capire il mese, non solo a registrare spese.
-                    </h1>
+            <div className="relative z-10 flex w-full max-w-4xl flex-col items-center text-center">
+              <BrandLogo
+                variant="full"
+                height={84}
+                className="mb-10 w-auto max-w-[280px] sm:max-w-[360px] lg:max-w-[420px]"
+              />
 
-                    <p className="mx-auto max-w-3xl text-base font-medium leading-relaxed text-muted-foreground sm:text-lg">
-                      Numa ti fa vedere dove stanno andando i tuoi soldi, quanto potrebbe restarti a fine mese e se una nuova spesa fissa e davvero sostenibile.
-                      Tutto con dati gestiti in locale.
-                    </p>
-                  </div>
+              <div className="space-y-6">
+                <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary">
+                  App di finanza personale locale-first
+                </Badge>
 
-                  <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row">
-                    <Button asChild size="lg" className="rounded-full px-8 shadow-lg shadow-primary/15">
-                      <Link href="/dashboard">
-                        Apri l&apos;app
-                        <ArrowRight className="h-4 w-4" />
-                      </Link>
-                    </Button>
+                <h1
+                  id="landing-hero-title"
+                  className="mx-auto max-w-[15ch] text-5xl font-black tracking-tight text-foreground sm:text-6xl lg:text-7xl"
+                >
+                  <CinematicTextReveal text="L'app che ti aiuta a capire il mese, non solo a registrare spese." />
+                </h1>
 
-                    <a
-                      href="#differenza"
-                      className="text-sm font-semibold text-primary transition-colors hover:text-primary/80"
-                    >
-                      Scopri perche e diversa
-                    </a>
-                  </div>
-                </div>
-              </MacroSection>
+                <p className="mx-auto max-w-2xl text-base font-medium leading-relaxed text-muted-foreground sm:text-lg lg:text-xl">
+                  Numa ti fa vedere dove stanno andando i tuoi soldi, quanto potrebbe restarti a fine mese e se una nuova spesa fissa e davvero sostenibile.
+                </p>
+              </div>
+
+              <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
+                <Button asChild size="lg" className="rounded-full px-8 shadow-lg shadow-primary/15">
+                  <Link href="/dashboard">
+                    Apri l&apos;app
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+
+                <a
+                  href="#problema"
+                  className="text-sm font-semibold text-primary transition-colors hover:text-primary/80"
+                >
+                  Scopri perche Numa e diversa
+                </a>
+              </div>
             </div>
           </section>
 
+          {/* SECTION 2: PROBLEMA */}
           <section id="problema" className="px-4 scroll-mt-24" aria-labelledby="landing-problem-title">
             <div className="mx-auto max-w-6xl">
-              <h2 id="landing-problem-title" className="sr-only">
-                Perche nasce Numa
-              </h2>
               <MacroSection disableAnimation contentClassName="pt-5">
                 <LandingHeroConsole />
               </MacroSection>
             </div>
           </section>
 
+          {/* SECTION 3: DIFFERENZA */}
           <section id="differenza" className="px-4 scroll-mt-24" aria-labelledby="landing-different-title">
             <div className="mx-auto max-w-6xl">
               <MacroSection
                 disableAnimation
-                title={<span id="landing-different-title">Perche e diversa da molti tracker</span>}
-                description="La maggior parte delle app ti chiede prima cloud, metodo o automazioni promesse. Numa prova a fare il contrario: spiegarti il mese con piu chiarezza."
+                title={<span id="landing-different-title">La differenza con Numa</span>}
+                description="La maggior parte delle app ti chiede prima cloud, metodo o automazioni. Numa prova a fare il contrario: spiegarti il mese con piu chiarezza."
                 contentClassName="space-y-3 pt-5"
               >
                 {LANDING_DIFFERENTIATORS.map((item) => (
@@ -122,19 +127,12 @@ export function LandingPage() {
             </div>
           </section>
 
-          <section id="demo" className="px-4 scroll-mt-24" aria-labelledby="landing-demo-title">
-            <div className="mx-auto max-w-6xl">
-              <MacroSection
-                disableAnimation
-                title={<span id="landing-demo-title">Guardala in 4 momenti</span>}
-                description="Qui non stai vedendo un video o slide generiche. Stai vedendo una versione controllata del prodotto, resa piu semplice da capire mentre scorri."
-                contentClassName="pt-5"
-              >
-                <LandingProductDemo />
-              </MacroSection>
-            </div>
+          {/* SECTION 4: DEMO NARRATIVA (STICKY SCROLLYTELLING) */}
+          <section id="demo" aria-labelledby="landing-demo-title">
+             <LandingProductDemo />
           </section>
 
+          {/* SECTION 5: COME FUNZIONA */}
           <section id="come-funziona" className="px-4 scroll-mt-24" aria-labelledby="landing-how-title">
             <div className="mx-auto max-w-6xl">
               <MacroSection
@@ -160,6 +158,7 @@ export function LandingPage() {
             </div>
           </section>
 
+          {/* SECTION 6: OUTCOME */}
           <section className="px-4" aria-labelledby="landing-outcomes-title">
             <div className="mx-auto max-w-6xl">
               <MacroSection
@@ -185,11 +184,12 @@ export function LandingPage() {
             </div>
           </section>
 
+          {/* SECTION 7: CTA FINALE */}
           <section id="open-app" className="px-4 scroll-mt-24" aria-labelledby="landing-cta-title">
             <div className="mx-auto max-w-6xl">
               <div className="surface-strong overflow-hidden p-6 sm:p-8 lg:p-10">
                 <div className="space-y-4">
-                  <SectionEyebrow>Dati locali. Stime future. Quota sostenibile.</SectionEyebrow>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">Dati locali. Stime future. Quota sostenibile.</p>
                   <h2 id="landing-cta-title" className="max-w-[16ch] text-3xl font-black tracking-tight text-foreground sm:text-4xl">
                     Se vuoi una lettura piu chiara dei tuoi soldi, entra in Numa.
                   </h2>

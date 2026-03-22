@@ -212,10 +212,6 @@ export const DEMO_IMPORT_SIGNALS: DemoImportSignal[] = [
   {
     label: "3 gruppi da rivedere",
     detail: "I casi dubbi vengono raccolti in modo leggibile prima del salvataggio."
-  },
-  {
-    label: "3 duplicati fermati",
-    detail: "I doppioni non entrano nel ledger se non hanno senso."
   }
 ]
 
@@ -229,11 +225,6 @@ export const DEMO_OVERVIEW_METRICS: DemoOverviewMetric[] = [
     label: "Spese flessibili",
     value: "27%",
     note: "La parte che puoi alleggerire si riconosce subito."
-  },
-  {
-    label: "Extra ricorrenti",
-    value: "12%",
-    note: "I piccoli pesi ripetuti emergono prima che diventino abitudine."
   }
 ]
 
@@ -244,19 +235,9 @@ export const DEMO_OVERVIEW_BREAKDOWN: DemoOverviewBreakdown[] = [
     share: 61
   },
   {
-    label: "Spesa alimentare",
-    value: "24%",
-    share: 24
-  },
-  {
-    label: "Ristoranti e take-away",
-    value: "10%",
-    share: 10
-  },
-  {
-    label: "Abbonamenti ed extra",
-    value: "5%",
-    share: 5
+    label: "Spesa flessibile",
+    value: "39%",
+    share: 39
   }
 ]
 
@@ -265,16 +246,6 @@ export const DEMO_OVERVIEW_MOVEMENTS: DemoOverviewMovement[] = [
     label: "Spesa settimanale",
     category: "Cibo",
     amountCents: -9300
-  },
-  {
-    label: "Toolkit design",
-    category: "Abbonamenti",
-    amountCents: -2300
-  },
-  {
-    label: "Upgrade in-app",
-    category: "Extra digitale",
-    amountCents: -900
   }
 ]
 
@@ -303,11 +274,6 @@ export const DEMO_BRAIN_METRICS: DemoBrainMetric[] = [
     label: "Mese prossimo",
     value: "EUR 1540",
     note: "Una lettura sintetica del mese che arriva."
-  },
-  {
-    label: "Affidabilita",
-    value: "78%",
-    note: "La stima viene messa in primo piano solo quando supera il controllo di qualita."
   }
 ]
 

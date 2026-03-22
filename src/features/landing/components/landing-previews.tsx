@@ -302,17 +302,13 @@ export function LandingStepPreview({
   step: LandingDemoStep
   isActive: boolean
 }) {
-  if (step.id === "import") {
-    return <ImportPreview isActive={isActive} />
+  const PREVIEW_MAP: Record<LandingDemoStep["id"], React.FC<{ isActive: boolean }>> = {
+    import: ImportPreview,
+    overview: OverviewPreview,
+    insights: BrainPreview,
+    scenarios: ScenarioPreview
   }
-
-  if (step.id === "overview") {
-    return <OverviewPreview isActive={isActive} />
-  }
-
-  if (step.id === "insights") {
-    return <BrainPreview isActive={isActive} />
-  }
-
-  return <ScenarioPreview isActive={isActive} />
+  
+  const Component = PREVIEW_MAP[step.id]
+  return Component ? <Component isActive={isActive} /> : null
 }

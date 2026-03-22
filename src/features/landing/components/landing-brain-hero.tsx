@@ -60,6 +60,36 @@ export function LandingBrainHero() {
   const maskOpacity = useTransform(smoothProgress, [0.45, 0.50], [0, 1])
   const revealOpacity = useTransform(smoothProgress, [0.60, 0.70], [0, 1])
   const revealY = useTransform(smoothProgress, [0.60, 0.70], [20, 0])
+  const contourOpacity = useTransform(smoothProgress, [0.50, 0.65], [0, 1])
+
+  const backgroundWordStyle = { y: bgY, opacity: textOpacity }
+  const headingStyle = { opacity: textOpacity }
+  const sceneStyle = { opacity: sceneOpacity }
+  const glowStyle = { scale: middleScale, opacity: bottomOpacity }
+  const backLayerStyle = {
+    y: bottomY,
+    scale: bottomScale,
+    opacity: bottomOpacity,
+    rotateX: bottomRotateX,
+    filter: bottomBlur,
+  }
+  const middleLayerStyle = {
+    y: middleY,
+    scale: middleScale,
+    opacity: middleOpacity,
+    rotateX: middleRotateX,
+    filter: middleBlur,
+  }
+  const topLayerStyle = {
+    y: topY,
+    scale: finalScale,
+    borderRadius: layerBorderRadius,
+  }
+  const topLayerFrameStyle = { opacity: topContentOpacity }
+  const topLayerContourStyle = { opacity: contourOpacity }
+  const maskStyle = { opacity: maskOpacity }
+  const topLayerContentStyle = { opacity: topContentOpacity, scale: topScale }
+  const revealStyle = { opacity: revealOpacity, y: revealY }
 
   if (prefersReducedMotion) {
     return (
@@ -110,7 +140,7 @@ export function LandingBrainHero() {
   return (
     <div ref={containerRef} className="relative h-[600vh] w-full bg-background [perspective:1000px]">
       <div className="sticky top-0 flex h-screen w-full flex-col items-center justify-center overflow-hidden">
-        <motion.div style={{ y: bgY, opacity: textOpacity }} className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <motion.div style={backgroundWordStyle} className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <h2 className="text-center text-[12vw] leading-none font-black tracking-tighter text-black/[0.03] dark:text-white/[0.02]">
             POSSIBILE
             <br />
@@ -118,7 +148,7 @@ export function LandingBrainHero() {
           </h2>
         </motion.div>
 
-        <motion.div style={{ opacity: textOpacity }} className="absolute top-20 z-50 px-6 text-center md:top-28">
+        <motion.div style={headingStyle} className="absolute top-20 z-50 px-6 text-center md:top-28">
           <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.2em] text-primary">Numa Brain</p>
           <h2 id="landing-brain-hero-title" className="mx-auto max-w-3xl text-4xl leading-tight font-black tracking-tight text-foreground md:text-6xl">
             Quando il Brain e pronto, ti mostra il possibile dopo.
@@ -128,15 +158,15 @@ export function LandingBrainHero() {
           </p>
         </motion.div>
 
-        <motion.div style={{ opacity: sceneOpacity }} className="relative z-10 flex h-[300px] w-[300px] items-center justify-center sm:h-[360px] sm:w-[360px]">
+        <motion.div style={sceneStyle} className="relative z-10 flex h-[300px] w-[300px] items-center justify-center sm:h-[360px] sm:w-[360px]">
           {/* Intense Core Backlight Glow */}
           <motion.div 
-             style={{ scale: middleScale, opacity: bottomOpacity }}
+             style={glowStyle}
              className="absolute inset-0 -z-10 rounded-full bg-primary/20 blur-[80px]" 
           />
 
           <motion.div
-            style={{ y: bottomY, scale: bottomScale, opacity: bottomOpacity, rotateX: bottomRotateX, filter: bottomBlur }}
+            style={backLayerStyle}
             className="absolute inset-0 z-0 flex flex-col items-center justify-center overflow-hidden rounded-[24px] border border-white/20 bg-background/80 p-6 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-black/90"
           >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(14,165,168,0.18),_transparent_58%)]" />
@@ -150,7 +180,7 @@ export function LandingBrainHero() {
           </motion.div>
 
           <motion.div
-            style={{ y: middleY, scale: middleScale, opacity: middleOpacity, rotateX: middleRotateX, filter: middleBlur }}
+            style={middleLayerStyle}
             className="absolute inset-0 z-10 flex flex-col items-center justify-center overflow-hidden rounded-[24px] border border-primary/40 bg-background/60 p-6 shadow-[0_30px_80px_rgba(14,165,168,0.25)] backdrop-blur-xl dark:bg-black/70"
           >
             <Cpu className="absolute -left-10 h-40 w-40 text-primary/30" />
@@ -161,24 +191,24 @@ export function LandingBrainHero() {
           </motion.div>
 
           <motion.div
-            style={{ y: topY, scale: finalScale, borderRadius: layerBorderRadius }}
+            style={topLayerStyle}
             className="absolute inset-0 z-20 origin-center overflow-hidden bg-white/80 p-6 backdrop-blur-2xl dark:bg-[#070707]/90"
           >
             {/* The actual border and shadow that fades out before the lens explodes, preventing massive scaling artifacts */}
             <motion.div 
-               style={{ opacity: topContentOpacity }}
+               style={topLayerFrameStyle}
                className="pointer-events-none absolute inset-0 rounded-[inherit] border border-white/50 shadow-[0_40px_100px_rgba(0,0,0,0.1)] dark:border-white/15 dark:shadow-[0_60px_120px_rgba(0,0,0,0.8)]"
             />
             
             {/* Cinematic expanding shadow contour to make the explosion pop against the dark background */}
             <motion.div 
-               style={{ opacity: useTransform(smoothProgress, [0.50, 0.65], [0, 1]) }}
+               style={topLayerContourStyle}
                className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[0_0_1px_rgba(0,0,0,0.8)] ring-1 ring-black/10 dark:shadow-[0_0_2px_rgba(255,255,255,0.6)] dark:ring-white/20"
             />
 
-            <motion.div style={{ opacity: maskOpacity }} className="absolute inset-0 bg-background" />
+            <motion.div style={maskStyle} className="absolute inset-0 bg-background" />
 
-            <motion.div style={{ opacity: topContentOpacity, scale: topScale }} className="relative z-10 flex h-full flex-col items-center justify-center text-center">
+            <motion.div style={topLayerContentStyle} className="relative z-10 flex h-full flex-col items-center justify-center text-center">
               <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full border border-primary/20 bg-primary/10 shadow-inner">
                 <Focus className="h-6 w-6 text-primary" />
               </div>
@@ -193,7 +223,7 @@ export function LandingBrainHero() {
 
         {/* The Post-Explosion Reveal */}
         <motion.div
-           style={{ opacity: revealOpacity, y: revealY }}
+           style={revealStyle}
            className="absolute inset-0 z-50 flex flex-col items-center justify-center p-6 text-center pointer-events-none"
         >
            <h3 className="text-4xl md:text-6xl font-black tracking-tight text-foreground max-w-3xl">

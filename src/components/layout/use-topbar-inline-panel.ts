@@ -9,6 +9,8 @@ interface UseTopbarInlinePanelOptions {
     maxWidth: number
     minWidth: number
     onOpenChange?: (isOpen: boolean) => void
+    reserveClosedWidth?: boolean
+    reservedGapPx?: number
     scopeSelector?: string
     widthFactor?: number
 }
@@ -19,6 +21,8 @@ export function useTopbarInlinePanel({
     maxWidth,
     minWidth,
     onOpenChange,
+    reserveClosedWidth = true,
+    reservedGapPx = 8,
     scopeSelector = '[data-testid="topbar-action-cluster"]',
     widthFactor = 1,
 }: UseTopbarInlinePanelOptions) {
@@ -26,6 +30,7 @@ export function useTopbarInlinePanel({
     const [uncontrolledIsOpen, setUncontrolledIsOpen] = useState(false)
     const [panelWidth, setPanelWidth] = useState(minWidth)
     const containerRef = useRef<HTMLDivElement>(null)
+    const closedWidthRef = useRef(0)
     const isOpenRef = useRef(false)
     const isControlled = controlledIsOpen !== undefined
     const isOpen = isControlled ? controlledIsOpen : uncontrolledIsOpen
@@ -43,32 +48,63 @@ export function useTopbarInlinePanel({
     }, [isControlled, onOpenChange])
 
     useEffect(() => {
-        const updatePanelWidth = () => {
-            if (isOpenRef.current) return
-
+        const resolveScopeElement = () => {
             const cluster = scopeSelector
                 ? containerRef.current?.closest(scopeSelector)
                 : null
-            if (cluster instanceof HTMLElement) {
+            return cluster instanceof HTMLElement ? cluster : null
+        }
+
+        const measureClosedWidth = () => {
+            if (!reserveClosedWidth || isOpenRef.current) return
+            const nextClosedWidth = Math.round(containerRef.current?.getBoundingClientRect().width ?? 0)
+            if (nextClosedWidth > 0) {
+                closedWidthRef.current = nextClosedWidth
+            }
+        }
+
+        const updatePanelWidth = () => {
+            const cluster = resolveScopeElement()
+            measureClosedWidth()
+
+            if (cluster) {
                 const clusterWidth = Math.round(cluster.getBoundingClientRect().width)
-                setPanelWidth(Math.max(minWidth, Math.min(Math.round(clusterWidth * widthFactor), maxWidth)))
+                const reservedWidth = reserveClosedWidth ? closedWidthRef.current + reservedGapPx : 0
+                const scaledWidth = Math.round(clusterWidth * widthFactor)
+                const availableWidth = Math.max(minWidth, scaledWidth - reservedWidth)
+                setPanelWidth(Math.max(minWidth, Math.min(availableWidth, maxWidth)))
                 return
             }
 
-            setPanelWidth(Math.max(minWidth, Math.min(window.innerWidth * fallbackViewportFactor, maxWidth)))
+            const viewportWidth = window.innerWidth * fallbackViewportFactor
+            const reservedWidth = reserveClosedWidth ? closedWidthRef.current + reservedGapPx : 0
+            const availableWidth = Math.max(minWidth, Math.round(viewportWidth - reservedWidth))
+            setPanelWidth(Math.max(minWidth, Math.min(availableWidth, maxWidth)))
         }
 
         updatePanelWidth()
         window.addEventListener("resize", updatePanelWidth)
 
+        const cluster = resolveScopeElement()
+        const resizeObserver = typeof ResizeObserver === "undefined" || !cluster
+            ? null
+            : new ResizeObserver(() => {
+                updatePanelWidth()
+            })
+
+        if (resizeObserver && cluster) {
+            resizeObserver.observe(cluster)
+        }
+
         return () => {
             window.removeEventListener("resize", updatePanelWidth)
+            resizeObserver?.disconnect()
         }
-    }, [fallbackViewportFactor, maxWidth, minWidth, scopeSelector, widthFactor])
+    }, [fallbackViewportFactor, maxWidth, minWidth, reserveClosedWidth, reservedGapPx, scopeSelector, widthFactor])
 
     useEffect(() => {
         isOpenRef.current = isOpen
-    }, [isOpen, setIsOpen])
+    }, [isOpen])
 
     useEffect(() => {
         if (!isOpen) return

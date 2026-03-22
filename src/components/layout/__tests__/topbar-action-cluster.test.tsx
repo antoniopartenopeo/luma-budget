@@ -2,8 +2,9 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { beforeEach, describe, expect, it } from "vitest"
 import { TopbarActionCluster } from "../topbar-action-cluster"
+import type React from "react"
 
-async function renderWithQueryClient() {
+async function renderWithQueryClient(props: React.ComponentProps<typeof TopbarActionCluster> = {}) {
     const queryClient = new QueryClient({
         defaultOptions: {
             queries: { retry: false },
@@ -14,7 +15,7 @@ async function renderWithQueryClient() {
     await act(async () => {
         render(
             <QueryClientProvider client={queryClient}>
-                <TopbarActionCluster />
+                <TopbarActionCluster {...props} />
             </QueryClientProvider>
         )
         await Promise.resolve()
@@ -31,7 +32,7 @@ describe("TopbarActionCluster", () => {
 
         const cluster = screen.getByTestId("topbar-action-cluster")
         const flashButton = screen.getByRole("button", { name: "Apri Numa Flash" })
-        const privacyButton = screen.getByRole("button", { name: "Nascondi importi" })
+        const privacyButton = screen.getByRole("button", { name: /Mostra importi|Nascondi importi/ })
         const themeButton = screen.getByTestId("topbar-theme-trigger")
         const brainButton = screen.getByTestId("topbar-brain-trigger")
         const notificationButton = screen.getByTestId("topbar-notifications-trigger")
@@ -136,17 +137,23 @@ describe("TopbarActionCluster", () => {
         await renderWithQueryClient()
 
         const cluster = screen.getByTestId("topbar-action-cluster")
-        const rightRail = screen.getByTestId("topbar-right-rail")
         const trigger = screen.getByTestId("topbar-flash-trigger")
-        const notificationTrigger = screen.getByTestId("topbar-notifications-trigger")
 
         fireEvent.click(trigger)
 
         const panel = screen.getByTestId("topbar-flash-panel")
         expect(cluster).toContainElement(panel)
-        expect(rightRail).toContainElement(notificationTrigger)
         expect(trigger).toHaveAttribute("aria-expanded", "true")
         expect(panel.compareDocumentPosition(trigger) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    })
+
+    it("in controlled mode renderizza solo il trigger desktop utility aperto", async () => {
+        await renderWithQueryClient({ activePanel: "flash", onActivePanelChange: () => undefined })
+
+        expect(screen.getByTestId("topbar-flash-panel")).toBeInTheDocument()
+        expect(screen.queryByTestId("topbar-theme-trigger")).not.toBeInTheDocument()
+        expect(screen.queryByTestId("topbar-brain-trigger")).not.toBeInTheDocument()
+        expect(screen.queryByTestId("topbar-notifications-trigger")).not.toBeInTheDocument()
     })
 
     it("mantiene il trigger tema come rail destro rendendo il pannello prima del trigger", async () => {
@@ -181,7 +188,38 @@ describe("TopbarActionCluster", () => {
 
         await waitFor(() => {
             expect(screen.getByTestId("topbar-flash-panel")).toBeInTheDocument()
-            expect(screen.queryByTestId("topbar-theme-panel")).not.toBeInTheDocument()
+            expect(screen.getByTestId("topbar-theme-panel")).toHaveStyle({ opacity: "0" })
+        })
+    })
+
+
+
+    it("su mobile espande la capsula verso il basso senza usare pannelli inline desktop", async () => {
+        await renderWithQueryClient({ surface: "mobile" })
+
+        expect(screen.queryByTestId("topbar-mobile-panel")).not.toBeInTheDocument()
+
+        fireEvent.click(screen.getByTestId("topbar-mobile-trigger-flash"))
+
+        const mobilePanel = screen.getByTestId("topbar-mobile-panel")
+        expect(mobilePanel).toBeInTheDocument()
+        expect(screen.getByText("Flash")).toBeInTheDocument()
+        expect(screen.queryByTestId("topbar-flash-panel")).not.toBeInTheDocument()
+
+        fireEvent.click(screen.getByTestId("topbar-mobile-trigger-theme"))
+
+        await waitFor(() => {
+            expect(screen.getByTestId("topbar-mobile-panel")).toBeInTheDocument()
+            expect(screen.getByText("Tema")).toBeInTheDocument()
+            expect(screen.queryByText("Flash")).not.toBeInTheDocument()
+        })
+
+        fireEvent.click(screen.getByTestId("topbar-mobile-trigger-quick"))
+
+        await waitFor(() => {
+            expect(screen.getAllByTestId("topbar-mobile-panel").length).toBeGreaterThan(0)
+            expect(screen.getByText("Transazione")).toBeInTheDocument()
+            expect(screen.getByLabelText("Registra come Uscita")).toBeInTheDocument()
         })
     })
 

@@ -59,7 +59,7 @@ export function TopbarNotifications({ isOpen, onOpenChange, triggerClassName }: 
     } = useTopbarInlinePanel({
         isOpen,
         minWidth: 260,
-        maxWidth: 520,
+        maxWidth: 1600,
         onOpenChange,
         scopeSelector: '[data-testid="topbar-desktop-capsule"]',
         widthFactor: 1,

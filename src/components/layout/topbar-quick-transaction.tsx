@@ -58,6 +58,7 @@ export function TopbarQuickTransaction({
         minWidth: 460,
         maxWidth: 980,
         onOpenChange: handleOpenChange,
+        reserveClosedWidth: false,
         scopeSelector: '[data-testid="topbar-desktop-capsule"]',
         widthFactor: 0.82,
         fallbackViewportFactor: 0.72,
@@ -103,8 +104,30 @@ export function TopbarQuickTransaction({
         updateAvailablePanelWidth()
         window.addEventListener("resize", updateAvailablePanelWidth)
 
+        const scope = containerRef.current?.closest('[data-testid="topbar-desktop-capsule"]')
+        const scopeObserver = typeof ResizeObserver === "undefined" || !(scope instanceof HTMLElement)
+            ? null
+            : new ResizeObserver(() => {
+                updateAvailablePanelWidth()
+            })
+        const triggerRailObserver = typeof ResizeObserver === "undefined" || !triggerRailRef.current
+            ? null
+            : new ResizeObserver(() => {
+                updateAvailablePanelWidth()
+            })
+
+        if (scopeObserver && scope instanceof HTMLElement) {
+            scopeObserver.observe(scope)
+        }
+
+        if (triggerRailObserver && triggerRailRef.current) {
+            triggerRailObserver.observe(triggerRailRef.current)
+        }
+
         return () => {
             window.removeEventListener("resize", updateAvailablePanelWidth)
+            scopeObserver?.disconnect()
+            triggerRailObserver?.disconnect()
         }
     }, [containerRef, resolvedIsOpen])
 

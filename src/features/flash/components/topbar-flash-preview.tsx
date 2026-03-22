@@ -37,7 +37,7 @@ export function TopbarFlashPreview({ isOpen, onOpenChange, triggerClassName }: T
     } = useTopbarInlinePanel({
         isOpen,
         minWidth: 320,
-        maxWidth: 420,
+        maxWidth: 1600,
         onOpenChange,
         scopeSelector: '[data-testid="topbar-desktop-capsule"]',
         widthFactor: 1,

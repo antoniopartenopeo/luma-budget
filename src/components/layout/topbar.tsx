@@ -1,27 +1,35 @@
 "use client"
 
+import { motion } from "framer-motion"
 import { useState } from "react"
 import { Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { QuickExpenseInput } from "@/features/transactions/components/quick-expense-input"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Sidebar } from "./sidebar"
 import { TopbarActionCluster } from "./topbar-action-cluster"
 import { type TopbarPanelId } from "./topbar-panel-id"
 import { TopbarQuickTransaction } from "./topbar-quick-transaction"
+import { TOPBAR_CLUSTER_DIVIDER_CLASS } from "./topbar-tokens"
 
-/**
- * TopBar: Streamlined for actions. 
- * Primary identity (Brand/Profile) is delegated to the Sidebar.
- */
+function SidebarSheetPanel({ onNavigate }: { onNavigate: () => void }) {
+    return (
+        <SheetContent side="left" className="w-64 border-none bg-transparent p-0 shadow-2xl">
+            <div className="sr-only">
+                <SheetTitle>Menu di Navigazione</SheetTitle>
+            </div>
+            <Sidebar onNavigate={onNavigate} />
+        </SheetContent>
+    )
+}
+
 export function TopBar() {
     const pathname = usePathname()
     const isSettingsPage = pathname === "/settings"
     const [isMenuOpen, setIsMenuOpen] = useState(false)
-    const [isQuickAddOpen, setIsQuickAddOpen] = useState(false)
     const [activeDesktopPanel, setActiveDesktopPanel] = useState<TopbarPanelId | null>(null)
+    const isDesktopUtilityPanelOpen = activeDesktopPanel !== null && activeDesktopPanel !== "quick"
 
     return (
         <header
@@ -30,23 +38,16 @@ export function TopBar() {
                 "sm:border-none sm:bg-transparent sm:backdrop-blur-none sm:[box-shadow:none] sm:dark:bg-transparent"
             )}
         >
-            <div className="flex min-h-[80px] lg:min-h-[80px] h-auto flex-col">
-                <div className="flex h-20 items-center gap-4 px-4 md:px-8">
-                    <div className="flex items-center gap-2">
+            <div className="flex h-auto min-h-[80px] flex-col">
+                <div className="hidden h-20 items-center gap-4 px-4 md:px-8 sm:flex">
+                    <div className="hidden items-center gap-2 sm:flex">
                         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                             <SheetTrigger asChild>
                                 <Button variant="ghost" size="icon" className="lg:hidden shrink-0 h-10 w-10">
                                     <Menu className="h-6 w-6" />
                                 </Button>
                             </SheetTrigger>
-                            <SheetContent side="left" className="p-0 border-none w-64 bg-transparent shadow-2xl">
-                                <div className="sr-only">
-                                    <SheetTitle>Menu di Navigazione</SheetTitle>
-                                </div>
-                                <Sidebar
-                                    onNavigate={() => setIsMenuOpen(false)}
-                                />
-                            </SheetContent>
+                            <SidebarSheetPanel onNavigate={() => setIsMenuOpen(false)} />
                         </Sheet>
                     </div>
 
@@ -59,62 +60,66 @@ export function TopBar() {
 
                             <div className="relative z-10 flex min-w-0 flex-1 items-center">
                                 {!isSettingsPage && (
-                                    <>
-                                        <TopbarQuickTransaction
-                                            activePanel={activeDesktopPanel}
-                                            onActivePanelChange={setActiveDesktopPanel}
-                                            surface="embedded"
-                                        />
-                                        <div className="mx-1 h-6 w-px shrink-0 bg-border/50" />
-                                    </>
+                                    <motion.div
+                                        layout
+                                        initial={false}
+                                        animate={isDesktopUtilityPanelOpen
+                                            ? { opacity: 0, maxWidth: 0, marginRight: 0 }
+                                            : { opacity: 1, maxWidth: 640, marginRight: 4 }}
+                                        transition={{ type: "spring", stiffness: 360, damping: 30, mass: 0.9 }}
+                                        className={cn(
+                                            "min-w-0 overflow-hidden",
+                                            isDesktopUtilityPanelOpen ? "pointer-events-none" : "flex-1"
+                                        )}
+                                    >
+                                        <div className="flex min-w-0 items-center">
+                                            <TopbarQuickTransaction
+                                                activePanel={activeDesktopPanel}
+                                                onActivePanelChange={setActiveDesktopPanel}
+                                                surface="embedded"
+                                            />
+                                            <div className={TOPBAR_CLUSTER_DIVIDER_CLASS} />
+                                        </div>
+                                    </motion.div>
                                 )}
 
-                                <div className={cn("min-w-0 shrink-0", isSettingsPage && "ml-auto")}>
+                                <motion.div
+                                    layout
+                                    initial={false}
+                                    className={cn(
+                                        "min-w-0",
+                                        isDesktopUtilityPanelOpen ? "flex-1" : "shrink-0",
+                                        isSettingsPage && "ml-auto"
+                                    )}
+                                >
                                     <TopbarActionCluster
                                         activePanel={activeDesktopPanel}
                                         onActivePanelChange={setActiveDesktopPanel}
                                         surface="embedded"
                                     />
-                                </div>
+                                </motion.div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="ml-auto flex min-w-0 items-center justify-end gap-3 sm:hidden">
-                        {/* Mobile Toggle Button */}
-                        {!isSettingsPage && (
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="sm:hidden -mr-2"
-                                onClick={() => setIsQuickAddOpen(!isQuickAddOpen)}
-                            >
-                                <div className={cn(
-                                    "transition-transform duration-300",
-                                    isQuickAddOpen ? "rotate-45 text-primary" : "rotate-0"
-                                )}>
-                                    <span className="text-2xl font-light leading-none">+</span>
-                                </div>
-                            </Button>
-                        )}
-
-                        <TopbarActionCluster />
-                    </div>
                 </div>
 
-                {/* Mobile QuickAdd - Revealed on toggle */}
-                {!isSettingsPage && (
-                    <div className={cn(
-                        "overflow-hidden sm:hidden transition-[max-height,opacity,padding] duration-300 ease-in-out",
-                        isQuickAddOpen ? "max-h-96 opacity-100 pb-4" : "max-h-0 opacity-0"
-                    )}>
-                        <div className="px-4 flex justify-center border-t pt-4">
-                            <div className="w-full max-w-md">
-                                <QuickExpenseInput onExpenseCreated={() => setIsQuickAddOpen(false)} />
-                            </div>
-                        </div>
-                    </div>
-                )}
+                <div className="px-4 pt-3 pb-3 sm:hidden">
+                    <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+                        <TopbarActionCluster
+                            surface="mobile"
+                            mobileLeadingSlot={(
+                                <SheetTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0">
+                                        <Menu className="h-5 w-5" />
+                                    </Button>
+                                </SheetTrigger>
+                            )}
+                        />
+                        <SidebarSheetPanel onNavigate={() => setIsMenuOpen(false)} />
+                    </Sheet>
+                </div>
+
             </div>
         </header>
     )

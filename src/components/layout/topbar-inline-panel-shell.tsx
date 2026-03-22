@@ -17,7 +17,6 @@ interface TopbarInlinePanelShellProps {
     panelRole?: string
     panelTestId: string
     panelWidth: number
-    rootDataOpen?: boolean
     transition: Transition
     trigger: ReactNode
 }
@@ -34,7 +33,6 @@ export function TopbarInlinePanelShell({
     panelRole = "region",
     panelTestId,
     panelWidth,
-    rootDataOpen,
     transition,
     trigger,
 }: TopbarInlinePanelShellProps) {
@@ -44,7 +42,6 @@ export function TopbarInlinePanelShell({
             layout
             initial={false}
             transition={transition}
-            data-open={rootDataOpen === undefined ? undefined : (rootDataOpen ? "true" : "false")}
             className={cn(TOPBAR_INLINE_PANEL_ROOT_CLASS, className)}
         >
             <AnimatePresence initial={false}>

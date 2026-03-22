@@ -24,7 +24,7 @@ interface QuickExpenseInputProps {
     autoFocusDescription?: boolean
     descriptionInputRef?: Ref<HTMLInputElement>
     onExpenseCreated?: (transaction: Transaction) => void
-    variant?: "card" | "embedded"
+    variant?: "card" | "embedded" | "mobile-panel"
 }
 
 const EMPTY_ARRAY: Category[] = []
@@ -126,6 +126,8 @@ export function QuickExpenseInput({
 
     const hasError = !!validationError || isError
     const isEmbedded = variant === "embedded"
+    const isMobilePanel = variant === "mobile-panel"
+    const isCapsuleVariant = isEmbedded || isMobilePanel
     const inlineUtilityButtonClass = "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-transparent bg-transparent text-muted-foreground/80 leading-none transition-[background-color,color,border-color] duration-200 hover:bg-black/[0.045] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-white/[0.06] [&_svg]:shrink-0"
     const expenseNatureLabel = isSuperfluous ? "Spesa superflua" : "Spesa necessaria"
     const ExpenseNatureIcon = isSuperfluous ? Sparkles : ShieldCheck
@@ -135,10 +137,12 @@ export function QuickExpenseInput({
             <form
                 onSubmit={handleSubmit}
                 className={cn(
-                    isEmbedded
-                        ? "flex h-auto flex-col items-stretch gap-2 rounded-[1.1rem] bg-transparent p-2 sm:h-10 sm:flex-row sm:items-center sm:gap-1 sm:p-0"
+                    isMobilePanel
+                        ? "flex h-auto flex-col items-stretch gap-1.5 rounded-[1rem] bg-transparent p-0"
+                        : isEmbedded
+                            ? "flex h-auto flex-col items-stretch gap-2 rounded-[1.1rem] bg-transparent p-2 sm:h-10 sm:flex-row sm:items-center sm:gap-1 sm:p-0"
                         : "glass-card flex h-auto flex-col items-stretch gap-2 rounded-[1.4rem] p-2 sm:h-12 sm:flex-row sm:items-center sm:p-1",
-                    !isEmbedded && isFocused && "bg-background/60 ring-2 ring-primary/20 shadow-lg dark:bg-black/40",
+                    variant === "card" && isFocused && "bg-background/60 ring-2 ring-primary/20 shadow-lg dark:bg-black/40",
                     hasError && "border-destructive/50 shadow-destructive/10"
                 )}
                 onFocus={() => setIsFocused(true)}
@@ -150,9 +154,12 @@ export function QuickExpenseInput({
                 }}
             >
                 {/* Mobile: Row 1 (Type + Description) | Desktop: Horizontal flow */}
-                <div className={cn("flex min-w-0 items-center gap-1", isEmbedded ? "flex-[1.55]" : "flex-1")}>
+                <div className={cn("flex min-w-0 items-center gap-1", isEmbedded ? "flex-[1.55]" : "flex-1", isMobilePanel && "gap-1.5")}>
                     {/* Type Toggle */}
-                    <div className="shrink-0 rounded-full border border-white/35 bg-white/55 p-0.5 shadow-sm dark:border-white/10 dark:bg-white/[0.05]">
+                    <div className={cn(
+                        "shrink-0 rounded-full border border-white/35 bg-white/55 p-0.5 shadow-sm dark:border-white/10 dark:bg-white/[0.05]",
+                        isMobilePanel && "border-white/25 bg-white/45 shadow-[0_4px_14px_rgba(15,23,42,0.08)] dark:bg-white/[0.04]"
+                    )}>
                         <button
                             type="button"
                             onClick={() => handleTypeChange("expense")}
@@ -193,23 +200,25 @@ export function QuickExpenseInput({
                         disabled={isPending}
                         className={cn(
                             "h-9 border-0 bg-transparent px-2 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70 flex-1 min-w-0 text-sm md:text-base",
-                            isEmbedded && TOPBAR_INLINE_INPUT_TEXT_CLASS,
+                            isMobilePanel && "h-8 px-1.5 text-[15px]",
+                            isCapsuleVariant && TOPBAR_INLINE_INPUT_TEXT_CLASS,
                             validationError && !description.trim() && "placeholder:text-destructive/50"
                         )}
                     />
                 </div>
 
-                <div className="h-px w-full bg-border/50 sm:hidden" />
-                <div className="h-6 w-px bg-border/50 hidden sm:block" />
+                <div className={cn("h-px w-full bg-border/50 sm:hidden", isMobilePanel && "hidden")} />
+                <div className={cn("h-6 w-px bg-border/50 hidden sm:block", isMobilePanel && "hidden")} />
 
                 {/* Mobile: Row 2 (Amount + Date + Category + Action) | Desktop: Horizontal flow */}
-                <div className={cn("flex items-center gap-1", isEmbedded && "shrink-0")}>
+                <div className={cn("flex items-center gap-1", isEmbedded && "shrink-0", isMobilePanel && "flex-wrap items-stretch gap-1.5 pt-0.5")}>
                     {/* Amount */}
-                    <div className={cn("relative flex items-center shrink-0", isEmbedded ? "w-20" : "w-24 sm:w-auto")}>
+                    <div className={cn("relative flex items-center shrink-0", isMobilePanel ? "w-[5.4rem]" : isEmbedded ? "w-20" : "w-24 sm:w-auto")}>
                         <span
                             className={cn(
                                 "absolute left-1.5 text-muted-foreground font-medium",
-                                isEmbedded ? TOPBAR_INLINE_INPUT_TEXT_CLASS : "md:left-2 text-xs md:text-sm"
+                                isEmbedded ? TOPBAR_INLINE_INPUT_TEXT_CLASS : "md:left-2 text-xs md:text-sm",
+                                isMobilePanel && "left-1 text-[14px]"
                             )}
                         >
                             €
@@ -224,8 +233,8 @@ export function QuickExpenseInput({
                             }}
                             disabled={isPending}
                             className={cn(
-                                isEmbedded
-                                    ? `h-9 w-full border-0 bg-transparent pl-5 pr-1 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70 text-right font-normal tabular-nums tracking-tighter ${TOPBAR_INLINE_INPUT_TEXT_CLASS} [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`
+                                isCapsuleVariant
+                                    ? `h-8 w-full border-0 bg-transparent pl-4 pr-1 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70 text-right font-normal tabular-nums tracking-tighter ${TOPBAR_INLINE_INPUT_TEXT_CLASS} [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`
                                     : "h-9 w-full sm:w-24 border-0 bg-transparent pl-4 md:pl-6 pr-1 md:pr-2 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70 text-right font-black tabular-nums tracking-tighter text-sm md:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
                                 validationError && (!amount || Math.abs(parseCurrencyToCents(amount)) <= 0) && "placeholder:text-destructive/50 text-destructive"
                             )}
@@ -245,8 +254,10 @@ export function QuickExpenseInput({
                         disabled={isPending}
                     >
                         <SelectTrigger className={cn(
-                            isEmbedded
-                                ? `h-9 w-[7.25rem] shrink-0 border-0 bg-transparent shadow-none focus:ring-0 text-muted-foreground data-[state=checked]:text-foreground ${TOPBAR_INLINE_SUPPORT_TEXT_CLASS}`
+                            isMobilePanel
+                                ? `h-8 min-w-0 flex-1 border-0 bg-transparent px-1 shadow-none focus:ring-0 text-muted-foreground data-[state=checked]:text-foreground ${TOPBAR_INLINE_SUPPORT_TEXT_CLASS}`
+                                : isEmbedded
+                                    ? `h-9 w-[7.25rem] shrink-0 border-0 bg-transparent shadow-none focus:ring-0 text-muted-foreground data-[state=checked]:text-foreground ${TOPBAR_INLINE_SUPPORT_TEXT_CLASS}`
                                 : "h-9 flex-1 sm:w-[130px] border-0 bg-transparent shadow-none focus:ring-0 text-muted-foreground data-[state=checked]:text-foreground text-xs md:text-sm",
                             validationError && !category && "text-destructive/70"
                         )}>
@@ -273,11 +284,11 @@ export function QuickExpenseInput({
                         </SelectContent>
                     </Select>
 
-                    {isEmbedded ? (
+                    {isCapsuleVariant ? (
                         <>
                             <div className="hidden h-6 w-px bg-border/50 sm:block" />
 
-                            <div data-testid="quick-expense-trailing-actions" className="flex shrink-0 items-center gap-1">
+                            <div data-testid="quick-expense-trailing-actions" className={cn("flex shrink-0 items-center gap-1", isMobilePanel && "w-full justify-end gap-0.5 pt-0")}>
                                 <DatePicker
                                     value={date}
                                     onChange={(d) => d && setDate(d)}
@@ -314,6 +325,7 @@ export function QuickExpenseInput({
                                     disabled={isPending}
                                     className={cn(
                                         "h-8 shrink-0 rounded-full bg-primary px-3 text-primary-foreground sm:ml-1",
+                                        isMobilePanel && "px-3.5",
                                         isSuccess && "bg-emerald-600 hover:bg-emerald-700 text-white"
                                     )}
                                 >
@@ -386,7 +398,7 @@ export function QuickExpenseInput({
 
             {/* Error Message */}
             {hasError && (
-                <div className="absolute -bottom-8 left-4 flex items-center gap-2 text-xs font-medium text-destructive animate-enter-up">
+                <div className={cn("flex items-center gap-2 text-xs font-medium text-destructive animate-enter-up", isMobilePanel ? "mt-1 px-0.5" : "absolute -bottom-8 left-4")}>
                     <AlertCircle className="h-3 w-3" />
                     {validationError || "Errore durante il salvataggio. Riprova."}
                 </div>

@@ -50,12 +50,12 @@ export function TopbarThemeSelector({ isOpen, onOpenChange, triggerClassName }: 
         transition,
     } = useTopbarInlinePanel({
         isOpen,
-        minWidth: 144,
-        maxWidth: 144,
+        minWidth: 220,
+        maxWidth: 1600,
         onOpenChange,
         scopeSelector: '[data-testid="topbar-desktop-capsule"]',
-        widthFactor: 0.36,
-        fallbackViewportFactor: 0.16,
+        widthFactor: 1,
+        fallbackViewportFactor: 0.3,
     })
 
     const handleThemeChange = (nextTheme: ThemePreference) => {

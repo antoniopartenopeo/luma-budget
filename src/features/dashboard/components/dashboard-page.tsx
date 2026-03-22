@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense } from "react"
+import { Suspense, useSyncExternalStore } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { PageHeader } from "@/components/ui/page-header"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
@@ -17,11 +17,20 @@ import {
 } from "@/features/dashboard/utils/dashboard-filter"
 
 function DashboardPageContent() {
+  const isHydrated = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false
+  )
   const pathname = usePathname()
   const router = useRouter()
   const searchParams = useSearchParams()
   const filter = parseDashboardTimeFilter(searchParams)
   const { data, isLoading } = useDashboardSummary(filter)
+
+  if (!isHydrated) {
+    return <DashboardLoading />
+  }
 
   const handleFilterChange = (nextFilter: typeof filter) => {
     const nextParams = writeDashboardTimeFilter(new URLSearchParams(searchParams.toString()), nextFilter)

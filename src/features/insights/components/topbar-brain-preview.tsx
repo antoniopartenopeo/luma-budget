@@ -9,7 +9,6 @@ import { TopbarInlinePanelLabel } from "@/components/layout/topbar-inline-panel-
 import { TopbarInlinePanelShell } from "@/components/layout/topbar-inline-panel-shell"
 import {
     TOPBAR_INLINE_DIVIDER_CLASS,
-    TOPBAR_INLINE_KPI_VALUE_CLASS,
 } from "@/components/layout/topbar-tokens"
 import { useTopbarInlinePanel } from "@/components/layout/use-topbar-inline-panel"
 import { cn } from "@/lib/utils"
@@ -80,11 +79,11 @@ export function TopbarBrainPreview({ isOpen, onOpenChange, triggerClassName }: T
     } = useTopbarInlinePanel({
         isOpen,
         minWidth: 284,
-        maxWidth: 284,
+        maxWidth: 1600,
         onOpenChange,
         scopeSelector: '[data-testid="topbar-desktop-capsule"]',
-        widthFactor: 0.5,
-        fallbackViewportFactor: 0.22,
+        widthFactor: 1,
+        fallbackViewportFactor: 0.3,
     })
 
     return (
@@ -158,8 +157,7 @@ export function TopbarBrainPreview({ isOpen, onOpenChange, triggerClassName }: T
                         <span
                             data-testid="topbar-brain-percent"
                             className={cn(
-                                "pointer-events-none absolute -right-2 -top-1.5 min-w-[30px] rounded-full border border-primary/40 bg-background/95 px-1.5 py-0.5 text-center text-[9px] text-primary shadow-sm",
-                                TOPBAR_INLINE_KPI_VALUE_CLASS
+                                "pointer-events-none absolute -right-1 -top-0.5 min-w-[20px] rounded-full border border-primary/30 bg-background/95 px-1 py-[2px] text-center text-[8px] font-semibold leading-none tabular-nums text-primary shadow-sm"
                             )}
                         >
                             {brainReadinessPercent}%

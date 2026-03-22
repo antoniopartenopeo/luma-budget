@@ -32,6 +32,7 @@ export function TopbarInlineMetric({
     valueClassName,
 }: TopbarInlineMetricProps) {
     const toneClass = resolveTopbarToneClass(tone)
+    const meterScaleStyle = { transform: `scaleX(${Math.max(0, Math.min(meterPct ?? 0, 100)) / 100})` } as CSSProperties
 
     return (
         <div className={cn("flex min-w-0 flex-1 flex-col justify-center gap-0.5", className)}>
@@ -57,7 +58,7 @@ export function TopbarInlineMetric({
                     <span className="hidden h-1 w-7 shrink-0 overflow-hidden rounded-full bg-foreground/10 sm:block">
                         <span
                             className={cn("block h-full origin-left rounded-full bg-current/75", toneClass)}
-                            style={{ transform: `scaleX(${Math.max(0, Math.min(meterPct, 100)) / 100})` } as CSSProperties}
+                            style={meterScaleStyle}
                         />
                     </span>
                 )}

@@ -205,6 +205,10 @@ function OverviewPreview({ isActive }: { isActive: boolean }) {
 }
 
 function BrainPreview({ isActive }: { isActive: boolean }) {
+  const topographicPatternStyle = {
+    backgroundImage: "repeating-radial-gradient(circle at 100% 100%, transparent 0, transparent 12px, currentColor 12px, currentColor 13px)",
+  }
+
   return (
     <PreviewFrame
       eyebrow="Brain"
@@ -218,7 +222,7 @@ function BrainPreview({ isActive }: { isActive: boolean }) {
           className="relative overflow-hidden rounded-[2rem] border border-primary/30 bg-gradient-to-br from-primary/10 to-transparent p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"
         >
           {/* Topographic calculating pattern layer */}
-          <div className="pointer-events-none absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" style={{ backgroundImage: "repeating-radial-gradient(circle at 100% 100%, transparent 0, transparent 12px, currentColor 12px, currentColor 13px)" }} />
+          <div className="pointer-events-none absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" style={topographicPatternStyle} />
           
           <motion.div 
              animate={isActive ? { rotate: 360 } : { rotate: 0 }}
@@ -260,6 +264,10 @@ function BrainPreview({ isActive }: { isActive: boolean }) {
 }
 
 function ScenarioPreview({ isActive }: { isActive: boolean }) {
+  const topographicPatternStyle = {
+    backgroundImage: "repeating-radial-gradient(circle at 50% 0%, transparent 0, transparent 16px, currentColor 16px, currentColor 17px)",
+  }
+
   return (
     <PreviewFrame
       eyebrow="Financial Lab"
@@ -283,7 +291,7 @@ function ScenarioPreview({ isActive }: { isActive: boolean }) {
           className="relative overflow-hidden flex flex-col items-center justify-center rounded-[2rem] border border-primary/20 bg-primary/5 py-7 shadow-[inset_0_0_20px_rgba(var(--primary),0.05)]"
         >
            {/* Topographic calculating pattern layer */}
-           <div className="pointer-events-none absolute inset-0 opacity-[0.04] dark:opacity-[0.06]" style={{ backgroundImage: "repeating-radial-gradient(circle at 50% 0%, transparent 0, transparent 16px, currentColor 16px, currentColor 17px)" }} />
+           <div className="pointer-events-none absolute inset-0 opacity-[0.04] dark:opacity-[0.06]" style={topographicPatternStyle} />
            
            <div className="relative z-10 flex flex-col items-center">
              <motion.div 

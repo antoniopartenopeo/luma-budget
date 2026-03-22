@@ -1,6 +1,11 @@
 import React from "react"
 
 export function HeroFluidVeils() {
+  const currentColorStop = { stopColor: "currentColor" }
+  const noiseTextureStyle = {
+    backgroundImage: "url('data:image/svg+xml;utf8,<svg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"noiseFilter\"><feTurbulence type=\"fractalNoise\" baseFrequency=\"0.8\" numOctaves=\"3\" stitchTiles=\"stitch\"/></filter><rect width=\"100%\" height=\"100%\" filter=\"url(%23noiseFilter)\"/></svg>')",
+  }
+
   return (
     <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-100 transition-opacity duration-1000">
       
@@ -19,26 +24,26 @@ export function HeroFluidVeils() {
           {/* Volumetric Gradients for 3D depth and shadow */}
           {/* Gradient 1: Vibrant Cyan to Deep Emerald (The Core Flow) */}
           <linearGradient id="numa-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" className="text-cyan-300 dark:text-cyan-500" stopOpacity="0.8" style={{ stopColor: 'currentColor' }} />
-            <stop offset="100%" className="text-emerald-400 dark:text-emerald-900" stopOpacity="0.4" style={{ stopColor: 'currentColor' }} />
+            <stop offset="0%" className="text-cyan-300 dark:text-cyan-500" stopOpacity="0.8" style={currentColorStop} />
+            <stop offset="100%" className="text-emerald-400 dark:text-emerald-900" stopOpacity="0.4" style={currentColorStop} />
           </linearGradient>
 
           {/* Background Ambient: Desaturated Slate/Teal to let ribbons pop */}
           <radialGradient id="numa-grad-2" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" className="text-teal-100 dark:text-slate-800" stopOpacity="0.6" style={{ stopColor: 'currentColor' }} />
-            <stop offset="100%" className="text-slate-100 dark:text-slate-950" stopOpacity="0.1" style={{ stopColor: 'currentColor' }} />
+            <stop offset="0%" className="text-teal-100 dark:text-slate-800" stopOpacity="0.6" style={currentColorStop} />
+            <stop offset="100%" className="text-slate-100 dark:text-slate-950" stopOpacity="0.1" style={currentColorStop} />
           </radialGradient>
 
           {/* Gradient 3: Contrasting Blue/Indigo to Teal (The Counter Flow) */}
           <linearGradient id="numa-grad-3" x1="100%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" className="text-blue-300 dark:text-indigo-500" stopOpacity="0.85" style={{ stopColor: 'currentColor' }} />
-            <stop offset="100%" className="text-teal-300 dark:text-teal-800" stopOpacity="0.4" style={{ stopColor: 'currentColor' }} />
+            <stop offset="0%" className="text-blue-300 dark:text-indigo-500" stopOpacity="0.85" style={currentColorStop} />
+            <stop offset="100%" className="text-teal-300 dark:text-teal-800" stopOpacity="0.4" style={currentColorStop} />
           </linearGradient>
 
           {/* Gradient 4: Warm Lime/Emerald (The High-Energy Twist) */}
           <linearGradient id="numa-grad-4" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" className="text-emerald-200 dark:text-emerald-400" stopOpacity="0.8" style={{ stopColor: 'currentColor' }} />
-            <stop offset="100%" className="text-cyan-100 dark:text-cyan-900" stopOpacity="0.3" style={{ stopColor: 'currentColor' }} />
+            <stop offset="0%" className="text-emerald-200 dark:text-emerald-400" stopOpacity="0.8" style={currentColorStop} />
+            <stop offset="100%" className="text-cyan-100 dark:text-cyan-900" stopOpacity="0.3" style={currentColorStop} />
           </linearGradient>
           
           {/* Glassy Anisotropic Ray Reflection on the edges */}
@@ -87,7 +92,7 @@ export function HeroFluidVeils() {
       {/* Absolute Microscopic Noise Overlay for premium tactile matte glass feel */}
       <div 
         className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none mix-blend-overlay" 
-        style={{ backgroundImage: "url('data:image/svg+xml;utf8,<svg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"noiseFilter\"><feTurbulence type=\"fractalNoise\" baseFrequency=\"0.8\" numOctaves=\"3\" stitchTiles=\"stitch\"/></filter><rect width=\"100%\" height=\"100%\" filter=\"url(%23noiseFilter)\"/></svg>')" }} 
+        style={noiseTextureStyle} 
       />
     </div>
   )

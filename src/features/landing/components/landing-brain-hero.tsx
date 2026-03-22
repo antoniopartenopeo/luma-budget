@@ -90,6 +90,9 @@ export function LandingBrainHero() {
   const maskStyle = { opacity: maskOpacity }
   const topLayerContentStyle = { opacity: topContentOpacity, scale: topScale }
   const revealStyle = { opacity: revealOpacity, y: revealY }
+  const topographicPatternStyle = {
+    backgroundImage: "repeating-radial-gradient(circle at 50% 50%, transparent 0, transparent 20px, currentColor 20px, currentColor 21px)",
+  }
 
   if (prefersReducedMotion) {
     return (
@@ -184,7 +187,7 @@ export function LandingBrainHero() {
             className="absolute inset-0 z-10 flex flex-col items-center justify-center overflow-hidden rounded-[24px] border border-primary/40 bg-background/60 p-6 shadow-[0_30px_80px_rgba(14,165,168,0.25)] backdrop-blur-xl dark:bg-black/70"
           >
             {/* Core engine topograpic pattern */}
-            <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" style={{ backgroundImage: "repeating-radial-gradient(circle at 50% 50%, transparent 0, transparent 20px, currentColor 20px, currentColor 21px)" }} />
+            <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" style={topographicPatternStyle} />
             
             <Cpu className="absolute -left-10 h-40 w-40 text-primary/30" />
             <BrainCircuit className="absolute -right-10 bottom-0 h-40 w-40 text-primary/30" />

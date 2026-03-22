@@ -153,6 +153,10 @@ export function PullToRefresh({
     }
   }, [handleRefresh, isRefreshing, pullDistance])
 
+  const indicatorStyle = { opacity, scale }
+  const spinnerStyle = { rotate: isRefreshing ? undefined : rotate }
+  const contentStyle = { y }
+
   return (
     <div 
       ref={containerRef}
@@ -161,17 +165,17 @@ export function PullToRefresh({
       {/* Pull Indicator Area */}
       <motion.div 
         className="pointer-events-none absolute inset-x-0 flex justify-center pt-8 z-50"
-        style={{ opacity, scale }}
+        style={indicatorStyle}
       >
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 border border-primary/20 text-primary shadow-xl backdrop-blur-md">
-          <motion.div style={{ rotate: isRefreshing ? undefined : rotate }}>
+          <motion.div style={spinnerStyle}>
             <RefreshCcw className={cn("h-6 w-6", isRefreshing && "animate-spin")} />
           </motion.div>
         </div>
       </motion.div>
 
       {/* Main Content Area */}
-      <motion.div style={{ y }}>
+      <motion.div style={contentStyle}>
         {children}
       </motion.div>
     </div>

@@ -7,7 +7,7 @@ let scrollChangeHandler: ((value: number) => void) | null = null
 vi.mock("framer-motion", async () => {
   const React = await vi.importActual<typeof import("react")>("react")
 
-  const MotionDiv = React.forwardRef<HTMLDivElement, Record<string, any>>(
+  const MotionDiv = React.forwardRef<HTMLDivElement, Record<string, unknown> & { children?: React.ReactNode }>(
     ({ children, ...props }, ref) => {
       const elementProps = { ...props }
       delete elementProps.initial
@@ -18,7 +18,7 @@ vi.mock("framer-motion", async () => {
 
       return (
         <div ref={ref} {...elementProps}>
-          {children}
+          {children as React.ReactNode}
         </div>
       )
     }

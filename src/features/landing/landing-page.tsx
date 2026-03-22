@@ -15,6 +15,7 @@ import {
 } from "./data"
 import { LandingHeroConsole } from "./components/landing-previews"
 import { LandingProductDemo } from "./components/landing-product-demo"
+import { HeroFluidVeils } from "./components/hero-fluid-veils"
 import { LandingBrainHero } from "./components/landing-brain-hero"
 import { CinematicTextReveal } from "./components/motion-primitives"
 
@@ -40,36 +41,39 @@ export function LandingPage() {
             className="relative flex min-h-[90vh] w-full flex-col items-center justify-center overflow-hidden px-4 py-20"
             aria-labelledby="landing-hero-title"
           >
-            {/* Immersive background layer */}
-            <div className="absolute inset-0 z-0 bg-background pointer-events-none" />
-            <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background pointer-events-none" />
+            {/* Soft pristine Apple-Premium animated SVG background */}
+            <div className="absolute inset-0 z-0 pointer-events-none">
+               <HeroFluidVeils />
+               <div className="absolute inset-0 bg-gradient-to-b from-background/10 via-background/40 to-background dark:from-background/20 dark:via-background/60" />
+               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_30%,_var(--tw-gradient-stops))] from-transparent via-background/60 to-background" />
+            </div>
 
-            <div className="relative z-10 flex w-full max-w-4xl flex-col items-center text-center">
+            <div className="relative z-10 flex w-full max-w-4xl flex-col items-center text-center mt-10">
               <BrandLogo
                 variant="full"
                 height={84}
-                className="mb-10 w-auto max-w-[280px] sm:max-w-[360px] lg:max-w-[420px]"
+                className="mb-10 w-auto max-w-[280px] sm:max-w-[360px] lg:max-w-[420px] drop-shadow-sm"
               />
 
               <div className="space-y-6">
-                <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary">
+                <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary backdrop-blur-md">
                   App di finanza personale locale-first
                 </Badge>
 
                 <h1
                   id="landing-hero-title"
-                  className="mx-auto max-w-[15ch] text-5xl font-black tracking-tight text-foreground sm:text-6xl lg:text-7xl"
+                  className="mx-auto max-w-[15ch] text-5xl font-black tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-sm"
                 >
                   <CinematicTextReveal text="L'app che ti aiuta a capire il mese, non solo a registrare spese." />
                 </h1>
 
-                <p className="mx-auto max-w-2xl text-base font-medium leading-relaxed text-muted-foreground sm:text-lg lg:text-xl">
+                <p className="mx-auto max-w-2xl text-base font-medium leading-relaxed text-muted-foreground sm:text-lg lg:text-xl drop-shadow-sm">
                   Numa ti fa vedere dove stanno andando i tuoi soldi, quanto potrebbe restarti a fine mese e se una nuova spesa fissa e davvero sostenibile.
                 </p>
               </div>
 
               <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
-                <Button asChild size="lg" className="rounded-full px-8 shadow-lg shadow-primary/15">
+                <Button asChild size="lg" className="rounded-full px-8 shadow-lg shadow-primary/15 hover:shadow-primary/30 transition-shadow">
                   <Link href="/dashboard">
                     Apri l&apos;app
                     <ArrowRight className="h-4 w-4" />
@@ -78,7 +82,7 @@ export function LandingPage() {
 
                 <a
                   href="#problema"
-                  className="text-sm font-semibold text-primary transition-colors hover:text-primary/80"
+                  className="text-sm font-semibold text-primary/90 transition-colors hover:text-primary drop-shadow-sm"
                 >
                   Scopri perche Numa e diversa
                 </a>

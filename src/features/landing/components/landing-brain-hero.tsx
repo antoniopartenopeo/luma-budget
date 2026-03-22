@@ -119,7 +119,7 @@ export function LandingBrainHero() {
                     </div>
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary">Margine Mese Prossimo</p>
-                      <p className="text-3xl font-black tracking-tighter text-foreground">EUR 1540</p>
+                      <p className="text-4xl sm:text-5xl font-black tracking-tighter text-foreground">EUR 1540</p>
                     </div>
                   </div>
                   <div className="rounded-[1.35rem] border border-emerald-500/20 bg-emerald-500/10 px-4 py-3">
@@ -183,6 +183,9 @@ export function LandingBrainHero() {
             style={middleLayerStyle}
             className="absolute inset-0 z-10 flex flex-col items-center justify-center overflow-hidden rounded-[24px] border border-primary/40 bg-background/60 p-6 shadow-[0_30px_80px_rgba(14,165,168,0.25)] backdrop-blur-xl dark:bg-black/70"
           >
+            {/* Core engine topograpic pattern */}
+            <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" style={{ backgroundImage: "repeating-radial-gradient(circle at 50% 50%, transparent 0, transparent 20px, currentColor 20px, currentColor 21px)" }} />
+            
             <Cpu className="absolute -left-10 h-40 w-40 text-primary/30" />
             <BrainCircuit className="absolute -right-10 bottom-0 h-40 w-40 text-primary/30" />
             <div className="relative flex h-24 w-24 items-center justify-center rounded-full border border-primary/50 bg-primary/20 shadow-[0_0_60px_rgba(14,165,168,0.4)]">
@@ -213,7 +216,7 @@ export function LandingBrainHero() {
                 <Focus className="h-6 w-6 text-primary" />
               </div>
               <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Margine Mese Prossimo</p>
-              <h3 className="text-5xl font-black tracking-tighter text-foreground">EUR 1540</h3>
+              <h3 className="text-6xl md:text-7xl font-black tracking-tighter text-foreground">EUR 1540</h3>
               <p className="mt-5 inline-block rounded-full bg-emerald-500/10 px-4 py-1.5 text-[11px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                 Affidabilita 78%
               </p>

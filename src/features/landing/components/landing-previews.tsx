@@ -163,7 +163,7 @@ function OverviewPreview({ isActive }: { isActive: boolean }) {
           className="rounded-[1.5rem] border border-white/28 bg-white/60 p-5 shadow-sm dark:border-white/10 dark:bg-white/[0.04]"
         >
           <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/72">Disponibile Mensile</p>
-          <p className="mt-1 text-4xl sm:text-5xl font-black tracking-tighter text-foreground">€ 1.842</p>
+          <p className="mt-1 text-5xl sm:text-6xl font-black tracking-tighter text-foreground">€ 1.842</p>
           
           <div className="mt-5 space-y-2">
             <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider">
@@ -215,8 +215,11 @@ function BrainPreview({ isActive }: { isActive: boolean }) {
         <motion.div 
           animate={isActive ? { scale: 1, opacity: 1 } : { scale: 0.95, opacity: 0 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="relative overflow-hidden rounded-[2rem] border border-primary/30 bg-gradient-to-br from-primary/15 to-transparent p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"
+          className="relative overflow-hidden rounded-[2rem] border border-primary/30 bg-gradient-to-br from-primary/10 to-transparent p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"
         >
+          {/* Topographic calculating pattern layer */}
+          <div className="pointer-events-none absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" style={{ backgroundImage: "repeating-radial-gradient(circle at 100% 100%, transparent 0, transparent 12px, currentColor 12px, currentColor 13px)" }} />
+          
           <motion.div 
              animate={isActive ? { rotate: 360 } : { rotate: 0 }}
              transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
@@ -229,7 +232,7 @@ function BrainPreview({ isActive }: { isActive: boolean }) {
               <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-primary">
                 <Sparkles className="h-3.5 w-3.5" /> Predizione Brain
               </p>
-              <p className="mt-3 text-5xl font-black tracking-tighter text-foreground">€ 1.540</p>
+              <p className="mt-3 text-6xl sm:text-7xl font-black tracking-tighter text-foreground">€ 1.540</p>
               <p className="mt-2 text-sm font-medium leading-relaxed text-muted-foreground">
                 Stima del margine disponibile alla fine del mese prossimo.
               </p>
@@ -277,17 +280,22 @@ function ScenarioPreview({ isActive }: { isActive: boolean }) {
         <motion.div 
           animate={isActive ? { scale: 1, opacity: 1 } : { scale: 0.95, opacity: 0 }}
           transition={{ delay: 0.1, duration: 0.4 }}
-          className="flex flex-col items-center justify-center rounded-[2rem] border border-primary/20 bg-primary/5 py-7 shadow-inner"
+          className="relative overflow-hidden flex flex-col items-center justify-center rounded-[2rem] border border-primary/20 bg-primary/5 py-7 shadow-[inset_0_0_20px_rgba(var(--primary),0.05)]"
         >
-           <motion.div 
-              animate={isActive ? { scale: [1, 1.05, 1] } : {}} 
-              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-           >
-             <FlaskConical className="mb-3 h-8 w-8 text-primary opacity-90 drop-shadow-md" />
-           </motion.div>
-           <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary">Nuova Fissa Sostenibile</p>
-           <h3 className="mt-1 text-5xl font-black tracking-tighter text-foreground">+240 €</h3>
-           <p className="mt-1.5 text-sm font-medium text-muted-foreground">aggiuntivi ogni mese</p>
+           {/* Topographic calculating pattern layer */}
+           <div className="pointer-events-none absolute inset-0 opacity-[0.04] dark:opacity-[0.06]" style={{ backgroundImage: "repeating-radial-gradient(circle at 50% 0%, transparent 0, transparent 16px, currentColor 16px, currentColor 17px)" }} />
+           
+           <div className="relative z-10 flex flex-col items-center">
+             <motion.div 
+                animate={isActive ? { scale: [1, 1.05, 1] } : {}} 
+                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+             >
+               <FlaskConical className="mb-3 h-8 w-8 text-primary opacity-90 drop-shadow-md" />
+             </motion.div>
+             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary">Nuova Fissa Sostenibile</p>
+             <h3 className="mt-1 text-6xl sm:text-7xl font-black tracking-tighter text-foreground drop-shadow-sm">+240 €</h3>
+             <p className="mt-1.5 text-sm font-medium text-muted-foreground">aggiuntivi ogni mese</p>
+           </div>
         </motion.div>
 
       </div>

@@ -5,7 +5,7 @@ import { LandingBrainHero } from "../landing-brain-hero"
 vi.mock("framer-motion", async () => {
   const React = await vi.importActual<typeof import("react")>("react")
 
-  const MotionDiv = React.forwardRef<HTMLDivElement, Record<string, any>>(
+  const MotionDiv = React.forwardRef<HTMLDivElement, Record<string, unknown> & { children?: React.ReactNode }>(
     ({ children, ...props }, ref) => {
       const elementProps = { ...props }
       delete elementProps.initial
@@ -17,7 +17,7 @@ vi.mock("framer-motion", async () => {
 
       return (
         <div ref={ref} {...elementProps}>
-          {children}
+          {children as React.ReactNode}
         </div>
       )
     }
@@ -35,7 +35,7 @@ vi.mock("framer-motion", async () => {
         on: () => () => undefined
       }
     }),
-    useSpring: (value: any) => value,
+    useSpring: (value: unknown) => value,
     useTransform: (_value: unknown, _input: unknown, output: unknown[]) => output[0]
   }
 })

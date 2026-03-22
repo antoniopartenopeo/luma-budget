@@ -204,19 +204,16 @@ export function LandingHeroConsole() {
       <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary">
-            Perche nasce Numa
-          </Badge>
-          <Badge variant="outline" className="border-white/35 bg-white/50 dark:border-white/12 dark:bg-white/[0.05]">
-            Non e un tracker qualunque
+            Il Problema
           </Badge>
         </div>
 
         <div className="space-y-2">
-          <h3 className="max-w-[18ch] text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-            Non nasce per farti inseguire categorie.
+          <h3 className="max-w-[20ch] text-2xl font-black tracking-tight text-foreground sm:text-3xl">
+            Perché le app classiche non bastano.
           </h3>
           <p className="max-w-3xl text-sm font-medium leading-relaxed text-muted-foreground sm:text-base">
-            Nasce per rispondere a tre domande semplici: come sta andando il mese, cosa potrebbe restarti e se una nuova spesa fissa entra davvero nel tuo ritmo.
+            Registrare ogni singola transazione spesso crea solo ansia numerica. Serve un prodotto che ti aiuti a capire il mese che stai vivendo, senza costringerti a seguire moduli rigidi.
           </p>
         </div>
 

@@ -11,11 +11,6 @@ import {
   WalletCards
 } from "lucide-react"
 
-export interface LandingHeroPoint {
-  icon: LucideIcon
-  title: string
-  description: string
-}
 
 export interface LandingStoryPoint {
   icon: LucideIcon
@@ -93,23 +88,6 @@ export interface DemoScenario {
   accentClassName: string
 }
 
-export const LANDING_HERO_POINTS: LandingHeroPoint[] = [
-  {
-    icon: ArrowDownUp,
-    title: "Capisci come sta andando il mese",
-    description: "Non solo elenco spese: Numa ti aiuta a leggere cosa pesa davvero e dove si sta stringendo il margine."
-  },
-  {
-    icon: BrainCircuit,
-    title: "Vedi una stima futura leggibile",
-    description: "Quando il Brain e pronto, ti mostra fine mese e mese successivo con una fonte chiara, non con promesse vaghe."
-  },
-  {
-    icon: FlaskConical,
-    title: "Capisci se una nuova spesa ci sta",
-    description: "Financial Lab ti dice quale quota mensile aggiuntiva puoi sostenere prima di impegnarti."
-  }
-]
 
 export const LANDING_STORY_POINTS: LandingStoryPoint[] = [
   {
@@ -146,7 +124,7 @@ export const LANDING_DIFFERENTIATORS: LandingDifferentItem[] = [
     icon: Sparkles,
     title: "Ti dice cose precise, non slogan",
     marketLabel: "Sul mercato ci sono tante promesse generiche su AI, automazioni e simulazioni, ma spesso non e chiaro cosa facciano davvero.",
-    numaLabel: "In Numa il Brain stima fine mese e mese prossimo. Financial Lab dice quale quota fissa puoi sostenere."
+    numaLabel: "Numa calcola stime chiare per il mese in corso e per il prossimo, e ti dice esattamente quale quota fissa puoi aggiungere."
   }
 ]
 

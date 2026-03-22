@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button"
 import {
   LANDING_DIFFERENTIATORS,
   LANDING_FLOW_STEPS,
-  LANDING_HERO_POINTS,
   LANDING_OUTCOMES
 } from "./data"
 import { LandingHeroConsole } from "./components/landing-previews"
@@ -60,8 +59,8 @@ export function LandingPage() {
                     </p>
                   </div>
 
-                  <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row">
-                    <Button asChild size="lg" className="rounded-full px-6 shadow-lg shadow-primary/15">
+                  <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row">
+                    <Button asChild size="lg" className="rounded-full px-8 shadow-lg shadow-primary/15">
                       <Link href="/dashboard">
                         Apri l&apos;app
                         <ArrowRight className="h-4 w-4" />
@@ -69,58 +68,29 @@ export function LandingPage() {
                     </Button>
 
                     <a
-                      href="#different"
+                      href="#differenza"
                       className="text-sm font-semibold text-primary transition-colors hover:text-primary/80"
                     >
                       Scopri perche e diversa
                     </a>
                   </div>
-
-                  <p className="mt-5 text-sm font-semibold leading-relaxed text-muted-foreground">
-                    Dati locali per default. Stime future chiare. Quota sostenibile per nuove spese fisse.
-                  </p>
                 </div>
               </MacroSection>
             </div>
           </section>
 
-          <section id="why-numa" className="px-4 scroll-mt-24" aria-labelledby="landing-origin-title">
+          <section id="problema" className="px-4 scroll-mt-24" aria-labelledby="landing-problem-title">
             <div className="mx-auto max-w-6xl">
-              <MacroSection
-                disableAnimation
-                title={<span id="landing-origin-title">Perche nasce Numa</span>}
-                description="Non per aggiungere altre schermate alla tua finanza personale, ma per renderla finalmente piu leggibile."
-                contentClassName="space-y-5 pt-5"
-              >
+              <h2 id="landing-problem-title" className="sr-only">
+                Perche nasce Numa
+              </h2>
+              <MacroSection disableAnimation contentClassName="pt-5">
                 <LandingHeroConsole />
-
-                <div className="space-y-3">
-                  <div className="space-y-2">
-                    <SectionEyebrow>Tre cose che fai con Numa</SectionEyebrow>
-                    <p className="max-w-3xl text-sm font-medium leading-relaxed text-muted-foreground sm:text-base">
-                      Dentro lo stesso prodotto trovi una lettura del mese, una stima futura prudente e uno spazio per capire se una nuova spesa fissa e sostenibile.
-                    </p>
-                  </div>
-
-                  {LANDING_HERO_POINTS.map((point) => (
-                    <article key={point.title} className="surface-subtle p-5">
-                      <div className="flex items-start gap-3">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] border border-primary/18 bg-primary/10 text-primary">
-                          <point.icon className="h-5 w-5" />
-                        </div>
-                        <div className="space-y-1.5">
-                          <h3 className="text-lg font-bold tracking-tight text-foreground">{point.title}</h3>
-                          <p className="text-sm font-medium leading-relaxed text-muted-foreground">{point.description}</p>
-                        </div>
-                      </div>
-                    </article>
-                  ))}
-                </div>
               </MacroSection>
             </div>
           </section>
 
-          <section id="different" className="px-4 scroll-mt-24" aria-labelledby="landing-different-title">
+          <section id="differenza" className="px-4 scroll-mt-24" aria-labelledby="landing-different-title">
             <div className="mx-auto max-w-6xl">
               <MacroSection
                 disableAnimation
@@ -152,7 +122,7 @@ export function LandingPage() {
             </div>
           </section>
 
-          <section id="product-demo" className="px-4 scroll-mt-24" aria-labelledby="landing-demo-title">
+          <section id="demo" className="px-4 scroll-mt-24" aria-labelledby="landing-demo-title">
             <div className="mx-auto max-w-6xl">
               <MacroSection
                 disableAnimation
@@ -165,7 +135,7 @@ export function LandingPage() {
             </div>
           </section>
 
-          <section id="how-it-works" className="px-4 scroll-mt-24" aria-labelledby="landing-how-title">
+          <section id="come-funziona" className="px-4 scroll-mt-24" aria-labelledby="landing-how-title">
             <div className="mx-auto max-w-6xl">
               <MacroSection
                 disableAnimation

@@ -81,19 +81,29 @@ function DifferentiatorPair({
     "border-emerald-400/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
     "border-amber-400/20 bg-amber-500/10 text-amber-600 dark:text-amber-400"
   ]
+  const pairStyle = { opacity: pairOpacity }
+  const numaCardStyle = {
+    rotateY: nRotateY,
+    rotateX: nRotateX,
+    rotateZ: nRotateZ,
+    scale: nScale,
+    opacity: nOpacity,
+    x: nX,
+  }
+  const marketCardStyle = {
+    rotateY: mRotateY,
+    rotateX: mRotateX,
+    rotateZ: mRotateZ,
+    scale: mScale,
+    opacity: mOpacity,
+    x: mX,
+  }
 
   return (
-    <motion.div style={{ opacity: pairOpacity }} className="absolute inset-0" aria-hidden={index > 0}>
+    <motion.div style={pairStyle} className="absolute inset-0" aria-hidden={index > 0}>
       {/* ── Numa card (z-10, behind) ── */}
       <motion.div
-        style={{
-          rotateY: nRotateY,
-          rotateX: nRotateX,
-          rotateZ: nRotateZ,
-          scale: nScale,
-          opacity: nOpacity,
-          x: nX,
-        }}
+        style={numaCardStyle}
         className={`absolute inset-0 z-10 flex flex-col justify-between rounded-[1.5rem] sm:rounded-[2rem] border bg-gradient-to-br p-6 sm:p-8 lg:p-10 shadow-2xl ${numaAccents[index]}`}
       >
         <div className="space-y-4 sm:space-y-5">
@@ -114,14 +124,7 @@ function DifferentiatorPair({
 
       {/* ── Market card (z-20, in front) ── */}
       <motion.div
-        style={{
-          rotateY: mRotateY,
-          rotateX: mRotateX,
-          rotateZ: mRotateZ,
-          scale: mScale,
-          opacity: mOpacity,
-          x: mX,
-        }}
+        style={marketCardStyle}
         className="absolute inset-0 z-20 flex flex-col justify-between rounded-[1.5rem] sm:rounded-[2rem] border border-neutral-200/60 bg-gradient-to-br from-neutral-100 to-stone-50 p-6 sm:p-8 lg:p-10 shadow-2xl dark:border-neutral-700/40 dark:from-neutral-800 dark:to-neutral-900"
       >
         <div className="space-y-4 sm:space-y-5">
@@ -159,6 +162,10 @@ export function LandingDifferentiatorCards() {
     damping: 28,
     mass: 1,
   })
+  const deckPerspectiveStyle = {
+    perspective: "1200px",
+    perspectiveOrigin: "50% 50%",
+  }
 
   useEffect(() => {
     return smooth.on("change", (v) => {
@@ -228,7 +235,7 @@ export function LandingDifferentiatorCards() {
         {/* ── Card deck viewport (full-width, 16:9, 3D perspective) ── */}
         <div
           className="relative mx-4 sm:mx-8 lg:mx-16 mt-8 w-[calc(100%-2rem)] sm:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-6xl aspect-video"
-          style={{ perspective: "1200px", perspectiveOrigin: "50% 50%" }}
+          style={deckPerspectiveStyle}
         >
           {LANDING_DIFFERENTIATORS.map((item, i) => (
             <DifferentiatorPair

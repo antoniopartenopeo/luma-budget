@@ -43,6 +43,13 @@ export function LandingBrainHero() {
   const act3Opacity = useTransform(smooth, [0.68, 0.78, 0.95, 1.0], [0, 1, 1, 0])
   const act3Y = useTransform(smooth, [0.68, 0.78], [20, 0])
   const act3Blur = useTransform(smooth, [0.68, 0.78], ["blur(12px)", "blur(0px)"])
+  const fluidMaskStyle = {
+    WebkitMaskImage: maskImageStyle,
+    maskImage: maskImageStyle,
+  }
+  const act1Style = { opacity: act1Opacity, filter: act1Blur }
+  const act2Style = { opacity: act2Opacity, y: act2Y, filter: act2Blur }
+  const act3Style = { opacity: act3Opacity, y: act3Y, filter: act3Blur }
 
   if (prefersReducedMotion) {
     return (
@@ -73,10 +80,7 @@ export function LandingBrainHero() {
         */}
         <div className="absolute inset-0 z-10 pointer-events-none [mask-image:linear-gradient(to_bottom,transparent_0%,black_15%,black_85%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_15%,black_85%,transparent_100%)]">
           <motion.div
-            style={{
-              WebkitMaskImage: maskImageStyle,
-              maskImage: maskImageStyle
-            }}
+            style={fluidMaskStyle}
             className="absolute inset-0 w-full h-full"
           >
             {/* The Ultimate Master Primitive: 
@@ -88,7 +92,7 @@ export function LandingBrainHero() {
 
         {/* ── Act I: Guarda Oltre ── */}
         <motion.div
-          style={{ opacity: act1Opacity, filter: act1Blur }}
+          style={act1Style}
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
           <Badge variant="outline" className="mb-6 border-primary/20 bg-primary/10 text-primary backdrop-blur-md scale-110">
@@ -104,7 +108,7 @@ export function LandingBrainHero() {
 
         {/* ── Act II: The Processing Phase ── */}
         <motion.div
-          style={{ opacity: act2Opacity, y: act2Y, filter: act2Blur }}
+          style={act2Style}
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
           <h3 className="text-3xl font-bold tracking-tight text-foreground/90 sm:text-5xl lg:text-6xl drop-shadow-xl max-w-3xl">
@@ -115,7 +119,7 @@ export function LandingBrainHero() {
 
         {/* ── Act III: The Promise ── */}
         <motion.div
-          style={{ opacity: act3Opacity, y: act3Y, filter: act3Blur }}
+          style={act3Style}
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
           <h3 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl lg:text-7xl drop-shadow-2xl">

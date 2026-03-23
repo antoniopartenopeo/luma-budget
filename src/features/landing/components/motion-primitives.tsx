@@ -129,3 +129,22 @@ export function AppleFluidMesh({ className }: { className?: string }) {
     </div>
   )
 }
+
+/**
+ * Master modular primitive that includes BOTH the raw AppleFluidMesh SVG
+ * and the specific dual-gradient integration overlays that correctly scale
+ * colors and blend the fluid perfectly with the dark/light site background.
+ * This guarantees 100% identical rendering across all sections.
+ */
+export function AppleFluidBackground({ className, style }: { className?: string, style?: React.CSSProperties }) {
+  return (
+    <div className={cn("absolute inset-0 pointer-events-none", className)} style={style}>
+      {/* The raw fluid SVG primitive */}
+      <AppleFluidMesh className="absolute inset-0 w-full h-full" />
+      
+      {/* The Integration Overlays - copied EXACTLY from Hero environment to guarantee identical scala colori e sfumature */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background/10 via-background/40 to-background dark:from-background/20 dark:via-background/60" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_30%,_var(--tw-gradient-stops))] from-transparent via-background/60 to-background" />
+    </div>
+  )
+}

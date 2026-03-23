@@ -36,18 +36,18 @@ vi.mock("framer-motion", async () => {
       }
     }),
     useSpring: (value: unknown) => value,
-    useTransform: (_value: unknown, _input: unknown, output: unknown[]) => output[0]
+    useTransform: (_value: unknown, _input: unknown, output: unknown[]) => output[0],
+    useMotionTemplate: (strings: string[], ..._values: unknown[]) => strings.join("")
   }
 })
 
 describe("LandingBrainHero", () => {
-  it("keeps the public Brain explainer calm, local-first, and readiness-aware", () => {
+  it("displays the cinematic Brain explainer with the predictive engine copy", () => {
     render(<LandingBrainHero />)
 
-    expect(screen.getByRole("heading", { name: /Quando il Brain e pronto, ti mostra il possibile dopo/i })).toBeInTheDocument()
-    expect(screen.getByText(/La previsione resta prudente/i)).toBeInTheDocument()
-    expect(screen.getAllByText(/Affidabilita 78%/i).length).toBeGreaterThan(0)
-    expect(screen.getByText(/Numa dichiara il fallback e usa la base storica/i)).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: /Guarda oltre/i })).toBeInTheDocument()
+    expect(screen.getByText(/Numa Predictive Engine/i)).toBeInTheDocument()
+    expect(screen.getByText(/Processa le tue abitudini/i)).toBeInTheDocument()
     expect(screen.queryByText(/SYNC_BANK_API/i)).not.toBeInTheDocument()
   })
 })

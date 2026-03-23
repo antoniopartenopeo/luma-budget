@@ -31,4 +31,5 @@ canonical-of: execution-work-log
 - Updated landing verification artifacts so tests now track public-link constraints and the step-based demo story.
 - Folded the new Brain explainer into the same governance layer, tightening its local-first copy, motion constraints, and verification coverage.
 - Refreshed docs again after the latest landing iteration to capture the longer Brain interlude and the zero-cloud/no-account closing CTA.
-- Created `AppleFluidMesh` primitive and re-engineered the landing Hero to use an Apple Premium immersive animated SVG background.
+- Created `AppleFluidBackground` master primitive (unifying `AppleFluidMesh` SVG with complex black scaling gradients) and re-engineered both the landing Hero and Brain Hero to use this identical Apple Premium immersive animated background.
+- Executed a rigorous linguistic and typographic audit across the entire landing page, fixing dozens of missing Italian accents and normalizing all responsive header scales (clamping `text-8xl` to `text-7xl`) for flawless visual hierarchy.

@@ -12,11 +12,11 @@ canonical-of: session-handoff
 - Governance, specialist context, playbooks, and ADRs now live entirely inside the root scaffold
 - Legacy `.agent/*` and `docs/*` governance surfaces were retired
 - Public landing page now lives at `/` and the operational dashboard now lives at `/dashboard`
-- Premium UI utilities (`PullToRefresh`, `ScrollToTop`, `AppleFluidMesh`) implemented and integrated into root layout and landing primitives.
+- Premium UI Phase: `PullToRefresh`, `ScrollToTop`, and `AppleFluidBackground` master primitive implemented and integrated into the global layout to ensure perfect rendering across all heroes.
 - Landing page evolved with interactive previews (Mar 17).
-- Landing governance now treats `/` as a constrained acquisition surface with anchored navigation, sticky step demo, and product-truth copy.
-- A dedicated Brain explainer now lives inside the landing forecast stage and is governed as an immersive but reduced-motion-safe deep dive.
-- The latest landing revision also emphasizes the closing zero-cloud/no-account CTA and a longer Brain interlude with reveal copy that returns focus to month control.
+- Landing governance now treats `/` as a constrained acquisition surface with anchored navigation, sticky step demo, and highly vetted product-truth copy.
+- A dedicated Brain explainer now lives inside the landing forecast stage and is governed as an immersive cinematic deep dive (`LandingBrainHero`).
+- The entire landing page has undergone a rigid linguistic and responsive typography audit to perfectly align with Apple-style standards, capping all hero titles to `text-7xl` and fixing all Italian accents.
 
 ## Read First to Restart Work
 

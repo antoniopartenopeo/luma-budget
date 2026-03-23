@@ -17,6 +17,10 @@ import {
   type LandingDemoStep
 } from "../data"
 
+const TOPOGRAPHIC_PATTERN: React.CSSProperties = {
+  backgroundImage: "repeating-radial-gradient(circle at 50% 50%, transparent 0, transparent 12px, currentColor 12px, currentColor 13px)",
+}
+
 function PreviewFrame({
   eyebrow,
   statusLabel,
@@ -54,18 +58,12 @@ export function LandingHeroConsole() {
   return (
     <div className="surface-strong overflow-hidden p-6 sm:p-8">
       <div className="space-y-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary">
-            Il Problema
-          </Badge>
-        </div>
-
         <div className="space-y-2">
           <h3 className="max-w-[20ch] text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-            Perché le app classiche non bastano.
+            Sai quanto hai speso. Ma sai come sta andando il mese?
           </h3>
           <p className="max-w-3xl text-sm font-medium leading-relaxed text-muted-foreground sm:text-base">
-            Registrare ogni singola transazione spesso crea solo ansia numerica. Serve un prodotto che ti aiuti a capire il mese che stai vivendo, senza costringerti a seguire moduli rigidi.
+            La differenza tra un elenco di transazioni e una visione utile è enorme. Quasi nessuna app la colma.
           </p>
         </div>
 
@@ -94,7 +92,7 @@ export function LandingHeroConsole() {
 
         <div className="rounded-[1.5rem] border border-primary/14 bg-primary/10 px-4 py-4">
           <p className="text-sm font-semibold leading-relaxed text-foreground">
-            Prima capisci il presente. Poi guardi la stima. Solo dopo decidi se aggiungere una nuova spesa fissa.
+            Numa non aggiunge un altro tracker. Ti dà una lente sul mese: presente, stima e sostenibilità delle spese fisse.
           </p>
         </div>
       </div>
@@ -187,7 +185,7 @@ function OverviewPreview({ isActive }: { isActive: boolean }) {
           >
             <LayoutDashboard className="mb-2 h-5 w-5 text-primary" />
             <p className="text-sm font-bold text-foreground">Focus Cibo</p>
-            <p className="mt-1 text-[11px] font-bold uppercase tracking-widest text-primary">-93 € sttim.</p>
+            <p className="mt-1 text-[11px] font-bold uppercase tracking-widest text-primary">-93 €/settim.</p>
           </motion.div>
           <motion.div 
             animate={isActive ? { y: 0, opacity: 1 } : { y: 10, opacity: 0 }}
@@ -205,15 +203,11 @@ function OverviewPreview({ isActive }: { isActive: boolean }) {
 }
 
 function BrainPreview({ isActive }: { isActive: boolean }) {
-  const topographicPatternStyle = {
-    backgroundImage: "repeating-radial-gradient(circle at 100% 100%, transparent 0, transparent 12px, currentColor 12px, currentColor 13px)",
-  }
-
   return (
     <PreviewFrame
       eyebrow="Brain"
       statusLabel="Stime in corso"
-      footerNote="Il calcolo e puramente probabilistico: se l'affidabilita scende, torna allo storico."
+      footerNote="Il calcolo è puramente probabilistico: se l'affidabilità scende, torna allo storico."
     >
       <div className="flex h-full flex-col justify-center py-2">
         <motion.div 
@@ -221,8 +215,7 @@ function BrainPreview({ isActive }: { isActive: boolean }) {
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className="relative overflow-hidden rounded-[2rem] border border-primary/30 bg-gradient-to-br from-primary/10 to-transparent p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"
         >
-          {/* Topographic calculating pattern layer */}
-          <div className="pointer-events-none absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" style={topographicPatternStyle} />
+          <div className="pointer-events-none absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" style={TOPOGRAPHIC_PATTERN} />
           
           <motion.div 
              animate={isActive ? { rotate: 360 } : { rotate: 0 }}
@@ -244,7 +237,7 @@ function BrainPreview({ isActive }: { isActive: boolean }) {
 
             <div className="rounded-[1.2rem] border border-white/40 bg-white/70 p-4 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-black/40">
               <div className="mb-2.5 flex items-center justify-between">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">Affidabilita Modello</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">Affidabilità Modello</span>
                 <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Alta (78%)</span>
               </div>
               <div className="h-1.5 w-full overflow-hidden rounded-full bg-black/5 dark:bg-white/10">
@@ -264,15 +257,11 @@ function BrainPreview({ isActive }: { isActive: boolean }) {
 }
 
 function ScenarioPreview({ isActive }: { isActive: boolean }) {
-  const topographicPatternStyle = {
-    backgroundImage: "repeating-radial-gradient(circle at 50% 0%, transparent 0, transparent 16px, currentColor 16px, currentColor 17px)",
-  }
-
   return (
     <PreviewFrame
       eyebrow="Financial Lab"
       statusLabel="Quota in eccesso"
-      footerNote="La domanda qui non e quanto puoi spendere, ma quanto puoi bloccarti a lungo termine."
+      footerNote="La domanda qui non è quanto puoi spendere, ma quanto puoi bloccarti a lungo termine."
     >
       <div className="flex h-full flex-col justify-center gap-4 py-1">
         
@@ -290,8 +279,7 @@ function ScenarioPreview({ isActive }: { isActive: boolean }) {
           transition={{ delay: 0.1, duration: 0.4 }}
           className="relative overflow-hidden flex flex-col items-center justify-center rounded-[2rem] border border-primary/20 bg-primary/5 py-7 shadow-[inset_0_0_20px_rgba(var(--primary),0.05)]"
         >
-           {/* Topographic calculating pattern layer */}
-           <div className="pointer-events-none absolute inset-0 opacity-[0.04] dark:opacity-[0.06]" style={topographicPatternStyle} />
+           <div className="pointer-events-none absolute inset-0 opacity-[0.04] dark:opacity-[0.06]" style={TOPOGRAPHIC_PATTERN} />
            
            <div className="relative z-10 flex flex-col items-center">
              <motion.div 

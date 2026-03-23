@@ -22,7 +22,12 @@ vi.mock("../components/landing-brain-hero", () => ({
   LandingBrainHero: () => <div data-testid="landing-brain-hero" />
 }))
 
+vi.mock("../components/landing-differentiator-cards", () => ({
+  LandingDifferentiatorCards: () => <div data-testid="landing-differentiator-cards">Tre scelte di design</div>
+}))
+
 vi.mock("../components/motion-primitives", () => ({
+  AppleFluidBackground: () => <div data-testid="apple-fluid-background" />,
   CinematicTextReveal: ({ text }: { text: string }) => <>{text}</>
 }))
 
@@ -33,7 +38,7 @@ describe("LandingPage", () => {
     expect(screen.getAllByTestId("brand-logo").length).toBeGreaterThan(0)
     expect(screen.getByRole("heading", { name: /L'app che ti aiuta a capire il mese, non solo a registrare spese/i })).toBeInTheDocument()
     expect(screen.getByText(/App di finanza personale locale-first/i)).toBeInTheDocument()
-    expect(screen.getByText(/La differenza con Numa/i)).toBeInTheDocument()
+    expect(screen.getByTestId("landing-differentiator-cards")).toBeInTheDocument()
     expect(screen.getByText(/Come inizi/i)).toBeInTheDocument()
     expect(screen.getByText(/Cosa cambia davvero/i)).toBeInTheDocument()
     expect(screen.getByTestId("landing-product-demo")).toBeInTheDocument()

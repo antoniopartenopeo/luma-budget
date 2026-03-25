@@ -120,7 +120,7 @@ Passi minimi:
 2. Aggiorna la struttura in `src/features/landing/landing-page.tsx` mantenendo hero, sezioni anchor e CTA finale.
 3. Aggiorna la demo in `src/features/landing/components/landing-product-demo.tsx` e `src/features/landing/components/landing-previews.tsx` solo con preview veritiere rispetto al prodotto reale.
 4. Se introduci un interludio dedicato a Brain o ad altri moduli, trattalo come deep-dive della narrativa esistente, non come nuova promessa prodotto.
-5. Se il Brain hero usa spring/parallax/reveal finale, documenta esplicitamente fallback reduced-motion, profondita blur consentita e copy finale di rientro al controllo umano.
+5. Se Brain hero o altre hero immersive usano spring/parallax/reveal finale, documenta esplicitamente che `prefers-reduced-motion` attenua il moto senza cambiare il pattern visivo canonico; definisci anche blur consentito e copy finale di rientro al controllo umano.
 6. Sincronizza `02_specs/REQUIREMENTS.md`, `01_rules/UX_GOVERNANCE.md`, `01_rules/MOTION_PRINCIPLES.md` e `05_specialists/NUMA_UI_STANDARDS.md`.
 7. Riallinea i test landing per coprire ordine narrativo, vincoli di navigazione pubblica, step demo e eventuali explainers immersivi.
 

@@ -80,6 +80,7 @@ Per processi tecnici estesi (es. training locale Neural Core), mostrare progress
 ## 5. UX Invariants
 
 - Nessun branching di experience per device: un solo componente adattivo.
+- Sulla landing questo vale anche per hero ed explainers immersivi: smartphone e `prefers-reduced-motion` non devono attivare superfici o pattern alternativi, ma solo ridurre il moto.
 - I flussi principali devono preservare orientamento verticale e leggibilità delle metriche.
 - Le etichette semantiche finanziarie devono rimanere non giudicanti e contestualizzate nel tempo.
 

@@ -77,6 +77,7 @@ Invarianti:
 - copy pubblico solo su feature reali, niente hype generico
 - preview veritiere e isolate, mai dati utente reali
 - navigazione pubblica limitata a anchor interne e app entry intenzionali
+- hero e explainers immersivi della landing devono restare lo stesso componente adattivo su desktop, smartphone e contesti `prefers-reduced-motion`; puo cambiare solo l'intensita del motion, non il pattern visivo
 - su mobile il primo viewport deve mantenere leggibile promessa, descrizione e CTA principale
 - il reveal finale del Brain hero deve richiudere il messaggio su controllo del mese e calma, non su promessa autonoma di AI
 
@@ -110,6 +111,7 @@ Le animazioni state-based Radix/Shadcn (`data-[state=*]:animate-*`) sono consent
 - no fake delay per operazioni AI/analisi
 - motion continuo solo su elementi a bassa dominanza visiva
 - rispettare `prefers-reduced-motion`
+- `prefers-reduced-motion` sulla landing riduce movimento, blur e transizioni ma non sostituisce hero/explainer con layout alternativi semplificati
 - animare preferibilmente solo `transform` e `opacity`
 - vietato `transition: all`
 - eccezione landing: reveal testuale, sticky demo e progress fill sono ammessi solo dentro la narrativa pubblica e frame preview isolati

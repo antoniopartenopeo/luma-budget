@@ -3,7 +3,7 @@
 scope: decision-log
 owner: engineering
 status: active
-last-verified: 2026-03-22
+last-verified: 2026-03-25
 canonical-of: decision-log
 
 | Date | Decision | Status | Why | Alternatives rejected |
@@ -15,3 +15,4 @@ canonical-of: decision-log
 | 2026-03-15 | Expose the public landing page at `/` and move the in-app dashboard to `/dashboard` | accepted | Separate acquisition and product surfaces while keeping the existing app shell and internal modules intact | Keep the dashboard at `/` and force the landing into a secondary route that users may never see |
 | 2026-03-22 | Treat the public landing as a product-truth acquisition surface with constrained navigation | accepted | Keep public promise, motion language, and entrypoints aligned with real modules instead of generic marketing patterns | Turn `/` into a broad marketing hub with loose routing, speculative claims, or signup-first CTA |
 | 2026-03-22 | Allow one immersive Brain explainer on the landing only as a forecast-stage deep dive | accepted | Explain Brain readiness and forecast trust without turning `/` into a separate AI-first promise or breaking local-first positioning | Add multiple immersive module spotlights or position Brain as an unconditional prediction engine |
+| 2026-03-25 | Keep one adaptive hero surface across device sizes and reduced-motion contexts on the public landing | accepted | Preserve the same product perception on smartphone and accessibility-reduced contexts while avoiding alternate simplified marketing patterns | Render separate static/mobile hero variants for landing explainers when motion is reduced |

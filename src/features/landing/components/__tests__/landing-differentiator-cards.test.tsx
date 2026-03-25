@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest"
 import { LandingDifferentiatorCards } from "../landing-differentiator-cards"
 
 let scrollChangeHandler: ((value: number) => void) | null = null
+let mockReducedMotion = false
 
 vi.mock("framer-motion", async () => {
   const React = await vi.importActual<typeof import("react")>("react")
@@ -30,7 +31,7 @@ vi.mock("framer-motion", async () => {
     motion: {
       div: MotionDiv
     },
-    useReducedMotion: () => false,
+    useReducedMotion: () => mockReducedMotion,
     useScroll: () => ({
       scrollYProgress: {
         on: (event: string, callback: (value: number) => void) => {
@@ -51,6 +52,7 @@ vi.mock("framer-motion", async () => {
 
 describe("LandingDifferentiatorCards", () => {
   it("renders the editorial Numa scene and swaps the active differentiator while scrolling", () => {
+    mockReducedMotion = false
     render(<LandingDifferentiatorCards />)
 
     expect(screen.getByRole("heading", { name: /Nessun intermediario tra te e i tuoi dati/i })).toBeInTheDocument()
@@ -71,5 +73,15 @@ describe("LandingDifferentiatorCards", () => {
 
     expect(screen.getByRole("heading", { name: /Numeri concreti, non promesse generiche/i })).toBeInTheDocument()
     expect(screen.getByText(/livello di affid/i)).toBeInTheDocument()
+  })
+
+  it("keeps the same hero composition when reduced motion is enabled", () => {
+    mockReducedMotion = true
+    render(<LandingDifferentiatorCards />)
+
+    expect(screen.getByRole("heading", { name: /Nessun intermediario tra te e i tuoi dati/i })).toBeInTheDocument()
+    expect(screen.getByText(/La differenza con Numa/i)).toBeInTheDocument()
+    expect(screen.getByText(/dato nasce e resta sul tuo dispositivo/i)).toBeInTheDocument()
+    expect(screen.queryByText(/Numa non ti chiede di inseguire il denaro/i)).not.toBeInTheDocument()
   })
 })

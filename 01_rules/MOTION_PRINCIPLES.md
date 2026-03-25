@@ -101,7 +101,7 @@ Guardrail obbligatori:
 Sulla landing questo implica:
 - hero text senza blur persistente;
 - demo step con cambio stato immediato o fade minimo;
-- interludio Brain convertito in card/surface statica;
+- interludi e hero immersivi che mantengono la stessa composizione adattiva, riducendo pero blur, parallax, loop e transizioni lunghe invece di sostituire la scena con un pattern diverso;
 - nessun loop continuo dominante fuori dai preview frame.
 
 ### Performance

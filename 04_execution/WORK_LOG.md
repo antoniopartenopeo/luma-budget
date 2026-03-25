@@ -3,7 +3,7 @@
 scope: execution-work-log
 owner: engineering
 status: active
-last-verified: 2026-03-22
+last-verified: 2026-03-25
 canonical-of: execution-work-log
 
 ## 2026-03-15
@@ -33,3 +33,9 @@ canonical-of: execution-work-log
 - Refreshed docs again after the latest landing iteration to capture the longer Brain interlude and the zero-cloud/no-account closing CTA.
 - Created `AppleFluidBackground` master primitive (unifying `AppleFluidMesh` SVG with complex black scaling gradients) and re-engineered both the landing Hero and Brain Hero to use this identical Apple Premium immersive animated background.
 - Executed a rigorous linguistic and typographic audit across the entire landing page, fixing dozens of missing Italian accents and normalizing all responsive header scales (clamping `text-8xl` to `text-7xl`) for flawless visual hierarchy.
+
+## 2026-03-25
+
+- Removed alternate simplified reduced-motion hero variants from the landing immersive sections.
+- Re-aligned the `Differenza` hero and `LandingBrainHero` so smartphone, desktop, and reduced-motion contexts share the same adaptive surface pattern.
+- Updated governance and documentation to codify the single-surface landing rule across requirements, UX, motion, architecture, decisions, and handoff context.

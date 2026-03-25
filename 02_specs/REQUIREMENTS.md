@@ -31,6 +31,7 @@ canonical-of: product-requirements
 - Open banking routes remain fail-closed unless `NUMA_ENABLE_OPEN_BANKING=true`.
 - Cross-layer changes should preserve governance quick-check and release validation flows.
 - Public landing claims must stay product-verifiable, and its public navigation must remain constrained to in-page anchors and intentionally public app-entry routes.
+- The public landing must keep one adaptive visual model per immersive hero or explainer across display sizes and reduced-motion contexts; motion may attenuate, but the surface pattern must not fork into separate mobile or simplified alternatives.
 
 ## Out of Scope by Default
 

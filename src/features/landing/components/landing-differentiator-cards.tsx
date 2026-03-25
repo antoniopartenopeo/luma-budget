@@ -43,18 +43,20 @@ const MARKET_GLIMPSES = [
 
 function MarketGhostLayer({
   item,
-  index
+  index,
+  prefersReducedMotion
 }: {
   item: LandingDifferentItem
   index: number
+  prefersReducedMotion: boolean
 }) {
   return (
     <motion.div
       key={`market-${item.title}`}
-      initial={{ opacity: 0, scale: 0.96, y: 32 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.96, y: 32 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 1.02, y: -24 }}
-      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+      exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.02, y: -24 }}
+      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       className="absolute inset-0"
       aria-hidden="true"
     >
@@ -89,31 +91,33 @@ function MarketGhostLayer({
 function NumaEditorialCard({
   item,
   index,
-  total
+  total,
+  prefersReducedMotion
 }: {
   item: LandingDifferentItem
   index: number
   total: number
+  prefersReducedMotion: boolean
 }) {
   const accent = EDITORIAL_ACCENTS[index]
 
   return (
     <motion.div
       key={`numa-${item.title}`}
-      initial={{ opacity: 0, y: 36, rotate: -10, scale: 0.94 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 36, rotate: -10, scale: 0.94 }}
       animate={{
         opacity: 1,
         y: 0,
         rotate: -7,
         scale: 1,
-        transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] }
+        transition: prefersReducedMotion ? { duration: 0 } : { duration: 0.55, ease: [0.22, 1, 0.36, 1] }
       }}
       exit={{
         opacity: 0,
-        y: -24,
-        rotate: -3,
-        scale: 1.03,
-        transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] }
+        y: prefersReducedMotion ? 0 : -24,
+        rotate: prefersReducedMotion ? -7 : -3,
+        scale: prefersReducedMotion ? 1 : 1.03,
+        transition: prefersReducedMotion ? { duration: 0 } : { duration: 0.35, ease: [0.22, 1, 0.36, 1] }
       }}
       className="absolute inset-x-[6%] top-[11%] bottom-[13%] will-change-transform sm:inset-x-[9%] sm:top-[10%] sm:bottom-[12%] lg:inset-x-[8%] lg:top-[9%] lg:bottom-[10%]"
     >
@@ -193,67 +197,13 @@ export function LandingDifferentiatorCards() {
   })
 
   useEffect(() => {
-    if (prefersReducedMotion) {
-      return
-    }
-
     return scrollYProgress.on("change", (value) => {
       const total = LANDING_DIFFERENTIATORS.length
       const clamped = Math.max(0, Math.min(value, 0.9999))
       const nextIndex = Math.min(Math.floor(clamped * total), total - 1)
       setActiveIndex((currentIndex) => (currentIndex === nextIndex ? currentIndex : nextIndex))
     })
-  }, [prefersReducedMotion, scrollYProgress])
-
-  if (prefersReducedMotion) {
-    return (
-      <div className="px-4">
-        <div className="mx-auto max-w-3xl space-y-8">
-          <div className="space-y-3 text-center">
-            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary">
-              La differenza con Numa
-            </p>
-            <h2 id="landing-different-title" className="text-3xl font-black tracking-tight text-foreground sm:text-4xl">
-              Numa non ti chiede di inseguire il denaro.
-            </h2>
-            <p className="mx-auto max-w-2xl text-sm font-medium leading-relaxed text-muted-foreground sm:text-base">
-              Ti aiuta a capirlo con scelte piu semplici: dati locali, nessun rito rigido e stime utili prima delle decisioni.
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            {LANDING_DIFFERENTIATORS.map((item, index) => {
-              const accent = EDITORIAL_ACCENTS[index]
-
-              return (
-                <div
-                  key={item.title}
-                  className={cn(
-                    "overflow-hidden rounded-[2.2rem] border p-5 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.28)] sm:p-6",
-                    accent.card
-                  )}
-                >
-                  <div className="space-y-4">
-                    <p className={cn("text-[10px] font-bold uppercase tracking-[0.2em]", accent.kicker)}>
-                      La differenza con Numa
-                    </p>
-                    <h3 className="text-2xl font-black tracking-tight text-foreground">{item.title}</h3>
-                    <p className="text-sm font-medium leading-relaxed text-foreground/76">{item.numaLabel}</p>
-                    <div className="rounded-[1.6rem] border border-black/8 bg-black/[0.03] p-4 dark:border-white/8 dark:bg-white/[0.04]">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/72">
-                        Il mercato
-                      </p>
-                      <p className="mt-2 text-sm font-medium leading-relaxed text-muted-foreground">{item.marketLabel}</p>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      </div>
-    )
-  }
+  }, [scrollYProgress])
 
   const activeItem = LANDING_DIFFERENTIATORS[activeIndex]
   const accent = EDITORIAL_ACCENTS[activeIndex]
@@ -270,15 +220,20 @@ export function LandingDifferentiatorCards() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.12),transparent_38%)] dark:bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.05),transparent_40%)]" />
         <motion.div
           className={cn("pointer-events-none absolute left-1/2 top-[14%] h-64 w-64 -translate-x-1/2 rounded-full blur-3xl sm:h-80 sm:w-80", accent.glow)}
-          animate={{ opacity: [0.4, 0.7, 0.45], scale: [0.96, 1.08, 0.98] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          animate={prefersReducedMotion ? { opacity: 0.5, scale: 1 } : { opacity: [0.4, 0.7, 0.45], scale: [0.96, 1.08, 0.98] }}
+          transition={prefersReducedMotion ? undefined : { duration: 8, repeat: Infinity, ease: "easeInOut" }}
           aria-hidden="true"
         />
 
         <div className="relative mx-auto w-full max-w-6xl">
           <div className="relative mx-auto h-[min(82vh,46rem)] w-full max-w-[28rem] sm:max-w-[33rem] lg:max-w-[37rem] [perspective:1400px]">
             <AnimatePresence mode="wait">
-              <MarketGhostLayer key={`ghost-${activeItem.title}`} item={activeItem} index={activeIndex} />
+              <MarketGhostLayer
+                key={`ghost-${activeItem.title}`}
+                item={activeItem}
+                index={activeIndex}
+                prefersReducedMotion={prefersReducedMotion}
+              />
             </AnimatePresence>
 
             <AnimatePresence mode="wait">
@@ -287,6 +242,7 @@ export function LandingDifferentiatorCards() {
                 item={activeItem}
                 index={activeIndex}
                 total={LANDING_DIFFERENTIATORS.length}
+                prefersReducedMotion={prefersReducedMotion}
               />
             </AnimatePresence>
           </div>

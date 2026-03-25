@@ -3,7 +3,7 @@
 scope: current-state
 owner: engineering
 status: active
-last-verified: 2026-03-22
+last-verified: 2026-03-25
 canonical-of: project-current-state
 
 ## Snapshot
@@ -14,6 +14,7 @@ canonical-of: project-current-state
 - Premium UI Phase: `PullToRefresh` and `ScrollToTop` utilities integrated into global layout (Mar 17)
 - Premium UI Phase: `AppleFluidBackground` master primitive implemented merging zero-weight mathematical mesh gradients with perfect volumetric CSS blending (Mar 22/23)
 - Public landing governance aligned as a dedicated acquisition surface with anchored narrative, sticky demo, constrained public navigation, and perfect Apple-grade language/typographic hierarchy (Mar 23)
+- Landing immersive heroes now preserve one adaptive surface across desktop, smartphone, and reduced-motion contexts; motion intensity changes, but the composition does not fork into mobile/static alternates (Mar 25)
 
 ## What Is Stable
 
@@ -35,7 +36,7 @@ canonical-of: project-current-state
 - Open banking code can drift from the documented local-first default if the runtime gate changes without further hardening
 - Landing motion and acquisition semantics require periodic reduced-motion and public-copy audits to avoid drift from governance
 - Immersive landing explainers must stay aligned with local-first messaging and must not imply enabled remote sync flows by default
-- The current Brain explainer uses a long-form scroll interlude with spring-smoothed depth separation and final reveal copy, which must remain synchronized with motion governance
+- The current Brain explainer uses a long-form scroll interlude with spring-smoothed depth separation and final reveal copy, which must remain synchronized with motion governance and the single-surface reduced-motion rule
 
 ## Quality and Verification Baseline
 

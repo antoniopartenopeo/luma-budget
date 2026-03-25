@@ -26,23 +26,63 @@ export function LandingBrainHero() {
   // black = visible fluid, transparent = hidden fluid.
   // We keep the "solid" core very small even at max expansion (35%), 
   // so the fading gradient has a massive runway (from 35% to 100%) to blend flawlessly with the background.
-  const coreRadius = useTransform(smooth, [0, 0.4, 0.8], ["2%", "15%", "30%"])
-  const fadeEdge = useTransform(smooth, [0, 0.4, 0.8], ["40%", "70%", "100%"])
+  const coreRadius = useTransform(
+    smooth,
+    prefersReducedMotion ? [0, 1] : [0, 0.4, 0.8],
+    prefersReducedMotion ? ["18%", "18%"] : ["2%", "15%", "30%"]
+  )
+  const fadeEdge = useTransform(
+    smooth,
+    prefersReducedMotion ? [0, 1] : [0, 0.4, 0.8],
+    prefersReducedMotion ? ["78%", "78%"] : ["40%", "70%", "100%"]
+  )
   const maskImageStyle = useMotionTemplate`radial-gradient(circle at 50% 50%, black ${coreRadius}, transparent ${fadeEdge})`
 
   // ── Act 1: The Hook ──
-  const act1Opacity = useTransform(smooth, [0, 0.05, 0.22, 0.28], [0, 1, 1, 0])
-  const act1Blur = useTransform(smooth, [0, 0.05, 0.22, 0.28], ["blur(12px)", "blur(0px)", "blur(0px)", "blur(12px)"])
+  const act1Opacity = useTransform(
+    smooth,
+    prefersReducedMotion ? [0, 1] : [0, 0.05, 0.22, 0.28],
+    prefersReducedMotion ? [1, 1] : [0, 1, 1, 0]
+  )
+  const act1Blur = useTransform(
+    smooth,
+    prefersReducedMotion ? [0, 1] : [0, 0.05, 0.22, 0.28],
+    prefersReducedMotion ? ["blur(0px)", "blur(0px)"] : ["blur(12px)", "blur(0px)", "blur(0px)", "blur(12px)"]
+  )
 
   // ── Act 2: The Explanation ──
-  const act2Opacity = useTransform(smooth, [0.32, 0.38, 0.55, 0.62], [0, 1, 1, 0])
-  const act2Y = useTransform(smooth, [0.32, 0.38, 0.55, 0.62], [20, 0, 0, -20])
-  const act2Blur = useTransform(smooth, [0.32, 0.38, 0.55, 0.62], ["blur(12px)", "blur(0px)", "blur(0px)", "blur(12px)"])
+  const act2Opacity = useTransform(
+    smooth,
+    prefersReducedMotion ? [0, 1] : [0.32, 0.38, 0.55, 0.62],
+    prefersReducedMotion ? [0, 0] : [0, 1, 1, 0]
+  )
+  const act2Y = useTransform(
+    smooth,
+    prefersReducedMotion ? [0, 1] : [0.32, 0.38, 0.55, 0.62],
+    prefersReducedMotion ? [0, 0] : [20, 0, 0, -20]
+  )
+  const act2Blur = useTransform(
+    smooth,
+    prefersReducedMotion ? [0, 1] : [0.32, 0.38, 0.55, 0.62],
+    prefersReducedMotion ? ["blur(0px)", "blur(0px)"] : ["blur(12px)", "blur(0px)", "blur(0px)", "blur(12px)"]
+  )
 
   // ── Act 3: The Promise ──
-  const act3Opacity = useTransform(smooth, [0.68, 0.78, 0.95, 1.0], [0, 1, 1, 0])
-  const act3Y = useTransform(smooth, [0.68, 0.78], [20, 0])
-  const act3Blur = useTransform(smooth, [0.68, 0.78], ["blur(12px)", "blur(0px)"])
+  const act3Opacity = useTransform(
+    smooth,
+    prefersReducedMotion ? [0, 1] : [0.68, 0.78, 0.95, 1.0],
+    prefersReducedMotion ? [0, 0] : [0, 1, 1, 0]
+  )
+  const act3Y = useTransform(
+    smooth,
+    prefersReducedMotion ? [0, 1] : [0.68, 0.78],
+    prefersReducedMotion ? [0, 0] : [20, 0]
+  )
+  const act3Blur = useTransform(
+    smooth,
+    prefersReducedMotion ? [0, 1] : [0.68, 0.78],
+    prefersReducedMotion ? ["blur(0px)", "blur(0px)"] : ["blur(12px)", "blur(0px)"]
+  )
   const fluidMaskStyle = {
     WebkitMaskImage: maskImageStyle,
     maskImage: maskImageStyle,
@@ -50,23 +90,6 @@ export function LandingBrainHero() {
   const act1Style = { opacity: act1Opacity, filter: act1Blur }
   const act2Style = { opacity: act2Opacity, y: act2Y, filter: act2Blur }
   const act3Style = { opacity: act3Opacity, y: act3Y, filter: act3Blur }
-
-  if (prefersReducedMotion) {
-    return (
-      <section className="flex min-h-[60vh] flex-col items-center justify-center px-6 text-center">
-        <Badge variant="outline" className="mb-6 border-primary/20 bg-primary/10 text-primary backdrop-blur-md">
-          Numa Predictive Engine
-        </Badge>
-        <h2 id="landing-brain-hero-title" className="text-4xl font-black tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-          Guarda oltre.
-        </h2>
-        <p className="mt-8 max-w-lg text-lg font-medium text-muted-foreground">
-          Processa le tue abitudini. Proietta il tuo potenziale. <br/>
-          Il tuo mese, svelato prima di viverlo.
-        </p>
-      </section>
-    )
-  }
 
   return (
     <div ref={containerRef} className="relative h-[600vh] w-full">

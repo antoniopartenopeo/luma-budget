@@ -1,152 +1,190 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import {
-  motion,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
-  type MotionValue
-} from "framer-motion"
+import { AnimatePresence, motion, useReducedMotion, useScroll } from "framer-motion"
+import { cn } from "@/lib/utils"
 import { LANDING_DIFFERENTIATORS, type LandingDifferentItem } from "../data"
 
-/* ─────────────────────────────────────────────
- * DifferentiatorPair
- * Two stacked cards in 3D perspective.
- * Market card starts in front (oblique), Numa behind.
- * Scroll swaps them with a cinematic deck rotation.
- * ───────────────────────────────────────────── */
-function DifferentiatorPair({
+const EDITORIAL_ACCENTS = [
+  {
+    ambient: "from-violet-500/10 via-background to-background dark:from-violet-500/16 dark:via-background dark:to-background",
+    glow: "bg-violet-500/18",
+    card: "border-violet-400/20 bg-gradient-to-br from-[#faf5ff] via-white to-[#eef2ff] dark:from-[#171021] dark:via-[#0b0b12] dark:to-[#121833]",
+    kicker: "text-violet-600 dark:text-violet-400",
+    icon: "border-violet-400/20 bg-violet-500/10 text-violet-600 dark:text-violet-400"
+  },
+  {
+    ambient: "from-emerald-500/10 via-background to-background dark:from-emerald-500/16 dark:via-background dark:to-background",
+    glow: "bg-emerald-500/16",
+    card: "border-emerald-400/20 bg-gradient-to-br from-[#ecfdf5] via-white to-[#effcf8] dark:from-[#0d1916] dark:via-[#0b0f0e] dark:to-[#10201b]",
+    kicker: "text-emerald-600 dark:text-emerald-400",
+    icon: "border-emerald-400/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+  },
+  {
+    ambient: "from-amber-500/10 via-background to-background dark:from-amber-500/16 dark:via-background dark:to-background",
+    glow: "bg-amber-500/18",
+    card: "border-amber-400/20 bg-gradient-to-br from-[#fff7ed] via-white to-[#fef3c7] dark:from-[#1b140d] dark:via-[#0b0b0d] dark:to-[#24160f]",
+    kicker: "text-amber-600 dark:text-amber-400",
+    icon: "border-amber-400/20 bg-amber-500/10 text-amber-600 dark:text-amber-400"
+  }
+] as const
+
+const EDITORIAL_NOTES = [
+  "Privacy locale all'inizio, non come postilla nascosta.",
+  "Parte dai movimenti che hai gia, non da un rito da seguire.",
+  "Stime chiare per il mese e una quota sostenibile prima di impegnarti."
+] as const
+
+const MARKET_GLIMPSES = [
+  ["Cloud sync obbligatorio", "Account collegati", "Dati ospitati altrove"],
+  ["Metodo rigido", "Budget da compilare", "Rituali da seguire"],
+  ["AI generica", "Promesse vaghe", "Simulazioni poco chiare"]
+] as const
+
+function MarketGhostLayer({
   item,
-  index,
-  total,
-  progress,
+  index
 }: {
   item: LandingDifferentItem
   index: number
-  total: number
-  progress: MotionValue<number>
 }) {
-  const seg = 1 / total
-  const start = index * seg
-  const end = start + seg
-  const swapBegin = start + seg * 0.2
-  const swapEnd = start + seg * 0.8
-
-  // ── Market card (in front → rotates away in 3D) ──
-  const mRotateY = useTransform(progress, [start, swapBegin, swapEnd], [-6, -6, -25])
-  const mRotateX = useTransform(progress, [start, swapBegin, swapEnd], [2, 2, 8])
-  const mRotateZ = useTransform(progress, [start, swapBegin, swapEnd], [-1, -1, -4])
-  const mScale = useTransform(progress, [start, swapBegin, swapEnd], [1, 1, 0.85])
-  const mOpacity = useTransform(progress, [swapBegin, swapEnd], [1, 0])
-  const mX = useTransform(progress, [start, swapBegin, swapEnd], ["0%", "0%", "-12%"])
-
-  // ── Numa card (behind → comes forward) ──
-  const nRotateY = useTransform(progress, [swapBegin, swapEnd, end], [8, 0, 0])
-  const nRotateX = useTransform(progress, [swapBegin, swapEnd, end], [3, 0, 0])
-  const nRotateZ = useTransform(progress, [swapBegin, swapEnd, end], [1.5, 0, 0])
-  const nScale = useTransform(progress, [swapBegin, swapEnd, end], [0.88, 1, 1])
-  const nOpacity = useTransform(progress, [swapBegin, swapEnd], [0.4, 1])
-  const nX = useTransform(progress, [swapBegin, swapEnd, end], ["6%", "0%", "0%"])
-
-  // ── Pair crossfade ──
-  const pairOpacity = useTransform(
-    progress,
-    index === 0
-      ? [0, end - seg * 0.08, end]
-      : index === total - 1
-        ? [start - seg * 0.08, start, 1]
-        : [start - seg * 0.08, start, end - seg * 0.08, end],
-    index === 0
-      ? [1, 1, 0]
-      : index === total - 1
-        ? [0, 1, 1]
-        : [0, 1, 1, 0]
-  )
-
-  // Per-differentiator accent colors for the Numa card
-  const numaAccents = [
-    "from-violet-500/12 to-indigo-500/8 border-violet-400/25 dark:from-violet-500/20 dark:to-indigo-500/12 dark:border-violet-400/20",
-    "from-emerald-500/12 to-teal-500/8 border-emerald-400/25 dark:from-emerald-500/20 dark:to-teal-500/12 dark:border-emerald-400/20",
-    "from-amber-500/10 to-orange-500/8 border-amber-400/25 dark:from-amber-500/18 dark:to-orange-500/10 dark:border-amber-400/20"
-  ]
-  const numaTextAccents = [
-    "text-violet-600 dark:text-violet-400",
-    "text-emerald-600 dark:text-emerald-400",
-    "text-amber-600 dark:text-amber-400"
-  ]
-  const numaIconAccents = [
-    "border-violet-400/20 bg-violet-500/10 text-violet-600 dark:text-violet-400",
-    "border-emerald-400/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-    "border-amber-400/20 bg-amber-500/10 text-amber-600 dark:text-amber-400"
-  ]
-  const pairStyle = { opacity: pairOpacity }
-  const numaCardStyle = {
-    rotateY: nRotateY,
-    rotateX: nRotateX,
-    rotateZ: nRotateZ,
-    scale: nScale,
-    opacity: nOpacity,
-    x: nX,
-  }
-  const marketCardStyle = {
-    rotateY: mRotateY,
-    rotateX: mRotateX,
-    rotateZ: mRotateZ,
-    scale: mScale,
-    opacity: mOpacity,
-    x: mX,
-  }
-
   return (
-    <motion.div style={pairStyle} className="absolute inset-0" aria-hidden={index > 0}>
-      {/* ── Numa card (z-10, behind) ── */}
-      <motion.div
-        style={numaCardStyle}
-        className={`absolute inset-0 z-10 flex flex-col justify-between rounded-[1.5rem] sm:rounded-[2rem] border bg-gradient-to-br p-6 sm:p-8 lg:p-10 shadow-2xl ${numaAccents[index]}`}
-      >
-        <div className="space-y-4 sm:space-y-5">
-          <p className={`text-[10px] font-bold uppercase tracking-[0.2em] ${numaTextAccents[index]}`}>
-            ✓ Con Numa
-          </p>
-          <div className={`flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-2xl border ${numaIconAccents[index]}`}>
-            <item.icon className="h-5 w-5" />
-          </div>
-          <h3 className="max-w-[20ch] text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-foreground">
-            {item.title}
-          </h3>
-        </div>
-        <p className="text-sm sm:text-base lg:text-lg font-semibold leading-relaxed text-foreground/80">
-          {item.numaLabel}
+    <motion.div
+      key={`market-${item.title}`}
+      initial={{ opacity: 0, scale: 0.96, y: 32 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 1.02, y: -24 }}
+      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+      className="absolute inset-0"
+      aria-hidden="true"
+    >
+      <div className="absolute right-[-8%] top-[7%] h-[38%] w-[74%] rotate-[14deg] rounded-[2.4rem] border border-black/8 bg-neutral-100/82 p-5 shadow-[0_40px_90px_-44px_rgba(15,23,42,0.45)] blur-[1.8px] dark:border-white/8 dark:bg-neutral-900/55 sm:h-[42%] sm:w-[70%] sm:p-6">
+        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-neutral-400 dark:text-neutral-500">
+          Il mercato
         </p>
-      </motion.div>
-
-      {/* ── Market card (z-20, in front) ── */}
-      <motion.div
-        style={marketCardStyle}
-        className="absolute inset-0 z-20 flex flex-col justify-between rounded-[1.5rem] sm:rounded-[2rem] border border-neutral-200/60 bg-gradient-to-br from-neutral-100 to-stone-50 p-6 sm:p-8 lg:p-10 shadow-2xl dark:border-neutral-700/40 dark:from-neutral-800 dark:to-neutral-900"
-      >
-        <div className="space-y-4 sm:space-y-5">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500">
-            • Il mercato
-          </p>
-          <div className="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-2xl border border-neutral-200 bg-neutral-100 text-neutral-400 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-500">
-            <item.icon className="h-5 w-5" />
-          </div>
-        </div>
-        <p className="text-base sm:text-lg lg:text-xl font-medium leading-relaxed text-neutral-500 dark:text-neutral-400">
+        <p className="mt-4 max-w-[18ch] text-lg font-medium leading-tight text-neutral-500 dark:text-neutral-400 sm:text-xl">
           {item.marketLabel}
         </p>
-      </motion.div>
+      </div>
+
+      <div className="absolute bottom-[4%] left-[-6%] w-[68%] -rotate-[9deg] rounded-[2rem] border border-black/8 bg-white/80 p-4 shadow-[0_30px_90px_-48px_rgba(15,23,42,0.5)] blur-[1.2px] dark:border-white/8 dark:bg-neutral-950/50 sm:w-[56%] sm:p-5">
+        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-neutral-400 dark:text-neutral-500">
+          Quello che trovi spesso
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {MARKET_GLIMPSES[index].map((label) => (
+            <span
+              key={label}
+              className="rounded-full border border-black/6 bg-black/[0.03] px-2.5 py-1 text-[11px] font-semibold text-neutral-500 dark:border-white/8 dark:bg-white/[0.04] dark:text-neutral-400"
+            >
+              {label}
+            </span>
+          ))}
+        </div>
+      </div>
     </motion.div>
   )
 }
 
-/* ─────────────────────────────────────────────
- * LandingDifferentiatorCards
- * Full-width, 16:9 scroll-pinned card deck.
- * ───────────────────────────────────────────── */
+function NumaEditorialCard({
+  item,
+  index,
+  total
+}: {
+  item: LandingDifferentItem
+  index: number
+  total: number
+}) {
+  const accent = EDITORIAL_ACCENTS[index]
+
+  return (
+    <motion.div
+      key={`numa-${item.title}`}
+      initial={{ opacity: 0, y: 36, rotate: -10, scale: 0.94 }}
+      animate={{
+        opacity: 1,
+        y: 0,
+        rotate: -7,
+        scale: 1,
+        transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] }
+      }}
+      exit={{
+        opacity: 0,
+        y: -24,
+        rotate: -3,
+        scale: 1.03,
+        transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] }
+      }}
+      className="absolute inset-x-[8%] top-[18%] bottom-[10%] will-change-transform sm:inset-x-[12%] sm:top-[16%] sm:bottom-[12%]"
+    >
+      <div
+        className={cn(
+          "relative flex h-full flex-col justify-between overflow-hidden rounded-[2.7rem] border p-7 shadow-[0_44px_120px_-50px_rgba(15,23,42,0.55)] sm:p-8 lg:p-10",
+          accent.card
+        )}
+      >
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.85),transparent_48%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_52%)]" />
+
+        <div className="relative flex h-full flex-col justify-between">
+          <div className="space-y-5">
+            <div className="space-y-3">
+              <p className={cn("text-[10px] font-bold uppercase tracking-[0.22em]", accent.kicker)}>
+                La differenza con Numa
+              </p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/36">
+                NUMA / DESIGN / {String(index + 1).padStart(2, "0")}
+              </p>
+            </div>
+
+            <div
+              className={cn(
+                "flex h-12 w-12 items-center justify-center rounded-[1.2rem] border shadow-[0_18px_32px_-24px_rgba(15,23,42,0.45)]",
+                accent.icon
+              )}
+            >
+              <item.icon className="h-5 w-5" />
+            </div>
+
+            <div className="space-y-4">
+              <h2
+                id="landing-different-title"
+                className="max-w-[11ch] text-4xl font-black tracking-tight text-foreground sm:text-5xl lg:text-[3.75rem] lg:leading-[0.95]"
+              >
+                {item.title}
+              </h2>
+              <p className="max-w-[26ch] text-base font-medium leading-relaxed text-foreground/78 sm:text-lg">
+                {item.numaLabel}
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="h-px w-16 bg-foreground/12" />
+            <p className="max-w-[28ch] text-sm font-semibold leading-relaxed text-foreground/64 sm:text-[15px]">
+              {EDITORIAL_NOTES[index]}
+            </p>
+
+            <div className="flex items-center gap-2 pt-1">
+              {LANDING_DIFFERENTIATORS.map((entry, dotIndex) => (
+                <span
+                  key={entry.title}
+                  className={cn(
+                    "h-1.5 rounded-full transition-all duration-300",
+                    dotIndex === index ? "w-10 bg-foreground/78" : "w-4 bg-foreground/12"
+                  )}
+                />
+              ))}
+              <span className="ml-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/36">
+                {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
 export function LandingDifferentiatorCards() {
   const containerRef = useRef<HTMLDivElement>(null)
   const prefersReducedMotion = useReducedMotion()
@@ -154,98 +192,107 @@ export function LandingDifferentiatorCards() {
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end end"],
+    offset: ["start start", "end end"]
   })
-
-  const smooth = useSpring(scrollYProgress, {
-    stiffness: 50,
-    damping: 28,
-    mass: 1,
-  })
-  const deckPerspectiveStyle = {
-    perspective: "1200px",
-    perspectiveOrigin: "50% 50%",
-  }
 
   useEffect(() => {
-    return smooth.on("change", (v) => {
-      const total = LANDING_DIFFERENTIATORS.length
-      const idx = Math.min(Math.floor(v * total), total - 1)
-      setActiveIndex((prev) => (prev === idx ? prev : idx))
-    })
-  }, [smooth])
+    if (prefersReducedMotion) {
+      return
+    }
 
-  /* ── Reduced motion fallback ── */
+    return scrollYProgress.on("change", (value) => {
+      const total = LANDING_DIFFERENTIATORS.length
+      const clamped = Math.max(0, Math.min(value, 0.9999))
+      const nextIndex = Math.min(Math.floor(clamped * total), total - 1)
+      setActiveIndex((currentIndex) => (currentIndex === nextIndex ? currentIndex : nextIndex))
+    })
+  }, [prefersReducedMotion, scrollYProgress])
+
   if (prefersReducedMotion) {
     return (
-      <div className="mx-auto max-w-2xl space-y-8 px-4">
-        <div className="text-center">
-          <h2 id="landing-different-title" className="text-3xl font-black tracking-tight text-foreground sm:text-4xl">
-            La differenza con Numa
-          </h2>
-          <p className="mt-2 text-sm font-medium text-muted-foreground">
-            Tre scelte di design che separano Numa da tutto il resto.
-          </p>
-        </div>
-        {LANDING_DIFFERENTIATORS.map((item) => (
-          <div key={item.title} className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
-                <item.icon className="h-5 w-5" />
-              </div>
-              <h3 className="text-xl font-bold tracking-tight text-foreground">{item.title}</h3>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-muted-foreground/10 bg-muted/40 p-4">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60 mb-1">• Il mercato</p>
-                <p className="text-sm font-medium text-muted-foreground">{item.marketLabel}</p>
-              </div>
-              <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-1">✓ Con Numa</p>
-                <p className="text-sm font-semibold text-foreground">{item.numaLabel}</p>
-              </div>
-            </div>
+      <div className="px-4">
+        <div className="mx-auto max-w-3xl space-y-8">
+          <div className="space-y-3 text-center">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary">
+              La differenza con Numa
+            </p>
+            <h2 id="landing-different-title" className="text-3xl font-black tracking-tight text-foreground sm:text-4xl">
+              Numa non ti chiede di inseguire il denaro.
+            </h2>
+            <p className="mx-auto max-w-2xl text-sm font-medium leading-relaxed text-muted-foreground sm:text-base">
+              Ti aiuta a capirlo con scelte piu semplici: dati locali, nessun rito rigido e stime utili prima delle decisioni.
+            </p>
           </div>
-        ))}
+
+          <div className="space-y-4">
+            {LANDING_DIFFERENTIATORS.map((item, index) => {
+              const accent = EDITORIAL_ACCENTS[index]
+
+              return (
+                <div
+                  key={item.title}
+                  className={cn(
+                    "overflow-hidden rounded-[2.2rem] border p-5 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.28)] sm:p-6",
+                    accent.card
+                  )}
+                >
+                  <div className="space-y-4">
+                    <p className={cn("text-[10px] font-bold uppercase tracking-[0.2em]", accent.kicker)}>
+                      La differenza con Numa
+                    </p>
+                    <h3 className="text-2xl font-black tracking-tight text-foreground">{item.title}</h3>
+                    <p className="text-sm font-medium leading-relaxed text-foreground/76">{item.numaLabel}</p>
+                    <div className="rounded-[1.6rem] border border-black/8 bg-black/[0.03] p-4 dark:border-white/8 dark:bg-white/[0.04]">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/72">
+                        Il mercato
+                      </p>
+                      <p className="mt-2 text-sm font-medium leading-relaxed text-muted-foreground">{item.marketLabel}</p>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
       </div>
     )
   }
 
-  /* ── Animated scroll-driven card deck ── */
+  const activeItem = LANDING_DIFFERENTIATORS[activeIndex]
+  const accent = EDITORIAL_ACCENTS[activeIndex]
+
   return (
-    <div ref={containerRef} className="relative h-[450vh] w-full">
-      <div className="sticky top-0 flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-background">
-
-        {/* ── Header with step counter ── */}
-        <div className="absolute top-12 sm:top-16 z-40 flex flex-col items-center text-center px-4">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary tabular-nums">
-            {String(activeIndex + 1).padStart(2, "0")} / {String(LANDING_DIFFERENTIATORS.length).padStart(2, "0")}
-          </p>
-          <h2
-            id="landing-different-title"
-            className="mt-3 text-3xl font-black tracking-tight text-foreground sm:text-4xl"
-          >
-            La differenza con Numa
-          </h2>
-          <p className="mt-2 max-w-md text-sm font-medium text-muted-foreground">
-            Tre scelte di design che separano Numa da tutto il resto.
-          </p>
-        </div>
-
-        {/* ── Card deck viewport (full-width, 16:9, 3D perspective) ── */}
+    <div ref={containerRef} className="relative h-[340vh] w-full">
+      <div className="sticky top-0 flex min-h-screen w-full items-center justify-center overflow-hidden bg-background px-4 py-10 sm:px-6">
         <div
-          className="relative mx-4 sm:mx-8 lg:mx-16 mt-8 w-[calc(100%-2rem)] sm:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-6xl aspect-video"
-          style={deckPerspectiveStyle}
-        >
-          {LANDING_DIFFERENTIATORS.map((item, i) => (
-            <DifferentiatorPair
-              key={item.title}
-              item={item}
-              index={i}
-              total={LANDING_DIFFERENTIATORS.length}
-              progress={smooth}
-            />
-          ))}
+          className={cn(
+            "pointer-events-none absolute inset-0 bg-gradient-to-b",
+            accent.ambient
+          )}
+        />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.12),transparent_38%)] dark:bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.05),transparent_40%)]" />
+        <motion.div
+          className={cn("pointer-events-none absolute left-1/2 top-[14%] h-64 w-64 -translate-x-1/2 rounded-full blur-3xl sm:h-80 sm:w-80", accent.glow)}
+          animate={{ opacity: [0.4, 0.7, 0.45], scale: [0.96, 1.08, 0.98] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          aria-hidden="true"
+        />
+
+        <div className="relative mx-auto w-full max-w-6xl">
+          <div className="relative mx-auto h-[min(82vh,46rem)] w-full max-w-[26rem] sm:max-w-[31rem] lg:max-w-[35rem] [perspective:1400px]">
+            <AnimatePresence mode="wait">
+              <MarketGhostLayer key={`ghost-${activeItem.title}`} item={activeItem} index={activeIndex} />
+            </AnimatePresence>
+
+            <AnimatePresence mode="wait">
+              <NumaEditorialCard
+                key={`editorial-${activeItem.title}`}
+                item={activeItem}
+                index={activeIndex}
+                total={LANDING_DIFFERENTIATORS.length}
+              />
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </div>

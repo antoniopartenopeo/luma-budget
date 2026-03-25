@@ -115,56 +115,53 @@ function NumaEditorialCard({
         scale: 1.03,
         transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] }
       }}
-      className="absolute inset-x-[8%] top-[18%] bottom-[10%] will-change-transform sm:inset-x-[12%] sm:top-[16%] sm:bottom-[12%]"
+      className="absolute inset-x-[6%] top-[11%] bottom-[13%] will-change-transform sm:inset-x-[9%] sm:top-[10%] sm:bottom-[12%] lg:inset-x-[8%] lg:top-[9%] lg:bottom-[10%]"
     >
       <div
         className={cn(
-          "relative flex h-full flex-col justify-between overflow-hidden rounded-[2.7rem] border p-7 shadow-[0_44px_120px_-50px_rgba(15,23,42,0.55)] sm:p-8 lg:p-10",
+          "@container/landing-card relative flex h-full flex-col justify-between overflow-hidden rounded-[2.7rem] border p-6 shadow-[0_44px_120px_-50px_rgba(15,23,42,0.55)] sm:p-7 lg:p-8",
           accent.card
         )}
       >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.85),transparent_48%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_52%)]" />
 
-        <div className="relative flex h-full flex-col justify-between">
-          <div className="space-y-5">
-            <div className="space-y-3">
+        <div className="relative flex h-full min-h-0 flex-col justify-between gap-4">
+          <div className="space-y-3">
+            <div className="space-y-2">
               <p className={cn("text-[10px] font-bold uppercase tracking-[0.22em]", accent.kicker)}>
                 La differenza con Numa
-              </p>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/36">
-                NUMA / DESIGN / {String(index + 1).padStart(2, "0")}
               </p>
             </div>
 
             <div
               className={cn(
-                "flex h-12 w-12 items-center justify-center rounded-[1.2rem] border shadow-[0_18px_32px_-24px_rgba(15,23,42,0.45)]",
+                "flex h-10 w-10 items-center justify-center rounded-[1rem] border shadow-[0_18px_32px_-24px_rgba(15,23,42,0.45)] sm:h-11 sm:w-11",
                 accent.icon
               )}
             >
-              <item.icon className="h-5 w-5" />
+              <item.icon className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-2.5">
               <h2
                 id="landing-different-title"
-                className="max-w-[11ch] text-4xl font-black tracking-tight text-foreground sm:text-5xl lg:text-[3.75rem] lg:leading-[0.95]"
+                className="max-w-[12.5ch] break-words text-balance font-black tracking-[-0.055em] text-foreground leading-[0.88] [font-size:clamp(1.9rem,12cqw,3.45rem)] [overflow-wrap:anywhere]"
               >
                 {item.title}
               </h2>
-              <p className="max-w-[26ch] text-base font-medium leading-relaxed text-foreground/78 sm:text-lg">
+              <p className="max-w-[31ch] text-sm font-medium leading-relaxed text-foreground/78 [font-size:clamp(0.9rem,4cqw,1rem)]">
                 {item.numaLabel}
               </p>
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-2.5">
             <div className="h-px w-16 bg-foreground/12" />
-            <p className="max-w-[28ch] text-sm font-semibold leading-relaxed text-foreground/64 sm:text-[15px]">
+            <p className="max-w-[32ch] text-[13px] font-semibold leading-relaxed text-foreground/64 [font-size:clamp(0.76rem,3.15cqw,0.9rem)]">
               {EDITORIAL_NOTES[index]}
             </p>
 
-            <div className="flex items-center gap-2 pt-1">
+            <div className="flex items-center gap-2 pt-0.5">
               {LANDING_DIFFERENTIATORS.map((entry, dotIndex) => (
                 <span
                   key={entry.title}
@@ -279,7 +276,7 @@ export function LandingDifferentiatorCards() {
         />
 
         <div className="relative mx-auto w-full max-w-6xl">
-          <div className="relative mx-auto h-[min(82vh,46rem)] w-full max-w-[26rem] sm:max-w-[31rem] lg:max-w-[35rem] [perspective:1400px]">
+          <div className="relative mx-auto h-[min(82vh,46rem)] w-full max-w-[28rem] sm:max-w-[33rem] lg:max-w-[37rem] [perspective:1400px]">
             <AnimatePresence mode="wait">
               <MarketGhostLayer key={`ghost-${activeItem.title}`} item={activeItem} index={activeIndex} />
             </AnimatePresence>

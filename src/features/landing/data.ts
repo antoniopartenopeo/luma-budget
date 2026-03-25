@@ -3,9 +3,6 @@ import {
   ArrowDownUp,
   BrainCircuit,
   CloudOff,
-  FileSpreadsheet,
-  FlaskConical,
-  LayoutDashboard,
   ShieldCheck,
   Sparkles,
   WalletCards
@@ -23,15 +20,6 @@ export interface LandingDifferentItem {
   title: string
   marketLabel: string
   numaLabel: string
-}
-
-export interface LandingDemoStep {
-  id: "import" | "overview" | "insights" | "scenarios"
-  icon: LucideIcon
-  eyebrow: string
-  title: string
-  description: string
-  outcome: string
 }
 
 export interface LandingFlowStep {
@@ -88,61 +76,26 @@ export const LANDING_DIFFERENTIATORS: LandingDifferentItem[] = [
   }
 ]
 
-export const LANDING_DEMO_STEPS: LandingDemoStep[] = [
-  {
-    id: "import",
-    icon: FileSpreadsheet,
-    eyebrow: "Momento 1",
-    title: "Importi lo storico senza caos",
-    description: "Il CSV non entra alla cieca: Numa legge, raggruppa, segnala i casi dubbi e ti fa confermare il risultato.",
-    outcome: "Il dato entra pulito e resta tuo."
-  },
-  {
-    id: "overview",
-    icon: LayoutDashboard,
-    eyebrow: "Momento 2",
-    title: "Capisci il mese da una sola schermata",
-    description: "Saldo, composizione delle spese e movimenti parlano la stessa lingua, nello stesso periodo.",
-    outcome: "Capisci subito dove si sta stringendo il margine."
-  },
-  {
-    id: "insights",
-    icon: BrainCircuit,
-    eyebrow: "Momento 3",
-    title: "Vedi quanto potrebbe restarti",
-    description: "Quando ha abbastanza dati, il Brain stima il resto del mese e il mese successivo. Se non è pronto, Numa lo dichiara.",
-    outcome: "La stima futura resta chiara e onesta."
-  },
-  {
-    id: "scenarios",
-    icon: FlaskConical,
-    eyebrow: "Momento 4",
-    title: "Scopri se una nuova spesa ci sta davvero",
-    description: "Se stai pensando a rata, abbonamento o altra quota fissa, Financial Lab ti restituisce la quota mensile aggiuntiva sostenibile.",
-    outcome: "Decidi prima di impegnarti."
-  }
-]
-
 export const LANDING_FLOW_STEPS: LandingFlowStep[] = [
   {
     stepLabel: "01",
-    title: "Un CSV, un file",
-    description: "Esporti l'estratto conto dalla tua banca e lo carichi. Nessun collegamento automatico."
+    title: "Importi lo storico senza caos",
+    description: "Carichi un CSV, Numa legge il file, separa i casi dubbi e ti fa confermare il risultato prima di salvare."
   },
   {
     stepLabel: "02",
-    title: "Numa organizza tutto",
-    description: "Duplicati, categorie, periodi: il motore fa la pulizia e tu confermi."
+    title: "Capisci il mese da una sola schermata",
+    description: "Saldo, composizione delle spese e movimenti stanno nello stesso punto, cosi vedi subito dove si sta stringendo il margine."
   },
   {
     stepLabel: "03",
-    title: "Leggi e valuti",
-    description: "Dashboard, stima e simulatore sono lì. Apri quello che ti serve, quando ti serve."
+    title: "Vedi quanto potrebbe restarti",
+    description: "Quando i dati bastano, il Brain stima fine mese e mese successivo. Se non e pronto, te lo dice chiaramente."
   },
   {
     stepLabel: "04",
-    title: "Decidi con calma",
-    description: "Nessuna pressione, nessun countdown. I dati restano lì finché non sei pronto."
+    title: "Scopri se una nuova spesa ci sta davvero",
+    description: "Se stai pensando a rata, abbonamento o altra spesa fissa, Financial Lab ti mostra la quota mensile aggiuntiva sostenibile."
   }
 ]
 

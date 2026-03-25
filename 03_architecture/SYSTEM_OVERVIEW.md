@@ -55,6 +55,7 @@ Open banking routes are present in codebase but remain fail-closed unless `NUMA_
 
 - Public acquisition layer, separate from the authenticated or operational app shell
 - Uses curated story data and preview models to explain live product capabilities without requiring user data
+- The canonical product flow on `/` is now explained through a static four-step `Come inizi` section rather than a dedicated animated scrollytelling module
 - May include isolated immersive explainers for specific modules such as Brain, but those explainers still operate on curated public preview state
 - The current Brain explainer is a dedicated scroll interlude with layered motion and final reveal copy, still scoped as presentation-only and not backed by live forecast repositories
 - Immersive landing heroes and explainers must remain component-identical across device sizes and reduced-motion contexts, with only motion intensity adapting

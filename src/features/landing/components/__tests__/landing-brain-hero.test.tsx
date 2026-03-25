@@ -37,7 +37,7 @@ vi.mock("framer-motion", async () => {
     }),
     useSpring: (value: unknown) => value,
     useTransform: (_value: unknown, _input: unknown, output: unknown[]) => output[0],
-    useMotionTemplate: (strings: string[], ..._values: unknown[]) => strings.join("")
+    useMotionTemplate: (strings: string[]) => strings.join("")
   }
 })
 

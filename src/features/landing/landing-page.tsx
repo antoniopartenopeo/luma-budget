@@ -13,7 +13,6 @@ import {
   LANDING_OUTCOMES
 } from "./data"
 import { LandingHeroConsole } from "./components/landing-previews"
-import { LandingProductDemo } from "./components/landing-product-demo"
 import { LandingBrainHero } from "./components/landing-brain-hero"
 import { LandingDifferentiatorCards } from "./components/landing-differentiator-cards"
 import { AppleFluidBackground, CinematicTextReveal } from "./components/motion-primitives"
@@ -27,9 +26,9 @@ export function LandingPage() {
         <nav className="flex items-center gap-1 rounded-full border border-white/20 bg-white/60 px-2 py-1.5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md dark:border-white/10 dark:bg-black/40">
           <a href="#problema" className="rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10">Il Problema</a>
           <a href="#differenza" className="rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10">Differenza</a>
-          <a href="#demo" className="rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10">Demo</a>
+          <a href="#come-inizi" className="rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10">Come inizi</a>
           <a href="#brain-hero" className="rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10">Brain</a>
-          <a href="#come-funziona" className="rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10">Come funziona</a>
+          <a href="#outcomes" className="rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10">Vantaggi</a>
         </nav>
       </div>
 
@@ -107,27 +106,16 @@ export function LandingPage() {
             <LandingDifferentiatorCards />
           </section>
 
-          {/* SECTION 4: DEMO NARRATIVA (STICKY SCROLLYTELLING) */}
-          <section id="demo" aria-labelledby="landing-demo-title">
-             <LandingProductDemo />
-          </section>
-
-          {/* SECTION 4.5: TEMPORAL CORE (BRAIN AI HERO) */}
-          <section id="brain-hero" aria-labelledby="landing-brain-hero-title">
-             <LandingBrainHero />
-          </section>
-
-          {/* SECTION 5: COME FUNZIONA (COMPACT TIMELINE RECAP) */}
-          <section id="come-funziona" className="px-4 scroll-mt-24" aria-labelledby="landing-how-title">
+          {/* SECTION 4: COME INIZI */}
+          <section id="come-inizi" className="px-4 scroll-mt-24" aria-labelledby="landing-how-title">
             <div className="mx-auto max-w-6xl">
               <MacroSection
                 disableAnimation
                 title={<span id="landing-how-title">Come inizi</span>}
-                description="Il percorso è lineare: dai dati che hai già a una decisione più chiara su come spendere."
+                description="Quattro passaggi semplici: fai entrare i dati, leggi il mese, guardi la stima e poi valuti una nuova spesa fissa."
                 contentClassName="pt-12"
               >
                 <div className="relative flex flex-col gap-0 sm:flex-row sm:gap-0">
-                  {/* Connecting line */}
                   <div className="absolute left-7 top-0 bottom-0 w-px bg-primary/15 sm:left-0 sm:right-0 sm:top-7 sm:bottom-auto sm:h-px sm:w-full" />
 
                   {LANDING_FLOW_STEPS.map((step, index) => (
@@ -135,9 +123,9 @@ export function LandingPage() {
                       <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-background text-xl font-black tracking-tight text-primary shadow-[0_0_30px_rgba(var(--primary),0.15)]">
                         {step.stepLabel}
                       </div>
-                      <div className="space-y-1.5 pt-1 sm:pt-4">
+                      <div className="space-y-2 pt-1 sm:pt-4">
                         <h3 className="text-base font-bold tracking-tight text-foreground">{step.title}</h3>
-                        <p className="text-sm font-medium leading-relaxed text-muted-foreground max-w-[28ch]">{step.description}</p>
+                        <p className="text-sm font-medium leading-relaxed text-muted-foreground max-w-[30ch]">{step.description}</p>
                       </div>
                       {index < LANDING_FLOW_STEPS.length - 1 && (
                         <div className="hidden sm:block absolute right-0 top-7 translate-x-1/2 -translate-y-1/2 z-20">
@@ -149,6 +137,11 @@ export function LandingPage() {
                 </div>
               </MacroSection>
             </div>
+          </section>
+
+          {/* SECTION 5: TEMPORAL CORE (BRAIN AI HERO) */}
+          <section id="brain-hero" aria-labelledby="landing-brain-hero-title">
+             <LandingBrainHero />
           </section>
 
           {/* SECTION 6: OUTCOME */}

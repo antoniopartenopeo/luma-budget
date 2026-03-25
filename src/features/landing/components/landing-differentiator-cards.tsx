@@ -188,7 +188,7 @@ function NumaEditorialCard({
 
 export function LandingDifferentiatorCards() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const prefersReducedMotion = useReducedMotion()
+  const prefersReducedMotion = useReducedMotion() ?? false
   const [activeIndex, setActiveIndex] = useState(0)
 
   const { scrollYProgress } = useScroll({

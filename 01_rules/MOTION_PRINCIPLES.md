@@ -3,12 +3,12 @@
 scope: motion-governance
 owner: governance
 status: active
-last-verified: 2026-03-22
+last-verified: 2026-03-25
 canonical-of: motion-policy
 
 > **Stato:** Attivo e vincolante
-> **Versione:** 1.5
-> **Ultimo aggiornamento:** 2026-03-22
+> **Versione:** 1.6
+> **Ultimo aggiornamento:** 2026-03-25
 
 Il motion in Numa comunica stato e priorità. Non è decorazione autonoma.
 
@@ -63,7 +63,7 @@ Per overlay Radix (`Dialog`, `Sheet`, `Popover`, `Dropdown`, `Select`) sono cons
 Sulla landing pubblica (`/`) sono ammesse eccezioni aggiuntive quando restano semanticamente collegate al prodotto e tutelano il limite cognitivo:
 - Primitive mesh matematiche (es. `AppleFluidMesh`) come SVG background animati nativamente, obbligatoriamente isolate con `pointer-events-none` e posizionate sullo strato visuale di fondo (`z-0`);
 - reveal testuale cinematico in ingresso per il titolo hero;
-- demo sticky/scrollytelling che attiva un solo step per volta;
+- un explainer statico `Come inizi` in 4 passaggi, senza scene scroll-driven dedicate;
 - micro-animazioni interne a preview frame isolati (progress fill, shimmer, check state, orbite a bassa dominanza);
 - un solo interludio immersivo dedicato al Brain con parallax/lens effect se rimane nella fase forecast e non introduce nuova navigazione.
 
@@ -85,7 +85,7 @@ Guardrail obbligatori:
 - Insights: stati advisor/trend.
 - Simulator/Goals: feedback su scenario e derivazione quota sostenibile.
 - Neural Core: progresso e stato evolutivo.
-- Landing pubblica: hero immersivo e demo step-based che raccontano il flusso prodotto senza imitare dati live utente.
+- Landing pubblica: hero immersivo, sezione statica `Come inizi` e interludio Brain che raccontano il flusso prodotto senza imitare dati live utente.
 
 ### Zone Static-First
 - Tabelle dense e liste transazioni: motion minimo, orientato a entrata/focus, non a distrazione.
@@ -100,7 +100,7 @@ Guardrail obbligatori:
 
 Sulla landing questo implica:
 - hero text senza blur persistente;
-- demo step con cambio stato immediato o fade minimo;
+- nessuna dipendenza da scene step-based scroll-driven per spiegare il flusso;
 - interludi e hero immersivi che mantengono la stessa composizione adattiva, riducendo pero blur, parallax, loop e transizioni lunghe invece di sostituire la scena con un pattern diverso;
 - nessun loop continuo dominante fuori dai preview frame.
 

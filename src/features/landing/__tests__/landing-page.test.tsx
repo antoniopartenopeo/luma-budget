@@ -14,10 +14,6 @@ vi.mock("../components/landing-previews", () => ({
   LandingHeroConsole: () => <div data-testid="landing-hero-console" />
 }))
 
-vi.mock("../components/landing-product-demo", () => ({
-  LandingProductDemo: () => <div data-testid="landing-product-demo" />
-}))
-
 vi.mock("../components/landing-brain-hero", () => ({
   LandingBrainHero: () => <div data-testid="landing-brain-hero" />
 }))
@@ -39,9 +35,10 @@ describe("LandingPage", () => {
     expect(screen.getByRole("heading", { name: /L'app che ti aiuta a capire il mese, non solo a registrare spese/i })).toBeInTheDocument()
     expect(screen.getByText(/App di finanza personale locale-first/i)).toBeInTheDocument()
     expect(screen.getByTestId("landing-differentiator-cards")).toBeInTheDocument()
-    expect(screen.getByText(/Come inizi/i)).toBeInTheDocument()
+    expect(screen.getByRole("region", { name: /Come inizi/i })).toBeInTheDocument()
     expect(screen.getByText(/Cosa cambia davvero/i)).toBeInTheDocument()
-    expect(screen.getByTestId("landing-product-demo")).toBeInTheDocument()
+    expect(screen.getByText(/Importi lo storico senza caos/i)).toBeInTheDocument()
+    expect(screen.getByText(/Scopri se una nuova spesa ci sta davvero/i)).toBeInTheDocument()
     expect(screen.getByTestId("landing-brain-hero")).toBeInTheDocument()
 
     const hrefs = screen.getAllByRole("link").map((link) => link.getAttribute("href"))

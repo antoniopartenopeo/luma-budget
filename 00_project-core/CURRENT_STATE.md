@@ -13,7 +13,7 @@ canonical-of: project-current-state
 - Context migration status: root scaffold adopted as canonical live context on 2026-03-15
 - Premium UI Phase: `PullToRefresh` and `ScrollToTop` utilities integrated into global layout (Mar 17)
 - Premium UI Phase: `AppleFluidBackground` master primitive implemented merging zero-weight mathematical mesh gradients with perfect volumetric CSS blending (Mar 22/23)
-- Public landing governance aligned as a dedicated acquisition surface with anchored narrative, sticky demo, constrained public navigation, and perfect Apple-grade language/typographic hierarchy (Mar 23)
+- Public landing governance aligned as a dedicated acquisition surface with anchored narrative, constrained public navigation, and a static `Come inizi` explainer that replaces the previous sticky demo pattern (Mar 23/25)
 - Landing immersive heroes now preserve one adaptive surface across desktop, smartphone, and reduced-motion contexts; motion intensity changes, but the composition does not fork into mobile/static alternates (Mar 25)
 
 ## What Is Stable
@@ -43,7 +43,7 @@ canonical-of: project-current-state
 - Core validation commands: `npm run test:run`, `npm run validate`, `npm run release:validate`
 - Governance quick check writes generated output into `04_execution/reports/`
 - Root scaffold paths must stay aligned with scripts, tests, and CI
-- Landing tests now participate in this alignment by asserting public-link constraints and the step-based demo story
+- Landing tests now participate in this alignment by asserting public-link constraints and the static four-step `Come inizi` story
 
 ## Next Coordination Step
 

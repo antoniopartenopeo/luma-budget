@@ -14,7 +14,7 @@ canonical-of: session-handoff
 - Public landing page now lives at `/` and the operational dashboard now lives at `/dashboard`
 - Premium UI Phase: `PullToRefresh`, `ScrollToTop`, and `AppleFluidBackground` master primitive implemented and integrated into the global layout to ensure perfect rendering across all heroes.
 - Landing page evolved with interactive previews (Mar 17).
-- Landing governance now treats `/` as a constrained acquisition surface with anchored navigation, sticky step demo, and highly vetted product-truth copy.
+- Landing governance now treats `/` as a constrained acquisition surface with anchored navigation, a static four-step `Come inizi` explainer, and highly vetted product-truth copy.
 - A dedicated Brain explainer now lives inside the landing forecast stage and is governed as an immersive cinematic deep dive (`LandingBrainHero`).
 - The entire landing page has undergone a rigid linguistic and responsive typography audit to perfectly align with Apple-style standards, capping all hero titles to `text-7xl` and fixing all Italian accents.
 - Landing immersive heroes now keep the same adaptive visual pattern on smartphone and under `prefers-reduced-motion`; only the motion amplitude changes.

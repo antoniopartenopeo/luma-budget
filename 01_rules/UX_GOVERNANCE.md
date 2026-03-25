@@ -3,12 +3,12 @@
 scope: ux-governance
 owner: governance
 status: active
-last-verified: 2026-03-22
+last-verified: 2026-03-25
 canonical-of: ux-policy
 
 > **Stato:** Active
-> **Versione:** 1.5
-> **Ultimo aggiornamento:** 2026-03-22
+> **Versione:** 1.6
+> **Ultimo aggiornamento:** 2026-03-25
 
 Linee guida UX ad alto livello per mantenere fiducia, chiarezza e coerenza cross-feature.
 
@@ -70,6 +70,7 @@ Per processi tecnici estesi (es. training locale Neural Core), mostrare progress
 - La landing pubblica e una trust surface, non una pagina marketing generica.
 - Il copy pubblico deve descrivere solo capacita verificabili nei moduli attivi del prodotto, evitando hype su AI, cloud o automazioni non dimostrate.
 - L'ordine narrativo canonico resta: dati gia posseduti -> lettura del mese -> stima se pronta -> decisione su nuova spesa fissa.
+- La spiegazione operativa del flusso pubblico deve vivere in una sezione statica `Come inizi` in quattro passaggi, non in una hero separata che duplica la stessa narrativa con scene animate.
 - Eventuali interludi dedicati al Brain devono rafforzare trasparenza di readiness e fallback, non spostare la promessa su predizioni assolute.
 - La CTA primaria resta l'ingresso nell'app (`/dashboard`), non signup forzato o routing dispersivo.
 - La CTA finale della landing puo esplicitare local-first, zero-cloud e assenza di account obbligatorio per la prima scansione, ma senza promettere piu di quanto l'app faccia davvero.

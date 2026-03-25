@@ -66,7 +66,7 @@ Pattern richiesto:
 1. hero immersivo con promessa prodotto verificabile
 2. anchor nav desktop compatta e non dispersiva
 3. sezioni esplicative a blocchi (`MacroSection`) con motion minimo
-4. demo sticky/scrollytelling che mostra un solo step attivo per volta
+4. sezione statica `Come inizi` in 4 passaggi, senza scene animate dedicate
 5. opzionalmente un solo explainer immersivo dedicato al Brain come approfondimento della fase forecast
 6. CTA finale esplicita su local-first / zero-cloud / no account obbligatorio per la prima scansione
 7. CTA finale diretta all'app (`/dashboard`)
@@ -114,7 +114,7 @@ Le animazioni state-based Radix/Shadcn (`data-[state=*]:animate-*`) sono consent
 - `prefers-reduced-motion` sulla landing riduce movimento, blur e transizioni ma non sostituisce hero/explainer con layout alternativi semplificati
 - animare preferibilmente solo `transform` e `opacity`
 - vietato `transition: all`
-- eccezione landing: reveal testuale, sticky demo e progress fill sono ammessi solo dentro la narrativa pubblica e frame preview isolati
+- eccezione landing: reveal testuale, micro-motion su preview isolate e interludio Brain sono ammessi solo dentro la narrativa pubblica
 - l'explainer Brain puo usare spring-smoothed parallax, blur di profondita e lens reveal solo se resta reduced-motion-safe, senza asset remoti e con surface finale leggibile
 
 ---

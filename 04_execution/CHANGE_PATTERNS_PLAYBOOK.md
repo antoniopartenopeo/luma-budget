@@ -3,7 +3,7 @@
 scope: change-patterns-playbook
 owner: engineering
 status: reference
-last-verified: 2026-02-26
+last-verified: 2026-03-25
 canonical-of: none
 
 Pattern operativi per cambiare il codice in modo conforme alla governance.
@@ -118,11 +118,11 @@ Intento: iterare la superficie pubblica mantenendo coerenza tra promessa esterna
 Passi minimi:
 1. Aggiorna la storia canonica in `src/features/landing/data.ts` prima di cambiare la UI.
 2. Aggiorna la struttura in `src/features/landing/landing-page.tsx` mantenendo hero, sezioni anchor e CTA finale.
-3. Aggiorna la demo in `src/features/landing/components/landing-product-demo.tsx` e `src/features/landing/components/landing-previews.tsx` solo con preview veritiere rispetto al prodotto reale.
+3. Aggiorna le superfici esplicative della landing in `src/features/landing/components/landing-previews.tsx` e nelle sezioni statiche di `landing-page.tsx` solo con preview veritiere rispetto al prodotto reale.
 4. Se introduci un interludio dedicato a Brain o ad altri moduli, trattalo come deep-dive della narrativa esistente, non come nuova promessa prodotto.
 5. Se Brain hero o altre hero immersive usano spring/parallax/reveal finale, documenta esplicitamente che `prefers-reduced-motion` attenua il moto senza cambiare il pattern visivo canonico; definisci anche blur consentito e copy finale di rientro al controllo umano.
 6. Sincronizza `02_specs/REQUIREMENTS.md`, `01_rules/UX_GOVERNANCE.md`, `01_rules/MOTION_PRINCIPLES.md` e `05_specialists/NUMA_UI_STANDARDS.md`.
-7. Riallinea i test landing per coprire ordine narrativo, vincoli di navigazione pubblica, step demo e eventuali explainers immersivi.
+7. Riallinea i test landing per coprire ordine narrativo, vincoli di navigazione pubblica, la sezione `Come inizi` e gli eventuali explainers immersivi.
 
 Guardrail:
 - Nessun claim pubblico su funzionalita non presenti nei moduli attivi.

@@ -1,86 +1,75 @@
 "use client"
 
 import { useRef } from "react"
-import { motion, useReducedMotion, useScroll, useSpring, useTransform, useMotionTemplate } from "framer-motion"
+import { motion, useReducedMotion, useScroll, useTransform, useMotionTemplate } from "framer-motion"
 import { Badge } from "@/components/ui/badge"
 import { AppleFluidBackground } from "./motion-primitives"
 
 export function LandingBrainHero() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const prefersReducedMotion = useReducedMotion()
+  const prefersReducedMotion = useReducedMotion() ?? false
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
   })
 
-  const smooth = useSpring(scrollYProgress, {
-    stiffness: 12,
-    damping: 25,
-    mass: 1.5,
-    restDelta: 0.0005,
-  })
-
   // ── Fluid Expansion Control ──
-  // Use useMotionTemplate to generate a valid cross-browser CSS mask-image gradient.
-  // black = visible fluid, transparent = hidden fluid.
-  // We keep the "solid" core very small even at max expansion (35%), 
-  // so the fading gradient has a massive runway (from 35% to 100%) to blend flawlessly with the background.
   const coreRadius = useTransform(
-    smooth,
-    prefersReducedMotion ? [0, 1] : [0, 0.4, 0.8],
-    prefersReducedMotion ? ["18%", "18%"] : ["2%", "15%", "30%"]
+    scrollYProgress,
+    [0, 0.4, 0.8],
+    ["2%", "15%", "30%"]
   )
   const fadeEdge = useTransform(
-    smooth,
-    prefersReducedMotion ? [0, 1] : [0, 0.4, 0.8],
-    prefersReducedMotion ? ["78%", "78%"] : ["40%", "70%", "100%"]
+    scrollYProgress,
+    [0, 0.4, 0.8],
+    ["40%", "70%", "100%"]
   )
   const maskImageStyle = useMotionTemplate`radial-gradient(circle at 50% 50%, black ${coreRadius}, transparent ${fadeEdge})`
 
   // ── Act 1: The Hook ──
   const act1Opacity = useTransform(
-    smooth,
-    prefersReducedMotion ? [0, 1] : [0, 0.05, 0.22, 0.28],
-    prefersReducedMotion ? [1, 1] : [0, 1, 1, 0]
+    scrollYProgress,
+    [0, 0.05, 0.22, 0.28],
+    [0, 1, 1, 0]
   )
   const act1Blur = useTransform(
-    smooth,
-    prefersReducedMotion ? [0, 1] : [0, 0.05, 0.22, 0.28],
-    prefersReducedMotion ? ["blur(0px)", "blur(0px)"] : ["blur(12px)", "blur(0px)", "blur(0px)", "blur(12px)"]
+    scrollYProgress,
+    [0, 0.05, 0.22, 0.28],
+    prefersReducedMotion ? ["blur(0px)", "blur(0px)", "blur(0px)", "blur(0px)"] : ["blur(12px)", "blur(0px)", "blur(0px)", "blur(12px)"]
   )
 
   // ── Act 2: The Explanation ──
   const act2Opacity = useTransform(
-    smooth,
-    prefersReducedMotion ? [0, 1] : [0.32, 0.38, 0.55, 0.62],
-    prefersReducedMotion ? [0, 0] : [0, 1, 1, 0]
+    scrollYProgress,
+    [0.32, 0.38, 0.55, 0.62],
+    [0, 1, 1, 0]
   )
   const act2Y = useTransform(
-    smooth,
-    prefersReducedMotion ? [0, 1] : [0.32, 0.38, 0.55, 0.62],
-    prefersReducedMotion ? [0, 0] : [20, 0, 0, -20]
+    scrollYProgress,
+    [0.32, 0.38, 0.55, 0.62],
+    [20, 0, 0, -20]
   )
   const act2Blur = useTransform(
-    smooth,
-    prefersReducedMotion ? [0, 1] : [0.32, 0.38, 0.55, 0.62],
-    prefersReducedMotion ? ["blur(0px)", "blur(0px)"] : ["blur(12px)", "blur(0px)", "blur(0px)", "blur(12px)"]
+    scrollYProgress,
+    [0.32, 0.38, 0.55, 0.62],
+    prefersReducedMotion ? ["blur(0px)", "blur(0px)", "blur(0px)", "blur(0px)"] : ["blur(12px)", "blur(0px)", "blur(0px)", "blur(12px)"]
   )
 
   // ── Act 3: The Promise ──
   const act3Opacity = useTransform(
-    smooth,
-    prefersReducedMotion ? [0, 1] : [0.68, 0.78, 0.95, 1.0],
-    prefersReducedMotion ? [0, 0] : [0, 1, 1, 0]
+    scrollYProgress,
+    [0.68, 0.78, 0.95, 1.0],
+    [0, 1, 1, 0]
   )
   const act3Y = useTransform(
-    smooth,
-    prefersReducedMotion ? [0, 1] : [0.68, 0.78],
-    prefersReducedMotion ? [0, 0] : [20, 0]
+    scrollYProgress,
+    [0.68, 0.78],
+    [20, 0]
   )
   const act3Blur = useTransform(
-    smooth,
-    prefersReducedMotion ? [0, 1] : [0.68, 0.78],
+    scrollYProgress,
+    [0.68, 0.78],
     prefersReducedMotion ? ["blur(0px)", "blur(0px)"] : ["blur(12px)", "blur(0px)"]
   )
   const fluidMaskStyle = {
@@ -116,6 +105,7 @@ export function LandingBrainHero() {
         {/* ── Act I: Guarda Oltre ── */}
         <motion.div
           style={act1Style}
+          data-testid="landing-brain-act-1"
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
           <Badge variant="outline" className="mb-6 border-primary/20 bg-primary/10 text-primary backdrop-blur-md scale-110">
@@ -132,6 +122,7 @@ export function LandingBrainHero() {
         {/* ── Act II: The Processing Phase ── */}
         <motion.div
           style={act2Style}
+          data-testid="landing-brain-act-2"
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
           <h3 className="text-3xl font-bold tracking-tight text-foreground/90 sm:text-5xl lg:text-6xl drop-shadow-xl max-w-3xl">
@@ -143,6 +134,7 @@ export function LandingBrainHero() {
         {/* ── Act III: The Promise ── */}
         <motion.div
           style={act3Style}
+          data-testid="landing-brain-act-3"
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
           <h3 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl lg:text-7xl drop-shadow-2xl">

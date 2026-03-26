@@ -16,9 +16,13 @@ import { LandingHeroConsole } from "./components/landing-previews"
 import { LandingBrainHero } from "./components/landing-brain-hero"
 import { LandingDifferentiatorCards } from "./components/landing-differentiator-cards"
 import { AppleFluidBackground, CinematicTextReveal } from "./components/motion-primitives"
-
-const LANDING_NAV_LINK_CLASS =
-  "rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10"
+import {
+  LANDING_FLOATING_NAV_CLASS,
+  LANDING_NAV_LINK_CLASS,
+  LANDING_SECTION_DESCRIPTION_CLASS,
+  LANDING_SECTION_EYEBROW_CLASS,
+  LANDING_SECTION_TITLE_CLASS
+} from "./components/landing-tokens"
 
 const LANDING_NAV_ITEMS = [
   { href: "#problema", label: "Il Problema" },
@@ -34,7 +38,7 @@ export function LandingPage() {
       <AmbientBackdrop />
 
       <div className="sticky top-4 z-50 mx-auto hidden w-fit px-4 md:block">
-        <nav className="flex items-center gap-1 rounded-full border border-white/20 bg-white/60 px-2 py-1.5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md dark:border-white/10 dark:bg-black/40">
+        <nav className={LANDING_FLOATING_NAV_CLASS}>
           {LANDING_NAV_ITEMS.map((item) => (
             <a key={item.href} href={item.href} className={LANDING_NAV_LINK_CLASS}>
               {item.label}
@@ -53,32 +57,32 @@ export function LandingPage() {
               <AppleFluidBackground />
             </div>
 
-            <div className="relative z-10 mt-10 flex w-full max-w-4xl flex-col items-center text-center">
+            <div className="relative z-10 mt-12 flex w-full max-w-4xl flex-col items-center text-center">
               <BrandLogo
                 variant="full"
-                height={84}
-                className="mb-10 w-auto max-w-[280px] sm:max-w-[360px] lg:max-w-[420px] drop-shadow-sm"
+                height={92}
+                className="mb-12 w-auto max-w-[300px] sm:max-w-[380px] lg:max-w-[440px] drop-shadow-sm"
               />
 
-              <div className="space-y-6">
-                <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary backdrop-blur-md">
+              <div className="space-y-5">
+                <Badge variant="outline" className="border-primary/16 bg-background/65 text-primary backdrop-blur-md">
                   App di finanza personale locale-first
                 </Badge>
 
                 <h1
                   id="landing-hero-title"
-                  className="mx-auto max-w-[15ch] text-5xl font-black tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-sm"
+                  className="mx-auto max-w-[14ch] text-5xl font-black tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-sm"
                 >
                   <CinematicTextReveal text="L'app che ti aiuta a capire il mese, non solo a registrare spese." />
                 </h1>
 
-                <p className="mx-auto max-w-2xl text-base font-medium leading-relaxed text-muted-foreground sm:text-lg lg:text-xl drop-shadow-sm">
-                  Numa ti fa vedere dove stanno andando i tuoi soldi, quanto potrebbe restarti a fine mese e se una nuova spesa fissa è davvero sostenibile.
+                <p className="mx-auto max-w-[44rem] text-base font-medium leading-relaxed text-muted-foreground sm:text-lg lg:text-[1.3rem] drop-shadow-sm">
+                  Numa ti mostra dove stanno andando i tuoi soldi, quanto potrebbe restarti a fine mese e se una nuova spesa fissa è davvero sostenibile.
                 </p>
               </div>
 
               <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
-                <Button asChild size="lg" className="rounded-full px-8 shadow-lg shadow-primary/15 hover:shadow-primary/30 transition-shadow">
+                <Button asChild size="lg" className="rounded-full px-8 shadow-lg shadow-primary/15 transition-shadow hover:shadow-primary/30">
                   <Link href="/dashboard">
                     Apri l&apos;app
                     <ArrowRight className="h-4 w-4" />
@@ -87,9 +91,9 @@ export function LandingPage() {
 
                 <a
                   href="#problema"
-                  className="text-sm font-semibold text-primary/90 transition-colors hover:text-primary drop-shadow-sm"
+                  className="text-sm font-semibold text-primary/75 transition-colors hover:text-primary"
                 >
-                  Scopri perché Numa è diversa
+                  Guarda perché Numa è diversa
                 </a>
               </div>
             </div>
@@ -99,8 +103,19 @@ export function LandingPage() {
             <div className="mx-auto max-w-6xl">
               <MacroSection
                 disableAnimation
-                title={<span id="landing-problem-title">Il problema che nessuno risolve</span>}
-                description="La maggior parte delle app di finanza personale si ferma al primo passo: registrare. Numa parte da lì dove le altre finiscono."
+                title={
+                  <div className="space-y-3">
+                    <p className={LANDING_SECTION_EYEBROW_CLASS}>Il problema</p>
+                    <span id="landing-problem-title" className={LANDING_SECTION_TITLE_CLASS}>
+                      Il problema che nessuno risolve
+                    </span>
+                  </div>
+                }
+                description={
+                  <span className={LANDING_SECTION_DESCRIPTION_CLASS}>
+                    La maggior parte delle app di finanza personale si ferma al primo passo: registrare. Numa parte da lì dove le altre finiscono.
+                  </span>
+                }
                 contentClassName="pt-8"
               >
                 <LandingHeroConsole />
@@ -116,8 +131,19 @@ export function LandingPage() {
             <div className="mx-auto max-w-6xl">
               <MacroSection
                 disableAnimation
-                title={<span id="landing-how-title">Come inizi</span>}
-                description="Quattro passaggi semplici: fai entrare i dati, leggi il mese, guardi la stima e poi valuti una nuova spesa fissa."
+                title={
+                  <div className="space-y-3">
+                    <p className={LANDING_SECTION_EYEBROW_CLASS}>Percorso</p>
+                    <span id="landing-how-title" className={LANDING_SECTION_TITLE_CLASS}>
+                      Come inizi
+                    </span>
+                  </div>
+                }
+                description={
+                  <span className={LANDING_SECTION_DESCRIPTION_CLASS}>
+                    Quattro passaggi semplici: fai entrare i dati, leggi il mese, guardi la stima e poi valuti una nuova spesa fissa.
+                  </span>
+                }
                 contentClassName="pt-12"
               >
                 <div className="relative flex flex-col gap-0 sm:flex-row sm:gap-0">
@@ -152,8 +178,19 @@ export function LandingPage() {
             <div className="mx-auto max-w-6xl">
               <MacroSection
                 disableAnimation
-                title={<span id="landing-outcomes-title">Cosa cambia davvero</span>}
-                description="Non è una questione di funzionalità. È una questione di abitudine: cosa succede dopo la prima settimana d'uso."
+                title={
+                  <div className="space-y-3">
+                    <p className={LANDING_SECTION_EYEBROW_CLASS}>Outcome</p>
+                    <span id="landing-outcomes-title" className={LANDING_SECTION_TITLE_CLASS}>
+                      Cosa cambia davvero
+                    </span>
+                  </div>
+                }
+                description={
+                  <span className={LANDING_SECTION_DESCRIPTION_CLASS}>
+                    Non è una questione di funzionalità. È una questione di abitudine: cosa succede dopo la prima settimana d&apos;uso.
+                  </span>
+                }
                 contentClassName="grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3 pt-12"
               >
                 {LANDING_OUTCOMES.map((outcome) => (

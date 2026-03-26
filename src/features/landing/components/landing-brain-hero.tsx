@@ -4,17 +4,13 @@ import { useRef } from "react"
 import { motion, useReducedMotion, useScroll, useTransform, useMotionTemplate } from "framer-motion"
 import { Badge } from "@/components/ui/badge"
 import { AppleFluidBackground } from "./motion-primitives"
-
-const FLUID_EXPANSION_RANGE = [0, 0.4, 0.8]
-const ACT_1_RANGE = [0, 0.05, 0.22, 0.28]
-const ACT_2_RANGE = [0.32, 0.38, 0.55, 0.62]
-const ACT_3_RANGE = [0.68, 0.78, 0.95, 1]
-const ACT_3_Y_RANGE = [0.68, 0.78]
-const NO_BLUR = "blur(0px)"
-const BLUR_IN_OUT = [NO_BLUR, NO_BLUR, NO_BLUR, NO_BLUR]
-const BLUR_TRANSITION = ["blur(12px)", NO_BLUR, NO_BLUR, "blur(12px)"]
-const BLUR_REVEAL = ["blur(12px)", NO_BLUR]
-const NO_BLUR_REVEAL = [NO_BLUR, NO_BLUR]
+import {
+  LANDING_BRAIN_RANGES,
+  LANDING_BLUR_REVEAL,
+  LANDING_BLUR_TRANSITION,
+  LANDING_NO_BLUR_REVEAL,
+  LANDING_NO_BLUR_TRANSITION
+} from "./landing-motion"
 
 export function LandingBrainHero() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -27,57 +23,57 @@ export function LandingBrainHero() {
 
   const coreRadius = useTransform(
     scrollYProgress,
-    FLUID_EXPANSION_RANGE,
+    LANDING_BRAIN_RANGES.fluidExpansion,
     ["2%", "15%", "30%"]
   )
   const fadeEdge = useTransform(
     scrollYProgress,
-    FLUID_EXPANSION_RANGE,
+    LANDING_BRAIN_RANGES.fluidExpansion,
     ["40%", "70%", "100%"]
   )
   const maskImageStyle = useMotionTemplate`radial-gradient(circle at 50% 50%, black ${coreRadius}, transparent ${fadeEdge})`
 
   const act1Opacity = useTransform(
     scrollYProgress,
-    ACT_1_RANGE,
+    LANDING_BRAIN_RANGES.act1,
     [0, 1, 1, 0]
   )
   const act1Blur = useTransform(
     scrollYProgress,
-    ACT_1_RANGE,
-    prefersReducedMotion ? BLUR_IN_OUT : BLUR_TRANSITION
+    LANDING_BRAIN_RANGES.act1,
+    prefersReducedMotion ? LANDING_NO_BLUR_TRANSITION : LANDING_BLUR_TRANSITION
   )
 
   const act2Opacity = useTransform(
     scrollYProgress,
-    ACT_2_RANGE,
+    LANDING_BRAIN_RANGES.act2,
     [0, 1, 1, 0]
   )
   const act2Y = useTransform(
     scrollYProgress,
-    ACT_2_RANGE,
+    LANDING_BRAIN_RANGES.act2,
     [20, 0, 0, -20]
   )
   const act2Blur = useTransform(
     scrollYProgress,
-    ACT_2_RANGE,
-    prefersReducedMotion ? BLUR_IN_OUT : BLUR_TRANSITION
+    LANDING_BRAIN_RANGES.act2,
+    prefersReducedMotion ? LANDING_NO_BLUR_TRANSITION : LANDING_BLUR_TRANSITION
   )
 
   const act3Opacity = useTransform(
     scrollYProgress,
-    ACT_3_RANGE,
+    LANDING_BRAIN_RANGES.act3,
     [0, 1, 1, 0]
   )
   const act3Y = useTransform(
     scrollYProgress,
-    ACT_3_Y_RANGE,
+    LANDING_BRAIN_RANGES.act3Y,
     [20, 0]
   )
   const act3Blur = useTransform(
     scrollYProgress,
-    ACT_3_Y_RANGE,
-    prefersReducedMotion ? NO_BLUR_REVEAL : BLUR_REVEAL
+    LANDING_BRAIN_RANGES.act3Y,
+    prefersReducedMotion ? LANDING_NO_BLUR_REVEAL : LANDING_BLUR_REVEAL
   )
   const fluidMaskStyle = {
     WebkitMaskImage: maskImageStyle,

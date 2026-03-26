@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion, useReducedMotion, useScroll } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { LANDING_DIFFERENTIATORS, type LandingDifferentItem } from "../data"
+import { LANDING_MOTION_EASE, LANDING_MOTION_TIMINGS } from "./landing-motion"
 
 const EDITORIAL_ACCENTS = [
   {
@@ -56,7 +57,7 @@ function MarketGhostLayer({
       initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.96, y: 32 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.02, y: -24 }}
-      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+      transition={prefersReducedMotion ? LANDING_MOTION_TIMINGS.instant : LANDING_MOTION_TIMINGS.medium}
       className="absolute inset-0"
       aria-hidden="true"
     >
@@ -110,14 +111,14 @@ function NumaEditorialCard({
         y: 0,
         rotate: -7,
         scale: 1,
-        transition: prefersReducedMotion ? { duration: 0 } : { duration: 0.55, ease: [0.22, 1, 0.36, 1] }
+        transition: prefersReducedMotion ? LANDING_MOTION_TIMINGS.instant : LANDING_MOTION_TIMINGS.slow
       }}
       exit={{
         opacity: 0,
         y: prefersReducedMotion ? 0 : -24,
         rotate: prefersReducedMotion ? -7 : -3,
         scale: prefersReducedMotion ? 1 : 1.03,
-        transition: prefersReducedMotion ? { duration: 0 } : { duration: 0.35, ease: [0.22, 1, 0.36, 1] }
+        transition: prefersReducedMotion ? LANDING_MOTION_TIMINGS.instant : LANDING_MOTION_TIMINGS.fast
       }}
       className="absolute inset-x-[6%] top-[11%] bottom-[13%] will-change-transform sm:inset-x-[9%] sm:top-[10%] sm:bottom-[12%] lg:inset-x-[8%] lg:top-[9%] lg:bottom-[10%]"
     >
@@ -221,7 +222,7 @@ export function LandingDifferentiatorCards() {
         <motion.div
           className={cn("pointer-events-none absolute left-1/2 top-[14%] h-64 w-64 -translate-x-1/2 rounded-full blur-3xl sm:h-80 sm:w-80", accent.glow)}
           animate={prefersReducedMotion ? { opacity: 0.5, scale: 1 } : { opacity: [0.4, 0.7, 0.45], scale: [0.96, 1.08, 0.98] }}
-          transition={prefersReducedMotion ? undefined : { duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          transition={prefersReducedMotion ? undefined : { duration: 8, repeat: Infinity, ease: LANDING_MOTION_EASE }}
           aria-hidden="true"
         />
 

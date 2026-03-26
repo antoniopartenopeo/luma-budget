@@ -1,7 +1,15 @@
 "use client"
 
-import { motion, Variants, useReducedMotion } from "framer-motion"
+import type { CSSProperties } from "react"
+import { motion, useReducedMotion } from "framer-motion"
+import type { Variants } from "framer-motion"
 import { cn } from "@/lib/utils"
+
+const CURRENT_COLOR_STOP = { stopColor: "currentColor" }
+const NOISE_TEXTURE_STYLE: CSSProperties = {
+  backgroundImage:
+    "url('data:image/svg+xml;utf8,<svg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"noiseFilter\"><feTurbulence type=\"fractalNoise\" baseFrequency=\"0.8\" numOctaves=\"3\" stitchTiles=\"stitch\"/></filter><rect width=\"100%\" height=\"100%\" filter=\"url(%23noiseFilter)\"/></svg>')",
+}
 
 interface CinematicTextRevealProps {
   text: string
@@ -59,11 +67,6 @@ export function CinematicTextReveal({ text, className, delay = 0 }: CinematicTex
 }
 
 export function AppleFluidMesh({ className }: { className?: string }) {
-  const currentColorStop = { stopColor: "currentColor" }
-  const noiseTextureStyle = {
-    backgroundImage: "url('data:image/svg+xml;utf8,<svg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"noiseFilter\"><feTurbulence type=\"fractalNoise\" baseFrequency=\"0.8\" numOctaves=\"3\" stitchTiles=\"stitch\"/></filter><rect width=\"100%\" height=\"100%\" filter=\"url(%23noiseFilter)\"/></svg>')",
-  }
-
   return (
     <div className={cn("overflow-hidden pointer-events-none transition-opacity duration-1000", className)}>
       <svg
@@ -74,23 +77,23 @@ export function AppleFluidMesh({ className }: { className?: string }) {
       >
         <defs>
           <linearGradient id="numa-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" className="text-cyan-300 dark:text-cyan-500" stopOpacity="0.8" style={currentColorStop} />
-            <stop offset="100%" className="text-emerald-400 dark:text-emerald-900" stopOpacity="0.4" style={currentColorStop} />
+            <stop offset="0%" className="text-cyan-300 dark:text-cyan-500" stopOpacity="0.8" style={CURRENT_COLOR_STOP} />
+            <stop offset="100%" className="text-emerald-400 dark:text-emerald-900" stopOpacity="0.4" style={CURRENT_COLOR_STOP} />
           </linearGradient>
 
           <radialGradient id="numa-grad-2" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" className="text-teal-100 dark:text-slate-800" stopOpacity="0.6" style={currentColorStop} />
-            <stop offset="100%" className="text-slate-100 dark:text-slate-950" stopOpacity="0.1" style={currentColorStop} />
+            <stop offset="0%" className="text-teal-100 dark:text-slate-800" stopOpacity="0.6" style={CURRENT_COLOR_STOP} />
+            <stop offset="100%" className="text-slate-100 dark:text-slate-950" stopOpacity="0.1" style={CURRENT_COLOR_STOP} />
           </radialGradient>
 
           <linearGradient id="numa-grad-3" x1="100%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" className="text-blue-300 dark:text-indigo-500" stopOpacity="0.85" style={currentColorStop} />
-            <stop offset="100%" className="text-teal-300 dark:text-teal-800" stopOpacity="0.4" style={currentColorStop} />
+            <stop offset="0%" className="text-blue-300 dark:text-indigo-500" stopOpacity="0.85" style={CURRENT_COLOR_STOP} />
+            <stop offset="100%" className="text-teal-300 dark:text-teal-800" stopOpacity="0.4" style={CURRENT_COLOR_STOP} />
           </linearGradient>
 
           <linearGradient id="numa-grad-4" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" className="text-emerald-200 dark:text-emerald-400" stopOpacity="0.8" style={currentColorStop} />
-            <stop offset="100%" className="text-cyan-100 dark:text-cyan-900" stopOpacity="0.3" style={currentColorStop} />
+            <stop offset="0%" className="text-emerald-200 dark:text-emerald-400" stopOpacity="0.8" style={CURRENT_COLOR_STOP} />
+            <stop offset="100%" className="text-cyan-100 dark:text-cyan-900" stopOpacity="0.3" style={CURRENT_COLOR_STOP} />
           </linearGradient>
           
           <linearGradient id="stroke-grad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -124,25 +127,16 @@ export function AppleFluidMesh({ className }: { className?: string }) {
       
       <div 
         className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none mix-blend-overlay" 
-        style={noiseTextureStyle} 
+        style={NOISE_TEXTURE_STYLE} 
       />
     </div>
   )
 }
 
-/**
- * Master modular primitive that includes BOTH the raw AppleFluidMesh SVG
- * and the specific dual-gradient integration overlays that correctly scale
- * colors and blend the fluid perfectly with the dark/light site background.
- * This guarantees 100% identical rendering across all sections.
- */
-export function AppleFluidBackground({ className, style }: { className?: string, style?: React.CSSProperties }) {
+export function AppleFluidBackground({ className, style }: { className?: string, style?: CSSProperties }) {
   return (
     <div className={cn("absolute inset-0 pointer-events-none", className)} style={style}>
-      {/* The raw fluid SVG primitive */}
       <AppleFluidMesh className="absolute inset-0 w-full h-full" />
-      
-      {/* The Integration Overlays - copied EXACTLY from Hero environment to guarantee identical scala colori e sfumature */}
       <div className="absolute inset-0 bg-gradient-to-b from-background/10 via-background/40 to-background dark:from-background/20 dark:via-background/60" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_30%,_var(--tw-gradient-stops))] from-transparent via-background/60 to-background" />
     </div>

@@ -17,6 +17,17 @@ import { LandingBrainHero } from "./components/landing-brain-hero"
 import { LandingDifferentiatorCards } from "./components/landing-differentiator-cards"
 import { AppleFluidBackground, CinematicTextReveal } from "./components/motion-primitives"
 
+const LANDING_NAV_LINK_CLASS =
+  "rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10"
+
+const LANDING_NAV_ITEMS = [
+  { href: "#problema", label: "Il Problema" },
+  { href: "#differenza", label: "Differenza" },
+  { href: "#come-inizi", label: "Come inizi" },
+  { href: "#brain-hero", label: "Brain" },
+  { href: "#outcomes", label: "Vantaggi" }
+] as const
+
 export function LandingPage() {
   return (
     <div className="relative min-h-screen overflow-x-clip bg-background selection:bg-primary/20">
@@ -24,28 +35,25 @@ export function LandingPage() {
 
       <div className="sticky top-4 z-50 mx-auto hidden w-fit px-4 md:block">
         <nav className="flex items-center gap-1 rounded-full border border-white/20 bg-white/60 px-2 py-1.5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md dark:border-white/10 dark:bg-black/40">
-          <a href="#problema" className="rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10">Il Problema</a>
-          <a href="#differenza" className="rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10">Differenza</a>
-          <a href="#come-inizi" className="rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10">Come inizi</a>
-          <a href="#brain-hero" className="rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10">Brain</a>
-          <a href="#outcomes" className="rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10">Vantaggi</a>
+          {LANDING_NAV_ITEMS.map((item) => (
+            <a key={item.href} href={item.href} className={LANDING_NAV_LINK_CLASS}>
+              {item.label}
+            </a>
+          ))}
         </nav>
       </div>
 
       <main id="main-content" className="relative pb-32">
         <StaggerContainer className="space-y-32 sm:space-y-48">
-          
-          {/* SECTION 1: HERO IMMERSIVE */}
           <section
             className="relative flex min-h-[90vh] w-full flex-col items-center justify-center overflow-hidden px-4 py-20"
             aria-labelledby="landing-hero-title"
           >
-            {/* Soft pristine Apple-Premium animated SVG background */}
             <div className="absolute inset-0 z-0 pointer-events-none">
-               <AppleFluidBackground />
+              <AppleFluidBackground />
             </div>
 
-            <div className="relative z-10 flex w-full max-w-4xl flex-col items-center text-center mt-10">
+            <div className="relative z-10 mt-10 flex w-full max-w-4xl flex-col items-center text-center">
               <BrandLogo
                 variant="full"
                 height={84}
@@ -87,7 +95,6 @@ export function LandingPage() {
             </div>
           </section>
 
-          {/* SECTION 2: PROBLEMA */}
           <section id="problema" className="px-4 scroll-mt-24" aria-labelledby="landing-problem-title">
             <div className="mx-auto max-w-6xl">
               <MacroSection
@@ -101,12 +108,10 @@ export function LandingPage() {
             </div>
           </section>
 
-          {/* SECTION 3: DIFFERENZA (SCROLL-DRIVEN CARD DECK) */}
           <section id="differenza" className="scroll-mt-24" aria-labelledby="landing-different-title">
             <LandingDifferentiatorCards />
           </section>
 
-          {/* SECTION 4: COME INIZI */}
           <section id="come-inizi" className="px-4 scroll-mt-24" aria-labelledby="landing-how-title">
             <div className="mx-auto max-w-6xl">
               <MacroSection
@@ -139,12 +144,10 @@ export function LandingPage() {
             </div>
           </section>
 
-          {/* SECTION 5: TEMPORAL CORE (BRAIN AI HERO) */}
           <section id="brain-hero" aria-labelledby="landing-brain-hero-title">
-             <LandingBrainHero />
+            <LandingBrainHero />
           </section>
 
-          {/* SECTION 6: OUTCOME */}
           <section id="outcomes" className="px-4 scroll-mt-24" aria-labelledby="landing-outcomes-title">
             <div className="mx-auto max-w-6xl">
               <MacroSection
@@ -168,9 +171,7 @@ export function LandingPage() {
             </div>
           </section>
 
-          {/* SECTION 7: CTA FINALE */}
           <section id="open-app" className="relative px-4 scroll-mt-24 overflow-hidden" aria-labelledby="landing-cta-title">
-            {/* Subtle fluid echo behind the CTA */}
             <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.07]">
               <AppleFluidBackground />
             </div>

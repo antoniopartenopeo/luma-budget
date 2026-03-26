@@ -5,6 +5,17 @@ import { motion, useReducedMotion, useScroll, useTransform, useMotionTemplate } 
 import { Badge } from "@/components/ui/badge"
 import { AppleFluidBackground } from "./motion-primitives"
 
+const FLUID_EXPANSION_RANGE = [0, 0.4, 0.8]
+const ACT_1_RANGE = [0, 0.05, 0.22, 0.28]
+const ACT_2_RANGE = [0.32, 0.38, 0.55, 0.62]
+const ACT_3_RANGE = [0.68, 0.78, 0.95, 1]
+const ACT_3_Y_RANGE = [0.68, 0.78]
+const NO_BLUR = "blur(0px)"
+const BLUR_IN_OUT = [NO_BLUR, NO_BLUR, NO_BLUR, NO_BLUR]
+const BLUR_TRANSITION = ["blur(12px)", NO_BLUR, NO_BLUR, "blur(12px)"]
+const BLUR_REVEAL = ["blur(12px)", NO_BLUR]
+const NO_BLUR_REVEAL = [NO_BLUR, NO_BLUR]
+
 export function LandingBrainHero() {
   const containerRef = useRef<HTMLDivElement>(null)
   const prefersReducedMotion = useReducedMotion() ?? false
@@ -14,63 +25,59 @@ export function LandingBrainHero() {
     offset: ["start start", "end end"],
   })
 
-  // ── Fluid Expansion Control ──
   const coreRadius = useTransform(
     scrollYProgress,
-    [0, 0.4, 0.8],
+    FLUID_EXPANSION_RANGE,
     ["2%", "15%", "30%"]
   )
   const fadeEdge = useTransform(
     scrollYProgress,
-    [0, 0.4, 0.8],
+    FLUID_EXPANSION_RANGE,
     ["40%", "70%", "100%"]
   )
   const maskImageStyle = useMotionTemplate`radial-gradient(circle at 50% 50%, black ${coreRadius}, transparent ${fadeEdge})`
 
-  // ── Act 1: The Hook ──
   const act1Opacity = useTransform(
     scrollYProgress,
-    [0, 0.05, 0.22, 0.28],
+    ACT_1_RANGE,
     [0, 1, 1, 0]
   )
   const act1Blur = useTransform(
     scrollYProgress,
-    [0, 0.05, 0.22, 0.28],
-    prefersReducedMotion ? ["blur(0px)", "blur(0px)", "blur(0px)", "blur(0px)"] : ["blur(12px)", "blur(0px)", "blur(0px)", "blur(12px)"]
+    ACT_1_RANGE,
+    prefersReducedMotion ? BLUR_IN_OUT : BLUR_TRANSITION
   )
 
-  // ── Act 2: The Explanation ──
   const act2Opacity = useTransform(
     scrollYProgress,
-    [0.32, 0.38, 0.55, 0.62],
+    ACT_2_RANGE,
     [0, 1, 1, 0]
   )
   const act2Y = useTransform(
     scrollYProgress,
-    [0.32, 0.38, 0.55, 0.62],
+    ACT_2_RANGE,
     [20, 0, 0, -20]
   )
   const act2Blur = useTransform(
     scrollYProgress,
-    [0.32, 0.38, 0.55, 0.62],
-    prefersReducedMotion ? ["blur(0px)", "blur(0px)", "blur(0px)", "blur(0px)"] : ["blur(12px)", "blur(0px)", "blur(0px)", "blur(12px)"]
+    ACT_2_RANGE,
+    prefersReducedMotion ? BLUR_IN_OUT : BLUR_TRANSITION
   )
 
-  // ── Act 3: The Promise ──
   const act3Opacity = useTransform(
     scrollYProgress,
-    [0.68, 0.78, 0.95, 1.0],
+    ACT_3_RANGE,
     [0, 1, 1, 0]
   )
   const act3Y = useTransform(
     scrollYProgress,
-    [0.68, 0.78],
+    ACT_3_Y_RANGE,
     [20, 0]
   )
   const act3Blur = useTransform(
     scrollYProgress,
-    [0.68, 0.78],
-    prefersReducedMotion ? ["blur(0px)", "blur(0px)"] : ["blur(12px)", "blur(0px)"]
+    ACT_3_Y_RANGE,
+    prefersReducedMotion ? NO_BLUR_REVEAL : BLUR_REVEAL
   )
   const fluidMaskStyle = {
     WebkitMaskImage: maskImageStyle,
@@ -83,26 +90,12 @@ export function LandingBrainHero() {
   return (
     <div ref={containerRef} className="relative h-[600vh] w-full">
       <div className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden bg-background">
-
-        {/* ── Background Fluid Mesh with Animated Mask ── 
-            Strict inset-0 sizing to guarantee the intricate 3D ribbons stay centered, 
-            matching the exact high-fidelity rendering of the top Hero page.
-            The parent div applies a permanent vertical fade so the fluid NEVER forms a sharp cut 
-            when the section ends, perfectly integrating with the rest of the page.
-        */}
         <div className="absolute inset-0 z-10 pointer-events-none [mask-image:linear-gradient(to_bottom,transparent_0%,black_15%,black_85%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_15%,black_85%,transparent_100%)]">
-          <motion.div
-            style={fluidMaskStyle}
-            className="absolute inset-0 w-full h-full"
-          >
-            {/* The Ultimate Master Primitive: 
-                Guarantees 100% exact rendering (colors, scale, integration) anywhere in the app 
-            */}
+          <motion.div style={fluidMaskStyle} className="absolute inset-0 h-full w-full">
             <AppleFluidBackground />
           </motion.div>
         </div>
 
-        {/* ── Act I: Guarda Oltre ── */}
         <motion.div
           style={act1Style}
           data-testid="landing-brain-act-1"
@@ -119,7 +112,6 @@ export function LandingBrainHero() {
           </h2>
         </motion.div>
 
-        {/* ── Act II: The Processing Phase ── */}
         <motion.div
           style={act2Style}
           data-testid="landing-brain-act-2"
@@ -131,7 +123,6 @@ export function LandingBrainHero() {
           </h3>
         </motion.div>
 
-        {/* ── Act III: The Promise ── */}
         <motion.div
           style={act3Style}
           data-testid="landing-brain-act-3"
@@ -143,7 +134,6 @@ export function LandingBrainHero() {
             svelato prima di viverlo.
           </h3>
         </motion.div>
-
       </div>
     </div>
   )

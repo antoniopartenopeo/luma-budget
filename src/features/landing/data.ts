@@ -8,7 +8,6 @@ import {
   WalletCards
 } from "lucide-react"
 
-
 export interface LandingStoryPoint {
   icon: LucideIcon
   title: string
@@ -33,9 +32,6 @@ export interface LandingOutcome {
   title: string
   description: string
 }
-
-
-
 
 export const LANDING_STORY_POINTS: LandingStoryPoint[] = [
   {

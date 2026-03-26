@@ -1,5 +1,6 @@
 "use client"
 
+import dynamic from "next/dynamic"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { AmbientBackdrop } from "@/components/layout/ambient-backdrop"
@@ -13,16 +14,28 @@ import {
   LANDING_OUTCOMES
 } from "./data"
 import { LandingHeroConsole } from "./components/landing-previews"
-import { LandingBrainHero } from "./components/landing-brain-hero"
-import { LandingDifferentiatorCards } from "./components/landing-differentiator-cards"
 import { AppleFluidBackground, CinematicTextReveal } from "./components/motion-primitives"
+import { LandingSectionHeader } from "./components/landing-section-header"
 import {
   LANDING_FLOATING_NAV_CLASS,
-  LANDING_NAV_LINK_CLASS,
-  LANDING_SECTION_DESCRIPTION_CLASS,
-  LANDING_SECTION_EYEBROW_CLASS,
-  LANDING_SECTION_TITLE_CLASS
+  LANDING_NAV_LINK_CLASS
 } from "./components/landing-tokens"
+
+const LandingDifferentiatorCards = dynamic(
+  () => import("./components/landing-differentiator-cards").then((module) => module.LandingDifferentiatorCards),
+  {
+    ssr: false,
+    loading: () => <div className="h-[340vh] w-full" aria-hidden="true" />
+  }
+)
+
+const LandingBrainHero = dynamic(
+  () => import("./components/landing-brain-hero").then((module) => module.LandingBrainHero),
+  {
+    ssr: false,
+    loading: () => <div className="h-[600vh] w-full" aria-hidden="true" />
+  }
+)
 
 const LANDING_NAV_ITEMS = [
   { href: "#problema", label: "Il Problema" },
@@ -104,17 +117,12 @@ export function LandingPage() {
               <MacroSection
                 disableAnimation
                 title={
-                  <div className="space-y-3">
-                    <p className={LANDING_SECTION_EYEBROW_CLASS}>Il problema</p>
-                    <span id="landing-problem-title" className={LANDING_SECTION_TITLE_CLASS}>
-                      Il problema che nessuno risolve
-                    </span>
-                  </div>
-                }
-                description={
-                  <span className={LANDING_SECTION_DESCRIPTION_CLASS}>
-                    La maggior parte delle app di finanza personale si ferma al primo passo: registrare. Numa parte da lì dove le altre finiscono.
-                  </span>
+                  <LandingSectionHeader
+                    eyebrow="Il problema"
+                    title="Il problema che nessuno risolve"
+                    description="La maggior parte delle app di finanza personale si ferma al primo passo: registrare. Numa parte da lì dove le altre finiscono."
+                    titleId="landing-problem-title"
+                  />
                 }
                 contentClassName="pt-8"
               >
@@ -132,17 +140,12 @@ export function LandingPage() {
               <MacroSection
                 disableAnimation
                 title={
-                  <div className="space-y-3">
-                    <p className={LANDING_SECTION_EYEBROW_CLASS}>Percorso</p>
-                    <span id="landing-how-title" className={LANDING_SECTION_TITLE_CLASS}>
-                      Come inizi
-                    </span>
-                  </div>
-                }
-                description={
-                  <span className={LANDING_SECTION_DESCRIPTION_CLASS}>
-                    Quattro passaggi semplici: fai entrare i dati, leggi il mese, guardi la stima e poi valuti una nuova spesa fissa.
-                  </span>
+                  <LandingSectionHeader
+                    eyebrow="Percorso"
+                    title="Come inizi"
+                    description="Quattro passaggi semplici: fai entrare i dati, leggi il mese, guardi la stima e poi valuti una nuova spesa fissa."
+                    titleId="landing-how-title"
+                  />
                 }
                 contentClassName="pt-12"
               >
@@ -179,17 +182,12 @@ export function LandingPage() {
               <MacroSection
                 disableAnimation
                 title={
-                  <div className="space-y-3">
-                    <p className={LANDING_SECTION_EYEBROW_CLASS}>Outcome</p>
-                    <span id="landing-outcomes-title" className={LANDING_SECTION_TITLE_CLASS}>
-                      Cosa cambia davvero
-                    </span>
-                  </div>
-                }
-                description={
-                  <span className={LANDING_SECTION_DESCRIPTION_CLASS}>
-                    Non è una questione di funzionalità. È una questione di abitudine: cosa succede dopo la prima settimana d&apos;uso.
-                  </span>
+                  <LandingSectionHeader
+                    eyebrow="Outcome"
+                    title="Cosa cambia davvero"
+                    description="Non è una questione di funzionalità. È una questione di abitudine: cosa succede dopo la prima settimana d&apos;uso."
+                    titleId="landing-outcomes-title"
+                  />
                 }
                 contentClassName="grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3 pt-12"
               >

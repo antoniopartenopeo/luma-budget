@@ -2,6 +2,30 @@ import { render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 import { LandingPage } from "../landing-page"
 
+vi.mock("next/dynamic", () => {
+  return {
+    default: (loader: () => Promise<unknown>) => {
+      const loaderSource = String(loader)
+
+      if (loaderSource.includes("landing-differentiator-cards")) {
+        const MockDifferentiatorCards = () => <div data-testid="landing-differentiator-cards">Tre scelte di design</div>
+        MockDifferentiatorCards.displayName = "MockDifferentiatorCards"
+        return MockDifferentiatorCards
+      }
+
+      if (loaderSource.includes("landing-brain-hero")) {
+        const MockBrainHero = () => <div data-testid="landing-brain-hero" />
+        MockBrainHero.displayName = "MockBrainHero"
+        return MockBrainHero
+      }
+
+      const MockDynamicComponent = () => <div data-testid="dynamic-component" />
+      MockDynamicComponent.displayName = "MockDynamicComponent"
+      return MockDynamicComponent
+    }
+  }
+})
+
 vi.mock("@/components/layout/ambient-backdrop", () => ({
   AmbientBackdrop: () => <div data-testid="ambient-backdrop" />
 }))
@@ -34,11 +58,12 @@ describe("LandingPage", () => {
     expect(screen.getAllByTestId("brand-logo").length).toBeGreaterThan(0)
     expect(screen.getByRole("heading", { name: /L'app che ti aiuta a capire il mese, non solo a registrare spese/i })).toBeInTheDocument()
     expect(screen.getByText(/App di finanza personale locale-first/i)).toBeInTheDocument()
-    expect(screen.getByTestId("landing-differentiator-cards")).toBeInTheDocument()
     expect(screen.getByRole("region", { name: /Come inizi/i })).toBeInTheDocument()
     expect(screen.getByText(/Cosa cambia davvero/i)).toBeInTheDocument()
     expect(screen.getByText(/Importi lo storico senza caos/i)).toBeInTheDocument()
     expect(screen.getByText(/Scopri se una nuova spesa ci sta davvero/i)).toBeInTheDocument()
+
+    expect(screen.getByTestId("landing-differentiator-cards")).toBeInTheDocument()
     expect(screen.getByTestId("landing-brain-hero")).toBeInTheDocument()
 
     const hrefs = screen.getAllByRole("link").map((link) => link.getAttribute("href"))

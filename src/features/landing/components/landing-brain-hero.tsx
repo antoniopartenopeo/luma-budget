@@ -98,14 +98,17 @@ export function LandingBrainHero() {
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
           <Badge variant="outline" className="mb-6 border-primary/20 bg-primary/10 text-primary backdrop-blur-md scale-110">
-            Numa Predictive Engine
+            Il Brain di Numa
           </Badge>
           <h2
             id="landing-brain-hero-title"
-            className="text-5xl font-black tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-xl"
+            className="max-w-[11ch] text-5xl font-black tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-xl"
           >
-            Guarda oltre.
+            Vede il mese prima che finisca.
           </h2>
+          <p className="mt-5 max-w-[40ch] text-sm font-medium leading-relaxed text-foreground/72 sm:text-base">
+            Non inventa scenari. Legge i movimenti, riconosce il ritmo e prova a mostrarti dove stai andando.
+          </p>
         </motion.div>
 
         <motion.div
@@ -113,10 +116,15 @@ export function LandingBrainHero() {
           data-testid="landing-brain-act-2"
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
-          <h3 className="text-3xl font-bold tracking-tight text-foreground/90 sm:text-5xl lg:text-6xl drop-shadow-xl max-w-3xl">
-            Processa le tue abitudini.<br />
-            <span className="text-muted-foreground">Proietta il tuo potenziale.</span>
+          <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.22em] text-primary/82">
+            Quando i dati bastano
+          </p>
+          <h3 className="max-w-[14ch] text-3xl font-black tracking-tight text-foreground/92 sm:text-5xl lg:text-6xl drop-shadow-xl">
+            Stima fine mese e mese dopo.
           </h3>
+          <p className="mt-5 max-w-[38ch] text-sm font-medium leading-relaxed text-muted-foreground sm:text-base">
+            Se il quadro non e ancora abbastanza stabile, te lo dice chiaramente. Non forza una risposta.
+          </p>
         </motion.div>
 
         <motion.div
@@ -124,11 +132,19 @@ export function LandingBrainHero() {
           data-testid="landing-brain-act-3"
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
-          <h3 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl lg:text-7xl drop-shadow-2xl">
-            Il tuo mese,
+          <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.22em] text-primary/82">
+            Quello che ti restituisce
+          </p>
+          <h3 className="max-w-[12ch] text-4xl font-black tracking-tight text-foreground sm:text-5xl lg:text-7xl drop-shadow-2xl">
+            Un importo.
             <br />
-            svelato prima di viverlo.
+            Un&apos;affidabilita.
+            <br />
+            Un orizzonte chiaro.
           </h3>
+          <p className="mt-5 max-w-[34ch] text-sm font-medium leading-relaxed text-foreground/68 sm:text-base">
+            Cosi puoi decidere prima, invece di rincorrere il mese dopo.
+          </p>
         </motion.div>
       </div>
     </div>

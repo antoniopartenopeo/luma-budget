@@ -45,9 +45,10 @@ describe("LandingBrainHero", () => {
   it("displays the cinematic Brain explainer with the predictive engine copy", () => {
     render(<LandingBrainHero />)
 
-    expect(screen.getByRole("heading", { name: /Guarda oltre/i })).toBeInTheDocument()
-    expect(screen.getByText(/Numa Predictive Engine/i)).toBeInTheDocument()
-    expect(screen.getByText(/Processa le tue abitudini/i)).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: /Vede il mese prima che finisca/i })).toBeInTheDocument()
+    expect(screen.getByText(/Il Brain di Numa/i)).toBeInTheDocument()
+    expect(screen.getByText(/Stima fine mese e mese dopo/i)).toBeInTheDocument()
+    expect(screen.getByText(/Un importo/i)).toBeInTheDocument()
     expect(screen.queryByText(/SYNC_BANK_API/i)).not.toBeInTheDocument()
   })
 })

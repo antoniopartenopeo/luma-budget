@@ -1,8 +1,8 @@
 export const LANDING_NAV_LINK_CLASS =
-  "rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground/80 transition-colors hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10"
+  "rounded-full px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/72 transition-colors hover:bg-black/[0.04] hover:text-foreground/90 dark:hover:bg-white/[0.08]"
 
 export const LANDING_FLOATING_NAV_CLASS =
-  "flex items-center gap-1 rounded-full border border-white/10 bg-white/34 px-2 py-1.5 shadow-[0_8px_24px_rgb(0,0,0,0.025)] backdrop-blur-md dark:border-white/8 dark:bg-black/22"
+  "flex items-center gap-0.5 rounded-full border border-white/8 bg-white/24 px-1.5 py-1 shadow-[0_10px_22px_-18px_rgba(15,23,42,0.28)] backdrop-blur-sm dark:border-white/7 dark:bg-black/18"
 
 export const LANDING_SECTION_EYEBROW_CLASS =
   "text-[11px] font-bold uppercase tracking-[0.24em] text-primary"

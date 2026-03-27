@@ -6,7 +6,6 @@ import { ArrowRight } from "lucide-react"
 import { AmbientBackdrop } from "@/components/layout/ambient-backdrop"
 import { MacroSection } from "@/components/patterns/macro-section"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
-import { Badge } from "@/components/ui/badge"
 import { BrandLogo } from "@/components/ui/brand-logo"
 import { Button } from "@/components/ui/button"
 import {
@@ -56,6 +55,63 @@ const LANDING_CTA_TRUST_PILLS = [
   "Tutto in locale",
   "Nessun account per iniziare",
   "Zero cloud obbligatorio"
+] as const
+
+const LANDING_CTA_SUMMARY_PILLS = [
+  "Presente leggibile",
+  "Stima prudente",
+  "Scelta sostenibile"
+] as const
+
+const LANDING_FOOTER_PRODUCT_PILLS = [
+  "Import CSV",
+  "Brain",
+  "Financial Lab"
+] as const
+
+const LANDING_FLOW_ACCENTS = [
+  {
+    border: "border-cyan-500/18 dark:border-cyan-400/14",
+    panel: "from-cyan-500/[0.10] via-white/72 to-white/88 dark:from-cyan-500/[0.12] dark:via-black/28 dark:to-black/22",
+    icon: "border-cyan-500/18 bg-cyan-500/10 text-cyan-700 dark:text-cyan-300",
+    line: "from-cyan-500/35 via-cyan-500/12 to-transparent"
+  },
+  {
+    border: "border-emerald-500/18 dark:border-emerald-400/14",
+    panel: "from-emerald-500/[0.10] via-white/72 to-white/88 dark:from-emerald-500/[0.12] dark:via-black/28 dark:to-black/22",
+    icon: "border-emerald-500/18 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+    line: "from-emerald-500/35 via-emerald-500/12 to-transparent"
+  },
+  {
+    border: "border-violet-500/18 dark:border-violet-400/14",
+    panel: "from-violet-500/[0.10] via-white/72 to-white/88 dark:from-violet-500/[0.12] dark:via-black/28 dark:to-black/22",
+    icon: "border-violet-500/18 bg-violet-500/10 text-violet-700 dark:text-violet-300",
+    line: "from-violet-500/35 via-violet-500/12 to-transparent"
+  },
+  {
+    border: "border-amber-500/18 dark:border-amber-400/14",
+    panel: "from-amber-500/[0.10] via-white/72 to-white/88 dark:from-amber-500/[0.12] dark:via-black/28 dark:to-black/22",
+    icon: "border-amber-500/18 bg-amber-500/10 text-amber-700 dark:text-amber-300",
+    line: "from-amber-500/35 via-amber-500/12 to-transparent"
+  }
+] as const
+
+const LANDING_OUTCOME_ACCENTS = [
+  {
+    border: "border-rose-500/18 dark:border-rose-400/14",
+    panel: "from-rose-500/[0.09] via-white/74 to-white/90 dark:from-rose-500/[0.12] dark:via-black/28 dark:to-black/22",
+    icon: "border-rose-500/18 bg-rose-500/10 text-rose-700 dark:text-rose-300"
+  },
+  {
+    border: "border-sky-500/18 dark:border-sky-400/14",
+    panel: "from-sky-500/[0.09] via-white/74 to-white/90 dark:from-sky-500/[0.12] dark:via-black/28 dark:to-black/22",
+    icon: "border-sky-500/18 bg-sky-500/10 text-sky-700 dark:text-sky-300"
+  },
+  {
+    border: "border-amber-500/18 dark:border-amber-400/14",
+    panel: "from-amber-500/[0.09] via-white/74 to-white/90 dark:from-amber-500/[0.12] dark:via-black/28 dark:to-black/22",
+    icon: "border-amber-500/18 bg-amber-500/10 text-amber-700 dark:text-amber-300"
+  }
 ] as const
 
 export function LandingPage() {
@@ -179,25 +235,50 @@ export function LandingPage() {
                 }
                 contentClassName="pt-12"
               >
-                <div className="relative flex flex-col gap-0 sm:flex-row sm:gap-0">
-                  <div className="absolute left-7 top-0 bottom-0 w-px bg-primary/15 sm:left-0 sm:right-0 sm:top-7 sm:bottom-auto sm:h-px sm:w-full" />
+                <div className="relative space-y-4 sm:space-y-5">
+                  <div className="pointer-events-none absolute left-7 top-0 bottom-0 w-px bg-gradient-to-b from-primary/20 via-primary/8 to-transparent" />
 
-                  {LANDING_FLOW_STEPS.map((step, index) => (
-                    <div key={step.stepLabel} className="relative flex items-start gap-5 py-5 sm:flex-1 sm:flex-col sm:items-center sm:text-center sm:px-4 sm:py-0">
-                      <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-background text-xl font-black tracking-tight text-primary shadow-[0_0_30px_rgba(var(--primary),0.15)]">
-                        {step.stepLabel}
-                      </div>
-                      <div className="space-y-2 pt-1 sm:pt-4">
-                        <h3 className="text-base font-bold tracking-tight text-foreground">{step.title}</h3>
-                        <p className="text-sm font-medium leading-relaxed text-muted-foreground max-w-[30ch]">{step.description}</p>
-                      </div>
-                      {index < LANDING_FLOW_STEPS.length - 1 && (
-                        <div className="hidden sm:block absolute right-0 top-7 translate-x-1/2 -translate-y-1/2 z-20">
-                          <ArrowRight className="h-3.5 w-3.5 text-primary/40" />
+                  {LANDING_FLOW_STEPS.map((step, index) => {
+                    const accent = LANDING_FLOW_ACCENTS[index]
+
+                    return (
+                      <article
+                        key={step.stepLabel}
+                        className={`group relative overflow-hidden rounded-[2rem] border ${accent.border} bg-gradient-to-br ${accent.panel} p-5 shadow-[0_28px_90px_-56px_rgba(15,23,42,0.38)] backdrop-blur-sm sm:p-6 lg:p-7`}
+                      >
+                        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.72),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_46%)]" />
+                        <div className="relative flex items-start gap-4 sm:gap-5">
+                          <div className="relative flex shrink-0 flex-col items-center">
+                            <div className={`relative z-10 flex h-14 w-14 items-center justify-center rounded-[1.2rem] border shadow-[0_18px_36px_-24px_rgba(15,23,42,0.35)] ${accent.icon}`}>
+                              <step.icon className="h-5 w-5" />
+                            </div>
+                            {index < LANDING_FLOW_STEPS.length - 1 && (
+                              <div className={`mt-3 h-14 w-px bg-gradient-to-b ${accent.line} sm:h-16`} />
+                            )}
+                          </div>
+
+                          <div className="min-w-0 flex-1 space-y-3 pt-0.5">
+                            <div className="flex flex-wrap items-center gap-2.5">
+                              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/82">
+                                {step.cue}
+                              </span>
+                              <span className="rounded-full border border-black/6 bg-black/[0.03] px-2.5 py-1 text-[11px] font-semibold text-foreground/56 dark:border-white/8 dark:bg-white/[0.04] dark:text-foreground/52">
+                                Passo {step.stepLabel}
+                              </span>
+                            </div>
+                            <div className="space-y-2">
+                              <h3 className="max-w-[24ch] text-xl font-black leading-tight tracking-tight text-foreground sm:text-[1.55rem]">
+                                {step.title}
+                              </h3>
+                              <p className="max-w-[58ch] text-sm font-medium leading-relaxed text-muted-foreground sm:text-[15px]">
+                                {step.description}
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                      )}
-                    </div>
-                  ))}
+                      </article>
+                    )
+                  })}
                 </div>
               </MacroSection>
             </div>
@@ -221,52 +302,87 @@ export function LandingPage() {
                 }
                 contentClassName="grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3 pt-12"
               >
-                {LANDING_OUTCOMES.map((outcome) => (
-                  <article key={outcome.title} className="flex flex-col gap-5">
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary shadow-[0_0_30px_rgba(var(--primary),0.15)]">
-                      <outcome.icon className="h-6 w-6" />
-                    </div>
-                    <div className="space-y-2">
-                      <h3 className="text-xl font-bold tracking-tight text-foreground">{outcome.title}</h3>
-                      <p className="text-base font-medium leading-relaxed text-muted-foreground">{outcome.description}</p>
-                    </div>
-                  </article>
-                ))}
+                {LANDING_OUTCOMES.map((outcome, index) => {
+                  const accent = LANDING_OUTCOME_ACCENTS[index]
+
+                  return (
+                    <article
+                      key={outcome.title}
+                      className={`group relative overflow-hidden rounded-[2rem] border ${accent.border} bg-gradient-to-br ${accent.panel} p-6 shadow-[0_28px_90px_-56px_rgba(15,23,42,0.38)] backdrop-blur-sm sm:p-7`}
+                    >
+                      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.72),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_46%)]" />
+                      <div className="relative flex h-full flex-col gap-5">
+                        <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.2rem] border shadow-[0_18px_36px_-24px_rgba(15,23,42,0.35)] ${accent.icon}`}>
+                          <outcome.icon className="h-6 w-6" />
+                        </div>
+                        <div className="space-y-2.5">
+                          <h3 className="max-w-[18ch] text-xl font-black tracking-tight text-foreground sm:text-[1.55rem]">
+                            {outcome.title}
+                          </h3>
+                          <p className="max-w-[34ch] text-base font-medium leading-relaxed text-muted-foreground">
+                            {outcome.description}
+                          </p>
+                        </div>
+                      </div>
+                    </article>
+                  )
+                })}
               </MacroSection>
             </div>
           </section>
 
-          <section id="open-app" className="relative px-4 scroll-mt-24 overflow-hidden" aria-labelledby="landing-cta-title">
-            <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.07]">
+          <section id="open-app" className="relative px-4 py-4 scroll-mt-24 sm:py-6" aria-labelledby="landing-cta-title">
+            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-[0.08]">
               <AppleFluidBackground />
             </div>
-            <div className="relative z-10 mx-auto max-w-6xl">
-              <div className="flex flex-col items-center justify-center text-center py-24 sm:py-40">
-                <div className="flex flex-col items-center space-y-6">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
-                    Pronto quando lo sei tu.
-                  </p>
-                  <h2 id="landing-cta-title" className="max-w-[20ch] text-5xl font-black tracking-tighter text-foreground sm:text-6xl lg:text-7xl">
-                    Apri Numa. Vedi il mese per intero.
-                  </h2>
-                  <p className="max-w-xl text-base font-medium leading-relaxed text-muted-foreground sm:text-xl">
-                    Importa un estratto conto e guarda dove stai andando. Nessun account, nessun cloud obbligatorio.
-                  </p>
-                </div>
-                <div className="mt-12">
-                  <Button asChild size="lg" className="rounded-full px-12 py-7 text-lg font-bold shadow-2xl shadow-primary/20">
-                    <Link href="/dashboard">Apri Numa</Link>
-                  </Button>
-                </div>
-                <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-                  {LANDING_CTA_TRUST_PILLS.map((pill) => (
-                    <span
-                      key={pill}
-                      className="rounded-full border border-primary/12 bg-background/58 px-3 py-1.5 text-[11px] font-semibold tracking-[0.04em] text-foreground/72 backdrop-blur-sm"
-                    >
-                      {pill}
-                    </span>
-                  ))}
+            <div className="pointer-events-none absolute inset-0 z-[1] overflow-hidden">
+              <div className="absolute left-1/2 top-[24%] h-[20rem] w-[20rem] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl sm:h-[24rem] sm:w-[24rem]" />
+              <div className="absolute right-[10%] top-[38%] h-[14rem] w-[14rem] rounded-full bg-cyan-500/10 blur-3xl" />
+            </div>
+            <div className="relative z-10 mx-auto max-w-6xl px-1 sm:px-2">
+              <div className="relative overflow-hidden rounded-[2.8rem] border border-white/14 bg-background/38 px-6 py-10 shadow-[0_44px_130px_-76px_rgba(15,23,42,0.56)] backdrop-blur-md sm:px-10 sm:py-14 lg:px-14 lg:py-16 dark:border-white/10 dark:bg-black/16">
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.28),transparent_42%)] dark:bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_44%)]" />
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/42 to-transparent dark:via-white/18" />
+                <div className="relative flex flex-col items-center justify-center text-center">
+                  <div className="flex flex-col items-center space-y-6">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+                      Pronto quando lo sei tu.
+                    </p>
+                    <h2 id="landing-cta-title" className="max-w-[14ch] text-5xl font-black tracking-tighter text-foreground sm:text-6xl lg:text-7xl">
+                      Apri Numa. Vedi il mese per intero.
+                    </h2>
+                    <p className="max-w-[44rem] text-base font-medium leading-relaxed text-muted-foreground sm:text-xl">
+                      Importa un estratto conto e guarda presente, stima e quota sostenibile nello stesso quadro. Nessun account, nessun cloud obbligatorio.
+                    </p>
+                  </div>
+
+                  <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+                    {LANDING_CTA_SUMMARY_PILLS.map((pill) => (
+                      <span
+                        key={pill}
+                        className="rounded-full border border-white/16 bg-background/54 px-3 py-1.5 text-[11px] font-semibold tracking-[0.04em] text-foreground/74 backdrop-blur-sm dark:border-white/10"
+                      >
+                        {pill}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="mt-12">
+                    <Button asChild size="lg" className="rounded-full px-12 py-7 text-lg font-bold shadow-2xl shadow-primary/20">
+                      <Link href="/dashboard">Apri Numa</Link>
+                    </Button>
+                  </div>
+
+                  <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+                    {LANDING_CTA_TRUST_PILLS.map((pill) => (
+                      <span
+                        key={pill}
+                        className="rounded-full border border-primary/12 bg-background/58 px-3 py-1.5 text-[11px] font-semibold tracking-[0.04em] text-foreground/72 backdrop-blur-sm"
+                      >
+                        {pill}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -275,25 +391,69 @@ export function LandingPage() {
       </main>
 
       <footer className="px-4 pb-8 pt-2">
-        <div className="mx-auto max-w-6xl rounded-[2rem] border border-white/30 px-5 py-5 glass-chrome">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-            <div className="space-y-3">
-              <BrandLogo variant="full" height={28} className="w-auto max-w-[140px]" />
-              <p className="max-w-xl text-sm font-medium leading-relaxed text-muted-foreground">
-                Finanza personale senza cloud, senza account, senza metodo obbligatorio. Solo i tuoi dati e una lettura più chiara.
-              </p>
+        <div className="mx-auto max-w-6xl">
+          <div className="relative overflow-hidden rounded-[2.25rem] border border-white/14 bg-gradient-to-br from-white/70 via-white/84 to-white/68 px-5 py-6 shadow-[0_30px_100px_-60px_rgba(15,23,42,0.45)] backdrop-blur-md dark:border-white/10 dark:from-black/24 dark:via-black/18 dark:to-black/24 sm:px-7 sm:py-7">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.72),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_48%)]" />
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/44 to-transparent dark:via-white/18" />
+
+            <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_auto] lg:items-start">
+              <div className="space-y-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/82">
+                  Numa Budget
+                </p>
+                <BrandLogo variant="full" height={30} className="w-auto max-w-[150px]" />
+                <p className="max-w-[34rem] text-sm font-medium leading-relaxed text-muted-foreground sm:text-[15px]">
+                  Finanza personale local-first, progettata per leggere presente, stima e sostenibilita senza cloud obbligatorio.
+                </p>
+              </div>
+
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div className="space-y-3">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-foreground/48">
+                    Prodotto
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {LANDING_FOOTER_PRODUCT_PILLS.map((pill) => (
+                      <span
+                        key={`footer-${pill}`}
+                        className="rounded-full border border-white/16 bg-background/54 px-3 py-1.5 text-[11px] font-semibold tracking-[0.04em] text-foreground/72 backdrop-blur-sm dark:border-white/10"
+                      >
+                        {pill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-foreground/48">
+                    Supporto
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {["FAQ", "Contatti", "Privacy", "Aggiornamenti"].map((label) => (
+                      <span
+                        key={label}
+                        className="rounded-full border border-black/6 bg-black/[0.03] px-3 py-1.5 text-[11px] font-semibold tracking-[0.04em] text-foreground/62 dark:border-white/8 dark:bg-white/[0.04] dark:text-foreground/58"
+                      >
+                        {label}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-start gap-3 lg:items-end">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-foreground/48">
+                  Accesso
+                </p>
+                <Link
+                  href="/dashboard"
+                  className="inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-foreground px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-background transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-24px_rgba(15,23,42,0.45)] dark:border-white/12 dark:bg-white dark:text-black"
+                >
+                  Apri Numa
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
             </div>
-            <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 shrink-0">
-              <Badge variant="outline" className="border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold uppercase tracking-wider">
-                100% Local-First
-              </Badge>
-              <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">
-                Zero Cloud
-              </Badge>
-              <Link href="/dashboard" className="text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground">
-                Apri Numa
-              </Link>
-            </nav>
           </div>
         </div>
       </footer>

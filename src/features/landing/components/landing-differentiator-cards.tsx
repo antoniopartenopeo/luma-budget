@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { AnimatePresence, motion, useReducedMotion, useScroll } from "framer-motion"
+import { AnimatePresence, motion, useScroll } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { LANDING_DIFFERENTIATORS, type LandingDifferentItem } from "../data"
 import { LANDING_MOTION_EASE, LANDING_MOTION_TIMINGS } from "./landing-motion"
@@ -50,20 +50,18 @@ const MARKET_GLIMPSES = [
 
 function MarketGhostLayer({
   item,
-  index,
-  prefersReducedMotion
+  index
 }: {
   item: LandingDifferentItem
   index: number
-  prefersReducedMotion: boolean
 }) {
   return (
     <motion.div
       key={`market-${item.title}`}
-      initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.96, y: 32 }}
+      initial={{ opacity: 0, scale: 0.96, y: 32 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.02, y: -24 }}
-      transition={prefersReducedMotion ? LANDING_MOTION_TIMINGS.instant : LANDING_MOTION_TIMINGS.medium}
+      exit={{ opacity: 0, scale: 1.02, y: -24 }}
+      transition={LANDING_MOTION_TIMINGS.medium}
       className="absolute inset-0"
       aria-hidden="true"
     >
@@ -97,32 +95,30 @@ function MarketGhostLayer({
 
 function NumaEditorialCard({
   item,
-  index,
-  prefersReducedMotion
+  index
 }: {
   item: LandingDifferentItem
   index: number
-  prefersReducedMotion: boolean
 }) {
   const accent = EDITORIAL_ACCENTS[index]
 
   return (
     <motion.div
       key={`numa-${item.title}`}
-      initial={prefersReducedMotion ? false : { opacity: 0, y: 36, rotate: -10, scale: 0.94 }}
+      initial={{ opacity: 0, y: 36, rotate: -10, scale: 0.94 }}
       animate={{
         opacity: 1,
         y: 0,
         rotate: -7,
         scale: 1,
-        transition: prefersReducedMotion ? LANDING_MOTION_TIMINGS.instant : LANDING_MOTION_TIMINGS.slow
+        transition: LANDING_MOTION_TIMINGS.slow
       }}
       exit={{
         opacity: 0,
-        y: prefersReducedMotion ? 0 : -24,
-        rotate: prefersReducedMotion ? -7 : -3,
-        scale: prefersReducedMotion ? 1 : 1.03,
-        transition: prefersReducedMotion ? LANDING_MOTION_TIMINGS.instant : LANDING_MOTION_TIMINGS.fast
+        y: -24,
+        rotate: -3,
+        scale: 1.03,
+        transition: LANDING_MOTION_TIMINGS.fast
       }}
       className="absolute inset-x-[6%] top-[11%] bottom-[13%] will-change-transform sm:inset-x-[9%] sm:top-[10%] sm:bottom-[12%] lg:inset-x-[8%] lg:top-[9%] lg:bottom-[10%]"
     >
@@ -190,7 +186,6 @@ function NumaEditorialCard({
 
 export function LandingDifferentiatorCards() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const prefersReducedMotion = useReducedMotion() ?? false
   const [activeIndex, setActiveIndex] = useState(0)
 
   const { scrollYProgress } = useScroll({
@@ -222,8 +217,8 @@ export function LandingDifferentiatorCards() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.12),transparent_38%)] dark:bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.05),transparent_40%)]" />
         <motion.div
           className={cn("pointer-events-none absolute left-1/2 top-[14%] h-64 w-64 -translate-x-1/2 rounded-full blur-3xl sm:h-80 sm:w-80", accent.glow)}
-          animate={prefersReducedMotion ? { opacity: 0.5, scale: 1 } : { opacity: [0.4, 0.7, 0.45], scale: [0.96, 1.08, 0.98] }}
-          transition={prefersReducedMotion ? undefined : { duration: 8, repeat: Infinity, ease: LANDING_MOTION_EASE }}
+          animate={{ opacity: [0.4, 0.7, 0.45], scale: [0.96, 1.08, 0.98] }}
+          transition={{ duration: 8, repeat: Infinity, ease: LANDING_MOTION_EASE }}
           aria-hidden="true"
         />
 
@@ -246,7 +241,6 @@ export function LandingDifferentiatorCards() {
                 key={`ghost-${activeItem.title}`}
                 item={activeItem}
                 index={activeIndex}
-                prefersReducedMotion={prefersReducedMotion}
               />
             </AnimatePresence>
 
@@ -255,7 +249,6 @@ export function LandingDifferentiatorCards() {
                 key={`editorial-${activeItem.title}`}
                 item={activeItem}
                 index={activeIndex}
-                prefersReducedMotion={prefersReducedMotion}
               />
             </AnimatePresence>
           </div>

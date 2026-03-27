@@ -94,13 +94,14 @@ inline_style_all_count="$(count_lines "$inline_style_hits_all")"
 # - chart runtime sizing / canvas wrappers
 # - dynamic SVG orbit palette
 # - runtime color chips from data source
+# - next/og image routes, which render through inline-style layout primitives
 inline_style_exempt_hits="$(printf '%s\n' "$inline_style_hits_all" | grep -E \
-    'src/features/dashboard/components/charts/echarts-wrapper.tsx:|src/features/dashboard/components/charts/premium-chart-section.tsx:|src/features/dashboard/components/charts/spending-composition-card.tsx:|src/components/layout/topbar-action-cluster.tsx:' \
+    'src/features/dashboard/components/charts/echarts-wrapper.tsx:|src/features/dashboard/components/charts/premium-chart-section.tsx:|src/features/dashboard/components/charts/spending-composition-card.tsx:|src/components/layout/topbar-action-cluster.tsx:|src/app/opengraph-image.tsx:|src/app/twitter-image.tsx:' \
     || true)"
 inline_style_exempt_count="$(count_lines "$inline_style_exempt_hits")"
 
 inline_style_hits="$(printf '%s\n' "$inline_style_hits_all" | grep -Ev \
-    'src/features/dashboard/components/charts/echarts-wrapper.tsx:|src/features/dashboard/components/charts/premium-chart-section.tsx:|src/features/dashboard/components/charts/spending-composition-card.tsx:|src/components/layout/topbar-action-cluster.tsx:' \
+    'src/features/dashboard/components/charts/echarts-wrapper.tsx:|src/features/dashboard/components/charts/premium-chart-section.tsx:|src/features/dashboard/components/charts/spending-composition-card.tsx:|src/components/layout/topbar-action-cluster.tsx:|src/app/opengraph-image.tsx:|src/app/twitter-image.tsx:' \
     || true)"
 inline_style_count="$(count_lines "$inline_style_hits")"
 

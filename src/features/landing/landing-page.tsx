@@ -52,6 +52,12 @@ const LANDING_HERO_PILLS = [
   "Nessun account per iniziare"
 ] as const
 
+const LANDING_CTA_TRUST_PILLS = [
+  "Tutto in locale",
+  "Nessun account per iniziare",
+  "Zero cloud obbligatorio"
+] as const
+
 export function LandingPage() {
   return (
     <div className="relative min-h-screen overflow-x-clip bg-background selection:bg-primary/20">
@@ -251,6 +257,16 @@ export function LandingPage() {
                   <Button asChild size="lg" className="rounded-full px-12 py-7 text-lg font-bold shadow-2xl shadow-primary/20">
                     <Link href="/dashboard">Apri Numa</Link>
                   </Button>
+                </div>
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+                  {LANDING_CTA_TRUST_PILLS.map((pill) => (
+                    <span
+                      key={pill}
+                      className="rounded-full border border-primary/12 bg-background/58 px-3 py-1.5 text-[11px] font-semibold tracking-[0.04em] text-foreground/72 backdrop-blur-sm"
+                    >
+                      {pill}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>

@@ -36,6 +36,12 @@ const EDITORIAL_NOTES = [
   "Stime chiare per il mese e una quota sostenibile prima di impegnarti."
 ] as const
 
+const EDITORIAL_KICKERS = [
+  "Locale per davvero",
+  "Si adatta a te",
+  "Numeri che servono"
+] as const
+
 const MARKET_GLIMPSES = [
   ["Cloud sync obbligatorio", "Account collegati", "Dati ospitati altrove"],
   ["Metodo rigido", "Budget da compilare", "Rituali da seguire"],
@@ -61,9 +67,9 @@ function MarketGhostLayer({
       className="absolute inset-0"
       aria-hidden="true"
     >
-      <div className="absolute right-[-8%] top-[7%] h-[38%] w-[74%] rotate-[14deg] rounded-[2.4rem] border border-black/8 bg-neutral-100/82 p-5 shadow-[0_40px_90px_-44px_rgba(15,23,42,0.45)] blur-[1.8px] dark:border-white/8 dark:bg-neutral-900/55 sm:h-[42%] sm:w-[70%] sm:p-6">
+        <div className="absolute right-[-8%] top-[7%] h-[38%] w-[74%] rotate-[14deg] rounded-[2.4rem] border border-black/8 bg-neutral-100/82 p-5 shadow-[0_40px_90px_-44px_rgba(15,23,42,0.45)] blur-[1.8px] dark:border-white/8 dark:bg-neutral-900/55 sm:h-[42%] sm:w-[70%] sm:p-6">
         <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-neutral-400 dark:text-neutral-500">
-          Il mercato
+          Altrove
         </p>
         <p className="mt-4 max-w-[18ch] text-lg font-medium leading-tight text-neutral-500 dark:text-neutral-400 sm:text-xl">
           {item.marketLabel}
@@ -72,7 +78,7 @@ function MarketGhostLayer({
 
       <div className="absolute bottom-[4%] left-[-6%] w-[68%] -rotate-[9deg] rounded-[2rem] border border-black/8 bg-white/80 p-4 shadow-[0_30px_90px_-48px_rgba(15,23,42,0.5)] blur-[1.2px] dark:border-white/8 dark:bg-neutral-950/50 sm:w-[56%] sm:p-5">
         <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-neutral-400 dark:text-neutral-500">
-          Quello che trovi spesso
+          Di solito
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           {MARKET_GLIMPSES[index].map((label) => (
@@ -92,12 +98,10 @@ function MarketGhostLayer({
 function NumaEditorialCard({
   item,
   index,
-  total,
   prefersReducedMotion
 }: {
   item: LandingDifferentItem
   index: number
-  total: number
   prefersReducedMotion: boolean
 }) {
   const accent = EDITORIAL_ACCENTS[index]
@@ -134,7 +138,7 @@ function NumaEditorialCard({
           <div className="space-y-3">
             <div className="space-y-2">
               <p className={cn("text-[10px] font-bold uppercase tracking-[0.22em]", accent.kicker)}>
-                La differenza con Numa
+                {EDITORIAL_KICKERS[index]}
               </p>
             </div>
 
@@ -160,11 +164,11 @@ function NumaEditorialCard({
             </div>
           </div>
 
-          <div className="space-y-2.5">
-            <div className="h-px w-16 bg-foreground/12" />
-            <p className="max-w-[32ch] text-[13px] font-semibold leading-relaxed text-foreground/64 [font-size:clamp(0.76rem,3.15cqw,0.9rem)]">
-              {EDITORIAL_NOTES[index]}
-            </p>
+            <div className="space-y-2.5">
+              <div className="h-px w-16 bg-foreground/12" />
+              <p className="max-w-[32ch] text-[13px] font-semibold leading-relaxed text-foreground/64 [font-size:clamp(0.76rem,3.15cqw,0.9rem)]">
+                {EDITORIAL_NOTES[index]}
+              </p>
 
             <div className="flex items-center gap-2 pt-0.5">
               {LANDING_DIFFERENTIATORS.map((entry, dotIndex) => (
@@ -176,9 +180,6 @@ function NumaEditorialCard({
                   )}
                 />
               ))}
-              <span className="ml-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/36">
-                {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
-              </span>
             </div>
           </div>
         </div>
@@ -226,8 +227,20 @@ export function LandingDifferentiatorCards() {
           aria-hidden="true"
         />
 
-        <div className="relative mx-auto w-full max-w-6xl">
-          <div className="relative mx-auto h-[min(82vh,46rem)] w-full max-w-[28rem] sm:max-w-[33rem] lg:max-w-[37rem] [perspective:1400px]">
+        <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center">
+          <div className="relative z-10 mb-8 max-w-2xl text-center sm:mb-10">
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary">
+              Differenza
+            </p>
+            <h2 className="mt-4 text-3xl font-black leading-[0.95] tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+              Tre scelte che cambiano il quadro.
+            </h2>
+            <p className="mx-auto mt-4 max-w-[52ch] text-sm font-medium leading-relaxed text-muted-foreground sm:text-base">
+              Numa non parte da cloud, metodi rigidi o promesse generiche. Parte da una lettura piu calma, privata e utile del mese.
+            </p>
+          </div>
+
+          <div className="relative mx-auto h-[min(74vh,43rem)] w-full max-w-[28rem] sm:h-[min(78vh,45rem)] sm:max-w-[33rem] lg:max-w-[37rem] [perspective:1400px]">
             <AnimatePresence mode="wait">
               <MarketGhostLayer
                 key={`ghost-${activeItem.title}`}
@@ -242,7 +255,6 @@ export function LandingDifferentiatorCards() {
                 key={`editorial-${activeItem.title}`}
                 item={activeItem}
                 index={activeIndex}
-                total={LANDING_DIFFERENTIATORS.length}
                 prefersReducedMotion={prefersReducedMotion}
               />
             </AnimatePresence>

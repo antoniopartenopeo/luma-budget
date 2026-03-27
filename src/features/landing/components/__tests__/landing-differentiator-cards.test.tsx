@@ -55,9 +55,9 @@ describe("LandingDifferentiatorCards", () => {
     mockReducedMotion = false
     render(<LandingDifferentiatorCards />)
 
+    expect(screen.getByRole("heading", { name: /Tre scelte che cambiano il quadro/i })).toBeInTheDocument()
     expect(screen.getByRole("heading", { name: /Nessun intermediario tra te e i tuoi dati/i })).toBeInTheDocument()
-    expect(screen.getByText(/La differenza con Numa/i)).toBeInTheDocument()
-    expect(screen.getByText(/dato nasce e resta sul tuo dispositivo/i)).toBeInTheDocument()
+    expect(screen.getByText(/Il dato nasce e resta sul tuo dispositivo/i)).toBeInTheDocument()
     expect(screen.queryByRole("link")).not.toBeInTheDocument()
 
     act(() => {
@@ -65,14 +65,14 @@ describe("LandingDifferentiatorCards", () => {
     })
 
     expect(screen.getByRole("heading", { name: /Nessun metodo da studiare prima/i })).toBeInTheDocument()
-    expect(screen.getByText(/Importi i movimenti e Numa li organizza/i)).toBeInTheDocument()
+    expect(screen.getByText(/Non devi cambiare tu per farlo funzionare/i)).toBeInTheDocument()
 
     act(() => {
       scrollChangeHandler?.(0.9)
     })
 
     expect(screen.getByRole("heading", { name: /Numeri concreti, non promesse generiche/i })).toBeInTheDocument()
-    expect(screen.getByText(/livello di affid/i)).toBeInTheDocument()
+    expect(screen.getByText(/orizzonte chiaro/i)).toBeInTheDocument()
   })
 
   it("keeps the same hero composition when reduced motion is enabled", () => {
@@ -80,8 +80,7 @@ describe("LandingDifferentiatorCards", () => {
     render(<LandingDifferentiatorCards />)
 
     expect(screen.getByRole("heading", { name: /Nessun intermediario tra te e i tuoi dati/i })).toBeInTheDocument()
-    expect(screen.getByText(/La differenza con Numa/i)).toBeInTheDocument()
-    expect(screen.getByText(/dato nasce e resta sul tuo dispositivo/i)).toBeInTheDocument()
+    expect(screen.getByText(/Il dato nasce e resta sul tuo dispositivo/i)).toBeInTheDocument()
     expect(screen.queryByText(/Numa non ti chiede di inseguire il denaro/i)).not.toBeInTheDocument()
   })
 })

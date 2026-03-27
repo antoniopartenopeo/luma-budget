@@ -18,6 +18,7 @@ import { AppleFluidBackground, CinematicTextReveal } from "./components/motion-p
 import { LandingSectionHeader } from "./components/landing-section-header"
 import {
   LANDING_FLOATING_NAV_CLASS,
+  LANDING_HERO_FRAME_CLASS,
   LANDING_NAV_LINK_CLASS
 } from "./components/landing-tokens"
 
@@ -67,64 +68,70 @@ export function LandingPage() {
       </div>
 
       <main id="main-content" className="relative pb-32">
-        <StaggerContainer className="space-y-32 sm:space-y-48">
+        <StaggerContainer className="space-y-36 sm:space-y-52">
           <section
-            className="relative flex min-h-[90vh] w-full flex-col items-center justify-center overflow-hidden px-4 py-20"
+            className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-4 py-20"
             aria-labelledby="landing-hero-title"
           >
             <div className="absolute inset-0 z-0 pointer-events-none">
               <AppleFluidBackground />
             </div>
 
-            <div className="relative z-10 mt-12 flex w-full max-w-4xl flex-col items-center text-center">
-              <BrandLogo
-                variant="full"
-                height={92}
-                className="mb-12 w-auto max-w-[300px] sm:max-w-[380px] lg:max-w-[440px] drop-shadow-sm"
-              />
+            <div className="pointer-events-none absolute inset-0 z-[1]">
+              <div className="absolute left-1/2 top-[48%] h-[24rem] w-[24rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/30 bg-white/[0.05] shadow-[0_0_120px_-70px_rgba(255,255,255,0.9)] backdrop-blur-[2px] sm:h-[32rem] sm:w-[32rem] dark:border-white/12 dark:bg-white/[0.03]" />
+              <div className="absolute left-1/2 top-[48%] h-[16rem] w-[16rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/22 bg-white/[0.04] sm:h-[21rem] sm:w-[21rem] dark:border-white/10 dark:bg-white/[0.02]" />
+            </div>
 
-              <div className="space-y-5">
-                <Badge variant="outline" className="border-primary/16 bg-background/65 text-primary backdrop-blur-md">
-                  App di finanza personale locale-first
-                </Badge>
+            <div className={LANDING_HERO_FRAME_CLASS}>
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.26),transparent_42%)] dark:bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_44%)]" />
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/45 to-transparent dark:via-white/18" />
 
-                <h1
-                  id="landing-hero-title"
-                  className="mx-auto max-w-[12ch] text-5xl font-black tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-sm"
-                >
-                  <CinematicTextReveal text="Capisci il mese prima che ti travolga." />
-                </h1>
+              <div className="relative z-10 mt-4 flex w-full max-w-4xl flex-col items-center text-center sm:mt-0">
+                <BrandLogo
+                  variant="full"
+                  height={92}
+                  className="mb-12 w-auto max-w-[300px] sm:max-w-[380px] lg:max-w-[440px] drop-shadow-sm"
+                />
 
-                <p className="mx-auto max-w-[44rem] text-base font-medium leading-relaxed text-muted-foreground sm:text-lg lg:text-[1.3rem] drop-shadow-sm">
-                  Numa legge i tuoi movimenti, stima cosa potrebbe restarti e ti dice se una nuova spesa fissa è davvero sostenibile. Tutto in locale.
-                </p>
-              </div>
-
-              <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
-                <Button asChild size="lg" className="rounded-full px-8 shadow-lg shadow-primary/15 transition-shadow hover:shadow-primary/30">
-                  <Link href="/dashboard">
-                    Apri Numa
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-
-                <a
-                  href="#problema"
-                  className="text-sm font-semibold text-primary/75 transition-colors hover:text-primary"
-                >
-                  Perché è diversa
-                </a>
-              </div>
-
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-                {LANDING_HERO_PILLS.map((pill) => (
-                  <span
-                    key={pill}
-                    className="rounded-full border border-white/20 bg-background/45 px-3 py-1.5 text-[11px] font-semibold tracking-[0.04em] text-foreground/75 backdrop-blur-md dark:border-white/10"
+                <div className="space-y-5">
+                  <h1
+                    id="landing-hero-title"
+                    className="mx-auto max-w-[11ch] text-5xl font-black leading-[0.92] tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-sm"
                   >
-                    {pill}
-                  </span>
-                ))}
+                    <CinematicTextReveal text="Capisci il mese prima che ti travolga." />
+                  </h1>
+
+                  <p className="mx-auto max-w-[46rem] text-base font-medium leading-relaxed text-muted-foreground sm:text-lg lg:text-[1.3rem] drop-shadow-sm">
+                    Numa legge i tuoi movimenti, stima cosa potrebbe restarti e ti dice se una nuova spesa fissa è davvero sostenibile. Tutto in locale.
+                  </p>
+                </div>
+
+                <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
+                  <Button asChild size="lg" className="rounded-full px-8 shadow-lg shadow-primary/15 transition-shadow hover:shadow-primary/30">
+                    <Link href="/dashboard">
+                      Apri Numa
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+
+                  <a
+                    href="#problema"
+                    className="text-sm font-semibold text-primary/72 transition-colors hover:text-primary"
+                  >
+                    Perché è diversa
+                  </a>
+                </div>
+
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+                  {LANDING_HERO_PILLS.map((pill) => (
+                    <span
+                      key={pill}
+                      className="rounded-full border border-white/18 bg-background/45 px-3 py-1.5 text-[11px] font-semibold tracking-[0.04em] text-foreground/75 backdrop-blur-md dark:border-white/10"
+                    >
+                      {pill}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           </section>

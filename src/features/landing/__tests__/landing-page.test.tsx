@@ -57,7 +57,7 @@ describe("LandingPage", () => {
 
     expect(screen.getAllByTestId("brand-logo").length).toBeGreaterThan(0)
     expect(screen.getByRole("heading", { name: /Capisci il mese prima che ti travolga/i })).toBeInTheDocument()
-    expect(screen.getByText(/App di finanza personale locale-first/i)).toBeInTheDocument()
+    expect(screen.getByText(/Zero cloud obbligatorio/i)).toBeInTheDocument()
     expect(screen.getByRole("region", { name: /Come inizi/i })).toBeInTheDocument()
     expect(screen.getByText(/Cosa cambia davvero/i)).toBeInTheDocument()
     expect(screen.getByText(/Importi lo storico senza caos/i)).toBeInTheDocument()

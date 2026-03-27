@@ -20,10 +20,10 @@ export function LandingSectionHeader({
   return (
     <div className="space-y-3">
       <p className={LANDING_SECTION_EYEBROW_CLASS}>{eyebrow}</p>
-      <span id={titleId} className={LANDING_SECTION_TITLE_CLASS}>
+      <div id={titleId} className={LANDING_SECTION_TITLE_CLASS}>
         {title}
-      </span>
-      <span className={LANDING_SECTION_DESCRIPTION_CLASS}>{description}</span>
+      </div>
+      <p className={LANDING_SECTION_DESCRIPTION_CLASS}>{description}</p>
     </div>
   )
 }

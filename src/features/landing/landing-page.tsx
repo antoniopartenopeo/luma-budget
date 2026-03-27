@@ -45,6 +45,12 @@ const LANDING_NAV_ITEMS = [
   { href: "#outcomes", label: "Vantaggi" }
 ] as const
 
+const LANDING_HERO_PILLS = [
+  "Tutto in locale",
+  "Zero cloud obbligatorio",
+  "Nessun account per iniziare"
+] as const
+
 export function LandingPage() {
   return (
     <div className="relative min-h-screen overflow-x-clip bg-background selection:bg-primary/20">
@@ -84,20 +90,20 @@ export function LandingPage() {
 
                 <h1
                   id="landing-hero-title"
-                  className="mx-auto max-w-[14ch] text-5xl font-black tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-sm"
+                  className="mx-auto max-w-[12ch] text-5xl font-black tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-sm"
                 >
-                  <CinematicTextReveal text="L'app che ti aiuta a capire il mese, non solo a registrare spese." />
+                  <CinematicTextReveal text="Capisci il mese prima che ti travolga." />
                 </h1>
 
                 <p className="mx-auto max-w-[44rem] text-base font-medium leading-relaxed text-muted-foreground sm:text-lg lg:text-[1.3rem] drop-shadow-sm">
-                  Numa ti mostra dove stanno andando i tuoi soldi, quanto potrebbe restarti a fine mese e se una nuova spesa fissa è davvero sostenibile.
+                  Numa legge i tuoi movimenti, stima cosa potrebbe restarti e ti dice se una nuova spesa fissa è davvero sostenibile. Tutto in locale.
                 </p>
               </div>
 
               <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
                 <Button asChild size="lg" className="rounded-full px-8 shadow-lg shadow-primary/15 transition-shadow hover:shadow-primary/30">
                   <Link href="/dashboard">
-                    Apri l&apos;app
+                    Apri Numa
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
@@ -106,8 +112,19 @@ export function LandingPage() {
                   href="#problema"
                   className="text-sm font-semibold text-primary/75 transition-colors hover:text-primary"
                 >
-                  Guarda perché Numa è diversa
+                  Perché è diversa
                 </a>
+              </div>
+
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+                {LANDING_HERO_PILLS.map((pill) => (
+                  <span
+                    key={pill}
+                    className="rounded-full border border-white/20 bg-background/45 px-3 py-1.5 text-[11px] font-semibold tracking-[0.04em] text-foreground/75 backdrop-blur-md dark:border-white/10"
+                  >
+                    {pill}
+                  </span>
+                ))}
               </div>
             </div>
           </section>
@@ -120,7 +137,7 @@ export function LandingPage() {
                   <LandingSectionHeader
                     eyebrow="Il problema"
                     title="Il problema che nessuno risolve"
-                    description="La maggior parte delle app di finanza personale si ferma al primo passo: registrare. Numa parte da lì dove le altre finiscono."
+                    description="Ti mostrano cosa hai speso. Quasi nessuna ti aiuta a capire cosa sta succedendo adesso."
                     titleId="landing-problem-title"
                   />
                 }
@@ -185,7 +202,7 @@ export function LandingPage() {
                   <LandingSectionHeader
                     eyebrow="Outcome"
                     title="Cosa cambia davvero"
-                    description="Non è una questione di funzionalità. È una questione di abitudine: cosa succede dopo la prima settimana d&apos;uso."
+                    description="Dopo la prima settimana non stai solo registrando spese: stai decidendo con più calma."
                     titleId="landing-outcomes-title"
                   />
                 }
@@ -217,15 +234,15 @@ export function LandingPage() {
                     Pronto quando lo sei tu.
                   </p>
                   <h2 id="landing-cta-title" className="max-w-[20ch] text-5xl font-black tracking-tighter text-foreground sm:text-6xl lg:text-7xl">
-                    Il tuo mese merita più di un elenco di spese.
+                    Apri Numa. Vedi il mese per intero.
                   </h2>
                   <p className="max-w-xl text-base font-medium leading-relaxed text-muted-foreground sm:text-xl">
-                    Apri Numa, importa un estratto conto e guarda cosa succede. Nessun account, nessun vincolo.
+                    Importa un estratto conto e guarda dove stai andando. Nessun account, nessun cloud obbligatorio.
                   </p>
                 </div>
                 <div className="mt-12">
                   <Button asChild size="lg" className="rounded-full px-12 py-7 text-lg font-bold shadow-2xl shadow-primary/20">
-                    <Link href="/dashboard">Inizia Ora</Link>
+                    <Link href="/dashboard">Apri Numa</Link>
                   </Button>
                 </div>
               </div>
@@ -251,7 +268,7 @@ export function LandingPage() {
                 Zero Cloud
               </Badge>
               <Link href="/dashboard" className="text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground">
-                Apri l&apos;app
+                Apri Numa
               </Link>
             </nav>
           </div>

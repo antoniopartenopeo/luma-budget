@@ -17,10 +17,10 @@ export function LandingHeroConsole() {
       <div className="space-y-3">
         <p className={LANDING_SECTION_EYEBROW_CLASS}>Perche succede</p>
         <h3 className={LANDING_SECTION_TITLE_CLASS}>
-          Sai quanto hai speso. Ma sai come sta andando il mese?
+          Sai quanto hai speso. Non se il mese sta davvero tenendo.
         </h3>
         <p className={LANDING_SECTION_DESCRIPTION_CLASS}>
-          La differenza tra un elenco di transazioni e una visione utile è enorme. Quasi nessuna app la colma.
+          Tra un elenco di movimenti e una decisione serena c&apos;e un vuoto enorme. Quasi nessuna app lo colma.
         </p>
       </div>
 
@@ -51,7 +51,7 @@ export function LandingHeroConsole() {
 
       <div className={LANDING_EDITORIAL_ACCENT_CLASS}>
         <p className="text-sm font-semibold leading-relaxed text-foreground">
-          Numa non aggiunge un altro tracker. Ti dà una lente sul mese: presente, stima e sostenibilità delle spese fisse.
+          Numa non aggiunge un altro tracker. Ti restituisce un quadro: presente, stima e sostenibilità delle spese fisse.
         </p>
       </div>
     </div>

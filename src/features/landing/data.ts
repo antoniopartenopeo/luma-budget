@@ -36,18 +36,18 @@ export interface LandingOutcome {
 export const LANDING_STORY_POINTS: LandingStoryPoint[] = [
   {
     icon: WalletCards,
-    title: "Il dato c'è, la visione no",
-    description: "Le app ti mostrano transazioni ordinate per data. Ma nessuna ti dice se il mese sta reggendo o cedendo."
+    title: "Il dato c'è. Il contesto no.",
+    description: "Le app ordinano movimenti e categorie. Ma quasi mai ti dicono se il mese sta tenendo o si sta stringendo."
   },
   {
     icon: ShieldCheck,
-    title: "Il cloud non è un prerequisito",
-    description: "Per leggere il tuo mese non serve collegare conti, creare account o mandare dati a un server remoto."
+    title: "Il cloud non dovrebbe essere il prezzo d'ingresso",
+    description: "Per leggere il tuo mese non serve collegare conti, creare account o spostare dati su un server remoto."
   },
   {
     icon: BrainCircuit,
-    title: "Stimare e decidere sono due cose diverse",
-    description: "Un conto è sapere quanto potrebbe restarti. Un altro è capire se puoi davvero aggiungere una nuova rata."
+    title: "Stimare non basta, se poi devi decidere da solo",
+    description: "Un conto è sapere quanto potrebbe restarti. Un altro è capire se puoi davvero aggiungere una nuova rata o un abbonamento."
   }
 ]
 
@@ -98,8 +98,8 @@ export const LANDING_FLOW_STEPS: LandingFlowStep[] = [
 export const LANDING_OUTCOMES: LandingOutcome[] = [
   {
     icon: ArrowDownUp,
-    title: "Meno ansia da notifica",
-    description: "Smetti di controllare il saldo per paura. Lo guardi perché hai un contesto che lo rende leggibile."
+    title: "Meno ansia da saldo",
+    description: "Smetti di controllarlo per paura. Lo guardi perché hai finalmente un contesto che lo rende leggibile."
   },
   {
     icon: ShieldCheck,
@@ -108,7 +108,7 @@ export const LANDING_OUTCOMES: LandingOutcome[] = [
   },
   {
     icon: Sparkles,
-    title: "Un'abitudine che dura",
+    title: "Un'abitudine che resta",
     description: "Non serve disciplina da monaco. Basta aprire Numa una volta a settimana per restare orientato."
   }
 ]

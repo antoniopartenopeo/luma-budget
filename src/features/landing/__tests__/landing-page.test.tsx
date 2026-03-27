@@ -56,7 +56,7 @@ describe("LandingPage", () => {
     render(<LandingPage />)
 
     expect(screen.getAllByTestId("brand-logo").length).toBeGreaterThan(0)
-    expect(screen.getByRole("heading", { name: /L'app che ti aiuta a capire il mese, non solo a registrare spese/i })).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: /Capisci il mese prima che ti travolga/i })).toBeInTheDocument()
     expect(screen.getByText(/App di finanza personale locale-first/i)).toBeInTheDocument()
     expect(screen.getByRole("region", { name: /Come inizi/i })).toBeInTheDocument()
     expect(screen.getByText(/Cosa cambia davvero/i)).toBeInTheDocument()
@@ -69,7 +69,7 @@ describe("LandingPage", () => {
     const hrefs = screen.getAllByRole("link").map((link) => link.getAttribute("href"))
     expect(hrefs.length).toBeGreaterThan(0)
     expect(hrefs.every((href) => href === "/dashboard" || href?.startsWith("#"))).toBe(true)
-    expect(screen.getAllByRole("link", { name: /Apri l'app/i }).length).toBeGreaterThan(0)
+    expect(screen.getAllByRole("link", { name: /Apri Numa/i }).length).toBeGreaterThan(0)
     expect(screen.queryByRole("link", { name: /Novita prodotto/i })).not.toBeInTheDocument()
   })
 })

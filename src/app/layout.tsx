@@ -4,6 +4,7 @@ import "./globals.css";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { ThemeApplier } from "@/components/providers/theme-applier";
 import { PwaRegister } from "@/components/providers/pwa-register";
+import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "sonner";
 import { RouteShell } from "@/components/layout/route-shell";
 
@@ -53,13 +54,13 @@ export const metadata: Metadata = {
     siteName: "NUMA Budget",
     title: "NUMA Budget | Finanza Personale Consapevole",
     description: "Capisci il tuo mese prima che ti sfugga. Privacy locale-first e Financial Lab avanzato.",
-    images: [{ url: "/og-image.png", width: 1200, height: 630 }],
+    images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "NUMA Budget | Finanza Personale Consapevole",
     description: "Capisci il tuo mese prima che ti sfugga. Privacy locale-first e Financial Lab avanzato.",
-    images: ["/og-image.png"],
+    images: ["/twitter-image"],
   },
 };
 
@@ -95,6 +96,7 @@ export default function RootLayout({
             <Toaster />
           </TooltipProvider>
         </QueryProvider>
+        <Analytics />
       </body>
     </html>
   );

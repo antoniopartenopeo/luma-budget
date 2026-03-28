@@ -39,17 +39,17 @@ export const LANDING_STORY_POINTS: LandingStoryPoint[] = [
   {
     icon: WalletCards,
     title: "Il dato c'è. Il contesto no.",
-    description: "Le app ordinano movimenti e categorie. Ma quasi mai ti dicono se il mese sta tenendo o si sta stringendo."
+    description: "Le app ordinano movimenti e categorie. Ma quasi mai ti dicono se il mese tiene o si sta stringendo."
   },
   {
     icon: ShieldCheck,
     title: "Il cloud non dovrebbe essere il prezzo d'ingresso",
-    description: "Per leggere il tuo mese non serve collegare conti, creare account o spostare dati su un server remoto."
+    description: "Per leggere il tuo mese non serve collegare conti, creare account o spedire dati su un server remoto."
   },
   {
     icon: BrainCircuit,
     title: "Stimare non basta, se poi devi decidere da solo",
-    description: "Un conto è sapere quanto potrebbe restarti. Un altro è capire se puoi davvero aggiungere una nuova rata o un abbonamento."
+    description: "Sapere quanto potrebbe restarti non basta. Devi anche capire se una nuova rata o un abbonamento ci stanno davvero."
   }
 ]
 

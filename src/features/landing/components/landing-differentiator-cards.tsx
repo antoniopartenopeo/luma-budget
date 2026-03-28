@@ -66,7 +66,7 @@ function MarketGhostLayer({
       aria-hidden="true"
     >
         <div className="absolute right-[-8%] top-[7%] h-[38%] w-[74%] rotate-[14deg] rounded-[2.4rem] border border-black/8 bg-neutral-100/82 p-5 shadow-[0_40px_90px_-44px_rgba(15,23,42,0.45)] blur-[1.8px] dark:border-white/8 dark:bg-neutral-900/55 sm:h-[42%] sm:w-[70%] sm:p-6">
-        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-neutral-400 dark:text-neutral-500">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-400 dark:text-neutral-500">
           Altrove
         </p>
         <p className="mt-4 max-w-[18ch] text-lg font-medium leading-tight text-neutral-500 dark:text-neutral-400 sm:text-xl">
@@ -75,7 +75,7 @@ function MarketGhostLayer({
       </div>
 
       <div className="absolute bottom-[4%] left-[-6%] w-[68%] -rotate-[9deg] rounded-[2rem] border border-black/8 bg-white/80 p-4 shadow-[0_30px_90px_-48px_rgba(15,23,42,0.5)] blur-[1.2px] dark:border-white/8 dark:bg-neutral-950/50 sm:w-[56%] sm:p-5">
-        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-neutral-400 dark:text-neutral-500">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-400 dark:text-neutral-500">
           Di solito
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -133,7 +133,7 @@ function NumaEditorialCard({
         <div className="relative flex h-full min-h-0 flex-col justify-between gap-4">
           <div className="space-y-3">
             <div className="space-y-2">
-              <p className={cn("text-[10px] font-bold uppercase tracking-[0.22em]", accent.kicker)}>
+              <p className={cn("text-[11px] font-semibold uppercase tracking-[0.16em]", accent.kicker)}>
                 {EDITORIAL_KICKERS[index]}
               </p>
             </div>
@@ -150,11 +150,11 @@ function NumaEditorialCard({
             <div className="space-y-2.5">
               <h2
                 id="landing-different-title"
-                className="max-w-[12.5ch] break-words text-balance font-black tracking-[-0.055em] text-foreground leading-[0.88] [font-size:clamp(1.9rem,12cqw,3.45rem)] [overflow-wrap:anywhere]"
+                className="max-w-[12.5ch] break-words text-balance font-extrabold tracking-[-0.05em] leading-[0.9] text-foreground [font-size:clamp(1.9rem,12cqw,3.3rem)] [overflow-wrap:anywhere]"
               >
                 {item.title}
               </h2>
-              <p className="max-w-[31ch] text-sm font-medium leading-relaxed text-foreground/78 [font-size:clamp(0.9rem,4cqw,1rem)]">
+              <p className="max-w-[31ch] text-sm font-normal leading-relaxed text-foreground/76 [font-size:clamp(0.9rem,4cqw,1rem)]">
                 {item.numaLabel}
               </p>
             </div>
@@ -162,7 +162,7 @@ function NumaEditorialCard({
 
             <div className="space-y-2.5">
               <div className="h-px w-16 bg-foreground/12" />
-              <p className="max-w-[32ch] text-[13px] font-semibold leading-relaxed text-foreground/64 [font-size:clamp(0.76rem,3.15cqw,0.9rem)]">
+              <p className="max-w-[32ch] text-[13px] font-medium leading-relaxed text-foreground/64 [font-size:clamp(0.78rem,3.15cqw,0.92rem)]">
                 {EDITORIAL_NOTES[index]}
               </p>
 
@@ -224,13 +224,13 @@ export function LandingDifferentiatorCards() {
 
         <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center">
           <div className="relative z-10 mb-8 max-w-2xl text-center sm:mb-10">
-            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
               Differenza
             </p>
-            <h2 className="mt-4 text-3xl font-black leading-[0.95] tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+            <h2 className="mt-4 text-3xl font-extrabold leading-[0.95] tracking-tight text-foreground sm:text-4xl lg:text-5xl">
               Tre scelte che cambiano il quadro.
             </h2>
-            <p className="mx-auto mt-4 max-w-[52ch] text-sm font-medium leading-relaxed text-muted-foreground sm:text-base">
+            <p className="mx-auto mt-4 max-w-[52ch] text-[15px] font-normal leading-relaxed text-muted-foreground sm:text-base">
               Numa non parte da cloud, metodi rigidi o promesse generiche. Parte da una lettura piu calma, privata e utile del mese.
             </p>
           </div>

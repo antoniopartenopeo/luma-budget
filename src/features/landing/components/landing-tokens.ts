@@ -1,17 +1,17 @@
 export const LANDING_NAV_LINK_CLASS =
-  "rounded-full px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/72 transition-colors hover:bg-black/[0.04] hover:text-foreground/90 dark:hover:bg-white/[0.08]"
+  "rounded-full px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground/72 transition-colors hover:bg-black/[0.04] hover:text-foreground/90 dark:hover:bg-white/[0.08]"
 
 export const LANDING_FLOATING_NAV_CLASS =
   "flex items-center gap-0.5 rounded-full border border-white/8 bg-white/24 px-1.5 py-1 shadow-[0_10px_22px_-18px_rgba(15,23,42,0.28)] backdrop-blur-sm dark:border-white/7 dark:bg-black/18"
 
 export const LANDING_SECTION_EYEBROW_CLASS =
-  "text-[11px] font-bold uppercase tracking-[0.24em] text-primary"
+  "text-[11px] font-semibold uppercase tracking-[0.18em] text-primary"
 
 export const LANDING_SECTION_TITLE_CLASS =
-  "max-w-[17ch] text-3xl font-black leading-[0.95] tracking-tight text-foreground sm:text-4xl lg:text-5xl"
+  "max-w-[17ch] text-3xl font-extrabold leading-[0.95] tracking-tight text-foreground sm:text-4xl lg:text-5xl"
 
 export const LANDING_SECTION_DESCRIPTION_CLASS =
-  "max-w-[54ch] text-sm font-medium leading-relaxed text-muted-foreground sm:text-[1.02rem]"
+  "max-w-[54ch] text-[15px] font-normal leading-relaxed text-muted-foreground sm:text-[1rem]"
 
 export const LANDING_EDITORIAL_PANEL_CLASS =
   "rounded-[1.8rem] border border-primary/12 bg-background/78 px-5 py-5 shadow-[0_24px_70px_-50px_rgba(15,23,42,0.4)] backdrop-blur-sm sm:px-6 sm:py-7"

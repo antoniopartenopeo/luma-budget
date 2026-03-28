@@ -2,6 +2,14 @@ import { render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 import { LandingPage } from "../landing-page"
 
+class MockIntersectionObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+vi.stubGlobal("IntersectionObserver", MockIntersectionObserver)
+
 vi.mock("next/dynamic", () => {
   return {
     default: (loader: () => Promise<unknown>) => {

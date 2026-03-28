@@ -10,12 +10,6 @@ import {
 } from "./landing-tokens"
 import { LANDING_MOTION_TIMINGS } from "./landing-motion"
 
-const PROBLEM_PILLS = [
-  "Movimenti ordinati",
-  "Contesto assente",
-  "Decisioni al buio"
-] as const
-
 const STORY_ACCENTS = [
   {
     border: "border-cyan-500/18 dark:border-cyan-400/14",
@@ -49,19 +43,8 @@ export function LandingHeroConsole() {
               Sai quanto hai speso. Non se il mese sta davvero tenendo.
             </h3>
             <p className={cn(LANDING_SECTION_DESCRIPTION_CLASS, "max-w-[48ch]")}>
-              Tra un elenco di movimenti e una decisione serena c&apos;e un vuoto enorme. Quasi nessuna app lo colma.
+              Tra movimenti registrati e decisioni serene c&apos;e ancora un vuoto enorme. Quasi nessuna app lo colma.
             </p>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {PROBLEM_PILLS.map((pill) => (
-              <span
-                key={pill}
-                className="rounded-full border border-primary/12 bg-background/62 px-3 py-1.5 text-[11px] font-semibold tracking-[0.04em] text-foreground/72 backdrop-blur-sm"
-              >
-                {pill}
-              </span>
-            ))}
           </div>
         </div>
       </div>
@@ -85,13 +68,13 @@ export function LandingHeroConsole() {
                   <point.icon className="h-5 w-5" />
                 </div>
                 <div className="min-w-0 space-y-2">
-                  <p className={cn("text-[10px] font-bold uppercase tracking-[0.2em]", accent.label)}>
+                  <p className={cn("text-[11px] font-semibold uppercase tracking-[0.14em]", accent.label)}>
                     Punto {String(index + 1).padStart(2, "0")}
                   </p>
-                  <p className="max-w-[26ch] text-lg font-black leading-tight tracking-tight text-foreground sm:text-[1.35rem]">
+                  <p className="max-w-[26ch] text-lg font-extrabold leading-tight tracking-tight text-foreground sm:text-[1.3rem]">
                     {point.title}
                   </p>
-                  <p className="max-w-[56ch] text-sm font-medium leading-relaxed text-muted-foreground sm:text-[15px]">
+                  <p className="max-w-[56ch] text-[15px] font-normal leading-relaxed text-muted-foreground">
                     {point.description}
                   </p>
                 </div>
@@ -103,8 +86,8 @@ export function LandingHeroConsole() {
 
       <div className="relative overflow-hidden rounded-[1.8rem] border border-primary/14 bg-primary/8 px-5 py-5 sm:px-6 sm:py-6">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.5),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.06),transparent_46%)]" />
-        <p className="relative text-sm font-semibold leading-relaxed text-foreground sm:text-[15px]">
-          Numa non aggiunge un altro tracker. Ti restituisce un quadro: presente, stima e sostenibilita delle spese fisse.
+        <p className="relative text-[15px] font-medium leading-relaxed text-foreground">
+          Numa non aggiunge un altro tracker. Ti aiuta a leggere il mese e a capire se una nuova spesa fissa regge davvero.
         </p>
       </div>
     </div>

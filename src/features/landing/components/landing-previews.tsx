@@ -1,8 +1,10 @@
 "use client"
 
+import { useRef } from "react"
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { LANDING_STORY_POINTS } from "../data"
+import { CinematicScrollCard } from "./motion-primitives"
 import {
   LANDING_SECTION_DESCRIPTION_CLASS,
   LANDING_SECTION_EYEBROW_CLASS,
@@ -33,33 +35,29 @@ const STORY_ACCENTS = [
 
 export function LandingHeroConsole() {
   return (
-    <div className="space-y-6 sm:space-y-7">
-      <div className="relative overflow-hidden rounded-[2.2rem] border border-primary/14 bg-gradient-to-br from-primary/[0.09] via-white/76 to-white/92 p-6 shadow-[0_30px_90px_-58px_rgba(15,23,42,0.42)] backdrop-blur-sm dark:border-primary/12 dark:from-primary/[0.12] dark:via-black/26 dark:to-black/20 sm:p-8">
+    <div className="space-y-6 sm:space-y-7" style={{ perspective: "1200px" }}>
+      <CinematicScrollCard className="relative overflow-hidden rounded-[2.2rem] border border-primary/14 bg-gradient-to-br from-primary/[0.09] via-white/76 to-white/92 p-6 shadow-[0_30px_90px_-58px_rgba(15,23,42,0.42)] backdrop-blur-sm dark:border-primary/12 dark:from-primary/[0.12] dark:via-black/26 dark:to-black/20 sm:p-8">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.74),transparent_44%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_48%)]" />
         <div className="relative space-y-5">
           <div className="space-y-3">
-            <p className={LANDING_SECTION_EYEBROW_CLASS}>Perche succede</p>
-            <h3 className={cn(LANDING_SECTION_TITLE_CLASS, "max-w-[13ch]")}>
-              Sai quanto hai speso. Non se il mese sta davvero tenendo.
+            <p className={LANDING_SECTION_EYEBROW_CLASS}>La diagnosi</p>
+            <h3 className={cn(LANDING_SECTION_TITLE_CLASS, "max-w-[17ch]")}>
+              C'è un vuoto strategico tra estratto conto e vita reale.
             </h3>
             <p className={cn(LANDING_SECTION_DESCRIPTION_CLASS, "max-w-[48ch]")}>
-              Tra movimenti registrati e decisioni serene c&apos;e ancora un vuoto enorme. Quasi nessuna app lo colma.
+              I tracker tradizionali registrano passivamente le tue uscite. Numa colma questo vuoto unendo la totale sicurezza locale a un motore di estrapolazione predittiva.
             </p>
           </div>
         </div>
-      </div>
+      </CinematicScrollCard>
 
       <div className="space-y-4">
         {LANDING_STORY_POINTS.map((point, index) => {
           const accent = STORY_ACCENTS[index]
 
           return (
-            <motion.article
+            <CinematicScrollCard
               key={point.title}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.25 }}
-              transition={LANDING_MOTION_TIMINGS.fast}
               className={`group relative overflow-hidden rounded-[2rem] border ${accent.border} bg-gradient-to-br ${accent.panel} p-5 shadow-[0_28px_90px_-56px_rgba(15,23,42,0.38)] backdrop-blur-sm sm:p-6`}
             >
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.72),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_46%)]" />
@@ -79,7 +77,7 @@ export function LandingHeroConsole() {
                   </p>
                 </div>
               </div>
-            </motion.article>
+            </CinematicScrollCard>
           )
         })}
       </div>
@@ -87,7 +85,7 @@ export function LandingHeroConsole() {
       <div className="relative overflow-hidden rounded-[1.8rem] border border-primary/14 bg-primary/8 px-5 py-5 sm:px-6 sm:py-6">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.5),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.06),transparent_46%)]" />
         <p className="relative text-[15px] font-medium leading-relaxed text-foreground">
-          Numa non aggiunge un altro tracker. Ti aiuta a leggere il mese e a capire se una nuova spesa fissa regge davvero.
+          Numa è un centro di comando predittivo local-first. Non tracci spese: progetti il tuo ecosistema finanziario con sicurezza totale.
         </p>
       </div>
     </div>

@@ -13,7 +13,7 @@ import {
   LANDING_OUTCOMES
 } from "./data"
 import { LandingHeroConsole } from "./components/landing-previews"
-import { AppleFluidBackground, CinematicTextReveal } from "./components/motion-primitives"
+import { AppleFluidBackground, CinematicTextReveal, CinematicScrollCard } from "./components/motion-primitives"
 import { LandingSectionHeader } from "./components/landing-section-header"
 import {
   LANDING_FLOATING_NAV_CLASS,
@@ -38,17 +38,17 @@ const LandingBrainHero = dynamic(
 )
 
 const LANDING_NAV_ITEMS = [
-  { href: "#problema", label: "Il Problema" },
+  { href: "#problema", label: "Diagnosi" },
+  { href: "#brain-hero", label: "Intelligenza" },
+  { href: "#come-inizi", label: "Esecuzione" },
   { href: "#differenza", label: "Differenza" },
-  { href: "#come-inizi", label: "Come inizi" },
-  { href: "#brain-hero", label: "Brain" },
-  { href: "#outcomes", label: "Vantaggi" }
+  { href: "#outcomes", label: "Standard" }
 ] as const
 
 const LANDING_HERO_PILLS = [
-  "Tutto in locale",
-  "Zero cloud obbligatorio",
-  "Nessun account per iniziare"
+  "100% Locale",
+  "Privacy by Design",
+  "Inizia Subito"
 ] as const
 
 const LANDING_FOOTER_PRODUCT_ITEMS = [
@@ -153,29 +153,23 @@ export function LandingPage() {
                 <div className="space-y-5">
                   <h1
                     id="landing-hero-title"
-                    className="mx-auto max-w-[11ch] text-5xl font-black leading-[0.92] tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-sm"
+                    className="mx-auto max-w-4xl text-5xl font-black leading-[0.98] tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-sm"
                   >
-                    <CinematicTextReveal text="Capisci il mese prima che ti travolga." />
+                    <CinematicTextReveal text="Non tracciare il passato. Domina il tuo presente." />
                   </h1>
 
                   <p className="mx-auto max-w-[44rem] text-base font-normal leading-relaxed text-muted-foreground sm:text-lg lg:text-[1.2rem] drop-shadow-sm">
-                    Numa legge i tuoi movimenti, stima cosa potrebbe restarti e ti dice se una nuova spesa fissa è sostenibile. Tutto in locale.
+                    Numa legge i tuoi movimenti e calcola la tua vera disponibilità. Nessun conto collegato, nessun cloud. Solo tu e la matematica del tuo mese.
                   </p>
                 </div>
 
-                <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
-                  <Button asChild size="lg" className="rounded-full px-8 shadow-lg shadow-primary/15 transition-shadow hover:shadow-primary/30">
-                    <Link href="/dashboard">
-                      Apri Numa
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-
+                <div className="mt-12 flex flex-col items-center">
                   <a
                     href="#problema"
-                    className="text-sm font-semibold text-primary/72 transition-colors hover:text-primary"
+                    className="group inline-flex items-center gap-2 rounded-full border border-transparent px-6 py-3 text-[13px] font-medium tracking-[0.05em] text-foreground/60 transition-all hover:bg-foreground/5 hover:text-foreground"
                   >
-                    Perché è diversa
+                    Esplora il sistema
+                    <ArrowRight className="h-[14px] w-[14px] rotate-90 transition-transform duration-300 group-hover:translate-y-1" />
                   </a>
                 </div>
 
@@ -199,9 +193,9 @@ export function LandingPage() {
                 disableAnimation
                 title={
                   <LandingSectionHeader
-                    eyebrow="Il problema"
-                    title="Il problema che nessuno risolve"
-                    description="Ti mostrano cosa hai speso. Quasi nessuna ti aiuta a capire cosa sta succedendo adesso."
+                    eyebrow="Il difetto del sistema"
+                    title="Guardare indietro non ti insegna a guidare"
+                    description="Le app tradizionali si limitano a mostrarti soldi già spesi. Numa usa il tuo storico per illuminare il tuo potenziale economico di oggi."
                     titleId="landing-problem-title"
                   />
                 }
@@ -212,8 +206,8 @@ export function LandingPage() {
             </div>
           </section>
 
-          <section id="differenza" className="scroll-mt-24" aria-labelledby="landing-different-title">
-            <LandingDifferentiatorCards />
+          <section id="brain-hero" aria-labelledby="landing-brain-hero-title">
+            <LandingBrainHero />
           </section>
 
           <section id="come-inizi" className="px-4 scroll-mt-24" aria-labelledby="landing-how-title">
@@ -222,9 +216,9 @@ export function LandingPage() {
                 disableAnimation
                 title={
                   <LandingSectionHeader
-                    eyebrow="Percorso"
-                    title="Come inizi"
-                    description="Quattro passaggi semplici: fai entrare i dati, leggi il mese, guardi la stima e poi valuti una nuova spesa fissa."
+                    eyebrow="Esecuzione"
+                    title="Quattro passi per la padronanza"
+                    description="Acquisisci i dati. Sblocca la visione d'insieme. Proietta il saldo futuro. Esegui decisioni tattiche perfette."
                     titleId="landing-how-title"
                   />
                 }
@@ -237,7 +231,7 @@ export function LandingPage() {
                     const accent = LANDING_FLOW_ACCENTS[index]
 
                     return (
-                      <article
+                      <CinematicScrollCard
                         key={step.stepLabel}
                         className={`group relative overflow-hidden rounded-[2rem] border ${accent.border} bg-gradient-to-br ${accent.panel} p-5 shadow-[0_28px_90px_-56px_rgba(15,23,42,0.38)] backdrop-blur-sm sm:p-6 lg:p-7`}
                       >
@@ -268,7 +262,7 @@ export function LandingPage() {
                             </div>
                           </div>
                         </div>
-                      </article>
+                      </CinematicScrollCard>
                     )
                   })}
                 </div>
@@ -276,8 +270,8 @@ export function LandingPage() {
             </div>
           </section>
 
-          <section id="brain-hero" aria-labelledby="landing-brain-hero-title">
-            <LandingBrainHero />
+          <section id="differenza" className="scroll-mt-24" aria-labelledby="landing-different-title">
+            <LandingDifferentiatorCards />
           </section>
 
           <section id="outcomes" className="px-4 scroll-mt-24" aria-labelledby="landing-outcomes-title">
@@ -286,9 +280,9 @@ export function LandingPage() {
                 disableAnimation
                 title={
                   <LandingSectionHeader
-                    eyebrow="Outcome"
-                    title="Cosa cambia davvero"
-                    description="Dopo la prima settimana non stai solo registrando spese: stai decidendo con più calma."
+                    eyebrow="Nuovo standard"
+                    title="L'effetto collaterale è la lucidità assoluta"
+                    description="Abbandona la gestione ansiosa. Scopri il piacere di comandare le tue risorse con precisione chirurgica."
                     titleId="landing-outcomes-title"
                   />
                 }
@@ -298,7 +292,7 @@ export function LandingPage() {
                   const accent = LANDING_OUTCOME_ACCENTS[index]
 
                   return (
-                    <article
+                    <CinematicScrollCard
                       key={outcome.title}
                       className={`group relative overflow-hidden rounded-[2rem] border ${accent.border} bg-gradient-to-br ${accent.panel} p-6 shadow-[0_28px_90px_-56px_rgba(15,23,42,0.38)] backdrop-blur-sm sm:p-7`}
                     >
@@ -316,7 +310,7 @@ export function LandingPage() {
                           </p>
                         </div>
                       </div>
-                    </article>
+                    </CinematicScrollCard>
                   )
                 })}
               </MacroSection>
@@ -338,25 +332,25 @@ export function LandingPage() {
               </p>
               <h2
                 id="landing-cta-title"
-                className="mt-6 max-w-[12ch] text-4xl font-black leading-[0.94] tracking-tight text-foreground sm:text-5xl lg:text-6xl"
+                className="mt-6 max-w-[18ch] text-4xl font-black leading-[0.94] tracking-tight text-foreground sm:text-5xl lg:text-6xl"
               >
-                Apri Numa. Vedi il mese per intero.
+                Riprendi il controllo. Disegna il tuo orizzonte.
               </h2>
               <p className="mt-5 max-w-[34rem] text-base font-normal leading-relaxed text-muted-foreground sm:text-lg">
-                Importa un estratto conto. Leggi presente, stima e quota sostenibile nello stesso quadro.
+                Importa un estratto conto e lascia che Numa orchestri il caos, elevandoti a una chiarezza finanziaria senza precedenti.
               </p>
 
               <div className="mt-10">
-                <Button asChild size="lg" className="rounded-full px-12 py-7 text-lg font-bold shadow-2xl shadow-primary/20">
+                <Button asChild size="lg" className="group rounded-full px-12 py-7 text-lg font-bold shadow-[0_0_40px_-10px] shadow-primary/30 transition-all hover:shadow-[0_0_60px_-10px] hover:shadow-primary/50">
                   <Link href="/dashboard">
                     Apri Numa
-                    <ArrowRight className="h-4 w-4" />
+                    <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
                   </Link>
                 </Button>
               </div>
 
               <p className="mt-6 text-sm font-medium text-foreground/54">
-                Tutto in locale · Nessun account per iniziare · Zero cloud obbligatorio
+                100% Locale · Privacy by Design · Inizia Subito
               </p>
             </div>
           </section>

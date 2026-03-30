@@ -97,17 +97,17 @@ export function LandingBrainHero() {
           data-testid="landing-brain-act-1"
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
-          <Badge variant="outline" className="mb-6 border-primary/20 bg-primary/10 text-primary backdrop-blur-md">
-            Il Brain di Numa
-          </Badge>
+          <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.18em] text-primary/80">
+            L'Intelligenza di Numa
+          </p>
           <h2
             id="landing-brain-hero-title"
-            className="max-w-[11ch] text-5xl font-black tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-xl"
+            className="max-w-[20ch] text-5xl font-black leading-[0.92] tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-xl"
           >
-            Vede il mese prima che finisca.
+            Sblocca la visione sul futuro.
           </h2>
-          <p className="mt-5 max-w-[40ch] text-sm font-normal leading-relaxed text-foreground/72 sm:text-base">
-            Non inventa scenari. Legge i movimenti, riconosce il ritmo e prova a mostrarti dove stai andando.
+          <p className="mt-5 max-w-[44ch] text-base font-normal leading-relaxed text-muted-foreground sm:text-lg">
+            Nessuna ipotesi astratta. Il motore predittivo analizza i tuoi pattern di spesa e proietta la tua vera traiettoria finanziaria.
           </p>
         </motion.div>
 
@@ -116,14 +116,14 @@ export function LandingBrainHero() {
           data-testid="landing-brain-act-2"
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
-          <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary/82">
-            Quando i dati bastano
+          <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.18em] text-primary/80">
+            Affidabilità estrema
           </p>
-          <h3 className="max-w-[14ch] text-3xl font-extrabold tracking-tight text-foreground/92 sm:text-4xl lg:text-5xl drop-shadow-xl">
-            Stima fine mese e mese dopo.
+          <h3 className="max-w-[20ch] text-5xl font-black leading-[0.92] tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-xl">
+            Proiezioni strategiche infallibili.
           </h3>
-          <p className="mt-5 max-w-[38ch] text-sm font-normal leading-relaxed text-muted-foreground sm:text-base">
-            Se il quadro non e ancora abbastanza stabile, te lo dice chiaramente. Non forza una risposta.
+          <p className="mt-5 max-w-[44ch] text-base font-normal leading-relaxed text-muted-foreground sm:text-lg">
+            Se i dati storici non garantiscono precisione matematica, Numa te lo comunica. Mai stime azzardate.
           </p>
         </motion.div>
 
@@ -132,18 +132,14 @@ export function LandingBrainHero() {
           data-testid="landing-brain-act-3"
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
-          <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary/82">
-            Quello che ti restituisce
+          <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.18em] text-primary/80">
+            Potere decisionale
           </p>
-          <h3 className="max-w-[12ch] text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl drop-shadow-2xl">
-            Un importo.
-            <br />
-            Un&apos;affidabilita.
-            <br />
-            Un orizzonte chiaro.
+          <h3 className="max-w-[16ch] text-5xl font-black leading-[0.92] tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-2xl">
+            Un limite.<br />Un margine.<br />Un orizzonte definito.
           </h3>
-          <p className="mt-5 max-w-[34ch] text-sm font-normal leading-relaxed text-foreground/68 sm:text-base">
-            Cosi puoi decidere prima, invece di rincorrere il mese dopo.
+          <p className="mt-5 max-w-[44ch] text-base font-normal leading-relaxed text-muted-foreground sm:text-lg">
+            Per orchestrare le tue mosse finanziarie in anticipo e con controllo assoluto.
           </p>
         </motion.div>
       </div>

@@ -1,7 +1,8 @@
 "use client"
 
-import type { CSSProperties } from "react"
-import { motion, useReducedMotion } from "framer-motion"
+import type { CSSProperties, ReactNode } from "react"
+import { useRef } from "react"
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion"
 import type { Variants } from "framer-motion"
 import { cn } from "@/lib/utils"
 
@@ -140,5 +141,44 @@ export function AppleFluidBackground({ className, style }: { className?: string,
       <div className="absolute inset-0 bg-gradient-to-b from-background/10 via-background/40 to-background dark:from-background/20 dark:via-background/60" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_30%,_var(--tw-gradient-stops))] from-transparent via-background/60 to-background" />
     </div>
+  )
+}
+
+export function CinematicScrollCard({ children, className }: { children: ReactNode; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const prefersReducedMotion = useReducedMotion()
+  
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start 96%", "center center"]
+  })
+
+  const rotateX = useTransform(scrollYProgress, [0, 1], [40, 0])
+  const scale = useTransform(scrollYProgress, [0, 1], [0.85, 1])
+  const opacity = useTransform(scrollYProgress, [0, 1], [0, 1])
+  const y = useTransform(scrollYProgress, [0, 1], [80, 0])
+
+  if (prefersReducedMotion) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.4 }}
+        className={className}
+      >
+        {children}
+      </motion.div>
+    )
+  }
+
+  return (
+    <motion.div
+      ref={ref}
+      style={{ rotateX, scale, opacity, y, transformStyle: "preserve-3d", transformPerspective: 1200 }}
+      className={className}
+    >
+      {children}
+    </motion.div>
   )
 }

@@ -38,87 +38,87 @@ export interface LandingOutcome {
 export const LANDING_STORY_POINTS: LandingStoryPoint[] = [
   {
     icon: WalletCards,
-    title: "Il dato c'è. Il contesto no.",
-    description: "Le app ordinano movimenti e categorie. Ma quasi mai ti dicono se il mese tiene o si sta stringendo."
+    title: "I numeri passati non decidono il tuo futuro",
+    description: "Le app tradizionali si fermano a dirti cosa hai speso. Numa usa quei dati per darti il potere di decidere cosa puoi permetterti oggi."
   },
   {
     icon: ShieldCheck,
-    title: "Il cloud non dovrebbe essere il prezzo d'ingresso",
-    description: "Per leggere il tuo mese non serve collegare conti, creare account o spedire dati su un server remoto."
+    title: "I tuoi dati. Il tuo perimetro.",
+    description: "Nessun server remoto, nessuna violazione possibile. Numa trasforma il tuo dispositivo nell'unico caveau finanziario di cui hai bisogno."
   },
   {
     icon: BrainCircuit,
-    title: "Stimare non basta, se poi devi decidere da solo",
-    description: "Sapere quanto potrebbe restarti non basta. Devi anche capire se una nuova rata o un abbonamento ci stanno davvero."
+    title: "Dalla stima passiva all'azione tattica",
+    description: "Sapere quanto resterà è solo l'inizio. Il vero potere è testare in tempo reale se una nuova spesa fissa è matematicamente sostenibile."
   }
 ]
 
 export const LANDING_DIFFERENTIATORS: LandingDifferentItem[] = [
   {
     icon: CloudOff,
-    title: "Nessun intermediario tra te e i tuoi dati",
-    marketLabel: "Molte app partono da cloud sync, account collegati e dati ospitati fuori dal dispositivo.",
-    numaLabel: "Il dato nasce e resta sul tuo dispositivo. Se vorrai spostarlo, lo deciderai tu."
+    title: "Sovranità totale sui tuoi dati",
+    marketLabel: "Il mercato offre sincronizzazioni cloud vulnerabili in cambio di comodità.",
+    numaLabel: "Con Numa, il dato nasce e vive solo sul tuo dispositivo. Nessun intermediario. Sicurezza matematica."
   },
   {
     icon: WalletCards,
-    title: "Nessun metodo da studiare prima",
-    marketLabel: "Molti tracker ti chiedono di scegliere un metodo prima di mostrarti qualcosa di utile.",
-    numaLabel: "Importi i movimenti e Numa li organizza. Non devi cambiare tu per farlo funzionare."
+    title: "Potere immediato, zero frizione",
+    marketLabel: "I tracker classici richiedono settimane per impostare budget e regole complesse.",
+    numaLabel: "Importa i movimenti. Numa li struttura all'istante, adattandosi alla tua realtà senza importi dogmi."
   },
   {
     icon: Sparkles,
-    title: "Numeri concreti, non promesse generiche",
-    marketLabel: "L'etichetta \"AI\" viene usata ovunque, ma quasi mai diventa un numero utile stasera.",
-    numaLabel: "Il Brain ti restituisce un importo, un livello di affidabilita e un orizzonte chiaro. Senza fumo."
+    title: "Proiezioni chirurgiche, mai approssimative",
+    marketLabel: "L'IA nel fintech è spesso fumo: chat inutili o consigli generici.",
+    numaLabel: "Il Brain di Numa calcola un impatto esatto e il margine di sicurezza residuo. Pragmatismo assoluto."
   }
 ]
 
 export const LANDING_FLOW_STEPS: LandingFlowStep[] = [
   {
     icon: WalletCards,
-    cue: "Import pulito",
+    cue: "Importazione sicura",
     stepLabel: "01",
-    title: "Importi lo storico senza caos",
-    description: "Carichi un CSV, Numa legge il file, separa i casi dubbi e ti fa confermare il risultato prima di salvare."
+    title: "Acquisisci il tuo storico bancario",
+    description: "Carichi il CSV della tua banca. Numa orchestra l'importazione, isola le anomalie e ti lascia il controllo totale prima di elaborare."
   },
   {
     icon: ArrowDownUp,
-    cue: "Lettura immediata",
+    cue: "Visione assoluta",
     stepLabel: "02",
-    title: "Capisci il mese da una sola schermata",
-    description: "Saldo, composizione delle spese e movimenti stanno nello stesso punto, cosi vedi subito dove si sta stringendo il margine."
+    title: "Dominio istantaneo del presente",
+    description: "Saldo corrente, pattern di spesa e movimenti convergono in un'unica interfaccia tattica. Nessuna distrazione, solo focus."
   },
   {
     icon: BrainCircuit,
-    cue: "Stima futura",
+    cue: "Analisi predittiva",
     stepLabel: "03",
-    title: "Vedi quanto potrebbe restarti",
-    description: "Quando i dati bastano, il Brain stima fine mese e mese successivo. Se non e pronto, te lo dice chiaramente."
+    title: "Sblocca la visione sul tuo futuro",
+    description: "L'intelligenza locale incrocia i dati e proietta il tuo fine mese. Il futuro diventa un parametro lucidamente calcolabile."
   },
   {
     icon: ShieldCheck,
-    cue: "Decisione sostenibile",
+    cue: "Scelta strategica",
     stepLabel: "04",
-    title: "Scopri se una nuova spesa ci sta davvero",
-    description: "Se stai pensando a rata, abbonamento o altra spesa fissa, Financial Lab ti mostra la quota mensile aggiuntiva sostenibile."
+    title: "Esegui mosse sostenibili",
+    description: "Usa il Financial Lab per simulare nuove rate o abbonamenti. Numa ti mostra istantaneamente l'impatto sul tuo intero ecosistema finanziario."
   }
 ]
 
 export const LANDING_OUTCOMES: LandingOutcome[] = [
   {
     icon: ArrowDownUp,
-    title: "Meno ansia da saldo",
-    description: "Smetti di controllarlo per paura. Lo guardi perché hai finalmente un contesto che lo rende leggibile."
+    title: "Lucidità finanziaria totale",
+    description: "Smetti di controllare il saldo per paura. Lo consulti per confermare che la tua traiettoria di spesa è perfetta."
   },
   {
     icon: ShieldCheck,
-    title: "Più fiducia nelle tue scelte",
-    description: "Quando sai quanto margine hai, dire sì o no a una spesa diventa una decisione, non un azzardo."
+    title: "Decisioni inflessibili",
+    description: "Conoscere il tuo vero margine trasforma una scommessa ansiosa in una scelta ponderata, sicura e infallibile."
   },
   {
     icon: Sparkles,
-    title: "Un'abitudine che resta",
-    description: "Non serve disciplina da monaco. Basta aprire Numa una volta a settimana per restare orientato."
+    title: "Controllo senza sforzo",
+    description: "Nessuna micro-gestione opprimente. Ti basterà aprire Numa pochi minuti a settimana per mantenere un allineamento perfetto."
   }
 ]

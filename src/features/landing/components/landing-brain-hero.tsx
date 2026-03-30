@@ -2,7 +2,6 @@
 
 import { useRef } from "react"
 import { motion, useReducedMotion, useScroll, useTransform, useMotionTemplate } from "framer-motion"
-import { Badge } from "@/components/ui/badge"
 import { AppleFluidBackground } from "./motion-primitives"
 import {
   LANDING_BRAIN_RANGES,
@@ -98,7 +97,7 @@ export function LandingBrainHero() {
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
           <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.18em] text-primary/80">
-            L'Intelligenza di Numa
+            L&apos;Intelligenza di Numa
           </p>
           <h2
             id="landing-brain-hero-title"

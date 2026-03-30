@@ -1,14 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { motion, useReducedMotion, useTransform } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { ChevronDown, ChevronUp, ShieldCheck, Sparkles, type LucideIcon } from "lucide-react"
 import { InteractiveCardGhostIcon } from "@/components/patterns/interactive-card-ghost-icon"
 import {
-    INTERACTIVE_CARD_HOVER_STATE,
     INTERACTIVE_CARD_TRANSITION,
     resolveInteractiveSurfaceStyle,
-    useInteractiveTilt,
     withAlpha
 } from "@/components/patterns/interactive-surface"
 import { AnimatedNumber } from "@/components/ui/animated-number"
@@ -41,9 +39,9 @@ interface NumaEngineCardProps {
     className?: string
 }
 
-const NUMA_ENGINE_UNIVERSAL_TITLE = "Come Funziona Numa"
-const NUMA_ENGINE_AUDIT_OPEN_LABEL = "Apri dettagli"
-const NUMA_ENGINE_AUDIT_CLOSE_LABEL = "Chiudi dettagli"
+const NUMA_ENGINE_UNIVERSAL_TITLE = "Architettura di Sistema Numa"
+const NUMA_ENGINE_AUDIT_OPEN_LABEL = "Ispeziona telemetria"
+const NUMA_ENGINE_AUDIT_CLOSE_LABEL = "Comprimi telemetria"
 const ENGINE_ACCENT_COLOR = "#0ea5a8"
 const NOISE_TEXTURE_BACKGROUND = "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")"
 
@@ -59,30 +57,15 @@ export function NumaEngineCard({
     steps,
     auditStats,
     transparencyNote,
-    certificationTitle = "Certificazione Privacy",
-    certificationSubtitle = "Analisi 100% Locale e Verificata.",
+    certificationTitle = "Protocollo Isolato",
+    certificationSubtitle = "Elaborazione 100% Locale e Non-Tracciabile.",
     className
 }: NumaEngineCardProps) {
     const [isExpanded, setIsExpanded] = React.useState(false)
     const [activeStep, setActiveStep] = React.useState(0)
+    const [isHoveringGrid, setIsHoveringGrid] = React.useState(false)
     const prefersReducedMotion = useReducedMotion()
     const hasAudit = Boolean(auditStats && auditStats.length > 0)
-    const {
-        depthX,
-        depthY,
-        isInteractive,
-        isPrimed,
-        handlePointerEnter,
-        handlePointerMove,
-        handlePointerLeave
-    } = useInteractiveTilt({
-        pointerSpring: { damping: 24, stiffness: 230, mass: 0.5 },
-        depthSpring: { damping: 30, stiffness: 270, mass: 0.42 }
-    })
-    const rotateX = useTransform(depthY, [-0.5, 0.5], [4.6, -4.6])
-    const rotateY = useTransform(depthX, [-0.5, 0.5], [-5.8, 5.8])
-    const contentShiftX = useTransform(depthX, [-0.5, 0.5], [-3, 3])
-    const contentShiftY = useTransform(depthY, [-0.5, 0.5], [-2, 2])
 
     return (
         <motion.div
@@ -90,28 +73,19 @@ export function NumaEngineCard({
                 "group/engine relative overflow-hidden rounded-[2.5rem] surface-strong p-6 [transform-style:preserve-3d] transition-[transform,border-color,box-shadow,background-color] duration-300 sm:p-7",
                 className
             )}
-            onMouseEnter={handlePointerEnter}
-            onMouseMove={handlePointerMove}
-            onMouseLeave={handlePointerLeave}
-            whileHover={isInteractive ? INTERACTIVE_CARD_HOVER_STATE : undefined}
-            transition={INTERACTIVE_CARD_TRANSITION}
-            style={isInteractive ? { rotateX, rotateY } : undefined}
         >
             <InteractiveCardGhostIcon
                 icon={BackgroundIcon}
-                isActive={isPrimed}
+                isActive={true}
                 floatDelay={0.06}
                 className="right-2 top-0 inset-y-auto"
                 wrapperClassName="h-28 w-28 sm:h-32 sm:w-32"
                 iconClassName="h-20 w-20 opacity-70 sm:h-24 sm:w-24"
-                tintStyle={{ color: withAlpha(ENGINE_ACCENT_COLOR, isPrimed ? 0.24 : 0.16) }}
+                tintStyle={{ color: withAlpha(ENGINE_ACCENT_COLOR, 0.24) }}
                 visibility="always"
             />
 
-            <motion.div
-                className="relative z-10"
-                style={isInteractive ? { x: contentShiftX, y: contentShiftY } : undefined}
-            >
+            <div className="relative z-10">
                 <div className="mb-5 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
                         <div className="h-1 w-8 rounded-full bg-primary" />
@@ -120,11 +94,15 @@ export function NumaEngineCard({
                         </h4>
                     </div>
                     <span className="rounded-full border border-white/40 bg-white/44 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.24)] dark:border-white/12 dark:bg-white/[0.05]">
-                        Motore di lettura
+                        Processore Strategico
                     </span>
                 </div>
 
-                <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-3 sm:gap-4">
+                <div 
+                    className="grid grid-cols-1 gap-3.5 sm:grid-cols-3 sm:gap-4"
+                    onMouseEnter={() => setIsHoveringGrid(true)}
+                    onMouseLeave={() => setIsHoveringGrid(false)}
+                >
                     {steps.map((step, idx) => {
                         const isActive = activeStep === idx
                         const StepIcon = step.icon
@@ -134,10 +112,13 @@ export function NumaEngineCard({
                             isActive ? "active" : "rest",
                             "neutral"
                         )
+                        const isDimmed = isHoveringGrid && !isActive
                         const stepCardStyle = {
                             borderColor: stepSurfaceStyle.borderColor,
                             backgroundColor: stepSurfaceStyle.backgroundColor,
                             boxShadow: stepSurfaceStyle.boxShadow,
+                            opacity: isDimmed ? 0.45 : 1,
+                            filter: isDimmed ? "grayscale(85%)" : "grayscale(0%)",
                         }
                         const stepBackgroundStyle = { backgroundImage: stepSurfaceStyle.backgroundImage }
                         const stepNoiseStyle = { backgroundImage: NOISE_TEXTURE_BACKGROUND }
@@ -145,7 +126,7 @@ export function NumaEngineCard({
                         return (
                             <motion.article
                                 key={idx}
-                                className="group/step relative overflow-hidden rounded-xl border glass-card p-4 [transform-style:preserve-3d] transition-[transform,border-color,box-shadow,background-color] duration-300"
+                                className="group/step relative overflow-hidden rounded-xl border glass-card p-4 [transform-style:preserve-3d] transition-[transform,border-color,box-shadow,background-color,opacity,filter] duration-500 ease-out"
                                 style={stepCardStyle}
                                 whileHover={prefersReducedMotion ? undefined : { y: -2, scale: 1.01 }}
                                 transition={INTERACTIVE_CARD_TRANSITION}
@@ -163,7 +144,7 @@ export function NumaEngineCard({
 
                                 {idx < steps.length - 1 ? (
                                     <div className="pointer-events-none absolute right-[-1.4rem] top-8 hidden h-px w-6 sm:block">
-                                        <div className="h-px w-full bg-border/55" />
+                                        <div className={cn("h-px w-full bg-border/55 transition-opacity duration-500", isDimmed ? "opacity-30" : "opacity-100")} />
                                     </div>
                                 ) : null}
 
@@ -203,7 +184,7 @@ export function NumaEngineCard({
                         )
                     })}
                 </div>
-            </motion.div>
+            </div>
 
             <div className="relative z-10 mt-6 border-t border-border/40 pt-5">
                 <div className="surface-subtle flex flex-col items-center justify-between gap-4 rounded-xl p-4 sm:flex-row">

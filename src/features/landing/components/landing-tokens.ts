@@ -13,11 +13,7 @@ export const LANDING_SECTION_TITLE_CLASS =
 export const LANDING_SECTION_DESCRIPTION_CLASS =
   "max-w-[54ch] text-[15px] font-normal leading-relaxed text-muted-foreground sm:text-[1rem]"
 
-export const LANDING_EDITORIAL_PANEL_CLASS =
-  "rounded-[1.8rem] border border-primary/12 bg-background/78 px-5 py-5 shadow-[0_24px_70px_-50px_rgba(15,23,42,0.4)] backdrop-blur-sm sm:px-6 sm:py-7"
 
-export const LANDING_EDITORIAL_ACCENT_CLASS =
-  "rounded-[1.4rem] border border-primary/14 bg-primary/8 px-4 py-4"
 
 export const LANDING_HERO_FRAME_CLASS =
   "relative z-10 overflow-hidden rounded-[2.6rem] border border-white/16 bg-background/34 px-6 py-8 shadow-[0_40px_120px_-70px_rgba(15,23,42,0.5)] backdrop-blur-md sm:px-10 sm:py-12 lg:px-14 lg:py-14 dark:border-white/10 dark:bg-black/16"

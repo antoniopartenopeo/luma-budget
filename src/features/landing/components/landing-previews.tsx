@@ -1,7 +1,5 @@
 "use client"
 
-import { useRef } from "react"
-import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { LANDING_STORY_POINTS } from "../data"
 import { CinematicScrollCard } from "./motion-primitives"
@@ -10,7 +8,6 @@ import {
   LANDING_SECTION_EYEBROW_CLASS,
   LANDING_SECTION_TITLE_CLASS
 } from "./landing-tokens"
-import { LANDING_MOTION_TIMINGS } from "./landing-motion"
 
 const STORY_ACCENTS = [
   {
@@ -42,7 +39,7 @@ export function LandingHeroConsole() {
           <div className="space-y-3">
             <p className={LANDING_SECTION_EYEBROW_CLASS}>La diagnosi</p>
             <h3 className={cn(LANDING_SECTION_TITLE_CLASS, "max-w-[17ch]")}>
-              C'è un vuoto strategico tra estratto conto e vita reale.
+              C&apos;è un vuoto strategico tra estratto conto e vita reale.
             </h3>
             <p className={cn(LANDING_SECTION_DESCRIPTION_CLASS, "max-w-[48ch]")}>
               I tracker tradizionali registrano passivamente le tue uscite. Numa colma questo vuoto unendo la totale sicurezza locale a un motore di estrapolazione predittiva.

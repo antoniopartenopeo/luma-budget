@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 import { TopbarInlineMetric } from "@/components/layout/topbar-inline-metric"
 import { TopbarInlinePanelLabel } from "@/components/layout/topbar-inline-panel-label"
 import { TopbarInlinePanelShell } from "@/components/layout/topbar-inline-panel-shell"
-import { TOPBAR_INLINE_DIVIDER_CLASS } from "@/components/layout/topbar-tokens"
+import { TOPBAR_INLINE_DIVIDER_CLASS, TOPBAR_PANEL_TRIGGER_CLASS, TOPBAR_PANEL_TRIGGER_OPEN_CLASS } from "@/components/layout/topbar-tokens"
 import { useTopbarInlinePanel } from "@/components/layout/use-topbar-inline-panel"
 import { usePrivacyStore } from "@/features/privacy/privacy.store"
 import { useDashboardSummary } from "@/features/dashboard/api/use-dashboard"
@@ -36,10 +36,9 @@ export function TopbarFlashPreview({ isOpen, onOpenChange, triggerClassName }: T
         transition,
     } = useTopbarInlinePanel({
         isOpen,
-        minWidth: 320,
+        minWidth: 250,
         maxWidth: 1600,
         onOpenChange,
-        scopeSelector: '[data-testid="topbar-desktop-capsule"]',
         widthFactor: 1,
         fallbackViewportFactor: 0.3,
     })
@@ -73,9 +72,9 @@ export function TopbarFlashPreview({ isOpen, onOpenChange, triggerClassName }: T
                     aria-expanded={resolvedIsOpen}
                     aria-controls="topbar-flash-panel"
                     className={cn(
-                        "relative z-10 h-10 w-10 shrink-0 text-primary transition-colors focus-visible:ring-0",
+                        TOPBAR_PANEL_TRIGGER_CLASS,
                         triggerClassName,
-                        resolvedIsOpen && "border-transparent bg-transparent hover:bg-transparent hover:shadow-none"
+                        resolvedIsOpen && TOPBAR_PANEL_TRIGGER_OPEN_CLASS
                     )}
                 >
                     <span className="pointer-events-none absolute inset-0 rounded-full border border-primary/30 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-active:opacity-100 motion-reduce:animate-none" />

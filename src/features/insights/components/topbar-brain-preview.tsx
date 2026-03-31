@@ -9,6 +9,8 @@ import { TopbarInlinePanelLabel } from "@/components/layout/topbar-inline-panel-
 import { TopbarInlinePanelShell } from "@/components/layout/topbar-inline-panel-shell"
 import {
     TOPBAR_INLINE_DIVIDER_CLASS,
+    TOPBAR_PANEL_TRIGGER_CLASS,
+    TOPBAR_PANEL_TRIGGER_OPEN_CLASS,
 } from "@/components/layout/topbar-tokens"
 import { useTopbarInlinePanel } from "@/components/layout/use-topbar-inline-panel"
 import { cn } from "@/lib/utils"
@@ -81,7 +83,6 @@ export function TopbarBrainPreview({ isOpen, onOpenChange, triggerClassName }: T
         minWidth: 284,
         maxWidth: 1600,
         onOpenChange,
-        scopeSelector: '[data-testid="topbar-desktop-capsule"]',
         widthFactor: 1,
         fallbackViewportFactor: 0.3,
     })
@@ -108,9 +109,9 @@ export function TopbarBrainPreview({ isOpen, onOpenChange, triggerClassName }: T
                     aria-expanded={resolvedIsOpen}
                     aria-controls="topbar-brain-panel"
                     className={cn(
-                        "relative z-10 h-10 w-10 shrink-0 text-primary transition-colors focus-visible:ring-0",
+                        TOPBAR_PANEL_TRIGGER_CLASS,
                         triggerClassName,
-                        resolvedIsOpen && "border-transparent bg-transparent hover:bg-transparent hover:shadow-none"
+                        resolvedIsOpen && TOPBAR_PANEL_TRIGGER_OPEN_CLASS
                     )}
                 >
                     <svg

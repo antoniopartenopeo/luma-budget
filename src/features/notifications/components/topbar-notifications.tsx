@@ -7,7 +7,7 @@ import { type CSSProperties, useMemo } from "react"
 import { cn } from "@/lib/utils"
 import { TopbarInlinePanelLabel } from "@/components/layout/topbar-inline-panel-label"
 import { TopbarInlinePanelShell } from "@/components/layout/topbar-inline-panel-shell"
-import { TOPBAR_INLINE_SUPPORT_TEXT_CLASS } from "@/components/layout/topbar-tokens"
+import { TOPBAR_INLINE_SUPPORT_TEXT_CLASS, TOPBAR_PANEL_TRIGGER_CLASS, TOPBAR_PANEL_TRIGGER_OPEN_CLASS } from "@/components/layout/topbar-tokens"
 import { useTopbarInlinePanel } from "@/components/layout/use-topbar-inline-panel"
 import { useUnreadNotifications } from "../api/use-notifications"
 import { NOTIFICATION_KIND_LABEL } from "./notification-ui"
@@ -58,12 +58,11 @@ export function TopbarNotifications({ isOpen, onOpenChange, triggerClassName }: 
         transition,
     } = useTopbarInlinePanel({
         isOpen,
-        minWidth: 260,
+        minWidth: 320,
         maxWidth: 1600,
         onOpenChange,
-        scopeSelector: '[data-testid="topbar-desktop-capsule"]',
         widthFactor: 1,
-        fallbackViewportFactor: 0.4,
+        fallbackViewportFactor: 0.35,
     })
 
     const unreadIdSet = useMemo(
@@ -100,9 +99,9 @@ export function TopbarNotifications({ isOpen, onOpenChange, triggerClassName }: 
                     aria-expanded={resolvedIsOpen}
                     aria-controls="topbar-notifications-panel"
                     className={cn(
-                        "relative z-10 h-10 w-10 shrink-0 text-primary transition-colors focus-visible:ring-0",
+                        TOPBAR_PANEL_TRIGGER_CLASS,
                         triggerClassName,
-                        resolvedIsOpen && "border-transparent bg-transparent hover:bg-transparent hover:shadow-none"
+                        resolvedIsOpen && TOPBAR_PANEL_TRIGGER_OPEN_CLASS
                     )}
                 >
                     <Bell className={cn("h-5 w-5", !resolvedIsOpen && "transition-transform duration-300 group-hover:scale-110 group-active:scale-110 motion-reduce:transform-none")} />

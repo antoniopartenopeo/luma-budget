@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import { Plus } from "lucide-react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
@@ -11,6 +11,7 @@ import { TopbarInlinePanelLabel } from "./topbar-inline-panel-label"
 import { TopbarInlinePanelShell } from "./topbar-inline-panel-shell"
 import {
     TOPBAR_CLUSTER_DIVIDER_CLASS,
+    TOPBAR_ICON_BUTTON_CLASS,
     TOPBAR_INLINE_INPUT_TEXT_CLASS,
 } from "./topbar-tokens"
 import { useTopbarInlinePanel } from "./use-topbar-inline-panel"
@@ -34,7 +35,6 @@ export function TopbarQuickTransaction({
     const triggerRailRef = useRef<HTMLDivElement>(null)
     const descriptionInputRef = useRef<HTMLInputElement>(null)
     const wasOpenRef = useRef(false)
-    const [availablePanelWidth, setAvailablePanelWidth] = useState<number | null>(null)
     const isEmbedded = surface === "embedded"
     const isControlledByPanel = activePanel !== undefined && onActivePanelChange !== undefined
     const controlledIsOpen = isControlledByPanel ? activePanel === "quick" : isOpen
@@ -56,12 +56,12 @@ export function TopbarQuickTransaction({
     } = useTopbarInlinePanel({
         isOpen: controlledIsOpen,
         minWidth: 460,
-        maxWidth: 980,
+        maxWidth: 1600,
         onOpenChange: handleOpenChange,
         reserveClosedWidth: false,
-        scopeSelector: '[data-testid="topbar-desktop-capsule"]',
-        widthFactor: 0.82,
-        fallbackViewportFactor: 0.72,
+        scopeSelector: '[data-testid="quick-transaction-cluster"]',
+        widthFactor: 1,
+        fallbackViewportFactor: 0.9,
     })
 
     useEffect(() => {
@@ -84,62 +84,9 @@ export function TopbarQuickTransaction({
         wasOpenRef.current = resolvedIsOpen
     }, [resolvedIsOpen])
 
-    useEffect(() => {
-        const updateAvailablePanelWidth = () => {
-            const scope = containerRef.current?.closest('[data-testid="topbar-desktop-capsule"]')
-            const triggerRail = triggerRailRef.current
-
-            if (!(scope instanceof HTMLElement) || !(triggerRail instanceof HTMLElement)) {
-                setAvailablePanelWidth(null)
-                return
-            }
-
-            const scopeRect = scope.getBoundingClientRect()
-            const triggerRailRect = triggerRail.getBoundingClientRect()
-            const scopePadding = 12
-            const nextWidth = Math.max(0, Math.floor(triggerRailRect.left - scopeRect.left - scopePadding))
-            setAvailablePanelWidth(nextWidth)
-        }
-
-        updateAvailablePanelWidth()
-        window.addEventListener("resize", updateAvailablePanelWidth)
-
-        const scope = containerRef.current?.closest('[data-testid="topbar-desktop-capsule"]')
-        const scopeObserver = typeof ResizeObserver === "undefined" || !(scope instanceof HTMLElement)
-            ? null
-            : new ResizeObserver(() => {
-                updateAvailablePanelWidth()
-            })
-        const triggerRailObserver = typeof ResizeObserver === "undefined" || !triggerRailRef.current
-            ? null
-            : new ResizeObserver(() => {
-                updateAvailablePanelWidth()
-            })
-
-        if (scopeObserver && scope instanceof HTMLElement) {
-            scopeObserver.observe(scope)
-        }
-
-        if (triggerRailObserver && triggerRailRef.current) {
-            triggerRailObserver.observe(triggerRailRef.current)
-        }
-
-        return () => {
-            window.removeEventListener("resize", updateAvailablePanelWidth)
-            scopeObserver?.disconnect()
-            triggerRailObserver?.disconnect()
-        }
-    }, [containerRef, resolvedIsOpen])
-
-    const resolvedPanelWidth = availablePanelWidth === null
-        ? panelWidth
-        : Math.min(panelWidth, availablePanelWidth)
-
-    const iconTriggerClass =
-        "h-10 w-10 shrink-0 rounded-full border border-primary/15 bg-transparent text-primary transition-[background-color,color,border-color,box-shadow,transform] duration-200 hover:bg-primary/10 hover:text-primary hover:shadow-md active:bg-primary/15 active:text-primary focus-visible:ring-2 focus-visible:ring-primary/25 motion-reduce:transition-none"
 
     return (
-        <div className="flex min-w-0 flex-1 justify-end">
+        <div className="flex min-w-0 flex-1 items-center">
             <TopbarInlinePanelShell
                 className={cn(
                     "group rounded-[1.4rem]",
@@ -153,7 +100,7 @@ export function TopbarQuickTransaction({
                 panelClassName="min-w-0"
                 panelId="topbar-quick-transaction-panel"
                 panelTestId="topbar-quick-transaction-panel"
-                panelWidth={resolvedPanelWidth}
+                panelWidth={panelWidth}
                 transition={transition}
                 trigger={(
                     <motion.div ref={triggerRailRef} layout className="flex shrink-0 items-center">
@@ -177,7 +124,7 @@ export function TopbarQuickTransaction({
                             aria-expanded={resolvedIsOpen}
                             aria-controls="topbar-quick-transaction-panel"
                             aria-label={resolvedIsOpen ? "Chiudi inserimento rapido transazione" : "Apri inserimento rapido transazione"}
-                            className={cn(iconTriggerClass, resolvedIsOpen && "hover:shadow-none")}
+                            className={cn(TOPBAR_ICON_BUTTON_CLASS, "text-primary", resolvedIsOpen && "hover:shadow-none")}
                         >
                             <Plus className={cn("h-5 w-5 transition-transform duration-300", resolvedIsOpen && "rotate-45")} />
                         </Button>

@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { TopbarInlinePanelShell } from "./topbar-inline-panel-shell"
 import { useTopbarInlinePanel } from "./use-topbar-inline-panel"
 import { TopbarInlinePanelLabel } from "./topbar-inline-panel-label"
+import { TOPBAR_PANEL_TRIGGER_CLASS, TOPBAR_PANEL_TRIGGER_OPEN_CLASS } from "./topbar-tokens"
 import { useSettings, useUpsertSettings } from "@/features/settings/api/use-settings"
 import { ThemePreference } from "@/features/settings/api/types"
 
@@ -53,7 +54,6 @@ export function TopbarThemeSelector({ isOpen, onOpenChange, triggerClassName }: 
         minWidth: 220,
         maxWidth: 1600,
         onOpenChange,
-        scopeSelector: '[data-testid="topbar-desktop-capsule"]',
         widthFactor: 1,
         fallbackViewportFactor: 0.3,
     })
@@ -87,9 +87,9 @@ export function TopbarThemeSelector({ isOpen, onOpenChange, triggerClassName }: 
                     aria-controls="topbar-theme-panel"
                     onClick={() => setIsOpen((prev) => !prev)}
                     className={cn(
-                        "relative z-10 h-10 w-10 shrink-0 text-primary transition-colors focus-visible:ring-0",
+                        TOPBAR_PANEL_TRIGGER_CLASS,
                         triggerClassName,
-                        resolvedIsOpen && "border-transparent bg-transparent hover:bg-transparent hover:shadow-none"
+                        resolvedIsOpen && TOPBAR_PANEL_TRIGGER_OPEN_CLASS
                     )}
                 >
                     <ThemeIcon theme={theme} />

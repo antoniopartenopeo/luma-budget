@@ -11,7 +11,7 @@ import { Sidebar } from "./sidebar"
 import { TopbarActionCluster } from "./topbar-action-cluster"
 import { type TopbarPanelId } from "./topbar-panel-id"
 import { TopbarQuickTransaction } from "./topbar-quick-transaction"
-import { TOPBAR_CLUSTER_DIVIDER_CLASS } from "./topbar-tokens"
+import { TOPBAR_CLUSTER_DIVIDER_CLASS, TOPBAR_GLASS_OVERLAY_CLASS } from "./topbar-tokens"
 
 function SidebarSheetPanel({ onNavigate }: { onNavigate: () => void }) {
     return (
@@ -30,6 +30,7 @@ export function TopBar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [activeDesktopPanel, setActiveDesktopPanel] = useState<TopbarPanelId | null>(null)
     const isDesktopUtilityPanelOpen = activeDesktopPanel !== null && activeDesktopPanel !== "quick"
+    const isQuickPanelOpen = activeDesktopPanel === "quick"
 
     return (
         <header
@@ -54,9 +55,14 @@ export function TopBar() {
                     <div className="hidden min-w-0 flex-1 sm:flex">
                         <div
                             data-testid="topbar-desktop-capsule"
-                            className="group relative flex h-12 min-w-0 flex-1 items-center rounded-full border border-white/50 bg-white/45 p-1 shadow-sm backdrop-blur-xl transition-[border-color,box-shadow,background-color] duration-300 focus-within:border-primary/30 focus-within:shadow-lg dark:border-white/15 dark:bg-white/[0.07]"
+                            className={cn(
+                                "group relative flex h-12 min-w-0 flex-1 items-center rounded-full border bg-white/45 pl-4 pr-3 py-1.5 backdrop-blur-xl transition-[border-color,box-shadow,background-color] duration-500 ease-out focus-within:border-primary/30 focus-within:shadow-lg dark:bg-white/[0.07]",
+                                isDesktopUtilityPanelOpen 
+                                    ? "border-primary/30 shadow-[0_4px_80px_-12px_hsl(var(--primary)/0.35)] dark:border-primary/20 dark:shadow-[0_4px_80px_-12px_hsl(var(--primary)/0.25)]" 
+                                    : "border-white/50 shadow-sm dark:border-white/15"
+                            )}
                         >
-                            <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-br from-white/35 via-transparent to-transparent dark:from-white/[0.08]" />
+                            <div className={TOPBAR_GLASS_OVERLAY_CLASS} />
 
                             <div className="relative z-10 flex min-w-0 flex-1 items-center">
                                 {!isSettingsPage && (
@@ -65,8 +71,9 @@ export function TopBar() {
                                         initial={false}
                                         animate={isDesktopUtilityPanelOpen
                                             ? { opacity: 0, maxWidth: 0, marginRight: 0 }
-                                            : { opacity: 1, maxWidth: 640, marginRight: 4 }}
+                                            : { opacity: 1, maxWidth: 1600, marginRight: 4 }}
                                         transition={{ type: "spring", stiffness: 360, damping: 30, mass: 0.9 }}
+                                        data-testid="quick-transaction-cluster"
                                         className={cn(
                                             "min-w-0 overflow-hidden",
                                             isDesktopUtilityPanelOpen ? "pointer-events-none" : "flex-1"
@@ -78,7 +85,10 @@ export function TopBar() {
                                                 onActivePanelChange={setActiveDesktopPanel}
                                                 surface="embedded"
                                             />
-                                            <div className={TOPBAR_CLUSTER_DIVIDER_CLASS} />
+                                            <motion.div 
+                                                animate={{ opacity: isQuickPanelOpen ? 0 : 1 }}
+                                                className={cn(TOPBAR_CLUSTER_DIVIDER_CLASS, isQuickPanelOpen && "pointer-events-none")} 
+                                            />
                                         </div>
                                     </motion.div>
                                 )}
@@ -86,9 +96,15 @@ export function TopBar() {
                                 <motion.div
                                     layout
                                     initial={false}
+                                    animate={isQuickPanelOpen
+                                        ? { opacity: 0, maxWidth: 0, marginLeft: 0 }
+                                        : { opacity: 1, maxWidth: 1600 }
+                                    }
+                                    transition={{ type: "spring", stiffness: 360, damping: 30, mass: 0.9 }}
                                     className={cn(
-                                        "min-w-0",
-                                        isDesktopUtilityPanelOpen ? "flex-1" : "shrink-0",
+                                        "min-w-0 overflow-hidden",
+                                        (isDesktopUtilityPanelOpen || isQuickPanelOpen) ? "flex-1" : "shrink-0",
+                                        isQuickPanelOpen && "pointer-events-none",
                                         isSettingsPage && "ml-auto"
                                     )}
                                 >

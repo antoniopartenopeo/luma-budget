@@ -1,8 +1,8 @@
 "use client"
 
-import { type ReactNode, useState } from "react"
+import { type ElementType, type ReactNode, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Bell, BrainCircuit, Eye, EyeOff, Monitor, Moon, Plus, Sparkles, Sun } from "lucide-react"
+import { Bell, BrainCircuit, Eye, EyeOff, Monitor, Moon, Sparkles, Sun } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { usePrivacyStore } from "@/features/privacy/privacy.store"
@@ -11,14 +11,20 @@ import { TopbarFlashPreview } from "@/features/flash/components/topbar-flash-pre
 import { TopbarNotifications } from "@/features/notifications/components/topbar-notifications"
 import { TopbarBrainPreview } from "@/features/insights/components/topbar-brain-preview"
 import { type TopbarPanelId } from "./topbar-panel-id"
-import { TOPBAR_CLUSTER_DIVIDER_CLASS, TOPBAR_INLINE_LABEL_CLASS } from "./topbar-tokens"
+import { TopbarAvatar } from "./topbar-avatar"
+import {
+    TOPBAR_CLUSTER_DIVIDER_CLASS,
+    TOPBAR_GLASS_OVERLAY_CLASS,
+    TOPBAR_ICON_BUTTON_CLASS,
+    TOPBAR_INLINE_LABEL_CLASS,
+} from "./topbar-tokens"
 import { TopbarThemeSelector } from "./topbar-theme-selector"
 import {
     TopbarMobilePanelContent,
     resolveMobilePanelTitle,
 } from "./topbar-mobile-panel-content"
 
-function getAvatarInitials(profile?: { firstName?: string; lastName?: string; displayName?: string }): string {
+function getAvatarInitials(profile?: { firstName?: string; lastName?: string; displayName?: string }): string | null {
     const firstName = profile?.firstName?.trim() || ""
     const lastName = profile?.lastName?.trim() || ""
     if (firstName && lastName) {
@@ -36,11 +42,10 @@ function getAvatarInitials(profile?: { firstName?: string; lastName?: string; di
 
     if (firstName) return firstName[0].toUpperCase()
     if (lastName) return lastName[0].toUpperCase()
-    return "N"
+    return null
 }
 
-const segmentButtonClass =
-    "group relative h-10 w-10 rounded-full border border-primary/15 bg-transparent text-muted-foreground transition-[background-color,color,border-color,box-shadow] duration-200 hover:bg-primary/10 hover:text-primary hover:shadow-md active:bg-primary/15 active:text-primary focus-visible:ring-2 focus-visible:ring-primary/25"
+
 
 interface TopbarActionClusterProps {
     activePanel?: TopbarPanelId | null
@@ -68,7 +73,7 @@ function DesktopClusterSlot({
                     animate={{ opacity: 1, width: "auto" }}
                     exit={{ opacity: 0, width: 0 }}
                     transition={{ duration: 0.18, ease: "easeOut" }}
-                    className="min-w-0 overflow-hidden"
+                    className="min-w-0 overflow-visible"
                 >
                     {children}
                 </motion.div>
@@ -81,27 +86,13 @@ function MobileExpandableTrigger({
     isOpen,
     onToggle,
     panelId,
-    theme,
+    resolvedIcon,
 }: {
     isOpen: boolean
     onToggle: () => void
     panelId: MobileExpandablePanelId
-    theme?: "system" | "light" | "dark"
+    resolvedIcon: ReactNode
 }) {
-    const icon = panelId === "quick"
-        ? <Plus className="h-5 w-5" />
-        : panelId === "flash"
-            ? <Sparkles className="h-5 w-5" />
-        : panelId === "theme"
-            ? theme === "dark"
-                ? <Moon className="h-5 w-5" />
-                : theme === "light"
-                    ? <Sun className="h-5 w-5" />
-                    : <Monitor className="h-5 w-5" />
-            : panelId === "brain"
-                ? <BrainCircuit className="h-5 w-5" />
-                : <Bell className="h-5 w-5" />
-
     return (
         <Button
             type="button"
@@ -113,12 +104,12 @@ function MobileExpandableTrigger({
             aria-controls={`topbar-mobile-panel-${panelId}`}
             onClick={onToggle}
             className={cn(
-                segmentButtonClass,
-                "border-none text-primary hover:shadow-none",
-                isOpen && "bg-primary/12 text-primary"
+                TOPBAR_ICON_BUTTON_CLASS,
+                "border-none text-primary",
+                isOpen && "bg-primary/15 text-primary shadow-inner scale-[0.97]"
             )}
         >
-            {icon}
+            {resolvedIcon}
         </Button>
     )
 }
@@ -132,22 +123,25 @@ function MobileActionCluster({
     setResolvedActivePanel,
     theme,
 }: {
-    initials: string
+    initials: string | null
     isPrivacyMode: boolean
     mobileLeadingSlot?: ReactNode
     onTogglePrivacy: () => void
     resolvedActivePanel: TopbarPanelId | null
     setResolvedActivePanel: (panelId: TopbarPanelId | null) => void
-    theme: ReturnType<typeof useSettings>["data"] extends infer T
-        ? T extends { theme?: infer U }
-            ? U | undefined
-            : undefined
-        : undefined
+    theme: string | undefined
 }) {
     const expandablePanels: MobileExpandablePanelId[] = ["quick", "flash", "theme", "brain", "notifications"]
     const mobileOpenPanel = resolvedActivePanel && expandablePanels.includes(resolvedActivePanel)
         ? resolvedActivePanel
         : null
+
+    const MOBILE_REGISTRY: Array<{ id: MobileExpandablePanelId; icon: ReactNode }> = [
+        { id: "theme", icon: theme === "dark" ? <Moon className="h-5 w-5" /> : theme === "light" ? <Sun className="h-5 w-5" /> : <Monitor className="h-5 w-5" /> },
+        { id: "brain", icon: <BrainCircuit className="h-5 w-5" /> },
+        { id: "notifications", icon: <Bell className="h-5 w-5" /> },
+        { id: "quick", icon: <Sparkles className="h-5 w-5" /> }
+    ]
 
     return (
         <motion.div
@@ -157,7 +151,7 @@ function MobileActionCluster({
             data-testid="topbar-action-cluster"
             className="group relative w-full overflow-hidden rounded-[28px] border border-white/50 bg-white/45 p-1 shadow-sm backdrop-blur-xl dark:border-white/15 dark:bg-white/[0.07]"
         >
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/35 via-transparent to-transparent dark:from-white/[0.08]" />
+            <div className={TOPBAR_GLASS_OVERLAY_CLASS} />
 
             <div className="relative z-10">
                 <div className="flex items-center gap-1">
@@ -167,7 +161,7 @@ function MobileActionCluster({
                         <div className="flex min-w-0 items-center gap-1">
                             <MobileExpandableTrigger
                                 panelId="flash"
-                                theme={theme}
+                                resolvedIcon={<Sparkles className="h-5 w-5" />}
                                 isOpen={mobileOpenPanel === "flash"}
                                 onToggle={() => setResolvedActivePanel(mobileOpenPanel === "flash" ? null : "flash")}
                             />
@@ -178,8 +172,8 @@ function MobileActionCluster({
                                 onClick={onTogglePrivacy}
                                 data-testid="topbar-mobile-privacy-trigger"
                                 className={cn(
-                                    segmentButtonClass,
-                                    "border-none hover:shadow-none",
+                                    TOPBAR_ICON_BUTTON_CLASS,
+                                    "border-none",
                                     isPrivacyMode ? "text-foreground" : "text-muted-foreground"
                                 )}
                                 title={isPrivacyMode ? "Mostra importi" : "Nascondi importi"}
@@ -188,36 +182,19 @@ function MobileActionCluster({
                                 {isPrivacyMode ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                             </Button>
 
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary/15 text-[10px] font-bold text-primary">
-                                {initials}
-                            </div>
+                            <TopbarAvatar initials={initials} />
                         </div>
 
-                        <div className="flex shrink-0 items-center gap-1">
-                            <MobileExpandableTrigger
-                                panelId="theme"
-                                theme={theme}
-                                isOpen={mobileOpenPanel === "theme"}
-                                onToggle={() => setResolvedActivePanel(mobileOpenPanel === "theme" ? null : "theme")}
-                            />
-                            <MobileExpandableTrigger
-                                panelId="brain"
-                                theme={theme}
-                                isOpen={mobileOpenPanel === "brain"}
-                                onToggle={() => setResolvedActivePanel(mobileOpenPanel === "brain" ? null : "brain")}
-                            />
-                            <MobileExpandableTrigger
-                                panelId="notifications"
-                                theme={theme}
-                                isOpen={mobileOpenPanel === "notifications"}
-                                onToggle={() => setResolvedActivePanel(mobileOpenPanel === "notifications" ? null : "notifications")}
-                            />
-                            <MobileExpandableTrigger
-                                panelId="quick"
-                                theme={theme}
-                                isOpen={mobileOpenPanel === "quick"}
-                                onToggle={() => setResolvedActivePanel(mobileOpenPanel === "quick" ? null : "quick")}
-                            />
+                        <div className="flex shrink-0 items-center gap-0.5">
+                            {MOBILE_REGISTRY.map((item) => (
+                                <MobileExpandableTrigger
+                                    key={item.id}
+                                    panelId={item.id}
+                                    resolvedIcon={item.icon}
+                                    isOpen={mobileOpenPanel === item.id}
+                                    onToggle={() => setResolvedActivePanel(mobileOpenPanel === item.id ? null : item.id)}
+                                />
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -275,7 +252,6 @@ export function TopbarActionCluster({
             onActivePanelChange(panelId)
             return
         }
-
         setLocalActivePanel(panelId)
     }
 
@@ -298,6 +274,16 @@ export function TopbarActionCluster({
         )
     }
 
+    const DESKTOP_MENU_REGISTRY: Array<{
+        id: DesktopClusterPanelId
+        Component: React.ComponentType<any>
+        triggerClass: string
+    }> = [
+        { id: "theme", Component: TopbarThemeSelector, triggerClass: cn(TOPBAR_ICON_BUTTON_CLASS, "border-none text-primary") },
+        { id: "brain", Component: TopbarBrainPreview, triggerClass: cn(TOPBAR_ICON_BUTTON_CLASS, "relative overflow-visible border-none text-primary") },
+        { id: "notifications", Component: TopbarNotifications, triggerClass: cn(TOPBAR_ICON_BUTTON_CLASS, "border-none bg-transparent text-primary hover:bg-primary/10") }
+    ]
+
     return (
         <motion.div
             layout
@@ -312,29 +298,29 @@ export function TopbarActionCluster({
             )}
         >
             {!isEmbedded && (
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/35 via-transparent to-transparent dark:from-white/[0.08]" />
+                <div className={TOPBAR_GLASS_OVERLAY_CLASS} />
             )}
 
-            <div className="relative z-10 flex min-w-0 items-center">
+            <div className="relative z-10 flex min-w-0 items-center gap-1">
                 <DesktopClusterSlot show={!activeDesktopUtilityPanel || activeDesktopUtilityPanel === "flash"}>
                     <TopbarFlashPreview
                         {...bindPanelState("flash")}
-                        triggerClassName={cn(segmentButtonClass, "border-none hover:shadow-none text-primary")}
+                        triggerClassName={cn(TOPBAR_ICON_BUTTON_CLASS, "border-none text-primary")}
                     />
                 </DesktopClusterSlot>
 
                 <DesktopClusterSlot show={!activeDesktopUtilityPanel}>
-                    <div className="flex min-w-0 items-center">
+                    <div className="flex min-w-0 items-center gap-1">
                         <div className={TOPBAR_CLUSTER_DIVIDER_CLASS} />
 
-                        <div className="group flex items-center gap-1 rounded-full px-0.5 transition-colors duration-300 hover:bg-primary/5">
+                        <div className="group flex items-center gap-1 transition-colors duration-300">
                             <Button
                                 variant="ghost"
                                 size="icon"
                                 onClick={togglePrivacy}
                                 className={cn(
-                                    segmentButtonClass,
-                                    "border-none hover:shadow-none",
+                                    TOPBAR_ICON_BUTTON_CLASS,
+                                    "border-none scale-100",
                                     isPrivacyMode ? "text-foreground" : "text-muted-foreground"
                                 )}
                                 title={isPrivacyMode ? "Mostra importi" : "Nascondi importi"}
@@ -343,49 +329,26 @@ export function TopbarActionCluster({
                                 {isPrivacyMode ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                             </Button>
 
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full border border-primary/20 bg-primary/15 text-[10px] font-bold text-primary">
-                                {initials}
-                            </div>
+                            <TopbarAvatar initials={initials} />
                         </div>
 
                         <div className={TOPBAR_CLUSTER_DIVIDER_CLASS} />
                     </div>
                 </DesktopClusterSlot>
 
-                <DesktopClusterSlot show={!activeDesktopUtilityPanel || activeDesktopUtilityPanel === "theme"}>
-                    <TopbarThemeSelector
-                        {...bindPanelState("theme")}
-                        triggerClassName={cn(segmentButtonClass, "border-none hover:shadow-none text-primary")}
-                    />
-                </DesktopClusterSlot>
-
-                <DesktopClusterSlot show={!activeDesktopUtilityPanel || activeDesktopUtilityPanel === "brain"}>
-                    <div className={cn("flex min-w-0 items-center", !activeDesktopUtilityPanel && "ml-1")}>
-                        {!activeDesktopUtilityPanel && <div aria-hidden="true" className={TOPBAR_CLUSTER_DIVIDER_CLASS} />}
-
-                        <TopbarBrainPreview
-                            {...bindPanelState("brain")}
-                            triggerClassName={cn(
-                                segmentButtonClass,
-                                "relative overflow-visible border-none hover:shadow-none text-primary"
-                            )}
-                        />
-                    </div>
-                </DesktopClusterSlot>
-
-                <DesktopClusterSlot show={!activeDesktopUtilityPanel || activeDesktopUtilityPanel === "notifications"}>
-                    <div className={cn("flex min-w-0 items-center", !activeDesktopUtilityPanel && "ml-1")}>
-                        {!activeDesktopUtilityPanel && <div className={TOPBAR_CLUSTER_DIVIDER_CLASS} />}
-
-                        <TopbarNotifications
-                            {...bindPanelState("notifications")}
-                            triggerClassName={cn(
-                                segmentButtonClass,
-                                "border-none hover:shadow-none bg-transparent text-primary hover:bg-primary/10"
-                            )}
-                        />
-                    </div>
-                </DesktopClusterSlot>
+                {DESKTOP_MENU_REGISTRY.map((item, idx) => {
+                    const Component = item.Component
+                    return (
+                        <DesktopClusterSlot key={item.id} show={!activeDesktopUtilityPanel || activeDesktopUtilityPanel === item.id}>
+                            <div className="flex min-w-0 items-center gap-1">
+                                <Component
+                                    {...bindPanelState(item.id)}
+                                    triggerClassName={item.triggerClass}
+                                />
+                            </div>
+                        </DesktopClusterSlot>
+                    )
+                })}
             </div>
         </motion.div>
     )

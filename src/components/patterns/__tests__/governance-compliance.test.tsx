@@ -10,7 +10,7 @@ import { SubSectionCard } from "../sub-section-card"
 // - /01_rules/UI_REGRESSION_CHECKLIST.md
 // - /01_rules/UI_EXECUTION_STANDARDS.md
 
-describe("UI Governance Compliance (Premium 3D)", () => {
+describe("UI Governance Compliance (Premium Surfaces)", () => {
     describe("MacroSection", () => {
         it("applies macro geometry and material contract", () => {
             render(<MacroSection title="Macro">Body</MacroSection>)
@@ -51,6 +51,19 @@ describe("UI Governance Compliance (Premium 3D)", () => {
             const valueRow = value.closest("div")
             expect(valueRow).toBeInTheDocument()
             expect(valueRow).toHaveClass("tabular-nums", "break-words")
+        })
+
+        it("uses flat hover surfaces without pointer-based 3D classes", () => {
+            render(<KpiCard title="Saldo" value="€100" icon={Calculator} />)
+
+            const title = screen.getByText("Saldo")
+            const wrapper = title.closest(".h-full")
+            const card = title.closest('[data-slot="card"]')
+
+            expect(wrapper).toBeInTheDocument()
+            expect(wrapper).not.toHaveClass("[perspective:1400px]")
+            expect(card).toBeInTheDocument()
+            expect(card).not.toHaveClass("[transform-style:preserve-3d]")
         })
 
         it("adds interactive affordance only when clickable", () => {

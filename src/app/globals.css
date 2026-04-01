@@ -450,10 +450,6 @@
     backdrop-filter: blur(8px) !important;
   }
 
-  .perspective-2000 {
-    perspective: 2000px;
-  }
-
   .notifications-ticker-track {
     animation: ticker-marquee var(--ticker-duration, 32s) linear infinite;
     will-change: transform;

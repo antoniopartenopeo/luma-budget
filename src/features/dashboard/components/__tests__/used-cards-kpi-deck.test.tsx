@@ -52,6 +52,14 @@ describe("UsedCardsKpiDeck", () => {
         expect(screen.getByText("2 rilevate")).toBeInTheDocument()
     })
 
+    it("renders flat hover tiles without 3D transform classes", () => {
+        render(<UsedCardsKpiDeck cards={cardsFixture} />)
+
+        const items = screen.getAllByTestId("used-card-item")
+        expect(items[0]).not.toHaveClass("[transform-style:preserve-3d]")
+        expect(items[0].getAttribute("style") ?? "").not.toContain("rotate")
+    })
+
     it("applies privacy blur to masked last4", () => {
         render(<UsedCardsKpiDeck cards={cardsFixture.slice(0, 1)} isPrivacyMode />)
 

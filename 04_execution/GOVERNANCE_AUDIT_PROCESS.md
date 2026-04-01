@@ -3,7 +3,7 @@
 scope: governance-audit-process
 owner: governance
 status: active
-last-verified: 2026-03-10
+last-verified: 2026-04-01
 canonical-of: audit-process
 
 Stato: attivo (guardrail non negoziabili)
@@ -16,6 +16,7 @@ Questo pacchetto rende operativo l'audit tecnico senza cambiare la logica di pro
 - UI: overlay + classi Tailwind, no `style={{...}}` salvo eccezioni tecniche documentate.
 - Period filters: usare `filterByRange` (`/src/lib/date-ranges.ts`) invece di logiche duplicate.
 - Test integrity: i test non devono simulare la logica di produzione se esiste una util importabile.
+- Frozen surfaces: se la governance dichiara una superficie congelata, l'audit deve segnalarla come eccezione intenzionale e non come fix immediato. Default attivo: `src/features/dashboard/components/charts/spending-composition-card.tsx`.
 
 ## Documenti
 

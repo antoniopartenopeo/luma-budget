@@ -3,7 +3,7 @@
 scope: system-architecture
 owner: engineering
 status: active
-last-verified: 2026-03-25
+last-verified: 2026-04-01
 canonical-of: architecture
 
 > Principles: feature-first modules, domain isolation, local-first persistence, explicitly gated remote integrations, deterministic narration.
@@ -60,6 +60,12 @@ Open banking routes are present in codebase but remain fail-closed unless `NUMA_
 - The current Brain explainer is a dedicated scroll interlude with layered motion and final reveal copy, still scoped as presentation-only and not backed by live forecast repositories
 - Immersive landing heroes and explainers must remain component-identical across device sizes and reduced-motion contexts, with only motion intensity adapting
 - May reuse pure domain formatters for product-truth rendering, but does not read repositories or mutate persisted financial state
+
+### Dashboard (`src/features/dashboard/*`)
+
+- Dashboard owns period KPIs, recent activity, and the interactive spending composition surface
+- `src/features/dashboard/components/charts/spending-composition-card.tsx` is an intentionally preserved frozen surface
+- Cross-app UI refactor, motion cleanup, audit-fix, or shared pattern cleanup must not alter that surface unless the request names it explicitly
 
 ### Domain (`src/domain/*`)
 

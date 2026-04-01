@@ -1,5 +1,5 @@
 import type { ElementType, ReactNode } from "react"
-import { motion, useTransform } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { ArrowDownIcon, ArrowUpIcon, Info } from "lucide-react"
 import { AnimatedNumber } from "@/components/ui/animated-number"
 import { InteractiveCardGhostIcon } from "@/components/patterns/interactive-card-ghost-icon"
@@ -9,7 +9,6 @@ import {
     INTERACTIVE_CARD_HOVER_STATE,
     INTERACTIVE_CARD_TRANSITION,
     resolveInteractiveSurfaceStyle,
-    useInteractiveTilt,
     withAlpha
 } from "@/components/patterns/interactive-surface"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -83,25 +82,10 @@ export function KpiCard({
     formatFn,
     compact = false,
 }: KpiCardProps) {
-    const {
-        depthX,
-        depthY,
-        isInteractive,
-        isPrimed,
-        handlePointerEnter,
-        handlePointerMove,
-        handlePointerLeave
-    } = useInteractiveTilt({
-        disabled: compact,
-        pointerSpring: { damping: 24, stiffness: 240, mass: 0.46 },
-        depthSpring: { damping: 28, stiffness: 280, mass: 0.36 }
-    })
-    const rotateX = useTransform(depthY, [-0.5, 0.5], [8.4, -8.4])
-    const rotateY = useTransform(depthX, [-0.5, 0.5], [-9.2, 9.2])
-    const valueShiftX = useTransform(depthX, [-0.5, 0.5], [-5, 5])
-    const valueShiftY = useTransform(depthY, [-0.5, 0.5], [-4, 4])
+    const prefersReducedMotion = useReducedMotion()
+    const showHoverLift = !prefersReducedMotion && !compact
     const toneStyle = TONE_STYLES[tone]
-    const surfaceStyle = resolveInteractiveSurfaceStyle(toneStyle.rawColor, isPrimed ? "active" : "rest", "neutral")
+    const surfaceStyle = resolveInteractiveSurfaceStyle(toneStyle.rawColor, "rest", "neutral")
     const cardStyle = {
         borderColor: surfaceStyle.borderColor,
         backgroundColor: surfaceStyle.backgroundColor,
@@ -126,20 +110,17 @@ export function KpiCard({
 
     return (
         <motion.div
-            className={cn("h-full", !compact && "[perspective:1400px]")}
-            onMouseEnter={handlePointerEnter}
-            onMouseMove={handlePointerMove}
-            onMouseLeave={handlePointerLeave}
-            whileHover={isInteractive && !compact ? INTERACTIVE_CARD_HOVER_STATE : undefined}
+            className="h-full"
+            whileHover={showHoverLift ? INTERACTIVE_CARD_HOVER_STATE : undefined}
             transition={INTERACTIVE_CARD_TRANSITION}
-            style={isInteractive ? { rotateX, rotateY } : undefined}
         >
             <Card
                 className={cn(
-                    "group/kpi relative flex flex-col overflow-hidden rounded-xl glass-card [transform-style:preserve-3d] transition-[transform,border-color,box-shadow,background-color] duration-300 h-full",
+                    "group/kpi relative flex flex-col overflow-hidden rounded-xl glass-card transition-[transform,border-color,box-shadow,background-color] duration-300 h-full",
                     compact && "gap-3 py-3",
                     onClick && "cursor-pointer active:scale-[0.98]",
-                    !compact && "hover:-translate-y-0.5 hover:border-white/55 hover:shadow-[0_22px_44px_-28px_rgba(15,23,42,0.4)]",
+                    !compact && "hover:border-white/55 hover:shadow-[0_22px_44px_-28px_rgba(15,23,42,0.4)]",
+                    showHoverLift && "hover:-translate-y-0.5",
                     className
                 )}
                 style={cardStyle}
@@ -152,9 +133,11 @@ export function KpiCard({
 
                 <InteractiveCardGhostIcon
                     icon={Icon}
-                    isActive={isPrimed}
+                    isActive={false}
+                    visibility="always"
+                    enableFloat={false}
                     floatDelay={0.08}
-                    tintStyle={{ color: withAlpha(toneStyle.rawColor, isPrimed ? 0.26 : 0.2) }}
+                    tintStyle={{ color: withAlpha(toneStyle.rawColor, 0.2) }}
                     className={cn(compact ? "bottom-0 right-0 inset-y-auto" : "bottom-[-0.1rem] right-[1%] inset-y-auto")}
                     wrapperClassName={cn(compact ? "h-24 w-24" : "h-32 w-32 sm:h-36 sm:w-36")}
                     iconClassName={cn(compact ? "h-16 w-16" : "h-24 w-24 sm:h-28 sm:w-28")}
@@ -194,10 +177,7 @@ export function KpiCard({
                 <CardContent className={cn(
                     compact ? "relative z-10 px-4 pb-4" : "relative z-10 flex flex-1 flex-col px-5 pb-5"
                 )}>
-                    <motion.div
-                        className="space-y-4"
-                        style={isInteractive ? { x: valueShiftX, y: valueShiftY } : undefined}
-                    >
+                    <div className="space-y-4">
                         <div className="flex items-end justify-between gap-3">
                             <div
                                 className={cn(
@@ -260,7 +240,7 @@ export function KpiCard({
                                 </div>
                             ) : null}
                         </div>
-                    </motion.div>
+                    </div>
 
                     <div className={cn(compact ? "pt-3" : "mt-auto pt-5")}>
                         <div className="flex flex-wrap items-center gap-2">

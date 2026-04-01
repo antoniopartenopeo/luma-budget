@@ -52,6 +52,7 @@ In caso di conflitto tra:
 | 7 | **SEMPRE** passare la checklist UI canonica prima di chiudere un task UI | `01_rules/UI_REGRESSION_CHECKLIST.md` |
 | 8 | **SEMPRE** aderire alle skill semantiche (`numa-*-semantics`) per copy/insight | determinismo narrativo |
 | 9 | **SEMPRE** sviluppare su branch `codex/*` e promuovere su `main` solo con release approvata | flusso release |
+| 10 | **SEMPRE** rispettare le frozen surface dichiarate in governance specialistica; `Composizione spese` e fuori scope di default | `05_specialists/NUMA_UI_STANDARDS.md` |
 
 ---
 
@@ -94,5 +95,5 @@ src/
 
 ---
 
-**Versione**: 2.5.0
-**Ultimo aggiornamento**: 2026-03-22
+**Versione**: 2.6.0
+**Ultimo aggiornamento**: 2026-04-01

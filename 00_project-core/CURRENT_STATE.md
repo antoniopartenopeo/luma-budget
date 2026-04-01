@@ -3,7 +3,7 @@
 scope: current-state
 owner: engineering
 status: active
-last-verified: 2026-03-25
+last-verified: 2026-04-01
 canonical-of: project-current-state
 
 ## Snapshot
@@ -15,6 +15,7 @@ canonical-of: project-current-state
 - Premium UI Phase: `AppleFluidBackground` master primitive implemented merging zero-weight mathematical mesh gradients with perfect volumetric CSS blending (Mar 22/23)
 - Public landing governance aligned as a dedicated acquisition surface with anchored narrative, constrained public navigation, and a static `Come inizi` explainer that replaces the previous sticky demo pattern (Mar 23/25)
 - Landing immersive heroes now preserve one adaptive surface across desktop, smartphone, and reduced-motion contexts; motion intensity changes, but the composition does not fork into mobile/static alternates (Mar 25)
+- Dashboard `Composizione spese` is now governed as a frozen interaction surface and is out of scope by default for future UI cleanup or motion standardization (Apr 1)
 
 ## What Is Stable
 
@@ -27,6 +28,7 @@ canonical-of: project-current-state
 - Sensitive financial scenario logic isolated in `src/VAULT/*`
 - Local-first persistence, backup/restore, and changelog-driven notifications
 - Governance guardrails consolidated in `01_rules/*` and `05_specialists/*`
+- The Dashboard spending composition surface is intentionally preserved and excluded from default UI refactor scope
 
 ## Current Risks
 

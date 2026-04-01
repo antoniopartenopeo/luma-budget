@@ -119,6 +119,16 @@ Le animazioni state-based Radix/Shadcn (`data-[state=*]:animate-*`) sono consent
 
 ---
 
+## Frozen Surfaces
+
+- `src/features/dashboard/components/charts/spending-composition-card.tsx` e una frozen surface intenzionalmente preservata.
+- Per default e fuori scope da refactor, cleanup, audit-fix, sweep UI, motion cleanup e standardizzazione cross-app.
+- Restano congelati anche overlay espanso, `pointermove`, `rotateX` / `rotateY`, `perspective`, light-follow / parallax interno, copy, layout, materiali e motion locali di quella superficie.
+- Se un refactor shared tocca import, token o motion contract usati da quella superficie, deve prima dimostrare che il comportamento resta invariato pixel/comportamento-wise; in assenza di questa garanzia, il refactor non e ammesso.
+- Solo una richiesta esplicita che nomini `Composizione spese` puo sbloccare modifiche a quella sezione.
+
+---
+
 ## Regole Tailwind
 
 ### Consentito
@@ -199,5 +209,5 @@ Invarianti:
 
 ---
 
-**Versione**: 2.0.0
-**Ultimo aggiornamento**: 2026-03-22
+**Versione**: 2.1.0
+**Ultimo aggiornamento**: 2026-04-01

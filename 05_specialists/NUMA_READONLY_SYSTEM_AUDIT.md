@@ -72,6 +72,7 @@ Se uno di questi riferimenti manca, dichiararlo nel report come rischio di gover
 2. Valutare coerenza globale, gerarchia visiva/cognitiva, ritmo verticale, pattern di layout, continuità percettiva.
 3. Segmentare l'interfaccia in zone a coerenza alta, media, bassa.
 4. Evidenziare dove l'esperienza rompe l'illusione premium.
+5. Se una superficie e dichiarata frozen dalla governance, classificare i finding come `frozen / intentionally preserved` e non come fix immediato. Default attivo: `/src/features/dashboard/components/charts/spending-composition-card.tsx`.
 
 ### 5) Eseguire audit tipografia, colori/materiali, motion
 

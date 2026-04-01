@@ -1,6 +1,6 @@
 "use client"
 
-import { motion, useTransform } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { CreditCard, Wifi } from "lucide-react"
 import { InteractiveCardGhostIcon } from "@/components/patterns/interactive-card-ghost-icon"
 import {
@@ -8,7 +8,6 @@ import {
     INTERACTIVE_CARD_TRANSITION,
     resolveInteractiveSurfaceStyle,
     resolveInteractiveTileLayoutClass,
-    useInteractiveTilt,
     withAlpha
 } from "@/components/patterns/interactive-surface"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -86,27 +85,9 @@ function UsedCardTile({
     const rawColor = resolveCardAccentColor(card)
     const status = renderStatusLabel(card)
     const confidenceLabel = resolveConfidenceLabel(card.confidence)
-    const {
-        depthX,
-        depthY,
-        isInteractive,
-        isPrimed,
-        handlePointerEnter,
-        handlePointerMove,
-        handlePointerLeave
-    } = useInteractiveTilt({
-        pointerSpring: { damping: 24, stiffness: 250, mass: 0.42 },
-        depthSpring: { damping: 28, stiffness: 300, mass: 0.34 }
-    })
-    const surfaceStyle = resolveInteractiveSurfaceStyle(rawColor, isPrimed ? "active" : "rest", "neutral")
-    const rotateX = useTransform(depthY, [-0.5, 0.5], [9.2, -9.2])
-    const rotateY = useTransform(depthX, [-0.5, 0.5], [-10.4, 10.4])
-    const contentShiftX = useTransform(depthX, [-0.5, 0.5], [-5, 5])
-    const contentShiftY = useTransform(depthY, [-0.5, 0.5], [-4, 4])
-    const articleStyle = {
-        ...surfaceStyle,
-        ...(isInteractive ? { rotateX, rotateY } : {}),
-    }
+    const prefersReducedMotion = useReducedMotion()
+    const showHoverLift = !prefersReducedMotion
+    const articleStyle = resolveInteractiveSurfaceStyle(rawColor, "rest", "neutral")
     const networkStyle = { color: withAlpha(rawColor, 0.82) }
     const walletBadgeStyle = {
         borderColor: withAlpha(rawColor, 0.18),
@@ -122,32 +103,29 @@ function UsedCardTile({
         <motion.article
             data-testid="used-card-item"
             className={cn(
-                "group/card relative min-h-[9.75rem] overflow-hidden rounded-[1.9rem] border px-5 py-4 [transform-style:preserve-3d]",
+                "group/card relative min-h-[9.75rem] overflow-hidden rounded-[1.9rem] border px-5 py-4 transition-[transform,border-color,box-shadow,background-color] duration-300 hover:border-white/55 hover:shadow-[0_22px_44px_-28px_rgba(15,23,42,0.4)]",
+                showHoverLift && "hover:-translate-y-0.5",
                 resolveInteractiveTileLayoutClass(index, total)
             )}
             style={articleStyle}
-            onMouseEnter={handlePointerEnter}
-            onMouseMove={handlePointerMove}
-            onMouseLeave={handlePointerLeave}
-            whileHover={isInteractive ? INTERACTIVE_CARD_HOVER_STATE : undefined}
+            whileHover={showHoverLift ? INTERACTIVE_CARD_HOVER_STATE : undefined}
             transition={INTERACTIVE_CARD_TRANSITION}
         >
             <div className="pointer-events-none absolute inset-[1px] rounded-[calc(1.9rem-1px)] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02)_34%,transparent_62%)] opacity-80" />
 
             <InteractiveCardGhostIcon
                 icon={CreditCard}
-                isActive={isPrimed}
+                isActive={false}
+                visibility="always"
+                enableFloat={false}
                 floatDelay={index * 0.08}
-                tintStyle={{ color: withAlpha(rawColor, isPrimed ? 0.26 : 0.2) }}
+                tintStyle={{ color: withAlpha(rawColor, 0.2) }}
                 className="bottom-[-0.35rem] right-[0.35rem] inset-y-auto"
                 wrapperClassName="h-32 w-32 sm:h-36 sm:w-36"
                 iconClassName="h-24 w-24 sm:h-28 sm:w-28"
             />
 
-            <motion.div
-                className="relative z-10 flex h-full flex-col justify-between gap-4"
-                style={isInteractive ? { x: contentShiftX, y: contentShiftY } : undefined}
-            >
+            <div className="relative z-10 flex h-full flex-col justify-between gap-4">
                 <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 max-w-[72%] space-y-1">
                         <p
@@ -203,7 +181,7 @@ function UsedCardTile({
                         </div>
                     </div>
                 </div>
-            </motion.div>
+            </div>
         </motion.article>
     )
 }

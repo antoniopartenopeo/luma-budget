@@ -3,7 +3,7 @@
 scope: session-handoff
 owner: engineering
 status: active
-last-verified: 2026-03-25
+last-verified: 2026-04-01
 canonical-of: session-handoff
 
 ## Current State
@@ -18,6 +18,7 @@ canonical-of: session-handoff
 - A dedicated Brain explainer now lives inside the landing forecast stage and is governed as an immersive cinematic deep dive (`LandingBrainHero`).
 - The entire landing page has undergone a rigid linguistic and responsive typography audit to perfectly align with Apple-style standards, capping all hero titles to `text-7xl` and fixing all Italian accents.
 - Landing immersive heroes now keep the same adaptive visual pattern on smartphone and under `prefers-reduced-motion`; only the motion amplitude changes.
+- Dashboard `Composizione spese` is now a frozen surface: do not modify it in cleanup, sweep, refactor, audit-fix, or motion standardization unless the request names it explicitly.
 
 ## Read First to Restart Work
 

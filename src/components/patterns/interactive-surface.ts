@@ -1,10 +1,4 @@
 "use client"
-
-import { useState, type MouseEvent } from "react"
-import { useMotionValue, useReducedMotion, useSpring } from "framer-motion"
-
-const DEFAULT_POINTER_SPRING = { damping: 22, stiffness: 210, mass: 0.5 }
-const DEFAULT_DEPTH_SPRING = { damping: 26, stiffness: 250, mass: 0.42 }
 export const INTERACTIVE_CARD_TRANSITION = { type: "spring", stiffness: 260, damping: 22, mass: 0.88 } as const
 export const INTERACTIVE_CARD_HOVER_STATE = { y: -4, scale: 1.01 } as const
 
@@ -74,55 +68,4 @@ export function resolveInteractiveTileLayoutClass(index: number, total: number):
     const pattern = MOSAIC_LAYOUT_PATTERNS[safeTotal] ?? MOSAIC_LAYOUT_PATTERNS[6]
 
     return pattern[index] ?? "xl:col-span-2"
-}
-
-export function useInteractiveTilt({
-    disabled = false,
-    pointerSpring = DEFAULT_POINTER_SPRING,
-    depthSpring = DEFAULT_DEPTH_SPRING
-}: {
-    disabled?: boolean
-    pointerSpring?: typeof DEFAULT_POINTER_SPRING
-    depthSpring?: typeof DEFAULT_DEPTH_SPRING
-} = {}) {
-    const prefersReducedMotion = useReducedMotion()
-    const [isPrimed, setIsPrimed] = useState(false)
-    const pointerX = useMotionValue(0)
-    const pointerY = useMotionValue(0)
-    const springX = useSpring(pointerX, pointerSpring)
-    const springY = useSpring(pointerY, pointerSpring)
-    const depthX = useSpring(springX, depthSpring)
-    const depthY = useSpring(springY, depthSpring)
-    const isInteractive = !disabled && !prefersReducedMotion
-
-    const handlePointerMove = (event: MouseEvent<HTMLElement>) => {
-        if (!isInteractive) return
-
-        const rect = event.currentTarget.getBoundingClientRect()
-        const nextX = (event.clientX - rect.left) / rect.width - 0.5
-        const nextY = (event.clientY - rect.top) / rect.height - 0.5
-
-        pointerX.set(Math.max(-0.5, Math.min(0.5, nextX)))
-        pointerY.set(Math.max(-0.5, Math.min(0.5, nextY)))
-    }
-
-    const handlePointerEnter = () => {
-        setIsPrimed(true)
-    }
-
-    const handlePointerLeave = () => {
-        pointerX.set(0)
-        pointerY.set(0)
-        setIsPrimed(false)
-    }
-
-    return {
-        depthX,
-        depthY,
-        isInteractive,
-        isPrimed,
-        handlePointerMove,
-        handlePointerEnter,
-        handlePointerLeave
-    }
 }

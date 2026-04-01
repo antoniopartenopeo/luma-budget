@@ -1,6 +1,6 @@
 "use client"
 
-import { type ElementType, type ReactNode, useState } from "react"
+import { type ComponentType, type ReactNode, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Bell, BrainCircuit, Eye, EyeOff, Monitor, Moon, Sparkles, Sun } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -56,6 +56,12 @@ interface TopbarActionClusterProps {
 
 type DesktopClusterPanelId = Exclude<TopbarPanelId, "quick">
 type MobileExpandablePanelId = TopbarPanelId
+
+interface TopbarDesktopPanelProps {
+    isOpen?: boolean
+    onOpenChange?: (isOpen: boolean) => void
+    triggerClassName?: string
+}
 
 function DesktopClusterSlot({
     children,
@@ -276,7 +282,7 @@ export function TopbarActionCluster({
 
     const DESKTOP_MENU_REGISTRY: Array<{
         id: DesktopClusterPanelId
-        Component: React.ComponentType<any>
+        Component: ComponentType<TopbarDesktopPanelProps>
         triggerClass: string
     }> = [
         { id: "theme", Component: TopbarThemeSelector, triggerClass: cn(TOPBAR_ICON_BUTTON_CLASS, "border-none text-primary") },
@@ -336,7 +342,7 @@ export function TopbarActionCluster({
                     </div>
                 </DesktopClusterSlot>
 
-                {DESKTOP_MENU_REGISTRY.map((item, idx) => {
+                {DESKTOP_MENU_REGISTRY.map((item) => {
                     const Component = item.Component
                     return (
                         <DesktopClusterSlot key={item.id} show={!activeDesktopUtilityPanel || activeDesktopUtilityPanel === item.id}>

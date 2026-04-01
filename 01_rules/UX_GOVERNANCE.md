@@ -3,12 +3,12 @@
 scope: ux-governance
 owner: governance
 status: active
-last-verified: 2026-03-25
+last-verified: 2026-04-01
 canonical-of: ux-policy
 
 > **Stato:** Active
-> **Versione:** 1.6
-> **Ultimo aggiornamento:** 2026-03-25
+> **Versione:** 1.7
+> **Ultimo aggiornamento:** 2026-04-01
 
 Linee guida UX ad alto livello per mantenere fiducia, chiarezza e coerenza cross-feature.
 
@@ -28,6 +28,7 @@ Per Advisor/Insights e per ogni operazione dichiarata come "analisi", lo stato d
 Quando viene mostrata una previsione in Insights/Advisor, la UI deve dichiarare la fonte:
 - `Fonte Core` solo se il nowcast è realmente pronto (internal source: `brain`).
 - `Fonte Storico` quando il Core non è pronto o non è aggiornato.
+- La stessa regola vale per qualunque superficie che espone la provenienza della stima, incluse dashboard summary, topbar preview, simulator overlay e varianti derivate della stessa metrica.
 
 ### C. Contradiction Suppression
 Se nel periodo corrente è presente un segnale `high/critical`, i messaggi rassicuranti a bassa severità nello stesso orizzonte vanno soppressi.

@@ -16,6 +16,7 @@ canonical-of: project-current-state
 - Public landing governance aligned as a dedicated acquisition surface with anchored narrative, constrained public navigation, and a static `Come inizi` explainer that replaces the previous sticky demo pattern (Mar 23/25)
 - Landing immersive heroes now preserve one adaptive surface across desktop, smartphone, and reduced-motion contexts; motion intensity changes, but the composition does not fork into mobile/static alternates (Mar 25)
 - Dashboard `Composizione spese` is now governed as a frozen interaction surface and is out of scope by default for future UI cleanup or motion standardization (Apr 1)
+- Repository-wide governance/app audit completed (Apr 1): root-scaffold drift in audit guidance was corrected and the remaining runtime risks were made explicit for source-label semantics, transition contracts, and period-filter consistency
 
 ## What Is Stable
 
@@ -39,10 +40,14 @@ canonical-of: project-current-state
 - Landing motion and acquisition semantics require periodic reduced-motion and public-copy audits to avoid drift from governance
 - Immersive landing explainers must stay aligned with local-first messaging and must not imply enabled remote sync flows by default
 - The current Brain explainer uses a long-form scroll interlude with spring-smoothed depth separation and final reveal copy, which must remain synchronized with motion governance and the single-surface reduced-motion rule
+- Forecast provenance labels still drift in some runtime surfaces where `brain` is rendered as `Fonte Brain` instead of the governed `Fonte Core`
+- Shared UI tokens and a subset of runtime components still rely on `transition-all`, which conflicts with the execution policy and can mask motion regressions
+- Governance quick check still flags candidate period-filter logic outside `filterByRange`; these paths need owner review before behavioral fixes
 
 ## Quality and Verification Baseline
 
 - Core validation commands: `npm run test:run`, `npm run validate`, `npm run release:validate`
+- Full verification sweep: `npm run doe:verify`
 - Governance quick check writes generated output into `04_execution/reports/`
 - Root scaffold paths must stay aligned with scripts, tests, and CI
 - Landing tests now participate in this alignment by asserting public-link constraints and the static four-step `Come inizi` story

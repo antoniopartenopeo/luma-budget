@@ -3,7 +3,7 @@
 scope: project-assumptions
 owner: engineering
 status: active
-last-verified: 2026-03-15
+last-verified: 2026-04-01
 canonical-of: project-assumptions
 
 ## Facts from the Repository
@@ -13,6 +13,7 @@ canonical-of: project-assumptions
 - Persistence model: local-first storage with explicit backup and restore
 - Canonical runtime and implementation guardrails live in `01_rules/*` and `05_specialists/*`
 - Open banking routes exist in codebase but stay disabled by default unless `NUMA_ENABLE_OPEN_BANKING=true`
+- Governance quick-check outputs are generated under `04_execution/reports/` as runtime artifacts and remain non versioned
 
 ## Active Operational Assumptions
 

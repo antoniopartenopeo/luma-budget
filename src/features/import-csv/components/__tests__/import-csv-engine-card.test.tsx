@@ -7,7 +7,7 @@ describe("ImportCsvEngineCard", () => {
         render(<ImportCsvEngineCard />)
 
         expect(screen.getByText("Import CSV locale e revisione guidata")).toBeInTheDocument()
-        fireEvent.click(screen.getByRole("button", { name: "Apri dettagli" }))
+        fireEvent.click(screen.getByRole("button", { name: "Ispeziona telemetria" }))
         expect(
             screen.getByText(/Nel flusso CSV attivo il file resta nel browser fino alla conferma finale\./i)
         ).toBeInTheDocument()

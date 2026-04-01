@@ -1,6 +1,7 @@
 import { act, render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 import { LandingDifferentiatorCards } from "../landing-differentiator-cards"
+import { LANDING_DIFFERENTIATORS } from "../../data"
 
 let scrollChangeHandler: ((value: number) => void) | null = null
 let mockReducedMotion = false
@@ -56,31 +57,31 @@ describe("LandingDifferentiatorCards", () => {
     render(<LandingDifferentiatorCards />)
 
     expect(screen.getByRole("heading", { name: /Tre scelte che cambiano il quadro/i })).toBeInTheDocument()
-    expect(screen.getByRole("heading", { name: /Nessun intermediario tra te e i tuoi dati/i })).toBeInTheDocument()
-    expect(screen.getByText(/Il dato nasce e resta sul tuo dispositivo/i)).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: LANDING_DIFFERENTIATORS[0].title })).toBeInTheDocument()
+    expect(screen.getByText(LANDING_DIFFERENTIATORS[0].numaLabel)).toBeInTheDocument()
     expect(screen.queryByRole("link")).not.toBeInTheDocument()
 
     act(() => {
       scrollChangeHandler?.(0.42)
     })
 
-    expect(screen.getByRole("heading", { name: /Nessun metodo da studiare prima/i })).toBeInTheDocument()
-    expect(screen.getByText(/Non devi cambiare tu per farlo funzionare/i)).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: LANDING_DIFFERENTIATORS[1].title })).toBeInTheDocument()
+    expect(screen.getByText(LANDING_DIFFERENTIATORS[1].numaLabel)).toBeInTheDocument()
 
     act(() => {
       scrollChangeHandler?.(0.9)
     })
 
-    expect(screen.getByRole("heading", { name: /Numeri concreti, non promesse generiche/i })).toBeInTheDocument()
-    expect(screen.getByText(/orizzonte chiaro/i)).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: LANDING_DIFFERENTIATORS[2].title })).toBeInTheDocument()
+    expect(screen.getByText(LANDING_DIFFERENTIATORS[2].numaLabel)).toBeInTheDocument()
   })
 
   it("keeps the same hero composition when reduced motion is enabled", () => {
     mockReducedMotion = true
     render(<LandingDifferentiatorCards />)
 
-    expect(screen.getByRole("heading", { name: /Nessun intermediario tra te e i tuoi dati/i })).toBeInTheDocument()
-    expect(screen.getByText(/Il dato nasce e resta sul tuo dispositivo/i)).toBeInTheDocument()
-    expect(screen.queryByText(/Numa non ti chiede di inseguire il denaro/i)).not.toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: LANDING_DIFFERENTIATORS[0].title })).toBeInTheDocument()
+    expect(screen.getByText(LANDING_DIFFERENTIATORS[0].numaLabel)).toBeInTheDocument()
+    expect(screen.queryByText(LANDING_DIFFERENTIATORS[1].numaLabel)).not.toBeInTheDocument()
   })
 })

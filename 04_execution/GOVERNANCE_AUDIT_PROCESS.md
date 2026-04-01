@@ -22,6 +22,7 @@ Questo pacchetto rende operativo l'audit tecnico senza cambiare la logica di pro
 
 - [Codebase navigation in 30 minutes](./CODEBASE_NAVIGATION_30_MIN.md)
 - [Change patterns playbook](./CHANGE_PATTERNS_PLAYBOOK.md)
+- [Read-only systemic audit baseline](../05_specialists/NUMA_READONLY_SYSTEM_AUDIT.md)
 - Generated output runtime: `04_execution/reports/generated-governance-quick-check.md` (non versionato)
 
 ## Quick start audit
@@ -42,5 +43,5 @@ Questo pacchetto rende operativo l'audit tecnico senza cambiare la logica di pro
 
 ## Regola di intervento
 
-- Fix diretto ammesso: typo documentali, link rotti, commenti chiaramente fuorvianti.
+- Fix diretto ammesso: typo documentali, link rotti, commenti chiaramente fuorvianti, drift di navigazione o governance tra fonti canoniche e artifact operativi.
 - Non fixare in audit pass: logica prodotto, comportamento UI, algoritmi dominio.

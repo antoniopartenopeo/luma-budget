@@ -201,7 +201,7 @@ Invarianti:
 2. [ ] Macro geometry e materiali coerenti (`rounded-[2.5rem]`, `glass-panel`)
 3. [ ] Motion conforme alle primitive e a `prefers-reduced-motion`
 4. [ ] Nessun fake loading su AI/analisi
-5. [ ] Etichette fonte previsione coerenti (`Fonte Core` o `Fonte Storico`)
+5. [ ] Etichette fonte previsione coerenti (`Fonte Core` o `Fonte Storico`) su Dashboard, Insights, topbar, Goals e superfici derivate
 6. [ ] Typography coerente con scala ufficiale
 7. [ ] Nessun inline style statico non giustificato
 8. [ ] Verifica `01_rules/UI_REGRESSION_CHECKLIST.md`
@@ -209,5 +209,5 @@ Invarianti:
 
 ---
 
-**Versione**: 2.1.0
+**Versione**: 2.1.1
 **Ultimo aggiornamento**: 2026-04-01

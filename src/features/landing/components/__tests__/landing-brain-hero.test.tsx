@@ -45,10 +45,12 @@ describe("LandingBrainHero", () => {
   it("displays the cinematic Brain explainer with the predictive engine copy", () => {
     render(<LandingBrainHero />)
 
-    expect(screen.getByRole("heading", { name: /Vede il mese prima che finisca/i })).toBeInTheDocument()
-    expect(screen.getByText(/Il Brain di Numa/i)).toBeInTheDocument()
-    expect(screen.getByText(/Stima fine mese e mese dopo/i)).toBeInTheDocument()
-    expect(screen.getByText(/Un importo/i)).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: /Sblocca la visione sul futuro\./i })).toBeInTheDocument()
+    expect(screen.getByText(/Il motore predittivo analizza i tuoi pattern di spesa/i)).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: /Proiezioni strategiche infallibili\./i })).toBeInTheDocument()
+    expect(screen.getByText(/Mai stime azzardate\./i)).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: /Un limite\./i })).toBeInTheDocument()
+    expect(screen.getByText(/Per orchestrare le tue mosse finanziarie in anticipo/i)).toBeInTheDocument()
     expect(screen.queryByText(/SYNC_BANK_API/i)).not.toBeInTheDocument()
   })
 })

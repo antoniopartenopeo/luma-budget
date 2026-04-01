@@ -5,6 +5,12 @@ description: Regole semantiche e invarianti per la generazione di testi in Insig
 
 # Insights: Invarianti e Regole Semantiche
 
+scope: insights-semantics
+owner: governance-narration
+status: active
+last-verified: 2026-04-01
+canonical-of: insights-semantics-specialist
+
 Questo documento definisce le regole semantiche OBBLIGATORIE per tutti i testi generati nella pagina Insights e nelle sezioni correlate (Flash Summary, AI Advisor, Trend Cards).
 
 **Scopo**: Garantire che l'AI non faccia affermazioni semanticamente false, fuorvianti o "tone-deaf" (prive di tatto), proteggendo la fiducia dell'utente.
@@ -60,6 +66,13 @@ Quando è attivo un segnale critico/alto sul periodo corrente, i messaggi rassic
 ### 3.4 Vietate le Stringhe Inline
 Nessun componente React (`use-ai-advisor.ts`, componenti UI) deve contenere logica di generazione testo con `if/else`. Tutto il testo deve provenire dal dominio `narration`.
 
+### 3.5 Etichette di Provenienza Forecast
+Quando una superficie espone la provenienza della stima, le uniche etichette ammesse sono:
+- `Fonte Core` se la previsione deriva da nowcast Brain realmente pronto e selezionato come primary source.
+- `Fonte Storico` se e attivo il fallback o la stima non e aggiornata sul dataset corrente.
+- La terminologia letterale `Fonte Brain` e considerata drift semantico anche se la source tecnica sottostante resta `brain`.
+- Questa regola si applica a Insights, Dashboard, topbar preview, Goals/Simulator e ad ogni variante che rende visibile la provenance forecast.
+
 ---
 
 ## 4. Trust Semantics (Real Processing)
@@ -83,5 +96,5 @@ Prima di approvare una PR su Insights, verificare:
 7.  [ ] **Eseguire `npm test src/domain/narration/__tests__/semantic-enforcement.test.ts` e verificare che passi.**
 ---
 
-**Versione**: 1.4.0  
-**Ultimo aggiornamento**: 2026-02-18
+**Versione**: 1.5.0  
+**Ultimo aggiornamento**: 2026-04-01

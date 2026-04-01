@@ -19,6 +19,7 @@ canonical-of: session-handoff
 - The entire landing page has undergone a rigid linguistic and responsive typography audit to perfectly align with Apple-style standards, capping all hero titles to `text-7xl` and fixing all Italian accents.
 - Landing immersive heroes now keep the same adaptive visual pattern on smartphone and under `prefers-reduced-motion`; only the motion amplitude changes.
 - Dashboard `Composizione spese` is now a frozen surface: do not modify it in cleanup, sweep, refactor, audit-fix, or motion standardization unless the request names it explicitly.
+- Repository-wide audit on 2026-04-01 corrected governance drift in the audit specialist/process and logged explicit follow-up items for source-label semantics, `transition-all`, and period-filter consistency.
 
 ## Read First to Restart Work
 
@@ -32,3 +33,6 @@ canonical-of: session-handoff
 
 - Keep scripts, tests, CI, and specialist files aligned with the root scaffold paths.
 - Re-audit landing reduced-motion behavior and public-link constraints whenever `src/features/landing/*` changes materially.
+- Resolve forecast provenance label drift so runtime copy matches the governed `Fonte Core` / `Fonte Storico` terminology.
+- Triage `transition-all` occurrences against `01_rules/UI_EXECUTION_STANDARDS.md` and replace them with explicit transition properties where possible.
+- Review quick-check period-filter candidates before changing dashboard/transactions filter behavior.

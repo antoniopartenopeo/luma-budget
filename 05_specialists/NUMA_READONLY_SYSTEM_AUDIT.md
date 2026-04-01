@@ -5,6 +5,12 @@ description: Eseguire audit diagnostico completo e read-only del progetto Numa s
 
 # Numa System Audit (Read-Only Assoluto)
 
+scope: readonly-system-audit
+owner: governance
+status: active
+last-verified: 2026-04-01
+canonical-of: readonly-system-audit-specialist
+
 ## Obiettivo
 
 Produrre una diagnosi profonda e scomoda dello stato reale del sistema, basata su evidenze verificabili nel repository.
@@ -20,21 +26,27 @@ Produrre una diagnosi profonda e scomoda dello stato reale del sistema, basata s
 
 ## Attivazione Governance Numa (Obbligatoria)
 
+Usare la root scaffold governance come unica baseline canonica dell'audit.
+`/.agents/*` resta materiale vendorizzato di riferimento e non sostituisce mai le fonti canoniche del repository.
+
 Leggere sempre questi file prima della diagnosi finale:
 
-1. `/01_rules/NUMA_CORE_RULES.md`
-2. `/01_rules/UI_REGRESSION_CHECKLIST.md`
-3. `/05_specialists/NUMA_UI_STANDARDS.md` (attivazione esplicita obbligatoria)
-4. `/05_specialists/NUMA_FINANCIAL_LOGIC.md`
-5. `/05_specialists/NUMA_BUDGET_SEMANTICS.md`
-6. `/05_specialists/NUMA_INSIGHTS_SEMANTICS.md`
-7. `/AGENTS.md`
-8. `/03_architecture/SYSTEM_OVERVIEW.md`
-9. `/01_rules/UX_GOVERNANCE.md`
-10. `/01_rules/MOTION_PRINCIPLES.md`
-11. `/06_decisions/ADR_005_SEMANTIC_SHIFT_RHYTHM.md`
-12. `/04_execution/GOVERNANCE_AUDIT_PROCESS.md`
-13. `/04_execution/reports/generated-governance-quick-check.md` (se presente)
+1. `/README.md`
+2. `/00_project-core/PROJECT_BRIEF.md`
+3. `/00_project-core/CURRENT_STATE.md`
+4. `/01_rules/NUMA_CORE_RULES.md`
+5. `/01_rules/UI_REGRESSION_CHECKLIST.md`
+6. `/01_rules/UX_GOVERNANCE.md`
+7. `/01_rules/MOTION_PRINCIPLES.md`
+8. `/05_specialists/NUMA_UI_STANDARDS.md` (attivazione esplicita obbligatoria)
+9. `/05_specialists/NUMA_FINANCIAL_LOGIC.md`
+10. `/05_specialists/NUMA_BUDGET_SEMANTICS.md`
+11. `/05_specialists/NUMA_INSIGHTS_SEMANTICS.md`
+12. `/AGENTS.md`
+13. `/03_architecture/SYSTEM_OVERVIEW.md`
+14. `/06_decisions/ADR_005_SEMANTIC_SHIFT_RHYTHM.md`
+15. `/04_execution/GOVERNANCE_AUDIT_PROCESS.md`
+16. `/04_execution/reports/generated-governance-quick-check.md` (se presente; output generato, non normativo, non versionato)
 
 Se uno di questi riferimenti manca, dichiararlo nel report come rischio di governance/documentation drift.
 
@@ -97,3 +109,8 @@ Vincoli finali:
 1. Includere esattamente le 8 sezioni richieste dal committente.
 2. Includere punteggi numerici (1-5) per valutazione complessiva, maturità architetturale e future-proofing.
 3. Non includere alcuna soluzione o proposta di intervento.
+
+---
+
+**Versione**: 1.1.0
+**Ultimo aggiornamento**: 2026-04-01

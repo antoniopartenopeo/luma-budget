@@ -56,7 +56,8 @@ vi.mock("../components/landing-differentiator-cards", () => ({
 
 vi.mock("../components/motion-primitives", () => ({
   AppleFluidBackground: () => <div data-testid="apple-fluid-background" />,
-  CinematicTextReveal: ({ text }: { text: string }) => <>{text}</>
+  CinematicTextReveal: ({ text }: { text: string }) => <>{text}</>,
+  CinematicScrollCard: ({ children }: { children: React.ReactNode }) => <>{children}</>
 }))
 
 describe("LandingPage", () => {
@@ -64,12 +65,14 @@ describe("LandingPage", () => {
     render(<LandingPage />)
 
     expect(screen.getAllByTestId("brand-logo").length).toBeGreaterThan(0)
-    expect(screen.getByRole("heading", { name: /Capisci il mese prima che ti travolga/i })).toBeInTheDocument()
-    expect(screen.getAllByText(/Zero cloud obbligatorio/i).length).toBeGreaterThan(0)
-    expect(screen.getByRole("region", { name: /Come inizi/i })).toBeInTheDocument()
-    expect(screen.getByText(/Cosa cambia davvero/i)).toBeInTheDocument()
-    expect(screen.getByText(/Importi lo storico senza caos/i)).toBeInTheDocument()
-    expect(screen.getByText(/Scopri se una nuova spesa ci sta davvero/i)).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: /Non tracciare il passato\. Domina il tuo presente\./i })).toBeInTheDocument()
+    expect(screen.getByText(/Nessun conto collegato, nessun cloud\./i)).toBeInTheDocument()
+    expect(screen.getByText("100% Locale")).toBeInTheDocument()
+    expect(screen.getByRole("region", { name: /Guardare indietro non ti insegna a guidare/i })).toBeInTheDocument()
+    expect(screen.getByRole("region", { name: /Quattro passi per la padronanza/i })).toBeInTheDocument()
+    expect(screen.getByText(/Acquisisci i dati\./i)).toBeInTheDocument()
+    expect(screen.getByRole("region", { name: /L'effetto collaterale è la lucidità assoluta/i })).toBeInTheDocument()
+    expect(screen.getByRole("region", { name: /Riprendi il controllo\. Disegna il tuo orizzonte\./i })).toBeInTheDocument()
 
     expect(screen.getByTestId("landing-differentiator-cards")).toBeInTheDocument()
     expect(screen.getByTestId("landing-brain-hero")).toBeInTheDocument()
@@ -78,6 +81,6 @@ describe("LandingPage", () => {
     expect(hrefs.length).toBeGreaterThan(0)
     expect(hrefs.every((href) => href === "/dashboard" || href?.startsWith("#"))).toBe(true)
     expect(screen.getAllByRole("link", { name: /Apri Numa/i }).length).toBeGreaterThan(0)
-    expect(screen.queryByRole("link", { name: /Novita prodotto/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole("link", { name: /Aggiornamenti/i })).not.toBeInTheDocument()
   })
 })

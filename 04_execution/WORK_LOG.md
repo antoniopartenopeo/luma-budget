@@ -3,7 +3,7 @@
 scope: execution-work-log
 owner: engineering
 status: active
-last-verified: 2026-03-25
+last-verified: 2026-04-01
 canonical-of: execution-work-log
 
 ## 2026-03-15
@@ -40,3 +40,10 @@ canonical-of: execution-work-log
 - Re-aligned the `Differenza` hero and `LandingBrainHero` so smartphone, desktop, and reduced-motion contexts share the same adaptive surface pattern.
 - Updated governance and documentation to codify the single-surface landing rule across requirements, UX, motion, architecture, decisions, and handoff context.
 - Replaced the old animated four-moment landing demo with a static `Come inizi` explainer in the same narrative position, and removed the obsolete component/test path.
+
+## 2026-04-01
+
+- Executed a repository-wide governance and application audit across root scaffold docs, runtime routes, storage contracts, and generated audit artifacts.
+- Corrected the read-only audit specialist so its mandatory reading list now follows the root-scaffold canonical sources instead of legacy expectations.
+- Clarified the audit process to allow direct fixes for governance/navigation drift inside audit passes without normalizing runtime code regressions.
+- Re-verified and documented open runtime risks around forecast provenance labels, `transition-all` usage, and period-filter consistency candidates.

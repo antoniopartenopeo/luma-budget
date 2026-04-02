@@ -35,6 +35,11 @@ export interface LandingOutcome {
   description: string
 }
 
+export interface LandingTrustSignal {
+  title: string
+  description: string
+}
+
 export const LANDING_STORY_POINTS: LandingStoryPoint[] = [
   {
     icon: WalletCards,
@@ -80,7 +85,7 @@ export const LANDING_FLOW_STEPS: LandingFlowStep[] = [
     cue: "Importa i dati",
     stepLabel: "01",
     title: "Parti da un estratto conto",
-    description: "Carichi il CSV della tua banca. Numa organizza i movimenti, segnala le anomalie e ti lascia il controllo prima di elaborare."
+    description: "Carichi il file esportato dalla banca. Numa organizza i movimenti, segnala le anomalie e ti lascia il controllo prima di elaborare."
   },
   {
     icon: ArrowDownUp,
@@ -122,3 +127,22 @@ export const LANDING_OUTCOMES: LandingOutcome[] = [
     description: "Nessuna micro-gestione punitiva. Bastano pochi minuti per riallinearti e capire dove sta andando il mese."
   }
 ]
+
+export const LANDING_TRUST_SIGNALS: LandingTrustSignal[] = [
+  {
+    title: "Elaborazione in locale",
+    description: "Il percorso principale legge i dati nel browser sul tuo dispositivo."
+  },
+  {
+    title: "Nessun account obbligatorio",
+    description: "Puoi iniziare senza registrazione forzata."
+  },
+  {
+    title: "Nessun collegamento bancario obbligatorio",
+    description: "Parti dal file esportato o dal dataset demo."
+  },
+  {
+    title: "Prova con dati demo",
+    description: "Il percorso di import include già una prova sicura."
+  }
+] as const

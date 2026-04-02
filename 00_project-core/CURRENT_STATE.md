@@ -3,7 +3,7 @@
 scope: current-state
 owner: engineering
 status: active
-last-verified: 2026-04-01
+last-verified: 2026-04-02
 canonical-of: project-current-state
 
 ## Snapshot
@@ -14,6 +14,7 @@ canonical-of: project-current-state
 - Premium UI Phase: `PullToRefresh` and `ScrollToTop` utilities integrated into global layout (Mar 17)
 - Premium UI Phase: `AppleFluidBackground` master primitive implemented merging zero-weight mathematical mesh gradients with perfect volumetric CSS blending (Mar 22/23)
 - Public landing governance aligned as a dedicated acquisition surface with anchored narrative, constrained public navigation, and a static `Come inizi` explainer that replaces the previous sticky demo pattern (Mar 23/25)
+- Public trust wave 1 shipped on the acquisition surface (Apr 2): calmer metadata/copy, explicit demo CTA toward `/transactions/import`, inline trust strip, landing FAQ, dedicated public trust pages for FAQ/privacy, and publicly reachable updates/import surfaces without breaking the operational app shell
 - Landing immersive heroes now preserve one adaptive surface across desktop, smartphone, and reduced-motion contexts; motion intensity changes, but the composition does not fork into mobile/static alternates (Mar 25)
 - Dashboard `Composizione spese` is now governed as a frozen interaction surface and is out of scope by default for future UI cleanup or motion standardization (Apr 1)
 - Repository-wide governance/app audit completed (Apr 1): root-scaffold drift in audit guidance was corrected and the remaining runtime risks were made explicit for source-label semantics, transition contracts, and period-filter consistency
@@ -21,6 +22,7 @@ canonical-of: project-current-state
 ## What Is Stable
 
 - Public landing page now exposed at `/` with the operational dashboard moved to `/dashboard`
+- Public trust routes now exposed at `/faq` and `/privacy`, with `/transactions/import` and `/updates` publicly reachable as app-native routes
 - Public landing now encodes the canonical public product story: import -> month reading -> forecast readiness -> fixed-cost sustainability
 - The public landing now includes a dedicated Brain explainer between forecast storytelling and downstream decision guidance
 - The public landing now closes with an explicit local-first CTA that reinforces zero-cloud and no mandatory account for the first scan
@@ -38,6 +40,7 @@ canonical-of: project-current-state
 - Backup payloads are cleartext JSON and remain privacy-sensitive
 - Open banking code can drift from the documented local-first default if the runtime gate changes without further hardening
 - Landing motion and acquisition semantics require periodic reduced-motion and public-copy audits to avoid drift from governance
+- Public support and safe-trial routes must remain aligned with the landing's trust promises and must not drift into false support affordances or cloud-first implications
 - Immersive landing explainers must stay aligned with local-first messaging and must not imply enabled remote sync flows by default
 - The current Brain explainer uses a long-form scroll interlude with spring-smoothed depth separation and final reveal copy, which must remain synchronized with motion governance and the single-surface reduced-motion rule
 - Forecast provenance labels still drift in some runtime surfaces where `brain` is rendered as `Fonte Brain` instead of the governed `Fonte Core`

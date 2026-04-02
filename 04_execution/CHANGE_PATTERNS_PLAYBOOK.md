@@ -122,11 +122,12 @@ Passi minimi:
 4. Se introduci un interludio dedicato a Brain o ad altri moduli, trattalo come deep-dive della narrativa esistente, non come nuova promessa prodotto.
 5. Se Brain hero o altre hero immersive usano spring/parallax/reveal finale, documenta esplicitamente che `prefers-reduced-motion` attenua il moto senza cambiare il pattern visivo canonico; definisci anche blur consentito e copy finale di rientro al controllo umano.
 6. Sincronizza `02_specs/REQUIREMENTS.md`, `01_rules/UX_GOVERNANCE.md`, `01_rules/MOTION_PRINCIPLES.md` e `05_specialists/NUMA_UI_STANDARDS.md`.
-7. Riallinea i test landing per coprire ordine narrativo, vincoli di navigazione pubblica, la sezione `Come inizi` e gli eventuali explainers immersivi.
+7. Se allarghi le route pubbliche intenzionali, sincronizza anche `src/components/layout/route-shell.tsx`, `src/app/sitemap.ts`, `src/app/robots.ts` e i test della landing/public shell.
+8. Riallinea i test landing per coprire ordine narrativo, vincoli di navigazione pubblica, la sezione `Come inizi` e gli eventuali explainers immersivi.
 
 Guardrail:
 - Nessun claim pubblico su funzionalita non presenti nei moduli attivi.
-- Nessun routing pubblico dispersivo: anchor interne e entrypoint app intenzionali soltanto.
+- Nessun routing pubblico dispersivo: anchor interne e sole route pubbliche intenzionali dichiarate dalla governance.
 - Mantieni la sequenza canonica `import -> mese -> stima -> decisione`.
 - Un eventuale focus Brain deve restare readiness-aware, local-first e privo di implicazioni su sync remoti attivi di default.
 - Il reveal finale del Brain hero deve riportare il messaggio verso controllo e calma, non sostituire la CTA di prodotto.

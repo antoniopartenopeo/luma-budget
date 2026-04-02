@@ -20,7 +20,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: "/",
+        allow: ["/", "/faq", "/privacy", "/updates", "/transactions/import"],
         disallow: [
           "/api/",
           "/brain",
@@ -28,8 +28,7 @@ export default function robots(): MetadataRoute.Robots {
           "/insights",
           "/settings",
           "/simulator",
-          "/transactions",
-          "/updates"
+          "/transactions"
         ]
       }
     ],

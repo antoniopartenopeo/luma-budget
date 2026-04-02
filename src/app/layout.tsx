@@ -53,13 +53,13 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "NUMA Budget",
     title: "NUMA Budget | Finanza Personale Consapevole",
-    description: "Capisci il tuo mese prima che ti sfugga. Privacy locale-first e Financial Lab avanzato.",
+    description: "Finanza personale local-first per leggere il mese con più chiarezza, senza dipendere dal cloud.",
     images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "NUMA Budget | Finanza Personale Consapevole",
-    description: "Capisci il tuo mese prima che ti sfugga. Privacy locale-first e Financial Lab avanzato.",
+    description: "Finanza personale local-first per leggere il mese con più chiarezza, senza dipendere dal cloud.",
     images: ["/twitter-image"],
   },
 };

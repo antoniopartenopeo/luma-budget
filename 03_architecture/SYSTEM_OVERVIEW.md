@@ -3,7 +3,7 @@
 scope: system-architecture
 owner: engineering
 status: active
-last-verified: 2026-04-01
+last-verified: 2026-04-02
 canonical-of: architecture
 
 > Principles: feature-first modules, domain isolation, local-first persistence, explicitly gated remote integrations, deterministic narration.
@@ -31,8 +31,11 @@ src/
 Primary pages:
 
 - `/` Public landing and acquisition surface
+- `/faq` Public FAQ trust surface
+- `/privacy` Public privacy trust surface
 - `/dashboard` Dashboard
 - `/transactions`
+- `/transactions/import`
 - `/insights`
 - `/simulator`
 - `/settings`
@@ -55,6 +58,8 @@ Open banking routes are present in codebase but remain fail-closed unless `NUMA_
 
 - Public acquisition layer, separate from the authenticated or operational app shell
 - Uses curated story data and preview models to explain live product capabilities without requiring user data
+- Works alongside intentionally public trust and safe-trial routes (`/transactions/import`, `/faq`, `/privacy`, `/updates`) that stay publicly reachable without duplicating the app/navigation model
+- Dedicated trust pages (`/faq`, `/privacy`) stay outside the operational app shell, while app-native routes (`/transactions/import`, `/updates`) keep `AppShell` when opened directly
 - The canonical product flow on `/` is now explained through a static four-step `Come inizi` section rather than a dedicated animated scrollytelling module
 - May include isolated immersive explainers for specific modules such as Brain, but those explainers still operate on curated public preview state
 - The current Brain explainer is a dedicated scroll interlude with layered motion and final reveal copy, still scoped as presentation-only and not backed by live forecast repositories

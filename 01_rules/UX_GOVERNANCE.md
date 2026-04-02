@@ -7,8 +7,8 @@ last-verified: 2026-04-01
 canonical-of: ux-policy
 
 > **Stato:** Active
-> **Versione:** 1.7
-> **Ultimo aggiornamento:** 2026-04-01
+> **Versione:** 1.8
+> **Ultimo aggiornamento:** 2026-04-02
 
 Linee guida UX ad alto livello per mantenere fiducia, chiarezza e coerenza cross-feature.
 
@@ -74,8 +74,12 @@ Per processi tecnici estesi (es. training locale Neural Core), mostrare progress
 - La spiegazione operativa del flusso pubblico deve vivere in una sezione statica `Come inizi` in quattro passaggi, non in una hero separata che duplica la stessa narrativa con scene animate.
 - Eventuali interludi dedicati al Brain devono rafforzare trasparenza di readiness e fallback, non spostare la promessa su predizioni assolute.
 - La CTA primaria resta l'ingresso nell'app (`/dashboard`), non signup forzato o routing dispersivo.
+- Una CTA secondaria puo portare a una prova sicura via `/transactions/import`, ma deve restare esplicita sul fatto che si tratta di import/demo e non di onboarding remoto.
 - La CTA finale della landing puo esplicitare local-first, zero-cloud e assenza di account obbligatorio per la prima scansione, ma senza promettere piu di quanto l'app faccia davvero.
 - La navigazione pubblica deve rimanere contenuta in anchor interne e route esplicitamente pubbliche.
+- Le route pubbliche intenzionali oggi ammesse sono `/dashboard`, `/transactions/import`, `/faq`, `/privacy` e `/updates`.
+- `/faq` e `/privacy` sono trust surface standalone fuori `AppShell`; `/transactions/import` e `/updates` restano route app-native raggiungibili anche dalla landing senza perdere il chrome operativo interno.
+- Il footer pubblico deve esporre solo support surface reali; vietate voci statiche o affordance di contatto non ancora implementate.
 - La landing deve mantenere tono calmo e non punitivo: niente FOMO, urgenza artificiale o framing colpevolizzante.
 - La landing non deve implicare open banking o sync remoti come baseline se il prodotto resta local-first e fail-closed di default.
 

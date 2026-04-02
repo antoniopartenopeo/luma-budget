@@ -25,10 +25,13 @@ Schema usato in tutte le release:
 - Offline, backup, diagnostica e impostazioni avanzate ora spiegano meglio cosa resta locale e quali azioni sono irreversibili.
 - TopBar azioni/notifiche resa più robusta, con comportamento più stabile su trigger, badge e stato aggiornamenti.
 - Documentazione progetto centralizzata in una struttura unica con naming coerente e percorso di lettura esplicito.
+- Landing pubblica resa più credibile e prudente: trust signal visibili vicino alle CTA, FAQ essenziali inline e accesso esplicito alla prova con dati demo.
+- Nuove superfici pubbliche FAQ e Privacy per chiarire file supportati, modello local-first e continuità tramite backup locale.
 
 ### Fixed (Correzioni)
 - Allineati script e riferimenti governance per evitare path obsoleti nei check automatici e negli audit.
 - Migliorata la coerenza operativa tra release notes, feed notifiche in-app e versione corrente del pacchetto.
+- Ripristinata la continuità di navigazione interna verso `/updates` e `/transactions/import`, mantenendo queste route raggiungibili anche dalla landing senza uscire dal chrome operativo dell'app.
 
 ### Removed (Semplificazioni)
 - Rimossi dal flusso documentale attivo i file temporanei/storici non normativi (riclassificati in `docs/archive` e `docs/reports`).

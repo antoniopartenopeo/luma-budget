@@ -1,6 +1,5 @@
-import type { ReactNode } from "react"
 import { render, screen } from "@testing-library/react"
-import { describe, expect, it, beforeEach, vi } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 import { RouteShell } from "../route-shell"
 
 const usePathnameMock = vi.fn()
@@ -10,39 +9,39 @@ vi.mock("next/navigation", () => ({
 }))
 
 vi.mock("../app-shell", () => ({
-  AppShell: ({ children }: { children: ReactNode }) => (
-    <div data-testid="app-shell">{children}</div>
-  )
+  AppShell: ({ children }: { children: React.ReactNode }) => <div data-testid="app-shell">{children}</div>
 }))
 
 describe("RouteShell", () => {
-  beforeEach(() => {
-    usePathnameMock.mockReset()
-  })
+  it.each(["/", "/faq", "/privacy", "/offline"])(
+    "keeps %s outside the operational app shell",
+    (pathname) => {
+      usePathnameMock.mockReturnValue(pathname)
 
-  it("renders public routes without the app shell", () => {
-    usePathnameMock.mockReturnValue("/")
+      render(
+        <RouteShell>
+          <div>Contenuto pubblico</div>
+        </RouteShell>
+      )
 
-    render(
-      <RouteShell>
-        <div>Landing</div>
-      </RouteShell>
-    )
+      expect(screen.getByText("Contenuto pubblico")).toBeInTheDocument()
+      expect(screen.queryByTestId("app-shell")).not.toBeInTheDocument()
+    }
+  )
 
-    expect(screen.getByText("Landing")).toBeInTheDocument()
-    expect(screen.queryByTestId("app-shell")).not.toBeInTheDocument()
-  })
+  it.each(["/dashboard", "/updates", "/transactions/import"])(
+    "wraps %s in the operational app shell",
+    (pathname) => {
+      usePathnameMock.mockReturnValue(pathname)
 
-  it("wraps internal routes with the app shell", () => {
-    usePathnameMock.mockReturnValue("/dashboard")
+      render(
+        <RouteShell>
+          <div>Contenuto operativo</div>
+        </RouteShell>
+      )
 
-    render(
-      <RouteShell>
-        <div>Dashboard</div>
-      </RouteShell>
-    )
-
-    expect(screen.getByTestId("app-shell")).toBeInTheDocument()
-    expect(screen.getByText("Dashboard")).toBeInTheDocument()
-  })
+      expect(screen.getByTestId("app-shell")).toBeInTheDocument()
+      expect(screen.getByText("Contenuto operativo")).toBeInTheDocument()
+    }
+  )
 })

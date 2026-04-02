@@ -1,43 +1,11 @@
-"use client"
+import type { Metadata } from "next"
+import { TransactionsImportPageContent } from "./transactions-import-page-content"
 
-import { useState } from "react"
-import { PageHeader } from "@/components/ui/page-header"
-import { CsvImportWizard } from "@/features/import-csv/components/csv-import-wizard"
-import { BankCsvHelpSection } from "@/features/import-csv/components/bank-csv-help-section"
-import { ImportCsvEngineCard } from "@/features/import-csv/components/import-csv-engine-card"
-import { MacroSection, macroItemVariants } from "@/components/patterns/macro-section"
-import { StaggerContainer } from "@/components/patterns/stagger-container"
-import { motion } from "framer-motion"
+export const metadata: Metadata = {
+  title: "Importa CSV | Numa Budget",
+  description: "Prova Numa con il tuo file esportato o con il dataset demo integrato, senza account obbligatorio."
+}
 
 export default function TransactionsImportPage() {
-    const [wizardStep, setWizardStep] = useState<"upload" | "review" | "summary">("upload")
-
-    return (
-        <StaggerContainer className="space-y-6 w-full">
-            <motion.div variants={macroItemVariants}>
-                <PageHeader
-                    title="Importa CSV"
-                    description="Carica il file della banca e controlla i movimenti prima di aggiungerli."
-                />
-            </motion.div>
-
-            <motion.div variants={macroItemVariants}>
-                <ImportCsvEngineCard />
-            </motion.div>
-
-            <motion.div variants={macroItemVariants}>
-                <MacroSection contentClassName="p-0" className="w-full">
-                    <div className="min-h-[70vh]">
-                        <CsvImportWizard onStepChange={setWizardStep} />
-                    </div>
-                </MacroSection>
-            </motion.div>
-
-            {wizardStep === "upload" ? (
-                <motion.div variants={macroItemVariants}>
-                    <BankCsvHelpSection />
-                </motion.div>
-            ) : null}
-        </StaggerContainer>
-    )
+  return <TransactionsImportPageContent />
 }

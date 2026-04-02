@@ -21,6 +21,7 @@ Canonical live project context now lives in:
 | Module | Status | Description |
 |---|---|---|
 | Landing (`/`) | Stable | Superficie pubblica di acquisizione con hero immersivo, sezione statica `Come inizi` in 4 passaggi, interludio Brain multilayer e CTA finale zero-cloud/no-account verso `/dashboard` |
+| FAQ + Privacy (`/faq`, `/privacy`) | Active | Superfici pubbliche di rassicurazione su file supportati, prova demo, modello local-first e continuità tramite backup locale |
 | Dashboard | Stable | KPI finanziari, composizione spese interattiva, movimenti recenti collegati all'elenco completo, filtri periodo persistenti in URL (`Mese/3M/6M/12M`) |
 | Transactions | Stable | Ledger responsive a row card/table, filtri periodo/range, export CSV, quick add da TopBar |
 | Import CSV | Stable | Wizard multi-step con parse/normalize/dedupe/enrich/grouping merchant + review guidata di gruppi, categorie e duplicati prima del salvataggio |
@@ -48,8 +49,11 @@ Canonical system overview: `03_architecture/SYSTEM_OVERVIEW.md`
 
 ### Runtime routes
 - `/` Public landing page
+- `/faq` Public FAQ page
+- `/privacy` Public privacy overview page
 - `/dashboard` Dashboard
 - `/transactions`
+- `/transactions/import`
 - `/insights`
 - `/simulator`
 - `/settings`

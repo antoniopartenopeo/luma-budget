@@ -47,3 +47,11 @@ canonical-of: execution-work-log
 - Corrected the read-only audit specialist so its mandatory reading list now follows the root-scaffold canonical sources instead of legacy expectations.
 - Clarified the audit process to allow direct fixes for governance/navigation drift inside audit passes without normalizing runtime code regressions.
 - Re-verified and documented open runtime risks around forecast provenance labels, `transition-all` usage, and period-filter consistency candidates.
+
+## 2026-04-02
+
+- Implemented trust wave 1 on the public surface: calmer landing copy and metadata, explicit demo CTA toward `/transactions/import`, inline trust strip, and landing FAQ.
+- Added public support routes `/faq` and `/privacy`, made `/updates` and `/transactions/import` publicly reachable from the landing, and aligned sitemap/robots with the intended public perimeter.
+- Re-aligned canonical governance and entrypoint docs so public navigation, support surfaces, and safe-trial behavior stay explicit and testable.
+- Corrected the public/app shell split so only `/faq` and `/privacy` stay outside `AppShell`, while `/updates` and `/transactions/import` remain publicly reachable without breaking internal navigation continuity.
+- Consolidated public FAQ copy into a shared source of truth reused by the landing and `/faq`, and brought release traceability back in sync with the Wave 1 public changes.

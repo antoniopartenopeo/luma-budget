@@ -82,7 +82,7 @@ export function LandingHeroConsole() {
       <div className="relative overflow-hidden rounded-[1.8rem] border border-primary/14 bg-primary/8 px-5 py-5 sm:px-6 sm:py-6">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.5),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.06),transparent_46%)]" />
         <p className="relative text-[15px] font-medium leading-relaxed text-foreground">
-          Numa non e un tracker piu elegante. E un modo piu calmo per leggere il mese e decidere con piu lucidita.
+          Numa non e un tracker piu elegante. E un modo piu calmo per leggere il mese e decidere con piu chiarezza.
         </p>
       </div>
     </div>

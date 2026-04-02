@@ -46,7 +46,7 @@ Regole:
 
 ## Gerarchia Layout
 
-Per pagine core app (`/dashboard`, `/transactions`, `/insights`, `/simulator`, `/settings`, `/brain`, `/updates`):
+Per pagine core app (`/dashboard`, `/transactions`, `/transactions/import`, `/insights`, `/simulator`, `/settings`, `/brain`, `/updates`):
 1. `PageHeader`
 2. `StaggerContainer`
 3. una macro-surface dominante (`MacroSection` o card equivalente)
@@ -70,13 +70,17 @@ Pattern richiesto:
 5. opzionalmente un solo explainer immersivo dedicato al Brain come approfondimento della fase forecast
 6. CTA finale esplicita su local-first / zero-cloud / no account obbligatorio per la prima scansione
 7. CTA finale diretta all'app (`/dashboard`)
+8. support surface pubbliche reali per trust/FAQ/privacy senza affordance false
 
 Invarianti:
 - ordine narrativo bloccato: import -> lettura del mese -> stima -> decisione su nuova fissa
 - un eventuale focus Brain appartiene alla fase "stima", non apre una quinta promessa autonoma
 - copy pubblico solo su feature reali, niente hype generico
 - preview veritiere e isolate, mai dati utente reali
-- navigazione pubblica limitata a anchor interne e app entry intenzionali
+- navigazione pubblica limitata a anchor interne e route pubbliche intenzionali (`/dashboard`, `/transactions/import`, `/faq`, `/privacy`, `/updates`)
+- `/faq` e `/privacy` sono support surface standalone fuori `AppShell`; `/transactions/import` e `/updates` restano route app-native raggiungibili anche dalla landing
+- eventuale CTA secondaria hero ammessa verso `/transactions/import` per prova sicura/demo, senza presentarla come signup o sync flow
+- footer supporto solo con link reali a superfici pubbliche implementate
 - hero e explainers immersivi della landing devono restare lo stesso componente adattivo su desktop, smartphone e contesti `prefers-reduced-motion`; puo cambiare solo l'intensita del motion, non il pattern visivo
 - su mobile il primo viewport deve mantenere leggibile promessa, descrizione e CTA principale
 - il reveal finale del Brain hero deve richiudere il messaggio su controllo del mese e calma, non su promessa autonoma di AI
@@ -209,5 +213,5 @@ Invarianti:
 
 ---
 
-**Versione**: 2.1.1
-**Ultimo aggiornamento**: 2026-04-01
+**Versione**: 2.1.2
+**Ultimo aggiornamento**: 2026-04-02

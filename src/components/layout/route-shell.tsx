@@ -7,7 +7,12 @@ interface RouteShellProps {
   children: React.ReactNode
 }
 
-const PUBLIC_ROUTES = new Set(["/", "/offline"])
+const PUBLIC_ROUTES = new Set([
+  "/",
+  "/offline",
+  "/faq",
+  "/privacy"
+])
 
 export function RouteShell({ children }: RouteShellProps) {
   const pathname = usePathname()

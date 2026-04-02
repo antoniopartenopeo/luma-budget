@@ -66,12 +66,15 @@ describe("LandingPage", () => {
 
     expect(screen.getAllByTestId("brand-logo").length).toBeGreaterThan(0)
     expect(screen.getByRole("heading", { name: /Capisci il mese prima di prendere una decisione\./i })).toBeInTheDocument()
-    expect(screen.getByText(/stima il margine e ti aiuta a capire se una nuova spesa fissa/i)).toBeInTheDocument()
-    expect(screen.getByText("Tutto in locale")).toBeInTheDocument()
+    expect(screen.getByText(/stima il margine del mese e ti aiuta a valutare una nuova spesa fissa/i)).toBeInTheDocument()
+    expect(screen.getByText("Elaborazione in locale")).toBeInTheDocument()
+    expect(screen.getByText("Nessun collegamento bancario obbligatorio")).toBeInTheDocument()
+    expect(screen.getAllByText("Prova con dati demo").length).toBeGreaterThan(0)
     expect(screen.getByRole("region", { name: /Il saldo non basta\./i })).toBeInTheDocument()
     expect(screen.getByRole("region", { name: /Quattro passaggi, nessun rito\./i })).toBeInTheDocument()
     expect(screen.getByText(/Importi un CSV, leggi il mese/i)).toBeInTheDocument()
     expect(screen.getByRole("region", { name: /Meno attrito\./i })).toBeInTheDocument()
+    expect(screen.getByRole("region", { name: /Le risposte che servono prima di fidarti\./i })).toBeInTheDocument()
     expect(screen.getByRole("region", { name: /Apri Numa\. Parti da/i })).toBeInTheDocument()
 
     expect(screen.getByTestId("landing-differentiator-cards")).toBeInTheDocument()
@@ -79,8 +82,19 @@ describe("LandingPage", () => {
 
     const hrefs = screen.getAllByRole("link").map((link) => link.getAttribute("href"))
     expect(hrefs.length).toBeGreaterThan(0)
-    expect(hrefs.every((href) => href === "/dashboard" || href?.startsWith("#"))).toBe(true)
+    expect(
+      hrefs.every(
+        (href) =>
+          href === "/dashboard" ||
+          href === "/transactions/import" ||
+          href === "/faq" ||
+          href === "/privacy" ||
+          href === "/updates" ||
+          href?.startsWith("#")
+      )
+    ).toBe(true)
     expect(screen.getAllByRole("link", { name: /Apri Numa/i }).length).toBeGreaterThan(0)
-    expect(screen.queryByRole("link", { name: /Aggiornamenti/i })).not.toBeInTheDocument()
+    expect(screen.getByRole("link", { name: /Aggiornamenti/i })).toBeInTheDocument()
+    expect(screen.queryByText("Contatti")).not.toBeInTheDocument()
   })
 })

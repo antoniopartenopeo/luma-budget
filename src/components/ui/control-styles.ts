@@ -1,4 +1,10 @@
 import { cva } from "class-variance-authority"
+import {
+  GLASS_V2_CARD_CLASS,
+  GLASS_V2_PANEL_CLASS,
+  LIQUID_CAPSULE_CLASS,
+  LIQUID_REFRACTION_CLASS
+} from "@/components/ui/glass-tokens"
 
 export const premiumFieldLabelClassName =
   "pl-1 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80"
@@ -12,8 +18,11 @@ export const premiumSectionEyebrowClassName =
 export const metricEyebrowClassName =
   "text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80"
 
-const premiumControlChrome =
-  "border-white/30 bg-white/58 shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_18px_36px_-28px_rgba(15,23,42,0.42)] backdrop-blur-md hover:bg-white/72 focus-visible:border-primary/35 focus-visible:ring-primary/15 dark:border-white/12 dark:bg-white/[0.06] dark:hover:bg-white/[0.09] dark:focus-visible:border-primary/40"
+const premiumControlChrome = [
+  LIQUID_CAPSULE_CLASS,
+  LIQUID_REFRACTION_CLASS,
+  "backdrop-blur-md border-white/20 bg-white/20 hover:bg-white/26 focus-visible:border-primary/35 focus-visible:ring-primary/15 dark:border-white/12 dark:bg-white/[0.05] dark:hover:bg-white/[0.08] dark:focus-visible:border-primary/40"
+].join(" ")
 
 export const inputControlVariants = cva(
   "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground w-full min-w-0 rounded-[var(--radius-md)] border px-3 py-1 text-base shadow-xs outline-none transition-all duration-300 ease-out md:text-sm touch-manipulation file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
@@ -88,7 +97,7 @@ export const selectContentVariants = cva(
         default:
           "bg-popover text-popover-foreground rounded-md border shadow-md",
         premium:
-          "glass-panel rounded-[1.5rem] border border-white/45 p-1.5 text-popover-foreground shadow-2xl dark:border-white/12",
+          `${GLASS_V2_PANEL_CLASS} glass-panel rounded-[1.5rem] border border-white/45 p-1.5 text-popover-foreground shadow-2xl dark:border-white/12`,
       },
     },
     defaultVariants: {
@@ -104,7 +113,7 @@ export const tabsListVariants = cva(
       variant: {
         default: "h-9 w-fit rounded-lg bg-muted p-[3px]",
         premium:
-          "glass-card h-auto w-fit rounded-[1.25rem] border border-white/30 bg-white/55 p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] dark:border-white/10 dark:bg-white/[0.05]",
+          `${GLASS_V2_CARD_CLASS} glass-card h-auto w-fit rounded-[1.25rem] border border-white/24 bg-white/22 p-1.5 dark:border-white/10 dark:bg-white/[0.05]`,
       },
       density: {
         default: "",

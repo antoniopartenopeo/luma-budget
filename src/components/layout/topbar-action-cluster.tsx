@@ -4,6 +4,7 @@ import { type ComponentType, type ReactNode, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Bell, BrainCircuit, Eye, EyeOff, Monitor, Moon, Sparkles, Sun } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { LIQUID_CAPSULE_CLASS, LIQUID_REFRACTION_CLASS } from "@/components/ui/glass-tokens"
 import { cn } from "@/lib/utils"
 import { usePrivacyStore } from "@/features/privacy/privacy.store"
 import { useSettings } from "@/features/settings/api/use-settings"
@@ -14,7 +15,6 @@ import { type TopbarPanelId } from "./topbar-panel-id"
 import { TopbarAvatar } from "./topbar-avatar"
 import {
     TOPBAR_CLUSTER_DIVIDER_CLASS,
-    TOPBAR_GLASS_OVERLAY_CLASS,
     TOPBAR_ICON_BUTTON_CLASS,
     TOPBAR_INLINE_LABEL_CLASS,
 } from "./topbar-tokens"
@@ -155,10 +155,8 @@ function MobileActionCluster({
             initial={false}
             transition={{ type: "spring", stiffness: 360, damping: 30, mass: 0.9 }}
             data-testid="topbar-action-cluster"
-            className="group relative w-full overflow-hidden rounded-[28px] border border-white/50 bg-white/45 p-1 shadow-sm backdrop-blur-xl dark:border-white/15 dark:bg-white/[0.07]"
+            className={cn("group relative w-full rounded-[28px] p-1", LIQUID_CAPSULE_CLASS, LIQUID_REFRACTION_CLASS)}
         >
-            <div className={TOPBAR_GLASS_OVERLAY_CLASS} />
-
             <div className="relative z-10">
                 <div className="flex items-center gap-1">
                     {mobileLeadingSlot ? <div className="shrink-0">{mobileLeadingSlot}</div> : null}
@@ -296,17 +294,13 @@ export function TopbarActionCluster({
             initial={false}
             transition={{ type: "spring", stiffness: 360, damping: 30, mass: 0.9 }}
             data-testid="topbar-action-cluster"
-            className={cn(
-                "group relative min-w-0 overflow-visible rounded-full motion-reduce:transform-none",
-                isEmbedded
-                    ? cn("p-0", activeDesktopUtilityPanel && "w-full")
-                    : "border-white/50 p-1 glass-card bg-white/45 hover:shadow-lg dark:border-white/15 dark:bg-white/[0.07]"
-            )}
+                            className={cn(
+                                "group relative min-w-0 overflow-visible rounded-full motion-reduce:transform-none",
+                                isEmbedded
+                                    ? cn("p-0", activeDesktopUtilityPanel && "w-full")
+                                    : cn("p-1 hover:shadow-lg", LIQUID_CAPSULE_CLASS, LIQUID_REFRACTION_CLASS)
+                            )}
         >
-            {!isEmbedded && (
-                <div className={TOPBAR_GLASS_OVERLAY_CLASS} />
-            )}
-
             <div className="relative z-10 flex min-w-0 items-center gap-1">
                 <DesktopClusterSlot show={!activeDesktopUtilityPanel || activeDesktopUtilityPanel === "flash"}>
                     <TopbarFlashPreview

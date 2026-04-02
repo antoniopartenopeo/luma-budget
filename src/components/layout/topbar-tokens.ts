@@ -46,7 +46,7 @@ export const TOPBAR_PANEL_TRIGGER_OPEN_CLASS =
 
 /** Shared gradient overlay for glass surfaces (capsule, cluster, standalone). */
 export const TOPBAR_GLASS_OVERLAY_CLASS =
-    "pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-br from-white/35 via-transparent to-transparent dark:from-white/[0.08]"
+    "pointer-events-none absolute inset-0 rounded-[inherit] bg-[linear-gradient(135deg,rgba(255,255,255,0.24)_0%,rgba(255,255,255,0.08)_18%,transparent_48%)] dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0.03)_18%,transparent_52%)]"
 
 // ── Tone resolution ────────────────────────────────────────────────
 

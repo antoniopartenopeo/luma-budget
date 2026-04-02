@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react"
 import { AmbientBackdrop } from "./ambient-backdrop"
 import { BrandLogo } from "@/components/ui/brand-logo"
 import { Button } from "@/components/ui/button"
+import { LIQUID_CAPSULE_CLASS, LIQUID_REFRACTION_CLASS } from "@/components/ui/glass-tokens"
 import { cn } from "@/lib/utils"
 
 interface PublicPageFrameProps {
@@ -21,7 +22,7 @@ export function PublicPageFrame({
       <AmbientBackdrop />
 
       <header className="px-4 pt-4 sm:pt-6">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 rounded-full border border-black/8 bg-background/72 px-4 py-3 shadow-[0_24px_60px_-36px_rgba(15,23,42,0.32)] backdrop-blur-xl dark:border-white/10">
+        <div className={cn("mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 rounded-full px-4 py-3", LIQUID_CAPSULE_CLASS, LIQUID_REFRACTION_CLASS)}>
           <Link href="/" aria-label="Torna alla landing">
             <BrandLogo variant="full" height={26} className="w-auto max-w-[132px] opacity-95" />
           </Link>

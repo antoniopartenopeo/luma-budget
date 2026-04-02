@@ -6,12 +6,13 @@ import { Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { LIQUID_CAPSULE_CLASS, LIQUID_CHROME_CLASS, LIQUID_REFRACTION_CLASS } from "@/components/ui/glass-tokens"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Sidebar } from "./sidebar"
 import { TopbarActionCluster } from "./topbar-action-cluster"
 import { type TopbarPanelId } from "./topbar-panel-id"
 import { TopbarQuickTransaction } from "./topbar-quick-transaction"
-import { TOPBAR_CLUSTER_DIVIDER_CLASS, TOPBAR_GLASS_OVERLAY_CLASS } from "./topbar-tokens"
+import { TOPBAR_CLUSTER_DIVIDER_CLASS } from "./topbar-tokens"
 
 const DESKTOP_MENU_SHEET_ID = "topbar-desktop-menu-sheet"
 const MOBILE_MENU_SHEET_ID = "topbar-mobile-menu-sheet"
@@ -38,7 +39,8 @@ export function TopBar() {
     return (
         <header
             className={cn(
-                "sticky top-0 z-30 border-b border-white/30 glass-chrome dark:border-white/8 lg:pl-64",
+                "sticky top-0 z-30 border-b border-white/18 lg:pl-64",
+                LIQUID_CHROME_CLASS,
                 "sm:border-none sm:bg-transparent sm:backdrop-blur-none sm:[box-shadow:none] sm:dark:bg-transparent"
             )}
         >
@@ -68,14 +70,14 @@ export function TopBar() {
                         <div
                             data-testid="topbar-desktop-capsule"
                             className={cn(
-                                "group relative flex h-12 min-w-0 flex-1 items-center rounded-full border bg-white/45 pl-4 pr-3 py-1.5 backdrop-blur-xl transition-[border-color,box-shadow,background-color] duration-500 ease-out focus-within:border-primary/30 focus-within:shadow-lg dark:bg-white/[0.07]",
+                                "group relative flex h-12 min-w-0 flex-1 items-center rounded-full pl-4 pr-3 py-1.5 transition-[border-color,box-shadow,background-color] duration-500 ease-out focus-within:border-primary/30 focus-within:shadow-lg",
+                                LIQUID_CAPSULE_CLASS,
+                                LIQUID_REFRACTION_CLASS,
                                 isDesktopUtilityPanelOpen 
                                     ? "border-primary/30 shadow-[0_4px_80px_-12px_hsl(var(--primary)/0.35)] dark:border-primary/20 dark:shadow-[0_4px_80px_-12px_hsl(var(--primary)/0.25)]" 
                                     : "border-white/50 shadow-sm dark:border-white/15"
                             )}
                         >
-                            <div className={TOPBAR_GLASS_OVERLAY_CLASS} />
-
                             <div className="relative z-10 flex min-w-0 flex-1 items-center">
                                 {!isSettingsPage && (
                                     <motion.div

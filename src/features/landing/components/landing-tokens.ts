@@ -1,8 +1,14 @@
+import {
+  GLASS_V2_PANEL_CLASS,
+  LIQUID_CAPSULE_CLASS,
+  LIQUID_REFRACTION_CLASS
+} from "@/components/ui/glass-tokens"
+
 export const LANDING_NAV_LINK_CLASS =
   "rounded-full px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground/72 transition-colors hover:bg-black/[0.04] hover:text-foreground/90 dark:hover:bg-white/[0.08]"
 
 export const LANDING_FLOATING_NAV_CLASS =
-  "flex items-center gap-0.5 rounded-full border border-white/8 bg-white/24 px-1.5 py-1 shadow-[0_10px_22px_-18px_rgba(15,23,42,0.28)] backdrop-blur-sm dark:border-white/7 dark:bg-black/18"
+  `${LIQUID_CAPSULE_CLASS} ${LIQUID_REFRACTION_CLASS} flex items-center gap-0.5 rounded-full px-1.5 py-1`
 
 export const LANDING_SECTION_EYEBROW_CLASS =
   "text-[11px] font-semibold uppercase tracking-[0.18em] text-primary"
@@ -16,4 +22,4 @@ export const LANDING_SECTION_DESCRIPTION_CLASS =
 
 
 export const LANDING_HERO_FRAME_CLASS =
-  "relative z-10 overflow-hidden rounded-[2.6rem] border border-white/16 bg-background/34 px-6 py-8 shadow-[0_40px_120px_-70px_rgba(15,23,42,0.5)] backdrop-blur-md sm:px-10 sm:py-12 lg:px-14 lg:py-14 dark:border-white/10 dark:bg-black/16"
+  `${GLASS_V2_PANEL_CLASS} relative z-10 rounded-[2.6rem] px-6 py-8 shadow-[0_40px_120px_-70px_rgba(15,23,42,0.38)] sm:px-10 sm:py-12 lg:px-14 lg:py-14`

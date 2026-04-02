@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react"
 import { Plus } from "lucide-react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
+import { LIQUID_CAPSULE_CLASS, LIQUID_REFRACTION_CLASS } from "@/components/ui/glass-tokens"
 import { cn } from "@/lib/utils"
 import { QuickExpenseInput } from "@/features/transactions/components/quick-expense-input"
 import { type TopbarPanelId } from "./topbar-panel-id"
@@ -92,7 +93,7 @@ export function TopbarQuickTransaction({
                     "group rounded-[1.4rem]",
                     isEmbedded
                         ? "bg-transparent p-0"
-                        : "border border-white/50 bg-white/45 p-1 shadow-sm backdrop-blur-xl dark:border-white/15 dark:bg-white/[0.07]"
+                        : cn("p-1", LIQUID_CAPSULE_CLASS, LIQUID_REFRACTION_CLASS)
                 )}
                 containerRef={containerRef}
                 isOpen={resolvedIsOpen}

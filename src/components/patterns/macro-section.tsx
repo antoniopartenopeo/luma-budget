@@ -4,6 +4,7 @@ import * as React from "react"
 import { motion, HTMLMotionProps, Variants, useReducedMotion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { GLASS_V2_PANEL_CLASS } from "@/components/ui/glass-tokens"
 
 interface MacroSectionProps extends Omit<HTMLMotionProps<"div">, "title" | "children"> {
     title?: React.ReactNode
@@ -60,7 +61,8 @@ export function MacroSection({
             <Card
                 data-testid="macro-card"
                 className={cn(
-                    "relative overflow-hidden rounded-[2.5rem] border-none p-1 glass-panel backdrop-blur-xl",
+                    "relative overflow-hidden rounded-[2.5rem] border-none p-1 glass-panel",
+                    GLASS_V2_PANEL_CLASS,
                     isWarning && "shadow-[0_0_40px_-10px_rgba(251,191,36,0.2)] ring-1 ring-amber-500/20",
                     isCritical && "shadow-[0_0_40px_-10px_rgba(244,63,94,0.3)] ring-1 ring-rose-500/20"
                 )}>

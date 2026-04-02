@@ -13,9 +13,12 @@ import { type TopbarPanelId } from "./topbar-panel-id"
 import { TopbarQuickTransaction } from "./topbar-quick-transaction"
 import { TOPBAR_CLUSTER_DIVIDER_CLASS, TOPBAR_GLASS_OVERLAY_CLASS } from "./topbar-tokens"
 
-function SidebarSheetPanel({ onNavigate }: { onNavigate: () => void }) {
+const DESKTOP_MENU_SHEET_ID = "topbar-desktop-menu-sheet"
+const MOBILE_MENU_SHEET_ID = "topbar-mobile-menu-sheet"
+
+function SidebarSheetPanel({ contentId, onNavigate }: { contentId: string; onNavigate: () => void }) {
     return (
-        <SheetContent side="left" className="w-64 border-none bg-transparent p-0 shadow-2xl">
+        <SheetContent id={contentId} side="left" className="w-64 border-none bg-transparent p-0 shadow-2xl">
             <div className="sr-only">
                 <SheetTitle>Menu di Navigazione</SheetTitle>
             </div>
@@ -43,12 +46,21 @@ export function TopBar() {
                 <div className="hidden h-20 items-center gap-4 px-4 md:px-8 sm:flex">
                     <div className="hidden items-center gap-2 sm:flex">
                         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-                            <SheetTrigger asChild>
-                                <Button variant="ghost" size="icon" className="lg:hidden shrink-0 h-10 w-10">
+                            <SheetTrigger asChild aria-controls={DESKTOP_MENU_SHEET_ID}>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    aria-label="Apri menu di navigazione"
+                                    title="Apri menu di navigazione"
+                                    className="lg:hidden shrink-0 h-10 w-10"
+                                >
                                     <Menu className="h-6 w-6" />
                                 </Button>
                             </SheetTrigger>
-                            <SidebarSheetPanel onNavigate={() => setIsMenuOpen(false)} />
+                            <SidebarSheetPanel
+                                contentId={DESKTOP_MENU_SHEET_ID}
+                                onNavigate={() => setIsMenuOpen(false)}
+                            />
                         </Sheet>
                     </div>
 
@@ -125,14 +137,23 @@ export function TopBar() {
                         <TopbarActionCluster
                             surface="mobile"
                             mobileLeadingSlot={(
-                                <SheetTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0">
+                                <SheetTrigger asChild aria-controls={MOBILE_MENU_SHEET_ID}>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        aria-label="Apri menu di navigazione"
+                                        title="Apri menu di navigazione"
+                                        className="h-10 w-10 shrink-0"
+                                    >
                                         <Menu className="h-5 w-5" />
                                     </Button>
                                 </SheetTrigger>
                             )}
                         />
-                        <SidebarSheetPanel onNavigate={() => setIsMenuOpen(false)} />
+                        <SidebarSheetPanel
+                            contentId={MOBILE_MENU_SHEET_ID}
+                            onNavigate={() => setIsMenuOpen(false)}
+                        />
                     </Sheet>
                 </div>
 

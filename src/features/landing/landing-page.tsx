@@ -134,10 +134,7 @@ export function LandingPage() {
               <AppleFluidBackground />
             </div>
 
-            <div className="pointer-events-none absolute inset-0 z-[1]">
-              <div className="absolute left-1/2 top-[48%] h-[24rem] w-[24rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/30 bg-white/[0.05] shadow-[0_0_120px_-70px_rgba(255,255,255,0.9)] backdrop-blur-[2px] sm:h-[32rem] sm:w-[32rem] dark:border-white/12 dark:bg-white/[0.03]" />
-              <div className="absolute left-1/2 top-[48%] h-[16rem] w-[16rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/22 bg-white/[0.04] sm:h-[21rem] sm:w-[21rem] dark:border-white/10 dark:bg-white/[0.02]" />
-            </div>
+
 
             <div className={LANDING_HERO_FRAME_CLASS}>
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.26),transparent_42%)] dark:bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_44%)]" />
@@ -323,8 +320,6 @@ export function LandingPage() {
             </div>
             <div className="pointer-events-none absolute inset-0 z-[1] overflow-hidden">
               <div className="absolute left-1/2 top-[36%] h-[22rem] w-[22rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-3xl sm:h-[28rem] sm:w-[28rem]" />
-              <div className="absolute left-1/2 top-[42%] h-[30rem] w-[30rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/20 dark:border-white/8" />
-              <div className="absolute left-1/2 top-[42%] h-[22rem] w-[22rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/18 dark:border-white/7" />
             </div>
             <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center text-center">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">

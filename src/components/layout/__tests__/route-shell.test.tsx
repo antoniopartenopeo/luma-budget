@@ -13,7 +13,7 @@ vi.mock("../app-shell", () => ({
 }))
 
 describe("RouteShell", () => {
-  it.each(["/", "/faq", "/privacy", "/offline"])(
+  it.each(["/", "/faq", "/privacy", "/offline", "/updates"])(
     "keeps %s outside the operational app shell",
     (pathname) => {
       usePathnameMock.mockReturnValue(pathname)
@@ -29,7 +29,7 @@ describe("RouteShell", () => {
     }
   )
 
-  it.each(["/dashboard", "/updates", "/transactions/import"])(
+  it.each(["/dashboard", "/transactions/import"])(
     "wraps %s in the operational app shell",
     (pathname) => {
       usePathnameMock.mockReturnValue(pathname)

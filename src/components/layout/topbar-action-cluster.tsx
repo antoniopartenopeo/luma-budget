@@ -2,14 +2,13 @@
 
 import { type ComponentType, type ReactNode, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Bell, BrainCircuit, Eye, EyeOff, Monitor, Moon, Sparkles, Sun } from "lucide-react"
+import { BrainCircuit, Eye, EyeOff, Monitor, Moon, Sparkles, Sun } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { LIQUID_CAPSULE_CLASS, LIQUID_REFRACTION_CLASS } from "@/components/ui/glass-tokens"
 import { cn } from "@/lib/utils"
 import { usePrivacyStore } from "@/features/privacy/privacy.store"
 import { useSettings } from "@/features/settings/api/use-settings"
 import { TopbarFlashPreview } from "@/features/flash/components/topbar-flash-preview"
-import { TopbarNotifications } from "@/features/notifications/components/topbar-notifications"
 import { TopbarBrainPreview } from "@/features/insights/components/topbar-brain-preview"
 import { type TopbarPanelId } from "./topbar-panel-id"
 import { TopbarAvatar } from "./topbar-avatar"
@@ -137,7 +136,7 @@ function MobileActionCluster({
     setResolvedActivePanel: (panelId: TopbarPanelId | null) => void
     theme: string | undefined
 }) {
-    const expandablePanels: MobileExpandablePanelId[] = ["quick", "flash", "theme", "brain", "notifications"]
+    const expandablePanels: MobileExpandablePanelId[] = ["quick", "flash", "theme", "brain"]
     const mobileOpenPanel = resolvedActivePanel && expandablePanels.includes(resolvedActivePanel)
         ? resolvedActivePanel
         : null
@@ -145,7 +144,6 @@ function MobileActionCluster({
     const MOBILE_REGISTRY: Array<{ id: MobileExpandablePanelId; icon: ReactNode }> = [
         { id: "theme", icon: theme === "dark" ? <Moon className="h-5 w-5" /> : theme === "light" ? <Sun className="h-5 w-5" /> : <Monitor className="h-5 w-5" /> },
         { id: "brain", icon: <BrainCircuit className="h-5 w-5" /> },
-        { id: "notifications", icon: <Bell className="h-5 w-5" /> },
         { id: "quick", icon: <Sparkles className="h-5 w-5" /> }
     ]
 
@@ -284,8 +282,7 @@ export function TopbarActionCluster({
         triggerClass: string
     }> = [
         { id: "theme", Component: TopbarThemeSelector, triggerClass: cn(TOPBAR_ICON_BUTTON_CLASS, "border-none text-primary") },
-        { id: "brain", Component: TopbarBrainPreview, triggerClass: cn(TOPBAR_ICON_BUTTON_CLASS, "relative overflow-visible border-none text-primary") },
-        { id: "notifications", Component: TopbarNotifications, triggerClass: cn(TOPBAR_ICON_BUTTON_CLASS, "border-none bg-transparent text-primary hover:bg-primary/10") }
+        { id: "brain", Component: TopbarBrainPreview, triggerClass: cn(TOPBAR_ICON_BUTTON_CLASS, "relative overflow-visible border-none text-primary") }
     ]
 
     return (

@@ -53,10 +53,10 @@ describe("changelog-sync parser", () => {
 
         expect(feed).toHaveLength(3)
         expect(feed[0]).toMatchObject({
-            audience: "beta",
+            audience: "public",
             kind: "feature",
             version: "0.3.0",
-            title: "v0.3.0 · Nuove funzionalita",
+            title: "Novità",
             body: "Deterministic Narration Layer.",
             highlights: ["Technical Audit Panel."],
             publishedAt: "2026-02-04T09:00:00.000Z",
@@ -65,10 +65,10 @@ describe("changelog-sync parser", () => {
         })
         expect(feed[0].id).toMatch(/^release-0\.3\.0-20260204-feature-[a-z0-9]+$/)
         expect(feed[1]).toMatchObject({
-            audience: "beta",
+            audience: "public",
             kind: "improvement",
             version: "0.3.0",
-            title: "v0.3.0 · Miglioramenti",
+            title: "Miglioramenti",
             body: "No Inline Strings mandate.",
             highlights: [],
             publishedAt: "2026-02-04T09:00:00.000Z",
@@ -77,10 +77,10 @@ describe("changelog-sync parser", () => {
         })
         expect(feed[1].id).toMatch(/^release-0\.3\.0-20260204-improvement-[a-z0-9]+$/)
         expect(feed[2]).toMatchObject({
-            audience: "beta",
+            audience: "public",
             kind: "feature",
             version: "0.2.5",
-            title: "v0.2.5 · Nuove funzionalita",
+            title: "Novità",
             body: "Living Effect.",
             highlights: [],
             publishedAt: "2026-02-01T09:00:00.000Z",

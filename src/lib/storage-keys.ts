@@ -101,7 +101,7 @@ export const STORAGE_KEYS_REGISTRY: StorageKeyConfig[] = [
     },
     {
         key: STORAGE_KEY_NOTIFICATIONS,
-        label: "Notifiche Beta",
+        label: "Stato novità legacy",
         invalidatesQueries: ["notifications"],
     },
     {

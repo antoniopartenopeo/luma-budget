@@ -46,7 +46,7 @@ Regole:
 
 ## Gerarchia Layout
 
-Per pagine core app (`/dashboard`, `/transactions`, `/transactions/import`, `/insights`, `/simulator`, `/settings`, `/brain`, `/updates`):
+Per pagine core app (`/dashboard`, `/transactions`, `/transactions/import`, `/insights`, `/simulator`, `/settings`, `/brain`):
 1. `PageHeader`
 2. `StaggerContainer`
 3. una macro-surface dominante (`MacroSection` o card equivalente)
@@ -78,7 +78,7 @@ Invarianti:
 - copy pubblico solo su feature reali, niente hype generico
 - preview veritiere e isolate, mai dati utente reali
 - navigazione pubblica limitata a anchor interne e route pubbliche intenzionali (`/dashboard`, `/transactions/import`, `/faq`, `/privacy`, `/updates`)
-- `/faq` e `/privacy` sono support surface standalone fuori `AppShell`; `/transactions/import` e `/updates` restano route app-native raggiungibili anche dalla landing
+- `/faq`, `/privacy` e `/updates` sono support surface standalone fuori `AppShell`; `/transactions/import` resta la route app-native raggiungibile anche dalla landing per prova sicura/demo
 - eventuale CTA secondaria hero ammessa verso `/transactions/import` per prova sicura/demo, senza presentarla come signup o sync flow
 - footer supporto solo con link reali a superfici pubbliche implementate
 - hero e explainers immersivi della landing devono restare lo stesso componente adattivo su desktop, smartphone e contesti `prefers-reduced-motion`; puo cambiare solo l'intensita del motion, non il pattern visivo

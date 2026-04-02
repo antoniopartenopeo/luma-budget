@@ -1,14 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { AlertTriangle, Bell, BrainCircuit, Monitor, Moon, Plus, Sparkles, Sun } from "lucide-react"
+import { BrainCircuit, Monitor, Moon, Plus, Sparkles, Sun } from "lucide-react"
 import { BRAIN_MATURITY_SAMPLE_TARGET } from "@/brain"
 import { useDashboardSummary } from "@/features/dashboard/api/use-dashboard"
 import { buildFlashPreviewModel } from "@/features/flash/lib/build-flash-preview-model"
 import { getCurrentPeriod } from "@/features/insights/utils"
 import { useBrainRuntimeState } from "@/features/insights/brain-runtime"
-import { useUnreadNotifications } from "@/features/notifications/api/use-notifications"
-import { NOTIFICATION_KIND_LABEL } from "@/features/notifications/components/notification-ui"
 import { usePrivacyStore } from "@/features/privacy/privacy.store"
 import { useCurrency } from "@/features/settings/api/use-currency"
 import { QuickExpenseInput } from "@/features/transactions/components/quick-expense-input"
@@ -203,75 +201,6 @@ function MobileBrainPanel({ onClose }: { onClose: () => void }) {
     )
 }
 
-function MobileNotificationsPanel({ onClose }: { onClose: () => void }) {
-    const {
-        notifications,
-        unreadNotifications,
-        unreadCount,
-        criticalUnreadCount,
-        isLoading,
-    } = useUnreadNotifications()
-
-    const unreadIdSet = new Set(unreadNotifications.map((notification) => notification.id))
-    const previewNotifications = notifications.slice(0, 3)
-
-    return (
-        <div className="space-y-2.5">
-            {criticalUnreadCount > 0 && (
-                <div className="inline-flex items-center gap-1 rounded-full border border-rose-500/20 bg-rose-500/12 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-rose-700 dark:text-rose-300">
-                    <AlertTriangle className="h-3 w-3" />
-                    Critiche {criticalUnreadCount}
-                </div>
-            )}
-
-            {isLoading ? (
-                <div className={cn(TOPBAR_INLINE_SUPPORT_TEXT_CLASS, "text-muted-foreground")}>
-                    Caricamento notifiche…
-                </div>
-            ) : previewNotifications.length === 0 ? (
-                <div className={cn(TOPBAR_INLINE_SUPPORT_TEXT_CLASS, "text-muted-foreground")}>
-                    Non ci sono ancora novità.
-                </div>
-            ) : (
-                <div className="space-y-2">
-                    {previewNotifications.map((notification) => (
-                        <Link
-                            key={notification.id}
-                            href="/updates"
-                            onClick={onClose}
-                            className="flex items-start gap-2 rounded-2xl border border-white/25 bg-white/20 px-3 py-2 dark:border-white/10 dark:bg-white/[0.04]"
-                        >
-                            <span className="mt-1 inline-flex h-2 w-2 shrink-0 rounded-full bg-primary" aria-hidden="true" />
-                            <div className="min-w-0">
-                                <div className="truncate text-sm font-semibold text-foreground/90">
-                                    {NOTIFICATION_KIND_LABEL[notification.kind]} · {notification.title}
-                                </div>
-                                <div className={cn(TOPBAR_INLINE_SUPPORT_TEXT_CLASS, "mt-1 truncate text-muted-foreground")}>
-                                    {notification.body}
-                                </div>
-                                {unreadIdSet.has(notification.id) && (
-                                    <div className={cn(TOPBAR_INLINE_SUPPORT_TEXT_CLASS, "mt-1 text-primary")}>
-                                        Non letta
-                                    </div>
-                                )}
-                            </div>
-                        </Link>
-                    ))}
-                </div>
-            )}
-
-            <Link
-                href="/updates"
-                onClick={onClose}
-                className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/20 px-3 py-2 text-sm font-medium text-foreground/85 dark:border-white/10 dark:bg-white/[0.04]"
-            >
-                <Bell className="h-4 w-4 text-primary" />
-                Apri novità{unreadCount > 0 ? ` (${unreadCount})` : ""}
-            </Link>
-        </div>
-    )
-}
-
 export function TopbarMobilePanelContent({ onClose, panelId }: TopbarMobilePanelContentProps) {
     if (panelId === "quick") {
         return <MobileQuickPanel onClose={onClose} />
@@ -289,21 +218,19 @@ export function TopbarMobilePanelContent({ onClose, panelId }: TopbarMobilePanel
         return <MobileBrainPanel onClose={onClose} />
     }
 
-    return <MobileNotificationsPanel onClose={onClose} />
+    return null
 }
 
 export function resolveMobilePanelTitle(panelId: MobilePanelId): string {
     if (panelId === "quick") return "Transazione"
     if (panelId === "flash") return "Flash"
     if (panelId === "theme") return "Tema"
-    if (panelId === "brain") return "Brain"
-    return "Novità"
+    return "Brain"
 }
 
 export function resolveMobileTriggerIcon(theme: ThemePreference | undefined, panelId: MobilePanelId) {
     if (panelId === "quick") return Plus
     if (panelId === "flash") return Sparkles
     if (panelId === "theme") return resolveThemeIcon(theme ?? "system")
-    if (panelId === "brain") return BrainCircuit
-    return Bell
+    return BrainCircuit
 }

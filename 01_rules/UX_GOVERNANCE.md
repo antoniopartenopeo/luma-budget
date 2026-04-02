@@ -78,7 +78,7 @@ Per processi tecnici estesi (es. training locale Neural Core), mostrare progress
 - La CTA finale della landing puo esplicitare local-first, zero-cloud e assenza di account obbligatorio per la prima scansione, ma senza promettere piu di quanto l'app faccia davvero.
 - La navigazione pubblica deve rimanere contenuta in anchor interne e route esplicitamente pubbliche.
 - Le route pubbliche intenzionali oggi ammesse sono `/dashboard`, `/transactions/import`, `/faq`, `/privacy` e `/updates`.
-- `/faq` e `/privacy` sono trust surface standalone fuori `AppShell`; `/transactions/import` e `/updates` restano route app-native raggiungibili anche dalla landing senza perdere il chrome operativo interno.
+- `/faq`, `/privacy` e `/updates` sono trust surface standalone fuori `AppShell`; `/transactions/import` resta la route app-native raggiungibile anche dalla landing senza perdere il chrome operativo interno.
 - Il footer pubblico deve esporre solo support surface reali; vietate voci statiche o affordance di contatto non ancora implementate.
 - La landing deve mantenere tono calmo e non punitivo: niente FOMO, urgenza artificiale o framing colpevolizzante.
 - La landing non deve implicare open banking o sync remoti come baseline se il prodotto resta local-first e fail-closed di default.

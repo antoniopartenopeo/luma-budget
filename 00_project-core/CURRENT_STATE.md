@@ -14,7 +14,7 @@ canonical-of: project-current-state
 - Premium UI Phase: `PullToRefresh` and `ScrollToTop` utilities integrated into global layout (Mar 17)
 - Premium UI Phase: `AppleFluidBackground` master primitive implemented merging zero-weight mathematical mesh gradients with perfect volumetric CSS blending (Mar 22/23)
 - Public landing governance aligned as a dedicated acquisition surface with anchored narrative, constrained public navigation, and a static `Come inizi` explainer that replaces the previous sticky demo pattern (Mar 23/25)
-- Public trust wave 1 shipped on the acquisition surface (Apr 2): calmer metadata/copy, explicit demo CTA toward `/transactions/import`, inline trust strip, landing FAQ, dedicated public trust pages for FAQ/privacy, and publicly reachable updates/import surfaces without breaking the operational app shell
+- Public trust wave 1 shipped on the acquisition surface (Apr 2): calmer metadata/copy, explicit demo CTA toward `/transactions/import`, inline trust strip, landing FAQ, dedicated public trust pages for FAQ/privacy, and public support surfaces for `/updates` plus import demo without false beta-notification affordances
 - Landing immersive heroes now preserve one adaptive surface across desktop, smartphone, and reduced-motion contexts; motion intensity changes, but the composition does not fork into mobile/static alternates (Mar 25)
 - Dashboard `Composizione spese` is now governed as a frozen interaction surface and is out of scope by default for future UI cleanup or motion standardization (Apr 1)
 - Repository-wide governance/app audit completed (Apr 1): root-scaffold drift in audit guidance was corrected and the remaining runtime risks were made explicit for source-label semantics, transition contracts, and period-filter consistency
@@ -22,14 +22,14 @@ canonical-of: project-current-state
 ## What Is Stable
 
 - Public landing page now exposed at `/` with the operational dashboard moved to `/dashboard`
-- Public trust routes now exposed at `/faq` and `/privacy`, with `/transactions/import` and `/updates` publicly reachable as app-native routes
+- Public trust routes now exposed at `/faq`, `/privacy`, and `/updates`, with `/transactions/import` remaining the only app-native safe-trial route reachable from the landing
 - Public landing now encodes the canonical public product story: import -> month reading -> forecast readiness -> fixed-cost sustainability
 - The public landing now includes a dedicated Brain explainer between forecast storytelling and downstream decision guidance
 - The public landing now closes with an explicit local-first CTA that reinforces zero-cloud and no mandatory account for the first scan
 - Feature-first application structure under `src/features/*`
 - Pure domain boundaries under `src/domain/*`
 - Sensitive financial scenario logic isolated in `src/VAULT/*`
-- Local-first persistence, backup/restore, and changelog-driven notifications
+- Local-first persistence, backup/restore, and changelog-driven public updates
 - Governance guardrails consolidated in `01_rules/*` and `05_specialists/*`
 - The Dashboard spending composition surface is intentionally preserved and excluded from default UI refactor scope
 

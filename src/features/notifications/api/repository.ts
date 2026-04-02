@@ -61,7 +61,7 @@ function normalizeNotification(value: unknown): ChangelogNotification | null {
         typeof candidate.version !== "string" ||
         candidate.version.trim().length === 0 ||
         !isValidKind(candidate.kind) ||
-        candidate.audience !== "beta" ||
+        candidate.audience !== "public" ||
         typeof candidate.title !== "string" ||
         candidate.title.trim().length === 0 ||
         typeof candidate.body !== "string" ||
@@ -79,7 +79,7 @@ function normalizeNotification(value: unknown): ChangelogNotification | null {
         id: candidate.id.trim(),
         version: candidate.version.trim(),
         kind: candidate.kind,
-        audience: "beta",
+        audience: "public",
         title: candidate.title.trim(),
         body,
         highlights,
@@ -139,7 +139,7 @@ export async function fetchChangelogNotifications(): Promise<ChangelogNotificati
     return safeFeed
         .map(normalizeNotification)
         .filter((notification): notification is ChangelogNotification => notification !== null)
-        .filter(notification => notification.audience === "beta")
+        .filter(notification => notification.audience === "public")
         .sort((a, b) => toTimestamp(b.publishedAt) - toTimestamp(a.publishedAt))
 }
 

@@ -11,7 +11,8 @@ const PUBLIC_ROUTES = new Set([
   "/",
   "/offline",
   "/faq",
-  "/privacy"
+  "/privacy",
+  "/updates"
 ])
 
 export function RouteShell({ children }: RouteShellProps) {

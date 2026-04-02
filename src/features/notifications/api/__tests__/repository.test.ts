@@ -11,10 +11,10 @@ import {
 
 const FEED_FIXTURE = [
     {
-        id: "beta-old",
+        id: "public-old",
         version: "0.1.0",
         kind: "fix",
-        audience: "beta",
+        audience: "public",
         title: "Fix vecchio",
         body: "Dettaglio fix",
         highlights: ["Fix vecchio"],
@@ -24,17 +24,17 @@ const FEED_FIXTURE = [
         id: "alpha-hidden",
         version: "0.1.1",
         kind: "feature",
-        audience: "alpha",
+        audience: "beta",
         title: "Non deve apparire",
         body: "Audience non valida",
         highlights: ["Non mostrare"],
         publishedAt: "2026-02-08T10:00:00.000Z",
     },
     {
-        id: "beta-new",
+        id: "public-new",
         version: "0.1.2",
         kind: "breaking",
-        audience: "beta",
+        audience: "public",
         title: "Breaking recente",
         body: "Dettaglio breaking",
         highlights: ["Breaking importante"],
@@ -42,20 +42,20 @@ const FEED_FIXTURE = [
         publishedAt: "2026-02-08T12:00:00.000Z",
     },
     {
-        id: "beta-mid",
+        id: "public-mid",
         version: "0.1.1",
         kind: "feature",
-        audience: "beta",
+        audience: "public",
         title: "Feature media",
         body: "Dettaglio feature",
         highlights: ["Feature media"],
         publishedAt: "2026-02-05T09:00:00.000Z",
     },
     {
-        id: "beta-legacy-dup",
+        id: "public-legacy-dup",
         version: "0.1.3",
         kind: "feature",
-        audience: "beta",
+        audience: "public",
         title: "Legacy con duplicati",
         body: "Feature legacy",
         highlights: [
@@ -90,14 +90,14 @@ describe("notifications repository", () => {
         vi.unstubAllGlobals()
     })
 
-    it("ordina il feed per publishedAt desc e filtra audience beta", async () => {
+    it("ordina il feed per publishedAt desc e filtra audience pubblica", async () => {
         const feed = await fetchChangelogNotifications()
-        expect(feed.map(item => item.id)).toEqual(["beta-legacy-dup", "beta-new", "beta-mid", "beta-old"])
+        expect(feed.map(item => item.id)).toEqual(["public-legacy-dup", "public-new", "public-mid", "public-old"])
     })
 
     it("normalizza highlights legacy rimuovendo body duplicato e voci ripetute", async () => {
         const feed = await fetchChangelogNotifications()
-        const legacy = feed.find(item => item.id === "beta-legacy-dup")
+        const legacy = feed.find(item => item.id === "public-legacy-dup")
 
         expect(legacy).toBeDefined()
         expect(legacy?.body).toBe("Feature legacy")
@@ -131,7 +131,7 @@ describe("notifications repository", () => {
             if (key === LEGACY_NOTIFICATIONS_STATE_STORAGE_KEY) {
                 return {
                     version: 1,
-                    readIds: ["beta-old"],
+                    readIds: ["public-old"],
                     updatedAt: "2026-02-08T00:00:00.000Z",
                 }
             }
@@ -141,13 +141,13 @@ describe("notifications repository", () => {
         const state = await fetchNotificationsState()
 
         expect(state.version).toBe(2)
-        expect(state.readIds).toEqual(["beta-old"])
+        expect(state.readIds).toEqual(["public-old"])
         expect(state.lastSeenVersion).toBeNull()
         expect(vi.mocked(storage.set)).toHaveBeenCalledWith(
             NOTIFICATIONS_STATE_STORAGE_KEY,
             expect.objectContaining({
                 version: 2,
-                readIds: ["beta-old"],
+                readIds: ["public-old"],
             })
         )
     })
@@ -165,11 +165,11 @@ describe("notifications repository", () => {
             storedState = value
         })
 
-        const first = await markNotificationAsRead("beta-new", "0.1.2")
-        const second = await markNotificationAsRead("beta-new", "0.1.2")
+        const first = await markNotificationAsRead("public-new", "0.1.2")
+        const second = await markNotificationAsRead("public-new", "0.1.2")
 
-        expect(first.readIds).toEqual(["beta-new"])
-        expect(second.readIds).toEqual(["beta-new"])
+        expect(first.readIds).toEqual(["public-new"])
+        expect(second.readIds).toEqual(["public-new"])
         expect(second.lastSeenVersion).toBe("0.1.2")
         expect(vi.mocked(storage.set)).toHaveBeenCalledTimes(2)
     })

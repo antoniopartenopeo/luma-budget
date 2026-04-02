@@ -38,6 +38,7 @@ function sectionKind(title: string, highlights: string[]): NotificationKind {
     const joined = highlights.join(" ").toLowerCase()
 
     if (lower.includes("breaking")) return "breaking"
+    if (lower.includes("removed") || lower.includes("semplific")) return "improvement"
     if (lower.includes("fix")) return "fix"
     if (lower.includes("add")) return "feature"
     if (lower.includes("change") || lower.includes("improv")) return "improvement"
@@ -49,9 +50,9 @@ function sectionKind(title: string, highlights: string[]): NotificationKind {
 }
 
 function kindTitle(kind: NotificationKind): string {
-    if (kind === "feature") return "Nuove funzionalita"
+    if (kind === "feature") return "Novità"
     if (kind === "fix") return "Correzioni"
-    if (kind === "breaking") return "Cambiamenti Importanti"
+    if (kind === "breaking") return "Indicazioni importanti"
     return "Miglioramenti"
 }
 
@@ -189,8 +190,8 @@ export function buildNotificationsFromReleases(releases: ParsedRelease[]): Chang
                 id,
                 version: release.version,
                 kind,
-                audience: "beta",
-                title: `v${release.version} · ${kindTitle(kind)}`,
+                audience: "public",
+                title: kindTitle(kind),
                 body,
                 highlights,
                 isCritical: inferCritical(kind, [body, ...highlights]),

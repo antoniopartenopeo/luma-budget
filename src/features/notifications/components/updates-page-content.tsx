@@ -1,67 +1,99 @@
 "use client"
 
 import { useMemo } from "react"
-import { AlertTriangle } from "lucide-react"
+import type { NotificationKind } from "../types"
+import { Clock3 } from "lucide-react"
 import { motion } from "framer-motion"
-import { PageHeader } from "@/components/ui/page-header"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StateMessage } from "@/components/ui/state-message"
-import { cn } from "@/lib/utils"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
 import { macroItemVariants } from "@/components/patterns/macro-section"
-import {
-    useMarkAllNotificationsAsRead,
-    useNotificationsFeed,
-    useNotificationsState,
-} from "../api/use-notifications"
-import {
-    NOTIFICATION_KIND_CLASS,
-    NOTIFICATION_KIND_LABEL,
-    formatItalianDate,
-} from "./notification-ui"
+import { useNotificationsFeed } from "../api/use-notifications"
+import { formatItalianDate } from "./notification-ui"
+
+const KIND_ORDER: NotificationKind[] = ["feature", "improvement", "fix", "breaking"]
+
+const KIND_BULLET_COPY: Record<NotificationKind, string> = {
+    feature: "Abbiamo introdotto nuove funzioni in punti chiave dell'app.",
+    improvement: "Abbiamo reso alcuni flussi più chiari e più semplici da usare.",
+    fix: "Abbiamo migliorato performance, stabilità e affidabilità generale.",
+    breaking: "Questa release include indicazioni importanti su comportamenti aggiornati.",
+}
+
+const KIND_LEAD_FRAGMENT: Record<NotificationKind, string> = {
+    feature: "nuove funzioni",
+    improvement: "miglioramenti all'esperienza",
+    fix: "più stabilità",
+    breaking: "indicazioni importanti",
+}
+
+function joinItalianList(parts: string[]): string {
+    if (parts.length <= 1) return parts[0] ?? ""
+    if (parts.length === 2) return `${parts[0]} e ${parts[1]}`
+    return `${parts.slice(0, -1).join(", ")} e ${parts.at(-1)}`
+}
+
+function buildReleaseLead(kinds: NotificationKind[]): string {
+    const fragments = kinds.map((kind) => KIND_LEAD_FRAGMENT[kind]).filter(Boolean)
+    if (fragments.length === 0) {
+        return "Aggiornamento generale dell'app."
+    }
+
+    return `Include ${joinItalianList(fragments)}.`
+}
+
+function buildReleaseTitle(kinds: NotificationKind[]): string {
+    if (kinds.includes("feature")) return "Nuove funzioni"
+    if (kinds.includes("improvement")) return "Miglioramenti"
+    if (kinds.includes("fix")) return "Correzioni e stabilità"
+    if (kinds.includes("breaking")) return "Avviso importante"
+    return "Aggiornamento"
+}
 
 export function UpdatesPageContent() {
     const feedQuery = useNotificationsFeed()
-    const stateQuery = useNotificationsState()
-    const markAllAsRead = useMarkAllNotificationsAsRead()
-
     const notifications = useMemo(() => feedQuery.data ?? [], [feedQuery.data])
-    const readIds = useMemo(() => stateQuery.data?.readIds ?? [], [stateQuery.data?.readIds])
-    const readSet = useMemo(() => new Set(readIds), [readIds])
-    const latestVersion = notifications[0]?.version
 
     const groupedByVersion = useMemo(() => {
         const groups = new Map<string, typeof notifications>()
+
         for (const notification of notifications) {
             const current = groups.get(notification.version) ?? []
             current.push(notification)
             groups.set(notification.version, current)
         }
+
         return Array.from(groups.entries())
     }, [notifications])
 
+    const releaseCards = useMemo(() => {
+        return groupedByVersion.map(([version, items]) => {
+            const kinds = KIND_ORDER.filter((kind) => items.some((item) => item.kind === kind))
+
+            return {
+                version,
+                items,
+                title: buildReleaseTitle(kinds),
+                lead: buildReleaseLead(kinds),
+                highlights: kinds.map((kind) => KIND_BULLET_COPY[kind]).slice(0, 4),
+            }
+        })
+    }, [groupedByVersion])
+
     return (
-        <StaggerContainer className="space-y-8 w-full">
+        <StaggerContainer className="w-full space-y-6">
             <motion.div variants={macroItemVariants}>
-                <PageHeader
-                    title="Cronologia novità"
-                    description="Cosa è cambiato nell'app, versione dopo versione."
-                    actions={(
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={notifications.length === 0 || markAllAsRead.isPending}
-                            onClick={() => markAllAsRead.mutate({
-                                ids: notifications.map(notification => notification.id),
-                                lastSeenVersion: latestVersion,
-                            })}
-                        >
-                            Segna tutto come letto
-                        </Button>
-                    )}
-                />
+                <section className="glass-panel rounded-[2.5rem] border-none p-6 shadow-[0_24px_70px_-42px_rgba(15,23,42,0.34)] sm:p-8">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
+                        Aggiornamenti
+                    </p>
+                    <h1 className="mt-4 max-w-[14ch] text-4xl font-black leading-[0.96] tracking-tight text-foreground sm:text-5xl">
+                        Le novità recenti di Numa.
+                    </h1>
+                    <p className="mt-4 max-w-[44rem] text-base font-medium leading-relaxed text-muted-foreground sm:text-lg">
+                        Novità, miglioramenti e correzioni delle ultime versioni.
+                    </p>
+                </section>
             </motion.div>
 
             {feedQuery.isLoading && (
@@ -84,78 +116,59 @@ export function UpdatesPageContent() {
                     <div className="glass-panel overflow-hidden rounded-[2rem]">
                         <StateMessage
                             variant="empty"
-                            title="Nessuna novita da mostrare"
-                            description="Le nuove release compariranno qui, con highlights e note utili per tenere il passo."
+                            title="Nessun aggiornamento da mostrare"
+                            description="Le prossime release compariranno qui, con una sintesi semplice e leggibile delle novità introdotte."
                         />
                     </div>
                 </motion.div>
             )}
 
-            {!feedQuery.isLoading && groupedByVersion.map(([version, items]) => (
-                <motion.div key={version} variants={macroItemVariants}>
-                    <section
-                        id={`v-${version.replaceAll(".", "-")}`}
-                        className="glass-panel rounded-[2rem] p-5 sm:p-6 space-y-4"
-                    >
-                        <div className="flex items-center justify-between gap-3">
-                            <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-muted-foreground/80 sm:text-base">
-                                Release {version}
-                            </h2>
-                            <span className="text-xs font-semibold text-muted-foreground">
-                                {formatItalianDate(items[0].publishedAt)}
-                            </span>
-                        </div>
-
-                        <div className="space-y-3">
-                            {items.map(notification => {
-                                const isCritical = notification.isCritical || notification.kind === "breaking"
-                                const isRead = readSet.has(notification.id)
-
-                                return (
-                                    <article
-                                        key={notification.id}
-                                        className={cn(
-                                            "space-y-2 rounded-[1.25rem] border p-3 transition-[background-color,border-color,box-shadow] duration-200",
-                                            isRead ? "border-white/25 bg-white/40 dark:border-white/10 dark:bg-white/[0.03]" : "border-primary/20 bg-primary/6 shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]",
-                                            isCritical && "ring-1 ring-rose-500/25 border-rose-500/25"
-                                        )}
-                                    >
-                                        <div className="flex items-center justify-between gap-2">
-                                            <div className="flex items-center gap-2">
-                                                <Badge variant="outline" className={cn("px-2.5 py-0.5 text-xs", NOTIFICATION_KIND_CLASS[notification.kind])}>
-                                                    {NOTIFICATION_KIND_LABEL[notification.kind]}
-                                                </Badge>
-                                                {isCritical && (
-                                                    <Badge variant="outline" className="px-2.5 py-0.5 text-xs border-rose-500/25 bg-rose-500/15 text-rose-700 dark:text-rose-300">
-                                                        <AlertTriangle className="h-3 w-3 mr-1" />
-                                                        Critico
-                                                    </Badge>
-                                                )}
-                                                {isRead && (
-                                                    <Badge variant="outline" className="px-2.5 py-0.5 text-xs">
-                                                        Letto
-                                                    </Badge>
-                                                )}
-                                            </div>
+            {!feedQuery.isLoading && releaseCards.length > 0 && (
+                <motion.div variants={macroItemVariants}>
+                    <section className="space-y-4">
+                        {releaseCards.map((release) => (
+                            <article
+                                key={release.version}
+                                id={`v-${release.version.replaceAll(".", "-")}`}
+                                className="glass-panel rounded-[2rem] border-none p-5 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.34)]"
+                            >
+                                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                                    <div className="space-y-2">
+                                        <div className="flex flex-wrap items-center gap-3">
+                                            <h2 className="text-lg font-bold tracking-tight text-foreground sm:text-xl">
+                                                Versione {release.version}
+                                            </h2>
+                                            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+                                                <Clock3 className="h-3.5 w-3.5 text-primary" />
+                                                {formatItalianDate(release.items[0].publishedAt)}
+                                            </span>
                                         </div>
+                                        <p className="text-sm font-semibold tracking-tight text-foreground">
+                                            {release.title}
+                                        </p>
+                                        <p className="max-w-[42rem] text-sm font-medium leading-relaxed text-muted-foreground sm:text-base">
+                                            {release.lead}
+                                        </p>
+                                    </div>
+                                </div>
 
-                                        <h3 className="text-sm font-bold leading-tight">{notification.title}</h3>
-                                        <p className="text-sm font-medium leading-relaxed text-muted-foreground">{notification.body}</p>
-
-                                        {notification.highlights.length > 0 && (
-                                            <ul className="text-xs font-medium leading-relaxed text-muted-foreground/90 space-y-1 list-disc pl-4">
-                                                {notification.highlights.map((highlight, index) => (
-                                                    <li key={`${notification.id}-updates-hl-${index}`}>{highlight}</li>
-                                                ))}
-                                            </ul>
-                                        )}
-                                    </article>
-                                )
-                            })}
-                        </div>
+                                {release.highlights.length > 0 && (
+                                    <ul className="mt-4 list-disc space-y-1.5 pl-5 text-sm font-medium leading-relaxed text-muted-foreground">
+                                        {release.highlights.map((highlight, index) => (
+                                            <li
+                                                key={`${release.version}-highlight-${index}`}
+                                                className="pl-1 marker:text-primary"
+                                            >
+                                                {highlight}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </article>
+                        ))}
                     </section>
                 </motion.div>
-            ))}
+            )}
         </StaggerContainer>
     )
 }

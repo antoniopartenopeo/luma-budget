@@ -29,7 +29,7 @@ Canonical live project context now lives in:
 | Financial Lab (`/simulator`) | Stable | Scenari baseline/balanced/aggressive in card espandibili con breakdown step-by-step della quota sostenibile |
 | Neural Core (`/brain`) | Active | Training locale del modello, nowcast mese corrente, timeline maturità |
 | Settings | Stable | Preferenze, categorie, backup/restore locale con validazione sezioni riconosciute, diagnostica locale e azioni avanzate di reset |
-| Notifications + Updates | Stable | Feed novità in-app da `CHANGELOG.md`, badge unread, campanella TopBar e pagina `/updates` |
+| Updates | Stable | Cronologia pubblica degli aggiornamenti da `CHANGELOG.md`, esposta su `/updates` con linguaggio semplificato e senza centro notifiche in-app |
 | Privacy + Flash | Stable | Privacy mode globale e overlay snapshot rapido |
 
 ## Architecture
@@ -66,7 +66,7 @@ Canonical system overview: `03_architecture/SYSTEM_OVERVIEW.md`
 - React Query -> cache + invalidation
 - Dashboard filters -> URL/search params -> deep-link coerenti verso `/transactions`
 - Cross-tab sync -> `storage` listeners on registered keys
-- `CHANGELOG.md` -> `/api/notifications/changelog` -> feed notifiche in TopBar e `/updates`
+- `CHANGELOG.md` -> `/api/notifications/changelog` -> pagina pubblica `/updates`
 - Open banking routes -> present in codebase but disabled by default unless `NUMA_ENABLE_OPEN_BANKING=true`
 - Narration layer -> deterministic copy from domain facts/state
 

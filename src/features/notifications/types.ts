@@ -1,5 +1,5 @@
 export type NotificationKind = "feature" | "fix" | "improvement" | "breaking"
-export type NotificationAudience = "beta"
+export type NotificationAudience = "public"
 
 export interface ChangelogNotification {
     id: string

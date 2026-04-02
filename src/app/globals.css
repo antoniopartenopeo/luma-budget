@@ -478,7 +478,6 @@
   .animate-flash-green,
   .animate-ping-slow,
   .animate-spin-slow,
-  .notifications-ticker-track,
   .ambient-grid,
   .ambient-orb {
     animation: none !important;
@@ -501,7 +500,6 @@
   .reduce-effects .animate-flash-green,
   .reduce-effects .animate-ping-slow,
   .reduce-effects .animate-spin-slow,
-  .reduce-effects .notifications-ticker-track,
   .reduce-effects .ambient-grid,
   .reduce-effects .ambient-orb {
     animation: none !important;
@@ -520,10 +518,5 @@
   .reduce-effects .glass-chrome,
   .reduce-effects .surface-strong {
     backdrop-filter: blur(8px) !important;
-  }
-
-  .notifications-ticker-track {
-    animation: ticker-marquee var(--ticker-duration, 32s) linear infinite;
-    will-change: transform;
   }
 }

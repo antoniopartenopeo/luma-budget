@@ -1,1 +1,1 @@
-export type TopbarPanelId = "quick" | "flash" | "theme" | "brain" | "notifications"
+export type TopbarPanelId = "quick" | "flash" | "theme" | "brain"

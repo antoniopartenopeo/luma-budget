@@ -8,9 +8,9 @@ const FEED_FIXTURE = [
         id: "release-0.3.0-20260204-feature",
         version: "0.3.0",
         kind: "feature",
-        audience: "beta",
-        title: "v0.3.0 · Nuove funzionalita",
-        body: "Deterministic Narration Layer.",
+        audience: "public",
+        title: "Novità",
+        body: "TopBar azioni/notifiche resa più robusta, con comportamento più stabile su trigger, badge e stato aggiornamenti.",
         highlights: ["Deterministic Narration Layer."],
         publishedAt: "2026-02-04T09:00:00.000Z",
         link: "/updates#v-0-3-0",
@@ -19,10 +19,10 @@ const FEED_FIXTURE = [
         id: "release-0.2.5-20260201-improvement",
         version: "0.2.5",
         kind: "improvement",
-        audience: "beta",
-        title: "v0.2.5 · Miglioramenti",
-        body: "Brand Consistency.",
-        highlights: ["Brand Consistency."],
+        audience: "public",
+        title: "Miglioramenti",
+        body: "Landing pubblica resa più credibile e prudente: trust signal visibili vicino alle CTA.",
+        highlights: ["Nuove superfici pubbliche FAQ e Privacy per chiarire file supportati e modello local-first."],
         publishedAt: "2026-02-01T09:00:00.000Z",
         link: "/updates#v-0-2-5",
     },
@@ -56,13 +56,22 @@ describe("UpdatesPageContent", () => {
         vi.unstubAllGlobals()
     })
 
-    it("renderizza lo storico release raggruppato per versione", async () => {
+    it("renderizza la cronologia pubblica per release senza affordance da centro notifiche interno", async () => {
         renderWithQueryClient()
 
         await waitFor(() => {
-            expect(screen.getByText("Cronologia novità")).toBeInTheDocument()
-            expect(screen.getByText("Release 0.3.0")).toBeInTheDocument()
-            expect(screen.getByText("Release 0.2.5")).toBeInTheDocument()
+            expect(screen.getByText("Aggiornamenti")).toBeInTheDocument()
+            expect(screen.getByText("Le novità recenti di Numa.")).toBeInTheDocument()
+            expect(screen.getByText("Versione 0.3.0")).toBeInTheDocument()
+            expect(screen.getByText("Versione 0.2.5")).toBeInTheDocument()
         })
+
+        expect(screen.queryByRole("button", { name: /Segna tutto come letto/i })).not.toBeInTheDocument()
+        expect(screen.getByText("Nuove funzioni")).toBeInTheDocument()
+        expect(screen.getByText("Miglioramenti")).toBeInTheDocument()
+        expect(screen.getByText("Include nuove funzioni.")).toBeInTheDocument()
+        expect(screen.getByText("Abbiamo introdotto nuove funzioni in punti chiave dell'app.")).toBeInTheDocument()
+        expect(screen.getByText("Include miglioramenti all'esperienza.")).toBeInTheDocument()
+        expect(screen.getByText("Abbiamo reso alcuni flussi più chiari e più semplici da usare.")).toBeInTheDocument()
     })
 })

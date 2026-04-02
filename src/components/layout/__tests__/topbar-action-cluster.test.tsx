@@ -27,7 +27,7 @@ describe("TopbarActionCluster", () => {
         window.localStorage.clear()
     })
 
-    it("renderizza cluster unico con ordine flash -> privacy -> tema -> brain -> campanella", async () => {
+    it("renderizza cluster unico con ordine flash -> privacy -> tema -> brain", async () => {
         await renderWithQueryClient()
 
         const cluster = screen.getByTestId("topbar-action-cluster")
@@ -35,25 +35,22 @@ describe("TopbarActionCluster", () => {
         const privacyButton = screen.getByRole("button", { name: /Mostra importi|Nascondi importi/ })
         const themeButton = screen.getByTestId("topbar-theme-trigger")
         const brainButton = screen.getByTestId("topbar-brain-trigger")
-        const notificationButton = screen.getByTestId("topbar-notifications-trigger")
 
         expect(cluster).toContainElement(flashButton)
         expect(cluster).toContainElement(privacyButton)
         expect(cluster).toContainElement(themeButton)
         expect(cluster).toContainElement(brainButton)
-        expect(cluster).toContainElement(notificationButton)
+        expect(screen.queryByTestId("topbar-notifications-trigger")).not.toBeInTheDocument()
 
         const orderedButtons = Array.from(cluster.querySelectorAll("button, a"))
         const flashIndex = orderedButtons.indexOf(flashButton)
         const privacyIndex = orderedButtons.indexOf(privacyButton)
         const themeIndex = orderedButtons.indexOf(themeButton)
         const brainIndex = orderedButtons.indexOf(brainButton)
-        const notificationIndex = orderedButtons.indexOf(notificationButton)
 
         expect(flashIndex).toBeLessThan(privacyIndex)
         expect(privacyIndex).toBeLessThan(themeIndex)
         expect(themeIndex).toBeLessThan(brainIndex)
-        expect(brainIndex).toBeLessThan(notificationIndex)
     })
 
     it("usa controlli icon-only con nome accessibile e target minimo h-10 w-10", async () => {
@@ -63,13 +60,11 @@ describe("TopbarActionCluster", () => {
         const privacyButton = screen.getByRole("button", { name: /Mostra importi|Nascondi importi/ })
         const themeButton = screen.getByTestId("topbar-theme-trigger")
         const brainLink = screen.getByTestId("topbar-brain-trigger")
-        const notificationsButton = screen.getByTestId("topbar-notifications-trigger")
 
         expect(flashButton).toHaveClass("h-10", "w-10")
         expect(privacyButton).toHaveClass("h-10", "w-10")
         expect(themeButton).toHaveClass("h-10", "w-10")
         expect(brainLink).toHaveClass("h-10", "w-10")
-        expect(notificationsButton).toHaveClass("h-10", "w-10")
     })
 
     it("integra la preview brain dentro la capsula madre e mantiene CTA verso /brain", async () => {
@@ -106,7 +101,7 @@ describe("TopbarActionCluster", () => {
 
         const cluster = screen.getByTestId("topbar-action-cluster")
         const themeButton = screen.getByRole("button", { name: "Tema: Sistema" })
-        
+
         expect(screen.queryByTestId("topbar-theme-panel")).not.toBeInTheDocument()
 
         fireEvent.click(themeButton)
@@ -118,19 +113,6 @@ describe("TopbarActionCluster", () => {
         expect(screen.getByTestId("topbar-theme-option-system")).toBeInTheDocument()
         expect(screen.getByTestId("topbar-theme-option-light")).toBeInTheDocument()
         expect(screen.getByTestId("topbar-theme-option-dark")).toBeInTheDocument()
-    })
-
-    it("integra la preview notifiche dentro la capsula madre del cluster", async () => {
-        await renderWithQueryClient()
-
-        const cluster = screen.getByTestId("topbar-action-cluster")
-        const trigger = screen.getByTestId("topbar-notifications-trigger")
-
-        fireEvent.click(trigger)
-
-        const panel = screen.getByTestId("topbar-notifications-panel")
-        expect(cluster).toContainElement(panel)
-        expect(screen.queryByTestId("topbar-notifications-capsule")).not.toBeInTheDocument()
     })
 
     it("integra la preview flash dentro la capsula madre del cluster", async () => {
@@ -153,7 +135,6 @@ describe("TopbarActionCluster", () => {
         expect(screen.getByTestId("topbar-flash-panel")).toBeInTheDocument()
         expect(screen.queryByTestId("topbar-theme-trigger")).not.toBeInTheDocument()
         expect(screen.queryByTestId("topbar-brain-trigger")).not.toBeInTheDocument()
-        expect(screen.queryByTestId("topbar-notifications-trigger")).not.toBeInTheDocument()
     })
 
     it("mantiene il trigger tema come rail destro rendendo il pannello prima del trigger", async () => {
@@ -192,8 +173,6 @@ describe("TopbarActionCluster", () => {
         })
     })
 
-
-
     it("su mobile espande la capsula verso il basso senza usare pannelli inline desktop", async () => {
         await renderWithQueryClient({ surface: "mobile" })
 
@@ -221,6 +200,8 @@ describe("TopbarActionCluster", () => {
             expect(screen.getByText("Transazione")).toBeInTheDocument()
             expect(screen.getByLabelText("Registra come Uscita")).toBeInTheDocument()
         })
+
+        expect(screen.queryByTestId("topbar-mobile-trigger-notifications")).not.toBeInTheDocument()
     })
 
     it("non aggiunge separatori di bordo extra nei pannelli inline", async () => {
@@ -241,11 +222,5 @@ describe("TopbarActionCluster", () => {
         fireEvent.click(screen.getByTestId("topbar-brain-trigger"))
         const brainPanel = screen.getByTestId("topbar-brain-panel")
         expect(brainPanel.querySelector(".h-6.w-px")).toBeNull()
-
-        fireEvent.click(screen.getByTestId("topbar-brain-trigger"))
-
-        fireEvent.click(screen.getByTestId("topbar-notifications-trigger"))
-        const notificationsPanel = screen.getByTestId("topbar-notifications-panel")
-        expect(notificationsPanel.querySelector(".h-6.w-px")).toBeNull()
     })
 })

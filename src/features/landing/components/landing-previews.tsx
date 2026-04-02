@@ -37,12 +37,12 @@ export function LandingHeroConsole() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.74),transparent_44%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_48%)]" />
         <div className="relative space-y-5">
           <div className="space-y-3">
-            <p className={LANDING_SECTION_EYEBROW_CLASS}>La diagnosi</p>
+            <p className={LANDING_SECTION_EYEBROW_CLASS}>Il nodo</p>
             <h3 className={cn(LANDING_SECTION_TITLE_CLASS, "max-w-[17ch]")}>
-              C&apos;è un vuoto strategico tra estratto conto e vita reale.
+              Tra estratto conto e decisione c&apos;e un vuoto.
             </h3>
             <p className={cn(LANDING_SECTION_DESCRIPTION_CLASS, "max-w-[48ch]")}>
-              I tracker tradizionali registrano passivamente le tue uscite. Numa colma questo vuoto unendo la totale sicurezza locale a un motore di estrapolazione predittiva.
+              Molte app registrano quello che e gia successo. Numa usa il passato per rispondere a una domanda piu utile: questa spesa ci sta davvero nel mese di oggi?
             </p>
           </div>
         </div>
@@ -64,7 +64,7 @@ export function LandingHeroConsole() {
                 </div>
                 <div className="min-w-0 space-y-2">
                   <p className={cn("text-[11px] font-semibold uppercase tracking-[0.14em]", accent.label)}>
-                    Punto {String(index + 1).padStart(2, "0")}
+                    Punto chiave {String(index + 1).padStart(2, "0")}
                   </p>
                   <p className="max-w-[26ch] text-lg font-extrabold leading-tight tracking-tight text-foreground sm:text-[1.3rem]">
                     {point.title}
@@ -82,7 +82,7 @@ export function LandingHeroConsole() {
       <div className="relative overflow-hidden rounded-[1.8rem] border border-primary/14 bg-primary/8 px-5 py-5 sm:px-6 sm:py-6">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.5),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.06),transparent_46%)]" />
         <p className="relative text-[15px] font-medium leading-relaxed text-foreground">
-          Numa è un centro di comando predittivo local-first. Non tracci spese: progetti il tuo ecosistema finanziario con sicurezza totale.
+          Numa non e un tracker piu elegante. E un modo piu calmo per leggere il mese e decidere con piu lucidita.
         </p>
       </div>
     </div>

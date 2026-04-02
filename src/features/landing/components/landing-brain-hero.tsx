@@ -97,16 +97,16 @@ export function LandingBrainHero() {
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
           <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.18em] text-primary/80">
-            L&apos;Intelligenza di Numa
+            Il Brain di Numa
           </p>
           <h2
             id="landing-brain-hero-title"
             className="max-w-[20ch] text-5xl font-black leading-[0.92] tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-xl"
           >
-            Sblocca la visione sul futuro.
+            Quando i dati bastano, il mese si vede prima.
           </h2>
           <p className="mt-5 max-w-[44ch] text-base font-normal leading-relaxed text-muted-foreground sm:text-lg">
-            Nessuna ipotesi astratta. Il motore predittivo analizza i tuoi pattern di spesa e proietta la tua vera traiettoria finanziaria.
+            Il Brain osserva ricorrenze, ritmo di spesa e storico recente per stimare il margine con prudenza.
           </p>
         </motion.div>
 
@@ -116,13 +116,13 @@ export function LandingBrainHero() {
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
           <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.18em] text-primary/80">
-            Affidabilità estrema
+            Stima, non spettacolo
           </p>
           <h3 className="max-w-[20ch] text-5xl font-black leading-[0.92] tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-xl">
-            Proiezioni strategiche infallibili.
+            Una previsione utile e leggibile.
           </h3>
           <p className="mt-5 max-w-[44ch] text-base font-normal leading-relaxed text-muted-foreground sm:text-lg">
-            Se i dati storici non garantiscono precisione matematica, Numa te lo comunica. Mai stime azzardate.
+            Se il contesto non e abbastanza solido, Numa lo segnala. La stima serve a decidere, non a impressionare.
           </p>
         </motion.div>
 
@@ -132,13 +132,13 @@ export function LandingBrainHero() {
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
           <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.18em] text-primary/80">
-            Potere decisionale
+            Per scegliere meglio
           </p>
           <h3 className="max-w-[16ch] text-5xl font-black leading-[0.92] tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-2xl">
-            Un limite.<br />Un margine.<br />Un orizzonte definito.
+            Margine.<br />Affidabilita.<br />Impatto.
           </h3>
           <p className="mt-5 max-w-[44ch] text-base font-normal leading-relaxed text-muted-foreground sm:text-lg">
-            Per orchestrare le tue mosse finanziarie in anticipo e con controllo assoluto.
+            Cosi capisci se una nuova rata o un nuovo abbonamento entrano davvero nel quadro del mese.
           </p>
         </motion.div>
       </div>

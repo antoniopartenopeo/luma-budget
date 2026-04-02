@@ -31,15 +31,15 @@ const EDITORIAL_ACCENTS = [
 ] as const
 
 const EDITORIAL_NOTES = [
-  "Privacy locale all'inizio, non come postilla nascosta.",
-  "Parte dai movimenti che hai gia, non da un rito da seguire.",
-  "Stime chiare per il mese e una quota sostenibile prima di impegnarti."
+  "La privacy locale e il punto di partenza, non una nota in fondo alla pagina.",
+  "Ti aiuta a partire dai movimenti che hai gia, non da un metodo da imparare.",
+  "La stima serve a capire il margine e l'impatto prima di impegnarti."
 ] as const
 
 const EDITORIAL_KICKERS = [
   "Locale per davvero",
-  "Si adatta a te",
-  "Numeri che servono"
+  "Parte da quello che hai",
+  "Numeri che aiutano a decidere"
 ] as const
 
 const MARKET_GLIMPSES = [
@@ -228,10 +228,10 @@ export function LandingDifferentiatorCards() {
               Differenza
             </p>
             <h2 className="mt-4 text-3xl font-extrabold leading-[0.95] tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-              Tre scelte che cambiano il quadro.
+              Tre differenze che cambiano il modo di leggere il mese.
             </h2>
             <p className="mx-auto mt-4 max-w-[52ch] text-[15px] font-normal leading-relaxed text-muted-foreground sm:text-base">
-              Numa non parte da cloud, metodi rigidi o promesse generiche. Parte da una lettura piu calma, privata e utile del mese.
+              Numa non parte da cloud, rituali rigidi o promesse generiche. Parte da una lettura piu calma, privata e utile del mese.
             </p>
           </div>
 

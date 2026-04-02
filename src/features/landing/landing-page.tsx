@@ -38,17 +38,17 @@ const LandingBrainHero = dynamic(
 )
 
 const LANDING_NAV_ITEMS = [
-  { href: "#problema", label: "Diagnosi" },
-  { href: "#brain-hero", label: "Intelligenza" },
-  { href: "#come-inizi", label: "Esecuzione" },
+  { href: "#problema", label: "Problema" },
   { href: "#differenza", label: "Differenza" },
-  { href: "#outcomes", label: "Standard" }
+  { href: "#come-inizi", label: "Come inizi" },
+  { href: "#brain-hero", label: "Brain" },
+  { href: "#outcomes", label: "Esito" }
 ] as const
 
 const LANDING_HERO_PILLS = [
-  "100% Locale",
-  "Privacy by Design",
-  "Inizia Subito"
+  "Tutto in locale",
+  "Nessun account",
+  "Import da CSV"
 ] as const
 
 const LANDING_FOOTER_PRODUCT_ITEMS = [
@@ -152,20 +152,27 @@ export function LandingPage() {
                     id="landing-hero-title"
                     className="mx-auto max-w-4xl text-5xl font-black leading-[0.98] tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-sm"
                   >
-                    <CinematicTextReveal text="Non tracciare il passato. Domina il tuo presente." />
+                    <CinematicTextReveal text="Capisci il mese prima di prendere una decisione." />
                   </h1>
 
                   <p className="mx-auto max-w-[44rem] text-base font-normal leading-relaxed text-muted-foreground sm:text-lg lg:text-[1.2rem] drop-shadow-sm">
-                    Numa legge i tuoi movimenti e calcola la tua vera disponibilità. Nessun conto collegato, nessun cloud. Solo tu e la matematica del tuo mese.
+                    Importi i movimenti, Numa legge il presente, stima il margine e ti aiuta a capire se una nuova spesa fissa è sostenibile. Tutto in locale.
                   </p>
                 </div>
 
-                <div className="mt-12 flex flex-col items-center">
+                <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
+                  <Button asChild size="lg" className="rounded-full px-8 shadow-lg shadow-primary/15 transition-shadow hover:shadow-primary/30">
+                    <Link href="/dashboard">
+                      Apri Numa
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+
                   <a
-                    href="#problema"
-                    className="group inline-flex items-center gap-2 rounded-full border border-transparent px-6 py-3 text-[13px] font-medium tracking-[0.05em] text-foreground/60 transition-all hover:bg-foreground/5 hover:text-foreground"
+                    href="#come-inizi"
+                    className="group inline-flex items-center gap-2 rounded-full border border-transparent px-6 py-3 text-[13px] font-medium tracking-[0.04em] text-foreground/60 transition-all hover:bg-foreground/5 hover:text-foreground"
                   >
-                    Esplora il sistema
+                    Scopri come funziona
                     <ArrowRight className="h-[14px] w-[14px] rotate-90 transition-transform duration-300 group-hover:translate-y-1" />
                   </a>
                 </div>
@@ -190,9 +197,9 @@ export function LandingPage() {
                 disableAnimation
                 title={
                   <LandingSectionHeader
-                    eyebrow="Il difetto del sistema"
-                    title="Guardare indietro non ti insegna a guidare"
-                    description="Le app tradizionali si limitano a mostrarti soldi già spesi. Numa usa il tuo storico per illuminare il tuo potenziale economico di oggi."
+                    eyebrow="Il problema"
+                    title="Il saldo non basta."
+                    description="Sapere cosa hai speso non ti dice quanto margine hai oggi. Il punto è capire il mese prima di aggiungere una nuova spesa."
                     titleId="landing-problem-title"
                   />
                 }
@@ -203,8 +210,8 @@ export function LandingPage() {
             </div>
           </section>
 
-          <section id="brain-hero" aria-labelledby="landing-brain-hero-title">
-            <LandingBrainHero />
+          <section id="differenza" className="scroll-mt-24" aria-labelledby="landing-different-title">
+            <LandingDifferentiatorCards />
           </section>
 
           <section id="come-inizi" className="px-4 scroll-mt-24" aria-labelledby="landing-how-title">
@@ -213,9 +220,9 @@ export function LandingPage() {
                 disableAnimation
                 title={
                   <LandingSectionHeader
-                    eyebrow="Esecuzione"
-                    title="Quattro passi per la padronanza"
-                    description="Acquisisci i dati. Sblocca la visione d'insieme. Proietta il saldo futuro. Esegui decisioni tattiche perfette."
+                    eyebrow="Come inizi"
+                    title="Quattro passaggi, nessun rito."
+                    description="Importi un CSV, leggi il mese, guardi la stima e capisci se una nuova spesa fissa è sostenibile."
                     titleId="landing-how-title"
                   />
                 }
@@ -267,8 +274,8 @@ export function LandingPage() {
             </div>
           </section>
 
-          <section id="differenza" className="scroll-mt-24" aria-labelledby="landing-different-title">
-            <LandingDifferentiatorCards />
+          <section id="brain-hero" aria-labelledby="landing-brain-hero-title">
+            <LandingBrainHero />
           </section>
 
           <section id="outcomes" className="px-4 scroll-mt-24" aria-labelledby="landing-outcomes-title">
@@ -277,9 +284,9 @@ export function LandingPage() {
                 disableAnimation
                 title={
                   <LandingSectionHeader
-                    eyebrow="Nuovo standard"
-                    title="L'effetto collaterale è la lucidità assoluta"
-                    description="Abbandona la gestione ansiosa. Scopri il piacere di comandare le tue risorse con precisione chirurgica."
+                    eyebrow="Cosa cambia"
+                    title="Meno attrito. Più chiarezza."
+                    description="Il beneficio non è controllare di più. È doverci pensare meno, con un quadro più stabile del mese."
                     titleId="landing-outcomes-title"
                   />
                 }
@@ -323,16 +330,16 @@ export function LandingPage() {
             </div>
             <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center text-center">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
-                Pronto quando lo sei tu.
+                Quando vuoi iniziare.
               </p>
               <h2
                 id="landing-cta-title"
                 className="mt-6 max-w-[18ch] text-4xl font-black leading-[0.94] tracking-tight text-foreground sm:text-5xl lg:text-6xl"
               >
-                Riprendi il controllo. Disegna il tuo orizzonte.
+                Apri Numa. Parti da ciò che hai già.
               </h2>
               <p className="mt-5 max-w-[34rem] text-base font-normal leading-relaxed text-muted-foreground sm:text-lg">
-                Importa un estratto conto e lascia che Numa orchestri il caos, elevandoti a una chiarezza finanziaria senza precedenti.
+                Importa un estratto conto e guarda il mese per intero prima di aggiungere una nuova spesa.
               </p>
 
               <div className="mt-10">
@@ -345,7 +352,7 @@ export function LandingPage() {
               </div>
 
               <p className="mt-6 text-sm font-medium text-foreground/54">
-                100% Locale · Privacy by Design · Inizia Subito
+                Tutto in locale · Nessun account · Import da CSV
               </p>
             </div>
           </section>

@@ -1,6 +1,16 @@
 import { motion } from "framer-motion"
+import { cn } from "@/lib/utils"
 
-const NEURON_COUNT = 8
+const NEURON_LAYOUTS = [
+    { positionClass: "left-[20%] top-[15%]", driftX: 0, driftY: 30, duration: 8, delay: 0 },
+    { positionClass: "left-[35%] top-[37%]", driftX: 25, driftY: 16, duration: 10, delay: 0.5 },
+    { positionClass: "left-[50%] top-[59%]", driftX: 27, driftY: -12, duration: 12, delay: 1 },
+    { positionClass: "left-[65%] top-[81%]", driftX: 4, driftY: -30, duration: 14, delay: 1.5 },
+    { positionClass: "left-[80%] top-[33%]", driftX: -23, driftY: -20, duration: 16, delay: 2 },
+    { positionClass: "left-[30%] top-[55%]", driftX: -29, driftY: 9, duration: 18, delay: 2.5 },
+    { positionClass: "left-[45%] top-[77%]", driftX: -8, driftY: 29, duration: 20, delay: 3 },
+    { positionClass: "left-[60%] top-[29%]", driftX: 20, driftY: 23, duration: 22, delay: 3.5 },
+] as const
 
 export function NeuralFieldBackground() {
     return (
@@ -19,26 +29,22 @@ export function NeuralFieldBackground() {
 
             {/* Floating Neurons (Stars) */}
             <div className="absolute inset-0">
-                {Array.from({ length: NEURON_COUNT }).map((_, i) => (
+                {NEURON_LAYOUTS.map((neuron) => (
                     <motion.div
-                        key={i}
-                        className="absolute h-1 w-1 rounded-full bg-primary/30 blur-[1px]"
+                        key={neuron.positionClass}
+                        className={cn("absolute h-1 w-1 rounded-full bg-primary/30 blur-[1px]", neuron.positionClass)}
                         initial={{ opacity: 0, scale: 0 }}
                         animate={{
                             opacity: [0.1, 0.4, 0.1],
                             scale: [1, 1.2, 1],
-                            x: [0, Math.sin(i) * 30, 0],
-                            y: [0, Math.cos(i) * 30, 0]
+                            x: [0, neuron.driftX, 0],
+                            y: [0, neuron.driftY, 0]
                         }}
                         transition={{
-                            duration: 8 + i * 2,
+                            duration: neuron.duration,
                             repeat: Infinity,
                             ease: "easeInOut",
-                            delay: i * 0.5
-                        }}
-                        style={{
-                            left: `${20 + (i * 15) % 65}%`,
-                            top: `${15 + (i * 22) % 70}%`,
+                            delay: neuron.delay
                         }}
                     />
                 ))}

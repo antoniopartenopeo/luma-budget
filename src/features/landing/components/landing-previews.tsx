@@ -32,7 +32,7 @@ const STORY_ACCENTS = [
 
 export function LandingHeroConsole() {
   return (
-    <div className="space-y-6 sm:space-y-7" style={{ perspective: "1200px" }}>
+    <div className="space-y-6 sm:space-y-7 [perspective:1200px]">
       <CinematicScrollCard className="relative overflow-hidden rounded-[2.2rem] border border-primary/14 bg-gradient-to-br from-primary/[0.09] via-white/76 to-white/92 p-6 shadow-[0_30px_90px_-58px_rgba(15,23,42,0.42)] backdrop-blur-sm dark:border-primary/12 dark:from-primary/[0.12] dark:via-black/26 dark:to-black/20 sm:p-8">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.74),transparent_44%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_48%)]" />
         <div className="relative space-y-5">

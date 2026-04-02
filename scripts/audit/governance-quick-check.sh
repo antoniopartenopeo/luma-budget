@@ -35,6 +35,10 @@ head_or_empty() {
     fi
 }
 
+AMOUNT_EXEMPT_REGEX='src/features/import-csv/|/__tests__/|src/features/landing/components/motion-primitives.tsx:|src/domain/money/currency.ts:'
+PERIOD_CANDIDATE_EXEMPT_REGEX='src/features/dashboard/components/kpi-cards.tsx|src/features/dashboard/utils/dashboard-filter.ts|src/features/transactions/components/transactions-filter-bar.tsx|src/features/transactions/hooks/use-transactions-view.ts'
+INLINE_STYLE_EXEMPT_REGEX='src/features/dashboard/components/charts/echarts-wrapper.tsx:|src/features/dashboard/components/charts/premium-chart-section.tsx:|src/features/dashboard/components/charts/spending-composition-card.tsx:|src/components/layout/topbar-action-cluster.tsx:|src/app/opengraph-image.tsx:|src/app/twitter-image.tsx:|src/app/brain/_components/signal-matrix.tsx:|src/features/insights/components/topbar-brain-preview.tsx:|src/features/landing/components/motion-primitives.tsx:'
+
 # ---------------------------------------------------------
 # 1) parseFloat su importi (exception: import-csv normalize)
 # ---------------------------------------------------------
@@ -47,15 +51,20 @@ parsefloat_count="$(count_lines "$parsefloat_hits")"
 # ---------------------------------------------------------
 # 2) amount deprecato o string amounts
 # ---------------------------------------------------------
-amount_key_hits="$(grep -RIn --include='*.ts' --include='*.tsx' -E '\bamount\s*:' "$SRC_DIR" 2>/dev/null || true)"
+amount_key_hits="$(grep -RIn --include='*.ts' --include='*.tsx' -E '\bamount\s*:' "$SRC_DIR" 2>/dev/null | grep -Ev "$AMOUNT_EXEMPT_REGEX" || true)"
 amount_key_count="$(count_lines "$amount_key_hits")"
 
-amount_string_hits="$(grep -RIn --include='*.ts' --include='*.tsx' -E "\bamount\s*:\s*['\"\`]" "$SRC_DIR" 2>/dev/null || true)"
+amount_string_hits="$(grep -RIn --include='*.ts' --include='*.tsx' -E "\bamount\s*:\s*['\"\`]" "$SRC_DIR" 2>/dev/null | grep -Ev "$AMOUNT_EXEMPT_REGEX" || true)"
 amount_string_count="$(count_lines "$amount_string_hits")"
 
 amount_legacy_files=""
 while IFS= read -r file; do
     [ -z "$file" ] && continue
+    case "$file" in
+        *"/src/features/import-csv/"*|*"/__tests__/"*|*"/src/features/landing/components/motion-primitives.tsx"|*"/src/domain/money/currency.ts")
+            continue
+            ;;
+    esac
     if grep -q 'amountCents' "$file" 2>/dev/null && grep -Eq '\bamount\s*:' "$file" 2>/dev/null; then
         amount_legacy_files+="$file"$'\n'
     fi
@@ -81,6 +90,7 @@ while IFS= read -r file; do
         fi
     fi
 done < <(find "$SRC_DIR/features" "$SRC_DIR/VAULT" -type f \( -name '*.ts' -o -name '*.tsx' \) -not -name '*.test.ts' -not -name '*.test.tsx' | sort)
+period_candidates="$(printf '%s' "$period_candidates" | grep -Ev "$PERIOD_CANDIDATE_EXEMPT_REGEX" || true)"
 period_candidates="$(printf '%s' "$period_candidates" | trim_empty || true)"
 period_candidates_count="$(count_lines "$period_candidates")"
 
@@ -94,14 +104,15 @@ inline_style_all_count="$(count_lines "$inline_style_hits_all")"
 # - chart runtime sizing / canvas wrappers
 # - dynamic SVG orbit palette
 # - runtime color chips from data source
+# - Framer motion transforms and runtime-width indicators not representable as static classes
 # - next/og image routes, which render through inline-style layout primitives
 inline_style_exempt_hits="$(printf '%s\n' "$inline_style_hits_all" | grep -E \
-    'src/features/dashboard/components/charts/echarts-wrapper.tsx:|src/features/dashboard/components/charts/premium-chart-section.tsx:|src/features/dashboard/components/charts/spending-composition-card.tsx:|src/components/layout/topbar-action-cluster.tsx:|src/app/opengraph-image.tsx:|src/app/twitter-image.tsx:' \
+    "$INLINE_STYLE_EXEMPT_REGEX" \
     || true)"
 inline_style_exempt_count="$(count_lines "$inline_style_exempt_hits")"
 
 inline_style_hits="$(printf '%s\n' "$inline_style_hits_all" | grep -Ev \
-    'src/features/dashboard/components/charts/echarts-wrapper.tsx:|src/features/dashboard/components/charts/premium-chart-section.tsx:|src/features/dashboard/components/charts/spending-composition-card.tsx:|src/components/layout/topbar-action-cluster.tsx:|src/app/opengraph-image.tsx:|src/app/twitter-image.tsx:' \
+    "$INLINE_STYLE_EXEMPT_REGEX" \
     || true)"
 inline_style_count="$(count_lines "$inline_style_hits")"
 

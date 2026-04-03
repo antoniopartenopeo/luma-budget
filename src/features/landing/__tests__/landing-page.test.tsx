@@ -10,6 +10,41 @@ class MockIntersectionObserver {
 
 vi.stubGlobal("IntersectionObserver", MockIntersectionObserver)
 
+vi.mock("framer-motion", async () => {
+  const React = await vi.importActual<typeof import("react")>("react")
+
+  const MotionDiv = React.forwardRef<HTMLDivElement, Record<string, unknown> & { children?: React.ReactNode }>(
+    ({ children, ...props }, ref) => {
+      const elementProps = { ...props }
+      delete elementProps.initial
+      delete elementProps.animate
+      delete elementProps.exit
+      delete elementProps.transition
+      delete elementProps.viewport
+      delete elementProps.whileInView
+
+      return (
+        <div ref={ref} {...elementProps}>
+          {children as React.ReactNode}
+        </div>
+      )
+    }
+  )
+
+  MotionDiv.displayName = "MotionDiv"
+
+  return {
+    motion: {
+      div: MotionDiv
+    },
+    useReducedMotion: () => false,
+    useScroll: () => ({
+      scrollYProgress: 0
+    }),
+    useTransform: (_value: unknown, _input: unknown, output: unknown[]) => output[0]
+  }
+})
+
 vi.mock("next/dynamic", () => {
   return {
     default: (loader: () => Promise<unknown>) => {
@@ -65,10 +100,9 @@ describe("LandingPage", () => {
     render(<LandingPage />)
 
     expect(screen.getAllByTestId("brand-logo").length).toBeGreaterThan(0)
-    expect(screen.getByRole("heading", { name: /Capisci il mese prima di prendere una decisione\./i })).toBeInTheDocument()
-    expect(screen.getByText(/Numa legge il presente, stima il margine/i)).toBeInTheDocument()
-    expect(screen.getByText("Elaborazione in locale")).toBeInTheDocument()
-    expect(screen.getByText("Nessun collegamento bancario obbligatorio")).toBeInTheDocument()
+    expect(screen.getByTestId("landing-hero-editorial")).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: /Numa Budget/i })).toBeInTheDocument()
+    expect(screen.getByText(/Tutto in locale, senza cloud o account obbligatori\./i)).toBeInTheDocument()
     expect(screen.getByRole("region", { name: /Smetti di indovinare le tue spese\./i })).toBeInTheDocument()
     expect(screen.getByRole("region", { name: /Quattro passaggi, nessun rito\./i })).toBeInTheDocument()
     expect(screen.getByText(/Importi un CSV, leggi il mese/i)).toBeInTheDocument()

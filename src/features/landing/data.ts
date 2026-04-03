@@ -40,6 +40,20 @@ export interface LandingTrustSignal {
   description: string
 }
 
+export interface LandingHeroEditorialPanel {
+  icon: LucideIcon
+  title: string
+  description: string
+}
+
+export interface LandingHeroEditorialContent {
+  srTitle: string
+  primaryCtaLabel: string
+  secondaryCtaLabel: string
+  trustPhrase: string
+  panels: LandingHeroEditorialPanel[]
+}
+
 export const LANDING_STORY_POINTS: LandingStoryPoint[] = [
   {
     icon: WalletCards,
@@ -146,3 +160,27 @@ export const LANDING_TRUST_SIGNALS: LandingTrustSignal[] = [
     description: "Il percorso di import include già una prova sicura."
   }
 ] as const
+
+export const LANDING_HERO_EDITORIAL = {
+  srTitle: "Numa Budget",
+  primaryCtaLabel: "Apri Numa",
+  secondaryCtaLabel: "Prova app demo",
+  trustPhrase: "Tutto in locale, senza cloud o account obbligatori.",
+  panels: [
+    {
+      icon: CloudOff,
+      title: "Locale",
+      description: "I dati restano qui"
+    },
+    {
+      icon: WalletCards,
+      title: "Margine",
+      description: "Quello che resta nel mese"
+    },
+    {
+      icon: BrainCircuit,
+      title: "Stima",
+      description: "Una previsione prudente"
+    }
+  ]
+} as const satisfies LandingHeroEditorialContent

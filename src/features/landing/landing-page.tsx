@@ -16,10 +16,10 @@ import {
   LANDING_TRUST_SIGNALS
 } from "./data"
 import { PUBLIC_FAQ_ITEMS } from "./public-support-content"
+import { LandingHeroEditorial } from "./components/landing-hero-editorial"
 import { LandingHeroConsole } from "./components/landing-previews"
-import { AppleFluidBackground, CinematicTextReveal } from "./components/motion-primitives"
+import { AppleFluidBackground } from "./components/motion-primitives"
 import { LandingEditorialCardFrame } from "./components/landing-editorial-card-frame"
-import { LandingHeroSurface } from "./components/landing-hero-surface"
 import { LandingImmersiveFallback } from "./components/landing-immersive-fallback"
 import { LandingSectionHeader } from "./components/landing-section-header"
 import {
@@ -149,76 +149,7 @@ export function LandingPage() {
 
       <main id="main-content" className="relative pb-32">
         <StaggerContainer className="space-y-36 sm:space-y-52">
-          <section
-            className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-4 py-20"
-            aria-labelledby="landing-hero-title"
-          >
-            <div className="absolute inset-0 z-0 pointer-events-none">
-              <AppleFluidBackground />
-            </div>
-
-
-
-            <LandingHeroSurface className="px-6 py-9 sm:px-10 sm:py-12 lg:px-14 lg:py-14">
-              <div className="mt-4 flex w-full max-w-[46rem] flex-col items-center text-center sm:mt-0">
-                <BrandLogo
-                  variant="full"
-                  height={92}
-                  className="mb-12 w-auto max-w-[300px] drop-shadow-sm sm:mb-14 sm:max-w-[380px] lg:mb-16 lg:max-w-[440px]"
-                />
-
-                <div className="space-y-6">
-                  <h1
-                    id="landing-hero-title"
-                    className="mx-auto max-w-[13ch] text-5xl font-black leading-[0.98] tracking-tight text-foreground sm:text-6xl lg:text-[5.4rem] drop-shadow-sm"
-                  >
-                    <CinematicTextReveal text="Capisci il mese prima di prendere una decisione." />
-                  </h1>
-
-                  <p className="mx-auto max-w-[38rem] text-base font-normal leading-relaxed text-muted-foreground sm:text-lg lg:text-[1.16rem] drop-shadow-sm">
-                    Numa legge il presente, stima il margine e ti aiuta a capire se una nuova spesa è sostenibile. Tutto in locale, senza cloud obbligatorio.
-                  </p>
-                </div>
-
-                <div className="mt-9 flex flex-col items-center gap-4 sm:flex-row">
-                  <Button asChild size="lg" className="rounded-full px-8 shadow-lg shadow-primary/15 transition-shadow hover:shadow-primary/30">
-                    <Link href="/dashboard">
-                      Apri Numa
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-
-                  <Button asChild variant="outline" size="lg" className="rounded-full px-8">
-                    <Link href="/transactions/import">
-                      Prova app demo
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-
-                <div className="mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:mt-10">
-                  {LANDING_TRUST_SIGNALS.slice(0, 3).map((signal) => (
-                    <div key={signal.title} className="flex items-center gap-2 text-muted-foreground/80">
-                      <div className="flex h-5 w-5 items-center justify-center rounded-full border border-foreground/10 bg-foreground/5">
-                        <svg className="h-3 w-3 text-foreground/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                      <span className="text-[13px] font-medium tracking-[0.03em] text-foreground/70">{signal.title}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <a
-                  href="#come-inizi"
-                  className="group mt-5 inline-flex items-center gap-2 rounded-full border border-transparent px-6 py-3 text-[13px] font-medium tracking-[0.04em] text-foreground/56 transition-[background-color,color,transform] duration-300 hover:bg-foreground/5 hover:text-foreground"
-                >
-                  Guarda come funziona
-                  <ArrowRight className="h-[14px] w-[14px] rotate-90 transition-transform duration-300 group-hover:translate-y-1" />
-                </a>
-              </div>
-            </LandingHeroSurface>
-          </section>
+          <LandingHeroEditorial />
 
           <section id="problema" className="px-4 scroll-mt-24" aria-labelledby="landing-problem-title">
             <div className="mx-auto max-w-6xl">

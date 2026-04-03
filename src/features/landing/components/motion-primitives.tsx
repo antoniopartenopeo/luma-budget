@@ -16,11 +16,18 @@ interface CinematicTextRevealProps {
   text: string
   className?: string
   delay?: number
+  align?: "center" | "left"
 }
 
-export function CinematicTextReveal({ text, className, delay = 0 }: CinematicTextRevealProps) {
+export function CinematicTextReveal({
+  text,
+  className,
+  delay = 0,
+  align = "center"
+}: CinematicTextRevealProps) {
   const prefersReducedMotion = useReducedMotion()
   const words = text.split(" ")
+  const justifyClassName = align === "left" ? "justify-start" : "justify-center"
 
   if (prefersReducedMotion) {
     return <span className={className}>{text}</span>
@@ -56,7 +63,7 @@ export function CinematicTextReveal({ text, className, delay = 0 }: CinematicTex
       variants={container}
       initial="hidden"
       animate="visible"
-      className={cn("flex flex-wrap justify-center gap-[0.25em]", className)}
+      className={cn("flex flex-wrap gap-[0.25em]", justifyClassName, className)}
     >
       {words.map((word, index) => (
         <motion.span key={index} variants={child} className="inline-block">

@@ -1,5 +1,39 @@
 export const LANDING_MOTION_EASE = [0.22, 1, 0.36, 1] as const
 
+export const LANDING_HERO_PRISM_STAGGER = 0.12
+export const LANDING_HERO_PRISM_SCROLL_RANGE = [0, 1] as const
+export const LANDING_HERO_PRISM_GLOW_DURATION = 7.4
+
+export const LANDING_HERO_PRISM_PANELS = [
+  {
+    baseX: 16,
+    baseY: -8,
+    baseRotate: -14,
+    scale: 0.94,
+    scrollX: -18,
+    scrollY: 18,
+    scrollRotate: -8
+  },
+  {
+    baseX: 0,
+    baseY: 0,
+    baseRotate: 4,
+    scale: 1,
+    scrollX: -8,
+    scrollY: 10,
+    scrollRotate: 8
+  },
+  {
+    baseX: -18,
+    baseY: 18,
+    baseRotate: 14,
+    scale: 0.92,
+    scrollX: 10,
+    scrollY: 28,
+    scrollRotate: 20
+  }
+] as const
+
 export const LANDING_MOTION_TIMINGS = {
   instant: { duration: 0 },
   fast: { duration: 0.34, ease: LANDING_MOTION_EASE },

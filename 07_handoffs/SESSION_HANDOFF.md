@@ -3,7 +3,7 @@
 scope: session-handoff
 owner: engineering
 status: active
-last-verified: 2026-04-01
+last-verified: 2026-04-03
 canonical-of: session-handoff
 
 ## Current State
@@ -16,6 +16,7 @@ canonical-of: session-handoff
 - Landing page evolved with interactive previews (Mar 17).
 - Landing governance now treats `/` as a constrained acquisition surface with anchored navigation, a static four-step `Come inizi` explainer, and highly vetted product-truth copy.
 - A dedicated Brain explainer now lives inside the landing forecast stage and is governed as an immersive cinematic deep dive (`LandingBrainHero`).
+- Any user-visible change now closes with the canonical findings-first ritual in `04_execution/USER_VISIBLE_CHANGE_RITUAL.md`, not only with implementation and tests.
 - The entire landing page has undergone a rigid linguistic and responsive typography audit to perfectly align with Apple-style standards, capping all hero titles to `text-7xl` and fixing all Italian accents.
 - Landing immersive heroes now keep the same adaptive visual pattern on smartphone and under `prefers-reduced-motion`; only the motion amplitude changes.
 - Dashboard `Composizione spese` is now a frozen surface: do not modify it in cleanup, sweep, refactor, audit-fix, or motion standardization unless the request names it explicitly.
@@ -33,6 +34,7 @@ canonical-of: session-handoff
 
 - Keep scripts, tests, CI, and specialist files aligned with the root scaffold paths.
 - Re-audit landing reduced-motion behavior and public-link constraints whenever `src/features/landing/*` changes materially.
+- For any user-visible change, run the ritual first and promote repeated findings to governance instead of leaving them implicit in review.
 - Resolve forecast provenance label drift so runtime copy matches the governed `Fonte Core` / `Fonte Storico` terminology.
 - Triage `transition-all` occurrences against `01_rules/UI_EXECUTION_STANDARDS.md` and replace them with explicit transition properties where possible.
 - Review quick-check period-filter candidates before changing dashboard/transactions filter behavior.

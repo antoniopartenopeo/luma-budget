@@ -3,14 +3,36 @@
 scope: ux-governance
 owner: governance
 status: active
-last-verified: 2026-04-01
+last-verified: 2026-04-03
 canonical-of: ux-policy
 
 > **Stato:** Active
-> **Versione:** 1.8
-> **Ultimo aggiornamento:** 2026-04-02
+> **Versione:** 1.9
+> **Ultimo aggiornamento:** 2026-04-03
 
 Linee guida UX ad alto livello per mantenere fiducia, chiarezza e coerenza cross-feature.
+
+---
+
+## 0. User-Visible Change Ritual
+
+Qualsiasi change che modifica cio che l'utente vede, legge, percepisce o interpreta deve seguire il rituale canonico in:
+
+- `/04_execution/USER_VISIBLE_CHANGE_RITUAL.md`
+
+Il perimetro include:
+
+- UI, layout, spacing, tipografia, CTA, copy, empty/error states
+- motion, hover, reveal, reduced-motion behavior
+- support surfaces, metadata pubblici e documentazione canonica che descrive promesse utente
+
+Non include refactor interni puramente tecnici senza impatto percepito.
+
+Invarianti:
+
+- il change non si chiude con un summary generico; si chiude con finding concreti
+- se un rilievo viene ripetuto due volte, deve essere promosso a governance
+- le superfici simili devono restare cross-surface coherent
 
 ---
 
@@ -64,6 +86,16 @@ Per processi tecnici estesi (es. training locale Neural Core), mostrare progress
 - Superfici secondarie: `glass-card`.
 - Overlay e chrome devono restare coerenti con la materialità della TopBar.
 
+### D. Trust Grammar
+- Le stesse promesse non devono essere ripetute inutilmente in hero, CTA, footer e support surfaces.
+- Trust messaging, support pages e support CTA devono rafforzarsi a vicenda senza eco o ridondanza.
+- Una support surface pubblica non deve mai sembrare appartenere a un altro prodotto.
+
+### E. Tone of Voice
+- Niente aggressivita gratuita, hype generico o framing punitivo.
+- Le promesse devono restare verificabili, specifiche e aderenti al runtime reale.
+- Se il prodotto promette calma e affidabilita, la UI non deve parlare come un trailer.
+
 ---
 
 ## 4. Public Acquisition Surface (`/`)
@@ -89,6 +121,7 @@ Per processi tecnici estesi (es. training locale Neural Core), mostrare progress
 - Sulla landing questo vale anche per hero ed explainers immersivi: smartphone e `prefers-reduced-motion` non devono attivare superfici o pattern alternativi, ma solo ridurre il moto.
 - I flussi principali devono preservare orientamento verticale e leggibilità delle metriche.
 - Le etichette semantiche finanziarie devono rimanere non giudicanti e contestualizzate nel tempo.
+- Ogni change utente-visibile deve chiudersi con narrative pass, typography pass, composition pass, truth pass, cross-surface coherence pass e verification pass.
 
 ---
 

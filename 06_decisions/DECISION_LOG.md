@@ -3,7 +3,7 @@
 scope: decision-log
 owner: engineering
 status: active
-last-verified: 2026-04-01
+last-verified: 2026-04-03
 canonical-of: decision-log
 
 | Date | Decision | Status | Why | Alternatives rejected |
@@ -18,3 +18,4 @@ canonical-of: decision-log
 | 2026-03-25 | Keep one adaptive hero surface across device sizes and reduced-motion contexts on the public landing | accepted | Preserve the same product perception on smartphone and accessibility-reduced contexts while avoiding alternate simplified marketing patterns | Render separate static/mobile hero variants for landing explainers when motion is reduced |
 | 2026-03-25 | Replace the old animated four-moment landing demo with a static `Come inizi` explainer | accepted | Keep the acquisition story simpler, remove redundant motion, and explain the real product flow with one stable four-step section in the same narrative slot | Preserve a separate sticky/scrollytelling module that duplicates the later onboarding explanation |
 | 2026-04-01 | Freeze `Composizione spese` as an intentionally preserved Dashboard surface | accepted | Prevent generic UI cleanup or motion standardization from altering a deliberately curated interaction surface without explicit approval | Treat the surface as ordinary shared UI and allow incidental refactors to modify its motion, materials, or copy |
+| 2026-04-03 | Apply a mandatory findings-first ritual to every user-visible change | accepted | Turn repeated UI/copy review findings into a lightweight but enforceable governance loop across all visible surfaces, not just the landing | Keep visual and narrative quality implicit in reviewer memory or restrict the ritual only to public acquisition pages |

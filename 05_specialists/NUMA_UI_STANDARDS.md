@@ -30,6 +30,30 @@ Se la skill non e attiva esplicitamente, fermati e chiedi conferma.
 
 ---
 
+## User-Visible Change Ritual
+
+Ogni change utente-visibile deve essere chiuso con il rituale canonico in:
+
+- `/04_execution/USER_VISIBLE_CHANGE_RITUAL.md`
+
+Questo vale per:
+
+- pagine pubbliche e interne
+- componenti UI
+- copy, CTA, label, empty/error states
+- motion, reveal, hover, reduced-motion behavior
+- support surfaces, metadata pubblici e documentazione viva che racconta il prodotto
+
+Non vale per refactor puramente tecnici senza impatto percepito.
+
+Vincoli operativi:
+
+- nessun change utente-visibile e "finito" senza review findings-first
+- se un rilievo viene ripetuto due volte, va promosso a governance
+- le superfici simili devono chiudere con verifica cross-surface, non solo locale
+
+---
+
 ## Overlay Pattern
 
 | Tipo | Uso |
@@ -164,6 +188,13 @@ Regole:
 - body/description in `font-medium`
 - evitare font-size custom non motivati
 
+Per superfici utente-visibili, aggiungere anche:
+
+- nessun wrap indesiderato nei titoli dove la composizione richiede una riga singola
+- niente salti di scala arbitrari tra section header, editorial card e hero-card della stessa famiglia
+- micro-label e eyebrow devono parlare una sola grammatica per superficie
+- se una nuova scala tipografica viene introdotta e riusata, deve essere promossa a token o primitive canonica
+
 ---
 
 ## Baseline Non Negoziabile (Estratto Operativo)
@@ -210,8 +241,9 @@ Invarianti:
 7. [ ] Nessun inline style statico non giustificato
 8. [ ] Verifica `01_rules/UI_REGRESSION_CHECKLIST.md`
 9. [ ] Verifica regole MUST/SHOULD/NEVER in `01_rules/UI_EXECUTION_STANDARDS.md`
+10. [ ] Se il change e utente-visibile, rituale completato secondo `04_execution/USER_VISIBLE_CHANGE_RITUAL.md`
 
 ---
 
-**Versione**: 2.1.2
-**Ultimo aggiornamento**: 2026-04-02
+**Versione**: 2.2.0
+**Ultimo aggiornamento**: 2026-04-03

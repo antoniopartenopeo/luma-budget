@@ -3,7 +3,7 @@
 scope: governance-audit-process
 owner: governance
 status: active
-last-verified: 2026-04-01
+last-verified: 2026-04-03
 canonical-of: audit-process
 
 Stato: attivo (guardrail non negoziabili)
@@ -22,8 +22,28 @@ Questo pacchetto rende operativo l'audit tecnico senza cambiare la logica di pro
 
 - [Codebase navigation in 30 minutes](./CODEBASE_NAVIGATION_30_MIN.md)
 - [Change patterns playbook](./CHANGE_PATTERNS_PLAYBOOK.md)
+- [User-visible change ritual](./USER_VISIBLE_CHANGE_RITUAL.md)
 - [Read-only systemic audit baseline](../05_specialists/NUMA_READONLY_SYSTEM_AUDIT.md)
 - Generated output runtime: `04_execution/reports/generated-governance-quick-check.md` (non versionato)
+
+## Due famiglie di audit
+
+### A. Audit tecnico/governance
+
+Serve a intercettare drift strutturale, regole non negoziabili, anti-pattern, routing e coerenza tra fonti canoniche.
+
+### B. Audit user-visible
+
+Serve a chiudere qualsiasi change che modifica cio che l'utente vede, legge, percepisce o interpreta.
+
+Per questa famiglia il riferimento canonico non e questo file, ma:
+
+- `04_execution/USER_VISIBLE_CHANGE_RITUAL.md`
+
+Regola:
+
+- un change utente-visibile non si chiude senza rituale findings-first
+- se un rilievo si ripete due volte, va promosso a governance
 
 ## Quick start audit
 
@@ -31,6 +51,15 @@ Questo pacchetto rende operativo l'audit tecnico senza cambiare la logica di pro
 2. Leggi il report generato in `04_execution/reports/generated-governance-quick-check.md`.
 3. Se hai toccato `CHANGELOG.md` (feed notifiche in-app), esegui anche `npm run release:validate`.
 4. Se trovi violazioni con impatto su behavior o logica, apri backlog (non fix diretto in hot pass).
+
+## Quick start user-visible change
+
+Se il change e utente-visibile:
+
+1. Esegui il rituale in `04_execution/USER_VISIBLE_CHANGE_RITUAL.md`.
+2. Chiudi con finding concreti, non con summary generici.
+3. Verifica cross-surface se il change tocca pagine, support surfaces, CTA o metadata pubblici.
+4. Se un finding e gia emerso due volte in review precedenti, promuovilo a governance invece di lasciarlo implicito.
 
 ## Enforcement automatico
 
@@ -45,3 +74,4 @@ Questo pacchetto rende operativo l'audit tecnico senza cambiare la logica di pro
 
 - Fix diretto ammesso: typo documentali, link rotti, commenti chiaramente fuorvianti, drift di navigazione o governance tra fonti canoniche e artifact operativi.
 - Non fixare in audit pass: logica prodotto, comportamento UI, algoritmi dominio.
+- Se il task e un user-visible change e non un audit puro, la chiusura deve comunque passare dal rituale user-visible prima della consegna finale.

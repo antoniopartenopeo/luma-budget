@@ -3,7 +3,7 @@
 scope: current-state
 owner: engineering
 status: active
-last-verified: 2026-04-02
+last-verified: 2026-04-03
 canonical-of: project-current-state
 
 ## Snapshot
@@ -15,6 +15,7 @@ canonical-of: project-current-state
 - Premium UI Phase: `AppleFluidBackground` master primitive implemented merging zero-weight mathematical mesh gradients with perfect volumetric CSS blending (Mar 22/23)
 - Public landing governance aligned as a dedicated acquisition surface with anchored narrative, constrained public navigation, and a static `Come inizi` explainer that replaces the previous sticky demo pattern (Mar 23/25)
 - Public trust wave 1 shipped on the acquisition surface (Apr 2): calmer metadata/copy, explicit demo CTA toward `/transactions/import`, inline trust strip, landing FAQ, dedicated public trust pages for FAQ/privacy, and public support surfaces for `/updates` plus import demo without false beta-notification affordances
+- User-visible governance ritual adopted (Apr 3): any change that alters what the user sees, reads, or perceives now closes with a findings-first ritual covering narrative, typography, composition, truth, cross-surface coherence, and verification
 - Landing immersive heroes now preserve one adaptive surface across desktop, smartphone, and reduced-motion contexts; motion intensity changes, but the composition does not fork into mobile/static alternates (Mar 25)
 - Dashboard `Composizione spese` is now governed as a frozen interaction surface and is out of scope by default for future UI cleanup or motion standardization (Apr 1)
 - Repository-wide governance/app audit completed (Apr 1): root-scaffold drift in audit guidance was corrected and the remaining runtime risks were made explicit for source-label semantics, transition contracts, and period-filter consistency
@@ -32,6 +33,7 @@ canonical-of: project-current-state
 - Local-first persistence, backup/restore, and changelog-driven public updates
 - Governance guardrails consolidated in `01_rules/*` and `05_specialists/*`
 - The Dashboard spending composition surface is intentionally preserved and excluded from default UI refactor scope
+- User-visible changes now have an explicit closure standard in `04_execution/USER_VISIBLE_CHANGE_RITUAL.md`
 
 ## Current Risks
 
@@ -43,6 +45,7 @@ canonical-of: project-current-state
 - Public support and safe-trial routes must remain aligned with the landing's trust promises and must not drift into false support affordances or cloud-first implications
 - Immersive landing explainers must stay aligned with local-first messaging and must not imply enabled remote sync flows by default
 - The current Brain explainer uses a long-form scroll interlude with spring-smoothed depth separation and final reveal copy, which must remain synchronized with motion governance and the single-surface reduced-motion rule
+- Repeated user-visible findings can still drift back into ad hoc review unless they are promoted promptly from local fixes into canonical governance
 - Forecast provenance labels still drift in some runtime surfaces where `brain` is rendered as `Fonte Brain` instead of the governed `Fonte Core`
 - Shared UI tokens and a subset of runtime components still rely on `transition-all`, which conflicts with the execution policy and can mask motion regressions
 - Governance quick check still flags candidate period-filter logic outside `filterByRange`; these paths need owner review before behavioral fixes
@@ -54,8 +57,10 @@ canonical-of: project-current-state
 - Governance quick check writes generated output into `04_execution/reports/`
 - Root scaffold paths must stay aligned with scripts, tests, and CI
 - Landing tests now participate in this alignment by asserting public-link constraints and the static four-step `Come inizi` story
+- User-visible changes must now close with the ritual in `04_execution/USER_VISIBLE_CHANGE_RITUAL.md`, not only with passing tests/build
 
 ## Next Coordination Step
 
 - Keep the new root scaffold updated after substantial cross-layer work, especially `CURRENT_STATE`, `DECISION_LOG`, and `SESSION_HANDOFF`
 - Re-check landing docs, motion rules, and tests whenever `/` changes its narrative order, public links, or preview behaviors
+- Promote repeated UI/copy findings to governance instead of leaving them as reviewer memory

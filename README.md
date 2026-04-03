@@ -98,6 +98,7 @@ Neural core storage is managed separately in `src/brain/storage.ts`:
 - Canonical specialist operating contexts: `/05_specialists/*`
 - Canonical decisions and ADRs: `/06_decisions/*`
 - Canonical handoff state: `/07_handoffs/*`
+- Canonical user-visible closure ritual: `/04_execution/USER_VISIBLE_CHANGE_RITUAL.md`
 - Vendored reference skills pinned in repo: `/.agents/skills/*` + `skills-lock.json`
 - Governance update workflow: `$numa-governance-update`
 

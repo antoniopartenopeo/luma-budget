@@ -84,7 +84,7 @@ export function LandingBrainHero() {
   const act2Style = { opacity: act2Opacity, y: act2Y, filter: act2Blur }
   const act3Style = { opacity: act3Opacity, y: act3Y, filter: act3Blur }
   const stageSurfaceClassName =
-    "flex w-full max-w-5xl flex-col items-center rounded-[2.2rem] border border-black/6 bg-white/52 px-7 py-8 text-center shadow-[0_28px_80px_-42px_rgba(15,23,42,0.26)] backdrop-blur-2xl dark:border-white/10 dark:bg-black/24 sm:px-10 sm:py-10"
+    "flex w-full max-w-5xl flex-col items-center rounded-[2.2rem] border border-black/6 bg-white/52 px-7 py-8 text-center shadow-[0_28px_80px_-42px_rgba(15,23,42,0.26)] backdrop-blur-2xl dark:border-white/8 dark:bg-white/[0.04] sm:px-10 sm:py-10"
 
   return (
     <div ref={containerRef} className="relative h-[440vh] w-full">
@@ -101,7 +101,7 @@ export function LandingBrainHero() {
           className="absolute inset-x-0 z-30 flex w-full flex-col items-center text-center pointer-events-none px-6"
         >
           <div className={stageSurfaceClassName}>
-            <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary/85 dark:text-cyan-400 sm:text-[12px]">
+            <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary/85 dark:text-foreground/56 sm:text-[12px]">
               Il Brain di Numa
             </p>
             <h2
@@ -127,7 +127,7 @@ export function LandingBrainHero() {
           className="absolute inset-x-0 z-30 flex w-full flex-col items-center text-center pointer-events-none px-6"
         >
           <div className={stageSurfaceClassName}>
-            <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary/85 dark:text-cyan-400 sm:text-[12px]">
+            <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary/85 dark:text-foreground/56 sm:text-[12px]">
               Stima prudente
             </p>
             <h3 className={cn(LANDING_EDITORIAL_CARD_HERO_TITLE_CLASS, "mx-auto max-w-[15ch] font-extrabold dark:text-white")}>
@@ -150,7 +150,7 @@ export function LandingBrainHero() {
           className="absolute inset-x-0 z-30 flex w-full flex-col items-center text-center pointer-events-none px-6"
         >
           <div className={stageSurfaceClassName}>
-            <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary/85 dark:text-cyan-400 sm:text-[12px]">
+            <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary/85 dark:text-foreground/56 sm:text-[12px]">
               Per scegliere meglio
             </p>
             <h3 className={cn(LANDING_EDITORIAL_CARD_HERO_TITLE_CLASS, "mx-auto max-w-[16ch] font-extrabold dark:text-white")}>

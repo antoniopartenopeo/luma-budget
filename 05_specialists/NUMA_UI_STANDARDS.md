@@ -108,6 +108,7 @@ Invarianti:
 - hero e explainers immersivi della landing devono restare lo stesso componente adattivo su desktop, smartphone e contesti `prefers-reduced-motion`; puo cambiare solo l'intensita del motion, non il pattern visivo
 - su mobile il primo viewport deve mantenere leggibile promessa, descrizione e CTA principale
 - il reveal finale del Brain hero deve richiudere il messaggio su controllo del mese e calma, non su promessa autonoma di AI
+- in dark la landing deve restare editoriale e quasi monocromatica: niente famiglie cromatiche concorrenti, il colore puo restare solo come eco minima
 
 ---
 
@@ -117,6 +118,10 @@ Invarianti:
 - Micro surfaces: `rounded-xl`, `glass-card`
 - Brand primary: `primary` (`oklch(0.6 0.16 200)`)
 - Vietato usare `indigo` come colore principale per stati attivi/CTA
+- In dark mode il materiale canonico e `ink / smoke / paper`: nero, grafite, bianco caldo e neutrali prima del colore
+- Le classi shared (`liquid-capsule`, `liquid-chrome`, `glass-panel`, `glass-card`, `surface-*`) devono usare un highlight comune `torchlight white` molto velato, off-axis e non centrato in modo ripetitivo
+- Glow cyan/teal/emerald in dark sono eccezioni locali esplicite, non grammatica di default
+- Eyebrow, kicker e support surface in dark devono preferire neutrali attenuati (`foreground/white`) e non accenti cromatici forti
 
 ---
 
@@ -242,8 +247,9 @@ Invarianti:
 8. [ ] Verifica `01_rules/UI_REGRESSION_CHECKLIST.md`
 9. [ ] Verifica regole MUST/SHOULD/NEVER in `01_rules/UI_EXECUTION_STANDARDS.md`
 10. [ ] Se il change e utente-visibile, rituale completato secondo `04_execution/USER_VISIBLE_CHANGE_RITUAL.md`
+11. [ ] Se il change tocca il dark theme, verifica coerenza `ink / smoke / paper` su landing, support surfaces e superfici core app condivise
 
 ---
 
-**Versione**: 2.2.0
+**Versione**: 2.3.0
 **Ultimo aggiornamento**: 2026-04-03

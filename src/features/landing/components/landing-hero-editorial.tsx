@@ -24,28 +24,28 @@ import { AppleFluidBackground } from "./motion-primitives"
 
 const PRISM_PANEL_ACCENTS = [
   {
-    kickerClassName: "text-cyan-700 dark:text-cyan-300",
+    kickerClassName: "text-cyan-700 dark:text-white/60",
     iconClassName:
-      "border-cyan-400/28 bg-cyan-500/12 text-cyan-700 dark:border-cyan-400/18 dark:bg-cyan-400/10 dark:text-cyan-300",
+      "border-cyan-400/28 bg-cyan-500/12 text-cyan-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-zinc-100",
     panelClassName:
-      "border-cyan-400/22 bg-gradient-to-br from-cyan-500/[0.08] via-white/74 to-cyan-100/48 dark:from-cyan-400/[0.10] dark:via-[#061019]/84 dark:to-cyan-900/[0.20]",
-    lineClassName: "bg-cyan-400/24 dark:bg-cyan-300/18"
+      "border-cyan-400/22 bg-gradient-to-br from-cyan-500/[0.08] via-white/74 to-cyan-100/48 dark:border-white/10 dark:from-white/[0.08] dark:via-[#090909]/86 dark:to-zinc-900/[0.22]",
+    lineClassName: "bg-cyan-400/24 dark:bg-white/16"
   },
   {
-    kickerClassName: "text-slate-700 dark:text-slate-200",
+    kickerClassName: "text-slate-700 dark:text-white/58",
     iconClassName:
-      "border-slate-400/24 bg-slate-500/10 text-slate-700 dark:border-slate-300/18 dark:bg-slate-200/10 dark:text-slate-200",
+      "border-slate-400/24 bg-slate-500/10 text-slate-700 dark:border-white/9 dark:bg-white/[0.045] dark:text-zinc-200",
     panelClassName:
-      "border-slate-400/18 bg-gradient-to-br from-slate-500/[0.08] via-white/76 to-slate-100/52 dark:from-slate-200/[0.10] dark:via-[#081018]/86 dark:to-slate-900/[0.22]",
-    lineClassName: "bg-slate-400/22 dark:bg-slate-200/16"
+      "border-slate-400/18 bg-gradient-to-br from-slate-500/[0.08] via-white/76 to-slate-100/52 dark:border-white/9 dark:from-white/[0.07] dark:via-[#090909]/86 dark:to-zinc-950/[0.24]",
+    lineClassName: "bg-slate-400/22 dark:bg-white/14"
   },
   {
-    kickerClassName: "text-teal-700 dark:text-teal-200",
+    kickerClassName: "text-teal-700 dark:text-white/56",
     iconClassName:
-      "border-teal-400/28 bg-teal-500/12 text-teal-700 dark:border-teal-300/18 dark:bg-teal-300/10 dark:text-teal-200",
+      "border-teal-400/28 bg-teal-500/12 text-teal-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-stone-200",
     panelClassName:
-      "border-teal-400/22 bg-gradient-to-br from-teal-500/[0.08] via-white/74 to-teal-100/50 dark:from-teal-300/[0.10] dark:via-[#061111]/84 dark:to-teal-900/[0.22]",
-    lineClassName: "bg-teal-400/22 dark:bg-teal-200/16"
+      "border-teal-400/22 bg-gradient-to-br from-teal-500/[0.08] via-white/74 to-teal-100/50 dark:border-white/10 dark:from-white/[0.075] dark:via-[#090909]/86 dark:to-stone-950/[0.22]",
+    lineClassName: "bg-teal-400/22 dark:bg-white/15"
   }
 ] as const
 
@@ -160,10 +160,10 @@ export function LandingHeroEditorial() {
       <div className="absolute inset-0 z-0 pointer-events-none">
         <AppleFluidBackground />
       </div>
-      <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.16),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(20,184,166,0.10),transparent_30%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(45,212,191,0.18),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(34,211,238,0.08),transparent_32%)]" />
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.16),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(20,184,166,0.10),transparent_30%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.10),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.04),transparent_32%)]" />
       <motion.div
         aria-hidden="true"
-        className="pointer-events-none absolute right-[8%] top-[15%] z-[2] h-[18rem] w-[18rem] rounded-full bg-cyan-400/20 blur-[110px] dark:bg-cyan-300/14 sm:h-[24rem] sm:w-[24rem] lg:h-[30rem] lg:w-[30rem]"
+        className="pointer-events-none absolute right-[8%] top-[15%] z-[2] h-[18rem] w-[18rem] rounded-full bg-cyan-400/20 blur-[110px] dark:bg-white/10 sm:h-[24rem] sm:w-[24rem] lg:h-[30rem] lg:w-[30rem]"
         animate={
           prefersReducedMotion
             ? undefined

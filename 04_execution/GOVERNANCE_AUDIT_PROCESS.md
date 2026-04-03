@@ -60,6 +60,7 @@ Se il change e utente-visibile:
 2. Chiudi con finding concreti, non con summary generici.
 3. Verifica cross-surface se il change tocca pagine, support surfaces, CTA o metadata pubblici.
 4. Se un finding e gia emerso due volte in review precedenti, promuovilo a governance invece di lasciarlo implicito.
+5. Se il change tocca il dark theme, verifica esplicitamente la grammatica `ink / smoke / paper` e l'assenza di drift neon/cromatico tra landing, support surfaces e superfici core app condivise.
 
 ## Enforcement automatico
 

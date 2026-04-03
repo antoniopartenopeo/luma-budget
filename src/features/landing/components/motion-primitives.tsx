@@ -15,30 +15,30 @@ export function AppleFluidMesh({ className }: { className?: string }) {
   return (
     <div className={cn("overflow-hidden pointer-events-none transition-opacity duration-1000", className)}>
       <svg
-        className="absolute h-[150%] w-[150%] -top-[25%] -left-[25%] opacity-90 dark:opacity-100 saturate-100 dark:saturate-150 mix-blend-normal"
+        className="absolute h-[150%] w-[150%] -top-[25%] -left-[25%] opacity-90 dark:opacity-[0.96] saturate-100 dark:saturate-75 mix-blend-normal"
         viewBox="0 0 1000 1000"
         xmlns="http://www.w3.org/2000/svg"
         preserveAspectRatio="none"
       >
         <defs>
           <linearGradient id="numa-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" className="text-cyan-300 dark:text-cyan-400" stopOpacity="0.8" style={CURRENT_COLOR_STOP} />
-            <stop offset="100%" className="text-emerald-400 dark:text-emerald-600" stopOpacity="0.6" style={CURRENT_COLOR_STOP} />
+            <stop offset="0%" className="text-cyan-300 dark:text-zinc-200" stopOpacity="0.8" style={CURRENT_COLOR_STOP} />
+            <stop offset="100%" className="text-emerald-400 dark:text-zinc-700" stopOpacity="0.6" style={CURRENT_COLOR_STOP} />
           </linearGradient>
 
           <radialGradient id="numa-grad-2" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" className="text-teal-100 dark:text-slate-800" stopOpacity="0.6" style={CURRENT_COLOR_STOP} />
-            <stop offset="100%" className="text-slate-100 dark:text-slate-950" stopOpacity="0.2" style={CURRENT_COLOR_STOP} />
+            <stop offset="0%" className="text-teal-100 dark:text-zinc-700" stopOpacity="0.6" style={CURRENT_COLOR_STOP} />
+            <stop offset="100%" className="text-slate-100 dark:text-zinc-950" stopOpacity="0.2" style={CURRENT_COLOR_STOP} />
           </radialGradient>
 
           <linearGradient id="numa-grad-3" x1="100%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" className="text-blue-300 dark:text-indigo-400" stopOpacity="0.85" style={CURRENT_COLOR_STOP} />
-            <stop offset="100%" className="text-teal-300 dark:text-teal-600" stopOpacity="0.6" style={CURRENT_COLOR_STOP} />
+            <stop offset="0%" className="text-blue-300 dark:text-zinc-300" stopOpacity="0.85" style={CURRENT_COLOR_STOP} />
+            <stop offset="100%" className="text-teal-300 dark:text-zinc-700" stopOpacity="0.6" style={CURRENT_COLOR_STOP} />
           </linearGradient>
 
           <linearGradient id="numa-grad-4" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" className="text-emerald-200 dark:text-emerald-400" stopOpacity="0.8" style={CURRENT_COLOR_STOP} />
-            <stop offset="100%" className="text-cyan-100 dark:text-cyan-600" stopOpacity="0.5" style={CURRENT_COLOR_STOP} />
+            <stop offset="0%" className="text-emerald-200 dark:text-stone-300" stopOpacity="0.8" style={CURRENT_COLOR_STOP} />
+            <stop offset="100%" className="text-cyan-100 dark:text-zinc-700" stopOpacity="0.5" style={CURRENT_COLOR_STOP} />
           </linearGradient>
         </defs>
 
@@ -65,7 +65,7 @@ export function AppleFluidMesh({ className }: { className?: string }) {
       </svg>
       
       <div 
-        className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none mix-blend-overlay" 
+        className="absolute inset-0 opacity-[0.03] dark:opacity-[0.035] pointer-events-none mix-blend-overlay" 
         style={NOISE_TEXTURE_STYLE} 
       />
     </div>
@@ -76,8 +76,8 @@ export function AppleFluidBackground({ className, style }: { className?: string,
   return (
     <div className={cn("absolute inset-0 pointer-events-none", className)} style={style}>
       <AppleFluidMesh className="absolute inset-0 w-full h-full" />
-      <div className="absolute inset-0 bg-gradient-to-b from-background/0 via-background/20 to-background dark:from-background/5 dark:via-background/50 dark:to-background" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_20%,_var(--tw-gradient-stops))] from-transparent via-background/50 to-background dark:via-background/70 dark:to-background" />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/0 via-background/20 to-background dark:from-black/0 dark:via-black/56 dark:to-background" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_20%,_var(--tw-gradient-stops))] from-transparent via-background/50 to-background dark:via-black/74 dark:to-background" />
     </div>
   )
 }

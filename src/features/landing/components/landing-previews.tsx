@@ -6,19 +6,19 @@ import { LandingEditorialCardFrame } from "./landing-editorial-card-frame"
 
 const STORY_ACCENTS = [
   {
-    border: "border-cyan-400/20 dark:border-cyan-400/10",
-    panel: "from-cyan-500/[0.02] via-white to-cyan-50/50 dark:from-cyan-900/30 dark:via-black/80 dark:to-cyan-950/20",
-    icon: "border-cyan-400/25 bg-cyan-500/10 text-cyan-600 dark:border-cyan-400/15 dark:bg-cyan-900/40 dark:text-cyan-400"
+    border: "border-cyan-400/20 dark:border-white/10",
+    panel: "from-cyan-500/[0.02] via-white to-cyan-50/50 dark:from-white/[0.06] dark:via-black/84 dark:to-zinc-900/62",
+    icon: "border-cyan-400/25 bg-cyan-500/10 text-cyan-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-zinc-100"
   },
   {
-    border: "border-slate-400/18 dark:border-slate-400/10",
-    panel: "from-slate-500/[0.03] via-white to-slate-50/60 dark:from-slate-800/28 dark:via-black/80 dark:to-slate-950/24",
-    icon: "border-slate-400/25 bg-slate-500/8 text-slate-700 dark:border-slate-400/15 dark:bg-slate-800/35 dark:text-slate-300"
+    border: "border-slate-400/18 dark:border-white/9",
+    panel: "from-slate-500/[0.03] via-white to-slate-50/60 dark:from-white/[0.05] dark:via-black/84 dark:to-zinc-950/68",
+    icon: "border-slate-400/25 bg-slate-500/8 text-slate-700 dark:border-white/9 dark:bg-white/[0.045] dark:text-zinc-200"
   },
   {
-    border: "border-teal-400/20 dark:border-teal-400/10",
-    panel: "from-teal-500/[0.02] via-white to-teal-50/50 dark:from-teal-900/30 dark:via-black/80 dark:to-teal-950/20",
-    icon: "border-teal-400/25 bg-teal-500/10 text-teal-700 dark:border-teal-400/15 dark:bg-teal-900/40 dark:text-teal-300"
+    border: "border-teal-400/20 dark:border-white/10",
+    panel: "from-teal-500/[0.02] via-white to-teal-50/50 dark:from-white/[0.055] dark:via-black/84 dark:to-stone-950/64",
+    icon: "border-teal-400/25 bg-teal-500/10 text-teal-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-stone-200"
   }
 ] as const
 

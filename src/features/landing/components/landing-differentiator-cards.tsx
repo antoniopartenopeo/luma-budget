@@ -8,25 +8,25 @@ import { LANDING_MOTION_EASE, LANDING_MOTION_TIMINGS } from "./landing-motion"
 
 const EDITORIAL_ACCENTS = [
   {
-    ambient: "from-cyan-500/15 via-background to-background dark:from-cyan-500/20 dark:via-background/80 dark:to-background",
-    glow: "bg-cyan-500/30 dark:bg-cyan-400/25",
-    card: "border-cyan-400/25 bg-gradient-to-br from-cyan-500/[0.02] via-white to-cyan-50/50 dark:border-cyan-400/20 dark:from-[rgba(6,182,212,0.12)] dark:via-black/80 dark:to-[rgba(6,182,212,0.08)] dark:backdrop-blur-3xl",
-    kicker: "text-cyan-700 dark:text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]",
-    icon: "border-cyan-400/25 bg-cyan-500/10 text-cyan-700 dark:text-cyan-400"
+    ambient: "from-cyan-500/15 via-background to-background dark:from-white/[0.05] dark:via-background/88 dark:to-background",
+    glow: "bg-cyan-500/30 dark:bg-white/12",
+    card: "border-cyan-400/25 bg-gradient-to-br from-cyan-500/[0.02] via-white to-cyan-50/50 dark:border-white/10 dark:from-white/[0.07] dark:via-black/84 dark:to-zinc-900/[0.56] dark:backdrop-blur-3xl",
+    kicker: "text-cyan-700 dark:text-white/62 dark:drop-shadow-none drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]",
+    icon: "border-cyan-400/25 bg-cyan-500/10 text-cyan-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-zinc-100"
   },
   {
-    ambient: "from-teal-500/14 via-background to-background dark:from-teal-500/18 dark:via-background/80 dark:to-background",
-    glow: "bg-teal-500/26 dark:bg-teal-300/22",
-    card: "border-teal-400/22 bg-gradient-to-br from-teal-500/[0.02] via-white to-teal-50/50 dark:border-teal-400/18 dark:from-[rgba(20,184,166,0.10)] dark:via-black/80 dark:to-[rgba(20,184,166,0.07)] dark:backdrop-blur-3xl",
-    kicker: "text-teal-700 dark:text-teal-300 drop-shadow-[0_0_8px_rgba(45,212,191,0.22)]",
-    icon: "border-teal-400/25 bg-teal-500/10 text-teal-700 dark:text-teal-300"
+    ambient: "from-teal-500/14 via-background to-background dark:from-white/[0.045] dark:via-background/88 dark:to-background",
+    glow: "bg-teal-500/26 dark:bg-white/11",
+    card: "border-teal-400/22 bg-gradient-to-br from-teal-500/[0.02] via-white to-teal-50/50 dark:border-white/9 dark:from-white/[0.06] dark:via-black/84 dark:to-zinc-950/[0.58] dark:backdrop-blur-3xl",
+    kicker: "text-teal-700 dark:text-white/58 dark:drop-shadow-none drop-shadow-[0_0_8px_rgba(45,212,191,0.22)]",
+    icon: "border-teal-400/25 bg-teal-500/10 text-teal-700 dark:border-white/9 dark:bg-white/[0.045] dark:text-zinc-200"
   },
   {
-    ambient: "from-slate-500/12 via-background to-background dark:from-slate-400/14 dark:via-background/80 dark:to-background",
-    glow: "bg-slate-500/22 dark:bg-slate-300/18",
-    card: "border-slate-400/20 bg-gradient-to-br from-slate-500/[0.03] via-white to-slate-50/60 dark:border-slate-400/18 dark:from-[rgba(148,163,184,0.10)] dark:via-black/80 dark:to-[rgba(15,23,42,0.08)] dark:backdrop-blur-3xl",
-    kicker: "text-slate-700 dark:text-slate-300 drop-shadow-[0_0_8px_rgba(148,163,184,0.18)]",
-    icon: "border-slate-400/25 bg-slate-500/8 text-slate-700 dark:text-slate-300"
+    ambient: "from-slate-500/12 via-background to-background dark:from-white/[0.04] dark:via-background/88 dark:to-background",
+    glow: "bg-slate-500/22 dark:bg-white/10",
+    card: "border-slate-400/20 bg-gradient-to-br from-slate-500/[0.03] via-white to-slate-50/60 dark:border-white/9 dark:from-white/[0.055] dark:via-black/84 dark:to-stone-950/[0.52] dark:backdrop-blur-3xl",
+    kicker: "text-slate-700 dark:text-white/56 dark:drop-shadow-none drop-shadow-[0_0_8px_rgba(148,163,184,0.18)]",
+    icon: "border-slate-400/25 bg-slate-500/8 text-slate-700 dark:border-white/9 dark:bg-white/[0.04] dark:text-stone-200"
   }
 ] as const
 
@@ -224,7 +224,7 @@ export function LandingDifferentiatorCards() {
 
         <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center">
           <div className="relative z-10 mb-8 flex w-full flex-col items-center text-center sm:mb-12 lg:mb-14">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-500 dark:text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.4)] sm:text-[12px]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-500 dark:text-foreground/58 dark:drop-shadow-none drop-shadow-[0_0_8px_rgba(34,211,238,0.4)] sm:text-[12px]">
               La tua cassaforte locale
             </p>
             <h2 className="mx-auto mt-5 max-w-fit text-center text-3xl font-black leading-[0.96] tracking-tight text-foreground sm:text-4xl lg:text-5xl xl:text-6xl xl:whitespace-nowrap">

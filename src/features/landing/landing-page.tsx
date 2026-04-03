@@ -79,53 +79,53 @@ const LANDING_FOOTER_SUPPORT_ITEMS = [
 
 const LANDING_FLOW_ACCENTS = [
   {
-    border: "border-cyan-400/20 dark:border-cyan-400/10",
-    panel: "from-cyan-500/[0.02] via-white to-cyan-50/50 dark:from-cyan-900/30 dark:via-black/80 dark:to-cyan-950/20",
-    icon: "border-cyan-400/25 bg-cyan-500/10 text-cyan-600 dark:border-cyan-400/15 dark:bg-cyan-900/40 dark:text-cyan-400",
-    number: "text-cyan-500/5 dark:text-cyan-400/[0.03]",
-    orb: "bg-cyan-500/20 dark:bg-cyan-400/10"
+    border: "border-cyan-400/20 dark:border-white/10",
+    panel: "from-cyan-500/[0.02] via-white to-cyan-50/50 dark:from-white/[0.06] dark:via-black/84 dark:to-zinc-900/62",
+    icon: "border-cyan-400/25 bg-cyan-500/10 text-cyan-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-zinc-100",
+    number: "text-cyan-500/5 dark:text-white/[0.03]",
+    orb: "bg-cyan-500/20 dark:bg-white/8"
   },
   {
-    border: "border-slate-400/18 dark:border-slate-400/10",
-    panel: "from-slate-500/[0.03] via-white to-slate-50/60 dark:from-slate-800/28 dark:via-black/80 dark:to-slate-950/24",
-    icon: "border-slate-400/25 bg-slate-500/8 text-slate-700 dark:border-slate-400/15 dark:bg-slate-800/35 dark:text-slate-300",
-    number: "text-slate-500/6 dark:text-slate-300/[0.03]",
-    orb: "bg-slate-500/18 dark:bg-slate-300/10"
+    border: "border-slate-400/18 dark:border-white/9",
+    panel: "from-slate-500/[0.03] via-white to-slate-50/60 dark:from-white/[0.05] dark:via-black/84 dark:to-zinc-950/68",
+    icon: "border-slate-400/25 bg-slate-500/8 text-slate-700 dark:border-white/9 dark:bg-white/[0.045] dark:text-zinc-200",
+    number: "text-slate-500/6 dark:text-white/[0.025]",
+    orb: "bg-slate-500/18 dark:bg-white/7"
   },
   {
-    border: "border-teal-400/20 dark:border-teal-400/10",
-    panel: "from-teal-500/[0.02] via-white to-teal-50/50 dark:from-teal-900/30 dark:via-black/80 dark:to-teal-950/20",
-    icon: "border-teal-400/25 bg-teal-500/10 text-teal-700 dark:border-teal-400/15 dark:bg-teal-900/40 dark:text-teal-300",
-    number: "text-teal-500/5 dark:text-teal-300/[0.03]",
-    orb: "bg-teal-500/18 dark:bg-teal-300/10"
+    border: "border-teal-400/20 dark:border-white/10",
+    panel: "from-teal-500/[0.02] via-white to-teal-50/50 dark:from-white/[0.055] dark:via-black/84 dark:to-stone-950/64",
+    icon: "border-teal-400/25 bg-teal-500/10 text-teal-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-stone-200",
+    number: "text-teal-500/5 dark:text-white/[0.028]",
+    orb: "bg-teal-500/18 dark:bg-white/8"
   },
   {
-    border: "border-cyan-400/16 dark:border-cyan-400/10",
-    panel: "from-cyan-500/[0.015] via-white to-cyan-50/45 dark:from-cyan-900/24 dark:via-black/80 dark:to-cyan-950/18",
-    icon: "border-cyan-400/22 bg-cyan-500/8 text-cyan-600 dark:border-cyan-400/15 dark:bg-cyan-900/34 dark:text-cyan-300",
-    number: "text-cyan-500/5 dark:text-cyan-300/[0.03]",
-    orb: "bg-cyan-500/16 dark:bg-cyan-300/10"
+    border: "border-cyan-400/16 dark:border-white/9",
+    panel: "from-cyan-500/[0.015] via-white to-cyan-50/45 dark:from-white/[0.05] dark:via-black/84 dark:to-zinc-900/60",
+    icon: "border-cyan-400/22 bg-cyan-500/8 text-cyan-600 dark:border-white/9 dark:bg-white/[0.045] dark:text-zinc-200",
+    number: "text-cyan-500/5 dark:text-white/[0.025]",
+    orb: "bg-cyan-500/16 dark:bg-white/7"
   }
 ] as const
 
 const LANDING_OUTCOME_ACCENTS = [
   {
-    border: "border-cyan-400/20 dark:border-cyan-400/10",
-    panel: "from-cyan-500/[0.02] via-white to-cyan-50/50 dark:from-cyan-900/30 dark:via-black/80 dark:to-cyan-950/20",
-    icon: "border-cyan-400/25 bg-cyan-500/10 text-cyan-600 dark:border-cyan-400/15 dark:bg-cyan-900/40 dark:text-cyan-300",
-    orb: "bg-cyan-500/20 dark:bg-cyan-400/10"
+    border: "border-cyan-400/20 dark:border-white/10",
+    panel: "from-cyan-500/[0.02] via-white to-cyan-50/50 dark:from-white/[0.06] dark:via-black/84 dark:to-zinc-900/62",
+    icon: "border-cyan-400/25 bg-cyan-500/10 text-cyan-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-zinc-100",
+    orb: "bg-cyan-500/20 dark:bg-white/8"
   },
   {
-    border: "border-teal-400/20 dark:border-teal-400/10",
-    panel: "from-teal-500/[0.02] via-white to-teal-50/50 dark:from-teal-900/30 dark:via-black/80 dark:to-teal-950/20",
-    icon: "border-teal-400/25 bg-teal-500/10 text-teal-700 dark:border-teal-400/15 dark:bg-teal-900/40 dark:text-teal-300",
-    orb: "bg-teal-500/18 dark:bg-teal-300/10"
+    border: "border-teal-400/20 dark:border-white/10",
+    panel: "from-teal-500/[0.02] via-white to-teal-50/50 dark:from-white/[0.055] dark:via-black/84 dark:to-stone-950/64",
+    icon: "border-teal-400/25 bg-teal-500/10 text-teal-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-stone-200",
+    orb: "bg-teal-500/18 dark:bg-white/8"
   },
   {
-    border: "border-slate-400/18 dark:border-slate-400/10",
-    panel: "from-slate-500/[0.03] via-white to-slate-50/60 dark:from-slate-800/28 dark:via-black/80 dark:to-slate-950/24",
-    icon: "border-slate-400/25 bg-slate-500/8 text-slate-700 dark:border-slate-400/15 dark:bg-slate-800/35 dark:text-slate-300",
-    orb: "bg-slate-500/18 dark:bg-slate-300/10"
+    border: "border-slate-400/18 dark:border-white/9",
+    panel: "from-slate-500/[0.03] via-white to-slate-50/60 dark:from-white/[0.05] dark:via-black/84 dark:to-zinc-950/68",
+    icon: "border-slate-400/25 bg-slate-500/8 text-slate-700 dark:border-white/9 dark:bg-white/[0.045] dark:text-zinc-200",
+    orb: "bg-slate-500/18 dark:bg-white/7"
   }
 ] as const
 
@@ -312,10 +312,10 @@ export function LandingPage() {
               <AppleFluidBackground />
             </div>
             <div className="pointer-events-none absolute inset-0 z-[1] overflow-hidden">
-              <div className="absolute left-1/2 top-[36%] h-[22rem] w-[22rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-3xl sm:h-[28rem] sm:w-[28rem]" />
+              <div className="absolute left-1/2 top-[36%] h-[22rem] w-[22rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-3xl dark:bg-white/6 sm:h-[28rem] sm:w-[28rem]" />
             </div>
             <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center text-center">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary dark:text-foreground/56">
                 Quando vuoi iniziare.
               </p>
               <h2

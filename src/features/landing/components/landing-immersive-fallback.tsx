@@ -19,12 +19,12 @@ export function LandingImmersiveFallback({
   return (
     <div className={cn("relative w-full", heightClassName)} aria-hidden="true">
       <div className="sticky top-0 flex min-h-screen w-full items-center justify-center overflow-hidden bg-background px-4 py-10 sm:px-6">
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/[0.08] via-background to-background dark:from-primary/[0.10] dark:via-background/85 dark:to-background" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/[0.08] via-background to-background dark:from-white/[0.04] dark:via-background/88 dark:to-background" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.12),transparent_38%)] dark:bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.05),transparent_40%)]" />
 
         <div className="mx-auto flex w-full max-w-6xl flex-col items-center">
           <div className="relative z-10 mb-8 max-w-2xl text-center sm:mb-12 lg:mb-14 xl:max-w-3xl">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary/84 sm:text-[12px]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary/84 dark:text-foreground/58 sm:text-[12px]">
               {eyebrow}
             </p>
             <h2 className="mt-5 text-4xl font-extrabold leading-[0.94] tracking-tight text-foreground sm:text-5xl lg:text-6xl">

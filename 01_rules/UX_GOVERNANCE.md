@@ -7,7 +7,7 @@ last-verified: 2026-04-03
 canonical-of: ux-policy
 
 > **Stato:** Active
-> **Versione:** 1.9
+> **Versione:** 2.0
 > **Ultimo aggiornamento:** 2026-04-03
 
 Linee guida UX ad alto livello per mantenere fiducia, chiarezza e coerenza cross-feature.
@@ -76,6 +76,8 @@ Per processi tecnici estesi (es. training locale Neural Core), mostrare progress
 ### A. Palette (Locked)
 - Primary state: `primary` (`oklch(0.6 0.16 200)`).
 - Vietato usare Indigo come colore principale per CTA/stati attivi.
+- In dark mode il colore non puo essere la materia dominante della UI: il primary resta un accento, non il fondale.
+- Per superfici utente-visibili in dark la base canonica e `ink / smoke / paper`: nero, grafite, bianco caldo e grigi neutri prima del colore.
 
 ### B. Geometry Scale
 - Macro surfaces: `rounded-[2.5rem]` (40px).
@@ -85,6 +87,8 @@ Per processi tecnici estesi (es. training locale Neural Core), mostrare progress
 - Superfici principali: `glass-panel`.
 - Superfici secondarie: `glass-card`.
 - Overlay e chrome devono restare coerenti con la materialità della TopBar.
+- In dark mode le superfici condivise devono usare un highlight bianco molto velato e off-axis (`torchlight white`), evitando spot centrati ripetuti e glow colorati come default globale.
+- Il materiale dark deve sembrare `inchiostro + vetro fumé`, non aurora neon o frosted glass lattiginoso.
 
 ### D. Trust Grammar
 - Le stesse promesse non devono essere ripetute inutilmente in hero, CTA, footer e support surfaces.
@@ -114,6 +118,7 @@ Per processi tecnici estesi (es. training locale Neural Core), mostrare progress
 - Il footer pubblico deve esporre solo support surface reali; vietate voci statiche o affordance di contatto non ancora implementate.
 - La landing deve mantenere tono calmo e non punitivo: niente FOMO, urgenza artificiale o framing colpevolizzante.
 - La landing non deve implicare open banking o sync remoti come baseline se il prodotto resta local-first e fail-closed di default.
+- In dark mode la landing deve restare editoriale e leggibile: accenti cromatici minimi, grande contrasto tipografico e nessuna sezione che sembri appartenere a un'estetica neon separata.
 
 ## 5. UX Invariants
 
@@ -122,6 +127,7 @@ Per processi tecnici estesi (es. training locale Neural Core), mostrare progress
 - I flussi principali devono preservare orientamento verticale e leggibilità delle metriche.
 - Le etichette semantiche finanziarie devono rimanere non giudicanti e contestualizzate nel tempo.
 - Ogni change utente-visibile deve chiudersi con narrative pass, typography pass, composition pass, truth pass, cross-surface coherence pass e verification pass.
+- Ogni change che tocca il dark theme deve verificare coerenza cross-surface tra landing, support surfaces e superfici core app, non solo il blocco locale.
 
 ---
 

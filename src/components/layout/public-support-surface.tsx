@@ -9,8 +9,8 @@ interface PublicSupportSurfaceProps {
 
 const TONE_CLASS_MAP = {
   default: "glass-panel border-none",
-  accent: "glass-panel border border-primary/14 bg-gradient-to-br from-primary/[0.08] via-white/76 to-white/92 dark:from-primary/[0.10] dark:via-black/24 dark:to-black/18",
-  warm: "glass-panel border border-amber-500/18 bg-amber-500/7 dark:border-amber-400/14 dark:bg-amber-500/[0.08]",
+  accent: "glass-panel border border-primary/14 bg-gradient-to-br from-primary/[0.08] via-white/76 to-white/92 dark:border-white/10 dark:from-white/[0.07] dark:via-black/84 dark:to-zinc-950/[0.62]",
+  warm: "glass-panel border border-amber-500/18 bg-amber-500/7 dark:border-white/10 dark:bg-white/[0.045]",
 } as const
 
 export function PublicSupportSurface({
@@ -48,7 +48,7 @@ export function PublicSupportIntro({
 }: PublicSupportIntroProps) {
   return (
     <PublicSupportSurface className={className}>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary dark:text-foreground/58">
         {eyebrow}
       </p>
       <h1

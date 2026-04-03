@@ -11,7 +11,7 @@ export const LANDING_FLOATING_NAV_CLASS =
   `${LIQUID_CAPSULE_CLASS} ${LIQUID_REFRACTION_CLASS} flex items-center gap-0.5 rounded-full px-1.5 py-1`
 
 export const LANDING_SECTION_EYEBROW_CLASS =
-  "text-[11px] font-semibold uppercase tracking-[0.16em] text-primary"
+  "text-[11px] font-semibold uppercase tracking-[0.16em] text-primary dark:text-foreground/58"
 
 export const LANDING_SECTION_TITLE_CLASS =
   "max-w-[17ch] text-3xl font-extrabold leading-[0.95] tracking-tight text-foreground sm:text-4xl lg:text-5xl"

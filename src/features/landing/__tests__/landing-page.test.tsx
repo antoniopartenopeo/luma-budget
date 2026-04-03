@@ -101,12 +101,13 @@ describe("LandingPage", () => {
     expect(screen.getAllByTestId("brand-logo").length).toBeGreaterThan(0)
     expect(screen.getByTestId("landing-hero-editorial")).toBeInTheDocument()
     expect(screen.getByRole("heading", { name: /Numa Budget/i })).toBeInTheDocument()
-    expect(screen.getByText(/Importa i tuoi dati e verifica se una nuova spesa entra davvero nel mese, tutto in locale\./i)).toBeInTheDocument()
+    expect(screen.getByText(/Un'app local-first per capire se una spesa entra nel mese\./i)).toBeInTheDocument()
+    expect(screen.getByText(/Importi un estratto conto, leggi il margine e provi una scelta senza mandare i tuoi dati fuori dal dispositivo\./i)).toBeInTheDocument()
     expect(screen.getByRole("region", { name: /Smetti di indovinare le tue spese\./i })).toBeInTheDocument()
     expect(screen.getByRole("region", { name: /Quattro passaggi, nessun rito\./i })).toBeInTheDocument()
     expect(screen.getByText(/Importi un CSV, leggi il mese/i)).toBeInTheDocument()
     expect(screen.getByRole("region", { name: /Meno attrito\./i })).toBeInTheDocument()
-    expect(screen.getByRole("region", { name: /Inizia gratis\. Parti da ciò che hai già\./i })).toBeInTheDocument()
+    expect(screen.getByRole("region", { name: /Apri il mese\. Poi decidi\./i })).toBeInTheDocument()
 
     expect(screen.getByTestId("landing-brain-hero")).toBeInTheDocument()
 

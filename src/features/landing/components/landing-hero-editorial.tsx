@@ -285,21 +285,25 @@ export function LandingHeroEditorial() {
         ))}
       </div>
 
+      <div className="pointer-events-none absolute inset-x-0 top-1/2 z-[3] flex -translate-y-1/2 justify-center lg:left-[-4%] lg:justify-start">
+        <BrandLogo
+          variant="full"
+          height={400}
+          className="h-auto w-[min(112vw,82rem)] opacity-[0.16] saturate-[0.88] dark:opacity-[0.11]"
+        />
+      </div>
+
       <div className="relative z-30 mx-auto flex w-full max-w-6xl items-center">
         <div className="max-w-[38rem] py-6 sm:py-10">
           <h1 id="landing-hero-title" className="sr-only">
             {LANDING_HERO_EDITORIAL.srTitle}
           </h1>
 
-          <div className="max-w-[36rem] sm:mt-2">
-            <BrandLogo
-              variant="full"
-              height={224}
-              className="w-auto max-w-[15.5rem] drop-shadow-[0_26px_60px_rgba(255,255,255,0.24)] sm:max-w-[26rem] lg:max-w-[34rem]"
-            />
-          </div>
+          <p className="mt-18 max-w-[14ch] text-[1.6rem] font-black leading-[0.98] tracking-tight text-foreground sm:mt-24 sm:text-[2rem] lg:mt-28 lg:text-[2.35rem]">
+            {LANDING_HERO_EDITORIAL.headline}
+          </p>
 
-          <p className="mt-5 max-w-[17rem] text-[0.98rem] font-medium leading-[1.45] tracking-[-0.01em] text-foreground/68 sm:mt-6 sm:max-w-[23rem] sm:text-[1.08rem] sm:leading-relaxed lg:max-w-[27rem] lg:text-[1.16rem]">
+          <p className="mt-4 max-w-[18rem] text-[0.98rem] font-medium leading-[1.45] tracking-[-0.01em] text-foreground/68 sm:max-w-[24rem] sm:text-[1.08rem] sm:leading-relaxed lg:max-w-[29rem] lg:text-[1.16rem]">
             {LANDING_HERO_EDITORIAL.supportingCopy}
           </p>
 

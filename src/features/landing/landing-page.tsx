@@ -16,7 +16,6 @@ import {
 } from "./data"
 import { LandingHeroEditorial } from "./components/landing-hero-editorial"
 import { LandingHeroConsole } from "./components/landing-previews"
-import { AppleFluidBackground } from "./components/motion-primitives"
 import { LandingEditorialCardFrame } from "./components/landing-editorial-card-frame"
 import { LandingImmersiveFallback } from "./components/landing-immersive-fallback"
 import { LandingSectionHeader } from "./components/landing-section-header"
@@ -307,43 +306,61 @@ export function LandingPage() {
             </div>
           </section>
 
-          <section id="open-app" className="relative overflow-hidden px-4 py-18 scroll-mt-24 sm:py-24" aria-labelledby="landing-cta-title">
-            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none opacity-[0.1]">
-              <AppleFluidBackground />
-            </div>
+          <section id="open-app" className="relative overflow-hidden px-4 py-18 scroll-mt-24 sm:py-24 lg:py-28" aria-labelledby="landing-cta-title">
             <div className="pointer-events-none absolute inset-0 z-[1] overflow-hidden">
-              <div className="absolute left-1/2 top-[36%] h-[22rem] w-[22rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-3xl dark:bg-white/6 sm:h-[28rem] sm:w-[28rem]" />
+              <div className="absolute left-1/2 top-[42%] h-[22rem] w-[22rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/8 blur-3xl dark:bg-white/5 sm:h-[28rem] sm:w-[28rem] lg:h-[34rem] lg:w-[34rem]" />
             </div>
-            <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center text-center">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary dark:text-foreground/56">
-                Quando vuoi iniziare.
-              </p>
-              <h2
-                id="landing-cta-title"
-                className="mt-6 max-w-[18ch] text-4xl font-black leading-[0.94] tracking-tight text-foreground sm:text-5xl lg:text-6xl"
-              >
-                Inizia gratis. Parti da ciò che hai già.
-              </h2>
-              <p className="mt-5 max-w-[34rem] text-base font-normal leading-relaxed text-muted-foreground sm:text-lg">
-                Importa un file, esplora l&apos;app demo o apri direttamente l&apos;app: il punto è capire il mese con più chiarezza prima di aggiungere una nuova spesa.
-              </p>
-
-              <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row">
-                <Button asChild size="lg" className="group rounded-full px-12 py-7 text-lg font-bold shadow-[0_0_40px_-10px] shadow-primary/30 transition-[transform,box-shadow] duration-300 hover:shadow-[0_0_60px_-10px] hover:shadow-primary/50">
-                  <Link href="/dashboard">
-                    Apri Numa
-                    <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-                  </Link>
-                </Button>
-
-                <Button asChild variant="outline" size="lg" className="rounded-full px-10 py-7 text-lg font-semibold">
-                  <Link href="/transactions/import">Prova app demo</Link>
-                </Button>
+            <div className="relative z-10 mx-auto flex min-h-[34rem] max-w-6xl flex-col justify-between lg:min-h-[38rem]">
+              <div className="flex items-center justify-between border-b border-black/6 pb-4 dark:border-white/8">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary dark:text-foreground/56">
+                  Quando vuoi iniziare.
+                </p>
+                <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-foreground/42 dark:text-foreground/44">
+                  Nessun account obbligatorio
+                </p>
               </div>
 
-              <p className="mt-6 text-sm font-medium text-foreground/54">
-                Dati in locale · Nessun account obbligatorio · Prova demo disponibile
-              </p>
+              <div className="relative flex flex-1 items-center justify-center py-12 sm:py-14 lg:py-18">
+                <div className="pointer-events-none absolute inset-x-0 top-1/2 flex -translate-y-1/2 justify-center">
+                  <BrandLogo
+                    variant="full"
+                    height={420}
+                    className="h-auto w-[min(112vw,84rem)] opacity-[0.1] saturate-[0.86] dark:opacity-[0.07]"
+                  />
+                </div>
+
+                <div className="relative z-10 flex max-w-[28rem] flex-col items-center text-center">
+                  <h2
+                    id="landing-cta-title"
+                    className="max-w-[12ch] text-4xl font-black leading-[0.92] tracking-tight text-foreground sm:text-5xl lg:text-6xl"
+                  >
+                    Apri il mese. Poi decidi.
+                  </h2>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-6 border-t border-black/6 pt-5 dark:border-white/8 sm:gap-8 lg:flex-row lg:items-end lg:justify-between">
+                <p className="max-w-[30rem] text-sm font-normal leading-relaxed text-muted-foreground sm:text-base">
+                  Apri l&apos;app o prova la demo. Il punto è leggere il mese con più chiarezza, prima di aggiungere una nuova spesa.
+                </p>
+
+                <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center lg:justify-end">
+                  <Button asChild size="lg" className="group rounded-full px-12 py-7 text-lg font-bold shadow-[0_0_40px_-10px] shadow-primary/24 transition-[transform,box-shadow] duration-300 hover:shadow-[0_0_60px_-10px] hover:shadow-primary/36">
+                    <Link href="/dashboard">
+                      Apri Numa
+                      <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                    </Link>
+                  </Button>
+
+                  <Link
+                    href="/transactions/import"
+                    className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/58 transition-colors duration-200 hover:text-foreground"
+                  >
+                    Prova app demo
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
+              </div>
             </div>
           </section>
         </StaggerContainer>

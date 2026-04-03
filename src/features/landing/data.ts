@@ -43,6 +43,7 @@ export interface LandingHeroEditorialPanel {
 
 export interface LandingHeroEditorialContent {
   srTitle: string
+  headline: string
   primaryCtaLabel: string
   secondaryCtaLabel: string
   supportingCopy: string
@@ -139,9 +140,10 @@ export const LANDING_OUTCOMES: LandingOutcome[] = [
 
 export const LANDING_HERO_EDITORIAL = {
   srTitle: "Numa Budget. Prima di dire sì, leggi il mese intero.",
+  headline: "Un'app local-first per capire se una spesa entra nel mese.",
   primaryCtaLabel: "Apri Numa",
   secondaryCtaLabel: "Prova app demo",
-  supportingCopy: "Importa i tuoi dati e verifica se una nuova spesa entra davvero nel mese, tutto in locale.",
+  supportingCopy: "Importi un estratto conto, leggi il margine e provi una scelta senza mandare i tuoi dati fuori dal dispositivo.",
   panels: [
     {
       icon: CloudOff,

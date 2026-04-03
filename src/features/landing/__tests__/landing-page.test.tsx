@@ -106,7 +106,6 @@ describe("LandingPage", () => {
     expect(screen.getByRole("region", { name: /Quattro passaggi, nessun rito\./i })).toBeInTheDocument()
     expect(screen.getByText(/Importi un CSV, leggi il mese/i)).toBeInTheDocument()
     expect(screen.getByRole("region", { name: /Meno attrito\./i })).toBeInTheDocument()
-    expect(screen.getByRole("region", { name: /Le risposte che servono prima di fidarti\./i })).toBeInTheDocument()
     expect(screen.getByRole("region", { name: /Inizia gratis\. Parti da ciò che hai già\./i })).toBeInTheDocument()
 
     expect(screen.getByTestId("landing-brain-hero")).toBeInTheDocument()

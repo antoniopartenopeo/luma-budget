@@ -4,7 +4,6 @@ import { useEffect } from "react"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { cn } from "@/lib/utils"
 import { AmbientBackdrop } from "@/components/layout/ambient-backdrop"
 import { MacroSection } from "@/components/patterns/macro-section"
@@ -15,7 +14,6 @@ import {
   LANDING_FLOW_STEPS,
   LANDING_OUTCOMES
 } from "./data"
-import { PUBLIC_FAQ_ITEMS } from "./public-support-content"
 import { LandingHeroEditorial } from "./components/landing-hero-editorial"
 import { LandingHeroConsole } from "./components/landing-previews"
 import { AppleFluidBackground } from "./components/motion-primitives"
@@ -64,8 +62,7 @@ const LANDING_NAV_ITEMS = [
   { href: "#differenza", label: "Differenza" },
   { href: "#come-inizi", label: "Come inizi" },
   { href: "#brain-hero", label: "Brain" },
-  { href: "#outcomes", label: "Esito" },
-  { href: "#faq", label: "FAQ" }
+  { href: "#outcomes", label: "Esito" }
 ] as const
 
 const LANDING_FOOTER_PRODUCT_ITEMS = [
@@ -305,69 +302,6 @@ export function LandingPage() {
                       </LandingEditorialCardFrame>
                     )
                   })}
-                </div>
-              </MacroSection>
-            </div>
-          </section>
-
-          <section id="faq" className="px-4 scroll-mt-24" aria-labelledby="landing-faq-title">
-            <div className="mx-auto max-w-6xl">
-              <MacroSection
-                disableAnimation
-                title={
-                  <LandingSectionHeader
-                    eyebrow="FAQ essenziali"
-                    title="Le risposte che servono prima di fidarti."
-                    description="Poche risposte, tutte legate a ciò che il prodotto fa davvero oggi: file supportati, prova demo, dati locali e continuità."
-                    titleId="landing-faq-title"
-                  />
-                }
-                contentClassName="pt-10"
-              >
-                <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
-                  <div className="rounded-[2rem] border border-black/6 bg-white/70 p-4 shadow-[0_28px_90px_-56px_rgba(15,23,42,0.28)] backdrop-blur-sm dark:border-white/8 dark:bg-white/[0.03] sm:p-6">
-                    <Accordion type="single" collapsible className="w-full">
-                      {PUBLIC_FAQ_ITEMS.map((item, index) => (
-                        <AccordionItem
-                          key={item.question}
-                          value={`landing-faq-${index}`}
-                          className="border-b border-black/6 last:border-b-0 dark:border-white/8"
-                        >
-                          <AccordionTrigger className="text-left text-base font-semibold tracking-tight text-foreground hover:no-underline sm:text-lg">
-                            {item.question}
-                          </AccordionTrigger>
-                          <AccordionContent className="max-w-[58ch] text-sm font-normal leading-relaxed text-muted-foreground sm:text-[15px]">
-                            {item.answer}
-                          </AccordionContent>
-                        </AccordionItem>
-                      ))}
-                    </Accordion>
-                  </div>
-
-                  <div className="rounded-[2rem] border border-primary/16 bg-gradient-to-br from-primary/[0.10] via-white/76 to-white/92 p-5 shadow-[0_28px_90px_-56px_rgba(15,23,42,0.28)] backdrop-blur-sm dark:border-primary/12 dark:from-primary/[0.12] dark:via-black/24 dark:to-black/18 sm:p-6">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
-                      Prova sicura
-                    </p>
-                    <h3 className="mt-4 max-w-[16ch] text-2xl font-extrabold tracking-tight text-foreground sm:text-[2rem]">
-                      Vuoi capire Numa senza usare i tuoi dati?
-                    </h3>
-                    <p className="mt-3 text-sm font-normal leading-relaxed text-muted-foreground sm:text-base">
-                      Parti dal percorso di import e usa il dataset demo già integrato. Vedrai lo stesso flusso operativo, senza toccare il tuo estratto conto.
-                    </p>
-
-                    <div className="mt-6 flex flex-col gap-3 sm:flex-row lg:flex-col">
-                      <Button asChild className="rounded-full px-6 shadow-[0_18px_40px_-24px_rgba(14,165,168,0.55)]">
-                        <Link href="/transactions/import">
-                          Esplora app demo
-                          <ArrowRight className="h-4 w-4" />
-                        </Link>
-                      </Button>
-
-                      <Button asChild variant="ghost" className="rounded-full px-5 text-foreground/78 hover:text-foreground">
-                        <Link href="/faq">Apri FAQ completa</Link>
-                      </Button>
-                    </div>
-                  </div>
                 </div>
               </MacroSection>
             </div>

@@ -11,14 +11,14 @@ const STORY_ACCENTS = [
     label: "text-cyan-600 dark:text-cyan-400"
   },
   {
-    border: "border-emerald-400/20 dark:border-emerald-400/10",
-    panel: "from-emerald-500/[0.02] via-white to-emerald-50/50 dark:from-emerald-900/30 dark:via-black/80 dark:to-emerald-950/20",
-    label: "text-emerald-600 dark:text-emerald-400"
+    border: "border-slate-400/18 dark:border-slate-400/10",
+    panel: "from-slate-500/[0.03] via-white to-slate-50/60 dark:from-slate-800/28 dark:via-black/80 dark:to-slate-950/24",
+    label: "text-slate-600 dark:text-slate-300"
   },
   {
-    border: "border-indigo-400/20 dark:border-indigo-400/10",
-    panel: "from-indigo-500/[0.02] via-white to-indigo-50/50 dark:from-indigo-900/30 dark:via-black/80 dark:to-indigo-950/20",
-    label: "text-indigo-600 dark:text-indigo-400"
+    border: "border-teal-400/20 dark:border-teal-400/10",
+    panel: "from-teal-500/[0.02] via-white to-teal-50/50 dark:from-teal-900/30 dark:via-black/80 dark:to-teal-950/20",
+    label: "text-teal-700 dark:text-teal-300"
   }
 ] as const
 
@@ -38,7 +38,7 @@ export function LandingHeroConsole() {
               Smetti di indovinare le tue spese.
             </h3>
             <p className="mt-6 max-w-[48ch] text-[15px] font-normal leading-relaxed text-muted-foreground sm:text-lg">
-              Molte app registrano quello che e gia successo. Numa usa il passato per rispondere a una domanda piu utile: questa spesa ci sta davvero nel mese di oggi?
+              Molte app registrano quello che è già successo. Numa usa il passato per rispondere a una domanda più utile: questa spesa ci sta davvero nel mese di oggi?
             </p>
           </div>
         </div>
@@ -76,7 +76,7 @@ export function LandingHeroConsole() {
       <div className="relative overflow-hidden rounded-[2rem] border border-black/6 bg-white/62 px-6 py-6 shadow-[0_24px_70px_-42px_rgba(15,23,42,0.14)] sm:px-8 sm:py-8 backdrop-blur-3xl dark:border-white/10 dark:bg-zinc-950/40 dark:shadow-[0_24px_70px_-42px_rgba(0,0,0,0.42)]">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.04),transparent_46%)]" />
         <p className="relative text-[16px] font-normal leading-relaxed text-muted-foreground sm:text-[17px]">
-          Numa non e un tracker piu elegante. E un modo piu calmo per leggere il mese e decidere con piu chiarezza.
+          Numa non è un tracker più elegante. È un modo più calmo per leggere il mese e decidere con più chiarezza.
         </p>
       </div>
     </div>

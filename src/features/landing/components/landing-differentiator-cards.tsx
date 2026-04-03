@@ -15,35 +15,35 @@ const EDITORIAL_ACCENTS = [
     icon: "border-cyan-400/25 bg-cyan-500/10 text-cyan-700 dark:text-cyan-400"
   },
   {
-    ambient: "from-emerald-500/15 via-background to-background dark:from-emerald-500/20 dark:via-background/80 dark:to-background",
-    glow: "bg-emerald-500/30 dark:bg-emerald-400/25",
-    card: "border-emerald-400/25 bg-gradient-to-br from-emerald-500/[0.02] via-white to-emerald-50/50 dark:border-emerald-400/20 dark:from-[rgba(16,185,129,0.12)] dark:via-black/80 dark:to-[rgba(16,185,129,0.08)] dark:backdrop-blur-3xl",
-    kicker: "text-emerald-700 dark:text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.3)]",
-    icon: "border-emerald-400/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+    ambient: "from-teal-500/14 via-background to-background dark:from-teal-500/18 dark:via-background/80 dark:to-background",
+    glow: "bg-teal-500/26 dark:bg-teal-300/22",
+    card: "border-teal-400/22 bg-gradient-to-br from-teal-500/[0.02] via-white to-teal-50/50 dark:border-teal-400/18 dark:from-[rgba(20,184,166,0.10)] dark:via-black/80 dark:to-[rgba(20,184,166,0.07)] dark:backdrop-blur-3xl",
+    kicker: "text-teal-700 dark:text-teal-300 drop-shadow-[0_0_8px_rgba(45,212,191,0.22)]",
+    icon: "border-teal-400/25 bg-teal-500/10 text-teal-700 dark:text-teal-300"
   },
   {
-    ambient: "from-indigo-500/15 via-background to-background dark:from-indigo-500/20 dark:via-background/80 dark:to-background",
-    glow: "bg-indigo-500/30 dark:bg-indigo-400/25",
-    card: "border-indigo-400/25 bg-gradient-to-br from-indigo-500/[0.02] via-white to-indigo-50/50 dark:border-indigo-400/20 dark:from-[rgba(99,102,241,0.12)] dark:via-black/80 dark:to-[rgba(99,102,241,0.08)] dark:backdrop-blur-3xl",
-    kicker: "text-indigo-700 dark:text-indigo-400 drop-shadow-[0_0_8px_rgba(99,102,241,0.3)]",
-    icon: "border-indigo-400/25 bg-indigo-500/10 text-indigo-700 dark:text-indigo-400"
+    ambient: "from-slate-500/12 via-background to-background dark:from-slate-400/14 dark:via-background/80 dark:to-background",
+    glow: "bg-slate-500/22 dark:bg-slate-300/18",
+    card: "border-slate-400/20 bg-gradient-to-br from-slate-500/[0.03] via-white to-slate-50/60 dark:border-slate-400/18 dark:from-[rgba(148,163,184,0.10)] dark:via-black/80 dark:to-[rgba(15,23,42,0.08)] dark:backdrop-blur-3xl",
+    kicker: "text-slate-700 dark:text-slate-300 drop-shadow-[0_0_8px_rgba(148,163,184,0.18)]",
+    icon: "border-slate-400/25 bg-slate-500/8 text-slate-700 dark:text-slate-300"
   }
 ] as const
 
 const EDITORIAL_NOTES = [
-  "I tuoi file non vengono mai inviati o salvati nel cloud.",
-  "Nessun rischio di data breach. Nessuna sincronizzazione forzata.",
-  "La potenza di calcolo usa il tuo processore, non i nostri server."
+  "I tuoi file non vengono inviati o salvati nel cloud.",
+  "Nessuna connessione continua con il conto. Nessuna sincronizzazione forzata.",
+  "La potenza di calcolo resta sul tuo dispositivo."
 ] as const
 
 const EDITORIAL_KICKERS = [
-  "Local-first nativo",
-  "Zero open banking",
-  "Intelligenza privata"
+  "Locale per davvero",
+  "Nessun accesso bancario",
+  "Stima privata"
 ] as const
 
 const MARKET_GLIMPSES = [
-  ["Sync obbligatorio", "Database centrali", "Dati in vendita"],
+  ["Sync obbligatorio", "Database centrali", "Dati remoti"],
   ["Credenziali condivise", "Connessione continua", "Privacy a rischio"],
   ["Dati inviati a terzi", "AI esterne", "Server opachi"]
 ] as const
@@ -154,7 +154,7 @@ function NumaEditorialCard({
               >
                 {item.title}
               </h2>
-              <p className="max-w-[34ch] font-medium leading-relaxed text-foreground/80 [font-size:clamp(1rem,4cqw,1.4rem)]">
+              <p className="max-w-[34ch] font-normal leading-relaxed text-foreground/78 [font-size:clamp(1rem,4cqw,1.28rem)]">
                 {item.numaLabel}
               </p>
             </div>
@@ -162,7 +162,7 @@ function NumaEditorialCard({
 
             <div className="space-y-3 lg:space-y-4">
               <div className="h-px w-16 bg-foreground/12 lg:w-24 xl:w-32" />
-              <p className="max-w-[32ch] text-[13px] font-semibold leading-relaxed text-foreground/64 [font-size:clamp(0.85rem,3.2cqw,1.1rem)]">
+              <p className="max-w-[32ch] text-[13px] font-medium leading-relaxed text-foreground/64 [font-size:clamp(0.85rem,3.2cqw,1.02rem)]">
                 {EDITORIAL_NOTES[index]}
               </p>
 
@@ -171,7 +171,7 @@ function NumaEditorialCard({
                 <span
                   key={entry.title}
                   className={cn(
-                    "h-1.5 rounded-full transition-all duration-300",
+                    "h-1.5 rounded-full transition-[width,background-color] duration-300",
                     dotIndex === index ? "w-10 bg-foreground/78" : "w-4 bg-foreground/12"
                   )}
                 />
@@ -206,7 +206,7 @@ export function LandingDifferentiatorCards() {
   const accent = EDITORIAL_ACCENTS[activeIndex]
 
   return (
-    <div ref={containerRef} className="relative h-[340vh] w-full">
+    <div ref={containerRef} className="relative h-[300vh] w-full">
       <div className="sticky top-0 flex min-h-screen w-full items-center justify-center overflow-hidden bg-background px-4 py-10 sm:px-6">
         <div
           className={cn(
@@ -223,15 +223,15 @@ export function LandingDifferentiatorCards() {
         />
 
         <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center">
-          <div className="relative z-10 mb-8 max-w-2xl text-center sm:mb-12 lg:mb-16 xl:max-w-4xl">
+          <div className="relative z-10 mb-8 max-w-2xl text-center sm:mb-12 lg:mb-14 xl:max-w-3xl">
             <p className="text-[12px] font-bold uppercase tracking-[0.2em] text-cyan-500 dark:text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]">
               La tua cassaforte locale
             </p>
             <h2 className="mt-5 text-4xl font-black leading-[0.92] tracking-tight text-foreground sm:text-5xl lg:text-6xl xl:text-7xl">
               I tuoi soldi.<br /> Nessun server di mezzo.
             </h2>
-            <p className="mx-auto mt-6 max-w-[56ch] text-[15px] font-medium leading-relaxed text-muted-foreground sm:text-lg lg:text-xl xl:text-[1.35rem]">
-              Il primo cruscotto budget che gira interamente nel tuo browser. Crea proiezioni e stima il tuo margine senza mai spostare i tuoi dati nel cloud.
+            <p className="mx-auto mt-6 max-w-[50ch] text-[15px] font-normal leading-relaxed text-muted-foreground sm:text-lg lg:text-[1.15rem] xl:text-[1.25rem]">
+              Numa elabora il quadro del mese nel browser. Nessun cloud obbligatorio, nessuna copia dei tuoi file fuori dal dispositivo.
             </p>
           </div>
 

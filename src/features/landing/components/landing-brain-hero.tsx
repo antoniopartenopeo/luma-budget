@@ -81,9 +81,11 @@ export function LandingBrainHero() {
   const act1Style = { opacity: act1Opacity, filter: act1Blur }
   const act2Style = { opacity: act2Opacity, y: act2Y, filter: act2Blur }
   const act3Style = { opacity: act3Opacity, y: act3Y, filter: act3Blur }
+  const stageSurfaceClassName =
+    "flex w-full max-w-5xl flex-col items-center rounded-[2.2rem] border border-black/6 bg-white/52 px-7 py-8 text-center shadow-[0_28px_80px_-42px_rgba(15,23,42,0.26)] backdrop-blur-2xl dark:border-white/10 dark:bg-black/24 sm:px-10 sm:py-10"
 
   return (
-    <div ref={containerRef} className="relative h-[600vh] w-full">
+    <div ref={containerRef} className="relative h-[440vh] w-full">
       <div className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden bg-background">
         <div className="absolute inset-0 z-10 pointer-events-none [mask-image:linear-gradient(to_bottom,transparent_0%,black_15%,black_85%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_15%,black_85%,transparent_100%)]">
           <motion.div style={fluidMaskStyle} className="absolute inset-0 h-full w-full">
@@ -96,18 +98,20 @@ export function LandingBrainHero() {
           data-testid="landing-brain-act-1"
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
-          <p className="mb-5 text-[12px] font-mono font-bold uppercase tracking-[0.2em] text-primary/85 dark:text-cyan-400">
-            Il Brain di Numa
-          </p>
-          <h2
-            id="landing-brain-hero-title"
-            className="max-w-[20ch] text-5xl font-black leading-[0.9] tracking-tighter text-foreground dark:text-white sm:text-6xl lg:text-7xl"
-          >
-            Quando i dati bastano, il mese si vede prima.
-          </h2>
-          <p className="mt-6 max-w-[44ch] text-[16px] font-normal leading-relaxed text-foreground/62 dark:text-zinc-400 sm:text-lg">
-            Il Brain osserva ricorrenze, ritmo di spesa e storico recente per stimare il margine con prudenza chirurgica.
-          </p>
+          <div className={stageSurfaceClassName}>
+            <p className="mb-4 text-[12px] font-mono font-bold uppercase tracking-[0.2em] text-primary/85 dark:text-cyan-400">
+              Il Brain di Numa
+            </p>
+            <h2
+              id="landing-brain-hero-title"
+              className="mx-auto max-w-[18ch] text-4xl font-black leading-[0.92] tracking-tight text-foreground dark:text-white sm:text-5xl lg:text-6xl"
+            >
+              Quando i dati bastano, il mese si vede prima.
+            </h2>
+            <p className="mx-auto mt-5 max-w-[40ch] text-[15px] font-normal leading-relaxed text-foreground/64 dark:text-zinc-400 sm:text-lg">
+              Il Brain legge ricorrenze, ritmo di spesa e storico recente per stimare il margine con prudenza.
+            </p>
+          </div>
         </motion.div>
 
         <motion.div
@@ -115,15 +119,17 @@ export function LandingBrainHero() {
           data-testid="landing-brain-act-2"
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
-          <p className="mb-5 text-[12px] font-mono font-bold uppercase tracking-[0.2em] text-primary/85 dark:text-cyan-400">
-            Stima, non spettacolo
-          </p>
-          <h3 className="max-w-[20ch] text-5xl font-black leading-[0.9] tracking-tighter text-foreground dark:text-white sm:text-6xl lg:text-7xl">
-            Una previsione utile e leggibile.
-          </h3>
-          <p className="mt-6 max-w-[44ch] text-[16px] font-normal leading-relaxed text-foreground/62 dark:text-zinc-400 sm:text-lg">
-            Se il contesto non è abbastanza solido, Numa lo segnala. La stima serve a decidere stanotte, non a impressionare.
-          </p>
+          <div className={stageSurfaceClassName}>
+            <p className="mb-4 text-[12px] font-mono font-bold uppercase tracking-[0.2em] text-primary/85 dark:text-cyan-400">
+              Stima prudente
+            </p>
+            <h3 className="mx-auto max-w-[20ch] text-4xl font-extrabold leading-[0.94] tracking-tight text-foreground dark:text-white sm:text-5xl lg:text-[3.7rem]">
+              Una previsione utile e leggibile.
+            </h3>
+            <p className="mx-auto mt-5 max-w-[40ch] text-[15px] font-normal leading-relaxed text-foreground/64 dark:text-zinc-400 sm:text-lg">
+              Se il contesto è debole, Numa lo dice. Una buona stima aiuta a decidere, non a fare scena.
+            </p>
+          </div>
         </motion.div>
 
         <motion.div
@@ -131,15 +137,17 @@ export function LandingBrainHero() {
           data-testid="landing-brain-act-3"
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
-          <p className="mb-5 text-[12px] font-mono font-bold uppercase tracking-[0.2em] text-primary/85 dark:text-cyan-400">
-            Per scegliere meglio
-          </p>
-          <h3 className="max-w-[16ch] text-5xl font-black leading-[0.9] tracking-tighter text-foreground dark:text-white sm:text-6xl lg:text-7xl">
-            Margine.<br />Affidabilità.<br />Impatto.
-          </h3>
-          <p className="mt-6 max-w-[44ch] text-[16px] font-normal leading-relaxed text-foreground/62 dark:text-zinc-400 sm:text-lg">
-            Così capisci se una nuova rata o un abbonamento entrano davvero nel quadro termico del mese.
-          </p>
+          <div className={stageSurfaceClassName}>
+            <p className="mb-4 text-[12px] font-mono font-bold uppercase tracking-[0.2em] text-primary/85 dark:text-cyan-400">
+              Per scegliere meglio
+            </p>
+            <h3 className="mx-auto max-w-[16ch] text-4xl font-extrabold leading-[0.94] tracking-tight text-foreground dark:text-white sm:text-5xl lg:text-[3.7rem]">
+              Margine.<br />Affidabilità.<br />Impatto.
+            </h3>
+            <p className="mx-auto mt-5 max-w-[40ch] text-[15px] font-normal leading-relaxed text-foreground/64 dark:text-zinc-400 sm:text-lg">
+              Così valuti una nuova rata o un abbonamento con un quadro più leggibile del mese.
+            </p>
+          </div>
         </motion.div>
       </div>
     </div>

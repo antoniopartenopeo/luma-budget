@@ -63,7 +63,7 @@ export const LANDING_DIFFERENTIATORS: LandingDifferentItem[] = [
     icon: CloudOff,
     title: "Il cloud non è invitato",
     marketLabel: "Ti obbligano a caricare l'estratto conto sui loro server.",
-    numaLabel: "Il motore di Numa vive nel tuo browser. Elabora tutto localmente: i tuoi dati non escono dal dispositivo."
+    numaLabel: "Numa elabora tutto nel tuo browser. I dati non escono dal dispositivo."
   },
   {
     icon: ShieldCheck,
@@ -75,7 +75,7 @@ export const LANDING_DIFFERENTIATORS: LandingDifferentItem[] = [
     icon: BrainCircuit,
     title: "Anche l'IA è offline",
     marketLabel: "Le stime vengono inviate ad algoritmi esterni e opachi.",
-    numaLabel: "Il nostro Brain calcola le proiezioni mensili sfruttando la potenza locale. La vera privacy è non avere API."
+    numaLabel: "Il Brain calcola le proiezioni in locale. Nessuna API esterna nel percorso principale."
   }
 ]
 
@@ -99,27 +99,27 @@ export const LANDING_FLOW_STEPS: LandingFlowStep[] = [
     cue: "Guarda il margine",
     stepLabel: "03",
     title: "Stima cosa potrebbe restarti",
-    description: "Il Brain locale osserva ritmo di spesa e storico recente per proiettare il fine mese con prudenza, non con promesse vaghe."
+    description: "Il Brain locale osserva ritmo di spesa e storico recente per proiettare il fine mese con prudenza."
   },
   {
     icon: ShieldCheck,
     cue: "Valuta una scelta",
     stepLabel: "04",
     title: "Prova una nuova spesa senza impegnarti",
-    description: "Usa il Financial Lab per simulare rate o abbonamenti e capire se entrano davvero nel quadro del mese prima di dire si."
+    description: "Usa il Financial Lab per simulare rate o abbonamenti e capire se entrano davvero nel quadro del mese prima di dire sì."
   }
 ]
 
 export const LANDING_OUTCOMES: LandingOutcome[] = [
   {
     icon: ArrowDownUp,
-    title: "Leggi il mese con piu calma",
-    description: "Non apri l'app per controllare se c'è un problema. La apri per confermare che il quadro resta leggibile."
+    title: "Leggi il mese con più calma",
+    description: "Non apri l'app per controllare un allarme. La apri per confermare che il quadro resta leggibile."
   },
   {
     icon: ShieldCheck,
     title: "Decidi con meno incertezza",
-    description: "Conoscere il margine reale trasforma una spesa potenzialmente ansiosa in una scelta piu ponderata."
+    description: "Conoscere il margine reale trasforma una spesa potenzialmente ansiosa in una scelta più ponderata."
   },
   {
     icon: Sparkles,

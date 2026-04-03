@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { ArrowRight, FileSpreadsheet, HardDriveDownload, ShieldCheck } from "lucide-react"
 import { PublicPageFrame } from "@/components/layout/public-page-frame"
+import { PublicSupportIntro, PublicSupportSurface } from "@/components/layout/public-support-surface"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { PUBLIC_FAQ_ITEMS } from "@/features/landing/public-support-content"
@@ -15,17 +16,13 @@ export default function FaqPage() {
   return (
     <PublicPageFrame className="max-w-4xl">
       <div className="space-y-6">
-        <section className="glass-panel rounded-[2.5rem] border-none p-6 shadow-[0_24px_70px_-42px_rgba(15,23,42,0.34)] sm:p-8">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">FAQ</p>
-          <h1 className="mt-4 max-w-[14ch] text-4xl font-black leading-[0.96] tracking-tight text-foreground sm:text-5xl">
-            Le domande che contano prima di iniziare.
-          </h1>
-          <p className="mt-4 max-w-[44rem] text-base font-medium leading-relaxed text-muted-foreground sm:text-lg">
-            Questa pagina raccoglie le obiezioni più comuni su prova sicura, dati locali e continuità d&apos;uso, senza promesse oltre ciò che il prodotto fa davvero oggi.
-          </p>
-        </section>
+        <PublicSupportIntro
+          eyebrow="FAQ"
+          title="Le domande che contano prima di iniziare."
+          description="Questa pagina raccoglie i dubbi più comuni su prova demo, dati locali e continuità d&apos;uso, senza promesse oltre ciò che il prodotto fa davvero oggi."
+        />
 
-        <section className="glass-panel rounded-[2.5rem] border-none p-4 shadow-[0_24px_70px_-42px_rgba(15,23,42,0.34)] sm:p-6">
+        <PublicSupportSurface className="p-4 sm:p-6">
           <Accordion type="single" collapsible className="w-full">
             {PUBLIC_FAQ_ITEMS.map((item, index) => (
               <AccordionItem
@@ -36,45 +33,45 @@ export default function FaqPage() {
                 <AccordionTrigger className="text-left text-base font-semibold tracking-tight text-foreground hover:no-underline sm:text-lg">
                   {item.question}
                 </AccordionTrigger>
-                <AccordionContent className="max-w-[60ch] text-sm font-medium leading-relaxed text-muted-foreground sm:text-[15px]">
+                <AccordionContent className="max-w-[60ch] text-sm font-normal leading-relaxed text-muted-foreground sm:text-[15px]">
                   {item.answer}
                 </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
-        </section>
+        </PublicSupportSurface>
 
         <section className="grid gap-4 md:grid-cols-3">
-          <article className="glass-panel rounded-[2rem] border-none p-5 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.34)]">
+          <PublicSupportSurface className="rounded-[2rem] p-5 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.34)]">
             <FileSpreadsheet className="h-5 w-5 text-primary" />
             <h2 className="mt-4 text-lg font-bold tracking-tight text-foreground">Prova guidata</h2>
-            <p className="mt-2 text-sm font-medium leading-relaxed text-muted-foreground">
+            <p className="mt-2 text-sm font-normal leading-relaxed text-muted-foreground">
               Il percorso consigliato parte da import e dataset demo, non da un setup complicato.
             </p>
-          </article>
+          </PublicSupportSurface>
 
-          <article className="glass-panel rounded-[2rem] border-none p-5 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.34)]">
+          <PublicSupportSurface className="rounded-[2rem] p-5 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.34)]">
             <ShieldCheck className="h-5 w-5 text-primary" />
             <h2 className="mt-4 text-lg font-bold tracking-tight text-foreground">Dati locali</h2>
-            <p className="mt-2 text-sm font-medium leading-relaxed text-muted-foreground">
+            <p className="mt-2 text-sm font-normal leading-relaxed text-muted-foreground">
               Il flusso principale non richiede cloud, sync remoto o collegamenti bancari obbligatori.
             </p>
-          </article>
+          </PublicSupportSurface>
 
-          <article className="glass-panel rounded-[2rem] border-none p-5 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.34)]">
+          <PublicSupportSurface className="rounded-[2rem] p-5 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.34)]">
             <HardDriveDownload className="h-5 w-5 text-primary" />
             <h2 className="mt-4 text-lg font-bold tracking-tight text-foreground">Continuità</h2>
-            <p className="mt-2 text-sm font-medium leading-relaxed text-muted-foreground">
+            <p className="mt-2 text-sm font-normal leading-relaxed text-muted-foreground">
               Se vuoi cambiare browser o dispositivo, il passaggio corretto oggi è backup JSON locale e ripristino.
             </p>
-          </article>
+          </PublicSupportSurface>
         </section>
 
-        <section className="glass-panel rounded-[2.5rem] border-none p-6 shadow-[0_24px_70px_-42px_rgba(15,23,42,0.34)] sm:p-8">
+        <PublicSupportSurface tone="accent">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-2">
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">Prima prova consigliata</p>
-              <p className="max-w-[36rem] text-sm font-medium leading-relaxed text-muted-foreground sm:text-base">
+              <p className="max-w-[36rem] text-sm font-normal leading-relaxed text-muted-foreground sm:text-base">
                 Se vuoi capire il prodotto senza usare i tuoi dati, entra nel percorso di import e usa il dataset demo già disponibile.
               </p>
             </div>
@@ -86,7 +83,7 @@ export default function FaqPage() {
               </Link>
             </Button>
           </div>
-        </section>
+        </PublicSupportSurface>
       </div>
     </PublicPageFrame>
   )

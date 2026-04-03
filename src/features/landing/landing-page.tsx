@@ -19,10 +19,11 @@ import { PUBLIC_FAQ_ITEMS } from "./public-support-content"
 import { LandingHeroConsole } from "./components/landing-previews"
 import { AppleFluidBackground, CinematicTextReveal } from "./components/motion-primitives"
 import { LandingEditorialCardFrame } from "./components/landing-editorial-card-frame"
+import { LandingHeroSurface } from "./components/landing-hero-surface"
+import { LandingImmersiveFallback } from "./components/landing-immersive-fallback"
 import { LandingSectionHeader } from "./components/landing-section-header"
 import {
   LANDING_FLOATING_NAV_CLASS,
-  LANDING_HERO_FRAME_CLASS,
   LANDING_NAV_LINK_CLASS
 } from "./components/landing-tokens"
 
@@ -30,7 +31,14 @@ const LandingDifferentiatorCards = dynamic(
   () => import("./components/landing-differentiator-cards").then((module) => module.LandingDifferentiatorCards),
   {
     ssr: false,
-    loading: () => <div className="h-[340vh] w-full" aria-hidden="true" />
+    loading: () => (
+      <LandingImmersiveFallback
+        eyebrow="La differenza di Numa"
+        title="I tuoi dati restano dove li stai leggendo."
+        description="La sezione si sta preparando con lo stesso ritmo della landing: locale, leggibile e senza scorciatoie cloud."
+        heightClassName="h-[300vh]"
+      />
+    )
   }
 )
 
@@ -38,7 +46,14 @@ const LandingBrainHero = dynamic(
   () => import("./components/landing-brain-hero").then((module) => module.LandingBrainHero),
   {
     ssr: false,
-    loading: () => <div className="h-[600vh] w-full" aria-hidden="true" />
+    loading: () => (
+      <LandingImmersiveFallback
+        eyebrow="Il Brain di Numa"
+        title="Una stima prudente prima di una scelta."
+        description="Il Brain arriva come prova del percorso: meno spettacolo, più affidabilità su margine e impatto del mese."
+        heightClassName="h-[440vh]"
+      />
+    )
   }
 )
 
@@ -72,25 +87,25 @@ const LANDING_FLOW_ACCENTS = [
     orb: "bg-cyan-500/20 dark:bg-cyan-400/10"
   },
   {
-    border: "border-emerald-400/20 dark:border-emerald-400/10",
-    panel: "from-emerald-500/[0.02] via-white to-emerald-50/50 dark:from-emerald-900/30 dark:via-black/80 dark:to-emerald-950/20",
-    icon: "border-emerald-400/25 bg-emerald-500/10 text-emerald-600 dark:border-emerald-400/15 dark:bg-emerald-900/40 dark:text-emerald-400",
-    number: "text-emerald-500/5 dark:text-emerald-400/[0.03]",
-    orb: "bg-emerald-500/20 dark:bg-emerald-400/10"
+    border: "border-slate-400/18 dark:border-slate-400/10",
+    panel: "from-slate-500/[0.03] via-white to-slate-50/60 dark:from-slate-800/28 dark:via-black/80 dark:to-slate-950/24",
+    icon: "border-slate-400/25 bg-slate-500/8 text-slate-700 dark:border-slate-400/15 dark:bg-slate-800/35 dark:text-slate-300",
+    number: "text-slate-500/6 dark:text-slate-300/[0.03]",
+    orb: "bg-slate-500/18 dark:bg-slate-300/10"
   },
   {
-    border: "border-indigo-400/20 dark:border-indigo-400/10",
-    panel: "from-indigo-500/[0.02] via-white to-indigo-50/50 dark:from-indigo-900/30 dark:via-black/80 dark:to-indigo-950/20",
-    icon: "border-indigo-400/25 bg-indigo-500/10 text-indigo-600 dark:border-indigo-400/15 dark:bg-indigo-900/40 dark:text-indigo-400",
-    number: "text-indigo-500/5 dark:text-indigo-400/[0.03]",
-    orb: "bg-indigo-500/20 dark:bg-indigo-400/10"
+    border: "border-teal-400/20 dark:border-teal-400/10",
+    panel: "from-teal-500/[0.02] via-white to-teal-50/50 dark:from-teal-900/30 dark:via-black/80 dark:to-teal-950/20",
+    icon: "border-teal-400/25 bg-teal-500/10 text-teal-700 dark:border-teal-400/15 dark:bg-teal-900/40 dark:text-teal-300",
+    number: "text-teal-500/5 dark:text-teal-300/[0.03]",
+    orb: "bg-teal-500/18 dark:bg-teal-300/10"
   },
   {
-    border: "border-amber-400/20 dark:border-amber-400/10",
-    panel: "from-amber-500/[0.02] via-white to-amber-50/50 dark:from-amber-900/30 dark:via-black/80 dark:to-amber-950/20",
-    icon: "border-amber-400/25 bg-amber-500/10 text-amber-600 dark:border-amber-400/15 dark:bg-amber-900/40 dark:text-amber-400",
-    number: "text-amber-500/5 dark:text-amber-400/[0.03]",
-    orb: "bg-amber-500/20 dark:bg-amber-400/10"
+    border: "border-cyan-400/16 dark:border-cyan-400/10",
+    panel: "from-cyan-500/[0.015] via-white to-cyan-50/45 dark:from-cyan-900/24 dark:via-black/80 dark:to-cyan-950/18",
+    icon: "border-cyan-400/22 bg-cyan-500/8 text-cyan-600 dark:border-cyan-400/15 dark:bg-cyan-900/34 dark:text-cyan-300",
+    number: "text-cyan-500/5 dark:text-cyan-300/[0.03]",
+    orb: "bg-cyan-500/16 dark:bg-cyan-300/10"
   }
 ] as const
 
@@ -101,14 +116,14 @@ const LANDING_OUTCOME_ACCENTS = [
     orb: "bg-cyan-500/20 dark:bg-cyan-400/10"
   },
   {
-    border: "border-emerald-400/20 dark:border-emerald-400/10",
-    panel: "from-emerald-500/[0.02] via-white to-emerald-50/50 dark:from-emerald-900/30 dark:via-black/80 dark:to-emerald-950/20",
-    orb: "bg-emerald-500/20 dark:bg-emerald-400/10"
+    border: "border-teal-400/20 dark:border-teal-400/10",
+    panel: "from-teal-500/[0.02] via-white to-teal-50/50 dark:from-teal-900/30 dark:via-black/80 dark:to-teal-950/20",
+    orb: "bg-teal-500/18 dark:bg-teal-300/10"
   },
   {
-    border: "border-indigo-400/20 dark:border-indigo-400/10",
-    panel: "from-indigo-500/[0.02] via-white to-indigo-50/50 dark:from-indigo-900/30 dark:via-black/80 dark:to-indigo-950/20",
-    orb: "bg-indigo-500/20 dark:bg-indigo-400/10"
+    border: "border-slate-400/18 dark:border-slate-400/10",
+    panel: "from-slate-500/[0.03] via-white to-slate-50/60 dark:from-slate-800/28 dark:via-black/80 dark:to-slate-950/24",
+    orb: "bg-slate-500/18 dark:bg-slate-300/10"
   }
 ] as const
 
@@ -139,68 +154,65 @@ export function LandingPage() {
 
 
 
-            <div className={LANDING_HERO_FRAME_CLASS}>
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.26),transparent_42%)] dark:bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_44%)]" />
-              <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/45 to-transparent dark:via-white/18" />
-
-              <div className="relative z-10 mt-4 flex w-full max-w-4xl flex-col items-center text-center sm:mt-0">
+            <LandingHeroSurface className="px-6 py-9 sm:px-10 sm:py-12 lg:px-14 lg:py-14">
+              <div className="mt-4 flex w-full max-w-[46rem] flex-col items-center text-center sm:mt-0">
                 <BrandLogo
                   variant="full"
                   height={92}
-                  className="mb-14 sm:mb-16 lg:mb-20 w-auto max-w-[300px] sm:max-w-[380px] lg:max-w-[440px] drop-shadow-sm"
+                  className="mb-12 w-auto max-w-[300px] drop-shadow-sm sm:mb-14 sm:max-w-[380px] lg:mb-16 lg:max-w-[440px]"
                 />
 
-                <div className="space-y-5">
+                <div className="space-y-6">
                   <h1
                     id="landing-hero-title"
-                    className="mx-auto max-w-4xl text-5xl font-black leading-[0.98] tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-sm"
+                    className="mx-auto max-w-[13ch] text-5xl font-black leading-[0.98] tracking-tight text-foreground sm:text-6xl lg:text-[5.4rem] drop-shadow-sm"
                   >
-                    <CinematicTextReveal text="Il tuo saldo è il passato. Scopri il tuo futuro." />
+                    <CinematicTextReveal text="Capisci il mese prima di prendere una decisione." />
                   </h1>
 
-                  <p className="mx-auto max-w-[44rem] text-base font-normal leading-relaxed text-muted-foreground sm:text-lg lg:text-[1.2rem] drop-shadow-sm">
-                    Prevedi il margine del mese in un istante. I tuoi dati restano sul tuo dispositivo, lontano dal cloud. Zero compromessi.
+                  <p className="mx-auto max-w-[38rem] text-base font-normal leading-relaxed text-muted-foreground sm:text-lg lg:text-[1.16rem] drop-shadow-sm">
+                    Numa legge il presente, stima il margine e ti aiuta a capire se una nuova spesa è sostenibile. Tutto in locale, senza cloud obbligatorio.
                   </p>
                 </div>
 
-                <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
+                <div className="mt-9 flex flex-col items-center gap-4 sm:flex-row">
                   <Button asChild size="lg" className="rounded-full px-8 shadow-lg shadow-primary/15 transition-shadow hover:shadow-primary/30">
                     <Link href="/dashboard">
-                      Inizia gratis
+                      Apri Numa
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
 
                   <Button asChild variant="outline" size="lg" className="rounded-full px-8">
                     <Link href="/transactions/import">
-                      Esplora app demo
+                      Prova app demo
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
                 </div>
 
-                <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:mt-12 opacity-80 mix-blend-plus-lighter">
+                <div className="mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:mt-10">
                   {LANDING_TRUST_SIGNALS.slice(0, 3).map((signal) => (
                     <div key={signal.title} className="flex items-center gap-2 text-muted-foreground/80">
-                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-foreground/5 border border-foreground/10">
+                      <div className="flex h-5 w-5 items-center justify-center rounded-full border border-foreground/10 bg-foreground/5">
                         <svg className="h-3 w-3 text-foreground/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
-                      <span className="text-[13px] font-semibold tracking-wide text-foreground/70">{signal.title}</span>
+                      <span className="text-[13px] font-medium tracking-[0.03em] text-foreground/70">{signal.title}</span>
                     </div>
                   ))}
                 </div>
 
                 <a
                   href="#come-inizi"
-                  className="group mt-6 inline-flex items-center gap-2 rounded-full border border-transparent px-6 py-3 text-[13px] font-medium tracking-[0.04em] text-foreground/60 transition-all hover:bg-foreground/5 hover:text-foreground"
+                  className="group mt-5 inline-flex items-center gap-2 rounded-full border border-transparent px-6 py-3 text-[13px] font-medium tracking-[0.04em] text-foreground/56 transition-[background-color,color,transform] duration-300 hover:bg-foreground/5 hover:text-foreground"
                 >
-                  Guarda il percorso in 4 passaggi
+                  Guarda come funziona
                   <ArrowRight className="h-[14px] w-[14px] rotate-90 transition-transform duration-300 group-hover:translate-y-1" />
                 </a>
               </div>
-            </div>
+            </LandingHeroSurface>
           </section>
 
           <section id="problema" className="px-4 scroll-mt-24" aria-labelledby="landing-problem-title">
@@ -423,15 +435,15 @@ export function LandingPage() {
               </p>
 
               <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row">
-                <Button asChild size="lg" className="group rounded-full px-12 py-7 text-lg font-bold shadow-[0_0_40px_-10px] shadow-primary/30 transition-all hover:shadow-[0_0_60px_-10px] hover:shadow-primary/50">
+                <Button asChild size="lg" className="group rounded-full px-12 py-7 text-lg font-bold shadow-[0_0_40px_-10px] shadow-primary/30 transition-[transform,box-shadow] duration-300 hover:shadow-[0_0_60px_-10px] hover:shadow-primary/50">
                   <Link href="/dashboard">
-                    Inizia gratis
+                    Apri Numa
                     <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
                   </Link>
                 </Button>
 
                 <Button asChild variant="outline" size="lg" className="rounded-full px-10 py-7 text-lg font-semibold">
-                  <Link href="/transactions/import">Esplora app demo</Link>
+                  <Link href="/transactions/import">Prova app demo</Link>
                 </Button>
               </div>
 

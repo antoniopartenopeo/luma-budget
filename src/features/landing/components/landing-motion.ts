@@ -20,9 +20,9 @@ export const LANDING_BLUR_REVEAL = [LANDING_BLUR, LANDING_NO_BLUR]
 export const LANDING_NO_BLUR_REVEAL = [LANDING_NO_BLUR, LANDING_NO_BLUR]
 
 export const LANDING_BRAIN_RANGES = {
-  fluidExpansion: [0, 0.4, 0.8],
-  act1: [0, 0.05, 0.22, 0.28],
-  act2: [0.32, 0.38, 0.55, 0.62],
-  act3: [0.68, 0.78, 0.95, 1],
-  act3Y: [0.68, 0.78]
+  fluidExpansion: [0, 0.3, 0.62],
+  act1: [0, 0.06, 0.24, 0.32],
+  act2: [0.36, 0.44, 0.62, 0.7],
+  act3: [0.76, 0.84, 0.98, 1],
+  act3Y: [0.76, 0.84]
 }

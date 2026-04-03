@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { StateMessage } from "@/components/ui/state-message"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
 import { macroItemVariants } from "@/components/patterns/macro-section"
+import { PublicSupportIntro, PublicSupportSurface } from "@/components/layout/public-support-surface"
 import { useNotificationsFeed } from "../api/use-notifications"
 import { formatItalianDate } from "./notification-ui"
 
@@ -83,22 +84,16 @@ export function UpdatesPageContent() {
     return (
         <StaggerContainer className="w-full space-y-6">
             <motion.div variants={macroItemVariants}>
-                <section className="glass-panel rounded-[2.5rem] border-none p-6 shadow-[0_24px_70px_-42px_rgba(15,23,42,0.34)] sm:p-8">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
-                        Aggiornamenti
-                    </p>
-                    <h1 className="mt-4 max-w-[14ch] text-4xl font-black leading-[0.96] tracking-tight text-foreground sm:text-5xl">
-                        Le novità recenti di Numa.
-                    </h1>
-                    <p className="mt-4 max-w-[44rem] text-base font-medium leading-relaxed text-muted-foreground sm:text-lg">
-                        Novità, miglioramenti e correzioni delle ultime versioni.
-                    </p>
-                </section>
+                <PublicSupportIntro
+                    eyebrow="Aggiornamenti"
+                    title="Le novità recenti di Numa."
+                    description="Novità, miglioramenti e correzioni delle ultime versioni."
+                />
             </motion.div>
 
             {feedQuery.isLoading && (
                 <motion.div variants={macroItemVariants}>
-                    <div className="glass-panel space-y-4 rounded-[2rem] p-5 sm:p-6">
+                    <PublicSupportSurface className="space-y-4 rounded-[2rem] p-5 sm:p-6">
                         <div className="flex items-center justify-between gap-3">
                             <Skeleton className="h-4 w-28 rounded-full" />
                             <Skeleton className="h-4 w-20 rounded-full" />
@@ -107,19 +102,19 @@ export function UpdatesPageContent() {
                             <Skeleton className="h-28 w-full rounded-[1.5rem]" />
                             <Skeleton className="h-24 w-full rounded-[1.5rem]" />
                         </div>
-                    </div>
+                    </PublicSupportSurface>
                 </motion.div>
             )}
 
             {!feedQuery.isLoading && notifications.length === 0 && (
                 <motion.div variants={macroItemVariants}>
-                    <div className="glass-panel overflow-hidden rounded-[2rem]">
+                    <PublicSupportSurface className="overflow-hidden rounded-[2rem] p-0">
                         <StateMessage
                             variant="empty"
                             title="Nessun aggiornamento da mostrare"
                             description="Le prossime release compariranno qui, con una sintesi semplice e leggibile delle novità introdotte."
                         />
-                    </div>
+                    </PublicSupportSurface>
                 </motion.div>
             )}
 
@@ -127,11 +122,11 @@ export function UpdatesPageContent() {
                 <motion.div variants={macroItemVariants}>
                     <section className="space-y-4">
                         {releaseCards.map((release) => (
-                            <article
+                            <PublicSupportSurface
                                 key={release.version}
-                                id={`v-${release.version.replaceAll(".", "-")}`}
-                                className="glass-panel rounded-[2rem] border-none p-5 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.34)]"
+                                className="rounded-[2rem] p-5 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.34)]"
                             >
+                                <article id={`v-${release.version.replaceAll(".", "-")}`}>
                                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                                     <div className="space-y-2">
                                         <div className="flex flex-wrap items-center gap-3">
@@ -146,14 +141,14 @@ export function UpdatesPageContent() {
                                         <p className="text-sm font-semibold tracking-tight text-foreground">
                                             {release.title}
                                         </p>
-                                        <p className="max-w-[42rem] text-sm font-medium leading-relaxed text-muted-foreground sm:text-base">
+                                        <p className="max-w-[42rem] text-sm font-normal leading-relaxed text-muted-foreground sm:text-base">
                                             {release.lead}
                                         </p>
                                     </div>
                                 </div>
 
                                 {release.highlights.length > 0 && (
-                                    <ul className="mt-4 list-disc space-y-1.5 pl-5 text-sm font-medium leading-relaxed text-muted-foreground">
+                                    <ul className="mt-4 list-disc space-y-1.5 pl-5 text-sm font-normal leading-relaxed text-muted-foreground">
                                         {release.highlights.map((highlight, index) => (
                                             <li
                                                 key={`${release.version}-highlight-${index}`}
@@ -164,7 +159,8 @@ export function UpdatesPageContent() {
                                         ))}
                                     </ul>
                                 )}
-                            </article>
+                                </article>
+                            </PublicSupportSurface>
                         ))}
                     </section>
                 </motion.div>

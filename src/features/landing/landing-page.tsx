@@ -98,19 +98,16 @@ const LANDING_OUTCOME_ACCENTS = [
   {
     border: "border-cyan-400/20 dark:border-cyan-400/10",
     panel: "from-cyan-500/[0.02] via-white to-cyan-50/50 dark:from-cyan-900/30 dark:via-black/80 dark:to-cyan-950/20",
-    icon: "border-cyan-400/25 bg-cyan-500/10 text-cyan-600 dark:border-cyan-400/15 dark:bg-cyan-900/40 dark:text-cyan-400",
     orb: "bg-cyan-500/20 dark:bg-cyan-400/10"
   },
   {
     border: "border-emerald-400/20 dark:border-emerald-400/10",
     panel: "from-emerald-500/[0.02] via-white to-emerald-50/50 dark:from-emerald-900/30 dark:via-black/80 dark:to-emerald-950/20",
-    icon: "border-emerald-400/25 bg-emerald-500/10 text-emerald-600 dark:border-emerald-400/15 dark:bg-emerald-900/40 dark:text-emerald-400",
     orb: "bg-emerald-500/20 dark:bg-emerald-400/10"
   },
   {
     border: "border-indigo-400/20 dark:border-indigo-400/10",
     panel: "from-indigo-500/[0.02] via-white to-indigo-50/50 dark:from-indigo-900/30 dark:via-black/80 dark:to-indigo-950/20",
-    icon: "border-indigo-400/25 bg-indigo-500/10 text-indigo-600 dark:border-indigo-400/15 dark:bg-indigo-900/40 dark:text-indigo-400",
     orb: "bg-indigo-500/20 dark:bg-indigo-400/10"
   }
 ] as const

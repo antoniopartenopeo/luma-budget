@@ -56,7 +56,7 @@ describe("LandingDifferentiatorCards", () => {
     mockReducedMotion = false
     render(<LandingDifferentiatorCards />)
 
-    expect(screen.getByRole("heading", { name: /I tuoi soldi\.\s*Nessun server di mezzo\./i })).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: /I tuoi soldi,\s*senza server di mezzo\./i })).toBeInTheDocument()
     expect(screen.getByRole("heading", { name: LANDING_DIFFERENTIATORS[0].title })).toBeInTheDocument()
     expect(screen.getByText(LANDING_DIFFERENTIATORS[0].numaLabel)).toBeInTheDocument()
     expect(screen.queryByRole("link")).not.toBeInTheDocument()

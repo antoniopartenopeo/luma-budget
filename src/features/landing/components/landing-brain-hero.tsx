@@ -2,6 +2,7 @@
 
 import { useRef } from "react"
 import { motion, useReducedMotion, useScroll, useTransform, useMotionTemplate } from "framer-motion"
+import { cn } from "@/lib/utils"
 import { AppleFluidBackground } from "./motion-primitives"
 import {
   LANDING_BRAIN_RANGES,
@@ -10,6 +11,7 @@ import {
   LANDING_NO_BLUR_REVEAL,
   LANDING_NO_BLUR_TRANSITION
 } from "./landing-motion"
+import { LANDING_EDITORIAL_CARD_HERO_TITLE_CLASS } from "./landing-tokens"
 
 export function LandingBrainHero() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -96,17 +98,22 @@ export function LandingBrainHero() {
         <motion.div
           style={act1Style}
           data-testid="landing-brain-act-1"
-          className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
+          className="absolute inset-x-0 z-30 flex w-full flex-col items-center text-center pointer-events-none px-6"
         >
           <div className={stageSurfaceClassName}>
-            <p className="mb-4 text-[12px] font-mono font-bold uppercase tracking-[0.2em] text-primary/85 dark:text-cyan-400">
+            <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary/85 dark:text-cyan-400 sm:text-[12px]">
               Il Brain di Numa
             </p>
             <h2
               id="landing-brain-hero-title"
-              className="mx-auto max-w-[18ch] text-4xl font-black leading-[0.92] tracking-tight text-foreground dark:text-white sm:text-5xl lg:text-6xl"
+              className={cn(LANDING_EDITORIAL_CARD_HERO_TITLE_CLASS, "mx-auto max-w-[16ch] dark:text-white")}
             >
-              Quando i dati bastano, il mese si vede prima.
+              Quando i dati{" "}
+              <br />
+              {" "}bastano, il{" "}
+              <br />
+              {" "}
+              mese si vede prima.
             </h2>
             <p className="mx-auto mt-5 max-w-[40ch] text-[15px] font-normal leading-relaxed text-foreground/64 dark:text-zinc-400 sm:text-lg">
               Il Brain legge ricorrenze, ritmo di spesa e storico recente per stimare il margine con prudenza.
@@ -117,14 +124,19 @@ export function LandingBrainHero() {
         <motion.div
           style={act2Style}
           data-testid="landing-brain-act-2"
-          className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
+          className="absolute inset-x-0 z-30 flex w-full flex-col items-center text-center pointer-events-none px-6"
         >
           <div className={stageSurfaceClassName}>
-            <p className="mb-4 text-[12px] font-mono font-bold uppercase tracking-[0.2em] text-primary/85 dark:text-cyan-400">
+            <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary/85 dark:text-cyan-400 sm:text-[12px]">
               Stima prudente
             </p>
-            <h3 className="mx-auto max-w-[20ch] text-4xl font-extrabold leading-[0.94] tracking-tight text-foreground dark:text-white sm:text-5xl lg:text-[3.7rem]">
-              Una previsione utile e leggibile.
+            <h3 className={cn(LANDING_EDITORIAL_CARD_HERO_TITLE_CLASS, "mx-auto max-w-[15ch] font-extrabold dark:text-white")}>
+              Una previsione{" "}
+              <br />
+              {" "}utile e{" "}
+              <br />
+              {" "}
+              leggibile.
             </h3>
             <p className="mx-auto mt-5 max-w-[40ch] text-[15px] font-normal leading-relaxed text-foreground/64 dark:text-zinc-400 sm:text-lg">
               Se il contesto è debole, Numa lo dice. Una buona stima aiuta a decidere, non a fare scena.
@@ -135,13 +147,13 @@ export function LandingBrainHero() {
         <motion.div
           style={act3Style}
           data-testid="landing-brain-act-3"
-          className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
+          className="absolute inset-x-0 z-30 flex w-full flex-col items-center text-center pointer-events-none px-6"
         >
           <div className={stageSurfaceClassName}>
-            <p className="mb-4 text-[12px] font-mono font-bold uppercase tracking-[0.2em] text-primary/85 dark:text-cyan-400">
+            <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary/85 dark:text-cyan-400 sm:text-[12px]">
               Per scegliere meglio
             </p>
-            <h3 className="mx-auto max-w-[16ch] text-4xl font-extrabold leading-[0.94] tracking-tight text-foreground dark:text-white sm:text-5xl lg:text-[3.7rem]">
+            <h3 className={cn(LANDING_EDITORIAL_CARD_HERO_TITLE_CLASS, "mx-auto max-w-[16ch] font-extrabold dark:text-white")}>
               Margine.<br />Affidabilità.<br />Impatto.
             </h3>
             <p className="mx-auto mt-5 max-w-[40ch] text-[15px] font-normal leading-relaxed text-foreground/64 dark:text-zinc-400 sm:text-lg">

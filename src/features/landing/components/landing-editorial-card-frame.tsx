@@ -11,6 +11,11 @@ interface LandingEditorialCardFrameProps {
   borderClassName?: string
   panelClassName?: string
   highlightClassName?: string
+  leadingIcon?: LucideIcon
+  leadingText?: string
+  leadingIconWrapperClassName?: string
+  leadingIconClassName?: string
+  leadingTextClassName?: string
   orbClassName?: string
   orbPositionClassName?: string
   decorativeIcon?: LucideIcon
@@ -29,6 +34,11 @@ export function LandingEditorialCardFrame({
   borderClassName,
   panelClassName,
   highlightClassName,
+  leadingIcon: LeadingIcon,
+  leadingText,
+  leadingIconWrapperClassName,
+  leadingIconClassName,
+  leadingTextClassName,
   orbClassName,
   orbPositionClassName,
   decorativeIcon: DecorativeIcon,
@@ -47,6 +57,28 @@ export function LandingEditorialCardFrame({
       )}
     >
       <div className={cn(DEFAULT_HIGHLIGHT_CLASS, highlightClassName)} />
+
+      {LeadingIcon || leadingText ? (
+        <div
+          className={cn(
+            "pointer-events-none absolute left-8 top-8 z-20 flex h-16 w-16 items-center justify-center rounded-[1.4rem] border shadow-[0_20px_40px_-20px_rgba(0,0,0,0.4)] sm:left-10 sm:top-10 sm:h-20 sm:w-20 sm:rounded-[1.8rem] lg:left-12 lg:top-12",
+            leadingIconWrapperClassName
+          )}
+        >
+          {LeadingIcon ? (
+            <LeadingIcon className={cn("h-7 w-7 sm:h-9 sm:w-9", leadingIconClassName)} />
+          ) : (
+            <span
+              className={cn(
+                "text-[13px] font-black tracking-[0.22em] sm:text-[16px]",
+                leadingTextClassName
+              )}
+            >
+              {leadingText}
+            </span>
+          )}
+        </div>
+      ) : null}
 
       {orbClassName ? (
         <div

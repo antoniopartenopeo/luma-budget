@@ -24,7 +24,9 @@ import { LandingImmersiveFallback } from "./components/landing-immersive-fallbac
 import { LandingSectionHeader } from "./components/landing-section-header"
 import {
   LANDING_FLOATING_NAV_CLASS,
-  LANDING_NAV_LINK_CLASS
+  LANDING_NAV_LINK_CLASS,
+  LANDING_EDITORIAL_CARD_HERO_TITLE_CLASS,
+  LANDING_EDITORIAL_CARD_TITLE_CLASS
 } from "./components/landing-tokens"
 
 const LandingDifferentiatorCards = dynamic(
@@ -113,16 +115,19 @@ const LANDING_OUTCOME_ACCENTS = [
   {
     border: "border-cyan-400/20 dark:border-cyan-400/10",
     panel: "from-cyan-500/[0.02] via-white to-cyan-50/50 dark:from-cyan-900/30 dark:via-black/80 dark:to-cyan-950/20",
+    icon: "border-cyan-400/25 bg-cyan-500/10 text-cyan-600 dark:border-cyan-400/15 dark:bg-cyan-900/40 dark:text-cyan-300",
     orb: "bg-cyan-500/20 dark:bg-cyan-400/10"
   },
   {
     border: "border-teal-400/20 dark:border-teal-400/10",
     panel: "from-teal-500/[0.02] via-white to-teal-50/50 dark:from-teal-900/30 dark:via-black/80 dark:to-teal-950/20",
+    icon: "border-teal-400/25 bg-teal-500/10 text-teal-700 dark:border-teal-400/15 dark:bg-teal-900/40 dark:text-teal-300",
     orb: "bg-teal-500/18 dark:bg-teal-300/10"
   },
   {
     border: "border-slate-400/18 dark:border-slate-400/10",
     panel: "from-slate-500/[0.03] via-white to-slate-50/60 dark:from-slate-800/28 dark:via-black/80 dark:to-slate-950/24",
+    icon: "border-slate-400/25 bg-slate-500/8 text-slate-700 dark:border-slate-400/15 dark:bg-slate-800/35 dark:text-slate-300",
     orb: "bg-slate-500/18 dark:bg-slate-300/10"
   }
 ] as const
@@ -261,26 +266,24 @@ export function LandingPage() {
                         key={step.stepLabel}
                         borderClassName={accent.border}
                         panelClassName={accent.panel}
+                        leadingIcon={step.icon}
+                        leadingIconWrapperClassName={accent.icon}
                         orbClassName={accent.orb}
                         orbPositionClassName="-right-[15%] -top-[20%] h-[20rem] w-[20rem] sm:h-[28rem] sm:w-[28rem]"
                         decorativeText={step.stepLabel}
                         decorativeTextClassName={`-bottom-[12%] -right-[2%] text-8xl ${accent.number} sm:-bottom-[8%] sm:text-[13rem] lg:-right-[1%] lg:text-[18rem]`}
                         className="p-8 shadow-[0_40px_100px_-50px_rgba(0,0,0,0.5)] sm:rounded-[3rem] sm:p-10 lg:p-12"
                       >
-                        <div className="relative flex flex-col items-start gap-6 sm:gap-8">
-                          <div className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.4rem] border shadow-[0_20px_40px_-20px_rgba(0,0,0,0.4)] sm:h-20 sm:w-20 sm:rounded-[1.8rem] ${accent.icon}`}>
-                            <step.icon className="h-7 w-7 sm:h-9 sm:w-9" />
-                          </div>
-
+                        <div className="relative flex flex-col items-start gap-6 pt-18 sm:gap-8 sm:pt-24 lg:pt-28">
                           <div className="min-w-0 flex-1 space-y-4 lg:space-y-5">
-                            <span className="text-[12px] font-bold uppercase tracking-[0.2em] text-foreground/50 sm:text-[13px] lg:text-[14px]">
+                            <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/50 sm:text-[12px] lg:text-[13px]">
                               {step.cue}
                             </span>
                             <div className="space-y-3 lg:space-y-4">
-                              <h3 className="max-w-[20ch] text-3xl font-black leading-tight tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+                              <h3 className={cn(LANDING_EDITORIAL_CARD_TITLE_CLASS, "max-w-[20ch]")}>
                                 {step.title}
                               </h3>
-                              <p className="max-w-[48ch] text-[16px] font-medium leading-relaxed text-foreground/70 sm:text-[18px] lg:text-[20px]">
+                              <p className="max-w-[48ch] text-[16px] font-normal leading-relaxed text-foreground/70 sm:text-[18px] lg:text-[20px]">
                                 {step.description}
                               </p>
                             </div>
@@ -322,6 +325,9 @@ export function LandingPage() {
                         key={outcome.title}
                         borderClassName={accent.border}
                         panelClassName={accent.panel}
+                        leadingIconWrapperClassName={accent.icon}
+                        leadingText={String(index + 1).padStart(2, "0")}
+                        leadingTextClassName="text-current"
                         orbClassName={accent.orb}
                         orbPositionClassName={isHero ? "-right-[10%] -top-[30%] h-[30rem] w-[30rem] sm:blur-[140px]" : "-right-[20%] -top-[20%] h-[16rem] w-[16rem] sm:blur-[100px]"}
                         decorativeIcon={outcome.icon}
@@ -333,11 +339,16 @@ export function LandingPage() {
                         )}
                       >
                         <div className={cn("relative flex h-full", isHero ? "flex-col gap-6 sm:gap-8" : "flex-col gap-6 sm:gap-8")}>
-                          <div className={cn("space-y-4", isHero ? "min-w-0 max-w-[48rem] pr-20 sm:pr-28 lg:pr-40" : "pr-14 sm:pr-20 lg:pr-28")}>
-                            <h3 className={cn("font-black tracking-tight text-foreground", isHero ? "text-4xl leading-[1.05] sm:text-5xl lg:text-5xl max-w-[20ch]" : "text-3xl leading-[1.05] sm:text-4xl max-w-[16ch]")}>
+                          <div className={cn("space-y-4 pt-18 sm:pt-24 lg:pt-28", isHero ? "min-w-0 max-w-[48rem] pr-20 sm:pr-28 lg:pr-40" : "pr-14 sm:pr-20 lg:pr-28")}>
+                            <h3
+                              className={cn(
+                                isHero ? LANDING_EDITORIAL_CARD_HERO_TITLE_CLASS : LANDING_EDITORIAL_CARD_TITLE_CLASS,
+                                isHero ? "max-w-[20ch]" : "max-w-[16ch]"
+                              )}
+                            >
                               {outcome.title}
                             </h3>
-                            <p className={cn("font-medium leading-relaxed text-foreground/70", isHero ? "text-[16px] sm:text-[19px] lg:text-[21px] max-w-[48ch]" : "text-[16px] sm:text-[18px] max-w-[34ch]")}>
+                            <p className={cn("font-normal leading-relaxed text-foreground/70", isHero ? "text-[16px] sm:text-[19px] lg:text-[21px] max-w-[48ch]" : "text-[16px] sm:text-[18px] max-w-[34ch]")}>
                               {outcome.description}
                             </p>
                           </div>
@@ -376,7 +387,7 @@ export function LandingPage() {
                           <AccordionTrigger className="text-left text-base font-semibold tracking-tight text-foreground hover:no-underline sm:text-lg">
                             {item.question}
                           </AccordionTrigger>
-                          <AccordionContent className="max-w-[58ch] text-sm font-medium leading-relaxed text-muted-foreground sm:text-[15px]">
+                          <AccordionContent className="max-w-[58ch] text-sm font-normal leading-relaxed text-muted-foreground sm:text-[15px]">
                             {item.answer}
                           </AccordionContent>
                         </AccordionItem>
@@ -391,7 +402,7 @@ export function LandingPage() {
                     <h3 className="mt-4 max-w-[16ch] text-2xl font-extrabold tracking-tight text-foreground sm:text-[2rem]">
                       Vuoi capire Numa senza usare i tuoi dati?
                     </h3>
-                    <p className="mt-3 text-sm font-medium leading-relaxed text-muted-foreground sm:text-base">
+                    <p className="mt-3 text-sm font-normal leading-relaxed text-muted-foreground sm:text-base">
                       Parti dal percorso di import e usa il dataset demo già integrato. Vedrai lo stesso flusso operativo, senza toccare il tuo estratto conto.
                     </p>
 

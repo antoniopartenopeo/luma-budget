@@ -24,7 +24,7 @@ export function LandingImmersiveFallback({
 
         <div className="mx-auto flex w-full max-w-6xl flex-col items-center">
           <div className="relative z-10 mb-8 max-w-2xl text-center sm:mb-12 lg:mb-14 xl:max-w-3xl">
-            <p className="text-[12px] font-bold uppercase tracking-[0.2em] text-primary/84">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary/84 sm:text-[12px]">
               {eyebrow}
             </p>
             <h2 className="mt-5 text-4xl font-extrabold leading-[0.94] tracking-tight text-foreground sm:text-5xl lg:text-6xl">

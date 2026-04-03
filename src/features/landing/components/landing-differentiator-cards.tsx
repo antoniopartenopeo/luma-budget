@@ -66,7 +66,7 @@ function MarketGhostLayer({
       aria-hidden="true"
     >
         <div className="absolute right-[-10%] top-[8%] h-[36%] w-[78%] rotate-[12deg] rounded-[2.6rem] border border-black/8 bg-neutral-100/90 p-5 shadow-[0_50px_100px_-40px_rgba(0,0,0,0.5)] blur-[2px] dark:border-white/10 dark:bg-neutral-900/80 sm:h-[40%] sm:w-[74%] sm:p-7 lg:p-9 xl:p-10">
-        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500 lg:text-[13px] xl:text-[14px]">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-400 dark:text-neutral-500 lg:text-[12px] xl:text-[13px]">
           Altrove
         </p>
         <p className="mt-4 max-w-[20ch] text-lg font-semibold leading-tight text-neutral-600 dark:text-neutral-300 sm:text-xl lg:text-3xl xl:mt-6 xl:text-4xl">
@@ -75,7 +75,7 @@ function MarketGhostLayer({
       </div>
 
       <div className="absolute bottom-[4%] left-[-8%] w-[72%] -rotate-[7deg] rounded-[2.2rem] border border-black/8 bg-white/90 p-4 shadow-[0_40px_100px_-40px_rgba(0,0,0,0.6)] blur-[1.5px] dark:border-white/10 dark:bg-neutral-950/80 sm:w-[58%] sm:p-6 lg:p-8 xl:p-9">
-        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500 lg:text-[13px] xl:text-[14px]">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-400 dark:text-neutral-500 lg:text-[12px] xl:text-[13px]">
           Di solito
         </p>
         <div className="mt-3 flex flex-wrap gap-2 lg:mt-5 lg:gap-3 xl:gap-3.5">
@@ -133,7 +133,7 @@ function NumaEditorialCard({
         <div className="relative flex h-full min-h-0 flex-col justify-between gap-4">
           <div className="space-y-4 lg:space-y-6">
             <div className="space-y-2">
-              <p className={cn("text-[12px] sm:text-[13px] font-bold uppercase tracking-[0.2em] lg:text-[14px] xl:text-[15px]", accent.kicker)}>
+              <p className={cn("text-[11px] font-semibold uppercase tracking-[0.16em] sm:text-[12px] lg:text-[13px] xl:text-[14px]", accent.kicker)}>
                 {EDITORIAL_KICKERS[index]}
               </p>
             </div>
@@ -162,7 +162,7 @@ function NumaEditorialCard({
 
             <div className="space-y-3 lg:space-y-4">
               <div className="h-px w-16 bg-foreground/12 lg:w-24 xl:w-32" />
-              <p className="max-w-[32ch] text-[13px] font-medium leading-relaxed text-foreground/64 [font-size:clamp(0.85rem,3.2cqw,1.02rem)]">
+              <p className="max-w-[32ch] text-[13px] font-normal leading-relaxed text-foreground/64 [font-size:clamp(0.85rem,3.2cqw,1.02rem)]">
                 {EDITORIAL_NOTES[index]}
               </p>
 
@@ -223,16 +223,13 @@ export function LandingDifferentiatorCards() {
         />
 
         <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center">
-          <div className="relative z-10 mb-8 max-w-2xl text-center sm:mb-12 lg:mb-14 xl:max-w-3xl">
-            <p className="text-[12px] font-bold uppercase tracking-[0.2em] text-cyan-500 dark:text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]">
+          <div className="relative z-10 mb-8 flex w-full flex-col items-center text-center sm:mb-12 lg:mb-14">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-500 dark:text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.4)] sm:text-[12px]">
               La tua cassaforte locale
             </p>
-            <h2 className="mt-5 text-4xl font-black leading-[0.92] tracking-tight text-foreground sm:text-5xl lg:text-6xl xl:text-7xl">
-              I tuoi soldi.<br /> Nessun server di mezzo.
+            <h2 className="mx-auto mt-5 max-w-fit text-center text-3xl font-black leading-[0.96] tracking-tight text-foreground sm:text-4xl lg:text-5xl xl:text-6xl xl:whitespace-nowrap">
+              I tuoi soldi, senza server di mezzo.
             </h2>
-            <p className="mx-auto mt-6 max-w-[50ch] text-[15px] font-normal leading-relaxed text-muted-foreground sm:text-lg lg:text-[1.15rem] xl:text-[1.25rem]">
-              Numa elabora il quadro del mese nel browser. Nessun cloud obbligatorio, nessuna copia dei tuoi file fuori dal dispositivo.
-            </p>
           </div>
 
           <div className="relative mx-auto h-[min(82vh,48rem)] w-full max-w-[32rem] sm:h-[min(85vh,54rem)] sm:max-w-[42rem] lg:max-w-[54rem] xl:h-[min(85vh,64rem)] xl:max-w-[64rem] [perspective:1400px]">

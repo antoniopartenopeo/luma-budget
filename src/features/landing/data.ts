@@ -43,17 +43,17 @@ export interface LandingTrustSignal {
 export const LANDING_STORY_POINTS: LandingStoryPoint[] = [
   {
     icon: WalletCards,
-    title: "Ti mostrano il passato, non il margine di oggi",
+    title: "Passato, non margine",
     description: "Molti tracker si fermano alle uscite registrate. Il punto, invece, è capire quanto spazio hai davvero nel mese in corso."
   },
   {
     icon: ShieldCheck,
-    title: "I tuoi dati meritano un perimetro chiaro",
+    title: "Dati con confini chiari",
     description: "Numa lavora in locale, senza trasformare il tuo quadro finanziario in un dato da affidare a un servizio remoto."
   },
   {
     icon: BrainCircuit,
-    title: "Una stima serve solo se ti aiuta a decidere",
+    title: "Stima per decidere",
     description: "Vedere quanto potrebbe restare è utile solo quando quella stima ti aiuta a valutare una rata, un abbonamento o una nuova spesa fissa."
   }
 ]

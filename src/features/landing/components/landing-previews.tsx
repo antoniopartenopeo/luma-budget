@@ -3,46 +3,41 @@
 import { cn } from "@/lib/utils"
 import { LANDING_STORY_POINTS } from "../data"
 import { CinematicScrollCard } from "./motion-primitives"
-import {
-  LANDING_SECTION_DESCRIPTION_CLASS,
-  LANDING_SECTION_EYEBROW_CLASS,
-  LANDING_SECTION_TITLE_CLASS
-} from "./landing-tokens"
 
 const STORY_ACCENTS = [
   {
-    border: "border-cyan-500/18 dark:border-cyan-400/14",
-    panel: "from-cyan-500/[0.09] via-white/74 to-white/90 dark:from-cyan-500/[0.12] dark:via-black/28 dark:to-black/22",
-    icon: "border-cyan-500/18 bg-cyan-500/10 text-cyan-700 dark:text-cyan-300",
-    label: "text-cyan-700/88 dark:text-cyan-300/84"
+    border: "border-cyan-400/20 dark:border-cyan-400/10",
+    panel: "from-cyan-500/[0.02] via-white to-cyan-50/50 dark:from-cyan-900/30 dark:via-black/80 dark:to-cyan-950/20",
+    icon: "border-cyan-400/25 bg-cyan-500/10 text-cyan-600 dark:border-cyan-400/15 dark:bg-cyan-900/40 dark:text-cyan-400",
+    label: "text-cyan-600 dark:text-cyan-400"
   },
   {
-    border: "border-violet-500/18 dark:border-violet-400/14",
-    panel: "from-violet-500/[0.09] via-white/74 to-white/90 dark:from-violet-500/[0.12] dark:via-black/28 dark:to-black/22",
-    icon: "border-violet-500/18 bg-violet-500/10 text-violet-700 dark:text-violet-300",
-    label: "text-violet-700/88 dark:text-violet-300/84"
+    border: "border-emerald-400/20 dark:border-emerald-400/10",
+    panel: "from-emerald-500/[0.02] via-white to-emerald-50/50 dark:from-emerald-900/30 dark:via-black/80 dark:to-emerald-950/20",
+    icon: "border-emerald-400/25 bg-emerald-500/10 text-emerald-600 dark:border-emerald-400/15 dark:bg-emerald-900/40 dark:text-emerald-400",
+    label: "text-emerald-600 dark:text-emerald-400"
   },
   {
-    border: "border-amber-500/18 dark:border-amber-400/14",
-    panel: "from-amber-500/[0.09] via-white/74 to-white/90 dark:from-amber-500/[0.12] dark:via-black/28 dark:to-black/22",
-    icon: "border-amber-500/18 bg-amber-500/10 text-amber-700 dark:text-amber-300",
-    label: "text-amber-700/88 dark:text-amber-300/84"
+    border: "border-indigo-400/20 dark:border-indigo-400/10",
+    panel: "from-indigo-500/[0.02] via-white to-indigo-50/50 dark:from-indigo-900/30 dark:via-black/80 dark:to-indigo-950/20",
+    icon: "border-indigo-400/25 bg-indigo-500/10 text-indigo-600 dark:border-indigo-400/15 dark:bg-indigo-900/40 dark:text-indigo-400",
+    label: "text-indigo-600 dark:text-indigo-400"
   }
 ] as const
 
 export function LandingHeroConsole() {
   return (
     <div className="space-y-6 sm:space-y-7 [perspective:1200px]">
-      <CinematicScrollCard className="relative overflow-hidden rounded-[2.2rem] border border-primary/14 bg-gradient-to-br from-primary/[0.09] via-white/76 to-white/92 p-6 shadow-[0_30px_90px_-58px_rgba(15,23,42,0.42)] backdrop-blur-sm dark:border-primary/12 dark:from-primary/[0.12] dark:via-black/26 dark:to-black/20 sm:p-8">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.74),transparent_44%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_48%)]" />
+      <CinematicScrollCard className="relative overflow-hidden rounded-[2.5rem] border border-black/6 bg-gradient-to-br from-slate-200/78 via-white to-slate-100/90 p-8 shadow-[0_40px_100px_-40px_rgba(15,23,42,0.22)] backdrop-blur-3xl dark:border-white/10 dark:bg-gradient-to-br dark:from-zinc-900/80 dark:via-black/90 dark:to-zinc-950/60 dark:shadow-[0_40px_100px_-40px_rgba(0,0,0,0.6)] sm:p-10">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.3),transparent_44%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.06),transparent_48%)]" />
         <div className="relative space-y-5">
-          <div className="space-y-3">
-            <p className={LANDING_SECTION_EYEBROW_CLASS}>Il nodo</p>
-            <h3 className={cn(LANDING_SECTION_TITLE_CLASS, "max-w-[17ch]")}>
-              Tra estratto conto e decisione c&apos;e un vuoto.
+          <div className="space-y-4 text-center mx-auto flex flex-col items-center">
+            <p className="text-[12px] sm:text-[13px] font-bold uppercase tracking-[0.2em] text-foreground/42 dark:text-foreground/50">Il nodo</p>
+            <h3 className="max-w-[19ch] text-4xl font-black leading-[0.92] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+              Smetti di indovinare le tue spese.
             </h3>
-            <p className={cn(LANDING_SECTION_DESCRIPTION_CLASS, "max-w-[48ch]")}>
-              Molte app registrano quello che e gia successo. Numa usa il passato per rispondere a una domanda piu utile: questa spesa ci sta davvero nel mese di oggi?
+            <p className="mt-6 max-w-[48ch] text-[15px] font-normal leading-relaxed text-muted-foreground sm:text-lg">
+              Molte app registrano quello che fgià successo. Numa usa il passato per rispondere a una domanda più utile: questa spesa ci sta davvero nel mese di oggi?
             </p>
           </div>
         </div>
@@ -55,21 +50,21 @@ export function LandingHeroConsole() {
           return (
             <CinematicScrollCard
               key={point.title}
-              className={`group relative overflow-hidden rounded-[2rem] border ${accent.border} bg-gradient-to-br ${accent.panel} p-5 shadow-[0_28px_90px_-56px_rgba(15,23,42,0.38)] backdrop-blur-sm sm:p-6`}
+              className={`group relative overflow-hidden rounded-[2.5rem] border ${accent.border} bg-gradient-to-br ${accent.panel} p-8 shadow-[0_30px_90px_-40px_rgba(15,23,42,0.16)] backdrop-blur-3xl dark:shadow-[0_30px_90px_-40px_rgba(0,0,0,0.5)] sm:p-10`}
             >
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.72),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_46%)]" />
-              <div className="relative flex items-start gap-4 sm:gap-5">
-                <div className={cn("flex h-12 w-12 shrink-0 items-center justify-center rounded-[1rem] border shadow-[0_18px_36px_-24px_rgba(15,23,42,0.35)]", accent.icon)}>
-                  <point.icon className="h-5 w-5" />
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.4),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.06),transparent_46%)]" />
+              <div className="relative flex items-start gap-5 sm:gap-6">
+                <div className={cn("flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.2rem] border shadow-[0_20px_40px_-20px_rgba(0,0,0,0.4)] sm:h-16 sm:w-16 sm:rounded-[1.4rem]", accent.icon)}>
+                  <point.icon className="h-6 w-6 sm:h-7 sm:w-7" />
                 </div>
-                <div className="min-w-0 space-y-2">
-                  <p className={cn("text-[11px] font-semibold uppercase tracking-[0.14em]", accent.label)}>
+                <div className="min-w-0 space-y-3">
+                  <p className={cn("text-[12px] font-bold uppercase tracking-[0.2em]", accent.label)}>
                     Punto chiave {String(index + 1).padStart(2, "0")}
                   </p>
-                  <p className="max-w-[26ch] text-lg font-extrabold leading-tight tracking-tight text-foreground sm:text-[1.3rem]">
+                  <p className="max-w-[26ch] text-2xl font-black leading-tight tracking-tight text-foreground sm:text-3xl">
                     {point.title}
                   </p>
-                  <p className="max-w-[56ch] text-[15px] font-normal leading-relaxed text-muted-foreground">
+                  <p className="max-w-[56ch] text-[16px] font-normal leading-relaxed text-muted-foreground sm:text-[17px]">
                     {point.description}
                   </p>
                 </div>
@@ -79,9 +74,9 @@ export function LandingHeroConsole() {
         })}
       </div>
 
-      <div className="relative overflow-hidden rounded-[1.8rem] border border-primary/14 bg-primary/8 px-5 py-5 sm:px-6 sm:py-6">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.5),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.06),transparent_46%)]" />
-        <p className="relative text-[15px] font-medium leading-relaxed text-foreground">
+      <div className="relative overflow-hidden rounded-[2rem] border border-black/6 bg-white/62 px-6 py-6 shadow-[0_24px_70px_-42px_rgba(15,23,42,0.14)] sm:px-8 sm:py-8 backdrop-blur-3xl dark:border-white/10 dark:bg-zinc-950/40 dark:shadow-[0_24px_70px_-42px_rgba(0,0,0,0.42)]">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.04),transparent_46%)]" />
+        <p className="relative text-[16px] font-normal leading-relaxed text-muted-foreground sm:text-[17px]">
           Numa non e un tracker piu elegante. E un modo piu calmo per leggere il mese e decidere con piu chiarezza.
         </p>
       </div>

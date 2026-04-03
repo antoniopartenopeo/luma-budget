@@ -96,17 +96,17 @@ export function LandingBrainHero() {
           data-testid="landing-brain-act-1"
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
-          <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.18em] text-primary/80">
+          <p className="mb-5 text-[12px] font-mono font-bold uppercase tracking-[0.2em] text-primary/85 dark:text-cyan-400">
             Il Brain di Numa
           </p>
           <h2
             id="landing-brain-hero-title"
-            className="max-w-[20ch] text-5xl font-black leading-[0.92] tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-xl"
+            className="max-w-[20ch] text-5xl font-black leading-[0.9] tracking-tighter text-foreground dark:text-white sm:text-6xl lg:text-7xl"
           >
             Quando i dati bastano, il mese si vede prima.
           </h2>
-          <p className="mt-5 max-w-[44ch] text-base font-normal leading-relaxed text-muted-foreground sm:text-lg">
-            Il Brain osserva ricorrenze, ritmo di spesa e storico recente per stimare il margine con prudenza.
+          <p className="mt-6 max-w-[44ch] text-[16px] font-normal leading-relaxed text-foreground/62 dark:text-zinc-400 sm:text-lg">
+            Il Brain osserva ricorrenze, ritmo di spesa e storico recente per stimare il margine con prudenza chirurgica.
           </p>
         </motion.div>
 
@@ -115,14 +115,14 @@ export function LandingBrainHero() {
           data-testid="landing-brain-act-2"
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
-          <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.18em] text-primary/80">
+          <p className="mb-5 text-[12px] font-mono font-bold uppercase tracking-[0.2em] text-primary/85 dark:text-cyan-400">
             Stima, non spettacolo
           </p>
-          <h3 className="max-w-[20ch] text-5xl font-black leading-[0.92] tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-xl">
+          <h3 className="max-w-[20ch] text-5xl font-black leading-[0.9] tracking-tighter text-foreground dark:text-white sm:text-6xl lg:text-7xl">
             Una previsione utile e leggibile.
           </h3>
-          <p className="mt-5 max-w-[44ch] text-base font-normal leading-relaxed text-muted-foreground sm:text-lg">
-            Se il contesto non e abbastanza solido, Numa lo segnala. La stima serve a decidere, non a impressionare.
+          <p className="mt-6 max-w-[44ch] text-[16px] font-normal leading-relaxed text-foreground/62 dark:text-zinc-400 sm:text-lg">
+            Se il contesto non è abbastanza solido, Numa lo segnala. La stima serve a decidere stanotte, non a impressionare.
           </p>
         </motion.div>
 
@@ -131,14 +131,14 @@ export function LandingBrainHero() {
           data-testid="landing-brain-act-3"
           className="absolute z-30 flex flex-col items-center text-center pointer-events-none px-6"
         >
-          <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.18em] text-primary/80">
+          <p className="mb-5 text-[12px] font-mono font-bold uppercase tracking-[0.2em] text-primary/85 dark:text-cyan-400">
             Per scegliere meglio
           </p>
-          <h3 className="max-w-[16ch] text-5xl font-black leading-[0.92] tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-2xl">
-            Margine.<br />Affidabilita.<br />Impatto.
+          <h3 className="max-w-[16ch] text-5xl font-black leading-[0.9] tracking-tighter text-foreground dark:text-white sm:text-6xl lg:text-7xl">
+            Margine.<br />Affidabilità.<br />Impatto.
           </h3>
-          <p className="mt-5 max-w-[44ch] text-base font-normal leading-relaxed text-muted-foreground sm:text-lg">
-            Cosi capisci se una nuova rata o un nuovo abbonamento entrano davvero nel quadro del mese.
+          <p className="mt-6 max-w-[44ch] text-[16px] font-normal leading-relaxed text-foreground/62 dark:text-zinc-400 sm:text-lg">
+            Così capisci se una nuova rata o un abbonamento entrano davvero nel quadro termico del mese.
           </p>
         </motion.div>
       </div>

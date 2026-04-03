@@ -61,21 +61,21 @@ export const LANDING_STORY_POINTS: LandingStoryPoint[] = [
 export const LANDING_DIFFERENTIATORS: LandingDifferentItem[] = [
   {
     icon: CloudOff,
-    title: "I tuoi dati restano con te",
-    marketLabel: "Molti strumenti partono dal cloud e dall'account obbligatorio.",
-    numaLabel: "Con Numa importi i movimenti e lavori in locale, senza affidare il quadro finanziario a un servizio remoto."
+    title: "Il cloud non è invitato",
+    marketLabel: "Ti obbligano a caricare l'estratto conto sui loro server.",
+    numaLabel: "Il motore di Numa vive nel tuo browser. Elabora tutto localmente: i tuoi dati non escono dal dispositivo."
   },
   {
-    icon: WalletCards,
-    title: "Parte da quello che hai già",
-    marketLabel: "Spesso devi costruire budget, categorie e regole prima di vedere qualcosa di utile.",
-    numaLabel: "Con un CSV inizi da subito. Numa ordina i movimenti e ti restituisce un quadro leggibile del mese."
+    icon: ShieldCheck,
+    title: "Nessun accesso alla banca",
+    marketLabel: "Chiedono connessioni dirette e le credenziali del tuo conto.",
+    numaLabel: "Lavori solo con file scaricati da te. Nessun ponte aperto tra noi e i tuoi risparmi."
   },
   {
-    icon: Sparkles,
-    title: "La stima serve a decidere",
-    marketLabel: "L'IA nel fintech spesso produce consigli generici o scenari difficili da verificare.",
-    numaLabel: "Numa usa la stima per mostrarti margine, affidabilita e impatto di una nuova spesa fissa."
+    icon: BrainCircuit,
+    title: "Anche l'IA è offline",
+    marketLabel: "Le stime vengono inviate ad algoritmi esterni e opachi.",
+    numaLabel: "Il nostro Brain calcola le proiezioni mensili sfruttando la potenza locale. La vera privacy è non avere API."
   }
 ]
 

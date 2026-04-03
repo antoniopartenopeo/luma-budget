@@ -1,7 +1,6 @@
 "use client"
 
-import { type ElementType } from "react"
-import { Monitor, Moon, Sun } from "lucide-react"
+import { Monitor, Moon, Sun, type LucideIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { TopbarInlinePanelShell } from "./topbar-inline-panel-shell"
@@ -33,7 +32,7 @@ function ThemeIcon({ theme }: { theme: ThemePreference }) {
     return <Monitor className="h-4 w-4" />
 }
 
-const themeOptions: Array<{ value: ThemePreference; label: string; icon: ElementType; ariaLabel: string }> = [
+const themeOptions: Array<{ value: ThemePreference; label: string; icon: LucideIcon; ariaLabel: string }> = [
     { value: "system", label: "Sistema", icon: Monitor, ariaLabel: "Tema sistema" },
     { value: "light", label: "Chiaro", icon: Sun, ariaLabel: "Tema chiaro" },
     { value: "dark", label: "Scuro", icon: Moon, ariaLabel: "Tema scuro" },

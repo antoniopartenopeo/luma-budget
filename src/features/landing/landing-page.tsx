@@ -4,6 +4,7 @@ import dynamic from "next/dynamic"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { cn } from "@/lib/utils"
 import { AmbientBackdrop } from "@/components/layout/ambient-backdrop"
 import { MacroSection } from "@/components/patterns/macro-section"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
@@ -63,46 +64,53 @@ const LANDING_FOOTER_SUPPORT_ITEMS = [
 
 const LANDING_FLOW_ACCENTS = [
   {
-    border: "border-cyan-500/18 dark:border-cyan-400/14",
-    panel: "from-cyan-500/[0.10] via-white/72 to-white/88 dark:from-cyan-500/[0.12] dark:via-black/28 dark:to-black/22",
-    icon: "border-cyan-500/18 bg-cyan-500/10 text-cyan-700 dark:text-cyan-300",
-    line: "from-cyan-500/35 via-cyan-500/12 to-transparent"
+    border: "border-cyan-400/20 dark:border-cyan-400/10",
+    panel: "from-cyan-500/[0.02] via-white to-cyan-50/50 dark:from-cyan-900/30 dark:via-black/80 dark:to-cyan-950/20",
+    icon: "border-cyan-400/25 bg-cyan-500/10 text-cyan-600 dark:border-cyan-400/15 dark:bg-cyan-900/40 dark:text-cyan-400",
+    number: "text-cyan-500/5 dark:text-cyan-400/[0.03]",
+    orb: "bg-cyan-500/20 dark:bg-cyan-400/10"
   },
   {
-    border: "border-emerald-500/18 dark:border-emerald-400/14",
-    panel: "from-emerald-500/[0.10] via-white/72 to-white/88 dark:from-emerald-500/[0.12] dark:via-black/28 dark:to-black/22",
-    icon: "border-emerald-500/18 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-    line: "from-emerald-500/35 via-emerald-500/12 to-transparent"
+    border: "border-emerald-400/20 dark:border-emerald-400/10",
+    panel: "from-emerald-500/[0.02] via-white to-emerald-50/50 dark:from-emerald-900/30 dark:via-black/80 dark:to-emerald-950/20",
+    icon: "border-emerald-400/25 bg-emerald-500/10 text-emerald-600 dark:border-emerald-400/15 dark:bg-emerald-900/40 dark:text-emerald-400",
+    number: "text-emerald-500/5 dark:text-emerald-400/[0.03]",
+    orb: "bg-emerald-500/20 dark:bg-emerald-400/10"
   },
   {
-    border: "border-violet-500/18 dark:border-violet-400/14",
-    panel: "from-violet-500/[0.10] via-white/72 to-white/88 dark:from-violet-500/[0.12] dark:via-black/28 dark:to-black/22",
-    icon: "border-violet-500/18 bg-violet-500/10 text-violet-700 dark:text-violet-300",
-    line: "from-violet-500/35 via-violet-500/12 to-transparent"
+    border: "border-indigo-400/20 dark:border-indigo-400/10",
+    panel: "from-indigo-500/[0.02] via-white to-indigo-50/50 dark:from-indigo-900/30 dark:via-black/80 dark:to-indigo-950/20",
+    icon: "border-indigo-400/25 bg-indigo-500/10 text-indigo-600 dark:border-indigo-400/15 dark:bg-indigo-900/40 dark:text-indigo-400",
+    number: "text-indigo-500/5 dark:text-indigo-400/[0.03]",
+    orb: "bg-indigo-500/20 dark:bg-indigo-400/10"
   },
   {
-    border: "border-amber-500/18 dark:border-amber-400/14",
-    panel: "from-amber-500/[0.10] via-white/72 to-white/88 dark:from-amber-500/[0.12] dark:via-black/28 dark:to-black/22",
-    icon: "border-amber-500/18 bg-amber-500/10 text-amber-700 dark:text-amber-300",
-    line: "from-amber-500/35 via-amber-500/12 to-transparent"
+    border: "border-amber-400/20 dark:border-amber-400/10",
+    panel: "from-amber-500/[0.02] via-white to-amber-50/50 dark:from-amber-900/30 dark:via-black/80 dark:to-amber-950/20",
+    icon: "border-amber-400/25 bg-amber-500/10 text-amber-600 dark:border-amber-400/15 dark:bg-amber-900/40 dark:text-amber-400",
+    number: "text-amber-500/5 dark:text-amber-400/[0.03]",
+    orb: "bg-amber-500/20 dark:bg-amber-400/10"
   }
 ] as const
 
 const LANDING_OUTCOME_ACCENTS = [
   {
-    border: "border-rose-500/18 dark:border-rose-400/14",
-    panel: "from-rose-500/[0.09] via-white/74 to-white/90 dark:from-rose-500/[0.12] dark:via-black/28 dark:to-black/22",
-    icon: "border-rose-500/18 bg-rose-500/10 text-rose-700 dark:text-rose-300"
+    border: "border-cyan-400/20 dark:border-cyan-400/10",
+    panel: "from-cyan-500/[0.02] via-white to-cyan-50/50 dark:from-cyan-900/30 dark:via-black/80 dark:to-cyan-950/20",
+    icon: "border-cyan-400/25 bg-cyan-500/10 text-cyan-600 dark:border-cyan-400/15 dark:bg-cyan-900/40 dark:text-cyan-400",
+    orb: "bg-cyan-500/20 dark:bg-cyan-400/10"
   },
   {
-    border: "border-sky-500/18 dark:border-sky-400/14",
-    panel: "from-sky-500/[0.09] via-white/74 to-white/90 dark:from-sky-500/[0.12] dark:via-black/28 dark:to-black/22",
-    icon: "border-sky-500/18 bg-sky-500/10 text-sky-700 dark:text-sky-300"
+    border: "border-emerald-400/20 dark:border-emerald-400/10",
+    panel: "from-emerald-500/[0.02] via-white to-emerald-50/50 dark:from-emerald-900/30 dark:via-black/80 dark:to-emerald-950/20",
+    icon: "border-emerald-400/25 bg-emerald-500/10 text-emerald-600 dark:border-emerald-400/15 dark:bg-emerald-900/40 dark:text-emerald-400",
+    orb: "bg-emerald-500/20 dark:bg-emerald-400/10"
   },
   {
-    border: "border-amber-500/18 dark:border-amber-400/14",
-    panel: "from-amber-500/[0.09] via-white/74 to-white/90 dark:from-amber-500/[0.12] dark:via-black/28 dark:to-black/22",
-    icon: "border-amber-500/18 bg-amber-500/10 text-amber-700 dark:text-amber-300"
+    border: "border-indigo-400/20 dark:border-indigo-400/10",
+    panel: "from-indigo-500/[0.02] via-white to-indigo-50/50 dark:from-indigo-900/30 dark:via-black/80 dark:to-indigo-950/20",
+    icon: "border-indigo-400/25 bg-indigo-500/10 text-indigo-600 dark:border-indigo-400/15 dark:bg-indigo-900/40 dark:text-indigo-400",
+    orb: "bg-indigo-500/20 dark:bg-indigo-400/10"
   }
 ] as const
 
@@ -141,7 +149,7 @@ export function LandingPage() {
                 <BrandLogo
                   variant="full"
                   height={92}
-                  className="mb-12 w-auto max-w-[300px] sm:max-w-[380px] lg:max-w-[440px] drop-shadow-sm"
+                  className="mb-14 sm:mb-16 lg:mb-20 w-auto max-w-[300px] sm:max-w-[380px] lg:max-w-[440px] drop-shadow-sm"
                 />
 
                 <div className="space-y-5">
@@ -149,45 +157,39 @@ export function LandingPage() {
                     id="landing-hero-title"
                     className="mx-auto max-w-4xl text-5xl font-black leading-[0.98] tracking-tight text-foreground sm:text-6xl lg:text-7xl drop-shadow-sm"
                   >
-                    <CinematicTextReveal text="Capisci il mese prima di prendere una decisione." />
+                    <CinematicTextReveal text="Il tuo saldo è il passato. Scopri il tuo futuro." />
                   </h1>
 
                   <p className="mx-auto max-w-[44rem] text-base font-normal leading-relaxed text-muted-foreground sm:text-lg lg:text-[1.2rem] drop-shadow-sm">
-                    Importi i movimenti, Numa legge il presente, stima il margine del mese e ti aiuta a valutare una nuova spesa fissa senza spostare il quadro finanziario nel cloud.
+                    Prevedi il margine del mese in un istante. I tuoi dati restano sul tuo dispositivo, lontano dal cloud. Zero compromessi.
                   </p>
                 </div>
 
                 <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
                   <Button asChild size="lg" className="rounded-full px-8 shadow-lg shadow-primary/15 transition-shadow hover:shadow-primary/30">
                     <Link href="/dashboard">
-                      Apri Numa
+                      Inizia gratis
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
 
                   <Button asChild variant="outline" size="lg" className="rounded-full px-8">
                     <Link href="/transactions/import">
-                      Prova con dati demo
+                      Esplora app demo
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
                 </div>
 
-                <div className="mt-8 grid w-full max-w-5xl gap-3 text-left sm:grid-cols-2 xl:grid-cols-4">
-                  {LANDING_TRUST_SIGNALS.map((signal) => (
-                    <div
-                      key={signal.title}
-                      className="rounded-[1.4rem] border border-white/16 bg-background/52 px-4 py-4 backdrop-blur-md shadow-[0_24px_70px_-48px_rgba(15,23,42,0.45)] dark:border-white/10"
-                    >
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary/82">
-                        Fiducia
-                      </p>
-                      <p className="mt-2 text-sm font-bold leading-tight text-foreground">
-                        {signal.title}
-                      </p>
-                      <p className="mt-2 text-[13px] font-medium leading-relaxed text-muted-foreground">
-                        {signal.description}
-                      </p>
+                <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:mt-12 opacity-80 mix-blend-plus-lighter">
+                  {LANDING_TRUST_SIGNALS.slice(0, 3).map((signal) => (
+                    <div key={signal.title} className="flex items-center gap-2 text-muted-foreground/80">
+                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-foreground/5 border border-foreground/10">
+                        <svg className="h-3 w-3 text-foreground/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span className="text-[13px] font-semibold tracking-wide text-foreground/70">{signal.title}</span>
                     </div>
                   ))}
                 </div>
@@ -210,7 +212,7 @@ export function LandingPage() {
                 title={
                   <LandingSectionHeader
                     eyebrow="Il problema"
-                    title="Il saldo non basta."
+                    title="Smetti di indovinare le tue spese."
                     description="Sapere cosa hai speso non ti dice quanto margine hai oggi. Il punto è capire il mese prima di aggiungere una nuova spesa."
                     titleId="landing-problem-title"
                   />
@@ -240,39 +242,36 @@ export function LandingPage() {
                 }
                 contentClassName="pt-12"
               >
-                <div className="relative space-y-4 sm:space-y-5">
-                  <div className="pointer-events-none absolute left-7 top-0 bottom-0 w-px bg-gradient-to-b from-primary/20 via-primary/8 to-transparent" />
-
+                <div className="relative space-y-8 sm:space-y-12">
                   {LANDING_FLOW_STEPS.map((step, index) => {
                     const accent = LANDING_FLOW_ACCENTS[index]
 
                     return (
                       <CinematicScrollCard
                         key={step.stepLabel}
-                        className={`group relative overflow-hidden rounded-[2rem] border ${accent.border} bg-gradient-to-br ${accent.panel} p-5 shadow-[0_28px_90px_-56px_rgba(15,23,42,0.38)] backdrop-blur-sm sm:p-6 lg:p-7`}
+                        className={`group relative overflow-hidden rounded-[2.5rem] border ${accent.border} bg-gradient-to-br ${accent.panel} p-8 shadow-[0_40px_100px_-50px_rgba(0,0,0,0.5)] backdrop-blur-3xl sm:rounded-[3rem] sm:p-10 lg:p-12`}
                       >
-                        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.72),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_46%)]" />
-                        <div className="relative flex items-start gap-4 sm:gap-5">
-                          <div className="relative flex shrink-0 flex-col items-center">
-                            <div className={`relative z-10 flex h-14 w-14 items-center justify-center rounded-[1.2rem] border shadow-[0_18px_36px_-24px_rgba(15,23,42,0.35)] ${accent.icon}`}>
-                              <step.icon className="h-5 w-5" />
-                            </div>
-                            {index < LANDING_FLOW_STEPS.length - 1 && (
-                              <div className={`mt-3 h-14 w-px bg-gradient-to-b ${accent.line} sm:h-16`} />
-                            )}
+                        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.4),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.06),transparent_46%)]" />
+                        <div className={`pointer-events-none absolute -right-[15%] -top-[20%] h-[20rem] w-[20rem] rounded-full blur-[80px] transition-transform duration-1000 group-hover:scale-110 sm:h-[28rem] sm:w-[28rem] sm:blur-[120px] ${accent.orb}`} />
+
+                        <div className={`pointer-events-none absolute -bottom-[12%] -right-[2%] text-8xl font-black italic tracking-tighter transition-transform duration-1000 group-hover:-translate-y-4 sm:-bottom-[8%] sm:text-[13rem] lg:-right-[1%] lg:text-[18rem] ${accent.number}`}>
+                          {step.stepLabel}
+                        </div>
+
+                        <div className="relative flex flex-col items-start gap-6 sm:gap-8">
+                          <div className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.4rem] border shadow-[0_20px_40px_-20px_rgba(0,0,0,0.4)] sm:h-20 sm:w-20 sm:rounded-[1.8rem] ${accent.icon}`}>
+                            <step.icon className="h-7 w-7 sm:h-9 sm:w-9" />
                           </div>
 
-                          <div className="min-w-0 flex-1 space-y-3 pt-0.5">
-                            <div className="flex flex-wrap items-center gap-2.5">
-                              <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary/82">
-                                {step.cue}
-                              </span>
-                            </div>
-                            <div className="space-y-2">
-                              <h3 className="max-w-[24ch] text-xl font-extrabold leading-tight tracking-tight text-foreground sm:text-[1.45rem]">
+                          <div className="min-w-0 flex-1 space-y-4 lg:space-y-5">
+                            <span className="text-[12px] font-bold uppercase tracking-[0.2em] text-foreground/50 sm:text-[13px] lg:text-[14px]">
+                              {step.cue}
+                            </span>
+                            <div className="space-y-3 lg:space-y-4">
+                              <h3 className="max-w-[20ch] text-3xl font-black leading-tight tracking-tight text-foreground sm:text-4xl lg:text-5xl">
                                 {step.title}
                               </h3>
-                              <p className="max-w-[58ch] text-[15px] font-normal leading-relaxed text-muted-foreground">
+                              <p className="max-w-[48ch] text-[16px] font-medium leading-relaxed text-foreground/70 sm:text-[18px] lg:text-[20px]">
                                 {step.description}
                               </p>
                             </div>
@@ -302,33 +301,43 @@ export function LandingPage() {
                     titleId="landing-outcomes-title"
                   />
                 }
-                contentClassName="grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3 pt-12"
+                contentClassName="pt-12"
               >
-                {LANDING_OUTCOMES.map((outcome, index) => {
-                  const accent = LANDING_OUTCOME_ACCENTS[index]
+                <div className="grid gap-6 sm:grid-cols-2 lg:gap-8">
+                  {LANDING_OUTCOMES.map((outcome, index) => {
+                    const accent = LANDING_OUTCOME_ACCENTS[index]
+                    const isHero = index === 0
 
-                  return (
-                    <CinematicScrollCard
-                      key={outcome.title}
-                      className={`group relative overflow-hidden rounded-[2rem] border ${accent.border} bg-gradient-to-br ${accent.panel} p-6 shadow-[0_28px_90px_-56px_rgba(15,23,42,0.38)] backdrop-blur-sm sm:p-7`}
-                    >
-                      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.72),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_46%)]" />
-                      <div className="relative flex h-full flex-col gap-5">
-                        <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.2rem] border shadow-[0_18px_36px_-24px_rgba(15,23,42,0.35)] ${accent.icon}`}>
-                          <outcome.icon className="h-6 w-6" />
+                    return (
+                      <CinematicScrollCard
+                        key={outcome.title}
+                        className={cn(
+                          "group relative overflow-hidden rounded-[2.5rem] border backdrop-blur-3xl shadow-[0_40px_100px_-50px_rgba(0,0,0,0.5)] sm:rounded-[3rem]",
+                          accent.border,
+                          accent.panel,
+                          isHero ? "col-span-full p-8 sm:p-12 lg:p-16" : "col-span-1 p-8 sm:p-10"
+                        )}
+                      >
+                        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.4),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.06),transparent_46%)]" />
+                        <div className={`pointer-events-none absolute ${isHero ? '-right-[10%] -top-[30%] h-[30rem] w-[30rem] blur-[100px] sm:blur-[140px]' : '-right-[20%] -top-[20%] h-[16rem] w-[16rem] blur-[80px] sm:blur-[100px]'} rounded-full transition-transform duration-1000 group-hover:scale-[1.15] ${accent.orb}`} />
+                        
+                        <div className={cn("relative flex h-full", isHero ? "flex-col sm:flex-row sm:items-start gap-8 lg:gap-12" : "flex-col gap-6 sm:gap-8")}>
+                          <div className={`flex shrink-0 items-center justify-center rounded-[1.4rem] border shadow-[0_20px_40px_-20px_rgba(0,0,0,0.4)] sm:rounded-[1.8rem] ${accent.icon} ${isHero ? "h-20 w-20 sm:h-24 sm:w-24" : "h-16 w-16 sm:h-20 sm:w-20"}`}>
+                            <outcome.icon className={isHero ? "h-9 w-9 sm:h-11 sm:w-11" : "h-7 w-7 sm:h-9 sm:w-9"} />
+                          </div>
+                          <div className={cn("space-y-4", isHero ? "min-w-0 flex-1 pt-2" : "")}>
+                            <h3 className={cn("font-black tracking-tight text-foreground", isHero ? "text-4xl leading-[1.05] sm:text-5xl lg:text-5xl max-w-[20ch]" : "text-3xl leading-[1.05] sm:text-4xl max-w-[16ch]")}>
+                              {outcome.title}
+                            </h3>
+                            <p className={cn("font-medium leading-relaxed text-foreground/70", isHero ? "text-[16px] sm:text-[19px] lg:text-[21px] max-w-[48ch]" : "text-[16px] sm:text-[18px] max-w-[34ch]")}>
+                              {outcome.description}
+                            </p>
+                          </div>
                         </div>
-                        <div className="space-y-2.5">
-                          <h3 className="max-w-[18ch] text-xl font-extrabold tracking-tight text-foreground sm:text-[1.45rem]">
-                            {outcome.title}
-                          </h3>
-                          <p className="max-w-[34ch] text-base font-normal leading-relaxed text-muted-foreground">
-                            {outcome.description}
-                          </p>
-                        </div>
-                      </div>
-                    </CinematicScrollCard>
-                  )
-                })}
+                      </CinematicScrollCard>
+                    )
+                  })}
+                </div>
               </MacroSection>
             </div>
           </section>
@@ -381,7 +390,7 @@ export function LandingPage() {
                     <div className="mt-6 flex flex-col gap-3 sm:flex-row lg:flex-col">
                       <Button asChild className="rounded-full px-6 shadow-[0_18px_40px_-24px_rgba(14,165,168,0.55)]">
                         <Link href="/transactions/import">
-                          Prova con dati demo
+                          Esplora app demo
                           <ArrowRight className="h-4 w-4" />
                         </Link>
                       </Button>
@@ -411,22 +420,22 @@ export function LandingPage() {
                 id="landing-cta-title"
                 className="mt-6 max-w-[18ch] text-4xl font-black leading-[0.94] tracking-tight text-foreground sm:text-5xl lg:text-6xl"
               >
-                Apri Numa. Parti da ciò che hai già.
+                Inizia gratis. Parti da ciò che hai già.
               </h2>
               <p className="mt-5 max-w-[34rem] text-base font-normal leading-relaxed text-muted-foreground sm:text-lg">
-                Importa un file, prova il dataset demo o apri direttamente l&apos;app: il punto è capire il mese con più chiarezza prima di aggiungere una nuova spesa.
+                Importa un file, esplora l'app demo o apri direttamente l'app: il punto è capire il mese con più chiarezza prima di aggiungere una nuova spesa.
               </p>
 
               <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row">
                 <Button asChild size="lg" className="group rounded-full px-12 py-7 text-lg font-bold shadow-[0_0_40px_-10px] shadow-primary/30 transition-all hover:shadow-[0_0_60px_-10px] hover:shadow-primary/50">
                   <Link href="/dashboard">
-                    Apri Numa
+                    Inizia gratis
                     <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
                   </Link>
                 </Button>
 
                 <Button asChild variant="outline" size="lg" className="rounded-full px-10 py-7 text-lg font-semibold">
-                  <Link href="/transactions/import">Prova con dati demo</Link>
+                  <Link href="/transactions/import">Esplora app demo</Link>
                 </Button>
               </div>
 

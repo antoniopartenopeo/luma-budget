@@ -35,11 +35,6 @@ export interface LandingOutcome {
   description: string
 }
 
-export interface LandingTrustSignal {
-  title: string
-  description: string
-}
-
 export interface LandingHeroEditorialPanel {
   icon: LucideIcon
   title: string
@@ -50,7 +45,7 @@ export interface LandingHeroEditorialContent {
   srTitle: string
   primaryCtaLabel: string
   secondaryCtaLabel: string
-  trustPhrase: string
+  supportingCopy: string
   panels: LandingHeroEditorialPanel[]
 }
 
@@ -142,30 +137,11 @@ export const LANDING_OUTCOMES: LandingOutcome[] = [
   }
 ]
 
-export const LANDING_TRUST_SIGNALS: LandingTrustSignal[] = [
-  {
-    title: "Elaborazione in locale",
-    description: "Il percorso principale legge i dati nel browser sul tuo dispositivo."
-  },
-  {
-    title: "Nessun account obbligatorio",
-    description: "Puoi iniziare senza registrazione forzata."
-  },
-  {
-    title: "Nessun collegamento bancario obbligatorio",
-    description: "Parti dal file esportato o dal dataset demo."
-  },
-  {
-    title: "Prova con dati demo",
-    description: "Il percorso di import include già una prova sicura."
-  }
-] as const
-
 export const LANDING_HERO_EDITORIAL = {
-  srTitle: "Numa Budget",
+  srTitle: "Numa Budget. Prima di dire sì, leggi il mese intero.",
   primaryCtaLabel: "Apri Numa",
   secondaryCtaLabel: "Prova app demo",
-  trustPhrase: "Tutto in locale, senza cloud o account obbligatori.",
+  supportingCopy: "Importa i tuoi dati e verifica se una nuova spesa entra davvero nel mese, tutto in locale.",
   panels: [
     {
       icon: CloudOff,

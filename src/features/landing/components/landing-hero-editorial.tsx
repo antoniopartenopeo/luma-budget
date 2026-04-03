@@ -208,8 +208,8 @@ export function LandingHeroEditorial() {
             />
           </div>
 
-          <p className="mt-5 max-w-[15rem] text-[0.98rem] font-medium leading-[1.45] tracking-[-0.01em] text-foreground/68 sm:mt-6 sm:max-w-[21rem] sm:text-[1.08rem] sm:leading-relaxed lg:max-w-[24rem] lg:text-[1.16rem]">
-            {LANDING_HERO_EDITORIAL.trustPhrase}
+          <p className="mt-5 max-w-[17rem] text-[0.98rem] font-medium leading-[1.45] tracking-[-0.01em] text-foreground/68 sm:mt-6 sm:max-w-[23rem] sm:text-[1.08rem] sm:leading-relaxed lg:max-w-[27rem] lg:text-[1.16rem]">
+            {LANDING_HERO_EDITORIAL.supportingCopy}
           </p>
 
           <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">

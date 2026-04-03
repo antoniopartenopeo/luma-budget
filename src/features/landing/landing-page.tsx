@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
@@ -12,8 +13,7 @@ import { BrandLogo } from "@/components/ui/brand-logo"
 import { Button } from "@/components/ui/button"
 import {
   LANDING_FLOW_STEPS,
-  LANDING_OUTCOMES,
-  LANDING_TRUST_SIGNALS
+  LANDING_OUTCOMES
 } from "./data"
 import { PUBLIC_FAQ_ITEMS } from "./public-support-content"
 import { LandingHeroEditorial } from "./components/landing-hero-editorial"
@@ -133,6 +133,24 @@ const LANDING_OUTCOME_ACCENTS = [
 ] as const
 
 export function LandingPage() {
+  useEffect(() => {
+    const scrollingElement = document.scrollingElement as HTMLElement | null
+
+    if (!scrollingElement) {
+      return
+    }
+
+    const previousPosition = scrollingElement.style.position
+
+    if (window.getComputedStyle(scrollingElement).position === "static") {
+      scrollingElement.style.position = "relative"
+    }
+
+    return () => {
+      scrollingElement.style.position = previousPosition
+    }
+  }, [])
+
   return (
     <div className="relative min-h-screen overflow-x-clip bg-background selection:bg-primary/20">
       <AmbientBackdrop />

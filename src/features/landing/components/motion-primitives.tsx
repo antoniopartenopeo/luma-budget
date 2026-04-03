@@ -3,75 +3,12 @@
 import type { CSSProperties, ReactNode } from "react"
 import { useRef } from "react"
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion"
-import type { Variants } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 const CURRENT_COLOR_STOP = { stopColor: "currentColor" }
 const NOISE_TEXTURE_STYLE: CSSProperties = {
   backgroundImage:
     "url('data:image/svg+xml;utf8,<svg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"noiseFilter\"><feTurbulence type=\"fractalNoise\" baseFrequency=\"0.8\" numOctaves=\"3\" stitchTiles=\"stitch\"/></filter><rect width=\"100%\" height=\"100%\" filter=\"url(%23noiseFilter)\"/></svg>')",
-}
-
-interface CinematicTextRevealProps {
-  text: string
-  className?: string
-  delay?: number
-  align?: "center" | "left"
-}
-
-export function CinematicTextReveal({
-  text,
-  className,
-  delay = 0,
-  align = "center"
-}: CinematicTextRevealProps) {
-  const prefersReducedMotion = useReducedMotion()
-  const words = text.split(" ")
-  const justifyClassName = align === "left" ? "justify-start" : "justify-center"
-
-  if (prefersReducedMotion) {
-    return <span className={className}>{text}</span>
-  }
-
-  const container: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.08,
-        delayChildren: delay,
-      },
-    },
-  }
-
-  const child: Variants = {
-    hidden: { opacity: 0, y: 20, filter: "blur(8px)" },
-    visible: {
-      opacity: 1,
-      y: 0,
-      filter: "blur(0px)",
-      transition: {
-        type: "spring",
-        damping: 12,
-        stiffness: 100,
-      },
-    },
-  }
-
-  return (
-    <motion.span
-      variants={container}
-      initial="hidden"
-      animate="visible"
-      className={cn("flex flex-wrap gap-[0.25em]", justifyClassName, className)}
-    >
-      {words.map((word, index) => (
-        <motion.span key={index} variants={child} className="inline-block">
-          {word}
-        </motion.span>
-      ))}
-    </motion.span>
-  )
 }
 
 export function AppleFluidMesh({ className }: { className?: string }) {

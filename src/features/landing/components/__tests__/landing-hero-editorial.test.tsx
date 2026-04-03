@@ -45,8 +45,7 @@ vi.mock("@/components/ui/brand-logo", () => ({
 }))
 
 vi.mock("../motion-primitives", () => ({
-  AppleFluidBackground: () => <div data-testid="apple-fluid-background" />,
-  CinematicTextReveal: ({ text }: { text: string }) => <>{text}</>
+  AppleFluidBackground: () => <div data-testid="apple-fluid-background" />
 }))
 
 describe("LandingHeroEditorial", () => {
@@ -56,7 +55,7 @@ describe("LandingHeroEditorial", () => {
 
     expect(screen.getByRole("heading", { name: LANDING_HERO_EDITORIAL.srTitle })).toBeInTheDocument()
     expect(screen.getAllByTestId("brand-logo")).toHaveLength(1)
-    expect(screen.getByText(LANDING_HERO_EDITORIAL.trustPhrase)).toBeInTheDocument()
+    expect(screen.getByText(LANDING_HERO_EDITORIAL.supportingCopy)).toBeInTheDocument()
     expect(screen.getAllByTestId("landing-hero-prism-panel")).toHaveLength(3)
     expect(screen.getByText("Locale")).toBeInTheDocument()
     expect(screen.getByText("Margine")).toBeInTheDocument()
@@ -71,7 +70,7 @@ describe("LandingHeroEditorial", () => {
 
     expect(screen.getByRole("heading", { name: LANDING_HERO_EDITORIAL.srTitle })).toBeInTheDocument()
     expect(screen.getAllByTestId("landing-hero-prism-panel")).toHaveLength(3)
-    expect(screen.getByText(LANDING_HERO_EDITORIAL.trustPhrase)).toBeInTheDocument()
+    expect(screen.getByText(LANDING_HERO_EDITORIAL.supportingCopy)).toBeInTheDocument()
     expect(screen.getByText("I dati restano qui")).toBeInTheDocument()
     expect(screen.getByRole("link", { name: /Apri Numa/i })).toBeInTheDocument()
   })

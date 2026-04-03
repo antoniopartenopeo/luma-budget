@@ -1,7 +1,7 @@
 export const LANDING_MOTION_EASE = [0.22, 1, 0.36, 1] as const
 
 export const LANDING_HERO_PRISM_STAGGER = 0.12
-export const LANDING_HERO_PRISM_SCROLL_RANGE = [0, 1] as const
+export const LANDING_HERO_PRISM_SCROLL_RANGE: [number, number] = [0, 1]
 export const LANDING_HERO_PRISM_GLOW_DURATION = 7.4
 
 export const LANDING_HERO_PRISM_PANELS = [

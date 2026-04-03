@@ -91,7 +91,6 @@ vi.mock("../components/landing-differentiator-cards", () => ({
 
 vi.mock("../components/motion-primitives", () => ({
   AppleFluidBackground: () => <div data-testid="apple-fluid-background" />,
-  CinematicTextReveal: ({ text }: { text: string }) => <>{text}</>,
   CinematicScrollCard: ({ children }: { children: React.ReactNode }) => <>{children}</>
 }))
 
@@ -102,7 +101,7 @@ describe("LandingPage", () => {
     expect(screen.getAllByTestId("brand-logo").length).toBeGreaterThan(0)
     expect(screen.getByTestId("landing-hero-editorial")).toBeInTheDocument()
     expect(screen.getByRole("heading", { name: /Numa Budget/i })).toBeInTheDocument()
-    expect(screen.getByText(/Tutto in locale, senza cloud o account obbligatori\./i)).toBeInTheDocument()
+    expect(screen.getByText(/Importa i tuoi dati e verifica se una nuova spesa entra davvero nel mese, tutto in locale\./i)).toBeInTheDocument()
     expect(screen.getByRole("region", { name: /Smetti di indovinare le tue spese\./i })).toBeInTheDocument()
     expect(screen.getByRole("region", { name: /Quattro passaggi, nessun rito\./i })).toBeInTheDocument()
     expect(screen.getByText(/Importi un CSV, leggi il mese/i)).toBeInTheDocument()

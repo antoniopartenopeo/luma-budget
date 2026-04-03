@@ -17,7 +17,8 @@ import {
 } from "./data"
 import { PUBLIC_FAQ_ITEMS } from "./public-support-content"
 import { LandingHeroConsole } from "./components/landing-previews"
-import { AppleFluidBackground, CinematicTextReveal, CinematicScrollCard } from "./components/motion-primitives"
+import { AppleFluidBackground, CinematicTextReveal } from "./components/motion-primitives"
+import { LandingEditorialCardFrame } from "./components/landing-editorial-card-frame"
 import { LandingSectionHeader } from "./components/landing-section-header"
 import {
   LANDING_FLOATING_NAV_CLASS,
@@ -247,17 +248,16 @@ export function LandingPage() {
                     const accent = LANDING_FLOW_ACCENTS[index]
 
                     return (
-                      <CinematicScrollCard
+                      <LandingEditorialCardFrame
                         key={step.stepLabel}
-                        className={`group relative overflow-hidden rounded-[2.5rem] border ${accent.border} bg-gradient-to-br ${accent.panel} p-8 shadow-[0_40px_100px_-50px_rgba(0,0,0,0.5)] backdrop-blur-3xl sm:rounded-[3rem] sm:p-10 lg:p-12`}
+                        borderClassName={accent.border}
+                        panelClassName={accent.panel}
+                        orbClassName={accent.orb}
+                        orbPositionClassName="-right-[15%] -top-[20%] h-[20rem] w-[20rem] sm:h-[28rem] sm:w-[28rem]"
+                        decorativeText={step.stepLabel}
+                        decorativeTextClassName={`-bottom-[12%] -right-[2%] text-8xl ${accent.number} sm:-bottom-[8%] sm:text-[13rem] lg:-right-[1%] lg:text-[18rem]`}
+                        className="p-8 shadow-[0_40px_100px_-50px_rgba(0,0,0,0.5)] sm:rounded-[3rem] sm:p-10 lg:p-12"
                       >
-                        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.4),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.06),transparent_46%)]" />
-                        <div className={`pointer-events-none absolute -right-[15%] -top-[20%] h-[20rem] w-[20rem] rounded-full blur-[80px] transition-transform duration-1000 group-hover:scale-110 sm:h-[28rem] sm:w-[28rem] sm:blur-[120px] ${accent.orb}`} />
-
-                        <div className={`pointer-events-none absolute -bottom-[12%] -right-[2%] text-8xl font-black italic tracking-tighter transition-transform duration-1000 group-hover:-translate-y-4 sm:-bottom-[8%] sm:text-[13rem] lg:-right-[1%] lg:text-[18rem] ${accent.number}`}>
-                          {step.stepLabel}
-                        </div>
-
                         <div className="relative flex flex-col items-start gap-6 sm:gap-8">
                           <div className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.4rem] border shadow-[0_20px_40px_-20px_rgba(0,0,0,0.4)] sm:h-20 sm:w-20 sm:rounded-[1.8rem] ${accent.icon}`}>
                             <step.icon className="h-7 w-7 sm:h-9 sm:w-9" />
@@ -277,7 +277,7 @@ export function LandingPage() {
                             </div>
                           </div>
                         </div>
-                      </CinematicScrollCard>
+                      </LandingEditorialCardFrame>
                     )
                   })}
                 </div>
@@ -309,23 +309,22 @@ export function LandingPage() {
                     const isHero = index === 0
 
                     return (
-                      <CinematicScrollCard
+                      <LandingEditorialCardFrame
                         key={outcome.title}
+                        borderClassName={accent.border}
+                        panelClassName={accent.panel}
+                        orbClassName={accent.orb}
+                        orbPositionClassName={isHero ? "-right-[10%] -top-[30%] h-[30rem] w-[30rem] sm:blur-[140px]" : "-right-[20%] -top-[20%] h-[16rem] w-[16rem] sm:blur-[100px]"}
+                        decorativeIcon={outcome.icon}
+                        decorativeIconPositionClassName={isHero ? "-bottom-[10%] right-[2%]" : "-bottom-[8%] right-[3%]"}
+                        decorativeIconClassName={isHero ? "h-36 w-36 sm:h-44 sm:w-44 lg:h-56 lg:w-56" : "h-24 w-24 sm:h-32 sm:w-32 lg:h-40 lg:w-40"}
                         className={cn(
-                          "group relative overflow-hidden rounded-[2.5rem] border backdrop-blur-3xl shadow-[0_40px_100px_-50px_rgba(0,0,0,0.5)] sm:rounded-[3rem]",
-                          accent.border,
-                          accent.panel,
+                          "shadow-[0_40px_100px_-50px_rgba(0,0,0,0.5)] sm:rounded-[3rem]",
                           isHero ? "col-span-full p-8 sm:p-12 lg:p-16" : "col-span-1 p-8 sm:p-10"
                         )}
                       >
-                        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.4),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.06),transparent_46%)]" />
-                        <div className={`pointer-events-none absolute ${isHero ? '-right-[10%] -top-[30%] h-[30rem] w-[30rem] blur-[100px] sm:blur-[140px]' : '-right-[20%] -top-[20%] h-[16rem] w-[16rem] blur-[80px] sm:blur-[100px]'} rounded-full transition-transform duration-1000 group-hover:scale-[1.15] ${accent.orb}`} />
-                        
-                        <div className={cn("relative flex h-full", isHero ? "flex-col sm:flex-row sm:items-start gap-8 lg:gap-12" : "flex-col gap-6 sm:gap-8")}>
-                          <div className={`flex shrink-0 items-center justify-center rounded-[1.4rem] border shadow-[0_20px_40px_-20px_rgba(0,0,0,0.4)] sm:rounded-[1.8rem] ${accent.icon} ${isHero ? "h-20 w-20 sm:h-24 sm:w-24" : "h-16 w-16 sm:h-20 sm:w-20"}`}>
-                            <outcome.icon className={isHero ? "h-9 w-9 sm:h-11 sm:w-11" : "h-7 w-7 sm:h-9 sm:w-9"} />
-                          </div>
-                          <div className={cn("space-y-4", isHero ? "min-w-0 flex-1 pt-2" : "")}>
+                        <div className={cn("relative flex h-full", isHero ? "flex-col gap-6 sm:gap-8" : "flex-col gap-6 sm:gap-8")}>
+                          <div className={cn("space-y-4", isHero ? "min-w-0 max-w-[48rem] pr-20 sm:pr-28 lg:pr-40" : "pr-14 sm:pr-20 lg:pr-28")}>
                             <h3 className={cn("font-black tracking-tight text-foreground", isHero ? "text-4xl leading-[1.05] sm:text-5xl lg:text-5xl max-w-[20ch]" : "text-3xl leading-[1.05] sm:text-4xl max-w-[16ch]")}>
                               {outcome.title}
                             </h3>
@@ -334,7 +333,7 @@ export function LandingPage() {
                             </p>
                           </div>
                         </div>
-                      </CinematicScrollCard>
+                      </LandingEditorialCardFrame>
                     )
                   })}
                 </div>
@@ -423,7 +422,7 @@ export function LandingPage() {
                 Inizia gratis. Parti da ciò che hai già.
               </h2>
               <p className="mt-5 max-w-[34rem] text-base font-normal leading-relaxed text-muted-foreground sm:text-lg">
-                Importa un file, esplora l'app demo o apri direttamente l'app: il punto è capire il mese con più chiarezza prima di aggiungere una nuova spesa.
+                Importa un file, esplora l&apos;app demo o apri direttamente l&apos;app: il punto è capire il mese con più chiarezza prima di aggiungere una nuova spesa.
               </p>
 
               <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row">

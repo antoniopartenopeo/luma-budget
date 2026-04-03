@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils"
 import { LANDING_STORY_POINTS } from "../data"
 import { CinematicScrollCard } from "./motion-primitives"
+import { LandingEditorialCardFrame } from "./landing-editorial-card-frame"
 
 const STORY_ACCENTS = [
   {
@@ -48,28 +49,26 @@ export function LandingHeroConsole() {
           const accent = STORY_ACCENTS[index]
 
           return (
-            <CinematicScrollCard
+            <LandingEditorialCardFrame
               key={point.title}
-              className={`group relative overflow-hidden rounded-[2.5rem] border ${accent.border} bg-gradient-to-br ${accent.panel} p-8 shadow-[0_30px_90px_-40px_rgba(15,23,42,0.16)] backdrop-blur-3xl dark:shadow-[0_30px_90px_-40px_rgba(0,0,0,0.5)] sm:p-10`}
+              borderClassName={accent.border}
+              panelClassName={accent.panel}
+              decorativeIcon={point.icon}
+              decorativeIconPositionClassName="-bottom-[8%] right-[3%]"
+              className="p-8 shadow-[0_30px_90px_-40px_rgba(15,23,42,0.16)] dark:shadow-[0_30px_90px_-40px_rgba(0,0,0,0.5)] sm:p-10"
             >
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.4),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.06),transparent_46%)]" />
-              <div className="relative flex items-start gap-5 sm:gap-6">
-                <div className={cn("flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.2rem] border shadow-[0_20px_40px_-20px_rgba(0,0,0,0.4)] sm:h-16 sm:w-16 sm:rounded-[1.4rem]", accent.icon)}>
-                  <point.icon className="h-6 w-6 sm:h-7 sm:w-7" />
-                </div>
-                <div className="min-w-0 space-y-3">
-                  <p className={cn("text-[12px] font-bold uppercase tracking-[0.2em]", accent.label)}>
-                    Punto chiave {String(index + 1).padStart(2, "0")}
-                  </p>
-                  <p className="max-w-[26ch] text-2xl font-black leading-tight tracking-tight text-foreground sm:text-3xl">
-                    {point.title}
-                  </p>
-                  <p className="max-w-[56ch] text-[16px] font-normal leading-relaxed text-muted-foreground sm:text-[17px]">
-                    {point.description}
-                  </p>
-                </div>
+              <div className="relative space-y-3 pr-12 sm:pr-20 lg:pr-28">
+                <p className={cn("text-[12px] font-bold uppercase tracking-[0.2em]", accent.label)}>
+                  Punto chiave {String(index + 1).padStart(2, "0")}
+                </p>
+                <p className="max-w-[26ch] text-2xl font-black leading-tight tracking-tight text-foreground sm:text-3xl">
+                  {point.title}
+                </p>
+                <p className="max-w-[56ch] text-[16px] font-normal leading-relaxed text-muted-foreground sm:text-[17px]">
+                  {point.description}
+                </p>
               </div>
-            </CinematicScrollCard>
+            </LandingEditorialCardFrame>
           )
         })}
       </div>

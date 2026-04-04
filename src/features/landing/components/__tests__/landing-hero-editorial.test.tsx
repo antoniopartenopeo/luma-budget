@@ -63,7 +63,7 @@ describe("LandingHeroEditorial", () => {
     expect(screen.getByText("Budget")).toBeInTheDocument()
     expect(screen.getByText("Previsione")).toBeInTheDocument()
     expect(screen.getByRole("link", { name: /Prova Numa gratis/i })).toHaveAttribute("href", "/dashboard")
-    expect(screen.getByRole("link", { name: /Guarda una demo/i })).toHaveAttribute("href", "/transactions/import")
+    expect(screen.queryByRole("link", { name: /Guarda una demo/i })).not.toBeInTheDocument()
 
     const hero = screen.getByTestId("landing-hero-editorial")
     expect(hero).not.toHaveTextContent(/\blocal-first\b/i)

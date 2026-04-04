@@ -117,7 +117,6 @@ describe("LandingPage", () => {
       hrefs.every(
         (href) =>
           href === "/dashboard" ||
-          href === "/transactions/import" ||
           href === "/faq" ||
           href === "/privacy" ||
           href === "/updates" ||
@@ -125,6 +124,7 @@ describe("LandingPage", () => {
       )
     ).toBe(true)
     expect(screen.getAllByRole("link", { name: /Prova Numa gratis/i }).length).toBeGreaterThan(0)
+    expect(screen.queryByRole("link", { name: /Guarda una demo/i })).not.toBeInTheDocument()
     expect(screen.getByRole("link", { name: /Aggiornamenti/i })).toBeInTheDocument()
     expect(screen.queryByText("Contatti")).not.toBeInTheDocument()
   })

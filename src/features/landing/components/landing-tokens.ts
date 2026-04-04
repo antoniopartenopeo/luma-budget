@@ -29,3 +29,6 @@ export const LANDING_EDITORIAL_CARD_HERO_TITLE_CLASS =
 
 export const LANDING_HERO_FRAME_CLASS =
   `${GLASS_V2_PANEL_CLASS} relative z-10 rounded-[2.6rem] px-6 py-8 shadow-[0_40px_120px_-70px_rgba(15,23,42,0.38)] sm:px-10 sm:py-12 lg:px-14 lg:py-14`
+
+export const LANDING_PRIMARY_CTA_CLASS =
+  "h-9 rounded-full px-6 text-[0.95rem] shadow-[0_20px_44px_-24px_rgba(14,165,168,0.42)] transition-[box-shadow,transform] hover:shadow-[0_28px_56px_-24px_rgba(14,165,168,0.58)] sm:h-10 sm:px-8 sm:text-sm"

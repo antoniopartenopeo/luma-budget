@@ -19,6 +19,7 @@ import {
   LANDING_MOTION_EASE,
   LANDING_MOTION_TIMINGS,
 } from "./landing-motion"
+import { LANDING_PRIMARY_CTA_CLASS } from "./landing-tokens"
 import { AppleFluidBackground } from "./motion-primitives"
 
 const PRISM_PANEL_ACCENTS = [
@@ -40,9 +41,9 @@ const PRISM_PANEL_ACCENTS = [
 ] as const
 
 const PRISM_PANEL_POSITIONS = [
-  "left-[8%] top-[12%] sm:left-[14%] sm:top-[12%] lg:left-[18%] lg:top-[12%]",
-  "left-[18%] top-[38%] sm:left-[20%] sm:top-[38%] lg:left-[24%] lg:top-[38%]",
-  "left-[6%] top-[66%] sm:left-[10%] sm:top-[64%] lg:left-[14%] lg:top-[64%]"
+  "left-[2%] top-[12%] sm:left-[14%] sm:top-[12%] lg:left-[18%] lg:top-[12%]",
+  "left-[9%] top-[38%] sm:left-[20%] sm:top-[38%] lg:left-[24%] lg:top-[38%]",
+  "left-[1%] top-[66%] sm:left-[10%] sm:top-[64%] lg:left-[14%] lg:top-[64%]"
 ] as const
 
 const PRISM_PANEL_EDITORIAL_DRIFT = [
@@ -77,7 +78,7 @@ function LandingHeroGlassGlyph({
 }) {
   return (
     <motion.div
-      className="relative flex h-24 w-24 items-center justify-center sm:h-32 sm:w-32 lg:h-40 lg:w-40"
+      className="relative flex h-[4.5rem] w-[4.5rem] items-center justify-center sm:h-32 sm:w-32 lg:h-40 lg:w-40"
       animate={
         prefersReducedMotion
           ? undefined
@@ -219,7 +220,7 @@ function LandingHeroPrismPanel({
           >
             <p
               className={cn(
-                "text-[1.25rem] font-black leading-none tracking-tight sm:text-[1.8rem] lg:text-[2.4rem]",
+                "text-[0.96rem] font-black leading-none tracking-tight sm:text-[1.8rem] lg:text-[2.4rem]",
                 accent.labelClassName
               )}
             >
@@ -244,14 +245,18 @@ export function LandingHeroEditorial() {
   return (
     <section
       ref={sectionRef}
-      className="relative flex min-h-[100svh] w-full items-center overflow-hidden px-4 py-16 md:min-h-[calc(100svh-4.5rem)] sm:px-6 lg:px-8"
+      className="relative flex min-h-[42rem] w-full items-center px-4 py-10 sm:min-h-[44rem] sm:px-6 sm:py-12 lg:min-h-[min(46rem,78svh)] lg:px-8 lg:py-14"
       aria-labelledby="landing-hero-title"
       data-testid="landing-hero-editorial"
     >
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <AppleFluidBackground />
+      <div className="pointer-events-none absolute inset-x-[-16%] top-1/2 z-0 flex -translate-y-1/2 justify-center sm:inset-x-[-10%] lg:inset-x-[-6%]">
+        <div className="relative aspect-[21/9] w-[220%] sm:w-[165%] lg:w-[126%] [mask-image:radial-gradient(ellipse_at_center,rgba(0,0,0,1)_54%,rgba(0,0,0,0.9)_70%,transparent_100%)] [-webkit-mask-image:radial-gradient(ellipse_at_center,rgba(0,0,0,1)_54%,rgba(0,0,0,0.9)_70%,transparent_100%)]">
+          <AppleFluidBackground className="scale-[1.08]" />
+        </div>
       </div>
-      <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.16),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(20,184,166,0.10),transparent_30%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.10),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.04),transparent_32%)]" />
+      <div className="pointer-events-none absolute inset-x-[-16%] top-1/2 z-[1] flex -translate-y-1/2 justify-center sm:inset-x-[-10%] lg:inset-x-[-6%]">
+        <div className="relative aspect-[21/9] w-[220%] sm:w-[165%] lg:w-[126%] [mask-image:radial-gradient(ellipse_at_center,rgba(0,0,0,1)_54%,rgba(0,0,0,0.9)_70%,transparent_100%)] [-webkit-mask-image:radial-gradient(ellipse_at_center,rgba(0,0,0,1)_54%,rgba(0,0,0,0.9)_70%,transparent_100%)] bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.16),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(20,184,166,0.10),transparent_30%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.10),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.04),transparent_32%)]" />
+      </div>
       <motion.div
         aria-hidden="true"
         className="pointer-events-none absolute right-[8%] top-[15%] z-[2] h-[18rem] w-[18rem] rounded-full bg-cyan-400/20 blur-[110px] dark:bg-white/10 sm:h-[24rem] sm:w-[24rem] lg:h-[30rem] lg:w-[30rem]"
@@ -271,7 +276,7 @@ export function LandingHeroEditorial() {
         }
       />
 
-      <div className="pointer-events-none absolute inset-y-0 left-[50%] right-[-42%] z-10 sm:left-[40%] sm:right-[-16%] lg:left-[48%] lg:right-[-8%]">
+      <div className="pointer-events-none absolute inset-y-0 left-[46%] right-[-34%] z-10 sm:left-[40%] sm:right-[-16%] lg:left-[48%] lg:right-[-8%]">
         {LANDING_HERO_EDITORIAL.panels.map((panel, index) => (
           <LandingHeroPrismPanel
             key={panel.title}
@@ -285,21 +290,21 @@ export function LandingHeroEditorial() {
         ))}
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 top-1/2 z-[3] flex -translate-y-1/2 justify-center lg:left-[-4%] lg:justify-start">
-        <BrandLogo
-          variant="full"
-          height={400}
-          className="h-auto w-[min(112vw,82rem)] opacity-[0.16] saturate-[0.88] dark:opacity-[0.11]"
-        />
-      </div>
-
       <div className="relative z-30 mx-auto flex w-full max-w-6xl items-center">
         <div className="max-w-[38rem] py-6 sm:py-10">
           <h1 id="landing-hero-title" className="sr-only">
             {LANDING_HERO_EDITORIAL.srTitle}
           </h1>
 
-          <p className="mt-18 max-w-[14ch] text-[1.6rem] font-black leading-[0.98] tracking-tight text-foreground sm:mt-24 sm:text-[2rem] lg:mt-28 lg:text-[2.35rem]">
+          <div className="pointer-events-none mt-18 sm:mt-24 lg:mt-28">
+            <BrandLogo
+              variant="full"
+              height={132}
+              className="h-auto w-[min(88vw,34rem)] justify-start opacity-[0.75] saturate-[0.8] dark:opacity-[0.75]"
+            />
+          </div>
+
+          <p className="mt-4 max-w-[14ch] text-[1.6rem] font-black leading-[0.98] tracking-tight text-foreground sm:text-[2rem] lg:text-[2.35rem]">
             {LANDING_HERO_EDITORIAL.headline}
           </p>
 
@@ -311,17 +316,10 @@ export function LandingHeroEditorial() {
             <Button
               asChild
               size="default"
-              className="h-9 rounded-full px-6 text-[0.95rem] shadow-[0_20px_44px_-24px_rgba(14,165,168,0.42)] transition-[box-shadow,transform] hover:shadow-[0_28px_56px_-24px_rgba(14,165,168,0.58)] sm:h-10 sm:px-8 sm:text-sm"
+              className={LANDING_PRIMARY_CTA_CLASS}
             >
               <Link href="/dashboard">
                 {LANDING_HERO_EDITORIAL.primaryCtaLabel}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-
-            <Button asChild variant="outline" size="default" className="h-9 rounded-full px-6 text-[0.95rem] sm:h-10 sm:px-8 sm:text-sm">
-              <Link href="/transactions/import">
-                {LANDING_HERO_EDITORIAL.secondaryCtaLabel}
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>

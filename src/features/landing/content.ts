@@ -61,7 +61,6 @@ export interface LandingHeroEditorialContent {
   headline: string
   supportingCopy: string
   primaryCtaLabel: string
-  secondaryCtaLabel: string
   microcopy: string
   panels: LandingHeroEditorialPanel[]
 }
@@ -83,7 +82,6 @@ export interface LandingClosingContent {
   title: string
   description: string
   primaryCtaLabel: string
-  secondaryCtaLabel: string
 }
 
 export interface LandingNavItem {
@@ -110,7 +108,6 @@ export const LANDING_HERO_EDITORIAL = {
   supportingCopy:
     "Numa Budget ti aiuta a capire quanto puoi spendere oggi, a valutare una nuova spesa prima di farla e a tenere tutto sul tuo dispositivo.",
   primaryCtaLabel: "Prova Numa gratis",
-  secondaryCtaLabel: "Guarda una demo",
   microcopy: "Nessuna registrazione richiesta. I tuoi dati non lasciano il tuo dispositivo.",
   panels: [
     {
@@ -309,9 +306,8 @@ export const LANDING_CLOSING = {
   railLabel: "Nessuna registrazione richiesta",
   title: "Apri il mese. Poi decidi.",
   description:
-    "Prova Numa gratis o guarda la demo. Il punto è capire i tuoi soldi con più chiarezza, prima di aggiungere una nuova spesa.",
-  primaryCtaLabel: "Prova Numa gratis",
-  secondaryCtaLabel: "Guarda una demo"
+    "Prova Numa gratis. Il punto è capire i tuoi soldi con più chiarezza, prima di aggiungere una nuova spesa.",
+  primaryCtaLabel: "Prova GRATIS"
 } as const satisfies LandingClosingContent
 
 export const LANDING_FOOTER = {

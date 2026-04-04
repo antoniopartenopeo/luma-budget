@@ -124,10 +124,10 @@ export function CategoryFormSheet({ open, onOpenChange, categoryToEdit, onSave, 
                         </div>
                         <div className="flex flex-col">
                             <SheetTitle className="text-xl font-bold tracking-tight">
-                                {categoryToEdit ? "Modifica Categoria" : "Nuova Categoria"}
+                                {categoryToEdit ? "Modifica categoria" : "Nuova categoria"}
                             </SheetTitle>
                             <SheetDescription className="text-sm font-medium">
-                                {categoryToEdit ? "Modifica i dettagli della categoria." : "Crea una nuova categoria per organizzare le tue spese."}
+                                {categoryToEdit ? "Aggiorna i dettagli della categoria." : "Crea una categoria per organizzare meglio le tue spese."}
                             </SheetDescription>
                         </div>
                     </div>
@@ -176,21 +176,21 @@ export function CategoryFormSheet({ open, onOpenChange, categoryToEdit, onSave, 
                                 Entrata
                             </Button>
                         </div>
-                        {!!categoryToEdit && <p className="px-1 text-xs font-medium italic text-muted-foreground">Il tipo non può essere modificato dopo la creazione.</p>}
+                        {!!categoryToEdit && <p className="px-1 text-xs font-medium italic text-muted-foreground">Il tipo non può essere cambiato dopo la creazione.</p>}
                     </div>
 
                     {/* Spending Nature (Only for Expenses) */}
                     {kind === "expense" && (
                         <div className="grid gap-2">
-                            <Label className={premiumFieldLabelClassName}>Gruppo spese</Label>
+                            <Label className={premiumFieldLabelClassName}>Categoria spesa</Label>
                             <Select value={spendingNature} onValueChange={(v) => setSpendingNature(v as SpendingNature)}>
                                 <SelectTrigger variant="premium" className="h-12 w-full rounded-[1rem]">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent variant="premium">
-                                    <SelectItem value="essential">Essenziali (Necessità)</SelectItem>
-                                    <SelectItem value="comfort">Benessere (Qualità della vita)</SelectItem>
-                                    <SelectItem value="superfluous">Superflue (Non essenziali)</SelectItem>
+                                    <SelectItem value="essential">Necessità</SelectItem>
+                                    <SelectItem value="comfort">Benessere</SelectItem>
+                                    <SelectItem value="superfluous">Non essenziali</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

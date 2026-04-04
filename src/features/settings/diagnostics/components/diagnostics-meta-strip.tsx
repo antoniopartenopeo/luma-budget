@@ -31,7 +31,7 @@ export function DiagnosticsMetaStrip({ diagnostics }: DiagnosticsMetaStripProps)
                     <span className="font-mono bg-muted px-1.5 py-0.5 rounded text-xs">{diagnostics.app.env}</span>
                 </div>
                 <div className="flex items-center gap-2 ml-auto">
-                    <span className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Storage totale:</span>
+                    <span className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Spazio totale:</span>
                     <span className={cn(
                         "font-mono font-bold text-xs",
                         diagnostics.totalApproxBytes > 1024 * 1024 ? "text-amber-600" : "text-primary"
@@ -42,7 +42,7 @@ export function DiagnosticsMetaStrip({ diagnostics }: DiagnosticsMetaStripProps)
             </div>
 
             <div className="text-xs font-medium text-muted-foreground">
-                Build time: {diagnostics.app.buildTime}
+                Build: {diagnostics.app.buildTime}
             </div>
         </>
     )

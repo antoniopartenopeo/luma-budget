@@ -168,7 +168,7 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
                         Carica i movimenti
                     </h2>
                     <p className="text-sm font-medium text-muted-foreground">
-                        Importa il file della banca e ti accompagno passo dopo passo.
+                        Carica il file della banca oppure prova i dati demo. Ti guidiamo passo passo.
                     </p>
                 </div>
 
@@ -182,7 +182,7 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
                         onClick={() => setIsDemoDialogOpen(true)}
                     >
                         {isDemoLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                        Carica dati demo
+                        Prova dati demo
                     </Button>
                 </div>
             </div>
@@ -193,7 +193,7 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
                     <div className="flex items-start gap-3">
                         <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
                         <div className="space-y-1">
-                            <p className="font-semibold">Non riesco a proseguire</p>
+                            <p className="font-semibold">Non riesco ad andare avanti</p>
                             <p>{error}</p>
                         </div>
                     </div>
@@ -300,9 +300,9 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
                             <Clock3 className="h-8 w-8 text-muted-foreground/50" />
                         </div>
                         <div className="space-y-2 max-w-[250px]">
-                            <h3 className="font-semibold text-foreground">Import Automatico</h3>
+                            <h3 className="font-semibold text-foreground">Import automatico</h3>
                             <p className="text-sm leading-relaxed text-muted-foreground">
-                                In futuro potrai collegare il tuo conto bancario per sincronizzare le transazioni in automatico.
+                                In futuro potrai collegare il tuo conto bancario per importare i movimenti in automatico.
                             </p>
                         </div>
                     </div>

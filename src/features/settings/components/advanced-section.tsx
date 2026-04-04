@@ -161,7 +161,7 @@ export function AdvancedSection() {
                     {/* Diagnostics */}
                     <MacroSection
                         title="Diagnostica locale"
-                        description="Versione app, stato dello storage e riepilogo dei dati salvati sul dispositivo."
+                        description="Versione app, stato dei dati locali e riepilogo di ciò che è salvato sul dispositivo."
                     >
                         {diagnostics ? (
                             <div className="space-y-4">
@@ -171,9 +171,9 @@ export function AdvancedSection() {
                                     <Table>
                                         <TableHeader>
                                             <TableRow>
-                                                <TableHead>Storage Key</TableHead>
+                                                <TableHead>Chiave dati</TableHead>
                                                 <TableHead className="w-[100px]">Stato</TableHead>
-                                                <TableHead className="w-[100px]">Size</TableHead>
+                                                <TableHead className="w-[100px]">Spazio</TableHead>
                                                 <TableHead>Dettagli</TableHead>
                                             </TableRow>
                                         </TableHeader>
@@ -255,7 +255,7 @@ export function AdvancedSection() {
                         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
                             {/* Granular Resets */}
                             <div className="surface-subtle space-y-4 p-5">
-                                <h3 className="text-sm font-bold tracking-tight">Reset Granulare</h3>
+                                <h3 className="text-sm font-bold tracking-tight">Reset selettivo</h3>
 
                                 <div className="flex flex-col gap-2">
                                     <Button
@@ -275,14 +275,14 @@ export function AdvancedSection() {
                                         className="justify-start text-muted-foreground hover:bg-muted"
                                     >
                                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
-                                        Reset Impostazioni
+                                        Ripristina impostazioni
                                     </Button>
                                 </div>
                             </div>
 
                             {/* Full Reset / Seed */}
                             <div className="surface-subtle space-y-4 p-5">
-                                <h3 className="text-sm font-bold tracking-tight">Azioni Globali</h3>
+                                <h3 className="text-sm font-bold tracking-tight">Reset completo</h3>
 
                                 <div className="flex flex-col gap-2">
                                     <Button
@@ -292,7 +292,7 @@ export function AdvancedSection() {
                                         className="w-full"
                                     >
                                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
-                                        Reset totale (Tutto)
+                                        Elimina tutti i dati
                                     </Button>
                                 </div>
                             </div>
@@ -304,7 +304,7 @@ export function AdvancedSection() {
                         <AlertCircle className="h-4 w-4" />
                         <AlertTitle>Nota sulla privacy</AlertTitle>
                         <AlertDescription>
-                            NUMA Budget salva e legge i dati locali di questa app sul dispositivo. Se una futura integrazione remota verra abilitata, il relativo flusso dovra dichiararlo in modo esplicito.
+                            Numa Budget salva e legge i dati locali di questa app sul dispositivo. Se in futuro verrà attivata un&apos;integrazione remota, il relativo flusso dovrà dichiararlo in modo esplicito.
                         </AlertDescription>
                     </Alert>
                 </div>

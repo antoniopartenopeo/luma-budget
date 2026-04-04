@@ -214,7 +214,7 @@ export function UsedCardsKpiDeck({
     cards,
     isLoading = false,
     isPrivacyMode = false,
-    emptyLabel = "Nessuna carta rilevata nello storico movimenti.",
+    emptyLabel = "Non ho rilevato carte nello storico dei movimenti.",
     showHeader = true,
     className
 }: UsedCardsKpiDeckProps) {
@@ -224,7 +224,7 @@ export function UsedCardsKpiDeck({
         <section className={cn("space-y-4", className)} aria-label="Carte utilizzate">
             {showHeader && (
                 <div className="flex items-center justify-between gap-2">
-                    <h3 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Carte Utilizzate</h3>
+                    <h3 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Carte utilizzate</h3>
                     {!isLoading && cappedCards.length > 0 && (
                         <span className="text-xs font-semibold text-muted-foreground">
                             {cappedCards.length} {cappedCards.length === 1 ? "rilevata" : "rilevate"}

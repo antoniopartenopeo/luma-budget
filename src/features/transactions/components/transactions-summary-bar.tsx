@@ -54,7 +54,7 @@ export function TransactionsSummaryBar({ summary, isLoading }: TransactionsSumma
             isMoney: true
         },
         {
-            label: "Bilancio",
+            label: "Saldo netto",
             value: formatCents(summary.netBalance),
             icon: Wallet,
             tone: netBalanceTone,

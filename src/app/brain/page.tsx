@@ -182,7 +182,7 @@ export default function BrainPage() {
             <motion.div variants={macroItemVariants}>
                 <PageHeader
                     title="Brain"
-                    description="Qui vedi cosa sta leggendo il Brain, quali stime sta producendo e da quali segnali dipendono."
+                    description="Qui vedi cosa sta leggendo il Brain, quanto sono affidabili le stime e da quali segnali dipendono."
                 />
             </motion.div>
 
@@ -213,7 +213,7 @@ export default function BrainPage() {
 
             <MacroSection
                 title="Stato del Brain"
-                description="Le stime principali del Brain e quanto sono affidabili in questo momento."
+                description="Le stime principali del Brain e quanto puoi fidarti di ciascuna in questo momento."
                 contentClassName="pt-5"
                 background={
                     <div className="absolute inset-0 bg-[linear-gradient(145deg,rgba(14,165,168,0.06),transparent_30%),linear-gradient(330deg,rgba(148,163,184,0.06),transparent_35%)]" />
@@ -246,8 +246,8 @@ export default function BrainPage() {
                                 comparisonLabel={advisorNowcastReady ? "Affidabilità" : "Soglia qualità"}
                                 description={advisorNowcastReady
                                     ? "Quanto potresti ancora spendere da qui a fine mese."
-                                    : "Il numero compare solo quando supera il controllo di qualità."}
-                                explainabilityText="Il Brain mostra questo dato solo quando lo considera abbastanza affidabile."
+                                    : "Questo numero compare solo quando il Brain lo considera abbastanza affidabile."}
+                                explainabilityText="Il Brain mostra questo dato solo quando supera il controllo di qualità."
                             />
                         </motion.div>
 
@@ -266,7 +266,7 @@ export default function BrainPage() {
                                 change={evolution?.prediction ? `${nextMonthReliabilitySamples} mesi` : stage.label}
                                 comparisonLabel={evolution?.prediction ? "Storico" : "Stato"}
                                 description="Quanto il Brain si fida della previsione del prossimo mese."
-                                explainabilityText="Più il valore è alto, più la previsione è stabile e coerente con lo storico già visto."
+                                explainabilityText="Più il valore è alto, più la previsione è stabile e coerente con i dati già letti."
                             />
                         </motion.div>
                     </StaggerContainer>
@@ -309,7 +309,7 @@ export default function BrainPage() {
 
             <MacroSection
                 title="Dettagli tecnici del Brain"
-                description="Indicatori interni utili per capire come sta lavorando il Brain, separati dalle stime principali."
+                description="Indicatori utili per capire come sta lavorando il Brain, separati dalle stime principali."
                 contentClassName="pt-5"
                 background={
                     <div className="absolute inset-0 bg-[linear-gradient(145deg,rgba(255,255,255,0.08),transparent_24%),radial-gradient(circle_at_top_right,rgba(14,165,168,0.08),transparent_26%),linear-gradient(330deg,rgba(148,163,184,0.06),transparent_36%)] dark:bg-[linear-gradient(145deg,rgba(255,255,255,0.04),transparent_24%),radial-gradient(circle_at_top_right,rgba(14,165,168,0.1),transparent_26%),linear-gradient(330deg,rgba(148,163,184,0.08),transparent_36%)]" />
@@ -336,15 +336,15 @@ export default function BrainPage() {
                             value={`${activeWeightsCount}/${vectorWeights.length}`}
                             icon={Brain}
                             tone={activeWeightsCount === vectorWeights.length ? "positive" : "neutral"}
-                            description="Quanti segnali interni stanno partecipando alla stima."
-                            explainabilityText="Non sono categorie di spesa: sono indicatori tecnici che il Brain combina per arrivare al risultato."
-                            compact
-                        />
+                                description="Quanti segnali stanno partecipando alla stima."
+                                explainabilityText="Non sono categorie di spesa: sono indicatori che il Brain combina per arrivare al risultato."
+                                compact
+                            />
                     </motion.div>
 
                     <motion.div variants={macroItemVariants} className="h-full">
                         <KpiCard
-                            title="Scarto medio storico"
+                            title="Scarto medio"
                             value={nextMonthMaeDisplayLabel}
                             valueClassName={nextMonthMaeLabel === "-" ? LONG_STATUS_VALUE_CLASS_NAME : undefined}
                             icon={Crosshair}
@@ -364,7 +364,7 @@ export default function BrainPage() {
 
                     <motion.div variants={macroItemVariants} className="h-full">
                         <KpiCard
-                            title="Errore percentuale storico"
+                            title="Errore medio percentuale"
                             value={nextMonthMapeDisplayLabel}
                             valueClassName={nextMonthMapeLabel === "-" ? LONG_STATUS_VALUE_CLASS_NAME : undefined}
                             icon={ShieldCheck}
@@ -384,7 +384,7 @@ export default function BrainPage() {
 
             <MacroSection
                 title="Segnali del Brain"
-                description="Qui vedi i fattori che in questo momento stanno pesando di più sulla stima. Selezionane uno per capire come influisce."
+                description="Qui vedi i segnali che in questo momento stanno pesando di più sulla stima. Selezionane uno per capire come influisce."
                 contentClassName="pt-5"
                 background={
                     <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.12),transparent_28%),radial-gradient(circle_at_top_left,rgba(14,165,168,0.08),transparent_30%),linear-gradient(140deg,rgba(148,163,184,0.06),transparent_42%)] dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.04),transparent_28%),radial-gradient(circle_at_top_left,rgba(14,165,168,0.11),transparent_30%),linear-gradient(140deg,rgba(148,163,184,0.08),transparent_42%)]" />

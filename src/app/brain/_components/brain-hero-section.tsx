@@ -123,7 +123,7 @@ export function BrainHeroSection({
                             <div className="space-y-2">
                                 <div className="rounded-[1.35rem] border border-white/45 bg-white/46 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.22)] dark:border-white/10 dark:bg-white/[0.05]">
                                     <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                                        Effetto del periodo
+                                        Effetto stagionale
                                     </p>
                                     <p className="mt-1 text-sm font-medium leading-relaxed text-muted-foreground">
                                         {resolveSeasonalityDescription(hwForecast.seasonalAdjustmentCents, formattedSeasonality ?? "-")}
@@ -131,7 +131,7 @@ export function BrainHeroSection({
                                 </div>
                                 <div className="rounded-[1.35rem] border border-white/45 bg-white/46 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.22)] dark:border-white/10 dark:bg-white/[0.05]">
                                     <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                                        Possibile oscillazione
+                                        Margine di oscillazione
                                     </p>
                                     <p className="mt-1 text-sm font-medium leading-relaxed text-muted-foreground">
                                         Questa lettura può ancora muoversi di circa {formattedConfidenceRange} in più o in meno.

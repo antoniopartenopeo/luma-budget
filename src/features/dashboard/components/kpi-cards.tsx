@@ -46,7 +46,7 @@ function resolveBrainSignalDisplay(advisorData: ReturnType<typeof useAIAdvisor>)
     if (advisorData.isLoading) {
         return {
             value: "Analizzo",
-            message: "Sto rileggendo il mese",
+            message: "Sto aggiornando la lettura del mese",
             trend: "neutral",
             tone: "neutral",
             confidence: "N/D",
@@ -57,11 +57,11 @@ function resolveBrainSignalDisplay(advisorData: ReturnType<typeof useAIAdvisor>)
     if (!advisorData.forecast) {
         return {
             value: "In avvio",
-            message: "Servono ancora più movimenti",
+            message: "Servono ancora più movimenti per stimare bene il mese",
             trend: "neutral",
             tone: "warning",
             confidence: "N/D",
-            source: "Fonte: storico parziale",
+            source: "Fonte: storico iniziale",
         }
     }
 
@@ -179,8 +179,8 @@ export function DashboardKpiGrid({
                             colorClass: "text-emerald-500",
                             bgClass: "bg-emerald-500/10",
                             stepLabel: "Passo 1",
-                            title: "Quanto ti resta oggi",
-                            description: "Il saldo del periodo mostra quanta liquidità resta dopo entrate e uscite."
+                            title: "Quanto ti resta",
+                            description: "Il saldo del periodo mostra quanto ti resta dopo entrate e uscite."
                         },
                         {
                             icon: PiggyBank,
@@ -188,7 +188,7 @@ export function DashboardKpiGrid({
                             bgClass: "bg-amber-500/10",
                             stepLabel: "Passo 2",
                             title: "Cosa migliora il margine",
-                            description: "Se riduci le spese extra, il margine residuo migliora in modo diretto."
+                            description: "Se riduci le spese non essenziali, il margine migliora in modo diretto."
                         },
                         {
                             icon: Hourglass,
@@ -196,16 +196,16 @@ export function DashboardKpiGrid({
                             bgClass: "bg-primary/10",
                             stepLabel: "Passo 3",
                             title: "Quando cambia la stima",
-                            description: "Ogni nuovo movimento aggiorna lettura, ritmo e direzione del mese."
+                            description: "Ogni nuovo movimento aggiorna la lettura del mese."
                         }
                     ]}
                     auditStats={[
-                        { label: "Metodo", value: "Storico comportamentale", subValue: "Base del calcolo mensile.", icon: TrendingUp },
+                        { label: "Metodo", value: "Basato sullo storico", subValue: "Punto di partenza del calcolo mensile.", icon: TrendingUp },
                         { label: "Aggiornamento", value: "Automatico", subValue: "Ricalcolo a ogni nuovo movimento.", icon: Zap },
-                        { label: "Dati usati", value: "Transazioni reali", subValue: "Nessuna stima manuale richiesta.", icon: BrainCircuit },
+                        { label: "Dati usati", value: "Movimenti reali", subValue: "Non devi inserire stime manuali.", icon: BrainCircuit },
                         { label: "Privacy", value: "Locale", subValue: "I calcoli restano sul dispositivo.", icon: ShieldCheck },
                     ]}
-                    transparencyNote="Questa card non inventa regole: ti mostra lo stato reale del mese usando i tuoi movimenti."
+                    transparencyNote="Questa sezione usa i tuoi movimenti reali per mostrarti lo stato del mese in modo chiaro."
                     certificationTitle="Controllo e trasparenza"
                     certificationSubtitle="Logica chiara, dati reali, privacy locale"
                 />
@@ -213,7 +213,7 @@ export function DashboardKpiGrid({
 
             <MacroSection
                 title="Carte utilizzate"
-                description="Rilevate nello storico completo, indipendenti dal periodo attivo"
+                description="Rilevate nello storico completo, anche fuori dal periodo attivo"
                 contentClassName="pt-5"
                 className="w-full"
                 background={
@@ -244,7 +244,7 @@ export function DashboardKpiGrid({
                 >
                     <motion.div variants={macroItemVariants} className="h-full">
                         <KpiCard
-                            title="Saldo complessivo"
+                            title="Quanto ti resta"
                             value={isLoading ? 0 : formatValue(netBalanceCents || 0)}
                             animatedValue={netBalanceCents || 0}
                             formatFn={formatValue}
@@ -252,17 +252,17 @@ export function DashboardKpiGrid({
                                 getPrivacyClass(isPrivacyMode),
                                 "max-w-full whitespace-nowrap text-[clamp(1.85rem,3.2vw,2.95rem)] leading-[0.95]"
                             )}
-                            comparisonLabel="Storico completo"
+                            comparisonLabel="Periodo attivo"
                             tone={saldoTone}
                             icon={CreditCard}
                             isLoading={isLoading}
                             description={isLoading ? undefined : buildNarration("balance", netBalanceCents || 0, saldoTone)}
-                            explainabilityText="Differenza matematica tra entrate e uscite nel periodo attivo."
+                            explainabilityText="Differenza tra entrate e uscite nel periodo attivo."
                         />
                     </motion.div>
                     <motion.div variants={macroItemVariants} className="h-full">
                         <KpiCard
-                            title="Spesa"
+                            title="Quanto hai speso"
                             value={isLoading ? 0 : formatValue(totalSpentCents || 0)}
                             animatedValue={totalSpentCents || 0}
                             formatFn={formatValue}
@@ -274,12 +274,12 @@ export function DashboardKpiGrid({
                             isLoading={isLoading}
                             onClick={() => router.push("/transactions")}
                             description={isLoading ? undefined : buildNarration("expenses", totalSpentCents || 0, spesaTone)}
-                            explainabilityText="Somma totale delle uscite (esclusi trasferimenti interni) nel periodo selezionato."
+                            explainabilityText="Somma delle uscite nel periodo selezionato, esclusi i trasferimenti interni."
                         />
                     </motion.div>
                     <motion.div variants={macroItemVariants} className="h-full">
                         <KpiCard
-                            title="Spese Extra"
+                            title="Spese non essenziali"
                             value={isLoading ? 0 : (uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—")}
                             animatedValue={uselessSpendPercent ?? undefined}
                             formatFn={(v) => `${Math.round(v)}%`}
@@ -289,12 +289,12 @@ export function DashboardKpiGrid({
                             isLoading={isLoading}
                             onClick={() => router.push("/transactions?filter=wants")}
                             description={isLoading ? undefined : buildNarration("superfluous", uselessSpendPercent !== null ? `${uselessSpendPercent}%` : "—", superflueTone, uselessSpendPercent ?? undefined)}
-                            explainabilityText={`Percentuale di spese "Wants" sul totale. Target ideale: < ${superfluousTarget}%`}
+                            explainabilityText={`Quota delle spese non essenziali sul totale. Obiettivo consigliato: sotto il ${superfluousTarget}%.`}
                         />
                     </motion.div>
                     <motion.div variants={macroItemVariants} className="h-full">
                         <KpiCard
-                            title="Segnale del mese"
+                            title="Stima del mese"
                             value={brainSignal.value}
                             comparisonLabel={`${brainSignal.source} · Affidabilità ${brainSignal.confidence}`}
                             tone={brainSignal.tone}
@@ -302,7 +302,7 @@ export function DashboardKpiGrid({
                             isLoading={false}
                             onClick={() => router.push("/insights")}
                             description={brainSignal.message}
-                            explainabilityText="Proiezione generata dal Brain basata sul tuo ritmo di spesa attuale."
+                            explainabilityText="Stima del mese costruita sul tuo ritmo di spesa attuale."
                         />
                     </motion.div>
                 </StaggerContainer>

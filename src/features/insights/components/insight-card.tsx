@@ -113,7 +113,7 @@ export function InsightCard({ insight }: InsightCardProps) {
                         {config.label}
                     </Badge>
                     <span className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest block">
-                        Spiegazione
+                        In breve
                     </span>
                 </div>
             }
@@ -124,7 +124,7 @@ export function InsightCard({ insight }: InsightCardProps) {
                         <div className="grid grid-cols-2 xs:grid-cols-3 gap-3">
                             {insight.metrics.currentCents !== undefined && (
                                 <div className="p-3 rounded-xl glass-card bg-white/40 dark:bg-white/5 space-y-1">
-                                    <span className="text-[10px] uppercase font-bold text-muted-foreground/70 tracking-wider">Attuale</span>
+                                    <span className="text-[10px] uppercase font-bold text-muted-foreground/70 tracking-wider">Oggi</span>
                                     <div className="font-mono text-sm sm:text-base font-black tracking-tighter tabular-nums">
                                         {formatCents(insight.metrics.currentCents)}
                                     </div>
@@ -184,7 +184,7 @@ export function InsightCard({ insight }: InsightCardProps) {
                                                 <div className="flex flex-col gap-0.5 min-w-0">
                                                     <span className="font-bold text-sm text-foreground/90 truncate">{driver.label}</span>
                                                     <span className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest">
-                                                        Peso sul totale
+                                                        Quanto pesa sul totale
                                                     </span>
                                                 </div>
 

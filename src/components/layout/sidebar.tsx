@@ -136,8 +136,8 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
           <div className="flex items-center gap-3 rounded-xl border border-primary/25 bg-primary/10 px-3 py-3 text-primary dark:border-primary/20 dark:bg-primary/5">
             <ShieldCheck className="h-5 w-5 shrink-0 opacity-90" />
             <div className="flex flex-col gap-0.5">
-              <span className="text-[10px] font-bold uppercase tracking-wider">Local AI &bull; Encrypted</span>
-              <span className="text-[9px] font-medium opacity-85 leading-tight text-foreground/80 dark:text-muted-foreground">Privacy on-device</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider">AI locale &bull; Crittografato</span>
+              <span className="text-[9px] font-medium opacity-85 leading-tight text-foreground/80 dark:text-muted-foreground">Privacy sul dispositivo</span>
             </div>
           </div>
         </div>

@@ -195,7 +195,7 @@ function MobileBrainPanel({ onClose }: { onClose: () => void }) {
                 className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/20 px-3 py-2 text-sm font-medium text-foreground/85 dark:border-white/10 dark:bg-white/[0.04]"
             >
                 <BrainCircuit className="h-4 w-4 text-primary" />
-                Apri Brain
+                Vai al Brain
             </Link>
         </div>
     )

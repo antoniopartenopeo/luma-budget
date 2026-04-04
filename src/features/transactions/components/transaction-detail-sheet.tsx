@@ -136,7 +136,7 @@ function TransactionDetailSheetContent({
                         )}
                         <div className="flex flex-col">
                             <SheetTitle className="text-xl font-bold tracking-tight leading-tight">
-                                {isEditing ? "Modifica Transazione" : transaction.description}
+                                {isEditing ? "Modifica movimento" : transaction.description}
                             </SheetTitle>
                             {!isEditing && (
                                 <span className="text-sm text-muted-foreground font-medium">
@@ -214,8 +214,8 @@ function TransactionDetailSheetContent({
                                     </div>
                                     <div className="bg-amber-500/10 p-4 rounded-xl border border-amber-500/20 flex items-center justify-between">
                                         <div className="flex flex-col text-sm font-medium">
-                                            <span className="font-bold text-amber-700 dark:text-amber-400">Spesa Superflua</span>
-                                            <span className="text-muted-foreground/80">Considerata non essenziale.</span>
+                                            <span className="font-bold text-amber-700 dark:text-amber-400">Spesa non essenziale</span>
+                                            <span className="text-muted-foreground/80">Considerata una spesa non essenziale.</span>
                                         </div>
                                         <Badge className="rounded-md border-amber-500/20 bg-amber-500/20 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-[0.14em] text-amber-800 dark:text-amber-300 shadow-none">
                                             {transaction.classificationSource === "ruleBased" ? "Regola" : "Manuale"}

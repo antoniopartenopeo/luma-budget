@@ -42,7 +42,7 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
             {/* Header */}
             <PageHeader
                 title="Insights"
-                description="Capisci come si sta muovendo il mese e dove puoi intervenire."
+                description="Qui capisci come sta andando il mese e dove puoi migliorare."
             />
 
             {/* Global Motion Orchestration */}
@@ -71,7 +71,7 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
                     {/* Periodic Analysis Section */}
                     <MacroSection
                         title="Analisi del mese"
-                        description={`I segnali utili emersi nei movimenti di ${periodLabel}.`}
+                        description={`I segnali più utili emersi nei movimenti di ${periodLabel}.`}
                         headerActions={
                             <div className="flex items-center gap-2 md:gap-3">
                                 <Button
@@ -129,7 +129,7 @@ export function InsightsPageContent({ initialPeriod }: InsightsPageContentProps)
                                             title={hasTransactions ? "Tutto regolare" : "Nessuna transazione"}
                                             description={
                                                 hasTransactions
-                                                    ? "Per ora non vedo segnali rilevanti: l'andamento è in linea con il solito."
+                                                    ? "Per ora non vedo segnali rilevanti: il mese sta andando in linea con il solito."
                                                     : `Per ${periodLabel} non ci sono ancora movimenti. Appena ne registri qualcuno, qui compariranno gli insight.`
                                             }
                                         />

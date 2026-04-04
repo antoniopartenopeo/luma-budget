@@ -94,8 +94,8 @@ export function SignalMatrix({ contributors }: SignalMatrixProps) {
             ) : (
                 <>
                     <p className="rounded-[1.8rem] border border-white/45 bg-white/38 px-5 py-4 text-sm font-medium text-muted-foreground shadow-[0_18px_36px_-28px_rgba(15,23,42,0.26)] dark:border-white/10 dark:bg-white/[0.04]">
-                        Ogni riga mostra un fattore che in questo momento sta spingendo la stima verso l&apos;alto o verso il basso.
-                        Selezionalo per capire quanto conta davvero.
+                        Ogni riga mostra un segnale che in questo momento sta spingendo la stima verso l&apos;alto o verso il basso.
+                        Selezionalo per capire quanto pesa davvero.
                     </p>
 
                     <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(20rem,0.85fr)]">
@@ -133,7 +133,7 @@ export function SignalMatrix({ contributors }: SignalMatrixProps) {
                                                 <div className="flex flex-wrap items-start justify-between gap-3">
                                                     <div className="min-w-0">
                                                         <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                                                            Fattore
+                                                            Segnale
                                                         </p>
                                                         <p className="text-sm font-semibold text-foreground">
                                                             {resolveLabel(signal.feature)}
@@ -142,7 +142,7 @@ export function SignalMatrix({ contributors }: SignalMatrixProps) {
 
                                                     <div className="text-right">
                                                         <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                                                            Impatto
+                                                            Effetto
                                                         </p>
                                                         <p className={cn("text-sm font-black tabular-nums", resolveSignalColor(signal.contribution))}>
                                                             {signal.contribution >= 0 ? "+" : ""}{signal.contribution.toFixed(4)}
@@ -184,7 +184,7 @@ export function SignalMatrix({ contributors }: SignalMatrixProps) {
                                     >
                                         <div className="space-y-1">
                                             <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-muted-foreground">
-                                                Fattore selezionato
+                                                Segnale selezionato
                                             </p>
                                             <div className="flex flex-wrap items-center gap-2">
                                                 <h3 className="text-lg font-bold tracking-tight text-foreground">
@@ -204,7 +204,7 @@ export function SignalMatrix({ contributors }: SignalMatrixProps) {
                                         <div className="grid gap-3 sm:grid-cols-3">
                                             <div className="rounded-[1.35rem] border border-white/45 bg-white/44 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.26)] dark:border-white/10 dark:bg-white/[0.05]">
                                                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-                                                    Impatto
+                                                    Effetto
                                                 </p>
                                                 <p className={cn("mt-1 text-lg font-black tabular-nums", resolveSignalColor(selectedSignal.contribution))}>
                                                     {selectedSignal.contribution >= 0 ? "+" : ""}{selectedSignal.contribution.toFixed(4)}
@@ -212,7 +212,7 @@ export function SignalMatrix({ contributors }: SignalMatrixProps) {
                                             </div>
                                             <div className="rounded-[1.35rem] border border-white/45 bg-white/44 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.26)] dark:border-white/10 dark:bg-white/[0.05]">
                                                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-                                                    Valore osservato
+                                                    Dato rilevato
                                                 </p>
                                                 <p className="mt-1 text-lg font-black tabular-nums text-foreground">
                                                     {selectedSignal.value.toFixed(4)}
@@ -220,7 +220,7 @@ export function SignalMatrix({ contributors }: SignalMatrixProps) {
                                             </div>
                                             <div className="rounded-[1.35rem] border border-white/45 bg-white/44 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.26)] dark:border-white/10 dark:bg-white/[0.05]">
                                                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-                                                    Importanza interna
+                                                    Peso nel calcolo
                                                 </p>
                                                 <p className="mt-1 text-lg font-black tabular-nums text-foreground">
                                                     {selectedSignal.weight.toFixed(4)}
@@ -238,10 +238,9 @@ export function SignalMatrix({ contributors }: SignalMatrixProps) {
                                                         Come interpretarlo
                                                     </p>
                                                     <p className="text-sm font-medium leading-relaxed text-muted-foreground">
-                                                        Il <strong className="text-foreground">valore osservato</strong> è il dato rilevato,
-                                                        l&apos;<strong className="text-foreground">importanza interna</strong> dice quanto il Brain
-                                                        lo considera rilevante, e l&apos;<strong className="text-foreground">impatto</strong> mostra
-                                                        l&apos;effetto finale sulla stima.
+                                                        Il <strong className="text-foreground">dato rilevato</strong> è il valore che il Brain sta leggendo,
+                                                        il <strong className="text-foreground">peso nel calcolo</strong> dice quanto lo considera rilevante,
+                                                        e l&apos;<strong className="text-foreground">effetto</strong> mostra quanto influenza la stima finale.
                                                     </p>
                                                 </div>
                                             </div>
@@ -250,7 +249,7 @@ export function SignalMatrix({ contributors }: SignalMatrixProps) {
                                         <div className="flex items-start gap-3 text-sm font-medium leading-relaxed text-muted-foreground">
                                             <ArrowRightLeft className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                                             <p>
-                                                Un impatto positivo o negativo non significa che il fattore sia buono o cattivo:
+                                                Un effetto positivo o negativo non significa che il segnale sia buono o cattivo:
                                                 indica solo se sta spingendo la stima verso l&apos;alto o verso il basso.
                                             </p>
                                         </div>

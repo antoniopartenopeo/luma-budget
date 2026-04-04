@@ -87,7 +87,7 @@ export function ImportStepSummary({
                             Importazione completata
                         </h2>
                         <p className="text-sm font-medium text-muted-foreground">
-                            I movimenti sono ora nello storico.
+                            I movimenti sono stati aggiunti allo storico.
                         </p>
                     </div>
                 </div>
@@ -127,7 +127,7 @@ export function ImportStepSummary({
                                 transition={{ delay: 0.3, duration: 0.4 }}
                                 className="text-lg text-muted-foreground max-w-[300px] mx-auto"
                             >
-                                Hai aggiunto <span className="font-semibold text-foreground">{stats?.count} movimenti</span> con successo al tuo storico.
+                                Hai aggiunto <span className="font-semibold text-foreground">{stats?.count} movimenti</span> allo storico con successo.
                             </motion.p>
                         </div>
                     </motion.div>
@@ -182,12 +182,12 @@ export function ImportStepSummary({
 
             <div className="space-y-6">
                 <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-border/60 bg-muted/10 p-4">
-                    <span className="text-sm text-foreground font-medium">Confermando aggiungerai</span>
+                    <span className="text-sm text-foreground font-medium">Stai per aggiungere</span>
                     <Badge variant="outline" className="h-7 rounded-full px-3 text-xs font-semibold normal-case tracking-normal text-foreground">
                         {stats.count} movimenti
                     </Badge>
                     <Badge variant="outline" className="h-7 rounded-full border-primary/30 bg-primary/10 px-3 text-xs font-semibold normal-case tracking-normal text-primary">
-                        Duplicati già esclusi
+                        Duplicati rimossi
                     </Badge>
                 </div>
 
@@ -220,7 +220,7 @@ export function ImportStepSummary({
                             <AlertCircle className="h-6 w-6 shrink-0" />
                             <div>
                                 <p className="font-bold text-sm">Errore durante il salvataggio</p>
-                                <p className="text-sm opacity-90">Ci dispiace, qualcosa è andato storto. Riprova.</p>
+                                <p className="text-sm opacity-90">Qualcosa è andato storto. Riprova.</p>
                             </div>
                         </div>
                     </div>

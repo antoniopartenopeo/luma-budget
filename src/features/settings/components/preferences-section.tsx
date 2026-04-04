@@ -113,7 +113,7 @@ export function PreferencesSection() {
     return (
         <MacroSection
             title="Preferenze"
-            description="Personalizza l'app e il modo in cui accompagna i tuoi movimenti."
+            description="Personalizza l'app e il modo in cui ti accompagna nella lettura dei movimenti."
             headerActions={
                 <div className="text-sm font-normal">
                     {saveStatus === "saving" && (
@@ -139,7 +139,7 @@ export function PreferencesSection() {
                     <AlertCircle className="h-4 w-4" />
                     <AlertTitle>Errore</AlertTitle>
                         <AlertDescription>
-                        Non riesco a caricare le preferenze. Per ora uso i valori predefiniti.
+                        Non riesco a caricare le preferenze. Per ora uso quelle predefinite.
                         </AlertDescription>
                 </Alert>
             ) : (
@@ -250,7 +250,7 @@ export function PreferencesSection() {
                         </div>
                         <div className="grid gap-4 xl:grid-cols-2">
                             <PreferenceField
-                                label="Target Spese Superflue"
+                                label="Obiettivo spese non essenziali"
                                 htmlFor="superfluous-target"
                                 loading={showLoading}
                                 helper="La soglia consigliata per tenere sotto controllo le spese non essenziali."
@@ -275,7 +275,7 @@ export function PreferencesSection() {
                             </PreferenceField>
 
                             <PreferenceField
-                                label="Sensibilita Insights"
+                                label="Quanto vuoi ricevere avvisi"
                                 htmlFor="sensitivity-select"
                                 loading={showLoading}
                                 helper={

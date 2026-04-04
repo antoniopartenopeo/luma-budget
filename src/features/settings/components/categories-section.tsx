@@ -247,7 +247,7 @@ export function CategoriesSection() {
                                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                     <Input
                                         variant="premium"
-                                        placeholder="Cerca categoria..."
+                                        placeholder="Cerca una categoria..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         className="h-11 rounded-[1rem] pl-10"
@@ -255,7 +255,7 @@ export function CategoriesSection() {
                                 </div>
                                 <div className="surface-subtle flex items-center justify-between gap-3 p-2 sm:justify-end sm:bg-transparent sm:p-0 sm:shadow-none">
                                     <Label htmlFor="show-archived" className="text-sm cursor-pointer text-muted-foreground font-medium pl-2 sm:pl-0">
-                                        Mostra archiviate
+                                        Mostra anche le archiviate
                                     </Label>
                                     <Switch
                                         id="show-archived"
@@ -287,14 +287,14 @@ export function CategoriesSection() {
                             </TabsList>
                             <TabsContent value="expense" className="mt-6 focus-visible:outline-none animate-enter-up">
                                 <div className="flex items-center justify-between mb-4">
-                                    <h3 className={premiumFieldLabelClassName}>Lista uscite</h3>
+                                    <h3 className={premiumFieldLabelClassName}>Categorie di uscita</h3>
                                     <span className="text-xs text-muted-foreground">{expenseCategories.length} trovate</span>
                                 </div>
                                 {renderCategoryList(expenseCategories, "Nessuna categoria di spesa.")}
                             </TabsContent>
                             <TabsContent value="income" className="mt-6 focus-visible:outline-none animate-enter-up">
                                 <div className="flex items-center justify-between mb-4">
-                                    <h3 className={premiumFieldLabelClassName}>Lista entrate</h3>
+                                    <h3 className={premiumFieldLabelClassName}>Categorie di entrata</h3>
                                     <span className="text-xs text-muted-foreground">{incomeCategories.length} trovate</span>
                                 </div>
                                 {renderCategoryList(incomeCategories, "Nessuna categoria di entrata.")}
@@ -311,7 +311,7 @@ export function CategoriesSection() {
                                 disabled={isOperationPending}
                             >
                                 <RotateCcw className="h-3 w-3" />
-                                Ripristina Defaults
+                                Ripristina categorie iniziali
                             </Button>
                         </div>
                     </div>

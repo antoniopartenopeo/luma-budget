@@ -38,15 +38,15 @@ export function NumaAdvisorHowItWorksCard({ forecast, facts, className }: NumaAd
                     bgClass: "bg-primary/10",
                     stepLabel: "1. Base + residuo",
                     title: "Formula chiara",
-                    description: "Partiamo dal saldo totale di base e togliamo la spesa ancora attesa fino a fine mese."
+                    description: "Partiamo dal saldo di base e togliamo la spesa che potresti ancora fare fino a fine mese."
                 },
                 {
                     icon: Search,
                     colorClass: "text-emerald-500",
                     bgClass: "bg-emerald-500/10",
                     stepLabel: "2. Fonte stima",
-                    title: "Da dove arriva la stima",
-                    description: "Se il Brain è pronto usiamo il nowcast del mese corrente, altrimenti una stima storica prudente."
+                    title: "Core quando pronto",
+                    description: "Se il Brain è pronto usiamo la sua stima del mese in corso, altrimenti una stima prudente basata sullo storico."
                 },
                 {
                     icon: Lock,
@@ -190,7 +190,7 @@ function AIAdvisorCardView({ forecast, subscriptions, isLoading: aiLoading }: AI
                     </div>
                     <div>
                         <h3 className="font-semibold text-lg">Dati ancora insufficienti</h3>
-                        <p className="max-w-[300px] text-sm font-medium leading-relaxed text-muted-foreground">Servono ancora più movimenti per stimare con affidabilità il saldo totale del mese.</p>
+                        <p className="max-w-[300px] text-sm font-medium leading-relaxed text-muted-foreground">Servono ancora più movimenti per stimare bene il saldo totale del mese.</p>
                     </div>
                 </div>
             </MacroSection>
@@ -202,7 +202,7 @@ function AIAdvisorCardView({ forecast, subscriptions, isLoading: aiLoading }: AI
             variant="premium"
             status={advisorStatus}
             title="Numa Advisor"
-            description="Una sintesi leggibile del mese in corso"
+            description="Una lettura semplice del mese in corso"
         >
             <motion.div
                 variants={containerVariants}
@@ -251,7 +251,7 @@ function AIAdvisorCardView({ forecast, subscriptions, isLoading: aiLoading }: AI
                                     {formatCents(forecast.predictedTotalEstimatedBalanceCents, currency, locale)}
                                 </div>
                                 <p className="text-sm font-medium leading-relaxed text-muted-foreground">
-                                    Saldo base totale meno spesa residua stimata del mese.
+                                    Saldo di base meno spesa residua stimata del mese.
                                 </p>
                             </div>
                         </SubSectionCard>

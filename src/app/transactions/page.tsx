@@ -125,12 +125,12 @@ function TransactionsPageContent() {
             <div className="space-y-6">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Transazioni</h1>
-                    <p className="text-muted-foreground">Controlla i tuoi movimenti e rivedili con calma.</p>
+                    <p className="text-muted-foreground">Qui trovi i tuoi movimenti e puoi rivederli con calma.</p>
                 </div>
                 <StateMessage
                     variant="error"
                     title="Impossibile caricare le transazioni"
-                    description="Non riesco a leggere i movimenti in questo momento."
+                    description="In questo momento non riesco a leggere i movimenti."
                     actionLabel="Riprova"
                     onActionClick={() => refetch()}
                 />
@@ -144,13 +144,13 @@ function TransactionsPageContent() {
             <motion.div variants={macroItemVariants}>
                 <PageHeader
                     title="Transazioni"
-                    description="Tutti i tuoi movimenti, con filtri e dettagli utili."
+                    description="Qui trovi tutti i movimenti, con filtri e dettagli utili."
                 />
             </motion.div>
 
             {/* MacroSection for Main Content */}
             <MacroSection
-                title="Elenco Movimenti"
+                title="Movimenti"
                 description="I movimenti del periodo selezionato."
                 headerActions={
                     <TransactionsFilterBar
@@ -202,8 +202,8 @@ function TransactionsPageContent() {
                     <div className="py-20 flex h-full items-center justify-center">
                         <StateMessage
                             variant="empty"
-                            title="Nessun movimento"
-                            description="Il tuo ledger è vuoto. Inizia importando i tuoi dati."
+                            title="Nessun movimento ancora"
+                            description="Importa un file CSV per iniziare a vedere i tuoi movimenti."
                             primaryAction={
                                 <Button asChild size="sm" variant="default" className="mt-2 shadow-lg shadow-primary/15">
                                     <Link href="/transactions/import">Importa CSV</Link>
@@ -218,14 +218,14 @@ function TransactionsPageContent() {
                         </div>
                         <h3 className="text-xl font-bold tracking-tight mb-2 text-foreground">Nessun risultato</h3>
                         <p className="text-muted-foreground font-medium mb-8 leading-relaxed">
-                            Non trovo movimenti che corrispondano ai filtri attivi.
+                            Nessun movimento corrisponde ai filtri attivi.
                         </p>
                         <Button
                             onClick={resetFilters}
                             variant="secondary"
                             className="rounded-xl font-bold px-8"
                         >
-                            Azzera tutti i filtri
+                            Azzera i filtri
                         </Button>
                     </div>
                 )}

@@ -17,12 +17,12 @@ export const FINANCIAL_LAB_COPY = {
         steps: [
             {
                 stepLabel: "1. Base Storica",
-                title: "Parto da ciò che ti resta",
+                title: "Parto dal tuo storico",
                 description: "Guardo entrate e uscite reali per capire il margine medio del mese."
             },
             {
                 stepLabel: "2. Correzione Live",
-                title: "Aggiorno il breve periodo",
+                title: "Correggo i prossimi mesi",
                 description: "Se serve, correggo la base con i segnali più recenti in modo prudente."
             },
             {
@@ -35,14 +35,14 @@ export const FINANCIAL_LAB_COPY = {
         certificationSubtitle: "Calcolo locale basato sullo storico, con correzione prudente sul breve periodo.",
         transparencyNote: "La base storica resta il riferimento: Brain e live correggono solo i prossimi mesi.",
         audit: {
-            depthLabel: "Profondita Audit",
+            depthLabel: "Periodo analizzato",
             depthValue: "Ultimi 6 Mesi",
             depthSubValue: "Analisi delle transazioni reali nel periodo.",
-            stabilityLabel: "Stabilita Rilevata",
+            stabilityLabel: "Stabilità rilevata",
             stabilitySubValue: "Variabilita osservata sui tuoi flussi mensili.",
-            sustainabilityLabel: "Sostenibilita",
+            sustainabilityLabel: "Tenuta quota",
             sustainabilitySubValue: "Valutata su buffer prudenziale e tenuta del piano.",
-            overlayLabel: "Overlay Realtime",
+            overlayLabel: "Correzione breve",
             overlaySubValuePrefix: "Aggiornamento sul breve periodo.",
             overlaySubValueDisabledPrefix: "Nessun aggiornamento live attivo."
         }
@@ -56,7 +56,7 @@ export const FINANCIAL_LAB_COPY = {
         liveNarrative: "Aggiorniamo il margine con i segnali più recenti, così la quota resta prudente."
     },
     planBasis: {
-        brain: "Fonte Core",
+        brain: "Fonte Brain",
         fallback: "Fonte Storico",
         historical: "Fonte Storico"
     },

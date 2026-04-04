@@ -58,7 +58,7 @@ export function RecentTransactions({ filter }: RecentTransactionsProps) {
         return (
             <MacroSection
                 title="Movimenti recenti"
-                description="Sto preparando l'anteprima del ledger nel periodo attivo..."
+                description="Sto preparando i movimenti più recenti del periodo attivo..."
                 className="col-span-3"
                 background={<div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(14,165,168,0.08),transparent_36%)]" />}
             >
@@ -89,7 +89,7 @@ export function RecentTransactions({ filter }: RecentTransactionsProps) {
                 <StateMessage
                     variant="error"
                     title="Non riesco a caricare i movimenti"
-                    description="Gli ultimi movimenti non sono disponibili in questo momento."
+                    description="In questo momento non riesco a mostrarti gli ultimi movimenti."
                     actionLabel="Riprova"
                     onActionClick={() => refetch()}
                 />
@@ -115,7 +115,7 @@ export function RecentTransactions({ filter }: RecentTransactionsProps) {
             >
                         <StateMessage
                             variant="empty"
-                            title="Nessun movimento"
+                            title="Nessun movimento ancora"
                             description="Nel periodo attivo non ci sono ancora movimenti da consultare."
                             primaryAction={
                                 <Button asChild size="sm" variant="default" className="mt-2 shadow-lg shadow-primary/15">
@@ -130,7 +130,7 @@ export function RecentTransactions({ filter }: RecentTransactionsProps) {
     return (
         <MacroSection
             title="Movimenti recenti"
-            description="Anteprima dei 5 movimenti piu recenti nel periodo attivo"
+            description="Gli ultimi 5 movimenti del periodo attivo"
             className="col-span-3"
             background={<div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(14,165,168,0.08),transparent_36%)]" />}
             headerActions={

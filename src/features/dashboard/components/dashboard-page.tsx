@@ -43,7 +43,7 @@ function DashboardPageContent() {
     <div className="space-y-8 w-full">
       <PageHeader
         title="Dashboard"
-        description="Il punto di riferimento per capire come stanno andando le tue finanze."
+        description="Qui vedi in un colpo d'occhio come sta andando il mese."
       />
 
       <StaggerContainer>
@@ -76,7 +76,7 @@ function DashboardLoading() {
     <div className="space-y-8 w-full">
       <PageHeader
         title="Dashboard"
-        description="Il punto di riferimento per capire come stanno andando le tue finanze."
+        description="Qui vedi in un colpo d'occhio come sta andando il mese."
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

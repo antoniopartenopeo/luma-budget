@@ -173,7 +173,7 @@ export function BackupSection() {
                                 className="w-full rounded-full border-white/30 bg-white/55 sm:w-auto dark:border-white/12 dark:bg-white/[0.06]"
                             >
                                 <Download className="mr-2 h-4 w-4" />
-                                Esporta Backup
+                                Esporta backup
                             </Button>
                         </div>
                     </div>
@@ -200,7 +200,7 @@ export function BackupSection() {
                                 >
                                     <label htmlFor="backup-upload" className="cursor-pointer">
                                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
-                                        Importa Backup
+                                        Importa backup
                                     </label>
                                 </Button>
                             </div>
@@ -215,7 +215,7 @@ export function BackupSection() {
                     <AlertDialogHeader>
                         <AlertDialogTitle>Conferma importazione</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Importando questo backup sostituirai tutti i dati locali attuali. Il file deve provenire da una fonte affidabile.
+                            Importando questo backup sostituirai tutti i dati locali attuali. Usa solo file provenienti da una fonte affidabile.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
 
@@ -228,7 +228,7 @@ export function BackupSection() {
                                     <span className="font-medium">{pendingBackup.summary.txCount}</span>
                                 </div>
                                 <div className="grid grid-cols-2 gap-2">
-                                    <span className="text-muted-foreground">Budget legacy:</span>
+                                    <span className="text-muted-foreground">Dati storici budget:</span>
                                     <span className="font-medium">{pendingBackup.summary.budgetCount}</span>
                                 </div>
                                 <div className="grid grid-cols-2 gap-2">

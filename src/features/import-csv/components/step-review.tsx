@@ -201,7 +201,7 @@ export function ImportStepReview({
                         Controlla i movimenti
                     </h2>
                     <p className="text-sm font-medium text-muted-foreground">
-                        Rivedi gruppi, categorie e duplicati prima di salvare.
+                        Controlla categorie e possibili duplicati prima di salvare.
                     </p>
                 </div>
             </div>
@@ -235,7 +235,7 @@ export function ImportStepReview({
                     valueClassName="text-2xl sm:text-3xl lg:text-4xl text-amber-700 dark:text-amber-300"
                     description={
                         importVisibility.duplicatesTotal > 0
-                            ? `${importVisibility.duplicatesConfirmed} certi + ${importVisibility.duplicatesSuspected} da controllare`
+                            ? `${importVisibility.duplicatesConfirmed} sicuri + ${importVisibility.duplicatesSuspected} da controllare`
                             : undefined
                     }
                 />
@@ -262,8 +262,8 @@ export function ImportStepReview({
                     <div className="flex items-start gap-3">
                         <AlertTriangle className="h-5 w-5 mt-0.5 shrink-0" />
                         <div className="text-sm">
-                            Alcune righe non sono state lette in modo corretto (<strong>{parseErrorsCount}</strong>).
-                            I movimenti validi sono già pronti nell&apos;elenco qui sotto.
+                            Alcune righe non sono state lette correttamente (<strong>{parseErrorsCount}</strong>).
+                            I movimenti validi sono già pronti qui sotto.
                         </div>
                     </div>
                 </div>
@@ -272,7 +272,7 @@ export function ImportStepReview({
             {filteredGroups.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-center rounded-[2rem] border border-border/50 bg-background/50">
                     <Filter className="h-10 w-10 text-muted-foreground/30 mb-4" />
-                    <p className="text-muted-foreground font-medium">Con il filtro attuale non vedo gruppi disponibili</p>
+                    <p className="text-muted-foreground font-medium">Con questo filtro non ci sono gruppi da controllare</p>
                     <Button variant="secondary" size="sm" className="mt-4 h-9 rounded-xl px-4" onClick={() => onThresholdChange(0)}>
                         Mostra tutti
                     </Button>

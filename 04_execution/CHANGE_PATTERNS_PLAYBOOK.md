@@ -3,7 +3,7 @@
 scope: change-patterns-playbook
 owner: engineering
 status: reference
-last-verified: 2026-03-25
+last-verified: 2026-04-04
 canonical-of: none
 
 Pattern operativi per cambiare il codice in modo conforme alla governance.
@@ -116,7 +116,7 @@ Guardrail:
 Intento: iterare la superficie pubblica mantenendo coerenza tra promessa esterna, feature reali e governance interna.
 
 Passi minimi:
-1. Aggiorna la storia canonica in `src/features/landing/data.ts` prima di cambiare la UI.
+1. Aggiorna la storia canonica in `src/features/landing/content.ts` prima di cambiare la UI.
 2. Aggiorna la struttura in `src/features/landing/landing-page.tsx` mantenendo hero, sezioni anchor e CTA finale.
 3. Aggiorna le superfici esplicative della landing in `src/features/landing/components/landing-previews.tsx` e nelle sezioni statiche di `landing-page.tsx` solo con preview veritiere rispetto al prodotto reale.
 4. Se introduci un interludio dedicato a Brain o ad altri moduli, trattalo come deep-dive della narrativa esistente, non come nuova promessa prodotto.
@@ -129,6 +129,8 @@ Guardrail:
 - Nessun claim pubblico su funzionalita non presenti nei moduli attivi.
 - Nessun routing pubblico dispersivo: anchor interne e sole route pubbliche intenzionali dichiarate dalla governance.
 - Mantieni la sequenza canonica `import -> mese -> stima -> decisione`.
+- Above the fold usa linguaggio utente prima del gergo di prodotto: la hero deve spiegare cos'e Numa, a cosa serve e perche fidarsi senza appoggiarsi a termini tecnici non tradotti.
+- Evita come lessico dominante della prima scansione `local-first`, `CSV`, `estratto conto`, `margine`, `Brain locale`, `Financial Lab`.
 - Un eventuale focus Brain deve restare readiness-aware, local-first e privo di implicazioni su sync remoti attivi di default.
 - Il reveal finale del Brain hero deve riportare il messaggio verso controllo e calma, non sostituire la CTA di prodotto.
 - Nessun dato reale utente nella landing; solo preview e semantica prodotto.

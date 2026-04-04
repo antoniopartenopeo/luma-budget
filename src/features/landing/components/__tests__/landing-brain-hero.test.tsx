@@ -45,12 +45,12 @@ describe("LandingBrainHero", () => {
   it("displays the cinematic Brain explainer with the predictive engine copy", () => {
     render(<LandingBrainHero />)
 
-    expect(screen.getByRole("heading", { name: /Quando i dati bastano, il mese si vede prima\./i })).toBeInTheDocument()
-    expect(screen.getByText(/stimare il margine con prudenza\./i)).toBeInTheDocument()
-    expect(screen.getByRole("heading", { name: /Una previsione utile e leggibile\./i })).toBeInTheDocument()
-    expect(screen.getByText(/Una buona stima aiuta a decidere, non a fare scena\./i)).toBeInTheDocument()
-    expect(screen.getByRole("heading", { name: /Margine\./i })).toBeInTheDocument()
-    expect(screen.getByText(/una nuova rata o un abbonamento con un quadro più leggibile del mese/i)).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: /Numa osserva le tue abitudini e ti aiuta a prevedere il mese\./i })).toBeInTheDocument()
+    expect(screen.getByText(/ti mostra una stima realistica di quanto potrebbe restarti a fine mese\./i)).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: /Ti aiuta a decidere, non a indovinare\./i })).toBeInTheDocument()
+    expect(screen.getByText(/La stima serve a capire se una spesa nuova è sostenibile/i)).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: /Numa te lo dice chiaramente, senza forzare la previsione\./i })).toBeInTheDocument()
+    expect(screen.getByText(/Se il quadro è troppo incompleto per una stima affidabile/i)).toBeInTheDocument()
     expect(screen.queryByText(/SYNC_BANK_API/i)).not.toBeInTheDocument()
   })
 })

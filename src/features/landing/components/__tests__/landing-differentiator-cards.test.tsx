@@ -1,7 +1,7 @@
 import { act, render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 import { LandingDifferentiatorCards } from "../landing-differentiator-cards"
-import { LANDING_DIFFERENTIATORS } from "../../data"
+import { LANDING_DIFFERENTIATORS } from "../../content"
 
 let scrollChangeHandler: ((value: number) => void) | null = null
 let mockReducedMotion = false
@@ -56,7 +56,7 @@ describe("LandingDifferentiatorCards", () => {
     mockReducedMotion = false
     render(<LandingDifferentiatorCards />)
 
-    expect(screen.getByRole("heading", { name: /I tuoi soldi,\s*senza server di mezzo\./i })).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: /I tuoi soldi,\s*senza passare da altri server\./i })).toBeInTheDocument()
     expect(screen.getByRole("heading", { name: LANDING_DIFFERENTIATORS[0].title })).toBeInTheDocument()
     expect(screen.getByText(LANDING_DIFFERENTIATORS[0].numaLabel)).toBeInTheDocument()
     expect(screen.queryByRole("link")).not.toBeInTheDocument()

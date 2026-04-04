@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils"
 import {
   LANDING_HERO_EDITORIAL,
   type LandingHeroEditorialPanel
-} from "../data"
+} from "../content"
 import {
   LANDING_HERO_PRISM_GLOW_DURATION,
   LANDING_HERO_PRISM_PANELS,
@@ -326,6 +326,10 @@ export function LandingHeroEditorial() {
               </Link>
             </Button>
           </div>
+
+          <p className="mt-4 max-w-[22rem] text-[11px] font-medium leading-relaxed tracking-[0.01em] text-foreground/52 sm:max-w-[26rem] sm:text-[12px]">
+            {LANDING_HERO_EDITORIAL.microcopy}
+          </p>
         </div>
       </div>
     </section>

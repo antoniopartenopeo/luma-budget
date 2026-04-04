@@ -86,6 +86,11 @@ Vincoli:
 
 `/` non e una pagina core app e non deve imitare `AppShell` o `PageHeader`.
 
+Fonte canonica del copy:
+
+- `src/features/landing/content.ts`
+- `src/features/landing/data.ts` resta solo un bridge di compatibilita e non va trattato come nuova fonte di verita.
+
 Pattern richiesto:
 1. hero immersivo con promessa prodotto verificabile
 2. anchor nav desktop compatta e non dispersiva
@@ -101,6 +106,9 @@ Invarianti:
 - un eventuale focus Brain appartiene alla fase "stima", non apre una quinta promessa autonoma
 - copy pubblico solo su feature reali, niente hype generico
 - preview veritiere e isolate, mai dati utente reali
+- hero above the fold comprensibile in circa 5 secondi anche a chi non conosce il prodotto
+- sopra la piega evitare come lessico dominante `local-first`, `CSV`, `estratto conto`, `margine`, `Brain locale`, `Financial Lab`
+- termini tecnici ammessi solo se tradotti nello stesso blocco in linguaggio utente
 - navigazione pubblica limitata a anchor interne e route pubbliche intenzionali (`/dashboard`, `/transactions/import`, `/faq`, `/privacy`, `/updates`)
 - `/faq`, `/privacy` e `/updates` sono support surface standalone fuori `AppShell`; `/transactions/import` resta la route app-native raggiungibile anche dalla landing per prova sicura/demo
 - eventuale CTA secondaria hero ammessa verso `/transactions/import` per prova sicura/demo, senza presentarla come signup o sync flow
@@ -251,5 +259,5 @@ Invarianti:
 
 ---
 
-**Versione**: 2.3.0
-**Ultimo aggiornamento**: 2026-04-03
+**Versione**: 2.4.0
+**Ultimo aggiornamento**: 2026-04-04

@@ -3,7 +3,11 @@
 import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion, useScroll } from "framer-motion"
 import { cn } from "@/lib/utils"
-import { LANDING_DIFFERENTIATORS, type LandingDifferentItem } from "../data"
+import {
+  LANDING_DIFFERENCE_SECTION,
+  LANDING_DIFFERENTIATORS,
+  type LandingDifferentItem
+} from "../content"
 import { LANDING_MOTION_EASE, LANDING_MOTION_TIMINGS } from "./landing-motion"
 
 const EDITORIAL_ACCENTS = [
@@ -30,30 +34,10 @@ const EDITORIAL_ACCENTS = [
   }
 ] as const
 
-const EDITORIAL_NOTES = [
-  "I tuoi file non vengono inviati o salvati nel cloud.",
-  "Nessuna connessione continua con il conto. Nessuna sincronizzazione forzata.",
-  "La potenza di calcolo resta sul tuo dispositivo."
-] as const
-
-const EDITORIAL_KICKERS = [
-  "Locale per davvero",
-  "Nessun accesso bancario",
-  "Stima privata"
-] as const
-
-const MARKET_GLIMPSES = [
-  ["Sync obbligatorio", "Database centrali", "Dati remoti"],
-  ["Credenziali condivise", "Connessione continua", "Privacy a rischio"],
-  ["Dati inviati a terzi", "AI esterne", "Server opachi"]
-] as const
-
 function MarketGhostLayer({
   item,
-  index
 }: {
   item: LandingDifferentItem
-  index: number
 }) {
   return (
     <motion.div
@@ -67,7 +51,7 @@ function MarketGhostLayer({
     >
         <div className="absolute right-[-10%] top-[8%] h-[36%] w-[78%] rotate-[12deg] rounded-[2.6rem] border border-black/8 bg-neutral-100/90 p-5 shadow-[0_50px_100px_-40px_rgba(0,0,0,0.5)] blur-[2px] dark:border-white/10 dark:bg-neutral-900/80 sm:h-[40%] sm:w-[74%] sm:p-7 lg:p-9 xl:p-10">
         <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-400 dark:text-neutral-500 lg:text-[12px] xl:text-[13px]">
-          Altrove
+          {item.marketEyebrow}
         </p>
         <p className="mt-4 max-w-[20ch] text-lg font-semibold leading-tight text-neutral-600 dark:text-neutral-300 sm:text-xl lg:text-3xl xl:mt-6 xl:text-4xl">
           {item.marketLabel}
@@ -76,10 +60,10 @@ function MarketGhostLayer({
 
       <div className="absolute bottom-[4%] left-[-8%] w-[72%] -rotate-[7deg] rounded-[2.2rem] border border-black/8 bg-white/90 p-4 shadow-[0_40px_100px_-40px_rgba(0,0,0,0.6)] blur-[1.5px] dark:border-white/10 dark:bg-neutral-950/80 sm:w-[58%] sm:p-6 lg:p-8 xl:p-9">
         <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-400 dark:text-neutral-500 lg:text-[12px] xl:text-[13px]">
-          Di solito
+          {item.glimpseEyebrow}
         </p>
         <div className="mt-3 flex flex-wrap gap-2 lg:mt-5 lg:gap-3 xl:gap-3.5">
-          {MARKET_GLIMPSES[index].map((label) => (
+          {item.glimpses.map((label) => (
             <span
               key={label}
               className="rounded-full border border-black/6 bg-black/[0.04] px-2.5 py-1 text-[11px] font-semibold text-neutral-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-neutral-300 lg:px-4 lg:py-2 lg:text-[13px] xl:px-4.5 xl:py-2.5 xl:text-[14px]"
@@ -134,7 +118,7 @@ function NumaEditorialCard({
           <div className="space-y-4 lg:space-y-6">
             <div className="space-y-2">
               <p className={cn("text-[11px] font-semibold uppercase tracking-[0.16em] sm:text-[12px] lg:text-[13px] xl:text-[14px]", accent.kicker)}>
-                {EDITORIAL_KICKERS[index]}
+                {item.kicker}
               </p>
             </div>
 
@@ -163,7 +147,7 @@ function NumaEditorialCard({
             <div className="space-y-3 lg:space-y-4">
               <div className="h-px w-16 bg-foreground/12 lg:w-24 xl:w-32" />
               <p className="max-w-[32ch] text-[13px] font-normal leading-relaxed text-foreground/64 [font-size:clamp(0.85rem,3.2cqw,1.02rem)]">
-                {EDITORIAL_NOTES[index]}
+                {item.note}
               </p>
 
             <div className="flex items-center gap-2 pt-0.5">
@@ -225,10 +209,10 @@ export function LandingDifferentiatorCards() {
         <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center">
           <div className="relative z-10 mb-8 flex w-full flex-col items-center text-center sm:mb-12 lg:mb-14">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-500 dark:text-foreground/58 dark:drop-shadow-none drop-shadow-[0_0_8px_rgba(34,211,238,0.4)] sm:text-[12px]">
-              La tua cassaforte locale
+              {LANDING_DIFFERENCE_SECTION.eyebrow}
             </p>
             <h2 className="mx-auto mt-5 max-w-fit text-center text-3xl font-black leading-[0.96] tracking-tight text-foreground sm:text-4xl lg:text-5xl xl:text-6xl xl:whitespace-nowrap">
-              I tuoi soldi, senza server di mezzo.
+              {LANDING_DIFFERENCE_SECTION.title}
             </h2>
           </div>
 
@@ -237,7 +221,6 @@ export function LandingDifferentiatorCards() {
               <MarketGhostLayer
                 key={`ghost-${activeItem.title}`}
                 item={activeItem}
-                index={activeIndex}
               />
             </AnimatePresence>
 

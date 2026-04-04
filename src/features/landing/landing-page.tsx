@@ -11,9 +11,16 @@ import { StaggerContainer } from "@/components/patterns/stagger-container"
 import { BrandLogo } from "@/components/ui/brand-logo"
 import { Button } from "@/components/ui/button"
 import {
+  LANDING_CLOSING,
+  LANDING_FOOTER,
   LANDING_FLOW_STEPS,
-  LANDING_OUTCOMES
-} from "./data"
+  LANDING_HOW_IT_WORKS_SECTION,
+  LANDING_IMMERSIVE_FALLBACKS,
+  LANDING_NAV_ITEMS,
+  LANDING_OUTCOMES,
+  LANDING_OUTCOMES_SECTION,
+  LANDING_PROBLEM_SECTION
+} from "./content"
 import { LandingHeroEditorial } from "./components/landing-hero-editorial"
 import { LandingHeroConsole } from "./components/landing-previews"
 import { LandingEditorialCardFrame } from "./components/landing-editorial-card-frame"
@@ -32,9 +39,9 @@ const LandingDifferentiatorCards = dynamic(
     ssr: false,
     loading: () => (
       <LandingImmersiveFallback
-        eyebrow="La differenza di Numa"
-        title="I tuoi dati restano dove li stai leggendo."
-        description="La sezione si sta preparando con lo stesso ritmo della landing: locale, leggibile e senza scorciatoie cloud."
+        eyebrow={LANDING_IMMERSIVE_FALLBACKS.difference.eyebrow}
+        title={LANDING_IMMERSIVE_FALLBACKS.difference.title}
+        description={LANDING_IMMERSIVE_FALLBACKS.difference.description}
         heightClassName="h-[300vh]"
       />
     )
@@ -47,34 +54,14 @@ const LandingBrainHero = dynamic(
     ssr: false,
     loading: () => (
       <LandingImmersiveFallback
-        eyebrow="Il Brain di Numa"
-        title="Una stima prudente prima di una scelta."
-        description="Il Brain arriva come prova del percorso: meno spettacolo, più affidabilità su margine e impatto del mese."
+        eyebrow={LANDING_IMMERSIVE_FALLBACKS.brain.eyebrow}
+        title={LANDING_IMMERSIVE_FALLBACKS.brain.title}
+        description={LANDING_IMMERSIVE_FALLBACKS.brain.description}
         heightClassName="h-[440vh]"
       />
     )
   }
 )
-
-const LANDING_NAV_ITEMS = [
-  { href: "#problema", label: "Problema" },
-  { href: "#differenza", label: "Differenza" },
-  { href: "#come-inizi", label: "Come inizi" },
-  { href: "#brain-hero", label: "Brain" },
-  { href: "#outcomes", label: "Esito" }
-] as const
-
-const LANDING_FOOTER_PRODUCT_ITEMS = [
-  "Import CSV",
-  "Brain",
-  "Financial Lab"
-] as const
-
-const LANDING_FOOTER_SUPPORT_ITEMS = [
-  { label: "FAQ", href: "/faq" },
-  { label: "Privacy", href: "/privacy" },
-  { label: "Aggiornamenti", href: "/updates" }
-] as const
 
 const LANDING_FLOW_ACCENTS = [
   {
@@ -171,9 +158,9 @@ export function LandingPage() {
                 disableAnimation
                 title={
                   <LandingSectionHeader
-                    eyebrow="Il problema"
-                    title="Smetti di indovinare le tue spese."
-                    description="Sapere cosa hai speso non ti dice quanto margine hai oggi. Il punto è capire il mese prima di aggiungere una nuova spesa."
+                    eyebrow={LANDING_PROBLEM_SECTION.eyebrow}
+                    title={LANDING_PROBLEM_SECTION.title}
+                    description={LANDING_PROBLEM_SECTION.description}
                     titleId="landing-problem-title"
                   />
                 }
@@ -194,9 +181,9 @@ export function LandingPage() {
                 disableAnimation
                 title={
                   <LandingSectionHeader
-                    eyebrow="Come inizi"
-                    title="Quattro passaggi, nessun rito."
-                    description="Importi un CSV, leggi il mese, guardi la stima e capisci se una nuova spesa fissa è sostenibile."
+                    eyebrow={LANDING_HOW_IT_WORKS_SECTION.eyebrow}
+                    title={LANDING_HOW_IT_WORKS_SECTION.title}
+                    description={LANDING_HOW_IT_WORKS_SECTION.description}
                     titleId="landing-how-title"
                   />
                 }
@@ -252,9 +239,9 @@ export function LandingPage() {
                 disableAnimation
                 title={
                   <LandingSectionHeader
-                    eyebrow="Cosa cambia"
-                    title="Meno attrito. Più chiarezza."
-                    description="Il beneficio non è controllare di più. È doverci pensare meno, con un quadro più stabile del mese."
+                    eyebrow={LANDING_OUTCOMES_SECTION.eyebrow}
+                    title={LANDING_OUTCOMES_SECTION.title}
+                    description={LANDING_OUTCOMES_SECTION.description}
                     titleId="landing-outcomes-title"
                   />
                 }
@@ -313,10 +300,10 @@ export function LandingPage() {
             <div className="relative z-10 mx-auto flex min-h-[34rem] max-w-6xl flex-col justify-between lg:min-h-[38rem]">
               <div className="flex items-center justify-between border-b border-black/6 pb-4 dark:border-white/8">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary dark:text-foreground/56">
-                  Quando vuoi iniziare.
+                  {LANDING_CLOSING.eyebrow}
                 </p>
                 <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-foreground/42 dark:text-foreground/44">
-                  Nessun account obbligatorio
+                  {LANDING_CLOSING.railLabel}
                 </p>
               </div>
 
@@ -334,20 +321,20 @@ export function LandingPage() {
                     id="landing-cta-title"
                     className="max-w-[12ch] text-4xl font-black leading-[0.92] tracking-tight text-foreground sm:text-5xl lg:text-6xl"
                   >
-                    Apri il mese. Poi decidi.
+                    {LANDING_CLOSING.title}
                   </h2>
                 </div>
               </div>
 
               <div className="flex flex-col gap-6 border-t border-black/6 pt-5 dark:border-white/8 sm:gap-8 lg:flex-row lg:items-end lg:justify-between">
                 <p className="max-w-[30rem] text-sm font-normal leading-relaxed text-muted-foreground sm:text-base">
-                  Apri l&apos;app o prova la demo. Il punto è leggere il mese con più chiarezza, prima di aggiungere una nuova spesa.
+                  {LANDING_CLOSING.description}
                 </p>
 
                 <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center lg:justify-end">
                   <Button asChild size="lg" className="group rounded-full px-12 py-7 text-lg font-bold shadow-[0_0_40px_-10px] shadow-primary/24 transition-[transform,box-shadow] duration-300 hover:shadow-[0_0_60px_-10px] hover:shadow-primary/36">
                     <Link href="/dashboard">
-                      Apri Numa
+                      {LANDING_CLOSING.primaryCtaLabel}
                       <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
                     </Link>
                   </Button>
@@ -356,7 +343,7 @@ export function LandingPage() {
                     href="/transactions/import"
                     className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/58 transition-colors duration-200 hover:text-foreground"
                   >
-                    Prova app demo
+                    {LANDING_CLOSING.secondaryCtaLabel}
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 </div>
@@ -372,17 +359,17 @@ export function LandingPage() {
             <div className="max-w-[26rem] space-y-3">
               <BrandLogo variant="full" height={24} className="w-auto max-w-[132px] opacity-90" />
               <p className="text-sm font-normal leading-relaxed text-muted-foreground">
-                Finanza personale local-first per leggere il mese con più calma.
+                {LANDING_FOOTER.description}
               </p>
             </div>
 
             <div className="grid gap-8 sm:grid-cols-2 lg:min-w-[26rem] lg:gap-12">
               <div className="space-y-3">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground/46">
-                  Prodotto
+                  {LANDING_FOOTER.productHeading}
                 </p>
                 <ul className="space-y-2">
-                  {LANDING_FOOTER_PRODUCT_ITEMS.map((item) => (
+                  {LANDING_FOOTER.productItems.map((item) => (
                     <li key={`footer-${item}`} className="text-sm font-normal text-foreground/72">
                       {item}
                     </li>
@@ -392,10 +379,10 @@ export function LandingPage() {
 
               <div className="space-y-3">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground/46">
-                  Supporto
+                  {LANDING_FOOTER.supportHeading}
                 </p>
                 <ul className="space-y-2">
-                  {LANDING_FOOTER_SUPPORT_ITEMS.map((item) => (
+                  {LANDING_FOOTER.supportItems.map((item) => (
                     <li key={item.label}>
                       <Link
                         href={item.href}

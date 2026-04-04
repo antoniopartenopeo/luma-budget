@@ -1,6 +1,6 @@
 "use client"
 
-import { LANDING_STORY_POINTS } from "../data"
+import { LANDING_PROBLEM_SECTION, LANDING_STORY_POINTS } from "../content"
 import { LANDING_EDITORIAL_CARD_TITLE_CLASS } from "./landing-tokens"
 import { LandingEditorialCardFrame } from "./landing-editorial-card-frame"
 
@@ -57,7 +57,7 @@ export function LandingHeroConsole() {
       <div className="relative overflow-hidden rounded-[2rem] border border-black/6 bg-white/62 px-6 py-6 shadow-[0_24px_70px_-42px_rgba(15,23,42,0.14)] sm:px-8 sm:py-8 backdrop-blur-3xl dark:border-white/10 dark:bg-zinc-950/40 dark:shadow-[0_24px_70px_-42px_rgba(0,0,0,0.42)]">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.18),transparent_42%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.04),transparent_46%)]" />
         <p className="relative text-[16px] font-normal leading-relaxed text-muted-foreground sm:text-[17px]">
-          Numa non è un tracker più elegante. È un modo più calmo per leggere il mese e decidere con più chiarezza.
+          {LANDING_PROBLEM_SECTION.statement}
         </p>
       </div>
     </div>

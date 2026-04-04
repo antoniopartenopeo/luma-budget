@@ -3,7 +3,7 @@
 scope: decision-log
 owner: engineering
 status: active
-last-verified: 2026-04-03
+last-verified: 2026-04-04
 canonical-of: decision-log
 
 | Date | Decision | Status | Why | Alternatives rejected |
@@ -20,3 +20,4 @@ canonical-of: decision-log
 | 2026-04-01 | Freeze `Composizione spese` as an intentionally preserved Dashboard surface | accepted | Prevent generic UI cleanup or motion standardization from altering a deliberately curated interaction surface without explicit approval | Treat the surface as ordinary shared UI and allow incidental refactors to modify its motion, materials, or copy |
 | 2026-04-03 | Apply a mandatory findings-first ritual to every user-visible change | accepted | Turn repeated UI/copy review findings into a lightweight but enforceable governance loop across all visible surfaces, not just the landing | Keep visual and narrative quality implicit in reviewer memory or restrict the ritual only to public acquisition pages |
 | 2026-04-03 | Govern dark theme as a shared editorial material system across landing and app surfaces | accepted | Keep dark mode coherent through neutral `ink / smoke / paper` materials, a shared `torchlight white` highlight, and minimal accent color instead of per-section neon drift | Let each section choose its own dark palette or keep cyan/teal glow as the default dark grammar |
+| 2026-04-04 | Govern public landing copy in user language before product jargon | accepted | Keep the acquisition story understandable to cold users by making benefit, use case, and trust legible before technical differentiators like local execution or import mechanics | Let internal product vocabulary drive the first scan of the landing or keep copy scattered across UI files without a canonical content source |

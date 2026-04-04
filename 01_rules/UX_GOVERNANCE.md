@@ -3,12 +3,12 @@
 scope: ux-governance
 owner: governance
 status: active
-last-verified: 2026-04-03
+last-verified: 2026-04-04
 canonical-of: ux-policy
 
 > **Stato:** Active
-> **Versione:** 2.0
-> **Ultimo aggiornamento:** 2026-04-03
+> **Versione:** 2.1
+> **Ultimo aggiornamento:** 2026-04-04
 
 Linee guida UX ad alto livello per mantenere fiducia, chiarezza e coerenza cross-feature.
 
@@ -105,6 +105,12 @@ Per processi tecnici estesi (es. training locale Neural Core), mostrare progress
 ## 4. Public Acquisition Surface (`/`)
 
 - La landing pubblica e una trust surface, non una pagina marketing generica.
+- Il copy della landing deve restare comprensibile anche a una cold audience nel primo viewport.
+- Sopra la piega la hero deve rispondere in pochi secondi a tre domande: cos'e Numa, a cosa serve, perche fidarsi.
+- Il copy pubblico usa linguaggio utente prima del lessico di prodotto: beneficio prima del meccanismo, risultato prima dell'architettura.
+- I differenziatori tecnici possono comparire solo dopo la prima scansione o nello stesso blocco in cui vengono tradotti in linguaggio umano.
+- Privacy e local execution vanno raccontati come rassicurazione concreta, non come infrastruttura da addetti ai lavori.
+- Termini come `local-first`, `CSV`, `estratto conto`, `margine`, `Brain locale` e `Financial Lab` non devono guidare la prima scansione della hero pubblica.
 - Il copy pubblico deve descrivere solo capacita verificabili nei moduli attivi del prodotto, evitando hype su AI, cloud o automazioni non dimostrate.
 - L'ordine narrativo canonico resta: dati gia posseduti -> lettura del mese -> stima se pronta -> decisione su nuova spesa fissa.
 - La spiegazione operativa del flusso pubblico deve vivere in una sezione statica `Come inizi` in quattro passaggi, non in una hero separata che duplica la stessa narrativa con scene animate.

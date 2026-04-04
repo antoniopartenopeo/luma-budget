@@ -3,6 +3,7 @@
 import { useRef } from "react"
 import { motion, useReducedMotion, useScroll, useTransform, useMotionTemplate } from "framer-motion"
 import { cn } from "@/lib/utils"
+import { LANDING_BRAIN_CONTENT } from "../content"
 import { AppleFluidBackground } from "./motion-primitives"
 import {
   LANDING_BRAIN_RANGES,
@@ -85,6 +86,15 @@ export function LandingBrainHero() {
   const act3Style = { opacity: act3Opacity, y: act3Y, filter: act3Blur }
   const stageSurfaceClassName =
     "flex w-full max-w-5xl flex-col items-center rounded-[2.2rem] border border-black/6 bg-white/52 px-7 py-8 text-center shadow-[0_28px_80px_-42px_rgba(15,23,42,0.26)] backdrop-blur-2xl dark:border-white/8 dark:bg-white/[0.04] sm:px-10 sm:py-10"
+  const [act1, act2, act3] = LANDING_BRAIN_CONTENT.acts
+
+  const renderTitleLines = (lines: readonly string[]) =>
+    lines.map((line, index) => (
+      <span key={`${line}-${index}`}>
+        {index > 0 ? <br /> : null}
+        {line}
+      </span>
+    ))
 
   return (
     <div ref={containerRef} className="relative h-[440vh] w-full">
@@ -102,21 +112,17 @@ export function LandingBrainHero() {
         >
           <div className={stageSurfaceClassName}>
             <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary/85 dark:text-foreground/56 sm:text-[12px]">
-              Il Brain di Numa
+              {act1.kicker}
             </p>
             <h2
               id="landing-brain-hero-title"
+              aria-label={act1.titleLines.join(" ")}
               className={cn(LANDING_EDITORIAL_CARD_HERO_TITLE_CLASS, "mx-auto max-w-[16ch] dark:text-white")}
             >
-              Quando i dati{" "}
-              <br />
-              {" "}bastano, il{" "}
-              <br />
-              {" "}
-              mese si vede prima.
+              {renderTitleLines(act1.titleLines)}
             </h2>
             <p className="mx-auto mt-5 max-w-[40ch] text-[15px] font-normal leading-relaxed text-foreground/64 dark:text-zinc-400 sm:text-lg">
-              Il Brain legge ricorrenze, ritmo di spesa e storico recente per stimare il margine con prudenza.
+              {act1.description}
             </p>
           </div>
         </motion.div>
@@ -128,18 +134,16 @@ export function LandingBrainHero() {
         >
           <div className={stageSurfaceClassName}>
             <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary/85 dark:text-foreground/56 sm:text-[12px]">
-              Stima prudente
+              {act2.kicker}
             </p>
-            <h3 className={cn(LANDING_EDITORIAL_CARD_HERO_TITLE_CLASS, "mx-auto max-w-[15ch] font-extrabold dark:text-white")}>
-              Una previsione{" "}
-              <br />
-              {" "}utile e{" "}
-              <br />
-              {" "}
-              leggibile.
+            <h3
+              aria-label={act2.titleLines.join(" ")}
+              className={cn(LANDING_EDITORIAL_CARD_HERO_TITLE_CLASS, "mx-auto max-w-[15ch] font-extrabold dark:text-white")}
+            >
+              {renderTitleLines(act2.titleLines)}
             </h3>
             <p className="mx-auto mt-5 max-w-[40ch] text-[15px] font-normal leading-relaxed text-foreground/64 dark:text-zinc-400 sm:text-lg">
-              Se il contesto è debole, Numa lo dice. Una buona stima aiuta a decidere, non a fare scena.
+              {act2.description}
             </p>
           </div>
         </motion.div>
@@ -151,13 +155,16 @@ export function LandingBrainHero() {
         >
           <div className={stageSurfaceClassName}>
             <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary/85 dark:text-foreground/56 sm:text-[12px]">
-              Per scegliere meglio
+              {act3.kicker}
             </p>
-            <h3 className={cn(LANDING_EDITORIAL_CARD_HERO_TITLE_CLASS, "mx-auto max-w-[16ch] font-extrabold dark:text-white")}>
-              Margine.<br />Affidabilità.<br />Impatto.
+            <h3
+              aria-label={act3.titleLines.join(" ")}
+              className={cn(LANDING_EDITORIAL_CARD_HERO_TITLE_CLASS, "mx-auto max-w-[16ch] font-extrabold dark:text-white")}
+            >
+              {renderTitleLines(act3.titleLines)}
             </h3>
             <p className="mx-auto mt-5 max-w-[40ch] text-[15px] font-normal leading-relaxed text-foreground/64 dark:text-zinc-400 sm:text-lg">
-              Così valuti una nuova rata o un abbonamento con un quadro più leggibile del mese.
+              {act3.description}
             </p>
           </div>
         </motion.div>

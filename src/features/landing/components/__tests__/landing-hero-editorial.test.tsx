@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 import { LandingHeroEditorial } from "../landing-hero-editorial"
-import { LANDING_HERO_EDITORIAL } from "../../data"
+import { LANDING_HERO_EDITORIAL } from "../../content"
 
 let mockReducedMotion = false
 
@@ -57,12 +57,21 @@ describe("LandingHeroEditorial", () => {
     expect(screen.getAllByTestId("brand-logo")).toHaveLength(1)
     expect(screen.getByText(LANDING_HERO_EDITORIAL.headline)).toBeInTheDocument()
     expect(screen.getByText(LANDING_HERO_EDITORIAL.supportingCopy)).toBeInTheDocument()
+    expect(screen.getByText(LANDING_HERO_EDITORIAL.microcopy)).toBeInTheDocument()
     expect(screen.getAllByTestId("landing-hero-prism-panel")).toHaveLength(3)
-    expect(screen.getByText("Locale")).toBeInTheDocument()
-    expect(screen.getByText("Margine")).toBeInTheDocument()
-    expect(screen.getByText("Stima")).toBeInTheDocument()
-    expect(screen.getByRole("link", { name: /Apri Numa/i })).toHaveAttribute("href", "/dashboard")
-    expect(screen.getByRole("link", { name: /Prova app demo/i })).toHaveAttribute("href", "/transactions/import")
+    expect(screen.getByText("Privacy")).toBeInTheDocument()
+    expect(screen.getByText("Budget")).toBeInTheDocument()
+    expect(screen.getByText("Previsione")).toBeInTheDocument()
+    expect(screen.getByRole("link", { name: /Prova Numa gratis/i })).toHaveAttribute("href", "/dashboard")
+    expect(screen.getByRole("link", { name: /Guarda una demo/i })).toHaveAttribute("href", "/transactions/import")
+
+    const hero = screen.getByTestId("landing-hero-editorial")
+    expect(hero).not.toHaveTextContent(/\blocal-first\b/i)
+    expect(hero).not.toHaveTextContent(/\bmargine\b/i)
+    expect(hero).not.toHaveTextContent(/\bCSV\b/i)
+    expect(hero).not.toHaveTextContent(/estratto conto/i)
+    expect(hero).not.toHaveTextContent(/\bBrain\b/i)
+    expect(hero).not.toHaveTextContent(/Financial Lab/i)
   })
 
   it("keeps the same hero composition when reduced motion is enabled", () => {
@@ -73,7 +82,8 @@ describe("LandingHeroEditorial", () => {
     expect(screen.getAllByTestId("landing-hero-prism-panel")).toHaveLength(3)
     expect(screen.getByText(LANDING_HERO_EDITORIAL.headline)).toBeInTheDocument()
     expect(screen.getByText(LANDING_HERO_EDITORIAL.supportingCopy)).toBeInTheDocument()
-    expect(screen.getByText("I dati restano qui")).toBeInTheDocument()
-    expect(screen.getByRole("link", { name: /Apri Numa/i })).toBeInTheDocument()
+    expect(screen.getByText(LANDING_HERO_EDITORIAL.microcopy)).toBeInTheDocument()
+    expect(screen.getByText("I tuoi dati restano sul dispositivo")).toBeInTheDocument()
+    expect(screen.getByRole("link", { name: /Prova Numa gratis/i })).toBeInTheDocument()
   })
 })

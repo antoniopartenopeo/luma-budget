@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { AmbientBackdrop } from "./ambient-backdrop"
+import { PublicSiteFooter } from "./public-site-footer"
 import { BrandLogo } from "@/components/ui/brand-logo"
 import { Button } from "@/components/ui/button"
 import { LIQUID_CAPSULE_CLASS, LIQUID_REFRACTION_CLASS } from "@/components/ui/glass-tokens"
@@ -47,6 +48,8 @@ export function PublicPageFrame({
       <main id="main-content" className="px-4 pb-24 pt-6 sm:pt-8">
         <div className={cn("mx-auto max-w-6xl", className)}>{children}</div>
       </main>
+
+      <PublicSiteFooter />
     </div>
   )
 }

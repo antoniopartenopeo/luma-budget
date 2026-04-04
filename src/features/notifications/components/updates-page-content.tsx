@@ -2,15 +2,16 @@
 
 import { useMemo } from "react"
 import type { NotificationKind } from "../types"
-import { Clock3 } from "lucide-react"
+import { ArrowUpRight, ShieldCheck, Sparkles, TriangleAlert, type LucideIcon } from "lucide-react"
 import { motion } from "framer-motion"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StateMessage } from "@/components/ui/state-message"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
 import { macroItemVariants } from "@/components/patterns/macro-section"
 import { PublicSupportIntro, PublicSupportSurface } from "@/components/layout/public-support-surface"
+import { LandingEditorialCardFrame } from "@/features/landing/components/landing-editorial-card-frame"
+import { LANDING_EDITORIAL_CARD_TITLE_CLASS } from "@/features/landing/components/landing-tokens"
 import { useNotificationsFeed } from "../api/use-notifications"
-import { formatItalianDate } from "./notification-ui"
 
 const KIND_ORDER: NotificationKind[] = ["feature", "improvement", "fix", "breaking"]
 
@@ -26,6 +27,53 @@ const KIND_LEAD_FRAGMENT: Record<NotificationKind, string> = {
     improvement: "miglioramenti all'esperienza",
     fix: "più stabilità",
     breaking: "indicazioni importanti",
+}
+
+const KIND_ICON_MAP: Record<NotificationKind, LucideIcon> = {
+    feature: Sparkles,
+    improvement: ArrowUpRight,
+    fix: ShieldCheck,
+    breaking: TriangleAlert,
+}
+
+const KIND_ACCENT_MAP: Record<
+    NotificationKind,
+    {
+        border: string
+        panel: string
+        icon: string
+        decorative: string
+        orb: string
+    }
+> = {
+    feature: {
+        border: "border-cyan-400/20 dark:border-white/10",
+        panel: "from-cyan-500/[0.02] via-white to-cyan-50/50 dark:from-white/[0.06] dark:via-black/84 dark:to-zinc-900/62",
+        icon: "border-cyan-400/25 bg-cyan-500/10 text-cyan-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-zinc-100",
+        decorative: "text-cyan-500/6 dark:text-white/[0.03]",
+        orb: "bg-cyan-500/18 dark:bg-white/8",
+    },
+    improvement: {
+        border: "border-slate-400/18 dark:border-white/9",
+        panel: "from-slate-500/[0.03] via-white to-slate-50/60 dark:from-white/[0.05] dark:via-black/84 dark:to-zinc-950/68",
+        icon: "border-slate-400/25 bg-slate-500/8 text-slate-700 dark:border-white/9 dark:bg-white/[0.045] dark:text-zinc-200",
+        decorative: "text-slate-500/7 dark:text-white/[0.028]",
+        orb: "bg-slate-500/16 dark:bg-white/7",
+    },
+    fix: {
+        border: "border-teal-400/20 dark:border-white/10",
+        panel: "from-teal-500/[0.02] via-white to-teal-50/50 dark:from-white/[0.055] dark:via-black/84 dark:to-stone-950/64",
+        icon: "border-teal-400/25 bg-teal-500/10 text-teal-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-stone-200",
+        decorative: "text-teal-500/6 dark:text-white/[0.03]",
+        orb: "bg-teal-500/18 dark:bg-white/8",
+    },
+    breaking: {
+        border: "border-amber-400/20 dark:border-white/10",
+        panel: "from-amber-500/[0.02] via-white to-amber-50/55 dark:from-white/[0.055] dark:via-black/84 dark:to-neutral-950/64",
+        icon: "border-amber-400/25 bg-amber-500/10 text-amber-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-neutral-100",
+        decorative: "text-amber-500/7 dark:text-white/[0.03]",
+        orb: "bg-amber-500/18 dark:bg-white/8",
+    },
 }
 
 function joinItalianList(parts: string[]): string {
@@ -51,6 +99,17 @@ function buildReleaseTitle(kinds: NotificationKind[]): string {
     return "Aggiornamento"
 }
 
+function formatEditorialDate(isoDate: string): string {
+    const timestamp = new Date(isoDate).getTime()
+    if (!Number.isFinite(timestamp)) return isoDate
+
+    return new Intl.DateTimeFormat("it-IT", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "2-digit",
+    }).format(new Date(timestamp))
+}
+
 export function UpdatesPageContent() {
     const feedQuery = useNotificationsFeed()
     const notifications = useMemo(() => feedQuery.data ?? [], [feedQuery.data])
@@ -70,10 +129,14 @@ export function UpdatesPageContent() {
     const releaseCards = useMemo(() => {
         return groupedByVersion.map(([version, items]) => {
             const kinds = KIND_ORDER.filter((kind) => items.some((item) => item.kind === kind))
+            const publishedAt = items[0]?.publishedAt ?? ""
+            const dateLabel = formatEditorialDate(publishedAt)
 
             return {
                 version,
                 items,
+                dateLabel,
+                primaryKind: kinds[0] ?? "improvement",
                 title: buildReleaseTitle(kinds),
                 lead: buildReleaseLead(kinds),
                 highlights: kinds.map((kind) => KIND_BULLET_COPY[kind]).slice(0, 4),
@@ -122,45 +185,47 @@ export function UpdatesPageContent() {
                 <motion.div variants={macroItemVariants}>
                     <section className="space-y-4">
                         {releaseCards.map((release) => (
-                            <PublicSupportSurface
+                            <LandingEditorialCardFrame
                                 key={release.version}
-                                className="rounded-[2rem] p-5 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.34)]"
+                                borderClassName={KIND_ACCENT_MAP[release.primaryKind].border}
+                                panelClassName={KIND_ACCENT_MAP[release.primaryKind].panel}
+                                leadingIcon={KIND_ICON_MAP[release.primaryKind]}
+                                leadingIconWrapperClassName={KIND_ACCENT_MAP[release.primaryKind].icon}
+                                orbClassName={KIND_ACCENT_MAP[release.primaryKind].orb}
+                                orbPositionClassName="-right-[14%] -top-[18%] h-[18rem] w-[18rem] sm:h-[24rem] sm:w-[24rem]"
+                                decorativeText={release.dateLabel}
+                                decorativeTextClassName={`-bottom-[14%] -right-[2%] text-[4.25rem] ${KIND_ACCENT_MAP[release.primaryKind].decorative} sm:-bottom-[10%] sm:text-[6.25rem] lg:text-[8rem]`}
+                                className="rounded-[2rem] p-5 shadow-[0_24px_60px_-42px_rgba(15,23,42,0.34)] sm:p-6"
                             >
                                 <article id={`v-${release.version.replaceAll(".", "-")}`}>
-                                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                                    <div className="space-y-2">
-                                        <div className="flex flex-wrap items-center gap-3">
-                                            <h2 className="text-lg font-bold tracking-tight text-foreground sm:text-xl">
-                                                Versione {release.version}
-                                            </h2>
-                                            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
-                                                <Clock3 className="h-3.5 w-3.5 text-primary" />
-                                                {formatItalianDate(release.items[0].publishedAt)}
-                                            </span>
-                                        </div>
-                                        <p className="text-sm font-semibold tracking-tight text-foreground">
+                                <div className="relative flex flex-col gap-4 pr-8 pt-18 sm:pr-16 sm:pt-24 lg:pr-24 lg:pt-28">
+                                    <div className="space-y-3">
+                                        <h2 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/52 sm:text-[12px] lg:text-[13px]">
+                                            Versione {release.version}
+                                        </h2>
+                                        <p className={`${LANDING_EDITORIAL_CARD_TITLE_CLASS} max-w-[16ch]`}>
                                             {release.title}
                                         </p>
                                         <p className="max-w-[42rem] text-sm font-normal leading-relaxed text-muted-foreground sm:text-base">
                                             {release.lead}
                                         </p>
                                     </div>
-                                </div>
 
-                                {release.highlights.length > 0 && (
-                                    <ul className="mt-4 list-disc space-y-1.5 pl-5 text-sm font-normal leading-relaxed text-muted-foreground">
-                                        {release.highlights.map((highlight, index) => (
-                                            <li
-                                                key={`${release.version}-highlight-${index}`}
-                                                className="pl-1 marker:text-primary"
-                                            >
-                                                {highlight}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
+                                    {release.highlights.length > 0 && (
+                                        <ul className="relative mt-2 list-disc space-y-1.5 pl-5 text-sm font-normal leading-relaxed text-muted-foreground">
+                                            {release.highlights.map((highlight, index) => (
+                                                <li
+                                                    key={`${release.version}-highlight-${index}`}
+                                                    className="pl-1 marker:text-primary"
+                                                >
+                                                    {highlight}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
                                 </article>
-                            </PublicSupportSurface>
+                            </LandingEditorialCardFrame>
                         ))}
                     </section>
                 </motion.div>

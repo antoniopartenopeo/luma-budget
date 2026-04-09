@@ -103,236 +103,236 @@ export interface LandingFooterContent {
 }
 
 export const LANDING_HERO_EDITORIAL = {
-  srTitle: "Numa Budget. Tieni sotto controllo le tue spese, senza stress e senza condividere nulla.",
-  headline: "Tieni sotto controllo le tue spese. Senza stress, senza condividere nulla.",
+  srTitle: "Numa Budget. Il tuo mese. Limpido come non mai.",
+  headline: "Il tuo mese. Limpido come non mai.",
   supportingCopy:
-    "Numa Budget ti aiuta a capire quanto puoi spendere oggi, a valutare una nuova spesa prima di farla e a tenere tutto sul tuo dispositivo.",
-  primaryCtaLabel: "Prova Numa gratis",
-  microcopy: "Nessuna registrazione richiesta. I tuoi dati non lasciano il tuo dispositivo.",
+    "Scopri il tuo vero margine di spesa in un istante. E con un'intelligenza che non lascia mai il tuo dispositivo.",
+  primaryCtaLabel: "Inizia senza account",
+  microcopy: "Privato. Nessun cloud, nessuna registrazione.",
   panels: [
     {
       icon: CloudOff,
       title: "Privacy",
-      description: "I tuoi dati restano sul dispositivo"
+      description: "Esiste solo dove sei tu."
     },
     {
       icon: WalletCards,
       title: "Budget",
-      description: "Capisci quanto puoi ancora spendere"
+      description: "Sai subito se è sostenibile."
     },
     {
       icon: BrainCircuit,
-      title: "Previsione",
-      description: "Valuti una spesa prima di farla"
+      title: "Brain",
+      description: "La mente sui tuoi soldi."
     }
   ]
 } as const satisfies LandingHeroEditorialContent
 
 export const LANDING_NAV_ITEMS = [
-  { href: "#problema", label: "Problema" },
+  { href: "#problema", label: "Oltre" },
   { href: "#differenza", label: "Differenza" },
-  { href: "#come-inizi", label: "Come inizi" },
-  { href: "#brain-hero", label: "Brain" },
+  { href: "#come-inizi", label: "Setup" },
+  { href: "#brain-hero", label: "Neural Core" },
   { href: "#outcomes", label: "Esito" }
 ] as const satisfies readonly LandingNavItem[]
 
 export const LANDING_PROBLEM_SECTION = {
-  eyebrow: "Il problema",
-  title: "Sai cosa hai speso. Non sai quanto puoi ancora spendere.",
+  eyebrow: "Oltre la banca",
+  title: "Il passato è scritto. Il futuro è tuo.",
   description:
-    "Guardare i movimenti del conto non basta quando devi capire se una nuova spesa entra davvero nel mese.",
+    "La banca ti mostra cosa è già uscito. Numa ti mostra cosa puoi ancora fare. Con fredda precisione.",
   statement:
-    "Numa non è solo un modo più ordinato di vedere le spese. È un modo più semplice per decidere con più calma."
+    "Dal rumore di mille righe alla sintesi di un margine, in un colpo d'occhio."
 } as const satisfies LandingProblemContent
 
 export const LANDING_STORY_POINTS: LandingStoryPoint[] = [
   {
     icon: WalletCards,
-    title: "Vedi le uscite, non quanto ti resta",
+    title: "Guarda avanti, non indietro.",
     description:
-      "La banca ti mostra cosa è già uscito. Numa ti aiuta a capire quanto puoi ancora spendere prima della fine del mese."
+      "La banca è passiva. Numa anticipa il tuo margine a fine mese, chiarendo oggi cosa accadrà domani."
   },
   {
     icon: ShieldCheck,
-    title: "I tuoi dati restano tuoi",
+    title: "Privato. Di default.",
     description:
-      "Numa funziona sul tuo dispositivo e non manda i tuoi movimenti a server esterni. Le tue finanze restano sotto il tuo controllo."
+      "Funziona sul tuo processore. I tuoi dati non partono per nessun server. Sei l'unico proprietario."
   },
   {
     icon: BrainCircuit,
-    title: "Prova prima di impegnarti",
+    title: "Prova. Poi decidi.",
     description:
-      "Vuoi aggiungere una rata o un abbonamento? Puoi vedere subito se quella spesa entra davvero nel budget del mese."
+      "Aggiungi uno scenario, verifica se la tua nuova spesa è sostenibile. Fallo con sicurezza prima di impegnarti."
   }
 ]
 
 export const LANDING_DIFFERENCE_SECTION = {
-  eyebrow: "Le tue finanze restano tue.",
-  title: "I tuoi soldi, senza passare da altri server."
+  eyebrow: "Sicurezza",
+  title: "Privato. E punto."
 } as const
 
 export const LANDING_DIFFERENTIATORS: LandingDifferentItem[] = [
   {
     icon: CloudOff,
-    title: "Niente copie altrove",
-    marketEyebrow: "Altrove",
-    marketLabel: "Molte app ti chiedono di caricare i movimenti sui loro server.",
-    glimpseEyebrow: "Di solito",
-    numaLabel: "Con Numa i dati restano sul tuo dispositivo. Li leggi e li usi senza spostarli altrove.",
-    kicker: "Sul tuo dispositivo",
-    note: "Nessun cloud obbligatorio nel percorso principale.",
-    glimpses: ["Cloud obbligatorio", "Copie remote", "Server esterni"]
+    title: "Zero Cloud",
+    marketEyebrow: "Gli altri",
+    marketLabel: "La quasi totalità delle app registra i tuoi movimenti sui propri server remoti.",
+    glimpseEyebrow: "Numa",
+    numaLabel: "Il tuo Mac o iPhone è l'unico luogo dell'universo in cui risiedono i tuoi dati.",
+    kicker: "Inviolabile",
+    note: "Tutta l'elaborazione avviene offline.",
+    glimpses: ["Nessun server", "Solo locale", "Zero tracking"]
   },
   {
     icon: ShieldCheck,
-    title: "Niente accesso al conto",
-    marketEyebrow: "Altrove",
-    marketLabel: "Altre soluzioni chiedono collegamenti diretti alla banca o credenziali condivise.",
-    glimpseEyebrow: "Di solito",
-    numaLabel: "Con Numa lavori solo con i movimenti che scegli tu di caricare. Nessun accesso diretto al conto.",
-    kicker: "Solo ciò che scegli",
-    note: "Decidi tu quali dati usare e quando usarli.",
-    glimpses: ["Accesso al conto", "Connessione continua", "Più dipendenze"]
+    title: "Sconnesso alla radice",
+    marketEyebrow: "Gli altri",
+    marketLabel: "Esigono le tue credenziali bancarie scavalcando la tua privacy.",
+    glimpseEyebrow: "Numa",
+    numaLabel: "Nessun accesso diretto. Sei tu a importare quello che desideri dal tuo istituto.",
+    kicker: "Il tuo caveau",
+    note: "Pieno controllo sul tuo perimetro.",
+    glimpses: ["Nessun login in-app", "Zero token Open Banking"]
   },
   {
     icon: BrainCircuit,
-    title: "Niente analisi inviate fuori",
-    marketEyebrow: "Altrove",
-    marketLabel: "Spesso le analisi passano da servizi esterni che non controlli davvero.",
-    glimpseEyebrow: "Di solito",
-    numaLabel: "Numa elabora le stime sul tuo dispositivo, così privacy e chiarezza restano nella stessa esperienza.",
-    kicker: "Analisi privata",
-    note: "La parte intelligente non richiede di inviare i tuoi dati altrove.",
-    glimpses: ["Analisi esterne", "Servizi terzi", "Percorsi opachi"]
+    title: "Intelligenza On-Device",
+    marketEyebrow: "Gli altri",
+    marketLabel: "Per l'analisi avanzata inviano i tuoi flussi a intelligenze cloud opache.",
+    glimpseEyebrow: "Numa",
+    numaLabel: "Il Brain calcola ogni stima direttamente sul chip del tuo dispositivo. Magia nera senza server.",
+    kicker: "Il Neural Engine",
+    note: "La potenza limite dell'AI a casa tua.",
+    glimpses: ["Motore locale", "Previsioni istantanee", "Machine Learning"]
   }
 ]
 
 export const LANDING_HOW_IT_WORKS_SECTION = {
-  eyebrow: "Come inizi",
-  title: "Quattro passaggi. Nessuna complicazione.",
+  eyebrow: "Setup",
+  title: "Quattro step. Magia inclusa.",
   description:
-    "Carichi i movimenti dalla banca, vedi il mese in un colpo d'occhio e capisci se una nuova spesa ci sta davvero."
+    "Un flusso invisibile. Pochi minuti per stabilire il tono dell'intero mese."
 } as const satisfies LandingSectionCopy
 
 export const LANDING_FLOW_STEPS: LandingFlowStep[] = [
   {
     icon: WalletCards,
-    cue: "Carica i movimenti",
+    cue: "Importa",
     stepLabel: "01",
-    title: "Carica i movimenti dalla tua banca",
+    title: "Importa dalla banca in un istante.",
     description:
-      "Scarichi il file dei movimenti dalla banca e lo carichi su Numa. L'app li organizza automaticamente in pochi passaggi."
+      "Scarica il file. Trascinalo su Numa. L'app fa il resto, categorizzando a una velocità impressionante."
   },
   {
     icon: ArrowDownUp,
-    cue: "Guarda il mese",
+    cue: "Sintetizza",
     stepLabel: "02",
-    title: "Vedi il tuo mese in un colpo d'occhio",
+    title: "Il tuo mese intero in uno schermo.",
     description:
-      "Entrate, spese ricorrenti e movimenti si ricompongono in una schermata unica, più facile da leggere."
+      "Tutte le entrate e uscite ricorrenti fuse in un'unica, limpida vista panoramica."
   },
   {
     icon: BrainCircuit,
-    cue: "Capisci quanto resta",
+    cue: "Prevedi",
     stepLabel: "03",
-    title: "Scopri quanto puoi ancora spendere",
+    title: "Il margine emerge dall'ombra.",
     description:
-      "Numa analizza come spendi di solito e ti mostra una previsione realistica di quello che potrebbe restarti a fine mese."
+      "Il Neural Core di Numa proietta le tue abitudini di spesa. Ti svela subito cosa resterà a fine mese."
   },
   {
     icon: ShieldCheck,
-    cue: "Prova una scelta",
+    cue: "Simula",
     stepLabel: "04",
-    title: "Prova una nuova spesa prima di farla",
+    title: "La spesa giusta al momento giusto.",
     description:
-      "Vuoi aggiungere una rata o un abbonamento? Lo verifichi prima, senza impegnarti e senza fare conti a mano."
+      "Inserisci una spesa fittizia. Il margine reagisce istantaneamente. Decidi serenamente, non indovini."
   }
 ]
 
 export const LANDING_BRAIN_CONTENT = {
-  sectionTitle: "Il Brain di Numa",
+  sectionTitle: "Il Neural Core",
   acts: [
     {
-      kicker: "Il lato intelligente di Numa",
-      titleLines: ["Numa osserva", "le tue abitudini", "e ti aiuta a prevedere il mese."],
+      kicker: "L'Intelligenza vera",
+      titleLines: ["Numa osserva", "e anticipa", "il tuo mese."],
       description:
-        "Analizza le spese abituali e ti mostra una stima realistica di quanto potrebbe restarti a fine mese."
+        "Non fa la media. Comprende il tuo ritmo biologico di spesa e lo proietta nel futuro in tempo reale."
     },
     {
-      kicker: "Una previsione utile",
-      titleLines: ["Ti aiuta", "a decidere,", "non a indovinare."],
+      kicker: "Utilità pura",
+      titleLines: ["Non indovina.", "Calcola,", "e rassicura."],
       description:
-        "La stima serve a capire se una spesa nuova è sostenibile, non a riempire la schermata di numeri."
+        "L'algoritmo non satura lo schermo di grafici insensati. Ti fornisce l'unico dato vitale: il budget rimanente sostenibile."
     },
     {
-      kicker: "Quando i dati non bastano",
-      titleLines: ["Numa te lo dice", "chiaramente,", "senza forzare la previsione."],
+      kicker: "Realismo estremo",
+      titleLines: ["Se manca base,", "non inventa,", "ti avvisa."],
       description:
-        "Se il quadro è troppo incompleto per una stima affidabile, te lo dice subito invece di fingere precisione."
+        "Quando i dati non bastano, si ferma. Niente miracoli opachi. Solo solida potenza di calcolo a tuo servizio."
     }
   ]
 } as const satisfies LandingBrainContent
 
 export const LANDING_OUTCOMES_SECTION = {
-  eyebrow: "Cosa cambia",
-  title: "Meno ansia, più chiarezza.",
+  eyebrow: "L'esito",
+  title: "Meno ansia. Controllo totale.",
   description:
-    "Il beneficio non è controllare tutto. È sentirti più tranquillo quando devi capire come sta andando il mese."
+    "Non sei qui per compilare tabelle excel anni '90. Sei qui per vivere serenamente, sicuro del tuo margine reale."
 } as const satisfies LandingSectionCopy
 
 export const LANDING_OUTCOMES: LandingOutcome[] = [
   {
     icon: ArrowDownUp,
-    title: "Smetti di evitare il conto",
+    title: "L'ansia del login scompare",
     description:
-      "Non apri l'app per scoprire una brutta sorpresa. La apri per capire come stai davvero questo mese."
+      "Scopri la certezza di sapere sempre cosa troverai in banca. Il mese perde opacità e acquisisce forma solida."
   },
   {
     icon: ShieldCheck,
-    title: "Decidi senza sensi di colpa",
+    title: "Lo status si rinforza",
     description:
-      "Quando sai quanto puoi spendere, una rata o un abbonamento diventano una scelta più chiara e meno ansiosa."
+      "Una borsa o un viaggio perdono il gusto amaro della decisione frettolosa. Riacquisti il privilegio della lucidità."
   },
   {
     icon: Sparkles,
-    title: "Pochi minuti a settimana bastano",
+    title: "Il tempo recuperato",
     description:
-      "Non servono fogli complessi o categorizzazioni infinite. Bastano pochi minuti per non perdere il filo del mese."
+      "Due minuti. Forse tre. Scusarsi per avere così tanto tempo libero diventerà un'abitudine."
   }
 ]
 
 export const LANDING_CLOSING = {
-  eyebrow: "Quando vuoi iniziare",
-  railLabel: "Nessuna registrazione richiesta",
-  title: "Apri il mese. Poi decidi.",
+  eyebrow: "Il primo passo",
+  railLabel: "Nessun login richiesto",
+  title: "Il mese. Nelle tue mani.",
   description:
-    "Prova Numa gratis. Il punto è capire i tuoi soldi con più chiarezza, prima di aggiungere una nuova spesa.",
-  primaryCtaLabel: "Prova GRATIS"
+    "Zero account da creare, zero attese infinite e niente cloud opachi. Esplora il tuo mese come merita di essere vissuto. Con il pieno potere decisionale.",
+  primaryCtaLabel: "Inizia senza account"
 } as const satisfies LandingClosingContent
 
 export const LANDING_FOOTER = {
-  description: "Un'app per gestire le tue finanze con più chiarezza, direttamente sul tuo dispositivo.",
+  description: "L'intelligenza finanziaria locale che inizia e finisce con il tuo consenso.",
   productHeading: "Prodotto",
-  productItems: ["Carica i movimenti", "Previsioni del mese", "Prova una spesa"] as const,
-  supportHeading: "Supporto",
+  productItems: ["Architettura Local First", "Il Neural Core", "Import CSV ultraveloce"] as const,
+  supportHeading: "Risorse",
   supportItems: [
-    { label: "FAQ", href: "/faq" },
-    { label: "Privacy", href: "/privacy" },
-    { label: "Aggiornamenti", href: "/updates" }
+    { label: "Domande frequenti", href: "/faq" },
+    { label: "Manifesto Privacy", href: "/privacy" },
+    { label: "Release log", href: "/updates" }
   ] as const satisfies readonly LandingFooterLink[]
 } as const satisfies LandingFooterContent
 
 export const LANDING_IMMERSIVE_FALLBACKS = {
   difference: {
     eyebrow: "La differenza di Numa",
-    title: "I tuoi soldi restano sul tuo dispositivo.",
+    title: "Privato. E punto.",
     description:
-      "La sezione si sta preparando con lo stesso tono della landing: privacy reale, niente cloud obbligatorio, più controllo per te."
+      "I tuoi dati finanziari nascono e muoiono sul perimetro protetto del tuo hardware. Niente server intermedi."
   },
   brain: {
-    eyebrow: "Il Brain di Numa",
-    title: "Una previsione utile, costruita sui tuoi dati.",
+    eyebrow: "Il Neural Core",
+    title: "Una previsione vitale.",
     description:
-      "Il Brain arriva come supporto alla decisione: meno incertezza, più chiarezza quando vuoi valutare una spesa."
+      "L'intelligenza di Numa scova pattern di spesa invisibili per restituirti un solido margine."
   }
 } as const

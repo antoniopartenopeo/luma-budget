@@ -3,7 +3,7 @@
 import { useRef } from "react"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
-import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion"
+import { motion, useReducedMotion, useScroll, useTransform, useMotionTemplate, type MotionValue } from "framer-motion"
 import { BrandLogo } from "@/components/ui/brand-logo"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -151,6 +151,18 @@ function LandingHeroPrismPanel({
     [motionConfig.baseRotate, motionConfig.scrollRotate]
   )
 
+  const zScaleMultiplierTransform = useTransform(
+    scrollYProgress,
+    LANDING_HERO_PRISM_SCROLL_RANGE,
+    [1, 2.5 + index * 0.8]
+  )
+  const blurBase = useTransform(
+    scrollYProgress,
+    LANDING_HERO_PRISM_SCROLL_RANGE,
+    [0, 14 + index * 8]
+  )
+  const dynamicFilter = useMotionTemplate`blur(${blurBase}px)`
+
   return (
     <motion.div
       aria-hidden="true"
@@ -166,15 +178,22 @@ function LandingHeroPrismPanel({
       }
     >
       <motion.div
-        className={cn(
-          "relative"
-        )}
         style={{
-          x: prefersReducedMotion ? motionConfig.baseX : x,
-          y: prefersReducedMotion ? motionConfig.baseY : y,
-          rotate: prefersReducedMotion ? motionConfig.baseRotate : rotate
+          scale: prefersReducedMotion ? 1 : zScaleMultiplierTransform,
+          filter: prefersReducedMotion ? "none" : dynamicFilter,
         }}
+        className="will-change-transform"
       >
+        <motion.div
+          className={cn(
+            "relative"
+          )}
+          style={{
+            x: prefersReducedMotion ? motionConfig.baseX : x,
+            y: prefersReducedMotion ? motionConfig.baseY : y,
+            rotate: prefersReducedMotion ? motionConfig.baseRotate : rotate
+          }}
+        >
         <motion.div
           className="relative flex items-center gap-4 sm:gap-5 lg:gap-6"
           animate={
@@ -230,6 +249,7 @@ function LandingHeroPrismPanel({
           </motion.div>
         </motion.div>
       </motion.div>
+    </motion.div>
     </motion.div>
   )
 }

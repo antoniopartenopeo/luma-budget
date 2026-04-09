@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { AnimatePresence, motion, useScroll } from "framer-motion"
+import { AnimatePresence, motion, useScroll, useMotionValue, useSpring, useTransform, useMotionTemplate, useInView } from "framer-motion"
 import { cn } from "@/lib/utils"
 import {
   LANDING_DIFFERENCE_SECTION,
@@ -14,25 +14,74 @@ const EDITORIAL_ACCENTS = [
   {
     ambient: "from-cyan-500/15 via-background to-background dark:from-white/[0.05] dark:via-background/88 dark:to-background",
     glow: "bg-cyan-500/30 dark:bg-white/12",
-    card: "border-cyan-400/25 bg-gradient-to-br from-cyan-500/[0.02] via-white to-cyan-50/50 dark:border-white/10 dark:from-white/[0.07] dark:via-black/84 dark:to-zinc-900/[0.56] dark:backdrop-blur-3xl",
+    liquid: "rgba(34,211,238,0.8)",
+    card: "border-transparent bg-gradient-to-br from-cyan-500/[0.02] via-white to-cyan-50/50 dark:from-white/[0.07] dark:via-black/84 dark:to-zinc-900/[0.56] dark:backdrop-blur-3xl",
     kicker: "text-cyan-700 dark:text-white/62 dark:drop-shadow-none drop-shadow-[0_0_8px_rgba(34,211,238,0.3)]",
     icon: "border-cyan-400/25 bg-cyan-500/10 text-cyan-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-zinc-100"
   },
   {
     ambient: "from-teal-500/14 via-background to-background dark:from-white/[0.045] dark:via-background/88 dark:to-background",
     glow: "bg-teal-500/26 dark:bg-white/11",
-    card: "border-teal-400/22 bg-gradient-to-br from-teal-500/[0.02] via-white to-teal-50/50 dark:border-white/9 dark:from-white/[0.06] dark:via-black/84 dark:to-zinc-950/[0.58] dark:backdrop-blur-3xl",
+    liquid: "rgba(45,212,191,0.8)",
+    card: "border-transparent bg-gradient-to-br from-teal-500/[0.02] via-white to-teal-50/50 dark:from-white/[0.06] dark:via-black/84 dark:to-zinc-950/[0.58] dark:backdrop-blur-3xl",
     kicker: "text-teal-700 dark:text-white/58 dark:drop-shadow-none drop-shadow-[0_0_8px_rgba(45,212,191,0.22)]",
     icon: "border-teal-400/25 bg-teal-500/10 text-teal-700 dark:border-white/9 dark:bg-white/[0.045] dark:text-zinc-200"
   },
   {
     ambient: "from-slate-500/12 via-background to-background dark:from-white/[0.04] dark:via-background/88 dark:to-background",
     glow: "bg-slate-500/22 dark:bg-white/10",
-    card: "border-slate-400/20 bg-gradient-to-br from-slate-500/[0.03] via-white to-slate-50/60 dark:border-white/9 dark:from-white/[0.055] dark:via-black/84 dark:to-stone-950/[0.52] dark:backdrop-blur-3xl",
+    liquid: "rgba(255,255,255,0.6)",
+    card: "border-transparent bg-gradient-to-br from-slate-500/[0.03] via-white to-slate-50/60 dark:from-white/[0.055] dark:via-black/84 dark:to-stone-950/[0.52] dark:backdrop-blur-3xl",
     kicker: "text-slate-700 dark:text-white/56 dark:drop-shadow-none drop-shadow-[0_0_8px_rgba(148,163,184,0.18)]",
     icon: "border-slate-400/25 bg-slate-500/8 text-slate-700 dark:border-white/9 dark:bg-white/[0.04] dark:text-stone-200"
   }
 ] as const
+
+function MaskedRevealTitle({ text, className }: { text: string; className?: string }) {
+  const ref = useRef<HTMLHeadingElement>(null)
+  const isInView = useInView(ref, { once: false, margin: "0px 0px -20% 0px" })
+  
+  const words = text.split(" ")
+
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.12, delayChildren: 0.1 }
+    }
+  }
+
+  const item = {
+    hidden: { y: "130%", filter: "blur(12px)", opacity: 0 },
+    show: {
+      y: "0%",
+      filter: "blur(0px)",
+      opacity: 1,
+      transition: {
+        duration: 1.2,
+        ease: [0.16, 1, 0.3, 1]
+      }
+    }
+  }
+
+  return (
+    <motion.h2
+      ref={ref}
+      variants={container}
+      initial="hidden"
+      animate={isInView ? "show" : "hidden"}
+      className={cn("flex flex-wrap items-center justify-center gap-x-[0.25em]", className)}
+    >
+      {words.map((word, i) => (
+        <span key={i} className="inline-block overflow-hidden pb-4 -mb-4 px-1 -mx-1">
+          <motion.span variants={item} className="inline-block will-change-transform">
+            {word}
+          </motion.span>
+        </span>
+      ))}
+    </motion.h2>
+  )
+}
 
 function MarketGhostLayer({
   item,
@@ -86,9 +135,44 @@ function NumaEditorialCard({
 }) {
   const accent = EDITORIAL_ACCENTS[index]
 
+  const cardRef = useRef<HTMLDivElement>(null)
+  
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
+
+  const springConfig = { damping: 25, stiffness: 200, mass: 0.5 }
+  
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [5, -5]), springConfig)
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-5, 5]), springConfig)
+
+  const glareX = useSpring(useTransform(mouseX, [-0.5, 0.5], [100, 0]), springConfig)
+  const glareY = useSpring(useTransform(mouseY, [-0.5, 0.5], [100, 0]), springConfig)
+  const backgroundPosition = useMotionTemplate`${glareX}% ${glareY}%`
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return
+    const rect = cardRef.current.getBoundingClientRect()
+    const width = rect.width
+    const height = rect.height
+    const clientX = e.clientX - rect.left
+    const clientY = e.clientY - rect.top
+    const xPct = clientX / width - 0.5
+    const yPct = clientY / height - 0.5
+    mouseX.set(xPct)
+    mouseY.set(yPct)
+  }
+
+  const handleMouseLeave = () => {
+    mouseX.set(0)
+    mouseY.set(0)
+  }
+
   return (
     <motion.div
       key={`numa-${item.title}`}
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       initial={{ opacity: 0, y: 36, rotate: -10, scale: 0.94 }}
       animate={{
         opacity: 1,
@@ -105,35 +189,64 @@ function NumaEditorialCard({
         transition: LANDING_MOTION_TIMINGS.fast
       }}
       className="absolute inset-x-[6%] top-[11%] bottom-[13%] will-change-transform sm:inset-x-[9%] sm:top-[10%] sm:bottom-[12%] lg:inset-x-[8%] lg:top-[9%] lg:bottom-[10%]"
+      style={{
+        rotateX,
+        rotateY,
+        transformStyle: "preserve-3d"
+      }}
     >
+      {/* LAYER 1: BASE VETRO (Flattened content) */}
       <div
         className={cn(
-          "@container/landing-card relative flex h-full flex-col justify-between overflow-hidden rounded-[2.7rem] border p-6 shadow-[0_44px_120px_-50px_rgba(15,23,42,0.55)] sm:p-7 lg:p-8",
+          "absolute inset-0 overflow-hidden rounded-[2.7rem] shadow-[0_44px_120px_-50px_rgba(15,23,42,0.55)]",
           accent.card
         )}
       >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.85),transparent_48%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_52%)]" />
+        <motion.div 
+          className="pointer-events-none absolute inset-0 z-50 opacity-40 dark:opacity-20 mix-blend-overlay transition-opacity duration-500"
+          style={{
+            background: "radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, transparent 60%)",
+            backgroundSize: "200% 200%",
+            backgroundPosition
+          }}
+        />
+      </div>
 
-        <div className="relative flex h-full min-h-0 flex-col justify-between gap-4">
-          <div className="space-y-4 lg:space-y-6">
-            <div className="space-y-2">
+      {/* LAYER 2: LIQUID EDGE (Isolato con Mask) */}
+      <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-[2.7rem] [isolation:isolate] [transform:translateZ(0)]">
+         <motion.div 
+            className="absolute left-1/2 top-1/2 aspect-square w-[200%] -translate-x-1/2 -translate-y-1/2"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+            style={{ background: `conic-gradient(transparent 75%, ${accent.liquid} 100%)` }}
+         />
+         <div className="absolute inset-[1px] rounded-[calc(2.7rem-1px)] bg-black [mix-blend-mode:destination-out]" />
+      </div>
+
+      {/* LAYER 3: 3D INTERNAL Z-DEPTH (Preserve-3D) */}
+      <div className="@container/landing-card relative flex h-full min-h-0 flex-col justify-between p-6 sm:p-7 lg:p-8 [transform-style:preserve-3d]">
+        <motion.div className="flex flex-col gap-4" style={{ translateZ: "40px", transformStyle: "preserve-3d" }}>
+          <div className="space-y-4 lg:space-y-6 [transform-style:preserve-3d]">
+            <motion.div style={{ translateZ: "20px" }} className="space-y-2">
               <p className={cn("text-[11px] font-semibold uppercase tracking-[0.16em] sm:text-[12px] lg:text-[13px] xl:text-[14px]", accent.kicker)}>
                 {item.kicker}
               </p>
-            </div>
+            </motion.div>
 
-            <div
+            <motion.div
+              style={{ translateZ: "30px" }}
               className={cn(
                 "flex h-10 w-10 items-center justify-center rounded-[1rem] border shadow-[0_18px_32px_-24px_rgba(15,23,42,0.45)] sm:h-12 sm:w-12 lg:h-16 lg:w-16 lg:rounded-[1.4rem]",
                 accent.icon
               )}
             >
               <item.icon className="h-4 w-4 sm:h-5 sm:w-5 lg:h-7 lg:w-7" />
-            </div>
+            </motion.div>
 
-            <div className="space-y-3 lg:space-y-4 xl:space-y-5">
+            <motion.div style={{ translateZ: "50px", transformStyle: "preserve-3d" }} className="space-y-3 lg:space-y-4 xl:space-y-5">
               <h2
-                id="landing-different-title"
+                id={`landing-different-title-${index}`}
                 className="max-w-[14ch] break-words text-balance font-black tracking-[-0.04em] leading-[0.92] text-foreground [font-size:clamp(2.2rem,11cqw,5.5rem)] [overflow-wrap:anywhere]"
               >
                 {item.title}
@@ -141,28 +254,28 @@ function NumaEditorialCard({
               <p className="max-w-[34ch] font-normal leading-relaxed text-foreground/78 [font-size:clamp(1rem,4cqw,1.28rem)]">
                 {item.numaLabel}
               </p>
-            </div>
+            </motion.div>
           </div>
+        </motion.div>
 
-            <div className="space-y-3 lg:space-y-4">
-              <div className="h-px w-16 bg-foreground/12 lg:w-24 xl:w-32" />
-              <p className="max-w-[32ch] text-[13px] font-normal leading-relaxed text-foreground/64 [font-size:clamp(0.85rem,3.2cqw,1.02rem)]">
-                {item.note}
-              </p>
+        <motion.div style={{ translateZ: "20px" }} className="space-y-3 lg:space-y-4">
+          <div className="h-px w-16 bg-foreground/12 lg:w-24 xl:w-32" />
+          <p className="max-w-[32ch] text-[13px] font-normal leading-relaxed text-foreground/64 [font-size:clamp(0.85rem,3.2cqw,1.02rem)]">
+            {item.note}
+          </p>
 
-            <div className="flex items-center gap-2 pt-0.5">
-              {LANDING_DIFFERENTIATORS.map((entry, dotIndex) => (
-                <span
-                  key={entry.title}
-                  className={cn(
-                    "h-1.5 rounded-full transition-[width,background-color] duration-300",
-                    dotIndex === index ? "w-10 bg-foreground/78" : "w-4 bg-foreground/12"
-                  )}
-                />
-              ))}
-            </div>
+          <div className="flex items-center gap-2 pt-0.5">
+            {LANDING_DIFFERENTIATORS.map((entry, dotIndex) => (
+              <span
+                key={entry.title}
+                className={cn(
+                  "h-1.5 rounded-full transition-[width,background-color] duration-300",
+                  dotIndex === index ? "w-10 bg-foreground/78" : "w-4 bg-foreground/12"
+                )}
+              />
+            ))}
           </div>
-        </div>
+        </motion.div>
       </div>
     </motion.div>
   )
@@ -211,9 +324,10 @@ export function LandingDifferentiatorCards() {
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-500 dark:text-foreground/58 dark:drop-shadow-none drop-shadow-[0_0_8px_rgba(34,211,238,0.4)] sm:text-[12px]">
               {LANDING_DIFFERENCE_SECTION.eyebrow}
             </p>
-            <h2 className="mx-auto mt-5 max-w-fit text-center text-3xl font-black leading-[0.96] tracking-tight text-foreground sm:text-4xl lg:text-5xl xl:text-6xl xl:whitespace-nowrap">
-              {LANDING_DIFFERENCE_SECTION.title}
-            </h2>
+            <MaskedRevealTitle
+              text={LANDING_DIFFERENCE_SECTION.title}
+              className="mx-auto mt-5 max-w-fit text-center text-3xl font-black leading-[0.96] tracking-tight text-foreground sm:text-4xl lg:text-5xl xl:text-6xl xl:whitespace-nowrap"
+            />
           </div>
 
           <div className="relative mx-auto h-[min(82vh,48rem)] w-full max-w-[32rem] sm:h-[min(85vh,54rem)] sm:max-w-[42rem] lg:max-w-[54rem] xl:h-[min(85vh,64rem)] xl:max-w-[64rem] [perspective:1400px]">

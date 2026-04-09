@@ -37,7 +37,7 @@ head_or_empty() {
 
 AMOUNT_EXEMPT_REGEX='src/features/import-csv/|/__tests__/|src/features/landing/components/motion-primitives.tsx:|src/domain/money/currency.ts:'
 PERIOD_CANDIDATE_EXEMPT_REGEX='src/features/dashboard/components/kpi-cards.tsx|src/features/dashboard/utils/dashboard-filter.ts|src/features/transactions/components/transactions-filter-bar.tsx|src/features/transactions/hooks/use-transactions-view.ts'
-INLINE_STYLE_EXEMPT_REGEX='src/features/dashboard/components/charts/echarts-wrapper.tsx:|src/features/dashboard/components/charts/premium-chart-section.tsx:|src/features/dashboard/components/charts/spending-composition-card.tsx:|src/components/layout/topbar-action-cluster.tsx:|src/app/opengraph-image.tsx:|src/app/twitter-image.tsx:|src/app/brain/_components/signal-matrix.tsx:|src/features/insights/components/topbar-brain-preview.tsx:|src/features/landing/components/motion-primitives.tsx:'
+INLINE_STYLE_EXEMPT_REGEX='src/features/dashboard/components/charts/echarts-wrapper.tsx:|src/features/dashboard/components/charts/premium-chart-section.tsx:|src/features/dashboard/components/charts/spending-composition-card.tsx:|src/components/layout/topbar-action-cluster.tsx:|src/components/layout/ambient-backdrop.tsx:|src/app/opengraph-image.tsx:|src/app/twitter-image.tsx:|src/app/brain/_components/signal-matrix.tsx:|src/features/insights/components/topbar-brain-preview.tsx:|src/features/landing/components/motion-primitives.tsx:|src/features/landing/components/landing-differentiator-cards.tsx:|src/features/landing/components/landing-editorial-card-frame.tsx:|src/features/landing/components/landing-hero-editorial.tsx:|src/features/landing/components/landing-previews.tsx:'
 
 # ---------------------------------------------------------
 # 1) parseFloat su importi (exception: import-csv normalize)
@@ -104,7 +104,7 @@ inline_style_all_count="$(count_lines "$inline_style_hits_all")"
 # - chart runtime sizing / canvas wrappers
 # - dynamic SVG orbit palette
 # - runtime color chips from data source
-# - Framer motion transforms and runtime-width indicators not representable as static classes
+# - Framer motion transforms, runtime gradients, and runtime-width indicators not representable as static classes
 # - next/og image routes, which render through inline-style layout primitives
 inline_style_exempt_hits="$(printf '%s\n' "$inline_style_hits_all" | grep -E \
     "$INLINE_STYLE_EXEMPT_REGEX" \

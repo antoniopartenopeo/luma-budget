@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef } from "react"
-import { motion, useReducedMotion, useScroll, useTransform, useMotionTemplate } from "framer-motion"
+import { m, useReducedMotion, useScroll, useTransform, useMotionTemplate } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { LANDING_BRAIN_CONTENT } from "../content"
 import { AppleFluidBackground } from "./motion-primitives"
@@ -100,12 +100,12 @@ export function LandingBrainHero() {
     <div ref={containerRef} className="relative h-[440vh] w-full">
       <div className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden bg-background">
         <div className="absolute inset-0 z-10 pointer-events-none [mask-image:linear-gradient(to_bottom,transparent_0%,black_15%,black_85%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_15%,black_85%,transparent_100%)]">
-          <motion.div style={fluidMaskStyle} className="absolute inset-0 h-full w-full">
+          <m.div style={fluidMaskStyle} className="absolute inset-0 h-full w-full">
             <AppleFluidBackground />
-          </motion.div>
+          </m.div>
         </div>
 
-        <motion.div
+        <m.div
           style={act1Style}
           data-testid="landing-brain-act-1"
           className="absolute inset-x-0 z-30 flex w-full flex-col items-center text-center pointer-events-none px-6"
@@ -125,9 +125,9 @@ export function LandingBrainHero() {
               {act1.description}
             </p>
           </div>
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           style={act2Style}
           data-testid="landing-brain-act-2"
           className="absolute inset-x-0 z-30 flex w-full flex-col items-center text-center pointer-events-none px-6"
@@ -146,9 +146,9 @@ export function LandingBrainHero() {
               {act2.description}
             </p>
           </div>
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           style={act3Style}
           data-testid="landing-brain-act-3"
           className="absolute inset-x-0 z-30 flex w-full flex-col items-center text-center pointer-events-none px-6"
@@ -167,7 +167,7 @@ export function LandingBrainHero() {
               {act3.description}
             </p>
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </div>
   )

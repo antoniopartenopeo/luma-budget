@@ -115,6 +115,8 @@ const LANDING_OUTCOME_ACCENTS = [
   }
 ] as const
 
+import { LazyMotion, domAnimation } from "framer-motion"
+
 export function LandingPage() {
   useEffect(() => {
     const scrollingElement = document.scrollingElement as HTMLElement | null
@@ -135,8 +137,10 @@ export function LandingPage() {
   }, [])
 
   return (
-    <div className="relative min-h-screen overflow-x-clip bg-background selection:bg-primary/20">
-      <AmbientBackdrop />
+    <LazyMotion features={domAnimation}>
+      <div className="relative min-h-screen overflow-x-clip bg-background selection:bg-primary/20">
+        <AmbientBackdrop />
+
 
       <div className="sticky top-4 z-50 mx-auto hidden w-fit px-4 md:block">
         <nav className={LANDING_FLOATING_NAV_CLASS}>
@@ -204,7 +208,8 @@ export function LandingPage() {
                         orbPositionClassName="-right-[15%] -top-[20%] h-[20rem] w-[20rem] sm:h-[28rem] sm:w-[28rem]"
                         decorativeText={step.stepLabel}
                         decorativeTextClassName={`-bottom-[12%] -right-[2%] text-8xl ${accent.number} sm:-bottom-[8%] sm:text-[13rem] lg:-right-[1%] lg:text-[18rem]`}
-                        className="p-8 shadow-[0_40px_100px_-50px_rgba(0,0,0,0.5)] sm:rounded-[3rem] sm:p-10 lg:p-12"
+                        className="shadow-[0_40px_100px_-50px_rgba(0,0,0,0.5)] sm:rounded-[3rem]"
+                        contentClassName="p-8 sm:p-10 lg:p-12"
                       >
                         <div className="relative flex flex-col items-start gap-6 pt-18 sm:gap-8 sm:pt-24 lg:pt-28">
                           <div className="min-w-0 flex-1 space-y-4 lg:space-y-5">
@@ -267,8 +272,9 @@ export function LandingPage() {
                         decorativeIconClassName={isHero ? "h-36 w-36 sm:h-44 sm:w-44 lg:h-56 lg:w-56" : "h-24 w-24 sm:h-32 sm:w-32 lg:h-40 lg:w-40"}
                         className={cn(
                           "shadow-[0_40px_100px_-50px_rgba(0,0,0,0.5)] sm:rounded-[3rem]",
-                          isHero ? "col-span-full p-8 sm:p-12 lg:p-16" : "col-span-1 p-8 sm:p-10"
+                          isHero ? "col-span-full" : "col-span-1"
                         )}
+                        contentClassName={isHero ? "p-8 sm:p-12 lg:p-16" : "p-8 sm:p-10"}
                       >
                         <div className={cn("relative flex h-full", isHero ? "flex-col gap-6 sm:gap-8" : "flex-col gap-6 sm:gap-8")}>
                           <div className={cn("space-y-4 pt-18 sm:pt-24 lg:pt-28", isHero ? "min-w-0 max-w-[48rem] pr-20 sm:pr-28 lg:pr-40" : "pr-14 sm:pr-20 lg:pr-28")}>
@@ -353,5 +359,6 @@ export function LandingPage() {
 
       <PublicSiteFooter />
     </div>
+    </LazyMotion>
   )
 }

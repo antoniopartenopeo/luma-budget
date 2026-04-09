@@ -2,7 +2,7 @@
 
 import type { CSSProperties, ReactNode } from "react"
 import { useRef } from "react"
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion"
+import { m, useReducedMotion, useScroll, useTransform } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 const CURRENT_COLOR_STOP = { stopColor: "currentColor" }
@@ -98,7 +98,7 @@ export function CinematicScrollCard({ children, className }: { children: ReactNo
 
   if (prefersReducedMotion) {
     return (
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
@@ -106,17 +106,17 @@ export function CinematicScrollCard({ children, className }: { children: ReactNo
         className={className}
       >
         {children}
-      </motion.div>
+      </m.div>
     )
   }
 
   return (
-    <motion.div
+    <m.div
       ref={ref}
       style={{ rotateX, scale, opacity, y, transformStyle: "preserve-3d", transformPerspective: 1200 }}
       className={className}
     >
       {children}
-    </motion.div>
+    </m.div>
   )
 }

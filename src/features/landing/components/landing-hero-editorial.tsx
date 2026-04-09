@@ -3,7 +3,7 @@
 import { useRef } from "react"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
-import { motion, useReducedMotion, useScroll, useTransform, useMotionTemplate, type MotionValue } from "framer-motion"
+import { m, useReducedMotion, useScroll, useTransform, useMotionTemplate, type MotionValue } from "framer-motion"
 import { BrandLogo } from "@/components/ui/brand-logo"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -77,7 +77,7 @@ function LandingHeroGlassGlyph({
   prefersReducedMotion: boolean
 }) {
   return (
-    <motion.div
+    <m.div
       className="relative flex h-[4.5rem] w-[4.5rem] items-center justify-center sm:h-32 sm:w-32 lg:h-40 lg:w-40"
       animate={
         prefersReducedMotion
@@ -114,7 +114,7 @@ function LandingHeroGlassGlyph({
         strokeWidth={1.25}
       />
       <div className="absolute inset-[10%] rounded-[30%] bg-[radial-gradient(circle_at_24%_18%,rgba(255,255,255,0.16),transparent_42%),linear-gradient(125deg,rgba(255,255,255,0.06),transparent_48%)] opacity-80" />
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -164,7 +164,7 @@ function LandingHeroPrismPanel({
   const dynamicFilter = useMotionTemplate`blur(${blurBase}px)`
 
   return (
-    <motion.div
+    <m.div
       aria-hidden="true"
       data-testid="landing-hero-prism-panel"
       className={cn("pointer-events-none absolute will-change-transform", positionClassName)}
@@ -177,14 +177,14 @@ function LandingHeroPrismPanel({
           : { ...LANDING_MOTION_TIMINGS.slow, delay: index * LANDING_HERO_PRISM_STAGGER }
       }
     >
-      <motion.div
+      <m.div
         style={{
           scale: prefersReducedMotion ? 1 : zScaleMultiplierTransform,
           filter: prefersReducedMotion ? "none" : dynamicFilter,
         }}
         className="will-change-transform"
       >
-        <motion.div
+        <m.div
           className={cn(
             "relative"
           )}
@@ -194,7 +194,7 @@ function LandingHeroPrismPanel({
             rotate: prefersReducedMotion ? motionConfig.baseRotate : rotate
           }}
         >
-        <motion.div
+        <m.div
           className="relative flex items-center gap-4 sm:gap-5 lg:gap-6"
           animate={
             prefersReducedMotion
@@ -220,7 +220,7 @@ function LandingHeroPrismPanel({
             accent={accent}
             prefersReducedMotion={prefersReducedMotion}
           />
-          <motion.div
+          <m.div
             className="space-y-1.5"
             animate={
               prefersReducedMotion
@@ -246,11 +246,11 @@ function LandingHeroPrismPanel({
               {panel.title}
             </p>
             <span className="sr-only">{panel.description}</span>
-          </motion.div>
-        </motion.div>
-      </motion.div>
-    </motion.div>
-    </motion.div>
+          </m.div>
+        </m.div>
+      </m.div>
+    </m.div>
+    </m.div>
   )
 }
 
@@ -277,7 +277,7 @@ export function LandingHeroEditorial() {
       <div className="pointer-events-none absolute inset-x-[-16%] top-1/2 z-[1] flex -translate-y-1/2 justify-center sm:inset-x-[-10%] lg:inset-x-[-6%]">
         <div className="relative aspect-[21/9] w-[220%] sm:w-[165%] lg:w-[126%] [mask-image:radial-gradient(ellipse_at_center,rgba(0,0,0,1)_54%,rgba(0,0,0,0.9)_70%,transparent_100%)] [-webkit-mask-image:radial-gradient(ellipse_at_center,rgba(0,0,0,1)_54%,rgba(0,0,0,0.9)_70%,transparent_100%)] bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.16),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(20,184,166,0.10),transparent_30%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.10),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.04),transparent_32%)]" />
       </div>
-      <motion.div
+      <m.div
         aria-hidden="true"
         className="pointer-events-none absolute right-[8%] top-[15%] z-[2] h-[18rem] w-[18rem] rounded-full bg-cyan-400/20 blur-[110px] dark:bg-white/10 sm:h-[24rem] sm:w-[24rem] lg:h-[30rem] lg:w-[30rem]"
         animate={

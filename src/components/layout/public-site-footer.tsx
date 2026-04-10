@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { ArrowRight } from "lucide-react"
 import { BrandLogo } from "@/components/ui/brand-logo"
 import { LANDING_FOOTER } from "@/features/landing/content"
 
@@ -46,6 +47,16 @@ export function PublicSiteFooter() {
               </ul>
             </div>
           </div>
+        </div>
+
+        <div className="mt-10 flex justify-center border-t border-black/6 pt-8 dark:border-white/8">
+          <Link
+            href="/dashboard"
+            className="group inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-[0_18px_40px_-24px_rgba(14,165,168,0.55)] transition-all duration-200 hover:shadow-[0_24px_52px_-24px_rgba(14,165,168,0.7)] hover:scale-[1.02]"
+          >
+            Inizia senza account
+            <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+          </Link>
         </div>
       </div>
     </footer>

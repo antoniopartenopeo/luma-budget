@@ -3,19 +3,20 @@
 import { useEffect } from "react"
 import dynamic from "next/dynamic"
 import Link from "next/link"
+import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { AmbientBackdrop } from "@/components/layout/ambient-backdrop"
 import { PublicSiteFooter } from "@/components/layout/public-site-footer"
 import { MacroSection } from "@/components/patterns/macro-section"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
 import { LIQUID_CAPSULE_CLASS, LIQUID_REFRACTION_CLASS } from "@/components/ui/glass-tokens"
+import { BrandLogo } from "@/components/ui/brand-logo"
 import { Button } from "@/components/ui/button"
 import {
   LANDING_CLOSING,
   LANDING_FLOW_STEPS,
   LANDING_HOW_IT_WORKS_SECTION,
   LANDING_IMMERSIVE_FALLBACKS,
-  LANDING_NAV_ITEMS,
   LANDING_OUTCOMES,
   LANDING_OUTCOMES_SECTION,
   LANDING_PROBLEM_SECTION
@@ -27,8 +28,6 @@ import { LandingImmersiveFallback } from "./components/landing-immersive-fallbac
 import { AppleFluidBackground } from "./components/motion-primitives"
 import { LandingSectionHeader } from "./components/landing-section-header"
 import {
-  LANDING_FLOATING_NAV_CLASS,
-  LANDING_NAV_LINK_CLASS,
   LANDING_EDITORIAL_CARD_HERO_TITLE_CLASS,
   LANDING_EDITORIAL_CARD_TITLE_CLASS
 } from "./components/landing-tokens"
@@ -142,15 +141,30 @@ export function LandingPage() {
         <AmbientBackdrop />
 
 
-      <div className="sticky top-4 z-50 mx-auto hidden w-fit px-4 md:block">
-        <nav className={LANDING_FLOATING_NAV_CLASS}>
-          {LANDING_NAV_ITEMS.map((item) => (
-            <a key={item.href} href={item.href} className={LANDING_NAV_LINK_CLASS}>
-              {item.label}
-            </a>
-          ))}
-        </nav>
-      </div>
+      <header className="absolute inset-x-0 top-0 z-50 px-4 pt-4 sm:pt-6">
+        <div className={cn("mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 rounded-full px-4 py-3", LIQUID_CAPSULE_CLASS, LIQUID_REFRACTION_CLASS)}>
+          <Link href="/" aria-label="Torna alla landing">
+            <BrandLogo variant="full" height={26} className="w-auto max-w-[132px] opacity-95" />
+          </Link>
+
+          <nav className="hidden items-center gap-1 md:flex">
+            <a href="#problema" className="rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/72 transition-colors hover:bg-black/[0.04] hover:text-foreground/90 dark:hover:bg-white/[0.08]">Problema</a>
+            <a href="#differenza" className="rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/72 transition-colors hover:bg-black/[0.04] hover:text-foreground/90 dark:hover:bg-white/[0.08]">Differenza</a>
+            <a href="#come-inizi" className="rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/72 transition-colors hover:bg-black/[0.04] hover:text-foreground/90 dark:hover:bg-white/[0.08]">Come inizi</a>
+            <a href="#brain-hero" className="rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/72 transition-colors hover:bg-black/[0.04] hover:text-foreground/90 dark:hover:bg-white/[0.08]">Brain</a>
+            <a href="#outcomes" className="rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/72 transition-colors hover:bg-black/[0.04] hover:text-foreground/90 dark:hover:bg-white/[0.08]">Risultati</a>
+          </nav>
+
+          <div className="flex items-center gap-2">
+            <Button asChild size="sm" className="rounded-full px-4 shadow-[0_18px_40px_-24px_rgba(14,165,168,0.55)]">
+              <Link href="/dashboard">
+                Inizia senza account
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </header>
 
       <main id="main-content" className="relative pb-32">
         <StaggerContainer className="space-y-36 sm:space-y-52">
@@ -299,61 +313,7 @@ export function LandingPage() {
             </div>
           </section>
 
-          <section id="open-app" className="relative overflow-hidden px-4 py-18 scroll-mt-24 sm:py-24 lg:py-28" aria-labelledby="landing-cta-title">
-            <div className="pointer-events-none absolute -inset-y-[24%] inset-x-[-12%] z-0 sm:-inset-y-[20%] sm:inset-x-[-8%] lg:-inset-y-[18%] lg:inset-x-[-6%]">
-              <AppleFluidBackground className="scale-[1.08]" />
-            </div>
-            <div className="pointer-events-none absolute -inset-y-[24%] inset-x-[-12%] z-[1] bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.16),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(20,184,166,0.10),transparent_30%)] sm:-inset-y-[20%] sm:inset-x-[-8%] lg:-inset-y-[18%] lg:inset-x-[-6%] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.10),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.04),transparent_32%)]" />
-            <div className="pointer-events-none absolute inset-0 z-[2] bg-[linear-gradient(to_bottom,rgba(255,255,255,1)_0%,rgba(255,255,255,0.78)_10%,rgba(255,255,255,0)_26%,rgba(255,255,255,0)_74%,rgba(255,255,255,0.78)_90%,rgba(255,255,255,1)_100%)] dark:bg-[linear-gradient(to_bottom,rgba(3,6,10,1)_0%,rgba(3,6,10,0.78)_10%,rgba(3,6,10,0)_26%,rgba(3,6,10,0)_74%,rgba(3,6,10,0.78)_90%,rgba(3,6,10,1)_100%)]" />
-            <div className="relative z-10 mx-auto max-w-6xl">
-              <h2 id="landing-cta-title" className="sr-only">
-                {LANDING_CLOSING.title}
-              </h2>
 
-              <div className="flex items-center justify-center py-8 sm:py-12 lg:py-16">
-                <Button
-                  asChild
-                  variant="ghost"
-                  size="default"
-                  className={cn(
-                    "group relative min-h-[8rem] w-full max-w-[64rem] overflow-hidden rounded-[2.4rem] px-6 py-8 text-center shadow-[0_34px_90px_-58px_rgba(15,23,42,0.28)] hover:bg-white/18 dark:hover:bg-white/[0.06] dark:shadow-[0_44px_120px_-72px_rgba(0,0,0,0.42)] sm:min-h-[10rem] sm:rounded-[3rem] sm:px-10 sm:py-10 lg:min-h-[12rem] lg:px-14 lg:py-12",
-                    LIQUID_CAPSULE_CLASS,
-                    LIQUID_REFRACTION_CLASS
-                  )}
-                >
-                  <Link
-                    href="/dashboard"
-                    aria-label={LANDING_CLOSING.primaryCtaLabel}
-                    className="relative flex w-full items-center justify-center overflow-hidden"
-                  >
-                    <span
-                      aria-hidden="true"
-                      className="pointer-events-none absolute inset-x-[14%] top-1/2 h-[54%] -translate-y-1/2 rounded-full bg-white/52 blur-[34px] dark:bg-white/[0.1] dark:blur-[42px]"
-                    />
-                    <span
-                      aria-hidden="true"
-                      className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_48%,rgba(255,255,255,0.2),transparent_42%)] opacity-70 dark:bg-[radial-gradient(circle_at_50%_48%,rgba(255,255,255,0.12),transparent_42%)]"
-                    />
-                    <span
-                      aria-hidden="true"
-                      className="pointer-events-none absolute text-[2.35rem] font-black italic leading-none tracking-tight text-slate-950/16 blur-[14px] dark:text-white/38 sm:text-[4.1rem] lg:text-[6rem]"
-                    >
-                      {LANDING_CLOSING.primaryCtaLabel}
-                    </span>
-                    <span
-                      aria-hidden="true"
-                      className="pointer-events-none absolute text-[2.35rem] font-black italic leading-none tracking-tight text-white/68 mix-blend-soft-light dark:text-white/32 dark:mix-blend-screen sm:text-[4.1rem] lg:text-[6rem]"
-                    >
-                      {LANDING_CLOSING.primaryCtaLabel}
-                    </span>
-                    <span className="relative block bg-gradient-to-b from-slate-950 via-slate-900/92 to-slate-700/78 bg-clip-text text-[2.35rem] font-black italic leading-none tracking-tight text-transparent dark:from-white dark:via-white/96 dark:to-white/84 sm:text-[4.1rem] lg:text-[6rem]">
-                      {LANDING_CLOSING.primaryCtaLabel}
-                    </span>
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </section>
         </StaggerContainer>
       </main>
 

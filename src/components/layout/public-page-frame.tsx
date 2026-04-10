@@ -10,13 +10,11 @@ import { cn } from "@/lib/utils"
 interface PublicPageFrameProps {
   children: React.ReactNode
   className?: string
-  showImportAction?: boolean
 }
 
 export function PublicPageFrame({
   children,
-  className,
-  showImportAction = true
+  className
 }: PublicPageFrameProps) {
   return (
     <div className="relative min-h-screen overflow-x-clip bg-background selection:bg-primary/20">
@@ -28,16 +26,10 @@ export function PublicPageFrame({
             <BrandLogo variant="full" height={26} className="w-auto max-w-[132px] opacity-95" />
           </Link>
 
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            {showImportAction ? (
-              <Button asChild variant="outline" size="sm" className="rounded-full px-4">
-                <Link href="/transactions/import">Prova import demo</Link>
-              </Button>
-            ) : null}
-
+          <div className="flex items-center gap-2">
             <Button asChild size="sm" className="rounded-full px-4 shadow-[0_18px_40px_-24px_rgba(14,165,168,0.55)]">
               <Link href="/dashboard">
-                Apri Numa
+                Inizia senza account
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>

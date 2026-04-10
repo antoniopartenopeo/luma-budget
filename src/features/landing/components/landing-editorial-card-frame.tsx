@@ -2,11 +2,8 @@
 
 import type { ReactNode } from "react"
 import type { LucideIcon } from "lucide-react"
-import { useRef } from "react"
 import { cn } from "@/lib/utils"
 import { CinematicScrollCard } from "./motion-primitives"
-import { useHardwareParallax } from "@/hooks/use-hardware-parallax"
-import { m } from "framer-motion"
 
 interface LandingEditorialCardFrameProps {
   children: ReactNode
@@ -52,14 +49,6 @@ export function LandingEditorialCardFrame({
   decorativeText,
   decorativeTextClassName
 }: LandingEditorialCardFrameProps) {
-  const cardRef = useRef<HTMLDivElement>(null)
-  const { rotateX, rotateY, backgroundPosition, isHovered, handleMouseEnter, handleMouseMove, handleMouseLeave } = useHardwareParallax({ tiltMax: 16 })
-
-  const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return
-    handleMouseMove(e, cardRef.current.getBoundingClientRect())
-  }
-
   return (
     <CinematicScrollCard
       className={cn(
@@ -69,28 +58,18 @@ export function LandingEditorialCardFrame({
         className
       )}
     >
-      <m.div
-        ref={cardRef}
-        onMouseEnter={handleMouseEnter}
-        onMouseMove={onMouseMove}
-        onMouseLeave={handleMouseLeave}
-        style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-        className="relative z-10 h-full w-full"
-      >
-        {/* Sfondo luminoso schiacciato leggermente all'indietro per aumentare la scala prospettica */}
-        <m.div 
-          className={cn(DEFAULT_HIGHLIGHT_CLASS, highlightClassName)} 
+      <div className="relative z-10 h-full w-full">
+        {/* Sfondo luminoso */}
+        <div
+          className={cn(DEFAULT_HIGHLIGHT_CLASS, highlightClassName)}
           style={{
             background: "radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, transparent 50%)",
             backgroundSize: "200% 200%",
-            backgroundPosition,
-            transform: "translateZ(-20px)"
           }}
         />
 
         {LeadingIcon || leadingText ? (
-          <m.div
-            animate={{ z: isHovered ? 70 : 10 }}
+          <div
             className={cn(
               "pointer-events-none absolute left-8 top-8 z-20 flex h-16 w-16 items-center justify-center rounded-[1.4rem] border shadow-[0_30px_60px_-15px_rgba(0,0,0,0.6)] sm:left-10 sm:top-10 sm:h-20 sm:w-20 sm:rounded-[1.8rem] lg:left-12 lg:top-12",
               leadingIconWrapperClassName
@@ -108,12 +87,11 @@ export function LandingEditorialCardFrame({
                 {leadingText}
               </span>
             )}
-          </m.div>
+          </div>
         ) : null}
 
         {orbClassName ? (
-          <m.div
-            animate={{ z: isHovered ? -40 : -10 }}
+          <div
             className={cn(
               "pointer-events-none absolute rounded-full blur-[80px] transition-transform duration-1000 group-hover:scale-110 sm:blur-[120px]",
               orbPositionClassName,
@@ -123,32 +101,30 @@ export function LandingEditorialCardFrame({
         ) : null}
 
         {DecorativeIcon ? (
-          <m.div
-            animate={{ z: isHovered ? 30 : 5 }}
+          <div
             className={cn(
               "pointer-events-none absolute text-foreground/[0.08] transition-transform duration-1000 group-hover:-translate-y-2 dark:text-white/[0.06]",
               decorativeIconPositionClassName
             )}
           >
             <DecorativeIcon className={cn("h-24 w-24 sm:h-32 sm:w-32 lg:h-40 lg:w-40", decorativeIconClassName)} strokeWidth={1.3} />
-          </m.div>
+          </div>
         ) : null}
 
         {decorativeText ? (
-          <m.div
-            animate={{ z: isHovered ? 20 : 0 }}
+          <div
             className={cn(
               "pointer-events-none absolute font-black italic tracking-tighter transition-transform duration-1000 group-hover:-translate-y-4",
               decorativeTextClassName
             )}
           >
             {decorativeText}
-          </m.div>
+          </div>
         ) : null}
 
-        {/* I Children (testi veri) pompati verso l'utente */}
-        <m.div animate={{ z: isHovered ? 60 : 15 }} className={cn("relative flex-1 h-full drop-shadow-2xl", contentClassName)}>{children}</m.div>
-      </m.div>
+        {/* Children */}
+        <div className={cn("relative flex-1 h-full", contentClassName)}>{children}</div>
+      </div>
     </CinematicScrollCard>
   )
 }

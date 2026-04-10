@@ -1,256 +1,62 @@
 "use client"
 
-import { useRef } from "react"
-import Link from "next/link"
-import { ArrowRight } from "lucide-react"
-import { m, useReducedMotion, useScroll, useTransform, useMotionTemplate, type MotionValue } from "framer-motion"
+import { useRef, useState, useEffect } from "react"
+import { m, useReducedMotion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import { BrandLogo } from "@/components/ui/brand-logo"
-import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import {
-  LANDING_HERO_EDITORIAL,
-  type LandingHeroEditorialPanel
-} from "../content"
-import {
-  LANDING_HERO_PRISM_GLOW_DURATION,
-  LANDING_HERO_PRISM_PANELS,
-  LANDING_HERO_PRISM_SCROLL_RANGE,
-  LANDING_HERO_PRISM_STAGGER,
-  LANDING_MOTION_EASE,
-  LANDING_MOTION_TIMINGS,
-} from "./landing-motion"
-import { LANDING_PRIMARY_CTA_CLASS } from "./landing-tokens"
+import { LANDING_HERO_EDITORIAL } from "../content"
 import { AppleFluidBackground } from "./motion-primitives"
 
-const PRISM_PANEL_ACCENTS = [
-  {
-    glowClassName: "bg-cyan-500/16 dark:bg-white/[0.08]",
-    glyphClassName: "text-cyan-700 dark:text-white/42",
-    labelClassName: "text-foreground dark:text-white/88"
-  },
-  {
-    glowClassName: "bg-slate-500/14 dark:bg-white/[0.07]",
-    glyphClassName: "text-slate-700 dark:text-white/38",
-    labelClassName: "text-foreground dark:text-white/84"
-  },
-  {
-    glowClassName: "bg-teal-500/15 dark:bg-white/[0.075]",
-    glyphClassName: "text-teal-700 dark:text-white/40",
-    labelClassName: "text-foreground dark:text-white/82"
-  }
-] as const
+// Nuovo componente "Dynamic Island" per ciclare le feature senza ingombrare la UI
+function DynamicFeatureCapsule({ prefersReducedMotion }: { prefersReducedMotion: boolean }) {
+  const [currentIndex, setCurrentIndex] = useState(0)
+  
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % LANDING_HERO_EDITORIAL.panels.length)
+    }, 3800)
+    return () => clearInterval(timer)
+  }, [])
 
-const PRISM_PANEL_POSITIONS = [
-  "left-[2%] top-[12%] sm:left-[14%] sm:top-[12%] lg:left-[18%] lg:top-[12%]",
-  "left-[9%] top-[38%] sm:left-[20%] sm:top-[38%] lg:left-[24%] lg:top-[38%]",
-  "left-[1%] top-[66%] sm:left-[10%] sm:top-[64%] lg:left-[14%] lg:top-[64%]"
-] as const
-
-const PRISM_PANEL_EDITORIAL_DRIFT = [
-  {
-    x: [0, 8, 3, -5, 0],
-    y: [0, -10, -4, 6, 0],
-    rotate: [-1.4, -3.1, -2.3, -1.1, -1.4],
-    duration: 15.5
-  },
-  {
-    x: [0, -6, -2, 7, 0],
-    y: [0, 7, 2, -8, 0],
-    rotate: [1.1, 2.6, 1.7, 0.6, 1.1],
-    duration: 17.25
-  },
-  {
-    x: [0, 7, 1, -6, 0],
-    y: [0, -8, -2, 5, 0],
-    rotate: [-1.2, -2.8, -1.8, -0.7, -1.2],
-    duration: 16.4
-  }
-] as const
-
-function LandingHeroGlassGlyph({
-  icon: Icon,
-  accent,
-  prefersReducedMotion
-}: {
-  icon: LandingHeroEditorialPanel["icon"]
-  accent: (typeof PRISM_PANEL_ACCENTS)[number]
-  prefersReducedMotion: boolean
-}) {
-  return (
-    <m.div
-      className="relative flex h-[4.5rem] w-[4.5rem] items-center justify-center sm:h-32 sm:w-32 lg:h-40 lg:w-40"
-      animate={
-        prefersReducedMotion
-          ? undefined
-          : {
-              scale: [1, 1.028, 0.994, 1],
-              opacity: [0.94, 1, 0.96, 0.94]
-            }
-      }
-      transition={
-        prefersReducedMotion
-          ? undefined
-          : {
-              duration: 9.5,
-              repeat: Infinity,
-              ease: LANDING_MOTION_EASE
-            }
-      }
-    >
-      <div className={cn("absolute inset-[14%] rounded-full blur-2xl", accent.glowClassName)} />
-      <Icon
-        aria-hidden="true"
-        className={cn("absolute inset-0 h-full w-full blur-[8px] opacity-22", accent.glyphClassName)}
-        strokeWidth={2.4}
-      />
-      <Icon
-        aria-hidden="true"
-        className={cn("absolute inset-0 h-full w-full opacity-34", accent.glyphClassName)}
-        strokeWidth={2.1}
-      />
-      <Icon
-        aria-hidden="true"
-        className="absolute inset-0 h-full w-full text-white/42 mix-blend-screen"
-        strokeWidth={1.25}
-      />
-      <div className="absolute inset-[10%] rounded-[30%] bg-[radial-gradient(circle_at_24%_18%,rgba(255,255,255,0.16),transparent_42%),linear-gradient(125deg,rgba(255,255,255,0.06),transparent_48%)] opacity-80" />
-    </m.div>
-  )
-}
-
-function LandingHeroPrismPanel({
-  accent,
-  index,
-  panel,
-  positionClassName,
-  prefersReducedMotion,
-  scrollYProgress
-}: {
-  accent: (typeof PRISM_PANEL_ACCENTS)[number]
-  index: number
-  panel: LandingHeroEditorialPanel
-  positionClassName: string
-  prefersReducedMotion: boolean
-  scrollYProgress: MotionValue<number>
-}) {
-  const motionConfig = LANDING_HERO_PRISM_PANELS[index]
-  const drift = PRISM_PANEL_EDITORIAL_DRIFT[index]
-  const x = useTransform(
-    scrollYProgress,
-    LANDING_HERO_PRISM_SCROLL_RANGE,
-    [motionConfig.baseX, motionConfig.baseX + motionConfig.scrollX]
-  )
-  const y = useTransform(
-    scrollYProgress,
-    LANDING_HERO_PRISM_SCROLL_RANGE,
-    [motionConfig.baseY, motionConfig.baseY + motionConfig.scrollY]
-  )
-  const rotate = useTransform(
-    scrollYProgress,
-    LANDING_HERO_PRISM_SCROLL_RANGE,
-    [motionConfig.baseRotate, motionConfig.scrollRotate]
-  )
-
-  const zScaleMultiplierTransform = useTransform(
-    scrollYProgress,
-    LANDING_HERO_PRISM_SCROLL_RANGE,
-    [1, 2.5 + index * 0.8]
-  )
-  const blurBase = useTransform(
-    scrollYProgress,
-    LANDING_HERO_PRISM_SCROLL_RANGE,
-    [0, 14 + index * 8]
-  )
-  const dynamicFilter = useMotionTemplate`blur(${blurBase}px)`
+  const currentPanel = LANDING_HERO_EDITORIAL.panels[currentIndex]
+  const Icon = currentPanel.icon
 
   return (
-    <m.div
-      aria-hidden="true"
-      data-testid="landing-hero-prism-panel"
-      className={cn("pointer-events-none absolute will-change-transform", positionClassName)}
-      style={{ scale: motionConfig.scale }}
-      initial={prefersReducedMotion ? false : { opacity: 0, scale: motionConfig.scale - 0.08 }}
-      animate={{ opacity: 1, scale: motionConfig.scale }}
-      transition={
-        prefersReducedMotion
-          ? LANDING_MOTION_TIMINGS.instant
-          : { ...LANDING_MOTION_TIMINGS.slow, delay: index * LANDING_HERO_PRISM_STAGGER }
-      }
-    >
+    <div className="relative mt-12 flex justify-center sm:mt-16">
       <m.div
-        style={{
-          scale: prefersReducedMotion ? 1 : zScaleMultiplierTransform,
-          filter: prefersReducedMotion ? "none" : dynamicFilter,
-        }}
-        className="will-change-transform"
+        layout
+        transition={
+          prefersReducedMotion ? undefined : { type: "spring", stiffness: 300, damping: 28, mass: 1 }
+        }
+        className="flex items-center gap-3 overflow-hidden rounded-full bg-black/4 border border-black/8 px-4 py-2.5 shadow-[inset_0_1px_4px_rgba(255,255,255,0.4)] backdrop-blur-xl dark:bg-white-[0.03] dark:border-white/[0.08] dark:shadow-[inset_0_1px_2px_rgba(255,255,255,0.1),_0_8px_32px_-12px_rgba(0,0,0,0.5)] sm:px-5 sm:py-3"
       >
-        <m.div
-          className={cn(
-            "relative"
-          )}
-          style={{
-            x: prefersReducedMotion ? motionConfig.baseX : x,
-            y: prefersReducedMotion ? motionConfig.baseY : y,
-            rotate: prefersReducedMotion ? motionConfig.baseRotate : rotate
-          }}
-        >
-        <m.div
-          className="relative flex items-center gap-4 sm:gap-5 lg:gap-6"
-          animate={
-            prefersReducedMotion
-              ? undefined
-              : {
-                  x: [...drift.x],
-                  y: [...drift.y],
-                  rotate: [...drift.rotate]
-                }
-          }
-          transition={
-            prefersReducedMotion
-              ? undefined
-              : {
-                  duration: drift.duration,
-                  repeat: Infinity,
-                  ease: LANDING_MOTION_EASE
-                }
-          }
-        >
-          <LandingHeroGlassGlyph
-            icon={panel.icon}
-            accent={accent}
-            prefersReducedMotion={prefersReducedMotion}
-          />
+        <AnimatePresence mode="popLayout" initial={false}>
           <m.div
-            className="space-y-1.5"
-            animate={
-              prefersReducedMotion
-                ? undefined
-                : { y: [0, -2, 1, 0], opacity: [0.9, 1, 0.94, 0.9] }
-            }
-            transition={
-              prefersReducedMotion
-                ? undefined
-                : {
-                    duration: drift.duration - 2,
-                    repeat: Infinity,
-                    ease: LANDING_MOTION_EASE
-                  }
-            }
+            key={`icon-${currentIndex}`}
+            initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.5, rotate: -20 }}
+            animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, rotate: 0 }}
+            exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.5, rotate: 20 }}
+            transition={{ type: "spring", stiffness: 350, damping: 25 }}
+            className="flex-shrink-0 text-foreground/80 dark:text-white/80"
           >
-            <p
-              className={cn(
-                "text-[0.96rem] font-black leading-none tracking-tight sm:text-[1.8rem] lg:text-[2.4rem]",
-                accent.labelClassName
-              )}
-            >
-              {panel.title}
-            </p>
-            <span className="sr-only">{panel.description}</span>
+            <Icon strokeWidth={2.5} className="h-4 w-4 sm:h-5 sm:w-5" />
           </m.div>
-        </m.div>
+        </AnimatePresence>
+
+        <AnimatePresence mode="popLayout" initial={false}>
+          <m.p
+            key={`text-${currentIndex}`}
+            initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, filter: "blur(4px)", x: -8 }}
+            animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, filter: "blur(0px)", x: 0 }}
+            exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, filter: "blur(4px)", x: 8 }}
+            transition={{ type: "spring", stiffness: 350, damping: 28 }}
+            className="whitespace-nowrap text-xs font-semibold leading-none tracking-wide text-foreground/90 dark:text-white/90 sm:text-sm"
+          >
+            {currentPanel.title}
+          </m.p>
+        </AnimatePresence>
       </m.div>
-    </m.div>
-    </m.div>
+    </div>
   )
 }
 
@@ -262,94 +68,83 @@ export function LandingHeroEditorial() {
     offset: ["start start", "end start"]
   })
 
+  const yOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
+  const yTranslate = useTransform(scrollYProgress, [0, 1], [0, 60])
+
   return (
     <section
       ref={sectionRef}
-      className="relative flex min-h-[42rem] w-full items-center px-4 py-10 sm:min-h-[44rem] sm:px-6 sm:py-12 lg:min-h-[min(46rem,78svh)] lg:px-8 lg:py-14"
+      className="relative flex min-h-[100svh] w-full flex-col items-center overflow-visible px-4 pt-[18vh] sm:px-6 sm:pt-[20vh] lg:px-8 lg:pt-[22vh]"
       aria-labelledby="landing-hero-title"
       data-testid="landing-hero-editorial"
     >
-      <div className="pointer-events-none absolute inset-x-[-16%] top-1/2 z-0 flex -translate-y-1/2 justify-center sm:inset-x-[-10%] lg:inset-x-[-6%]">
-        <div className="relative aspect-[21/9] w-[220%] sm:w-[165%] lg:w-[126%] [mask-image:radial-gradient(ellipse_at_center,rgba(0,0,0,1)_54%,rgba(0,0,0,0.9)_70%,transparent_100%)] [-webkit-mask-image:radial-gradient(ellipse_at_center,rgba(0,0,0,1)_54%,rgba(0,0,0,0.9)_70%,transparent_100%)]">
-          <AppleFluidBackground className="scale-[1.08]" />
-        </div>
+      {/* Background Sfumato che copre l'intero viewport dall'alto (Y=0) */}
+      <div className="pointer-events-none absolute inset-0 z-0 [mask-image:linear-gradient(to_bottom,black_40%,transparent_100%)]">
+        <AppleFluidBackground className="scale-[1.08] sm:scale-[1.04]" />
       </div>
-      <div className="pointer-events-none absolute inset-x-[-16%] top-1/2 z-[1] flex -translate-y-1/2 justify-center sm:inset-x-[-10%] lg:inset-x-[-6%]">
-        <div className="relative aspect-[21/9] w-[220%] sm:w-[165%] lg:w-[126%] [mask-image:radial-gradient(ellipse_at_center,rgba(0,0,0,1)_54%,rgba(0,0,0,0.9)_70%,transparent_100%)] [-webkit-mask-image:radial-gradient(ellipse_at_center,rgba(0,0,0,1)_54%,rgba(0,0,0,0.9)_70%,transparent_100%)] bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.16),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(20,184,166,0.10),transparent_30%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.10),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.04),transparent_32%)]" />
-      </div>
+
+      {/* Layer gradient per migliorare il contrasto con i testi scuri/chiari */}
+      <div className="pointer-events-none absolute inset-0 z-[1] [mask-image:linear-gradient(to_bottom,black_40%,transparent_100%)] bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.12),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(20,184,166,0.08),transparent_40%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.03),transparent_32%)]" />
+
+      {/* Luce zenitale per dare un forte effetto "Apple" / "Vercel" centrato */}
       <m.div
         aria-hidden="true"
-        className="pointer-events-none absolute right-[8%] top-[15%] z-[2] h-[18rem] w-[18rem] rounded-full bg-cyan-400/20 blur-[110px] dark:bg-white/10 sm:h-[24rem] sm:w-[24rem] lg:h-[30rem] lg:w-[30rem]"
-        animate={
-          prefersReducedMotion
-            ? undefined
-            : { opacity: [0.35, 0.62, 0.4], scale: [0.92, 1.06, 0.98] }
-        }
-        transition={
-          prefersReducedMotion
-            ? undefined
-            : {
-                duration: LANDING_HERO_PRISM_GLOW_DURATION,
-                repeat: Infinity,
-                ease: LANDING_MOTION_EASE
-              }
-        }
+        className="pointer-events-none absolute left-1/2 top-[5%] z-[2] -translate-x-1/2 h-[30rem] w-[50rem] rounded-[100%] bg-white/40 blur-[120px] dark:bg-cyan-500/10 sm:h-[40rem] sm:w-[70rem]"
+        style={{ opacity: yOpacity }}
       />
 
-      <div className="pointer-events-none absolute inset-y-0 left-[46%] right-[-34%] z-10 sm:left-[40%] sm:right-[-16%] lg:left-[48%] lg:right-[-8%]">
-        {LANDING_HERO_EDITORIAL.panels.map((panel, index) => (
-          <LandingHeroPrismPanel
-            key={panel.title}
-            accent={PRISM_PANEL_ACCENTS[index]}
-            index={index}
-            panel={panel}
-            positionClassName={PRISM_PANEL_POSITIONS[index]}
-            prefersReducedMotion={prefersReducedMotion}
-            scrollYProgress={scrollYProgress}
+      {/* Core Layout: Centrato, minimale, estremo */}
+      <m.div 
+        className="relative z-30 mx-auto flex w-full max-w-[56rem] flex-col items-center text-center"
+        style={{ opacity: yOpacity, y: yTranslate }}
+      >
+        <h1 id="landing-hero-title" className="sr-only">
+          {LANDING_HERO_EDITORIAL.srTitle}
+        </h1>
+
+        {/* Smart Logo: solo il mark sopra il testo */}
+        <m.div 
+          className="pointer-events-none mb-6 sm:mb-8"
+          initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 20, scale: 0.95 }}
+          animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <BrandLogo
+            variant="smart"
+            width={160}
+            className="h-auto w-[5rem] opacity-80 mix-blend-multiply dark:opacity-90 dark:mix-blend-screen sm:w-[6.5rem] lg:w-[8rem]"
           />
-        ))}
-      </div>
+        </m.div>
 
-      <div className="relative z-30 mx-auto flex w-full max-w-6xl items-center">
-        <div className="max-w-[38rem] py-6 sm:py-10">
-          <h1 id="landing-hero-title" className="sr-only">
-            {LANDING_HERO_EDITORIAL.srTitle}
-          </h1>
+        {/* Tipografia Massiccia */}
+        <m.p 
+          className="max-w-[14ch] text-[clamp(2.75rem,8vw,6.5rem)] font-black leading-[0.95] tracking-tight text-foreground/95 [text-wrap:balance]"
+          initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 30 }}
+          animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+        >
+          {LANDING_HERO_EDITORIAL.headline}
+        </m.p>
 
-          <div className="pointer-events-none mt-18 sm:mt-24 lg:mt-28">
-            <BrandLogo
-              variant="full"
-              height={132}
-              className="h-auto w-[min(88vw,34rem)] justify-start opacity-[0.75] saturate-[0.8] dark:opacity-[0.75]"
-            />
-          </div>
+        <m.p 
+          className="mt-6 max-w-[22rem] text-[1.05rem] font-medium leading-[1.5] tracking-[-0.01em] text-foreground/60 sm:max-w-[34rem] sm:text-[1.25rem] lg:max-w-[40rem] lg:text-[1.35rem]"
+          initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
+          animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+        >
+          {LANDING_HERO_EDITORIAL.supportingCopy}
+        </m.p>
 
-          <p className="mt-4 max-w-[14ch] text-[1.6rem] font-black leading-[0.98] tracking-tight text-foreground sm:text-[2rem] lg:text-[2.35rem]">
-            {LANDING_HERO_EDITORIAL.headline}
-          </p>
-
-          <p className="mt-4 max-w-[18rem] text-[0.98rem] font-medium leading-[1.45] tracking-[-0.01em] text-foreground/68 sm:max-w-[24rem] sm:text-[1.08rem] sm:leading-relaxed lg:max-w-[29rem] lg:text-[1.16rem]">
-            {LANDING_HERO_EDITORIAL.supportingCopy}
-          </p>
-
-          <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-            <Button
-              asChild
-              size="default"
-              className={LANDING_PRIMARY_CTA_CLASS}
-            >
-              <Link href="/dashboard">
-                {LANDING_HERO_EDITORIAL.primaryCtaLabel}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-
-          <p className="mt-4 max-w-[22rem] text-[11px] font-medium leading-relaxed tracking-[0.01em] text-foreground/52 sm:max-w-[26rem] sm:text-[12px]">
-            {LANDING_HERO_EDITORIAL.microcopy}
-          </p>
-        </div>
-      </div>
+        {/* Dynamic Capsule per scorrere tra le feature senza impattare sul layout */}
+        <m.div
+          initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 15 }}
+          animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.35 }}
+        >
+          <DynamicFeatureCapsule prefersReducedMotion={prefersReducedMotion} />
+        </m.div>
+      </m.div>
     </section>
   )
 }
+

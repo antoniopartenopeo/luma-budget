@@ -1,64 +1,12 @@
 "use client"
 
-import { useRef, useState, useEffect } from "react"
-import { m, useReducedMotion, useScroll, useTransform, AnimatePresence } from "framer-motion"
+import { useRef } from "react"
+import { m, useReducedMotion, useScroll, useTransform } from "framer-motion"
 import { BrandLogo } from "@/components/ui/brand-logo"
 import { cn } from "@/lib/utils"
 import { LANDING_HERO_EDITORIAL } from "../content"
 import { AppleFluidBackground } from "./motion-primitives"
-
-// Nuovo componente "Dynamic Island" per ciclare le feature senza ingombrare la UI
-function DynamicFeatureCapsule({ prefersReducedMotion }: { prefersReducedMotion: boolean }) {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % LANDING_HERO_EDITORIAL.panels.length)
-    }, 3800)
-    return () => clearInterval(timer)
-  }, [])
-
-  const currentPanel = LANDING_HERO_EDITORIAL.panels[currentIndex]
-  const Icon = currentPanel.icon
-
-  return (
-    <div className="relative mt-12 flex justify-center sm:mt-16">
-      <m.div
-        layout
-        transition={
-          prefersReducedMotion ? undefined : { type: "spring", stiffness: 300, damping: 28, mass: 1 }
-        }
-        className="flex items-center gap-3 overflow-hidden rounded-full bg-black/4 border border-black/8 px-4 py-2.5 shadow-[inset_0_1px_4px_rgba(255,255,255,0.4)] backdrop-blur-xl dark:bg-white-[0.03] dark:border-white/[0.08] dark:shadow-[inset_0_1px_2px_rgba(255,255,255,0.1),_0_8px_32px_-12px_rgba(0,0,0,0.5)] sm:px-5 sm:py-3"
-      >
-        <AnimatePresence mode="popLayout" initial={false}>
-          <m.div
-            key={`icon-${currentIndex}`}
-            initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.5, rotate: -20 }}
-            animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, scale: 1, rotate: 0 }}
-            exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.5, rotate: 20 }}
-            transition={{ type: "spring", stiffness: 350, damping: 25 }}
-            className="flex-shrink-0 text-foreground/80 dark:text-white/80"
-          >
-            <Icon strokeWidth={2.5} className="h-4 w-4 sm:h-5 sm:w-5" />
-          </m.div>
-        </AnimatePresence>
-
-        <AnimatePresence mode="popLayout" initial={false}>
-          <m.p
-            key={`text-${currentIndex}`}
-            initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, filter: "blur(4px)", x: -8 }}
-            animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, filter: "blur(0px)", x: 0 }}
-            exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, filter: "blur(4px)", x: 8 }}
-            transition={{ type: "spring", stiffness: 350, damping: 28 }}
-            className="whitespace-nowrap text-xs font-semibold leading-none tracking-wide text-foreground/90 dark:text-white/90 sm:text-sm"
-          >
-            {currentPanel.title}
-          </m.p>
-        </AnimatePresence>
-      </m.div>
-    </div>
-  )
-}
+import { LandingCoverFlow } from "./landing-cover-flow"
 
 export function LandingHeroEditorial() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -94,56 +42,80 @@ export function LandingHeroEditorial() {
       />
 
       {/* Core Layout: Centrato, minimale, estremo */}
-      <m.div 
-        className="relative z-30 mx-auto flex w-full max-w-[56rem] flex-col items-center text-center"
-        style={{ opacity: yOpacity, y: yTranslate }}
-      >
-        <h1 id="landing-hero-title" className="sr-only">
-          {LANDING_HERO_EDITORIAL.srTitle}
-        </h1>
+      <div className="relative z-30 mx-auto flex w-full max-w-[56rem] flex-col items-center text-center">
+        
+        {/* Gruppo Testuale: Svanisce scrollando giù */}
+        <m.div className="flex flex-col items-center text-center" style={{ opacity: yOpacity, y: yTranslate }}>
+          <h1 id="landing-hero-title" className="sr-only">
+            {LANDING_HERO_EDITORIAL.srTitle}
+          </h1>
 
-        {/* Smart Logo: solo il mark sopra il testo */}
-        <m.div 
-          className="pointer-events-none mb-6 sm:mb-8"
-          initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 20, scale: 0.95 }}
-          animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <BrandLogo
-            variant="smart"
-            width={160}
-            className="h-auto w-[5rem] opacity-80 mix-blend-multiply dark:opacity-90 dark:mix-blend-screen sm:w-[6.5rem] lg:w-[8rem]"
-          />
+          {/* Smart Logo: solo il mark sopra il testo */}
+          <m.div 
+            className="pointer-events-none mb-6 sm:mb-8"
+            initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 20, scale: 0.95 }}
+            animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <BrandLogo
+              variant="smart"
+              width={160}
+              className="h-auto w-[5rem] opacity-80 mix-blend-multiply dark:opacity-90 dark:mix-blend-screen sm:w-[6.5rem] lg:w-[8rem]"
+            />
+          </m.div>
+
+          {/* Tipografia Massiccia */}
+          <m.p 
+            className="max-w-[14ch] text-[clamp(2.75rem,8vw,6.5rem)] font-black leading-[0.95] tracking-tight text-foreground/95 [text-wrap:balance]"
+            initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 30 }}
+            animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+          >
+            {LANDING_HERO_EDITORIAL.headline}
+          </m.p>
+
+          <m.p 
+            className="mt-6 max-w-[22rem] text-[1.05rem] font-medium leading-[1.5] tracking-[-0.01em] text-foreground/60 sm:max-w-[34rem] sm:text-[1.25rem] lg:max-w-[40rem] lg:text-[1.35rem]"
+            initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
+            animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+          >
+            {LANDING_HERO_EDITORIAL.supportingCopy}
+          </m.p>
         </m.div>
 
-        {/* Tipografia Massiccia */}
-        <m.p 
-          className="max-w-[14ch] text-[clamp(2.75rem,8vw,6.5rem)] font-black leading-[0.95] tracking-tight text-foreground/95 [text-wrap:balance]"
-          initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 30 }}
-          animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-        >
-          {LANDING_HERO_EDITORIAL.headline}
-        </m.p>
+        {/* Dark Cover Flow Mockups - NON Svanisce on scroll */}
+        <div className="w-full">
+          <LandingCoverFlow />
+        </div>
 
-        <m.p 
-          className="mt-6 max-w-[22rem] text-[1.05rem] font-medium leading-[1.5] tracking-[-0.01em] text-foreground/60 sm:max-w-[34rem] sm:text-[1.25rem] lg:max-w-[40rem] lg:text-[1.35rem]"
-          initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
-          animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-        >
-          {LANDING_HERO_EDITORIAL.supportingCopy}
-        </m.p>
-
-        {/* Dynamic Capsule per scorrere tra le feature senza impattare sul layout */}
+        {/* Trus Bar / Social Proof Istituzionale Above-The-Fold */}
         <m.div
-          initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 15 }}
-          animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.35 }}
+          className="pointer-events-none mt-16 flex flex-col items-center gap-4 sm:mt-24 lg:mt-32"
+          initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+          animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1 }}
+          transition={{ duration: 2, ease: "easeOut", delay: 0.8 }}
         >
-          <DynamicFeatureCapsule prefersReducedMotion={prefersReducedMotion} />
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/30 dark:text-white/30">
+            Architettura blindata a zero-conoscenza
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 opacity-40 dark:opacity-30 grayscale saturate-0 [filter:contrast(1.2)]">
+            <span className="flex items-center gap-2 text-[12.5px] font-medium tracking-tight text-foreground">
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+              Local-First 100%
+            </span>
+            <span className="flex items-center gap-2 text-[12.5px] font-medium tracking-tight text-foreground">
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" /></svg>
+              Apple Neural Engine
+            </span>
+            <span className="flex items-center gap-2 text-[12.5px] font-medium tracking-tight text-foreground">
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
+              Zero Cloud Tracking
+            </span>
+          </div>
         </m.div>
-      </m.div>
+
+      </div>
     </section>
   )
 }

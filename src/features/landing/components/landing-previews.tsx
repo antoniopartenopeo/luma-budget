@@ -3,7 +3,7 @@
 import { useRef } from "react"
 import { m } from "framer-motion"
 import { useHardwareParallax } from "@/hooks/use-hardware-parallax"
-import { LANDING_PROBLEM_SECTION, LANDING_STORY_POINTS } from "../content"
+import { LANDING_STORY_POINTS } from "../content"
 import { LANDING_EDITORIAL_CARD_TITLE_CLASS } from "./landing-tokens"
 import { LandingEditorialCardFrame } from "./landing-editorial-card-frame"
 
@@ -40,33 +40,82 @@ function ConsoleChassis() {
       onMouseMove={_handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      className="group relative overflow-hidden rounded-[2rem] border border-black/6 bg-white/62 shadow-[0_24px_70px_-42px_rgba(15,23,42,0.14)] backdrop-blur-3xl dark:border-white/10 dark:bg-zinc-950/40 dark:shadow-[0_24px_70px_-42px_rgba(0,0,0,0.42)] will-change-transform"
+      className="group relative overflow-hidden rounded-[2rem] border border-black/6 bg-white/50 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.14)] backdrop-blur-3xl dark:border-white/10 dark:bg-zinc-950/40 dark:shadow-[0_40px_100px_-30px_rgba(0,0,0,0.6)] will-change-transform bg-clip-padding"
     >
-      <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.8),transparent_48%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_52%)]" />
+      <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.8),transparent_48%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.06),transparent_60%)]" />
+      <div className="absolute inset-0 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.12)] z-[1]" />
       
       <m.div 
-        className="pointer-events-none absolute inset-0 z-[1] opacity-40 dark:opacity-20 mix-blend-overlay transition-opacity duration-500"
+        className="pointer-events-none absolute inset-0 z-[2] opacity-40 dark:opacity-15 mix-blend-overlay transition-opacity duration-500"
         style={{
-          background: "radial-gradient(circle at center, rgba(255,255,255,0.9) 0%, transparent 60%)",
+          background: "radial-gradient(circle at center, rgba(255,255,255,1) 0%, transparent 60%)",
           backgroundSize: "200% 200%",
           backgroundPosition
         }}
       />
 
-      <div className="relative z-10 p-6 sm:p-8 sm:py-10 [transform-style:preserve-3d]">
-        <div className="mb-4 flex items-center gap-1.5" style={{ transform: "translateZ(10px)" }}>
-          <div className="h-2.5 w-2.5 rounded-full bg-red-400/80 dark:bg-red-500/50" />
-          <div className="h-2.5 w-2.5 rounded-full bg-amber-400/80 dark:bg-amber-500/50" />
-          <div className="h-2.5 w-2.5 rounded-full bg-emerald-400/80 dark:bg-emerald-500/50" />
-          <span className="ml-3 font-mono text-[10px] uppercase tracking-wider text-muted-foreground/60">Console.log</span>
+      <div className="relative z-10 p-6 sm:p-8 sm:py-8 flex flex-col [transform-style:preserve-3d] min-h-[16rem]">
+        {/* Fake Window Controls */}
+        <div className="mb-6 flex items-center gap-1.5" style={{ transform: "translateZ(10px)" }}>
+          <div className="h-3 w-3 rounded-full bg-red-400 dark:bg-red-500/80 shadow-sm" />
+          <div className="h-3 w-3 rounded-full bg-amber-400 dark:bg-amber-500/80 shadow-sm" />
+          <div className="h-3 w-3 rounded-full bg-emerald-400 dark:bg-emerald-500/80 shadow-sm" />
         </div>
 
-        <m.p 
-          className="relative text-[17px] font-medium leading-relaxed tracking-tight text-foreground/80 sm:text-[19px] lg:text-[21px]"
-          style={{ transform: "translateZ(30px)" }}
-        >
-          {LANDING_PROBLEM_SECTION.statement}
-        </m.p>
+        {/* Mock Dashboard Area */}
+        <div className="flex-1 space-y-6 sm:space-y-8" style={{ transform: "translateZ(30px)" }}>
+          {/* Top Section - Key Metric */}
+          <div className="space-y-1">
+            <h4 className="flex items-center gap-2 text-[11px] font-semibold tracking-[0.15em] text-muted-foreground/80 uppercase">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
+              </span>
+              Margine Sostenibile
+            </h4>
+            <div className="flex items-baseline gap-2 tracking-tighter pt-1">
+              <span className="text-5xl sm:text-[4rem] font-black leading-none text-foreground">€ 1.250</span>
+              <span className="text-xl sm:text-2xl font-bold text-muted-foreground/60 leading-none">,00</span>
+            </div>
+            
+            {/* Fake Progress Bar */}
+            <div className="mt-6 h-1 w-full overflow-hidden rounded-full bg-black/5 dark:bg-white/10 sm:max-w-xs">
+              <div className="h-full w-2/3 rounded-full bg-teal-500 shadow-[0_0_12px_rgba(20,184,166,0.5)] dark:bg-teal-400 dark:shadow-[0_0_12px_rgba(45,212,191,0.6)]" />
+            </div>
+          </div>
+
+          {/* Bottom Section - Fake Transaction Rows */}
+          <m.div 
+            className="space-y-3 relative p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] shadow-[inset_0_1px_2px_rgba(255,255,255,0.4)] dark:shadow-[inset_0_1px_2px_rgba(255,255,255,0.05)]"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-5%" }}
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.1, delayChildren: 0.4 } }
+            }}
+          >
+            {[1, 2, 3].map((i) => (
+              <m.div 
+                key={i} 
+                variants={{
+                  hidden: { opacity: 0, filter: "blur(8px)", x: -12 },
+                  visible: { opacity: 1, filter: "blur(0px)", x: 0, transition: { type: "spring", stiffness: 450, damping: 25 } }
+                }}
+                className="flex items-center justify-between border-b border-black/5 dark:border-white/5 pb-3 last:border-0 last:pb-0"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 shrink-0 rounded-xl bg-gradient-to-br from-black/5 to-black/10 dark:from-white/5 dark:to-white/10" />
+                  <div className="space-y-2 w-28">
+                    <div className="h-1.5 w-full rounded-full bg-black/10 dark:bg-white/15" />
+                    <div className={`h-1.5 w-${i === 1 ? '16' : i === 2 ? '12' : '20'} rounded-full bg-black/5 dark:bg-white/10`} />
+                  </div>
+                </div>
+                <div className={`h-2.5 w-${i === 1 ? '10' : i === 2 ? '8' : '12'} rounded-full bg-black/10 dark:bg-white/15`} />
+              </m.div>
+            ))}
+          </m.div>
+        </div>
       </div>
     </m.div>
   )

@@ -50,19 +50,12 @@ export interface LandingOutcome {
   description: string
 }
 
-export interface LandingHeroEditorialPanel {
-  icon: LucideIcon
-  title: string
-  description: string
-}
-
 export interface LandingHeroEditorialContent {
   srTitle: string
   headline: string
   supportingCopy: string
   primaryCtaLabel: string
   microcopy: string
-  panels: LandingHeroEditorialPanel[]
 }
 
 export interface LandingBrainAct {
@@ -108,24 +101,7 @@ export const LANDING_HERO_EDITORIAL = {
   supportingCopy:
     "Scopri il tuo vero margine di spesa in un istante. E con un'intelligenza che non lascia mai il tuo dispositivo.",
   primaryCtaLabel: "Inizia senza account",
-  microcopy: "Privato. Nessun cloud, nessuna registrazione.",
-  panels: [
-    {
-      icon: CloudOff,
-      title: "Privacy",
-      description: "Esiste solo dove sei tu."
-    },
-    {
-      icon: WalletCards,
-      title: "Budget",
-      description: "Sai subito se è sostenibile."
-    },
-    {
-      icon: BrainCircuit,
-      title: "Brain",
-      description: "La mente sui tuoi soldi."
-    }
-  ]
+  microcopy: "Privato. Nessun cloud, nessuna registrazione."
 } as const satisfies LandingHeroEditorialContent
 
 export const LANDING_NAV_ITEMS = [

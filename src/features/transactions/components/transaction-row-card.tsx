@@ -33,6 +33,7 @@ interface TransactionRowCardProps {
     highlight?: boolean
     showChevron?: boolean
     layout?: "compact" | "table"
+    showType?: boolean
 }
 
 export const TRANSACTION_TABLE_COLUMNS_CLASS_NAME = "md:grid-cols-[5.6rem_minmax(0,1fr)_7.25rem_5.35rem_7.15rem]"
@@ -60,10 +61,12 @@ function TransactionRowBody({
     transaction,
     showChevron,
     layout,
+    showType,
 }: {
     transaction: Transaction
     showChevron: boolean
     layout: "compact" | "table"
+    showType: boolean
 }) {
     const { currency, locale } = useCurrency()
     const { isPrivacyMode } = usePrivacyStore()
@@ -77,7 +80,9 @@ function TransactionRowBody({
                 "grid min-w-0 flex-1 gap-3 md:items-center md:gap-4",
                 isTableLayout
                     ? TRANSACTION_TABLE_COLUMNS_CLASS_NAME
-                    : "md:grid-cols-[minmax(0,1fr)_6.75rem_9.5rem]"
+                    : showType
+                        ? "md:grid-cols-[minmax(0,1fr)_6.75rem_9.5rem]"
+                        : "md:grid-cols-[minmax(0,1fr)_9.5rem]"
             )}
         >
             {isTableLayout ? (
@@ -104,13 +109,17 @@ function TransactionRowBody({
 
                 <div className="min-w-0 flex-1 space-y-1">
                     <div className={cn(
-                        "flex min-w-0 flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground/78",
-                        isTableLayout && "md:hidden"
+                        "min-w-0 text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground/78",
+                        isTableLayout
+                            ? "flex flex-wrap items-center gap-2 md:hidden"
+                            : showType
+                                ? "flex flex-wrap items-center gap-2"
+                                : "flex flex-col items-start gap-1"
                     )}>
                         <span className="rounded-full border border-white/34 bg-white/44 px-2 py-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] dark:border-white/10 dark:bg-white/[0.05]">
                             {formatTransactionDate(transaction)}
                         </span>
-                        <span className="truncate">{transaction.category}</span>
+                        <span className="max-w-full truncate">{transaction.category}</span>
                     </div>
 
                     <p className="max-w-full truncate text-[0.925rem] font-semibold leading-tight text-foreground transition-colors group-hover/transaction-surface:text-primary">
@@ -127,20 +136,22 @@ function TransactionRowBody({
                 </div>
             ) : null}
 
-            <div className="flex items-center md:justify-center">
-                {transaction.type === "income" ? (
-                    <Badge
-                        variant="secondary"
-                        className="rounded-full border border-emerald-500/16 bg-emerald-500/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-emerald-700 dark:text-emerald-300"
-                    >
-                        Entrata
-                    </Badge>
-                ) : (
-                    <span className="text-[9px] font-black uppercase tracking-[0.12em] text-muted-foreground/72">
-                        Uscita
-                    </span>
-                )}
-            </div>
+            {showType ? (
+                <div className="flex items-center md:justify-center">
+                    {transaction.type === "income" ? (
+                        <Badge
+                            variant="secondary"
+                            className="rounded-full border border-emerald-500/16 bg-emerald-500/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-emerald-700 dark:text-emerald-300"
+                        >
+                            Entrata
+                        </Badge>
+                    ) : (
+                        <span className="text-[9px] font-black uppercase tracking-[0.12em] text-muted-foreground/72">
+                            Uscita
+                        </span>
+                    )}
+                </div>
+            ) : null}
 
             <div className="flex items-center justify-between gap-2 md:min-w-[7.15rem] md:justify-end">
                 <div
@@ -165,13 +176,15 @@ function renderPrimaryAction(
     primaryAction: TransactionRowPrimaryAction | undefined,
     transaction: Transaction,
     showChevron: boolean,
-    layout: "compact" | "table"
+    layout: "compact" | "table",
+    showType: boolean
 ) {
     const content = (
         <TransactionRowBody
             transaction={transaction}
             showChevron={showChevron}
             layout={layout}
+            showType={showType}
         />
     )
 
@@ -211,6 +224,7 @@ export function TransactionRowCard({
     highlight = false,
     showChevron = false,
     layout = "compact",
+    showType = true,
 }: TransactionRowCardProps) {
     return (
         <article
@@ -223,7 +237,7 @@ export function TransactionRowCard({
             <div className="pointer-events-none absolute inset-[1px] rounded-[calc(1.6rem-1px)] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02)_34%,transparent_62%)] opacity-80" />
 
             <div className="relative z-10 flex items-stretch gap-2">
-                {renderPrimaryAction(primaryAction, transaction, showChevron, layout)}
+                {renderPrimaryAction(primaryAction, transaction, showChevron, layout, showType)}
 
                 {endSlot ? (
                     <div className="flex shrink-0 items-center pr-3">

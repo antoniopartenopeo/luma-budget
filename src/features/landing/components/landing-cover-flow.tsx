@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { m, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
+import { CategoryIds } from "@/domain/categories/types"
 
 // Import ICONE
 import { 
@@ -24,66 +25,77 @@ import type { DashboardCardUsage } from "@/features/dashboard/api/types"
 const MOCK_TRANSACTIONS: Transaction[] = [
   {
     id: "tx-1",
-    description: "Ristorante Da Mario",
+    description: "Da Mario",
     amountCents: 4500,
     type: "expense",
-    date: new Date().toISOString(),
-    category: "Dining Out",
-    categoryId: "dining",
+    date: "2026-04-13T19:42:00.000Z",
+    timestamp: new Date("2026-04-13T19:42:00.000Z").getTime(),
+    category: "Ristoranti",
+    categoryId: CategoryIds.RISTORANTI,
     isSuperfluous: true,
   },
   {
     id: "tx-2",
-    description: "Amazon Prime",
+    description: "Prime",
     amountCents: 499,
     type: "expense",
-    date: new Date().toISOString(),
-    category: "Subscriptions",
-    categoryId: "software",
+    date: "2026-04-12T08:15:00.000Z",
+    timestamp: new Date("2026-04-12T08:15:00.000Z").getTime(),
+    category: "Abbonamenti",
+    categoryId: CategoryIds.ABBONAMENTI,
     isSuperfluous: true,
   },
   {
     id: "tx-3",
-    description: "Stipendio Mensile",
+    description: "Stipendio",
     amountCents: 185000,
     type: "income",
-    date: new Date().toISOString(),
-    category: "Salary",
-    categoryId: "income",
+    date: "2026-04-12T06:30:00.000Z",
+    timestamp: new Date("2026-04-12T06:30:00.000Z").getTime(),
+    category: "Stipendio",
+    categoryId: CategoryIds.STIPENDIO,
     isSuperfluous: false,
-  }
+  },
+  {
+    id: "tx-4",
+    description: "Bar Centrale",
+    amountCents: 280,
+    type: "expense",
+    date: "2026-04-11T07:54:00.000Z",
+    timestamp: new Date("2026-04-11T07:54:00.000Z").getTime(),
+    category: "Caffè",
+    categoryId: CategoryIds.BAR_CAFFE,
+    isSuperfluous: false,
+  },
 ]
 
 const MOCK_CARDS: DashboardCardUsage[] = [
   { cardId: 'c1', network: 'Mastercard', last4: '8821', status: 'active', confidence: 'high', walletProvider: 'Apple Pay', lastSeen: new Date().toISOString(), firstSeen: new Date().toISOString() },
-  { cardId: 'c2', network: 'Visa', last4: '0491', status: 'active', confidence: 'medium', walletProvider: 'Nessuno', lastSeen: new Date().toISOString(), firstSeen: new Date().toISOString() },
+  { cardId: 'c2', network: 'Visa', last4: '0491', status: 'active', confidence: 'medium', walletProvider: 'Unknown', lastSeen: new Date().toISOString(), firstSeen: new Date().toISOString() },
 ]
 
 const MOCK_SUBSCRIPTIONS: SubscriptionPortfolioItem[] = [
-  { id: 'sub1', description: 'Netflix Premium', categoryId: 'movies', categoryLabel: 'Film', amountCents: 1599, occurrences: 12, impactPct: 4.2, transactionsHref: '#' },
-  { id: 'sub2', description: 'Palestra FitActive', categoryId: 'gym', categoryLabel: 'Salute', amountCents: 2990, occurrences: 6, impactPct: 7.0, transactionsHref: '#' },
-  { id: 'sub3', description: 'Aruba Hosting', categoryId: 'tools', categoryLabel: 'Lavoro', amountCents: 3499, occurrences: 4, impactPct: 8.5, transactionsHref: '#' },
+  { id: 'sub1', description: 'Netflix Premium', categoryId: CategoryIds.ABBONAMENTI, categoryLabel: 'Streaming & Media', amountCents: 1599, occurrences: 12, impactPct: 4.2, transactionsHref: '#' },
+  { id: 'sub2', description: 'Palestra FitActive', categoryId: CategoryIds.HOBBY_SPORT, categoryLabel: 'Sport & Palestra', amountCents: 2990, occurrences: 6, impactPct: 7.0, transactionsHref: '#' },
+  { id: 'sub3', description: 'Aruba Hosting', categoryId: CategoryIds.TECNOLOGIA, categoryLabel: 'Tecnologia & Gadget', amountCents: 3499, occurrences: 4, impactPct: 8.5, transactionsHref: '#' },
 ]
 
 // --- Mockups Wrap of Real Components --- //
 
 function CardsAppMockup() {
   return (
-    <div className="relative z-10 flex h-full w-full flex-col px-4 pt-10 overflow-hidden">
+    <div className="relative z-10 flex h-full w-full flex-col px-4 pt-10 pb-6 overflow-hidden">
       <div className="flex flex-col gap-1 items-center mb-6">
         <span className="text-[10px] font-extrabold uppercase tracking-widest text-orange-600 dark:text-orange-400">Metodi Tracciati</span>
         <div className="h-1 w-8 rounded-full bg-orange-500/20" />
       </div>
       
-      <div className="w-[135%] origin-top-left scale-[0.74] ml-0">
+      {/* Usando CSS sovrascriviamo la media-query sm:grid-cols-2 nativa incollata dai veri componenti su schermi larghi */}
+      <div className="w-full mt-2 [&_div.grid]:!grid-cols-1 [&_article]:!col-span-1">
         <UsedCardsKpiDeck 
             cards={MOCK_CARDS} 
             showHeader={false} 
         />
-        {/* Decorative Fake Skeleton for remainder */}
-        <div className="mt-4 opacity-50 space-y-4 pointer-events-none">
-             <div className="h-32 w-full rounded-[1.9rem] bg-white dark:bg-white/5 border border-black/5 dark:border-white/5 shadow-sm" />
-        </div>
       </div>
     </div>
   )
@@ -110,19 +122,36 @@ function SubscriptionsAppMockup() {
 
 function TransactionsAppMockup() {
   return (
-    <div className="relative z-10 flex h-full flex-col px-4 py-8 w-full gap-3 overflow-hidden">
-      <div className="flex items-center gap-2 px-1 mb-2">
-        <ActivitySquare className="h-4 w-4 text-slate-400" />
-        <span className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">Storico App</span>
+    <div className="relative z-10 flex h-full w-full flex-col gap-3 overflow-hidden px-4 py-7">
+      <div className="mb-1 flex items-center justify-between gap-3 px-1">
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-[0.9rem] border border-slate-200/70 bg-white/78 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] dark:border-white/10 dark:bg-white/[0.05]">
+            <ActivitySquare className="h-4 w-4 text-slate-500 dark:text-slate-300" />
+          </div>
+          <span className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">
+            Storico App
+          </span>
+        </div>
+        <div className="rounded-full border border-black/6 bg-white/72 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.16em] text-slate-500 shadow-[0_8px_24px_-18px_rgba(15,23,42,0.22)] dark:border-white/10 dark:bg-white/[0.05] dark:text-slate-300">
+          {MOCK_TRANSACTIONS.length} movimenti
+        </div>
       </div>
-      <div className="w-[120%] origin-top-left scale-[0.833] ml-0">
-        <div className="flex flex-col gap-2.5 w-full">
+
+      <div className="w-[136%] origin-top-left scale-[0.7] sm:w-[132%] sm:scale-[0.72]">
+        <div className="flex w-full flex-col gap-1.5">
           {MOCK_TRANSACTIONS.map(tx => (
-            <TransactionRowCard key={tx.id} transaction={tx} layout="compact" showChevron className="shadow-lg border-black/5 dark:border-white/5" />
+            <TransactionRowCard
+              key={tx.id}
+              transaction={tx}
+              layout="compact"
+              showChevron
+              showType={false}
+              className="border-black/5 bg-white/88 shadow-[0_18px_42px_-26px_rgba(15,23,42,0.18)] dark:border-white/6 dark:bg-white/[0.03]"
+            />
           ))}
         </div>
       </div>
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white/90 dark:from-black/90 to-transparent pointer-events-none rounded-b-[2.5rem]" />
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white/92 via-white/58 to-transparent dark:from-black/90 dark:via-black/48 rounded-b-[2.5rem]" />
     </div>
   )
 }
@@ -184,7 +213,7 @@ function FloatingPill({ text, colorClass = "text-white/90" }: { text: string, co
 // --- Motore Dati della Ghiera a 5 --- //
 const CARDS = [
   { id: 'cards', component: CardsAppMockup, title: "Sorgenti", colorClass: "text-orange-700 dark:text-orange-400", theme: "orange" },
-  { id: 'transactions', component: TransactionsAppMockup, title: "Lista Cruda", colorClass: "text-slate-700 dark:text-slate-400", theme: "slate" },
+  { id: 'transactions', component: TransactionsAppMockup, title: "Movimenti", colorClass: "text-slate-700 dark:text-slate-400", theme: "slate" },
   { id: 'dashboard', component: KpiAppMockup, title: "Visione Chiara", colorClass: "text-cyan-700 dark:text-cyan-400", theme: "cyan" },
   { id: 'expense', component: ExpenseAppMockup, title: "Input Veloce", colorClass: "text-emerald-700 dark:text-emerald-400", theme: "emerald" },
   { id: 'subscriptions', component: SubscriptionsAppMockup, title: "Impatto Fisso", colorClass: "text-violet-700 dark:text-violet-400", theme: "violet" }
@@ -207,7 +236,6 @@ export function LandingCoverFlow() {
         const isLeft1 = distance === -1
         const isRight1 = distance === 1
         const isLeft2 = distance === -2
-        const isRight2 = distance === 2
 
         // Parametri Fisici 3D calibrati per uno scaglione morbido e cinematico
         const xOffset = isCenter ? 0 : isLeft1 ? -220 : isRight1 ? 220 : isLeft2 ? -380 : 380
@@ -293,7 +321,8 @@ export function LandingCoverFlow() {
              <FloatingPill text={card.title} colorClass={card.colorClass} />
              
              {/* THE ACTUAL REAL APP COMPONENTS MOUNTED HERE */}
-             <div className="relative z-10 w-full h-full pointer-events-auto">
+             {/* Overflow hidden imposto qua blocca nativamente qualsiasi esondazione del transform-scale trick da parte dei figli */}
+             <div className="relative z-10 w-full h-full pointer-events-auto overflow-hidden rounded-[2.5rem]">
                 <card.component />
              </div>
              

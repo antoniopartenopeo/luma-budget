@@ -2,7 +2,6 @@ import type { LucideIcon } from "lucide-react"
 import {
   ArrowDownUp,
   BrainCircuit,
-  CloudOff,
   ShieldCheck,
   Sparkles,
   WalletCards
@@ -55,7 +54,7 @@ export interface LandingHeroEditorialContent {
   headline: string
   supportingCopy: string
   primaryCtaLabel: string
-  microcopy: string
+  primaryCtaHref: string
 }
 
 export interface LandingBrainAct {
@@ -99,17 +98,17 @@ export const LANDING_HERO_EDITORIAL = {
   srTitle: "Numa Budget. Il tuo mese. Limpido come non mai.",
   headline: "Il tuo mese. Limpido come non mai.",
   supportingCopy:
-    "Scopri il tuo vero margine di spesa in un istante. E con un'intelligenza che non lascia mai il tuo dispositivo.",
+    "Importi quello che hai gia. Capisci quanto ti resta davvero questo mese. E puoi provare una nuova spesa con piu lucidita.",
   primaryCtaLabel: "Inizia senza account",
-  microcopy: "Privato. Nessun cloud, nessuna registrazione."
+  primaryCtaHref: "/dashboard"
 } as const satisfies LandingHeroEditorialContent
 
 export const LANDING_NAV_ITEMS = [
-  { href: "#problema", label: "Oltre" },
+  { href: "#problema", label: "Problema" },
   { href: "#differenza", label: "Differenza" },
-  { href: "#come-inizi", label: "Setup" },
-  { href: "#brain-hero", label: "Neural Core" },
-  { href: "#outcomes", label: "Esito" }
+  { href: "#come-inizi", label: "Come inizi" },
+  { href: "#brain-hero", label: "Brain" },
+  { href: "#outcomes", label: "Risultati" }
 ] as const satisfies readonly LandingNavItem[]
 
 export const LANDING_PROBLEM_SECTION = {
@@ -124,62 +123,62 @@ export const LANDING_PROBLEM_SECTION = {
 export const LANDING_STORY_POINTS: LandingStoryPoint[] = [
   {
     icon: WalletCards,
-    title: "Guarda avanti, non indietro.",
+    title: "Leggi il passato una volta sola.",
     description:
-      "La banca è passiva. Numa anticipa il tuo margine a fine mese, chiarendo oggi cosa accadrà domani."
+      "Importi quello che esiste gia. Numa ordina i movimenti e prepara la base da cui leggere davvero il mese."
   },
   {
     icon: ShieldCheck,
-    title: "Privato. Di default.",
+    title: "Capisci il peso reale del mese.",
     description:
-      "Funziona sul tuo processore. I tuoi dati non partono per nessun server. Sei l'unico proprietario."
+      "Ricorrenze, uscite forti e ritmo di spesa smettono di essere rumore. Diventano un margine leggibile."
   },
   {
     icon: BrainCircuit,
-    title: "Prova. Poi decidi.",
+    title: "Prova il futuro prima di decidere.",
     description:
-      "Aggiungi uno scenario, verifica se la tua nuova spesa è sostenibile. Fallo con sicurezza prima di impegnarti."
+      "Aggiungi uno scenario e vedi subito se resta spazio sostenibile. Decidi con lucidita, non per istinto."
   }
 ]
 
 export const LANDING_DIFFERENCE_SECTION = {
-  eyebrow: "Sicurezza",
-  title: "Privato. E punto."
+  eyebrow: "Insight Engine",
+  title: "Piu movimenti. Piu Brain."
 } as const
 
 export const LANDING_DIFFERENTIATORS: LandingDifferentItem[] = [
   {
-    icon: CloudOff,
-    title: "Zero Cloud",
-    marketEyebrow: "Gli altri",
-    marketLabel: "La quasi totalità delle app registra i tuoi movimenti sui propri server remoti.",
-    glimpseEyebrow: "Numa",
-    numaLabel: "Il tuo Mac o iPhone è l'unico luogo dell'universo in cui risiedono i tuoi dati.",
-    kicker: "Inviolabile",
-    note: "Tutta l'elaborazione avviene offline.",
-    glimpses: ["Nessun server", "Solo locale", "Zero tracking"]
-  },
-  {
-    icon: ShieldCheck,
-    title: "Sconnesso alla radice",
-    marketEyebrow: "Gli altri",
-    marketLabel: "Esigono le tue credenziali bancarie scavalcando la tua privacy.",
-    glimpseEyebrow: "Numa",
-    numaLabel: "Nessun accesso diretto. Sei tu a importare quello che desideri dal tuo istituto.",
-    kicker: "Il tuo caveau",
-    note: "Pieno controllo sul tuo perimetro.",
-    glimpses: ["Nessun login in-app", "Zero token Open Banking"]
-  },
-  {
     icon: BrainCircuit,
-    title: "Intelligenza On-Device",
-    marketEyebrow: "Gli altri",
-    marketLabel: "Per l'analisi avanzata inviano i tuoi flussi a intelligenze cloud opache.",
-    glimpseEyebrow: "Numa",
-    numaLabel: "Il Brain calcola ogni stima direttamente sul chip del tuo dispositivo. Magia nera senza server.",
-    kicker: "Il Neural Engine",
-    note: "La potenza limite dell'AI a casa tua.",
-    glimpses: ["Motore locale", "Previsioni istantanee", "Machine Learning"]
+    title: "Il Brain cresce",
+    marketEyebrow: "Input",
+    marketLabel: "Ogni nuova transazione aggiunge contesto reale invece di rumore isolato.",
+    glimpseEyebrow: "Insight",
+    numaLabel: "Con poche righe Numa legge pattern grezzi. Con una base piu ampia inizia a produrre insight affidabili, margine e segnali decisionali.",
+    kicker: "Insight progressivo",
+    note: "L'intelligenza si nutre di contesto.",
+    glimpses: ["Pattern", "Margine", "Segnali"]
+  },
+  {
+    icon: ArrowDownUp,
+    title: "Riconosce il ritmo",
+    marketEyebrow: "Prima",
+    marketLabel: "Le uscite sembrano solo righe sparse senza una direzione leggibile.",
+    glimpseEyebrow: "Dopo",
+    numaLabel: "Quando le ricorrenze emergono, il mese smette di essere un elenco e diventa una struttura leggibile.",
+    kicker: "Pattern detection",
+    note: "Il peso del mese prende forma.",
+    glimpses: ["Ricorrenze", "Cadenza", "Peso"]
+  },
+  {
+    icon: Sparkles,
+    title: "Sblocca decisioni",
+    marketEyebrow: "Dati",
+    marketLabel: "Vedi quello che e gia successo ma non cosa puoi ancora permetterti.",
+    glimpseEyebrow: "Brain",
+    numaLabel: "Quando il contesto e sufficiente, Numa traduce i movimenti in una risposta concreta: cosa puoi fare adesso senza stressare il mese.",
+    kicker: "Decision support",
+    note: "L'insight arriva quando la base e pronta.",
+    glimpses: ["Scenario", "Spazio", "Lucidita"]
   }
 ]
 

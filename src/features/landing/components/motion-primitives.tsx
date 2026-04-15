@@ -3,6 +3,7 @@
 import type { CSSProperties, ReactNode } from "react"
 import { useRef } from "react"
 import { m, useReducedMotion, useScroll, useTransform } from "framer-motion"
+import { useDeviceHardware } from "@/hooks/use-device-hardware"
 import { cn } from "@/lib/utils"
 
 const CURRENT_COLOR_STOP = { stopColor: "currentColor" }
@@ -12,9 +13,19 @@ const NOISE_TEXTURE_STYLE: CSSProperties = {
 }
 
 export function AppleFluidMesh({ className }: { className?: string }) {
+  const prefersReducedMotion = useReducedMotion() ?? false
+  const { safeToAnimate3D } = useDeviceHardware()
+  const shouldAnimate = safeToAnimate3D && !prefersReducedMotion
+  const loopTransition = (duration: number) => ({
+    duration,
+    repeat: Infinity,
+    repeatType: "mirror" as const,
+    ease: "easeInOut" as const,
+  })
+
   return (
     <div className={cn("overflow-hidden pointer-events-none transition-opacity duration-1000", className)}>
-      <svg
+      <m.svg
         className="absolute h-[150%] w-[150%] -top-[25%] -left-[25%] opacity-90 dark:opacity-[0.96] saturate-100 dark:saturate-75 mix-blend-normal"
         viewBox="0 0 1000 1000"
         xmlns="http://www.w3.org/2000/svg"
@@ -42,27 +53,67 @@ export function AppleFluidMesh({ className }: { className?: string }) {
           </linearGradient>
         </defs>
 
-        <rect width="100%" height="100%" fill="url(#numa-grad-2)">
-           <animateTransform attributeName="transform" type="scale" values="1; 1.2; 1" dur="20s" repeatCount="indefinite" />
-        </rect>
+        <m.rect
+          width="100%"
+          height="100%"
+          fill="url(#numa-grad-2)"
+          animate={
+            shouldAnimate
+              ? {
+                  scale: [1, 1.12, 1],
+                }
+              : undefined
+          }
+          transition={shouldAnimate ? loopTransition(20) : undefined}
+          style={{ originX: "50%", originY: "50%" }}
+        />
 
-        <g>
-          <path fill="url(#numa-grad-1)" d="M -200,800 C 200,900 400,200 800,100 C 1200,0 1200,400 900,600 C 600,800 200,1200 -200,800 Z">
-            <animateTransform attributeName="transform" type="rotate" from="0 500 500" to="360 500 500" dur="45s" repeatCount="indefinite" />
-            <animateTransform attributeName="transform" type="scale" values="1; 1.1; 0.9; 1" dur="25s" repeatCount="indefinite" additive="sum" />
-          </path>
-          
-          <path fill="url(#numa-grad-3)" d="M 1200,200 C 800,100 600,800 200,900 C -200,1000 -200,600 100,400 C 400,200 800,-200 1200,200 Z">
-            <animateTransform attributeName="transform" type="rotate" from="360 500 500" to="0 500 500" dur="35s" repeatCount="indefinite" />
-            <animateTransform attributeName="transform" type="translate" values="-100 -100; 100 100; -100 -100" dur="20s" repeatCount="indefinite" additive="sum" />
-          </path>
+        <m.g
+          animate={
+            shouldAnimate
+              ? {
+                  rotate: [0, 180, 360],
+                  scale: [1, 1.08, 0.92, 1],
+                }
+              : undefined
+          }
+          transition={shouldAnimate ? loopTransition(45) : undefined}
+          style={{ originX: "50%", originY: "50%", transformBox: "fill-box" }}
+        >
+          <path fill="url(#numa-grad-1)" d="M -200,800 C 200,900 400,200 800,100 C 1200,0 1200,400 900,600 C 600,800 200,1200 -200,800 Z" />
+        </m.g>
 
-          <path fill="url(#numa-grad-4)" d="M 500,200 C 800,200 1000,500 1000,800 C 1000,1100 700,900 400,900 C 100,900 0,600 200,400 C 300,300 400,200 500,200 Z">
-            <animateTransform attributeName="transform" type="rotate" from="0 500 500" to="-360 500 500" dur="55s" repeatCount="indefinite" />
-            <animateTransform attributeName="transform" type="scale" values="1; 0.8; 1.2; 1" dur="30s" repeatCount="indefinite" additive="sum" />
-          </path>
-        </g>
-      </svg>
+        <m.g
+          animate={
+            shouldAnimate
+              ? {
+                  rotate: [360, 180, 0],
+                  x: [-90, 90, -90],
+                  y: [-70, 70, -70],
+                }
+              : undefined
+          }
+          transition={shouldAnimate ? loopTransition(35) : undefined}
+          style={{ originX: "50%", originY: "50%", transformBox: "fill-box" }}
+        >
+          <path fill="url(#numa-grad-3)" d="M 1200,200 C 800,100 600,800 200,900 C -200,1000 -200,600 100,400 C 400,200 800,-200 1200,200 Z" />
+        </m.g>
+
+        <m.g
+          animate={
+            shouldAnimate
+              ? {
+                  rotate: [0, -180, -360],
+                  scale: [1, 0.84, 1.14, 1],
+                }
+              : undefined
+          }
+          transition={shouldAnimate ? loopTransition(55) : undefined}
+          style={{ originX: "50%", originY: "50%", transformBox: "fill-box" }}
+        >
+          <path fill="url(#numa-grad-4)" d="M 500,200 C 800,200 1000,500 1000,800 C 1000,1100 700,900 400,900 C 100,900 0,600 200,400 C 300,300 400,200 500,200 Z" />
+        </m.g>
+      </m.svg>
       
       <div 
         className="absolute inset-0 opacity-[0.03] dark:opacity-[0.035] pointer-events-none mix-blend-overlay" 

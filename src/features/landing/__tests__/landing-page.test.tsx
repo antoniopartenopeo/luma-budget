@@ -1,6 +1,14 @@
 import { render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 import { LandingPage } from "../landing-page"
+import {
+  LANDING_CLOSING,
+  LANDING_HERO_EDITORIAL,
+  LANDING_HOW_IT_WORKS_SECTION,
+  LANDING_NAV_ITEMS,
+  LANDING_OUTCOMES_SECTION,
+  LANDING_PROBLEM_SECTION
+} from "../content"
 
 class MockIntersectionObserver {
   observe() {}
@@ -13,7 +21,7 @@ vi.stubGlobal("IntersectionObserver", MockIntersectionObserver)
 vi.mock("framer-motion", async () => {
   const React = await vi.importActual<typeof import("react")>("react")
 
-  const MotionDiv = React.forwardRef<HTMLDivElement, Record<string, unknown> & { children?: React.ReactNode }>(
+  const MotionElement = React.forwardRef<HTMLDivElement, Record<string, unknown> & { children?: React.ReactNode }>(
     ({ children, ...props }, ref) => {
       const elementProps = { ...props }
       delete elementProps.initial
@@ -31,12 +39,16 @@ vi.mock("framer-motion", async () => {
     }
   )
 
-  MotionDiv.displayName = "MotionDiv"
+  MotionElement.displayName = "MotionElement"
+  const motionProxy = new Proxy({}, { get: () => MotionElement })
 
   return {
-    motion: {
-      div: MotionDiv
-    },
+    AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    LazyMotion: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    domAnimation: {},
+    m: motionProxy,
+    motion: motionProxy,
+    useInView: () => true,
     useReducedMotion: () => false,
     useScroll: () => ({
       scrollYProgress: 0
@@ -100,14 +112,13 @@ describe("LandingPage", () => {
 
     expect(screen.getAllByTestId("brand-logo").length).toBeGreaterThan(0)
     expect(screen.getByTestId("landing-hero-editorial")).toBeInTheDocument()
-    expect(screen.getByRole("heading", { name: /Numa Budget/i })).toBeInTheDocument()
-    expect(screen.getByText(/Tieni sotto controllo le tue spese\. Senza stress, senza condividere nulla\./i)).toBeInTheDocument()
-    expect(screen.getByText(/Numa Budget ti aiuta a capire quanto puoi spendere oggi, a valutare una nuova spesa prima di farla e a tenere tutto sul tuo dispositivo\./i)).toBeInTheDocument()
-    expect(screen.getByRole("region", { name: /Sai cosa hai speso\. Non sai quanto puoi ancora spendere\./i })).toBeInTheDocument()
-    expect(screen.getByRole("region", { name: /Quattro passaggi\. Nessuna complicazione\./i })).toBeInTheDocument()
-    expect(screen.getByText(/Carichi i movimenti dalla banca, vedi il mese in un colpo d'occhio/i)).toBeInTheDocument()
-    expect(screen.getByRole("region", { name: /Meno ansia, più chiarezza\./i })).toBeInTheDocument()
-    expect(screen.getByRole("region", { name: /Apri il mese\. Poi decidi\./i })).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: LANDING_HERO_EDITORIAL.srTitle })).toBeInTheDocument()
+    expect(screen.getByText(LANDING_HERO_EDITORIAL.headline)).toBeInTheDocument()
+    expect(screen.getByText(LANDING_HERO_EDITORIAL.supportingCopy)).toBeInTheDocument()
+    expect(screen.getByRole("region", { name: LANDING_PROBLEM_SECTION.title })).toBeInTheDocument()
+    expect(screen.getByRole("region", { name: LANDING_HOW_IT_WORKS_SECTION.title })).toBeInTheDocument()
+    expect(screen.getByRole("region", { name: LANDING_OUTCOMES_SECTION.title })).toBeInTheDocument()
+    expect(screen.getByRole("region", { name: LANDING_CLOSING.title })).toBeInTheDocument()
 
     expect(screen.getByTestId("landing-brain-hero")).toBeInTheDocument()
 
@@ -116,6 +127,7 @@ describe("LandingPage", () => {
     expect(
       hrefs.every(
         (href) =>
+          href === "/" ||
           href === "/dashboard" ||
           href === "/faq" ||
           href === "/privacy" ||
@@ -123,9 +135,12 @@ describe("LandingPage", () => {
           href?.startsWith("#")
       )
     ).toBe(true)
-    expect(screen.getAllByRole("link", { name: /Prova Numa gratis/i }).length).toBeGreaterThan(0)
-    expect(screen.queryByRole("link", { name: /Guarda una demo/i })).not.toBeInTheDocument()
-    expect(screen.getByRole("link", { name: /Aggiornamenti/i })).toBeInTheDocument()
+    expect(screen.getAllByRole("link", { name: new RegExp(LANDING_HERO_EDITORIAL.primaryCtaLabel, "i") }).length).toBeGreaterThan(0)
+    expect(screen.queryByRole("link", { name: /Apri una demo sicura/i })).not.toBeInTheDocument()
+    expect(screen.getByRole("link", { name: /release log/i })).toBeInTheDocument()
+    LANDING_NAV_ITEMS.forEach((item) => {
+      expect(screen.getByRole("link", { name: item.label })).toHaveAttribute("href", item.href)
+    })
     expect(screen.queryByText("Contatti")).not.toBeInTheDocument()
   })
 })

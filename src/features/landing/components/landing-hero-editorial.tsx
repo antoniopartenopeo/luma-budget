@@ -1,12 +1,15 @@
 "use client"
 
 import { useRef } from "react"
+import Link from "next/link"
+import { ArrowRight } from "lucide-react"
 import { m, useReducedMotion, useScroll, useTransform } from "framer-motion"
 import { BrandLogo } from "@/components/ui/brand-logo"
-import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 import { LANDING_HERO_EDITORIAL } from "../content"
 import { AppleFluidBackground } from "./motion-primitives"
 import { LandingCoverFlow } from "./landing-cover-flow"
+import { LANDING_PRIMARY_CTA_CLASS } from "./landing-tokens"
 
 export function LandingHeroEditorial() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -60,7 +63,9 @@ export function LandingHeroEditorial() {
             <BrandLogo
               variant="smart"
               width={160}
-              className="h-auto w-[5rem] opacity-80 mix-blend-multiply dark:opacity-90 dark:mix-blend-screen sm:w-[6.5rem] lg:w-[8rem]"
+              priority
+              sizes="(min-width: 1024px) 128px, (min-width: 640px) 104px, 80px"
+              className="h-auto w-[5rem] opacity-92 drop-shadow-[0_18px_34px_rgba(15,23,42,0.10)] dark:opacity-96 dark:drop-shadow-[0_20px_42px_rgba(0,0,0,0.32)] sm:w-[6.5rem] lg:w-[8rem]"
             />
           </m.div>
 
@@ -82,6 +87,20 @@ export function LandingHeroEditorial() {
           >
             {LANDING_HERO_EDITORIAL.supportingCopy}
           </m.p>
+
+          <m.div
+            className="mt-8 flex flex-wrap items-center justify-center gap-3"
+            initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 16 }}
+            animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.25 }}
+          >
+            <Button asChild size="lg" className={`rounded-full ${LANDING_PRIMARY_CTA_CLASS}`}>
+              <Link href={LANDING_HERO_EDITORIAL.primaryCtaHref}>
+                {LANDING_HERO_EDITORIAL.primaryCtaLabel}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </m.div>
         </m.div>
 
         {/* Dark Cover Flow Mockups - NON Svanisce on scroll */}
@@ -97,20 +116,20 @@ export function LandingHeroEditorial() {
           transition={{ duration: 2, ease: "easeOut", delay: 0.8 }}
         >
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/30 dark:text-white/30">
-            Architettura blindata a zero-conoscenza
+            Una lettura chiara prima della prima decisione
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 opacity-40 dark:opacity-30 grayscale saturate-0 [filter:contrast(1.2)]">
-            <span className="flex items-center gap-2 text-[12.5px] font-medium tracking-tight text-foreground">
+          <div className="flex flex-wrap items-center justify-center gap-6 opacity-55 dark:opacity-42 sm:gap-10">
+            <span className="flex items-center gap-2 text-[12.5px] font-medium tracking-tight text-foreground/72">
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-              Local-First 100%
+              Nessun account per iniziare
             </span>
-            <span className="flex items-center gap-2 text-[12.5px] font-medium tracking-tight text-foreground">
+            <span className="flex items-center gap-2 text-[12.5px] font-medium tracking-tight text-foreground/72">
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" /></svg>
-              Apple Neural Engine
+              Import rapido del mese
             </span>
-            <span className="flex items-center gap-2 text-[12.5px] font-medium tracking-tight text-foreground">
+            <span className="flex items-center gap-2 text-[12.5px] font-medium tracking-tight text-foreground/72">
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
-              Zero Cloud Tracking
+              Dati sul tuo dispositivo
             </span>
           </div>
         </m.div>
@@ -119,4 +138,3 @@ export function LandingHeroEditorial() {
     </section>
   )
 }
-

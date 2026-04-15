@@ -6,6 +6,7 @@ import { BrandLogo } from "@/components/ui/brand-logo"
 import { Button } from "@/components/ui/button"
 import { LIQUID_CAPSULE_CLASS, LIQUID_REFRACTION_CLASS } from "@/components/ui/glass-tokens"
 import { cn } from "@/lib/utils"
+import { LANDING_HERO_EDITORIAL } from "@/features/landing/content"
 
 interface PublicPageFrameProps {
   children: React.ReactNode
@@ -28,8 +29,8 @@ export function PublicPageFrame({
 
           <div className="flex items-center gap-2">
             <Button asChild size="sm" className="rounded-full px-4 shadow-[0_18px_40px_-24px_rgba(14,165,168,0.55)]">
-              <Link href="/dashboard">
-                Inizia senza account
+              <Link href={LANDING_HERO_EDITORIAL.primaryCtaHref}>
+                {LANDING_HERO_EDITORIAL.primaryCtaLabel}
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>

@@ -1,60 +1,14 @@
 "use client"
 
-import { useEffect, useLayoutEffect } from "react"
 import { useSettings } from "@/features/settings/api/use-settings"
-
-// Helper ensuring SSR safety for useLayoutEffect
-const useIsomorphicLayoutEffect =
-    typeof window !== "undefined" ? useLayoutEffect : useEffect
+import { syncThemeSelection, useIsomorphicLayoutEffect } from "./theme-dom"
 
 export function ThemeApplier() {
     const { data: settings } = useSettings()
     const theme = settings?.theme || "system"
 
     useIsomorphicLayoutEffect(() => {
-        const root = document.documentElement
-
-        const applyTheme = (isDark: boolean) => {
-            if (isDark) {
-                root.classList.add("dark")
-                root.style.colorScheme = "dark"
-            } else {
-                root.classList.remove("dark")
-                root.style.colorScheme = "light"
-            }
-        }
-
-        if (theme === "system") {
-            const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
-
-            // Apply current system state
-            applyTheme(mediaQuery.matches)
-
-            // Dynamic listener for theme switches while app is open
-            const handler = (e: MediaQueryListEvent | MediaQueryList) => applyTheme(e.matches)
-
-            // Support both old and new API
-            if (mediaQuery.addEventListener) {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                mediaQuery.addEventListener("change", handler as any)
-            } else {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                mediaQuery.addListener(handler as any)
-            }
-
-            return () => {
-                if (mediaQuery.removeEventListener) {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    mediaQuery.removeEventListener("change", handler as any)
-                } else {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    mediaQuery.removeListener(handler as any)
-                }
-            }
-        } else {
-            // Manual overrides
-            applyTheme(theme === "dark")
-        }
+        return syncThemeSelection(theme)
     }, [theme])
 
     return null

@@ -65,7 +65,7 @@ function ConsoleChassis() {
         {/* Mock Dashboard Area */}
         <div className="flex-1 space-y-6 sm:space-y-8" style={{ transform: "translateZ(30px)" }}>
           {/* Top Section - Key Metric */}
-          <div className="space-y-1">
+          <div className="space-y-2">
             <h4 className="flex items-center gap-2 text-[11px] font-semibold tracking-[0.15em] text-muted-foreground/80 uppercase">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
@@ -77,6 +77,9 @@ function ConsoleChassis() {
               <span className="text-5xl sm:text-[4rem] font-black leading-none text-foreground">€ 1.250</span>
               <span className="text-xl sm:text-2xl font-bold text-muted-foreground/60 leading-none">,00</span>
             </div>
+            <p className="max-w-[34rem] text-[13px] font-medium leading-relaxed text-muted-foreground/72 sm:text-[15px]">
+              Resta margine per una nuova decisione perche entrate, ricorrenze e peso del mese sono gia stati assorbiti.
+            </p>
             
             {/* Fake Progress Bar */}
             <div className="mt-6 h-1 w-full overflow-hidden rounded-full bg-black/5 dark:bg-white/10 sm:max-w-xs">
@@ -84,7 +87,27 @@ function ConsoleChassis() {
             </div>
           </div>
 
-          {/* Bottom Section - Fake Transaction Rows */}
+          <div className="grid gap-3 sm:grid-cols-3">
+            {[
+              ["Entrate certe", "+ € 2.300"],
+              ["Spese assorbite", "- € 1.008"],
+              ["Scenario libero", "+ spazio"],
+            ].map(([label, value], index) => (
+              <div
+                key={label}
+                className="rounded-[1.15rem] border border-black/6 bg-white/55 px-4 py-3 text-left shadow-[0_16px_28px_-24px_rgba(15,23,42,0.18)] dark:border-white/8 dark:bg-white/[0.04]"
+              >
+                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/72">
+                  {label}
+                </p>
+                <p className={`mt-1 text-sm font-black tracking-tight ${index === 2 ? "text-teal-600 dark:text-teal-300" : "text-foreground"}`}>
+                  {value}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Bottom Section - Semantic rows */}
           <m.div 
             className="space-y-3 relative p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] shadow-[inset_0_1px_2px_rgba(255,255,255,0.4)] dark:shadow-[inset_0_1px_2px_rgba(255,255,255,0.05)]"
             initial="hidden"
@@ -95,9 +118,13 @@ function ConsoleChassis() {
               visible: { transition: { staggerChildren: 0.1, delayChildren: 0.4 } }
             }}
           >
-            {[1, 2, 3].map((i) => (
+            {[
+              ["Stipendio del mese", "base letta", "+ € 2.300"],
+              ["Ricorrenze gia emerse", "peso assorbito", "- € 968"],
+              ["Nuova spesa possibile", "spazio residuo", "sostenibile"],
+            ].map(([title, note, value], i) => (
               <m.div 
-                key={i} 
+                key={title} 
                 variants={{
                   hidden: { opacity: 0, filter: "blur(8px)", x: -12 },
                   visible: { opacity: 1, filter: "blur(0px)", x: 0, transition: { type: "spring", stiffness: 450, damping: 25 } }
@@ -106,12 +133,18 @@ function ConsoleChassis() {
               >
                 <div className="flex items-center gap-3">
                   <div className="h-9 w-9 shrink-0 rounded-xl bg-gradient-to-br from-black/5 to-black/10 dark:from-white/5 dark:to-white/10" />
-                  <div className="space-y-2 w-28">
-                    <div className="h-1.5 w-full rounded-full bg-black/10 dark:bg-white/15" />
-                    <div className={`h-1.5 w-${i === 1 ? '16' : i === 2 ? '12' : '20'} rounded-full bg-black/5 dark:bg-white/10`} />
+                  <div className="space-y-1.5">
+                    <p className="text-[13px] font-semibold tracking-tight text-foreground">{title}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/72">{note}</p>
                   </div>
                 </div>
-                <div className={`h-2.5 w-${i === 1 ? '10' : i === 2 ? '8' : '12'} rounded-full bg-black/10 dark:bg-white/15`} />
+                <div className={`rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] ${
+                  i === 2
+                    ? "border border-teal-400/20 bg-teal-500/10 text-teal-700 dark:border-teal-300/12 dark:bg-teal-300/[0.08] dark:text-teal-100"
+                    : "border border-black/6 bg-white/50 text-foreground/68 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/72"
+                }`}>
+                  {value}
+                </div>
               </m.div>
             ))}
           </m.div>
@@ -127,6 +160,7 @@ export function LandingHeroConsole() {
       <div className="space-y-4">
         {LANDING_STORY_POINTS.map((point, index) => {
           const accent = STORY_ACCENTS[index]
+          const labels = ["01 base", "02 margine", "03 decisione"] as const
 
           return (
             <LandingEditorialCardFrame
@@ -141,8 +175,11 @@ export function LandingHeroConsole() {
               className="shadow-[0_30px_90px_-40px_rgba(15,23,42,0.16)] dark:shadow-[0_30px_90px_-40px_rgba(0,0,0,0.5)]"
               contentClassName="p-8 sm:p-10"
             >
-              <div className="relative space-y-3 pr-12 pt-18 sm:pr-20 sm:pt-24 lg:pr-28 lg:pt-28">
-                <p className={`${LANDING_EDITORIAL_CARD_TITLE_CLASS} whitespace-nowrap [font-size:clamp(1.15rem,2.8vw,3rem)]`}>
+              <div className="relative space-y-4 pr-12 pt-18 sm:pr-20 sm:pt-24 lg:pr-28 lg:pt-28">
+                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-foreground/44">
+                  {labels[index]}
+                </p>
+                <p className={`${LANDING_EDITORIAL_CARD_TITLE_CLASS} [font-size:clamp(1.15rem,2.8vw,3rem)] max-w-[22ch] text-balance`}>
                   {point.title}
                 </p>
                 <p className="max-w-[56ch] text-[16px] font-normal leading-relaxed text-muted-foreground sm:text-[17px]">

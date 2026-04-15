@@ -5,7 +5,7 @@ import {
 } from "@/components/ui/glass-tokens"
 
 export const LANDING_NAV_LINK_CLASS =
-  "rounded-full px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground/72 transition-colors hover:bg-black/[0.04] hover:text-foreground/90 dark:hover:bg-white/[0.08]"
+  "rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground/60 transition-[color,background-color,box-shadow] hover:bg-white/42 hover:text-foreground hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.32)] dark:text-white/70 dark:hover:bg-white/[0.10] dark:hover:text-white"
 
 export const LANDING_FLOATING_NAV_CLASS =
   `${LIQUID_CAPSULE_CLASS} ${LIQUID_REFRACTION_CLASS} flex items-center gap-0.5 rounded-full px-1.5 py-1`

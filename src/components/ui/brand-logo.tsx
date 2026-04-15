@@ -6,13 +6,17 @@ interface BrandLogoProps {
     className?: string
     width?: number
     height?: number
+    priority?: boolean
+    sizes?: string
 }
 
 export function BrandLogo({
     variant = "full",
     className,
     width,
-    height
+    height,
+    priority = false,
+    sizes
 }: BrandLogoProps) {
     const isSmart = variant === "smart"
 
@@ -25,14 +29,15 @@ export function BrandLogo({
     const resolvedHeight = height ?? (width ? Math.round(width / aspectRatio) : defaultHeight)
 
     return (
-        <div className={cn("relative flex items-center justify-center", className)}>
+        <div className={cn("relative inline-flex shrink-0 items-center justify-center", className)}>
             <Image
                 src={isSmart ? "/brand/numa-logo-smart.png" : "/brand/numa-logo-full.png"}
                 alt="NUMA Budget"
                 width={resolvedWidth}
                 height={resolvedHeight}
-                className="object-contain"
-                priority
+                className="block h-auto max-w-full object-contain"
+                priority={priority}
+                sizes={sizes ?? (isSmart ? "128px" : "132px")}
                 unoptimized
             />
         </div>

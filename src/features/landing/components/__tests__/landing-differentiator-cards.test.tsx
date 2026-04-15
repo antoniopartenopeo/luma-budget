@@ -1,9 +1,7 @@
-import { act, render, screen } from "@testing-library/react"
+import { render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 import { LandingDifferentiatorCards } from "../landing-differentiator-cards"
-import { LANDING_DIFFERENTIATORS } from "../../content"
-
-let scrollChangeHandler: ((value: number) => void) | null = null
+import { LANDING_DIFFERENCE_SECTION, LANDING_DIFFERENTIATORS } from "../../content"
 let mockReducedMotion = false
 
 vi.mock("framer-motion", async () => {
@@ -16,6 +14,10 @@ vi.mock("framer-motion", async () => {
       delete elementProps.animate
       delete elementProps.exit
       delete elementProps.transition
+      delete elementProps.variants
+      delete elementProps.whileHover
+      delete elementProps.whileInView
+      delete elementProps.viewport
 
       return (
         <div ref={ref} {...elementProps}>
@@ -26,54 +28,39 @@ vi.mock("framer-motion", async () => {
   )
 
   MotionDiv.displayName = "MotionDiv"
+  const motionProxy = new Proxy({}, { get: () => MotionDiv })
 
   return {
     AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    motion: {
-      div: MotionDiv
-    },
+    m: motionProxy,
+    motion: motionProxy,
+    useInView: () => true,
     useReducedMotion: () => mockReducedMotion,
-    useScroll: () => ({
-      scrollYProgress: {
-        on: (event: string, callback: (value: number) => void) => {
-          if (event === "change") {
-            scrollChangeHandler = callback
-          }
-
-          return () => {
-            if (scrollChangeHandler === callback) {
-              scrollChangeHandler = null
-            }
-          }
-        }
-      }
-    })
+    useScroll: () => ({ scrollYProgress: 0 })
   }
 })
 
+vi.mock("@/hooks/use-hardware-parallax", () => ({
+  useHardwareParallax: () => ({
+    rotateX: 0,
+    rotateY: 0,
+    backgroundPosition: "50% 50%",
+    handleMouseMove: () => undefined,
+    handleMouseLeave: () => undefined
+  })
+}))
+
 describe("LandingDifferentiatorCards", () => {
-  it("renders the editorial Numa scene and swaps the active differentiator while scrolling", () => {
+  it("renders the editorial Numa scene and the three differentiators", () => {
     mockReducedMotion = false
     render(<LandingDifferentiatorCards />)
 
-    expect(screen.getByRole("heading", { name: /I tuoi soldi,\s*senza passare da altri server\./i })).toBeInTheDocument()
-    expect(screen.getByRole("heading", { name: LANDING_DIFFERENTIATORS[0].title })).toBeInTheDocument()
-    expect(screen.getByText(LANDING_DIFFERENTIATORS[0].numaLabel)).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: LANDING_DIFFERENCE_SECTION.title })).toBeInTheDocument()
+    LANDING_DIFFERENTIATORS.forEach((item) => {
+      expect(screen.getByRole("heading", { name: item.title })).toBeInTheDocument()
+      expect(screen.getAllByText(item.numaLabel).length).toBeGreaterThan(0)
+    })
     expect(screen.queryByRole("link")).not.toBeInTheDocument()
-
-    act(() => {
-      scrollChangeHandler?.(0.42)
-    })
-
-    expect(screen.getByRole("heading", { name: LANDING_DIFFERENTIATORS[1].title })).toBeInTheDocument()
-    expect(screen.getByText(LANDING_DIFFERENTIATORS[1].numaLabel)).toBeInTheDocument()
-
-    act(() => {
-      scrollChangeHandler?.(0.9)
-    })
-
-    expect(screen.getByRole("heading", { name: LANDING_DIFFERENTIATORS[2].title })).toBeInTheDocument()
-    expect(screen.getByText(LANDING_DIFFERENTIATORS[2].numaLabel)).toBeInTheDocument()
   })
 
   it("keeps the same hero composition when reduced motion is enabled", () => {
@@ -81,7 +68,7 @@ describe("LandingDifferentiatorCards", () => {
     render(<LandingDifferentiatorCards />)
 
     expect(screen.getByRole("heading", { name: LANDING_DIFFERENTIATORS[0].title })).toBeInTheDocument()
-    expect(screen.getByText(LANDING_DIFFERENTIATORS[0].numaLabel)).toBeInTheDocument()
-    expect(screen.queryByText(LANDING_DIFFERENTIATORS[1].numaLabel)).not.toBeInTheDocument()
+    expect(screen.getAllByText(LANDING_DIFFERENTIATORS[0].numaLabel).length).toBeGreaterThan(0)
+    expect(screen.getByRole("heading", { name: LANDING_DIFFERENTIATORS[1].title })).toBeInTheDocument()
   })
 })

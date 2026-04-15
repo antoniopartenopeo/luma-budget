@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 import { LandingBrainHero } from "../landing-brain-hero"
+import { LANDING_BRAIN_CONTENT } from "../../content"
 
 vi.mock("framer-motion", async () => {
   const React = await vi.importActual<typeof import("react")>("react")
@@ -26,6 +27,9 @@ vi.mock("framer-motion", async () => {
   MotionDiv.displayName = "MotionDiv"
 
   return {
+    m: {
+      div: MotionDiv
+    },
     motion: {
       div: MotionDiv
     },
@@ -41,16 +45,19 @@ vi.mock("framer-motion", async () => {
   }
 })
 
+vi.mock("../motion-primitives", () => ({
+  AppleFluidBackground: () => <div data-testid="apple-fluid-background" />
+}))
+
 describe("LandingBrainHero", () => {
   it("displays the cinematic Brain explainer with the predictive engine copy", () => {
     render(<LandingBrainHero />)
 
-    expect(screen.getByRole("heading", { name: /Numa osserva le tue abitudini e ti aiuta a prevedere il mese\./i })).toBeInTheDocument()
-    expect(screen.getByText(/ti mostra una stima realistica di quanto potrebbe restarti a fine mese\./i)).toBeInTheDocument()
-    expect(screen.getByRole("heading", { name: /Ti aiuta a decidere, non a indovinare\./i })).toBeInTheDocument()
-    expect(screen.getByText(/La stima serve a capire se una spesa nuova è sostenibile/i)).toBeInTheDocument()
-    expect(screen.getByRole("heading", { name: /Numa te lo dice chiaramente, senza forzare la previsione\./i })).toBeInTheDocument()
-    expect(screen.getByText(/Se il quadro è troppo incompleto per una stima affidabile/i)).toBeInTheDocument()
+    LANDING_BRAIN_CONTENT.acts.forEach((act) => {
+      expect(screen.getByText(act.kicker)).toBeInTheDocument()
+      expect(screen.getByRole("heading", { name: act.titleLines.join(" ") })).toBeInTheDocument()
+      expect(screen.getByText(act.description)).toBeInTheDocument()
+    })
     expect(screen.queryByText(/SYNC_BANK_API/i)).not.toBeInTheDocument()
   })
 })

@@ -1,31 +1,37 @@
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
+
+function getReducedMotionPreference() {
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+    return false
+  }
+
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches
+}
+
+function shouldEnableLowPowerMode(isReducedMotion: boolean) {
+  if (typeof navigator === "undefined" || typeof window === "undefined") {
+    return isReducedMotion
+  }
+
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !("MSStream" in window)
+  return isIOS || isReducedMotion
+}
 
 export function useDeviceHardware() {
-  const [isReducedMotion, setIsReducedMotion] = useState(false)
-  const [isLowPowerMode, setIsLowPowerMode] = useState(false)
+  const [isReducedMotion, setIsReducedMotion] = useState(getReducedMotionPreference)
+  const [isLowPowerMode, setIsLowPowerMode] = useState(() =>
+    shouldEnableLowPowerMode(getReducedMotionPreference())
+  )
 
   useEffect(() => {
-    // 1. Controlla preferenza utente (Riduci movimento)
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
-    setIsReducedMotion(motionQuery.matches)
 
     const handleMotionChange = (e: MediaQueryListEvent) => {
       setIsReducedMotion(e.matches)
+      setIsLowPowerMode(shouldEnableLowPowerMode(e.matches))
     }
 
     motionQuery.addEventListener("change", handleMotionChange)
-
-    // 2. Euristica base: se Safari Mobile, le animazioni complesse Z-depth 
-    // assieme ai blur falliscono spesso o causano overheat.
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
-    
-    // Per un layer aggiuntivo, potremmo stimare il framerate, ma per ora il
-    // ridotto movimento e l'OS throttling è sufficiente come fallback.
-    // Attiveremo fallback pesante su iOS nativi.
-    if (isIOS || isReducedMotion) {
-      setIsLowPowerMode(true)
-    }
 
     return () => {
       motionQuery.removeEventListener("change", handleMotionChange)

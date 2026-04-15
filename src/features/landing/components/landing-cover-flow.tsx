@@ -1,205 +1,18 @@
 "use client"
 
-import { useState } from "react"
-import { m, AnimatePresence } from "framer-motion"
-import { cn } from "@/lib/utils"
-import { CategoryIds } from "@/domain/categories/types"
-
-// Import ICONE
-import { 
-  ActivitySquare, 
-  CreditCard 
+import { startTransition, useState } from "react"
+import type { ComponentType } from "react"
+import type { LucideIcon } from "lucide-react"
+import {
+  ArrowDownUp,
+  BrainCircuit,
+  CreditCard,
+  ShieldCheck,
+  Sparkles,
+  WalletCards
 } from "lucide-react"
-
-// Import VERI COMPONENTI Numa Strutturali Funzionali
-import { KpiCard } from "@/components/patterns/kpi-card"
-import { QuickExpenseInput } from "@/features/transactions/components/quick-expense-input"
-import { TransactionRowCard } from "@/features/transactions/components/transaction-row-card"
-import { UsedCardsKpiDeck } from "@/features/dashboard/components/used-cards-kpi-deck"
-import { SubscriptionPortfolioCard, type SubscriptionPortfolioItem } from "@/components/patterns/subscription-portfolio-card"
-
-// Import TYPES
-import type { Transaction } from "@/features/transactions/api/types"
-import type { DashboardCardUsage } from "@/features/dashboard/api/types"
-
-const MOCK_TRANSACTIONS: Transaction[] = [
-  {
-    id: "tx-1",
-    description: "Da Mario",
-    amountCents: 4500,
-    type: "expense",
-    date: "2026-04-13T19:42:00.000Z",
-    timestamp: new Date("2026-04-13T19:42:00.000Z").getTime(),
-    category: "Ristoranti",
-    categoryId: CategoryIds.RISTORANTI,
-    isSuperfluous: true,
-  },
-  {
-    id: "tx-2",
-    description: "Prime",
-    amountCents: 499,
-    type: "expense",
-    date: "2026-04-12T08:15:00.000Z",
-    timestamp: new Date("2026-04-12T08:15:00.000Z").getTime(),
-    category: "Abbonamenti",
-    categoryId: CategoryIds.ABBONAMENTI,
-    isSuperfluous: true,
-  },
-  {
-    id: "tx-3",
-    description: "Stipendio",
-    amountCents: 185000,
-    type: "income",
-    date: "2026-04-12T06:30:00.000Z",
-    timestamp: new Date("2026-04-12T06:30:00.000Z").getTime(),
-    category: "Stipendio",
-    categoryId: CategoryIds.STIPENDIO,
-    isSuperfluous: false,
-  },
-  {
-    id: "tx-4",
-    description: "Bar Centrale",
-    amountCents: 280,
-    type: "expense",
-    date: "2026-04-11T07:54:00.000Z",
-    timestamp: new Date("2026-04-11T07:54:00.000Z").getTime(),
-    category: "Caffè",
-    categoryId: CategoryIds.BAR_CAFFE,
-    isSuperfluous: false,
-  },
-]
-
-const MOCK_CARDS: DashboardCardUsage[] = [
-  { cardId: 'c1', network: 'Mastercard', last4: '8821', status: 'active', confidence: 'high', walletProvider: 'Apple Pay', lastSeen: new Date().toISOString(), firstSeen: new Date().toISOString() },
-  { cardId: 'c2', network: 'Visa', last4: '0491', status: 'active', confidence: 'medium', walletProvider: 'Unknown', lastSeen: new Date().toISOString(), firstSeen: new Date().toISOString() },
-]
-
-const MOCK_SUBSCRIPTIONS: SubscriptionPortfolioItem[] = [
-  { id: 'sub1', description: 'Netflix Premium', categoryId: CategoryIds.ABBONAMENTI, categoryLabel: 'Streaming & Media', amountCents: 1599, occurrences: 12, impactPct: 4.2, transactionsHref: '#' },
-  { id: 'sub2', description: 'Palestra FitActive', categoryId: CategoryIds.HOBBY_SPORT, categoryLabel: 'Sport & Palestra', amountCents: 2990, occurrences: 6, impactPct: 7.0, transactionsHref: '#' },
-  { id: 'sub3', description: 'Aruba Hosting', categoryId: CategoryIds.TECNOLOGIA, categoryLabel: 'Tecnologia & Gadget', amountCents: 3499, occurrences: 4, impactPct: 8.5, transactionsHref: '#' },
-]
-
-// --- Mockups Wrap of Real Components --- //
-
-function CardsAppMockup() {
-  return (
-    <div className="relative z-10 flex h-full w-full flex-col px-4 pt-10 pb-6 overflow-hidden">
-      <div className="flex flex-col gap-1 items-center mb-6">
-        <span className="text-[10px] font-extrabold uppercase tracking-widest text-orange-600 dark:text-orange-400">Metodi Tracciati</span>
-        <div className="h-1 w-8 rounded-full bg-orange-500/20" />
-      </div>
-      
-      {/* Usando CSS sovrascriviamo la media-query sm:grid-cols-2 nativa incollata dai veri componenti su schermi larghi */}
-      <div className="w-full mt-2 [&_div.grid]:!grid-cols-1 [&_article]:!col-span-1">
-        <UsedCardsKpiDeck 
-            cards={MOCK_CARDS} 
-            showHeader={false} 
-        />
-      </div>
-    </div>
-  )
-}
-
-function SubscriptionsAppMockup() {
-  return (
-    <div className="relative z-10 flex h-full w-full flex-col px-4 pt-10 overflow-hidden">
-      <div className="flex flex-col gap-1 items-center mb-6">
-        <span className="text-[10px] font-extrabold uppercase tracking-widest text-violet-600 dark:text-violet-400">Piani Ricorrenti</span>
-        <div className="h-1 w-8 rounded-full bg-violet-500/20" />
-      </div>
-      
-      <div className="w-[135%] origin-top-left scale-[0.74] ml-0">
-         <SubscriptionPortfolioCard 
-            items={MOCK_SUBSCRIPTIONS} 
-            hiddenCount={1} 
-            formatAmount={(cents) => `€ ${(cents / 100).toLocaleString("it-IT", { minimumFractionDigits: 2 })}`}
-         />
-      </div>
-    </div>
-  )
-}
-
-function TransactionsAppMockup() {
-  return (
-    <div className="relative z-10 flex h-full w-full flex-col gap-3 overflow-hidden px-4 py-7">
-      <div className="mb-1 flex items-center justify-between gap-3 px-1">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-[0.9rem] border border-slate-200/70 bg-white/78 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] dark:border-white/10 dark:bg-white/[0.05]">
-            <ActivitySquare className="h-4 w-4 text-slate-500 dark:text-slate-300" />
-          </div>
-          <span className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">
-            Storico App
-          </span>
-        </div>
-        <div className="rounded-full border border-black/6 bg-white/72 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.16em] text-slate-500 shadow-[0_8px_24px_-18px_rgba(15,23,42,0.22)] dark:border-white/10 dark:bg-white/[0.05] dark:text-slate-300">
-          {MOCK_TRANSACTIONS.length} movimenti
-        </div>
-      </div>
-
-      <div className="w-[136%] origin-top-left scale-[0.7] sm:w-[132%] sm:scale-[0.72]">
-        <div className="flex w-full flex-col gap-1.5">
-          {MOCK_TRANSACTIONS.map(tx => (
-            <TransactionRowCard
-              key={tx.id}
-              transaction={tx}
-              layout="compact"
-              showChevron
-              showType={false}
-              className="border-black/5 bg-white/88 shadow-[0_18px_42px_-26px_rgba(15,23,42,0.18)] dark:border-white/6 dark:bg-white/[0.03]"
-            />
-          ))}
-        </div>
-      </div>
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white/92 via-white/58 to-transparent dark:from-black/90 dark:via-black/48 rounded-b-[2.5rem]" />
-    </div>
-  )
-}
-
-function KpiAppMockup() {
-  return (
-    <div className="relative z-10 flex h-full flex-col px-4 sm:px-6 justify-center">
-      <div className="mb-6 flex flex-col gap-1 items-center">
-        <span className="text-[10px] font-extrabold uppercase tracking-widest text-cyan-600 dark:text-cyan-400">Marginimetro</span>
-        <div className="h-1 w-8 rounded-full bg-cyan-500/20" />
-      </div>
-      <KpiCard
-        title="Quanto ti resta"
-        value="€ 1.450,50"
-        animatedValue={145050}
-        formatFn={(v) => `€ ${(v / 100).toLocaleString("it-IT", { minimumFractionDigits: 2 })}`}
-        comparisonLabel="Periodo attivo"
-        tone="positive"
-        icon={CreditCard}
-        description="Il saldo del periodo corrente mostra quanto margine hai al netto delle spese fisse periodiche."
-        explainabilityText="Buffer di ricchezza libero."
-        className="shadow-2xl h-auto border-white/30 dark:border-white/10"
-      />
-    </div>
-  )
-}
-
-function ExpenseAppMockup() {
-  return (
-    <div className="relative z-10 flex h-full flex-col px-4 pt-10 pb-6 w-full">
-      <div className="flex flex-col gap-1 items-center mb-8">
-        <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Punto Inserimento</span>
-        <div className="h-1 w-8 rounded-full bg-emerald-500/20" />
-      </div>
-      <div className="w-full">
-        <QuickExpenseInput variant="mobile-panel" />
-      </div>
-      {/* Scheletro UI per riempire il resto della card fedelmente come un app canvas */}
-      <div className="mt-8 space-y-3 opacity-30 pointer-events-none select-none">
-        <div className="h-14 w-full rounded-2xl bg-white dark:bg-white/5 border border-black/5 dark:border-white/5 shadow-sm" />
-        <div className="h-14 w-full rounded-2xl bg-white dark:bg-white/5 border border-black/5 dark:border-white/5 shadow-sm" />
-        <div className="h-14 w-full rounded-2xl bg-white dark:bg-white/5 border border-black/5 dark:border-white/5 shadow-sm" />
-      </div>
-    </div>
-  )
-}
-
-// --- Pillola Tipografica Superiore --- //
+import { AnimatePresence, m } from "framer-motion"
+import { cn } from "@/lib/utils"
 function FloatingPill({ text, colorClass = "text-white/90" }: { text: string, colorClass?: string }) {
   return (
     <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-40 flex items-center justify-center whitespace-nowrap rounded-full border border-black/[0.06] bg-white px-5 py-1.5 shadow-[0_6px_20px_rgba(0,0,0,0.08),_0_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-900/90 dark:shadow-[0_8px_30px_rgba(0,0,0,0.8),_inset_0_1px_1px_rgba(255,255,255,0.1)] transition-colors duration-500">
@@ -210,54 +23,423 @@ function FloatingPill({ text, colorClass = "text-white/90" }: { text: string, co
   )
 }
 
-// --- Motore Dati della Ghiera a 5 --- //
-const CARDS = [
-  { id: 'cards', component: CardsAppMockup, title: "Sorgenti", colorClass: "text-orange-700 dark:text-orange-400", theme: "orange" },
-  { id: 'transactions', component: TransactionsAppMockup, title: "Movimenti", colorClass: "text-slate-700 dark:text-slate-400", theme: "slate" },
-  { id: 'dashboard', component: KpiAppMockup, title: "Visione Chiara", colorClass: "text-cyan-700 dark:text-cyan-400", theme: "cyan" },
-  { id: 'expense', component: ExpenseAppMockup, title: "Input Veloce", colorClass: "text-emerald-700 dark:text-emerald-400", theme: "emerald" },
-  { id: 'subscriptions', component: SubscriptionsAppMockup, title: "Impatto Fisso", colorClass: "text-violet-700 dark:text-violet-400", theme: "violet" }
+function ClarityPreview() {
+  return (
+    <div className="relative z-10 flex h-full flex-col justify-between px-5 py-6">
+      <div className="space-y-5">
+        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-500/10 px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.24)] dark:border-cyan-300/12 dark:bg-cyan-300/[0.08]">
+          <BrainCircuit className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-200" />
+          <span className="text-[10px] font-black uppercase tracking-[0.16em] text-cyan-700 dark:text-cyan-200">
+            Stima locale attiva
+          </span>
+        </div>
+
+        <div className="space-y-2">
+          <span className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
+            Margine del mese
+          </span>
+          <div className="space-y-2">
+            <p className="text-4xl font-black tracking-tighter text-foreground sm:text-5xl">€ 1.245</p>
+            <p className="max-w-[18rem] text-sm font-medium leading-relaxed text-foreground/62">
+              Ti resta spazio per una nuova spesa fissa senza comprimere il mese.
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-[1.5rem] border border-black/6 bg-white/62 px-4 py-3 shadow-[0_18px_34px_-28px_rgba(15,23,42,0.22)] dark:border-white/10 dark:bg-white/[0.04]">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/42">
+                Lettura
+              </p>
+              <p className="mt-1 text-sm font-semibold tracking-tight text-foreground">
+                Ricorrenze stabili, scenario sostenibile
+              </p>
+            </div>
+            <div className="rounded-full border border-emerald-400/22 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-emerald-700 dark:border-emerald-300/14 dark:bg-emerald-300/[0.08] dark:text-emerald-100">
+              OK
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <div className="space-y-3 rounded-[1.8rem] border border-black/6 bg-white/65 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] dark:border-white/10 dark:bg-white/[0.04]">
+          <div className="flex items-center justify-between text-xs font-semibold text-foreground/58">
+            <span>Entrate note</span>
+            <span>+ € 2.300</span>
+          </div>
+          <div className="h-2 rounded-full bg-black/5 dark:bg-white/8">
+            <div className="h-full w-[72%] rounded-full bg-cyan-500 dark:bg-cyan-400" />
+          </div>
+          <div className="flex items-center justify-between text-xs font-semibold text-foreground/58">
+            <span>Spese stimate</span>
+            <span>- € 1.055</span>
+          </div>
+          <div className="h-2 rounded-full bg-black/5 dark:bg-white/8">
+            <div className="h-full w-[46%] rounded-full bg-slate-400 dark:bg-white/32" />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function TransactionsPreview() {
+  return (
+    <div className="relative z-10 flex h-full flex-col justify-between px-4 py-6">
+      <div className="space-y-4">
+        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-slate-400/18 bg-slate-500/[0.08] px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.24)] dark:border-white/10 dark:bg-white/[0.05]">
+          <ArrowDownUp className="h-3.5 w-3.5 text-slate-700 dark:text-white/72" />
+          <span className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-700 dark:text-white/72">
+            Lettura pulita
+          </span>
+        </div>
+
+        <div className="space-y-2">
+          <span className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-slate-700 dark:text-slate-300">
+            Ultimi movimenti
+          </span>
+          <p className="max-w-[18rem] text-sm font-medium leading-relaxed text-foreground/62">
+            Numa separa subito entrate, uscite forti e piccole frizioni senza lasciarti nel rumore grezzo.
+          </p>
+        </div>
+
+        <div className="rounded-[1.45rem] border border-black/6 bg-white/66 px-4 py-3 shadow-[0_18px_34px_-28px_rgba(15,23,42,0.2)] dark:border-white/10 dark:bg-white/[0.04]">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/42">Segnale</p>
+              <p className="mt-1 text-sm font-semibold tracking-tight text-foreground">
+                Le uscite ricorrenti emergono prima delle spese episodiche
+              </p>
+            </div>
+            <div className="rounded-full border border-slate-400/18 bg-slate-500/[0.08] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-slate-700 dark:border-white/10 dark:bg-white/[0.06] dark:text-white/78">
+              chiaro
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        {[
+          ["Affitto", "- € 690", "uscita forte"],
+          ["Supermercato", "- € 58", "variabile"],
+          ["Stipendio", "+ € 2.300", "entrata"],
+        ].map(([label, value, date]) => (
+          <div
+            key={label}
+            className="flex items-center justify-between rounded-[1.35rem] border border-black/6 bg-white/76 px-4 py-3 shadow-[0_16px_30px_-24px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-white/[0.04]"
+          >
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-foreground">{label}</p>
+              <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-foreground/48">{date}</p>
+            </div>
+            <p className="text-sm font-black tracking-tight text-foreground">{value}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function InputPreview() {
+  return (
+    <div className="relative z-10 flex h-full flex-col justify-between px-4 py-6">
+      <div className="space-y-4">
+        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-400/18 bg-emerald-500/[0.08] px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.24)] dark:border-emerald-300/12 dark:bg-emerald-300/[0.08]">
+          <ShieldCheck className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-100" />
+          <span className="text-[10px] font-black uppercase tracking-[0.16em] text-emerald-700 dark:text-emerald-100">
+            Prova sicura
+          </span>
+        </div>
+
+        <div className="rounded-[1.45rem] border border-black/6 bg-white/76 px-4 py-3 shadow-[0_16px_30px_-24px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-white/[0.04]">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/46">Nuova spesa</p>
+          <div className="mt-2 flex items-center justify-between gap-3">
+            <p className="text-sm font-medium text-foreground/78">Cena con amici</p>
+            <span className="rounded-full border border-black/6 bg-black/3 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-foreground/52 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/62">
+              svago
+            </span>
+          </div>
+        </div>
+
+        <div className="rounded-[1.45rem] border border-emerald-400/22 bg-emerald-500/8 px-4 py-3 dark:border-emerald-300/12 dark:bg-emerald-300/[0.06]">
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-700 dark:text-emerald-100">
+            Risposta immediata
+          </p>
+          <p className="mt-1 text-sm font-semibold tracking-tight text-foreground">
+            Simuli l’idea senza sporcare il mese reale
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <div className="grid grid-cols-[1fr_auto] gap-3">
+          <div className="rounded-[1.2rem] border border-black/6 bg-white/72 px-4 py-3 text-sm font-black tracking-tight text-foreground dark:border-white/10 dark:bg-white/[0.04]">
+            € 42,00
+          </div>
+          <div className="rounded-[1.2rem] border border-black/6 bg-white/72 px-4 py-3 text-sm font-semibold text-foreground/64 dark:border-white/10 dark:bg-white/[0.04]">
+            scenario
+          </div>
+        </div>
+
+        <div className="mt-auto flex items-center justify-between rounded-[1.4rem] border border-emerald-400/24 bg-emerald-500/8 px-4 py-3 text-sm font-semibold text-emerald-700 dark:border-emerald-300/12 dark:bg-emerald-300/[0.06] dark:text-emerald-100">
+          <span>Restano disponibili</span>
+          <span>€ 1.203</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function SubscriptionsPreview() {
+  return (
+    <div className="relative z-10 flex h-full flex-col justify-between px-4 py-6">
+      <div className="space-y-4">
+        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-violet-400/18 bg-violet-500/[0.08] px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.24)] dark:border-violet-300/12 dark:bg-violet-300/[0.08]">
+          <Sparkles className="h-3.5 w-3.5 text-violet-700 dark:text-violet-100" />
+          <span className="text-[10px] font-black uppercase tracking-[0.16em] text-violet-700 dark:text-violet-100">
+            Peso ricorrente
+          </span>
+        </div>
+
+        <div className="space-y-2">
+          <span className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-violet-700 dark:text-violet-300">
+            Spese fisse
+          </span>
+          <p className="max-w-[18rem] text-sm font-medium leading-relaxed text-foreground/62">
+            Capisci subito cosa sta già occupando il mese prima ancora di pensare al resto.
+          </p>
+        </div>
+
+        <div className="rounded-[1.45rem] border border-black/6 bg-white/66 px-4 py-3 shadow-[0_18px_34px_-28px_rgba(15,23,42,0.2)] dark:border-white/10 dark:bg-white/[0.04]">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/42">Impatto</p>
+              <p className="mt-1 text-sm font-semibold tracking-tight text-foreground">
+                Le ricorrenze assorbono la base del tuo margine
+              </p>
+            </div>
+            <div className="rounded-full border border-violet-400/18 bg-violet-500/[0.08] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-violet-700 dark:border-violet-300/12 dark:bg-violet-300/[0.08] dark:text-violet-100">
+              fisso
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        {[
+          ["Casa", "€ 690", "peso principale"],
+          ["Palestra", "€ 29", "ricorrenza"],
+          ["Streaming", "€ 16", "ricorrenza"],
+        ].map(([label, value, cadence]) => (
+          <div
+            key={label}
+            className="flex items-center justify-between rounded-[1.35rem] border border-black/6 bg-white/74 px-4 py-3 dark:border-white/10 dark:bg-white/[0.04]"
+          >
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-foreground">{label}</p>
+              <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-foreground/46">{cadence}</p>
+            </div>
+            <p className="text-sm font-black tracking-tight text-foreground">{value}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function SourcesPreview() {
+  return (
+    <div className="relative z-10 flex h-full flex-col justify-between px-4 py-6">
+      <div className="space-y-4">
+        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-orange-400/18 bg-orange-500/[0.08] px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.24)] dark:border-orange-300/12 dark:bg-orange-300/[0.08]">
+          <WalletCards className="h-3.5 w-3.5 text-orange-700 dark:text-orange-100" />
+          <span className="text-[10px] font-black uppercase tracking-[0.16em] text-orange-700 dark:text-orange-100">
+            Base ordinata
+          </span>
+        </div>
+
+        <div className="space-y-2">
+          <span className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-orange-700 dark:text-orange-300">
+            Sorgenti
+          </span>
+          <p className="max-w-[18rem] text-sm font-medium leading-relaxed text-foreground/62">
+            Porti dentro solo ciò che ti serve e Numa costruisce una base leggibile senza cloud e senza caos.
+          </p>
+        </div>
+
+        <div className="rounded-[1.45rem] border border-black/6 bg-white/66 px-4 py-3 shadow-[0_18px_34px_-28px_rgba(15,23,42,0.2)] dark:border-white/10 dark:bg-white/[0.04]">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/42">Controllo</p>
+              <p className="mt-1 text-sm font-semibold tracking-tight text-foreground">
+                Ogni fonte resta esplicita e sotto la tua mano
+              </p>
+            </div>
+            <div className="rounded-full border border-orange-400/18 bg-orange-500/[0.08] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-orange-700 dark:border-orange-300/12 dark:bg-orange-300/[0.08] dark:text-orange-100">
+              locale
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        {[
+          ["Conto Principale", "sincronizzato a mano"],
+          ["Carta Personale", "ultimi 30 giorni"],
+          ["Carta Spese Fisse", "ricorrenze chiare"],
+        ].map(([label, note]) => (
+          <div
+            key={label}
+            className="flex items-center gap-3 rounded-[1.35rem] border border-black/6 bg-white/72 px-4 py-3 dark:border-white/10 dark:bg-white/[0.04]"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-[1rem] bg-black/4 text-foreground/56 dark:bg-white/[0.06] dark:text-white/68">
+              <CreditCard className="h-4 w-4" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-foreground">{label}</p>
+              <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-foreground/46">{note}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+interface PreviewCardDefinition {
+  id: string
+  title: string
+  colorClass: string
+  theme: "orange" | "slate" | "cyan" | "emerald" | "violet"
+  icon: LucideIcon
+  summary: string
+  Preview: ComponentType
+}
+
+const CARDS: readonly PreviewCardDefinition[] = [
+  {
+    id: "sources",
+    title: "Sorgenti",
+    colorClass: "text-orange-700 dark:text-orange-400",
+    theme: "orange",
+    icon: WalletCards,
+    summary: "Organizzi quello che hai gia senza ricostruire tutto a mano.",
+    Preview: SourcesPreview
+  },
+  {
+    id: "transactions",
+    title: "Movimenti",
+    colorClass: "text-slate-700 dark:text-slate-400",
+    theme: "slate",
+    icon: ArrowDownUp,
+    summary: "Le uscite smettono di essere rumore e diventano lettura utile.",
+    Preview: TransactionsPreview
+  },
+  {
+    id: "clarity",
+    title: "Visione Chiara",
+    colorClass: "text-cyan-700 dark:text-cyan-400",
+    theme: "cyan",
+    icon: BrainCircuit,
+    summary: "Vedi come Numa stima il margine del mese e quanto spazio hai davvero.",
+    Preview: ClarityPreview
+  },
+  {
+    id: "input",
+    title: "Input Veloce",
+    colorClass: "text-emerald-700 dark:text-emerald-400",
+    theme: "emerald",
+    icon: ShieldCheck,
+    summary: "Provi una nuova spesa senza sporcare il tuo storico reale.",
+    Preview: InputPreview
+  },
+  {
+    id: "subscriptions",
+    title: "Impatto Fisso",
+    colorClass: "text-violet-700 dark:text-violet-400",
+    theme: "violet",
+    icon: Sparkles,
+    summary: "Capisci quali abitudini ricorrenti stanno gia occupando il mese.",
+    Preview: SubscriptionsPreview
+  }
 ]
+
+function getGlowColor(theme: PreviewCardDefinition["theme"]) {
+  switch (theme) {
+    case "emerald":
+      return "var(--success)"
+    case "cyan":
+      return "var(--primary)"
+    case "violet":
+      return "oklch(0.64 0.17 315)"
+    case "orange":
+      return "oklch(0.72 0.16 60)"
+    default:
+      return "oklch(0.65 0 0)"
+  }
+}
 
 export function LandingCoverFlow() {
   const [activeIndex, setActiveIndex] = useState(2)
+  const totalCards = CARDS.length
+
+  const activateCard = (index: number) => {
+    startTransition(() => {
+      setActiveIndex(index)
+    })
+  }
+
+  const handleCardKeyDown = (index: number, event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === "ArrowRight") {
+      event.preventDefault()
+      activateCard((index + 1) % totalCards)
+    }
+
+    if (event.key === "ArrowLeft") {
+      event.preventDefault()
+      activateCard((index - 1 + totalCards) % totalCards)
+    }
+  }
 
   return (
-    <div className="relative mt-8 sm:mt-16 flex w-full h-[32rem] sm:h-[36rem] items-center justify-center [perspective:2400px] overflow-visible">
+    <div className="relative mt-8 flex w-full flex-col items-center gap-6 overflow-visible sm:mt-16">
+      <div className="relative flex h-[32rem] w-full items-center justify-center overflow-visible [perspective:2400px] sm:h-[36rem]">
       
       {CARDS.map((card, index) => {
-        // Calcolo della distanza in logica "Ghiera ad anello a 5" (Modulo 5)
         let distance = index - activeIndex
-        // Normalizzazione rapida per wrap-around
-        if (distance > 2) distance -= 5
-        if (distance < -2) distance += 5
+        if (distance > totalCards / 2) distance -= totalCards
+        if (distance < -totalCards / 2) distance += totalCards
 
         const isCenter = distance === 0
         const isLeft1 = distance === -1
         const isRight1 = distance === 1
         const isLeft2 = distance === -2
+        const isAdjacent = isLeft1 || isRight1
 
-        // Parametri Fisici 3D calibrati per uno scaglione morbido e cinematico
         const xOffset = isCenter ? 0 : isLeft1 ? -220 : isRight1 ? 220 : isLeft2 ? -380 : 380
         const zOffset = isCenter ? 0 : (isLeft1 || isRight1) ? -200 : -450
         const rotateY = isCenter ? 0 : isLeft1 ? 40 : isRight1 ? -40 : isLeft2 ? 65 : -65
         const scale = isCenter ? 1 : (isLeft1 || isRight1) ? 0.88 : 0.72
-        
-        // Opacità sproporzionata per enfatizzare la messa a fuoco (isCenter assoluta)
         const opacityTarget = isCenter ? 1 : (isLeft1 || isRight1) ? 0.35 : 0.05
+        const Preview = card.Preview
         
         return (
-          <m.div
+          <m.button
             key={card.id}
-            onClick={() => setActiveIndex(index)}
+            type="button"
+            onClick={() => activateCard(index)}
+            onKeyDown={(event) => handleCardKeyDown(index, event)}
+            aria-label={`${card.title}. ${card.summary}`}
+            aria-pressed={isCenter}
             className={cn(
-               "absolute flex flex-col rounded-[2.5rem] transition-colors",
+               "absolute flex flex-col rounded-[2.5rem] text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
                "w-full max-w-[19rem] sm:max-w-[22rem] h-[26rem] sm:h-[30rem]",
-               // Nascondo del tutto su mobile le carte esterne per mantenere il layout intatto su iPhone 11/12
-               (!isCenter && !isLeft1 && !isRight1) && "max-sm:!opacity-0 max-sm:pointer-events-none",
+               (!isCenter && !isAdjacent) && "max-sm:pointer-events-none max-sm:opacity-0",
                isCenter 
                 ? "z-30 cursor-default border-black/10 dark:border-white/10"
-                : (isLeft1 || isRight1)
+                : isAdjacent
                   ? "z-20 cursor-pointer border-black/5 dark:border-white/5"
                   : "z-10 cursor-pointer pointer-events-none sm:pointer-events-auto"
             )}
@@ -277,18 +459,15 @@ export function LandingCoverFlow() {
             }}
             style={{ transformStyle: "preserve-3d", willChange: "transform, opacity" }}
           >
-             {/* Background & Glass Materials */}
              <div 
                className={cn(
-                 "absolute inset-0 z-0 overflow-hidden rounded-[2.5rem] border backdrop-blur-3xl transition-all duration-700",
+                 "absolute inset-0 z-0 overflow-hidden rounded-[2.5rem] border backdrop-blur-3xl transition-[background-color,border-color,box-shadow,opacity] duration-700",
                  isCenter 
                   ? "bg-white/[0.93] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.15)] dark:bg-zinc-950/80 dark:shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] border-black/5 dark:border-white/10"
                   : "bg-white/60 shadow-2xl dark:bg-zinc-950/40 border-black/5 dark:border-white/5 hover:bg-white/80 dark:hover:bg-zinc-900/60",
-                 // Rimosso il blur-[1px] per accelerazione GPU (evita pesante ricalcolo gaussiano ad ogni frame)
                  !isCenter && "opacity-80"
                )}
              >
-               {/* Ambient Glow */}
                <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-transparent dark:from-white/10 opacity-50 mix-blend-overlay pointer-events-none" />
                
                <AnimatePresence>
@@ -302,11 +481,7 @@ export function LandingCoverFlow() {
                    >
                      <div className="absolute inset-x-0 -bottom-32 h-64 blur-[90px] transition-colors duration-1000"
                           style={{
-                            backgroundColor: card.theme === 'emerald' ? 'var(--emerald-400)' 
-                                            : card.theme === 'cyan' ? 'var(--cyan-400)' 
-                                            : card.theme === 'violet' ? 'var(--violet-400)' 
-                                            : card.theme === 'orange' ? 'var(--orange-400)' 
-                                            : 'var(--slate-400)',
+                            backgroundColor: getGlowColor(card.theme),
                             opacity: 0.15
                           }} 
                      />
@@ -314,23 +489,51 @@ export function LandingCoverFlow() {
                  )}
                </AnimatePresence>
 
-               {/* Inset shadow (Glass thickness) */}
                <div className="absolute inset-0 rounded-[2.5rem] pointer-events-none shadow-[inset_0_2px_6px_rgba(255,255,255,0.9),inset_0_-1px_2px_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_3px_rgba(255,255,255,0.1),inset_0_-1px_1px_rgba(0,0,0,0.4)]" />
              </div>
 
              <FloatingPill text={card.title} colorClass={card.colorClass} />
              
-             {/* THE ACTUAL REAL APP COMPONENTS MOUNTED HERE */}
-             {/* Overflow hidden imposto qua blocca nativamente qualsiasi esondazione del transform-scale trick da parte dei figli */}
              <div className="relative z-10 w-full h-full pointer-events-auto overflow-hidden rounded-[2.5rem]">
-                <card.component />
+                <Preview />
              </div>
-             
-             {/* Scudo hardware per intercettare click e focus prima che raggiungano i componenti veri se la carta non è a fuoco */}
-             {!isCenter && <div className="absolute inset-0 z-50 cursor-pointer" title="Clicca per portare al centro" />}
-          </m.div>
+
+             {!isCenter ? (
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center px-4 pb-5">
+                <div className="rounded-full border border-black/6 bg-white/62 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/52 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.05] dark:text-white/58">
+                  Clicca per portare al centro
+                </div>
+              </div>
+             ) : null}
+          </m.button>
         )
       })}
+      </div>
+
+      <div className="flex flex-wrap items-center justify-center gap-2 px-4" aria-label="Seleziona anteprima hero">
+        {CARDS.map((card, index) => {
+          const Icon = card.icon
+          const isActive = index === activeIndex
+
+          return (
+            <button
+              key={`selector-${card.id}`}
+              type="button"
+              onClick={() => activateCard(index)}
+              className={cn(
+                "inline-flex items-center gap-2 rounded-full border px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] transition-[background-color,border-color,color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25",
+                isActive
+                  ? "border-primary/24 bg-primary/10 text-foreground shadow-[0_16px_30px_-22px_rgba(14,165,168,0.42)] dark:border-white/12 dark:bg-white/[0.06] dark:text-white"
+                  : "border-black/6 bg-white/55 text-foreground/58 hover:border-black/10 hover:text-foreground dark:border-white/10 dark:bg-white/[0.04] dark:text-white/58 dark:hover:text-white/84"
+              )}
+              aria-pressed={isActive}
+            >
+              <Icon className="h-3.5 w-3.5" />
+              {card.title}
+            </button>
+          )
+        })}
+      </div>
     </div>
   )
 }

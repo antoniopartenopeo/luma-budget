@@ -13,10 +13,12 @@ import { LIQUID_CAPSULE_CLASS, LIQUID_REFRACTION_CLASS } from "@/components/ui/g
 import { BrandLogo } from "@/components/ui/brand-logo"
 import { Button } from "@/components/ui/button"
 import {
+  LANDING_HERO_EDITORIAL,
   LANDING_CLOSING,
   LANDING_FLOW_STEPS,
   LANDING_HOW_IT_WORKS_SECTION,
   LANDING_IMMERSIVE_FALLBACKS,
+  LANDING_NAV_ITEMS,
   LANDING_OUTCOMES,
   LANDING_OUTCOMES_SECTION,
   LANDING_PROBLEM_SECTION
@@ -25,11 +27,12 @@ import { LandingHeroEditorial } from "./components/landing-hero-editorial"
 import { LandingHeroConsole } from "./components/landing-previews"
 import { LandingEditorialCardFrame } from "./components/landing-editorial-card-frame"
 import { LandingImmersiveFallback } from "./components/landing-immersive-fallback"
-import { AppleFluidBackground } from "./components/motion-primitives"
 import { LandingSectionHeader } from "./components/landing-section-header"
 import {
   LANDING_EDITORIAL_CARD_HERO_TITLE_CLASS,
-  LANDING_EDITORIAL_CARD_TITLE_CLASS
+  LANDING_EDITORIAL_CARD_TITLE_CLASS,
+  LANDING_NAV_LINK_CLASS,
+  LANDING_PRIMARY_CTA_CLASS
 } from "./components/landing-tokens"
 
 const LandingDifferentiatorCards = dynamic(
@@ -142,23 +145,33 @@ export function LandingPage() {
 
 
       <header className="absolute inset-x-0 top-0 z-50 px-4 pt-4 sm:pt-6">
-        <div className={cn("mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 rounded-full px-4 py-3", LIQUID_CAPSULE_CLASS, LIQUID_REFRACTION_CLASS)}>
-          <Link href="/" aria-label="Torna alla landing">
-            <BrandLogo variant="full" height={26} className="w-auto max-w-[132px] opacity-95" />
+        <div
+          className={cn(
+            "mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 rounded-full border border-white/28 bg-white/48 px-4 py-3 shadow-[0_24px_80px_-44px_rgba(15,23,42,0.48)] backdrop-blur-xl dark:border-white/12 dark:bg-black/24 dark:shadow-[0_32px_88px_-48px_rgba(0,0,0,0.72)]",
+            LIQUID_CAPSULE_CLASS,
+            LIQUID_REFRACTION_CLASS
+          )}
+        >
+          <Link
+            href="/"
+            aria-label="Torna alla landing"
+            className="transition-opacity hover:opacity-100"
+          >
+            <BrandLogo variant="full" height={26} priority sizes="132px" className="w-auto max-w-[132px] opacity-100" />
           </Link>
 
           <nav className="hidden items-center gap-1 md:flex">
-            <a href="#problema" className="rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/72 transition-colors hover:bg-black/[0.04] hover:text-foreground/90 dark:hover:bg-white/[0.08]">Problema</a>
-            <a href="#differenza" className="rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/72 transition-colors hover:bg-black/[0.04] hover:text-foreground/90 dark:hover:bg-white/[0.08]">Differenza</a>
-            <a href="#come-inizi" className="rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/72 transition-colors hover:bg-black/[0.04] hover:text-foreground/90 dark:hover:bg-white/[0.08]">Come inizi</a>
-            <a href="#brain-hero" className="rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/72 transition-colors hover:bg-black/[0.04] hover:text-foreground/90 dark:hover:bg-white/[0.08]">Brain</a>
-            <a href="#outcomes" className="rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/72 transition-colors hover:bg-black/[0.04] hover:text-foreground/90 dark:hover:bg-white/[0.08]">Risultati</a>
+            {LANDING_NAV_ITEMS.map((item) => (
+              <a key={item.href} href={item.href} className={LANDING_NAV_LINK_CLASS}>
+                {item.label}
+              </a>
+            ))}
           </nav>
 
           <div className="flex items-center gap-2">
             <Button asChild size="sm" className="rounded-full px-4 shadow-[0_18px_40px_-24px_rgba(14,165,168,0.55)]">
-              <Link href="/dashboard">
-                Inizia senza account
+              <Link href={LANDING_HERO_EDITORIAL.primaryCtaHref}>
+                {LANDING_HERO_EDITORIAL.primaryCtaLabel}
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
@@ -310,6 +323,43 @@ export function LandingPage() {
                   })}
                 </div>
               </MacroSection>
+            </div>
+          </section>
+
+          <section className="px-4" aria-labelledby="landing-closing-title">
+            <div className="mx-auto max-w-6xl">
+              <LandingEditorialCardFrame
+                borderClassName="border-cyan-400/16 dark:border-white/10"
+                panelClassName="from-cyan-500/[0.018] via-white to-cyan-50/40 dark:from-white/[0.06] dark:via-black/84 dark:to-zinc-950/[0.62]"
+                leadingText={LANDING_CLOSING.railLabel}
+                leadingTextClassName="text-[10px] tracking-[0.16em] text-primary dark:text-white/72"
+                orbClassName="bg-cyan-500/14 dark:bg-white/8"
+                orbPositionClassName="-right-[10%] -top-[20%] h-[24rem] w-[24rem] sm:h-[28rem] sm:w-[28rem]"
+                className="shadow-[0_40px_110px_-56px_rgba(15,23,42,0.38)]"
+                contentClassName="p-8 sm:p-12 lg:p-14"
+              >
+                <div className="relative flex flex-col gap-6 pt-18 sm:gap-8 sm:pt-24 lg:flex-row lg:items-end lg:justify-between lg:pt-28">
+                  <div className="max-w-[42rem] space-y-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/48">
+                      {LANDING_CLOSING.eyebrow}
+                    </p>
+                    <h2 id="landing-closing-title" className={cn(LANDING_EDITORIAL_CARD_HERO_TITLE_CLASS, "max-w-[16ch]")}>
+                      {LANDING_CLOSING.title}
+                    </h2>
+                    <p className="max-w-[48ch] text-[16px] font-medium leading-relaxed text-foreground/68 sm:text-[18px] lg:text-[20px]">
+                      {LANDING_CLOSING.description}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Button asChild size="lg" className={cn("rounded-full", LANDING_PRIMARY_CTA_CLASS)}>
+                      <Link href={LANDING_HERO_EDITORIAL.primaryCtaHref}>
+                        {LANDING_CLOSING.primaryCtaLabel}
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              </LandingEditorialCardFrame>
             </div>
           </section>
 

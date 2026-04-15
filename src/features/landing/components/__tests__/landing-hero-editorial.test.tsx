@@ -8,7 +8,7 @@ let mockReducedMotion = false
 vi.mock("framer-motion", async () => {
   const React = await vi.importActual<typeof import("react")>("react")
 
-  const MotionDiv = React.forwardRef<HTMLDivElement, Record<string, unknown> & { children?: React.ReactNode }>(
+  const MotionElement = React.forwardRef<HTMLDivElement, Record<string, unknown> & { children?: React.ReactNode }>(
     ({ children, ...props }, ref) => {
       const elementProps = { ...props }
       delete elementProps.initial
@@ -26,12 +26,12 @@ vi.mock("framer-motion", async () => {
     }
   )
 
-  MotionDiv.displayName = "MotionDiv"
+  MotionElement.displayName = "MotionElement"
+  const motionProxy = new Proxy({}, { get: () => MotionElement })
 
   return {
-    motion: {
-      div: MotionDiv
-    },
+    m: motionProxy,
+    motion: motionProxy,
     useReducedMotion: () => mockReducedMotion,
     useScroll: () => ({
       scrollYProgress: 0
@@ -48,8 +48,12 @@ vi.mock("../motion-primitives", () => ({
   AppleFluidBackground: () => <div data-testid="apple-fluid-background" />
 }))
 
+vi.mock("../landing-cover-flow", () => ({
+  LandingCoverFlow: () => <div data-testid="landing-cover-flow" />
+}))
+
 describe("LandingHeroEditorial", () => {
-  it("renders the editorial hero content, prism panels, and primary actions", () => {
+  it("renders the editorial hero content and primary actions without crowding the first fold", () => {
     mockReducedMotion = false
     render(<LandingHeroEditorial />)
 
@@ -57,20 +61,16 @@ describe("LandingHeroEditorial", () => {
     expect(screen.getAllByTestId("brand-logo")).toHaveLength(1)
     expect(screen.getByText(LANDING_HERO_EDITORIAL.headline)).toBeInTheDocument()
     expect(screen.getByText(LANDING_HERO_EDITORIAL.supportingCopy)).toBeInTheDocument()
-    expect(screen.getByText(LANDING_HERO_EDITORIAL.microcopy)).toBeInTheDocument()
-    expect(screen.getAllByTestId("landing-hero-prism-panel")).toHaveLength(3)
-    expect(screen.getByText("Privacy")).toBeInTheDocument()
-    expect(screen.getByText("Budget")).toBeInTheDocument()
-    expect(screen.getByText("Previsione")).toBeInTheDocument()
-    expect(screen.getByRole("link", { name: /Prova Numa gratis/i })).toHaveAttribute("href", "/dashboard")
-    expect(screen.queryByRole("link", { name: /Guarda una demo/i })).not.toBeInTheDocument()
+    expect(screen.getByTestId("landing-cover-flow")).toBeInTheDocument()
+    expect(screen.getByRole("link", { name: new RegExp(LANDING_HERO_EDITORIAL.primaryCtaLabel, "i") })).toHaveAttribute("href", LANDING_HERO_EDITORIAL.primaryCtaHref)
+    expect(screen.queryByText(/In tre mosse/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Apri una demo sicura/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Nessun account obbligatorio\. I dati restano sul tuo dispositivo\./i)).not.toBeInTheDocument()
 
     const hero = screen.getByTestId("landing-hero-editorial")
     expect(hero).not.toHaveTextContent(/\blocal-first\b/i)
-    expect(hero).not.toHaveTextContent(/\bmargine\b/i)
     expect(hero).not.toHaveTextContent(/\bCSV\b/i)
     expect(hero).not.toHaveTextContent(/estratto conto/i)
-    expect(hero).not.toHaveTextContent(/\bBrain\b/i)
     expect(hero).not.toHaveTextContent(/Financial Lab/i)
   })
 
@@ -79,11 +79,11 @@ describe("LandingHeroEditorial", () => {
     render(<LandingHeroEditorial />)
 
     expect(screen.getByRole("heading", { name: LANDING_HERO_EDITORIAL.srTitle })).toBeInTheDocument()
-    expect(screen.getAllByTestId("landing-hero-prism-panel")).toHaveLength(3)
+    expect(screen.getByTestId("landing-cover-flow")).toBeInTheDocument()
     expect(screen.getByText(LANDING_HERO_EDITORIAL.headline)).toBeInTheDocument()
     expect(screen.getByText(LANDING_HERO_EDITORIAL.supportingCopy)).toBeInTheDocument()
-    expect(screen.getByText(LANDING_HERO_EDITORIAL.microcopy)).toBeInTheDocument()
-    expect(screen.getByText("I tuoi dati restano sul dispositivo")).toBeInTheDocument()
-    expect(screen.getByRole("link", { name: /Prova Numa gratis/i })).toBeInTheDocument()
+    expect(screen.getAllByText("Dati sul tuo dispositivo").length).toBeGreaterThan(0)
+    expect(screen.getByRole("link", { name: new RegExp(LANDING_HERO_EDITORIAL.primaryCtaLabel, "i") })).toBeInTheDocument()
+    expect(screen.queryByText(/Apri una demo sicura/i)).not.toBeInTheDocument()
   })
 })

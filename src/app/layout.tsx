@@ -1,12 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { QueryProvider } from "@/components/providers/query-provider";
-import { ThemeApplier } from "@/components/providers/theme-applier";
-import { PwaRegister } from "@/components/providers/pwa-register";
 import { Analytics } from "@vercel/analytics/next";
-import { Toaster } from "sonner";
-import { RouteShell } from "@/components/layout/route-shell";
+import { AppRuntimeGate } from "@/components/providers/app-runtime-gate";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -68,8 +64,6 @@ export const viewport: Viewport = {
   themeColor: "#0ea5a8",
 };
 
-import { TooltipProvider } from "@/components/ui/tooltip";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -82,20 +76,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
-        <QueryProvider>
-          <ThemeApplier />
-          <PwaRegister />
-          <a
-            href="#main-content"
-            className="sr-only fixed left-4 top-4 z-[100] rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-lg focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-primary/30"
-          >
-            Vai al contenuto
-          </a>
-          <TooltipProvider delayDuration={300}>
-            <RouteShell>{children}</RouteShell>
-            <Toaster />
-          </TooltipProvider>
-        </QueryProvider>
+        <AppRuntimeGate>{children}</AppRuntimeGate>
         <Analytics />
       </body>
     </html>

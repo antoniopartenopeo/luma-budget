@@ -1,8 +1,8 @@
 "use client"
 
 import { useRef, useMemo } from "react"
-import { m, useScroll, useTransform, useSpring, useMotionTemplate } from "framer-motion"
-import { BrainCircuit, Cpu, Zap, Activity } from "lucide-react"
+import { m, useScroll, useTransform, useSpring } from "framer-motion"
+import { BrainCircuit, Zap, Activity } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
   LANDING_DIFFERENCE_SECTION,
@@ -51,7 +51,7 @@ export function LandingDifferentiatorCards() {
   const backgroundY = useTransform(smoothProgress, [0, 1], [0, 150])
 
   return (
-    <div ref={containerRef} className="relative min-h-[220vh] w-full bg-background selection:bg-cyan-500/20">
+    <div ref={containerRef} className="relative min-h-[220svh] w-full bg-background selection:bg-cyan-500/20">
       
       {/* Scroll-sticky wrapper */}
       <div className="sticky top-0 flex h-screen w-full flex-col items-center overflow-hidden bg-background pt-24 md:pt-32">

@@ -2,7 +2,7 @@
 
 import type { CSSProperties, ReactNode } from "react"
 import { useRef } from "react"
-import { m, useReducedMotion, useScroll, useTransform } from "framer-motion"
+import { m, useReducedMotion, useScroll, useTransform, useInView, useMotionValue, useSpring, useMotionTemplate } from "framer-motion"
 import { useDeviceHardware } from "@/hooks/use-device-hardware"
 import { cn } from "@/lib/utils"
 
@@ -13,9 +13,11 @@ const NOISE_TEXTURE_STYLE: CSSProperties = {
 }
 
 export function AppleFluidMesh({ className }: { className?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
   const prefersReducedMotion = useReducedMotion() ?? false
   const { safeToAnimate3D } = useDeviceHardware()
-  const shouldAnimate = safeToAnimate3D && !prefersReducedMotion
+  const isInView = useInView(ref, { margin: "20%" })
+  const shouldAnimate = safeToAnimate3D && !prefersReducedMotion && isInView
   const loopTransition = (duration: number) => ({
     duration,
     repeat: Infinity,
@@ -24,7 +26,7 @@ export function AppleFluidMesh({ className }: { className?: string }) {
   })
 
   return (
-    <div className={cn("overflow-hidden pointer-events-none transition-opacity duration-1000", className)}>
+    <div ref={ref} className={cn("overflow-hidden pointer-events-none transition-opacity duration-1000", className)}>
       <m.svg
         className="absolute h-[150%] w-[150%] -top-[25%] -left-[25%] opacity-90 dark:opacity-[0.96] saturate-100 dark:saturate-75 mix-blend-normal"
         viewBox="0 0 1000 1000"
@@ -142,10 +144,43 @@ export function CinematicScrollCard({ children, className }: { children: ReactNo
     offset: ["start 96%", "center center"]
   })
 
-  const rotateX = useTransform(scrollYProgress, [0, 1], [40, 0])
+  // Scroll transforms
+  const scrollRotateX = useTransform(scrollYProgress, [0, 1], [40, 0])
   const scale = useTransform(scrollYProgress, [0, 1], [0.85, 1])
   const opacity = useTransform(scrollYProgress, [0, 1], [0, 1])
   const y = useTransform(scrollYProgress, [0, 1], [80, 0])
+
+  // Interattività Hover (Tilt & Glare)
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!ref.current) return
+    const rect = ref.current.getBoundingClientRect()
+    const x = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2)
+    const yVal = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2)
+    mouseX.set(x)
+    mouseY.set(yVal)
+  }
+
+  const handleMouseLeave = () => {
+    mouseX.set(0)
+    mouseY.set(0)
+  }
+
+  const springConfig = { damping: 20, stiffness: 150 }
+  const hoverRotateX = useSpring(useTransform(mouseY, [-1, 1], [6, -6]), springConfig)
+  const hoverRotateY = useSpring(useTransform(mouseX, [-1, 1], [-6, 6]), springConfig)
+  
+  // Composizione sicura asse X: scroll + tilt algebrico
+  const rotateX = useTransform(() => scrollRotateX.get() + hoverRotateX.get())
+
+  const glareX = useSpring(useTransform(mouseX, [-1, 1], [-20, 120]), springConfig)
+  const glareY = useSpring(useTransform(mouseY, [-1, 1], [-20, 120]), springConfig)
+  
+  const glareBackground = useMotionTemplate`radial-gradient(450px circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.08) 50%, transparent 100%)`
+  const laserBackground = useMotionTemplate`radial-gradient(1000px circle at ${glareX}% ${glareY}%, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 20%, rgba(255,255,255,0.5) 45%, rgba(255,255,255,0.1) 80%, transparent 100%)`
+  const fogMask = useMotionTemplate`radial-gradient(400px circle at ${glareX}% ${glareY}%, black 0%, rgba(0,0,0,0.6) 30%, transparent 80%)`
 
   if (prefersReducedMotion) {
     return (
@@ -164,9 +199,50 @@ export function CinematicScrollCard({ children, className }: { children: ReactNo
   return (
     <m.div
       ref={ref}
-      style={{ rotateX, scale, opacity, y, transformStyle: "preserve-3d", transformPerspective: 1200 }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ 
+        rotateX, 
+        rotateY: hoverRotateY, 
+        scale, 
+        opacity, 
+        y, 
+        transformStyle: "preserve-3d", 
+        transformPerspective: 1200,
+        cursor: "url(\"data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='32'%20height='32'%20viewBox='0%200%2032%2032'%3E%3Cdefs%3E%3CradialGradient%20id='glow'%20cx='50%25'%20cy='50%25'%20r='50%25'%3E%3Cstop%20offset='0%25'%20stop-color='white'%20stop-opacity='1'/%3E%3Cstop%20offset='10%25'%20stop-color='white'%20stop-opacity='0.8'/%3E%3Cstop%20offset='30%25'%20stop-color='white'%20stop-opacity='0.3'/%3E%3Cstop%20offset='60%25'%20stop-color='white'%20stop-opacity='0.05'/%3E%3Cstop%20offset='100%25'%20stop-color='white'%20stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle%20cx='16'%20cy='16'%20r='16'%20fill='url(%23glow)'/%3E%3C/svg%3E\") 16 16, crosshair"
+      }}
       className={className}
     >
+      {/* 1. Internal Surface Glare (Tight Spotlight) */}
+      <m.div
+        className="pointer-events-none absolute inset-0 z-50 transition-opacity duration-300 opacity-0 mix-blend-overlay group-hover:opacity-100"
+        style={{ background: glareBackground }}
+      />
+      
+      {/* 2. Magical Border Laser Tracking (Ultra Premium) */}
+      <m.div
+        className="pointer-events-none absolute inset-0 z-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{
+          background: laserBackground,
+          mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+          WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+          maskComposite: "exclude",
+          WebkitMaskComposite: "xor",
+          padding: "2.5px"
+        }}
+      />
+      <div className="absolute inset-0 z-50 pointer-events-none rounded-[inherit]" style={{ borderRadius: "inherit" }} />
+
+      {/* 3. Volumetric Fog & Dust Particles */}
+      <m.div
+        className="pointer-events-none absolute inset-0 z-40 opacity-0 transition-opacity duration-500 group-hover:opacity-[0.25] mix-blend-color-dodge"
+        style={{
+          ...NOISE_TEXTURE_STYLE,
+          mask: fogMask,
+          WebkitMask: fogMask
+        }}
+      />
+
       {children}
     </m.div>
   )

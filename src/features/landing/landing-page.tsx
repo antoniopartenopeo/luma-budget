@@ -1,10 +1,7 @@
-"use client"
-
-import { useEffect } from "react"
-import dynamic from "next/dynamic"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { LandingClientWrapper } from "./components/landing-client-wrapper"
 import { AmbientBackdrop } from "@/components/layout/ambient-backdrop"
 import { PublicSiteFooter } from "@/components/layout/public-site-footer"
 import { MacroSection } from "@/components/patterns/macro-section"
@@ -17,7 +14,6 @@ import {
   LANDING_CLOSING,
   LANDING_FLOW_STEPS,
   LANDING_HOW_IT_WORKS_SECTION,
-  LANDING_IMMERSIVE_FALLBACKS,
   LANDING_NAV_ITEMS,
   LANDING_OUTCOMES,
   LANDING_OUTCOMES_SECTION,
@@ -35,35 +31,7 @@ import {
   LANDING_PRIMARY_CTA_CLASS
 } from "./components/landing-tokens"
 
-const LandingDifferentiatorCards = dynamic(
-  () => import("./components/landing-differentiator-cards").then((module) => module.LandingDifferentiatorCards),
-  {
-    ssr: false,
-    loading: () => (
-      <LandingImmersiveFallback
-        eyebrow={LANDING_IMMERSIVE_FALLBACKS.difference.eyebrow}
-        title={LANDING_IMMERSIVE_FALLBACKS.difference.title}
-        description={LANDING_IMMERSIVE_FALLBACKS.difference.description}
-        heightClassName="h-[300vh]"
-      />
-    )
-  }
-)
-
-const LandingBrainHero = dynamic(
-  () => import("./components/landing-brain-hero").then((module) => module.LandingBrainHero),
-  {
-    ssr: false,
-    loading: () => (
-      <LandingImmersiveFallback
-        eyebrow={LANDING_IMMERSIVE_FALLBACKS.brain.eyebrow}
-        title={LANDING_IMMERSIVE_FALLBACKS.brain.title}
-        description={LANDING_IMMERSIVE_FALLBACKS.brain.description}
-        heightClassName="h-[440vh]"
-      />
-    )
-  }
-)
+import { LandingDifferentiatorCards, LandingBrainHero } from "./components/landing-dynamic-sections"
 
 const LANDING_FLOW_ACCENTS = [
   {
@@ -117,29 +85,9 @@ const LANDING_OUTCOME_ACCENTS = [
   }
 ] as const
 
-import { LazyMotion, domAnimation } from "framer-motion"
-
 export function LandingPage() {
-  useEffect(() => {
-    const scrollingElement = document.scrollingElement as HTMLElement | null
-
-    if (!scrollingElement) {
-      return
-    }
-
-    const previousPosition = scrollingElement.style.position
-
-    if (window.getComputedStyle(scrollingElement).position === "static") {
-      scrollingElement.style.position = "relative"
-    }
-
-    return () => {
-      scrollingElement.style.position = previousPosition
-    }
-  }, [])
-
   return (
-    <LazyMotion features={domAnimation}>
+    <LandingClientWrapper>
       <div className="relative min-h-screen overflow-x-clip bg-background selection:bg-primary/20">
         <AmbientBackdrop />
 
@@ -332,14 +280,15 @@ export function LandingPage() {
                 borderClassName="border-cyan-400/16 dark:border-white/10"
                 panelClassName="from-cyan-500/[0.018] via-white to-cyan-50/40 dark:from-white/[0.06] dark:via-black/84 dark:to-zinc-950/[0.62]"
                 leadingText={LANDING_CLOSING.railLabel}
-                leadingTextClassName="text-[10px] tracking-[0.16em] text-primary dark:text-white/72"
+                leadingTextClassName="whitespace-nowrap text-[11px] font-bold tracking-[0.08em] text-cyan-900 dark:text-cyan-100"
+                leadingIconWrapperClassName="h-auto w-auto px-5 py-2.5 sm:h-auto sm:w-auto sm:px-6 sm:py-3 rounded-full bg-white/90 dark:bg-zinc-900/90 shadow-sm backdrop-blur-md"
                 orbClassName="bg-cyan-500/14 dark:bg-white/8"
                 orbPositionClassName="-right-[10%] -top-[20%] h-[24rem] w-[24rem] sm:h-[28rem] sm:w-[28rem]"
                 className="shadow-[0_40px_110px_-56px_rgba(15,23,42,0.38)]"
-                contentClassName="p-8 sm:p-12 lg:p-14"
+                contentClassName="p-8 sm:p-12 lg:p-16"
               >
-                <div className="relative flex flex-col gap-6 pt-18 sm:gap-8 sm:pt-24 lg:flex-row lg:items-end lg:justify-between lg:pt-28">
-                  <div className="max-w-[42rem] space-y-4">
+                <div className="relative flex flex-col gap-8 pt-18 sm:pt-24 lg:flex-row lg:items-center lg:justify-between lg:pt-28">
+                  <div className="max-w-[42rem] space-y-5">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/48">
                       {LANDING_CLOSING.eyebrow}
                     </p>
@@ -350,7 +299,7 @@ export function LandingPage() {
                       {LANDING_CLOSING.description}
                     </p>
                   </div>
-                  <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex shrink-0 flex-wrap items-center gap-3 lg:pr-8">
                     <Button asChild size="lg" className={cn("rounded-full", LANDING_PRIMARY_CTA_CLASS)}>
                       <Link href={LANDING_HERO_EDITORIAL.primaryCtaHref}>
                         {LANDING_CLOSING.primaryCtaLabel}
@@ -369,6 +318,6 @@ export function LandingPage() {
 
       <PublicSiteFooter />
     </div>
-    </LazyMotion>
+    </LandingClientWrapper>
   )
 }

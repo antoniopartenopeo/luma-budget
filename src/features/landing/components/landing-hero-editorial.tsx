@@ -3,7 +3,7 @@
 import { useRef } from "react"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
-import { m, useReducedMotion, useScroll, useTransform } from "framer-motion"
+import { m, useScroll, useTransform } from "framer-motion"
 import { BrandLogo } from "@/components/ui/brand-logo"
 import { Button } from "@/components/ui/button"
 import { LANDING_HERO_EDITORIAL } from "../content"
@@ -13,7 +13,6 @@ import { LANDING_PRIMARY_CTA_CLASS } from "./landing-tokens"
 
 export function LandingHeroEditorial() {
   const sectionRef = useRef<HTMLElement>(null)
-  const prefersReducedMotion = useReducedMotion() ?? false
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"]
@@ -25,7 +24,7 @@ export function LandingHeroEditorial() {
   return (
     <section
       ref={sectionRef}
-      className="relative flex min-h-[100svh] w-full flex-col items-center overflow-visible px-4 pt-[18vh] sm:px-6 sm:pt-[20vh] lg:px-8 lg:pt-[22vh]"
+      className="relative flex min-h-[100svh] w-full flex-col items-center overflow-visible px-4 pt-[clamp(6rem,15svh,10rem)] sm:px-6 sm:pt-[clamp(8rem,18svh,12rem)] lg:px-8 lg:pt-[clamp(10rem,20svh,14rem)]"
       aria-labelledby="landing-hero-title"
       data-testid="landing-hero-editorial"
     >
@@ -54,11 +53,8 @@ export function LandingHeroEditorial() {
           </h1>
 
           {/* Smart Logo: solo il mark sopra il testo */}
-          <m.div 
-            className="pointer-events-none mb-6 sm:mb-8"
-            initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 20, scale: 0.95 }}
-            animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+          <div 
+            className="pointer-events-none mb-6 sm:mb-8 motion-safe:transition-all motion-safe:duration-[1200ms] motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:starting:opacity-0 motion-safe:starting:translate-y-5 motion-safe:starting:scale-95"
           >
             <BrandLogo
               variant="smart"
@@ -67,32 +63,23 @@ export function LandingHeroEditorial() {
               sizes="(min-width: 1024px) 128px, (min-width: 640px) 104px, 80px"
               className="h-auto w-[5rem] opacity-92 drop-shadow-[0_18px_34px_rgba(15,23,42,0.10)] dark:opacity-96 dark:drop-shadow-[0_20px_42px_rgba(0,0,0,0.32)] sm:w-[6.5rem] lg:w-[8rem]"
             />
-          </m.div>
+          </div>
 
           {/* Tipografia Massiccia */}
-          <m.p 
-            className="max-w-[14ch] text-[clamp(2.75rem,8vw,6.5rem)] font-black leading-[0.95] tracking-tight text-foreground/95 [text-wrap:balance]"
-            initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 30 }}
-            animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+          <p 
+            className="max-w-[14ch] text-[clamp(2.75rem,8vw,6.5rem)] font-black leading-[0.95] tracking-tight text-foreground/95 [text-wrap:balance] motion-safe:transition-all motion-safe:duration-[1200ms] motion-safe:delay-100 motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:starting:opacity-0 motion-safe:starting:translate-y-8"
           >
             {LANDING_HERO_EDITORIAL.headline}
-          </m.p>
+          </p>
 
-          <m.p 
-            className="mt-6 max-w-[22rem] text-[1.05rem] font-medium leading-[1.5] tracking-[-0.01em] text-foreground/60 sm:max-w-[34rem] sm:text-[1.25rem] lg:max-w-[40rem] lg:text-[1.35rem]"
-            initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 20 }}
-            animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+          <p 
+            className="mt-6 max-w-[22rem] text-[1.05rem] font-medium leading-[1.5] tracking-[-0.01em] text-foreground/60 sm:max-w-[34rem] sm:text-[1.25rem] lg:max-w-[40rem] lg:text-[1.35rem] motion-safe:transition-all motion-safe:duration-[1200ms] motion-safe:delay-200 motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:starting:opacity-0 motion-safe:starting:translate-y-5"
           >
             {LANDING_HERO_EDITORIAL.supportingCopy}
-          </m.p>
+          </p>
 
-          <m.div
-            className="mt-8 flex flex-wrap items-center justify-center gap-3"
-            initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 16 }}
-            animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.25 }}
+          <div
+            className="mt-8 flex flex-wrap items-center justify-center gap-3 motion-safe:transition-all motion-safe:duration-1000 motion-safe:delay-[250ms] motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:starting:opacity-0 motion-safe:starting:translate-y-4"
           >
             <Button asChild size="lg" className={`rounded-full ${LANDING_PRIMARY_CTA_CLASS}`}>
               <Link href={LANDING_HERO_EDITORIAL.primaryCtaHref}>
@@ -100,7 +87,7 @@ export function LandingHeroEditorial() {
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
-          </m.div>
+          </div>
         </m.div>
 
         {/* Dark Cover Flow Mockups - NON Svanisce on scroll */}
@@ -109,11 +96,8 @@ export function LandingHeroEditorial() {
         </div>
 
         {/* Trus Bar / Social Proof Istituzionale Above-The-Fold */}
-        <m.div
-          className="pointer-events-none mt-16 flex flex-col items-center gap-4 sm:mt-24 lg:mt-32"
-          initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
-          animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1 }}
-          transition={{ duration: 2, ease: "easeOut", delay: 0.8 }}
+        <div
+          className="pointer-events-none mt-16 flex flex-col items-center gap-4 sm:mt-24 lg:mt-32 motion-safe:transition-opacity motion-safe:duration-[2000ms] motion-safe:ease-out motion-safe:delay-[800ms] motion-safe:starting:opacity-0"
         >
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/30 dark:text-white/30">
             Una lettura chiara prima della prima decisione
@@ -132,7 +116,7 @@ export function LandingHeroEditorial() {
               Dati sul tuo dispositivo
             </span>
           </div>
-        </m.div>
+        </div>
 
       </div>
     </section>

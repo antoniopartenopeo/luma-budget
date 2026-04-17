@@ -168,7 +168,7 @@ export function LandingBrainHero() {
   }
 
   return (
-    <div ref={containerRef} className="relative h-[440vh] w-full bg-background">
+    <div ref={containerRef} className="relative h-[440svh] w-full bg-background">
       <div className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden bg-background">
         
         {/* Background Fluid with proper stacking */}

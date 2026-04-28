@@ -27,6 +27,8 @@ Schema usato in tutte le release:
 - Documentazione progetto centralizzata in una struttura unica con naming coerente e percorso di lettura esplicito.
 - Landing pubblica resa più credibile e prudente: trust signal visibili vicino alle CTA, FAQ essenziali inline e accesso esplicito alla prova con dati demo.
 - Nuove superfici pubbliche FAQ e Privacy per chiarire file supportati, modello local-first e continuità tramite backup locale.
+- Landing pubblica resa più leggibile per chi arriva da zero: promessa principale semplificata, trust strip su account/dati/stima, preview demo con formula controllabile e linguaggio meno legato al gergo Brain.
+- FAQ e Privacy rifinite attorno a demo, import, dati sul dispositivo, nessun collegamento bancario obbligatorio e backup JSON da proteggere.
 
 ### Fixed (Correzioni)
 - Allineati script e riferimenti governance per evitare path obsoleti nei check automatici e negli audit.

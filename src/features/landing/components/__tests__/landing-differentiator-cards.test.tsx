@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 import { LandingDifferentiatorCards } from "../landing-differentiator-cards"
 import { LANDING_DIFFERENCE_SECTION, LANDING_DIFFERENTIATORS } from "../../content"
+
 let mockReducedMotion = false
 
 vi.mock("framer-motion", async () => {
@@ -36,7 +37,9 @@ vi.mock("framer-motion", async () => {
     motion: motionProxy,
     useInView: () => true,
     useReducedMotion: () => mockReducedMotion,
-    useScroll: () => ({ scrollYProgress: 0 })
+    useScroll: () => ({ scrollYProgress: 0 }),
+    useSpring: (value: unknown) => value,
+    useTransform: (_value: unknown, _input: unknown, output: unknown[]) => output[0] ?? 0,
   }
 })
 
@@ -56,9 +59,11 @@ describe("LandingDifferentiatorCards", () => {
     render(<LandingDifferentiatorCards />)
 
     expect(screen.getByRole("heading", { name: LANDING_DIFFERENCE_SECTION.title })).toBeInTheDocument()
+    expect(screen.getByText(LANDING_DIFFERENTIATORS[0].kicker)).toBeInTheDocument()
+    expect(screen.getByText("Oggi")).toBeInTheDocument()
+    expect(screen.getByText(LANDING_DIFFERENTIATORS[2].note)).toBeInTheDocument()
     LANDING_DIFFERENTIATORS.forEach((item) => {
-      expect(screen.getByRole("heading", { name: item.title })).toBeInTheDocument()
-      expect(screen.getAllByText(item.numaLabel).length).toBeGreaterThan(0)
+      expect(screen.getByText(item.title)).toBeInTheDocument()
     })
     expect(screen.queryByRole("link")).not.toBeInTheDocument()
   })
@@ -67,8 +72,8 @@ describe("LandingDifferentiatorCards", () => {
     mockReducedMotion = true
     render(<LandingDifferentiatorCards />)
 
-    expect(screen.getByRole("heading", { name: LANDING_DIFFERENTIATORS[0].title })).toBeInTheDocument()
-    expect(screen.getAllByText(LANDING_DIFFERENTIATORS[0].numaLabel).length).toBeGreaterThan(0)
-    expect(screen.getByRole("heading", { name: LANDING_DIFFERENTIATORS[1].title })).toBeInTheDocument()
+    expect(screen.getByText(LANDING_DIFFERENTIATORS[0].title)).toBeInTheDocument()
+    expect(screen.getByText(LANDING_DIFFERENTIATORS[1].title)).toBeInTheDocument()
+    expect(screen.getByText(LANDING_DIFFERENTIATORS[2].note)).toBeInTheDocument()
   })
 })

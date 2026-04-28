@@ -3,12 +3,12 @@
 scope: ui-execution-governance
 owner: governance
 status: active
-last-verified: 2026-03-22
+last-verified: 2026-04-28
 canonical-of: ui-execution-policy
 
 > **Stato:** Attivo e vincolante
-> **Versione:** 1.1
-> **Ultimo aggiornamento:** 2026-03-22
+> **Versione:** 1.2
+> **Ultimo aggiornamento:** 2026-04-28
 
 Regole operative concise per costruire interfacce accessibili, veloci e credibili.
 Questo documento guida implementation e review tecnica cross-feature.
@@ -78,7 +78,7 @@ Questo documento guida implementation e review tecnica cross-feature.
 - SHOULD: preferire CSS, poi Web Animations API, poi librerie JS.
 - MUST: animare solo `transform` e `opacity` salvo eccezioni tecniche motivate.
 - NEVER: animare proprieta layout (`top`, `left`, `width`, `height`).
-- EXCEPTION: preview frame isolati su superfici narrative pubbliche possono animare `width` o `filter` solo se il moto rappresenta uno stato prodotto verificabile, non causa reflow esterno, e ha fallback reduced-motion.
+- EXCEPTION: preview frame isolati su superfici narrative pubbliche possono animare `width`, `filter` o pointer-reactive torchlight/tilt solo se il moto rappresenta uno stato prodotto verificabile, non causa reflow esterno, resta opzionale per la comprensione e ha fallback reduced-motion.
 - NEVER: usare `transition: all`; dichiarare proprieta esplicite.
 - SHOULD: animare solo per chiarire causa/effetto o feedback intenzionale.
 - SHOULD: easing coerente con distanza/tipo trigger.

@@ -8,27 +8,27 @@ import { Button } from "@/components/ui/button"
 const PRIVACY_POINTS = [
   {
     icon: ShieldCheck,
-    title: "Dati nel browser",
+    title: "Dati sul dispositivo",
     body:
-      "Nel percorso principale i tuoi dati restano nel browser sul dispositivo che stai usando, senza cloud obbligatorio per iniziare."
+      "Nel percorso principale i dati restano nel browser del dispositivo che stai usando."
   },
   {
     icon: WalletCards,
-    title: "Nessun account obbligatorio",
+    title: "Nessun account per provare",
     body:
-      "Per iniziare non devi creare un account e non devi collegare una banca. Puoi partire dal file esportato o dal dataset demo."
+      "Puoi iniziare dalla demo o da un file esportato dalla banca, senza collegare un conto."
   },
   {
     icon: HardDrive,
-    title: "Backup locale",
+    title: "Backup da proteggere",
     body:
-      "Se cambi browser o dispositivo, i dati non si sincronizzano in automatico. Oggi il passaggio corretto è export locale e ripristino del backup."
+      "Se vuoi spostare i dati, esporti un file. Quel file contiene dati finanziari e va custodito bene."
   }
 ] as const
 
 export const metadata: Metadata = {
   title: "Privacy | Numa Budget",
-  description: "Come funziona oggi la privacy in Numa Budget: dati nel browser, nessun account obbligatorio e backup locale."
+  description: "Come Numa Budget gestisce oggi dati sul dispositivo, account, demo e backup."
 }
 
 export default function PrivacyPage() {
@@ -37,8 +37,8 @@ export default function PrivacyPage() {
       <div className="space-y-6">
         <PublicSupportIntro
           eyebrow="Privacy"
-          title="Come funziona la privacy in Numa, oggi."
-          description="Questa pagina riassume in modo semplice come si comporta il prodotto nel percorso principale: dati nel browser, nessun account obbligatorio per iniziare e continuità tramite backup locale."
+          title="I tuoi dati, spiegati semplice."
+          description="Numa parte da una scelta chiara: puoi provarlo senza account, senza collegare la banca e con dati sul dispositivo."
         />
 
         <section className="grid gap-4 md:grid-cols-3">
@@ -57,24 +57,24 @@ export default function PrivacyPage() {
         <PublicSupportSurface>
           <div className="space-y-5">
             <div className="space-y-2">
-              <h2 className="text-2xl font-extrabold tracking-tight text-foreground">Cosa significa oggi, in pratica</h2>
+              <h2 className="text-2xl font-extrabold tracking-tight text-foreground">Cosa significa, in pratica</h2>
               <p className="max-w-[42rem] text-sm font-normal leading-relaxed text-muted-foreground sm:text-base">
-                Questa non è una pagina legale estesa. È la sintesi operativa di come si comporta il prodotto oggi nel suo percorso principale.
+                Questa non è una pagina legale lunga. È il riassunto pratico di come funziona Numa oggi.
               </p>
             </div>
 
             <div className="space-y-4 text-sm font-normal leading-relaxed text-muted-foreground sm:text-base">
               <p>
-                I dati restano nel browser sul dispositivo in uso. Non esiste una sincronizzazione cloud obbligatoria nella user journey principale.
+                Quando usi il percorso principale, i dati restano nel browser del dispositivo in uso.
               </p>
               <p>
-                L&apos;eventuale perdita di cache o il cambio browser/dispositivo non trasferiscono i dati in automatico. Per continuità oggi esiste il backup locale in formato JSON con relativo ripristino.
+                Se cancelli i dati del browser, cambi browser o cambi dispositivo, Numa non li sposta automaticamente.
               </p>
               <p>
-                Il backup esportato è un file JSON non cifrato: è utile per portare i dati con te, ma va trattato come un file finanziario sensibile.
+                Per portarli con te puoi usare il backup. Il backup è un file JSON non cifrato: utile, ma sensibile.
               </p>
               <p>
-                Il percorso principale che stai provando qui non dipende da un account o da una sincronizzazione cloud obbligatoria.
+                Per iniziare non serve un account e non serve collegare la banca. Puoi usare la demo o un file esportato da te.
               </p>
             </div>
           </div>
@@ -87,13 +87,13 @@ export default function PrivacyPage() {
                 Nota importante
               </p>
               <p className="max-w-[38rem] text-sm font-normal leading-relaxed text-foreground/80 sm:text-base">
-                Se vuoi evitare qualsiasi uso di dati personali nella prima prova, usa il dataset demo integrato nel percorso di import.
+                Se vuoi provare senza dati personali, usa la demo integrata nel percorso di import.
               </p>
             </div>
 
             <Button asChild className="rounded-full px-6 shadow-[0_18px_40px_-24px_rgba(14,165,168,0.55)]">
               <Link href="/transactions/import">
-                Prova import demo
+                Apri la demo
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>

@@ -88,24 +88,29 @@ Vincoli:
 
 Fonte canonica del copy:
 
-- `src/features/landing/content.ts`
+- `src/features/landing/data/landing.json` per il payload editoriale
+- `src/features/landing/content.ts` per tipi, icone e hydration del payload
+- `src/features/landing/preview-model.ts` per i numeri demo della hero/cover-flow
 - `src/features/landing/data.ts` resta solo un bridge di compatibilita e non va trattato come nuova fonte di verita.
 
 Pattern richiesto:
-1. hero immersivo con promessa prodotto verificabile
+1. hero immersivo con promessa prodotto verificabile e linguaggio utente
 2. anchor nav desktop compatta e non dispersiva
-3. sezioni esplicative a blocchi (`MacroSection`) con motion minimo
-4. sezione statica `Come inizi` in 4 passaggi, senza scene animate dedicate
-5. opzionalmente un solo explainer immersivo dedicato al Brain come approfondimento della fase forecast
-6. CTA finale esplicita su local-first / zero-cloud / no account obbligatorio per la prima scansione
-7. CTA finale diretta all'app (`/dashboard`)
-8. support surface pubbliche reali per trust/FAQ/privacy senza affordance false
+3. trust strip sopra la piega con no-account, dati sul dispositivo e stima rileggibile
+4. cover-flow/preview demo derivati da cents curati, non da dati utente
+5. sezioni esplicative a blocchi (`MacroSection`) con motion minimo
+6. sezione statica `Come inizi` in 4 passaggi, senza scene animate dedicate
+7. opzionalmente un solo explainer immersivo dedicato al Brain/stima come approfondimento della fase estimate
+8. CTA finale esplicita su assenza account / dati sul dispositivo / controllo utente
+9. CTA finale diretta all'app (`/dashboard`)
+10. support surface pubbliche reali per trust/FAQ/privacy senza affordance false
 
 Invarianti:
-- ordine narrativo bloccato: import -> lettura del mese -> stima -> decisione su nuova fissa
-- un eventuale focus Brain appartiene alla fase "stima", non apre una quinta promessa autonoma
+- ordine narrativo bloccato: import -> controllo -> lettura del mese/stima -> prova di spesa -> pressione ricorrente/fissa
+- un eventuale focus Brain appartiene alla fase "stima", non apre una promessa autonoma di AI
 - copy pubblico solo su feature reali, niente hype generico
 - preview veritiere e isolate, mai dati utente reali
+- numeri preview derivati da `preview-model.ts` e domain money utilities, niente math monetaria ad hoc in componenti
 - hero above the fold comprensibile in circa 5 secondi anche a chi non conosce il prodotto
 - sopra la piega evitare come lessico dominante `local-first`, `CSV`, `estratto conto`, `margine`, `Brain locale`, `Financial Lab`
 - termini tecnici ammessi solo se tradotti nello stesso blocco in linguaggio utente
@@ -157,6 +162,7 @@ Le animazioni state-based Radix/Shadcn (`data-[state=*]:animate-*`) sono consent
 - vietato `transition: all`
 - eccezione landing: reveal testuale, micro-motion su preview isolate e interludio Brain sono ammessi solo dentro la narrativa pubblica
 - l'explainer Brain puo usare spring-smoothed parallax, blur di profondita e lens reveal solo se resta reduced-motion-safe, senza asset remoti e con surface finale leggibile
+- torchlight, laser border e tilt hover della landing sono eccezioni narrative isolate: devono essere pointer-optional, ridotte/soppresse in `prefers-reduced-motion`, e non devono comunicare informazione finanziaria indispensabile
 
 ---
 
@@ -259,5 +265,5 @@ Invarianti:
 
 ---
 
-**Versione**: 2.4.0
-**Ultimo aggiornamento**: 2026-04-04
+**Versione**: 2.5.0
+**Ultimo aggiornamento**: 2026-04-28

@@ -12,8 +12,9 @@ vi.mock("@/hooks/use-device-hardware", () => ({
 
 vi.mock("framer-motion", async () => {
   const React = await vi.importActual<typeof import("react")>("react")
+  type MockTag = "div" | "svg" | "rect" | "g"
 
-  const createMotionElement = (tag: keyof JSX.IntrinsicElements, testIdPrefix: string) => {
+  const createMotionElement = (tag: MockTag, testIdPrefix: string) => {
     const MotionElement = React.forwardRef<HTMLElement, Record<string, unknown> & { children?: React.ReactNode }>(
       ({ children, animate, ...props }, ref) => {
         const elementProps = { ...props }
@@ -24,10 +25,10 @@ vi.mock("framer-motion", async () => {
         delete elementProps.viewport
 
         return React.createElement(
-          tag,
+          String(tag),
           {
             ref,
-            "data-testid": `${testIdPrefix}-${tag}`,
+            "data-testid": `${testIdPrefix}-${String(tag)}`,
             "data-has-animate": animate ? "true" : "false",
             ...elementProps
           },
@@ -36,7 +37,7 @@ vi.mock("framer-motion", async () => {
       }
     )
 
-    MotionElement.displayName = `Motion${tag}`
+    MotionElement.displayName = `Motion${String(tag)}`
     return MotionElement
   }
 
@@ -52,6 +53,7 @@ vi.mock("framer-motion", async () => {
   return {
     m: motionProxy,
     motion: motionProxy,
+    useInView: () => true,
     useReducedMotion: () => false,
     useScroll: () => ({
       scrollYProgress: 0

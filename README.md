@@ -20,8 +20,8 @@ Canonical live project context now lives in:
 
 | Module | Status | Description |
 |---|---|---|
-| Landing (`/`) | Stable | Superficie pubblica di acquisizione con hero immersivo, sezione statica `Come inizi` in 4 passaggi, interludio Brain multilayer e CTA finale zero-cloud/no-account verso `/dashboard` |
-| FAQ + Privacy (`/faq`, `/privacy`) | Active | Superfici pubbliche di rassicurazione su file supportati, prova demo, modello local-first e continuità tramite backup locale |
+| Landing (`/`) | Active | Superficie pubblica di acquisizione con hero user-language, trust strip, cover-flow di preview governato da un modello demo in cents, sezione statica `Come inizi` in 4 passaggi, interludio Brain come stima trasparente e CTA primaria verso `/dashboard` |
+| FAQ + Privacy (`/faq`, `/privacy`) | Active | Superfici pubbliche di rassicurazione su demo/import, dati sul dispositivo, nessun account o collegamento bancario obbligatorio, backup JSON locale da custodire |
 | Dashboard | Stable | KPI finanziari, composizione spese interattiva, movimenti recenti collegati all'elenco completo, filtri periodo persistenti in URL (`Mese/3M/6M/12M`) |
 | Transactions | Stable | Ledger responsive a row card/table, filtri periodo/range, export CSV, quick add da TopBar |
 | Import CSV | Stable | Wizard multi-step con parse/normalize/dedupe/enrich/grouping merchant + review guidata di gruppi, categorie e duplicati prima del salvataggio |
@@ -64,6 +64,7 @@ Canonical system overview: `03_architecture/SYSTEM_OVERVIEW.md`
 ### Data flow
 - Repository layer -> `localStorage` persistence
 - React Query -> cache + invalidation
+- Landing preview model -> curated demo cents + `@/domain/money` formatters, with no repository reads or live user data
 - Dashboard filters -> URL/search params -> deep-link coerenti verso `/transactions`
 - Cross-tab sync -> `storage` listeners on registered keys
 - `CHANGELOG.md` -> `/api/notifications/changelog` -> pagina pubblica `/updates`

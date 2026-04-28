@@ -1,9 +1,8 @@
 "use client"
 
-import { useRef, useMemo } from "react"
+import { useRef } from "react"
 import { m, useScroll, useTransform, useSpring } from "framer-motion"
 import { BrainCircuit, Zap, Activity } from "lucide-react"
-import { cn } from "@/lib/utils"
 import {
   LANDING_DIFFERENCE_SECTION,
   LANDING_DIFFERENTIATORS
@@ -161,11 +160,11 @@ export function LandingDifferentiatorCards() {
           
           {/* Node 1: Historical Base */}
           <m.div
-            style={{ opacity: node1Opacity, scale: node1Scale, top: "65.7%", left: "35%" }}
-            className="absolute -translate-x-1/2 -translate-y-full pb-4"
+            style={{ opacity: node1Opacity, scale: node1Scale }}
+            className="absolute left-[35%] top-[65.7%] -translate-x-1/2 -translate-y-full pb-4"
           >
             <div className="flex flex-col items-center gap-2">
-              <div className="rounded-2xl border border-slate-200/50 bg-slate-50/80 dark:border-white/10 dark:bg-black/60 p-3 backdrop-blur-md shadow-xl transition-all">
+              <div className="rounded-2xl border border-slate-200/50 bg-slate-50/80 p-3 shadow-xl backdrop-blur-md transition-[background-color,border-color,box-shadow] dark:border-white/10 dark:bg-black/60">
                 <div className="flex items-center gap-3">
                   <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-200/50 dark:bg-white/10 text-slate-600 dark:text-zinc-300">
                     <Activity className="h-4 w-4" />
@@ -188,8 +187,8 @@ export function LandingDifferentiatorCards() {
           {/* Node 2: Present Orchestration ("Oggi") */}
           {/* SVG cy="260" / 350 = 74.28% */}
           <m.div
-            style={{ opacity: node2Opacity, scale: node2Scale, top: "74.28%", left: "60%" }}
-            className="absolute -translate-x-1/2 translate-y-3 pt-3"
+            style={{ opacity: node2Opacity, scale: node2Scale }}
+            className="absolute left-[60%] top-[74.28%] -translate-x-1/2 translate-y-3 pt-3"
           >
             <div className="relative">
               <div className="rounded-2xl border border-cyan-400/20 bg-cyan-50/90 dark:border-cyan-400/20 dark:bg-cyan-950/60 p-3 backdrop-blur-md shadow-[0_16px_40px_-12px_rgba(34,211,238,0.2)]">
@@ -213,8 +212,8 @@ export function LandingDifferentiatorCards() {
           {/* Node 3: Predictive Future */}
           {/* SVG cx="1000" / 1000 = 100% | cy="90" / 350 = 25.71% */}
           <m.div
-            style={{ opacity: node3Opacity, scale: node3Scale, top: "25.71%", left: "100%" }}
-            className="absolute -translate-x-[85%] sm:-translate-x-1/2 -translate-y-full pb-4"
+            style={{ opacity: node3Opacity, scale: node3Scale }}
+            className="absolute left-full top-[25.71%] -translate-x-[85%] -translate-y-full pb-4 sm:-translate-x-1/2"
           >
             <div className="flex flex-col items-center sm:items-center items-end gap-2 pr-6 sm:pr-0">
               <div className="rounded-[1.35rem] border border-emerald-400/20 bg-emerald-50/90 dark:border-emerald-400/20 dark:bg-emerald-950/60 p-4 backdrop-blur-md shadow-[0_20px_50px_-12px_rgba(16,185,129,0.3)]">

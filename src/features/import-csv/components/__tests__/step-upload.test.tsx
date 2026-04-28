@@ -23,7 +23,7 @@ describe("ImportStepUpload", () => {
 
         expect(screen.getByText("Prossimamente")).toBeInTheDocument()
         expect(
-            screen.getByText(/In futuro potrai collegare il tuo conto bancario per sincronizzare le transazioni in automatico/i)
+            screen.getByText(/In futuro potrai collegare il tuo conto bancario per importare i movimenti in automatico/i)
         ).toBeInTheDocument()
         expect(
             screen.queryByText(/Autorizzazione sicura direttamente/i)

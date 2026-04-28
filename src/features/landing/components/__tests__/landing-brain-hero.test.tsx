@@ -46,7 +46,12 @@ vi.mock("framer-motion", async () => {
 })
 
 vi.mock("../motion-primitives", () => ({
-  AppleFluidBackground: () => <div data-testid="apple-fluid-background" />
+  AppleFluidBackground: () => <div data-testid="apple-fluid-background" />,
+  useEditorialTorchlight: () => ({
+    torchlightBackground: "",
+    laserBackground: "",
+    fogMask: ""
+  })
 }))
 
 describe("LandingBrainHero", () => {

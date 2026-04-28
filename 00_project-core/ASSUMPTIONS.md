@@ -3,7 +3,7 @@
 scope: project-assumptions
 owner: engineering
 status: active
-last-verified: 2026-04-01
+last-verified: 2026-04-28
 canonical-of: project-assumptions
 
 ## Facts from the Repository
@@ -14,12 +14,14 @@ canonical-of: project-assumptions
 - Canonical runtime and implementation guardrails live in `01_rules/*` and `05_specialists/*`
 - Open banking routes exist in codebase but stay disabled by default unless `NUMA_ENABLE_OPEN_BANKING=true`
 - Governance quick-check outputs are generated under `04_execution/reports/` as runtime artifacts and remain non versioned
+- The public landing uses curated demo values and preview models only; it does not read live repositories or display user financial data.
 
 ## Active Operational Assumptions
 
 - The root scaffold is the only canonical context and governance system for AI and operator sessions.
 - Specialist workflows belong in `05_specialists/*`, not in ad hoc repo subtrees.
 - Generated governance output belongs under `04_execution/reports/`.
+- Public acquisition copy is governed as product truth: user-language first, technical terms only after they are translated into concrete benefit.
 
 ## Open Decisions
 

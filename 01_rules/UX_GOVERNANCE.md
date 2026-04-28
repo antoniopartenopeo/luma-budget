@@ -3,12 +3,12 @@
 scope: ux-governance
 owner: governance
 status: active
-last-verified: 2026-04-04
+last-verified: 2026-04-28
 canonical-of: ux-policy
 
 > **Stato:** Active
-> **Versione:** 2.1
-> **Ultimo aggiornamento:** 2026-04-04
+> **Versione:** 2.2
+> **Ultimo aggiornamento:** 2026-04-28
 
 Linee guida UX ad alto livello per mantenere fiducia, chiarezza e coerenza cross-feature.
 
@@ -112,12 +112,14 @@ Per processi tecnici estesi (es. training locale Neural Core), mostrare progress
 - Privacy e local execution vanno raccontati come rassicurazione concreta, non come infrastruttura da addetti ai lavori.
 - Termini come `local-first`, `CSV`, `estratto conto`, `margine`, `Brain locale` e `Financial Lab` non devono guidare la prima scansione della hero pubblica.
 - Il copy pubblico deve descrivere solo capacita verificabili nei moduli attivi del prodotto, evitando hype su AI, cloud o automazioni non dimostrate.
-- L'ordine narrativo canonico resta: dati gia posseduti -> lettura del mese -> stima se pronta -> decisione su nuova spesa fissa.
+- L'ordine narrativo canonico resta: movimenti gia posseduti -> controllo di cio che Numa ha letto -> stima leggibile del mese -> prova di una possibile spesa -> pressione dei costi ricorrenti/fissi.
 - La spiegazione operativa del flusso pubblico deve vivere in una sezione statica `Come inizi` in quattro passaggi, non in una hero separata che duplica la stessa narrativa con scene animate.
-- Eventuali interludi dedicati al Brain devono rafforzare trasparenza di readiness e fallback, non spostare la promessa su predizioni assolute.
+- Eventuali interludi dedicati al Brain devono rafforzare trasparenza di stima, readiness e fallback, non spostare la promessa su predizioni assolute o su una promessa AI autonoma.
+- La hero e il cover-flow possono mostrare numeri demo solo se derivati da un modello curato e verificabile; devono rendere esplicita la formula o il fatto che la prova non modifica i movimenti reali.
+- Il primo viewport deve includere trust leggibile senza gergo: nessun account per iniziare, dati sul dispositivo, stima rileggibile o controllabile.
 - La CTA primaria resta l'ingresso nell'app (`/dashboard`), non signup forzato o routing dispersivo.
 - Una CTA secondaria puo portare a una prova sicura via `/transactions/import`, ma deve restare esplicita sul fatto che si tratta di import/demo e non di onboarding remoto.
-- La CTA finale della landing puo esplicitare local-first, zero-cloud e assenza di account obbligatorio per la prima scansione, ma senza promettere piu di quanto l'app faccia davvero.
+- La CTA finale della landing puo esplicitare assenza di account, dati sul dispositivo, backup o local-first, ma senza promettere piu di quanto l'app faccia davvero.
 - La navigazione pubblica deve rimanere contenuta in anchor interne e route esplicitamente pubbliche.
 - Le route pubbliche intenzionali oggi ammesse sono `/dashboard`, `/transactions/import`, `/faq`, `/privacy` e `/updates`.
 - `/faq`, `/privacy` e `/updates` sono trust surface standalone fuori `AppShell`; `/transactions/import` resta la route app-native raggiungibile anche dalla landing senza perdere il chrome operativo interno.

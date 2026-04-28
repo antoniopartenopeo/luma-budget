@@ -1,5 +1,4 @@
-import { useState } from "react"
-import { useMotionTemplate, useMotionValue, useSpring, useTransform } from "framer-motion"
+import { useMotionValue, useSpring, useTransform } from "framer-motion"
 import { useDeviceHardware } from "./use-device-hardware"
 
 interface HardwareParallaxConfig {
@@ -25,17 +24,6 @@ export function useHardwareParallax(config?: HardwareParallaxConfig) {
   const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [effectiveTiltMax, -effectiveTiltMax]), springConfig)
   const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-effectiveTiltMax, effectiveTiltMax]), springConfig)
 
-  const glareX = useSpring(useTransform(mouseX, [-0.5, 0.5], [100, 0]), springConfig)
-  const glareY = useSpring(useTransform(mouseY, [-0.5, 0.5], [100, 0]), springConfig)
-  const backgroundPosition = useMotionTemplate`${glareX}% ${glareY}%`
-
-  const [isHovered, setIsHovered] = useState(false)
-
-  const handleMouseEnter = () => {
-    if (!safeToAnimate3D) return
-    setIsHovered(true)
-  }
-
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>, rect: DOMRect) => {
     if (!safeToAnimate3D) return
     requestAnimationFrame(() => {
@@ -51,17 +39,15 @@ export function useHardwareParallax(config?: HardwareParallaxConfig) {
   }
 
   const handleMouseLeave = () => {
-    setIsHovered(false)
     mouseX.set(0)
     mouseY.set(0)
   }
 
   return {
+    mouseX,
+    mouseY,
     rotateX,
     rotateY,
-    backgroundPosition,
-    isHovered,
-    handleMouseEnter,
     handleMouseMove,
     handleMouseLeave
   }

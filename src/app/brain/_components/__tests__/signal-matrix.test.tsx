@@ -23,14 +23,14 @@ describe("SignalMatrix", () => {
 
         expect(screen.getByRole("button", { name: /Rapporto tra spese ed entrate/i })).toBeInTheDocument()
         expect(screen.getByRole("button", { name: /Ritmo delle transazioni/i })).toBeInTheDocument()
-        expect(screen.getByText("Fattore selezionato")).toBeInTheDocument()
+        expect(screen.getByText("Segnale selezionato")).toBeInTheDocument()
         expect(screen.getAllByText("Rapporto tra spese ed entrate")).toHaveLength(2)
 
         fireEvent.click(screen.getByRole("button", { name: /Ritmo delle transazioni/i }))
 
         expect(screen.getByText("Ritmo delle transazioni")).toBeInTheDocument()
-        expect(screen.getByText("Valore osservato")).toBeInTheDocument()
-        expect(screen.getByText("Importanza interna")).toBeInTheDocument()
+        expect(screen.getByText("Dato rilevato")).toBeInTheDocument()
+        expect(screen.getByText("Peso nel calcolo")).toBeInTheDocument()
         expect(screen.getByText("Come interpretarlo")).toBeInTheDocument()
     })
 

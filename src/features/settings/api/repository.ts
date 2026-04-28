@@ -1,14 +1,14 @@
 import { storage } from "@/lib/storage-utils"
+import { STORAGE_KEY_SETTINGS } from "@/lib/storage-keys"
 import { AppSettingsV1, DEFAULT_SETTINGS_V1, ThemePreference, CurrencyCode, InsightsSensitivity } from "./types"
+import { normalizeSettingsProfile } from "../profile-utils"
 
-const SETTINGS_KEY = "luma_settings_v1"
+const SETTINGS_KEY = STORAGE_KEY_SETTINGS
 
-function normalizeName(value: unknown): string {
-    if (typeof value !== "string") return ""
-    return value.trim().slice(0, 50)
-}
+let cachedSettingsRaw: string | null | undefined
+let cachedSettingsSnapshot: AppSettingsV1 = DEFAULT_SETTINGS_V1
 
-function validateSettings(data: unknown): AppSettingsV1 {
+function normalizeSettings(data: unknown): AppSettingsV1 {
     if (!data || typeof data !== "object") {
         return DEFAULT_SETTINGS_V1
     }
@@ -57,31 +57,44 @@ function validateSettings(data: unknown): AppSettingsV1 {
         insightsSensitivity = candidate.insightsSensitivity
     }
 
-    // Validate profile. Keep backward compatibility with legacy displayName.
-    const legacyDisplayName = normalizeName(candidate.profile?.displayName)
-    const legacyTokens = legacyDisplayName.split(/\s+/).filter(Boolean)
-    const legacyFirstName = legacyTokens[0] ?? ""
-    const legacyLastName = legacyTokens.length > 1 ? legacyTokens.slice(1).join(" ") : ""
-
-    const profile = {
-        firstName: normalizeName(candidate.profile?.firstName) || legacyFirstName,
-        lastName: normalizeName(candidate.profile?.lastName) || legacyLastName,
-        displayName: legacyDisplayName,
-    }
-
     return {
         version: 1,
         theme,
         currency,
         superfluousTargetPercent,
         insightsSensitivity,
-        profile,
+        profile: normalizeSettingsProfile(candidate.profile),
+    }
+}
+
+function readSettingsSnapshot(): AppSettingsV1 {
+    if (typeof window === "undefined" || !window.localStorage) {
+        return DEFAULT_SETTINGS_V1
+    }
+
+    try {
+        const raw = window.localStorage.getItem(SETTINGS_KEY)
+
+        if (raw === cachedSettingsRaw) {
+            return cachedSettingsSnapshot
+        }
+
+        const parsed = raw === null ? null : JSON.parse(raw)
+
+        cachedSettingsRaw = raw
+        cachedSettingsSnapshot = normalizeSettings(parsed)
+
+        return cachedSettingsSnapshot
+    } catch (error) {
+        console.error(`Error reading key "${SETTINGS_KEY}" from localStorage`, error)
+        cachedSettingsRaw = null
+        cachedSettingsSnapshot = DEFAULT_SETTINGS_V1
+        return cachedSettingsSnapshot
     }
 }
 
 export async function fetchSettings(): Promise<AppSettingsV1> {
-    const raw = storage.get<unknown>(SETTINGS_KEY, null)
-    return validateSettings(raw)
+    return readSettingsSnapshot()
 }
 
 export async function upsertSettings(patch: Partial<Omit<AppSettingsV1, "version">>): Promise<AppSettingsV1> {

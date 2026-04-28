@@ -24,62 +24,55 @@ export function LandingHeroEditorial() {
   return (
     <section
       ref={sectionRef}
-      className="relative flex min-h-[100svh] w-full flex-col items-center overflow-visible px-4 pt-[clamp(6rem,15svh,10rem)] sm:px-6 sm:pt-[clamp(8rem,18svh,12rem)] lg:px-8 lg:pt-[clamp(10rem,20svh,14rem)]"
+      className="relative flex min-h-[100svh] w-full flex-col items-center overflow-visible px-4 pt-[clamp(5.75rem,11svh,8rem)] sm:px-6 sm:pt-[clamp(6.25rem,12svh,9rem)] lg:px-8 lg:pt-[clamp(6.5rem,12svh,9rem)]"
       aria-labelledby="landing-hero-title"
       data-testid="landing-hero-editorial"
     >
-      {/* Background Sfumato che copre l'intero viewport dall'alto (Y=0) */}
-      <div className="pointer-events-none absolute inset-0 z-0 [mask-image:linear-gradient(to_bottom,black_40%,transparent_100%)]">
-        <AppleFluidBackground className="scale-[1.08] sm:scale-[1.04]" />
+      <div className="pointer-events-none absolute inset-0 z-0 [mask-image:linear-gradient(to_bottom,black_46%,transparent_100%)]">
+        <AppleFluidBackground className="scale-[1.14] opacity-[0.88] saturate-[0.82] dark:opacity-[0.82] dark:saturate-[0.52] sm:scale-[1.08]" />
       </div>
 
-      {/* Layer gradient per migliorare il contrasto con i testi scuri/chiari */}
-      <div className="pointer-events-none absolute inset-0 z-[1] [mask-image:linear-gradient(to_bottom,black_40%,transparent_100%)] bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.12),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(20,184,166,0.08),transparent_40%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.03),transparent_32%)]" />
+      <div className="pointer-events-none absolute inset-0 z-[1] [mask-image:linear-gradient(to_bottom,black_50%,transparent_100%)] bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.54),transparent_44%),radial-gradient(circle_at_72%_22%,rgba(34,211,238,0.11),transparent_34%),radial-gradient(circle_at_24%_42%,rgba(15,23,42,0.08),transparent_38%)] dark:bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.08),transparent_38%),radial-gradient(circle_at_72%_20%,rgba(255,255,255,0.075),transparent_34%),radial-gradient(circle_at_30%_46%,rgba(255,255,255,0.035),transparent_38%)]" />
 
-      {/* Luce zenitale per dare un forte effetto "Apple" / "Vercel" centrato */}
       <m.div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-[5%] z-[2] -translate-x-1/2 h-[30rem] w-[50rem] rounded-[100%] bg-white/40 blur-[120px] dark:bg-cyan-500/10 sm:h-[40rem] sm:w-[70rem]"
+        className="pointer-events-none absolute left-1/2 top-[4%] z-[2] h-[28rem] w-[44rem] -translate-x-1/2 rounded-[100%] bg-white/44 blur-[120px] dark:bg-white/[0.055] sm:h-[38rem] sm:w-[72rem]"
         style={{ opacity: yOpacity }}
       />
 
-      {/* Core Layout: Centrato, minimale, estremo */}
-      <div className="relative z-30 mx-auto flex w-full max-w-[56rem] flex-col items-center text-center">
+      <div className="relative z-30 mx-auto flex w-full max-w-[68rem] flex-col items-center text-center">
         
-        {/* Gruppo Testuale: Svanisce scrollando giù */}
         <m.div className="flex flex-col items-center text-center" style={{ opacity: yOpacity, y: yTranslate }}>
           <h1 id="landing-hero-title" className="sr-only">
             {LANDING_HERO_EDITORIAL.srTitle}
           </h1>
 
-          {/* Smart Logo: solo il mark sopra il testo */}
           <div 
-            className="pointer-events-none mb-6 sm:mb-8 motion-safe:transition-all motion-safe:duration-[1200ms] motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:starting:opacity-0 motion-safe:starting:translate-y-5 motion-safe:starting:scale-95"
+            className="pointer-events-none mb-4 motion-safe:transition-[opacity,transform] motion-safe:duration-[1200ms] motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:starting:opacity-0 motion-safe:starting:translate-y-5 motion-safe:starting:scale-95 sm:mb-6"
           >
             <BrandLogo
               variant="smart"
               width={160}
               priority
               sizes="(min-width: 1024px) 128px, (min-width: 640px) 104px, 80px"
-              className="h-auto w-[5rem] opacity-92 drop-shadow-[0_18px_34px_rgba(15,23,42,0.10)] dark:opacity-96 dark:drop-shadow-[0_20px_42px_rgba(0,0,0,0.32)] sm:w-[6.5rem] lg:w-[8rem]"
+              className="h-auto w-[4.75rem] opacity-92 drop-shadow-[0_18px_34px_rgba(15,23,42,0.10)] dark:opacity-96 dark:drop-shadow-[0_20px_42px_rgba(0,0,0,0.32)] sm:w-[6rem] lg:w-[7rem]"
             />
           </div>
 
-          {/* Tipografia Massiccia */}
           <p 
-            className="max-w-[14ch] text-[clamp(2.75rem,8vw,6.5rem)] font-black leading-[0.95] tracking-tight text-foreground/95 [text-wrap:balance] motion-safe:transition-all motion-safe:duration-[1200ms] motion-safe:delay-100 motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:starting:opacity-0 motion-safe:starting:translate-y-8"
+            className="max-w-[13ch] text-[clamp(3rem,7.4vw,6.2rem)] font-black leading-[0.93] tracking-tight text-foreground/95 [text-wrap:balance] motion-safe:transition-[opacity,transform] motion-safe:duration-[1200ms] motion-safe:delay-100 motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:starting:opacity-0 motion-safe:starting:translate-y-8"
           >
             {LANDING_HERO_EDITORIAL.headline}
           </p>
 
           <p 
-            className="mt-6 max-w-[22rem] text-[1.05rem] font-medium leading-[1.5] tracking-[-0.01em] text-foreground/60 sm:max-w-[34rem] sm:text-[1.25rem] lg:max-w-[40rem] lg:text-[1.35rem] motion-safe:transition-all motion-safe:duration-[1200ms] motion-safe:delay-200 motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:starting:opacity-0 motion-safe:starting:translate-y-5"
+            className="mt-5 max-w-[24rem] text-[1.05rem] font-medium leading-[1.5] text-foreground/64 motion-safe:transition-[opacity,transform] motion-safe:duration-[1200ms] motion-safe:delay-200 motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:starting:opacity-0 motion-safe:starting:translate-y-5 sm:max-w-[38rem] sm:text-[1.2rem] lg:max-w-[42rem] lg:text-[1.26rem]"
           >
             {LANDING_HERO_EDITORIAL.supportingCopy}
           </p>
 
           <div
-            className="mt-8 flex flex-wrap items-center justify-center gap-3 motion-safe:transition-all motion-safe:duration-1000 motion-safe:delay-[250ms] motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:starting:opacity-0 motion-safe:starting:translate-y-4"
+            className="mt-7 flex flex-wrap items-center justify-center gap-3 motion-safe:transition-[opacity,transform] motion-safe:duration-1000 motion-safe:delay-[250ms] motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:starting:opacity-0 motion-safe:starting:translate-y-4"
           >
             <Button asChild size="lg" className={`rounded-full ${LANDING_PRIMARY_CTA_CLASS}`}>
               <Link href={LANDING_HERO_EDITORIAL.primaryCtaHref}>
@@ -90,32 +83,16 @@ export function LandingHeroEditorial() {
           </div>
         </m.div>
 
-        {/* Dark Cover Flow Mockups - NON Svanisce on scroll */}
         <div className="w-full">
           <LandingCoverFlow />
         </div>
 
-        {/* Trus Bar / Social Proof Istituzionale Above-The-Fold */}
         <div
-          className="pointer-events-none mt-16 flex flex-col items-center gap-4 sm:mt-24 lg:mt-32 motion-safe:transition-opacity motion-safe:duration-[2000ms] motion-safe:ease-out motion-safe:delay-[800ms] motion-safe:starting:opacity-0"
+          className="pointer-events-none mt-8 flex justify-center motion-safe:transition-opacity motion-safe:duration-[1600ms] motion-safe:ease-out motion-safe:delay-[700ms] motion-safe:starting:opacity-0 sm:mt-12 lg:mt-16"
         >
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/30 dark:text-white/30">
-            Una lettura chiara prima della prima decisione
+          <p className="max-w-[42rem] text-center text-[12px] font-medium leading-relaxed text-foreground/42 dark:text-white/42 sm:text-[13px]">
+            {LANDING_HERO_EDITORIAL.trustItems.join(" · ")}
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-6 opacity-55 dark:opacity-42 sm:gap-10">
-            <span className="flex items-center gap-2 text-[12.5px] font-medium tracking-tight text-foreground/72">
-              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-              Nessun account per iniziare
-            </span>
-            <span className="flex items-center gap-2 text-[12.5px] font-medium tracking-tight text-foreground/72">
-              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" /></svg>
-              Import rapido del mese
-            </span>
-            <span className="flex items-center gap-2 text-[12.5px] font-medium tracking-tight text-foreground/72">
-              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
-              Dati sul tuo dispositivo
-            </span>
-          </div>
         </div>
 
       </div>

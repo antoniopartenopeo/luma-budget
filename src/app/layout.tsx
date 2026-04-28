@@ -4,6 +4,8 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { AppRuntimeGate } from "@/components/providers/app-runtime-gate";
 
+const ENABLE_VERCEL_ANALYTICS = process.env.VERCEL === "1" || Boolean(process.env.VERCEL_ENV);
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -77,7 +79,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <AppRuntimeGate>{children}</AppRuntimeGate>
-        <Analytics />
+        {ENABLE_VERCEL_ANALYTICS ? <Analytics /> : null}
       </body>
     </html>
   );

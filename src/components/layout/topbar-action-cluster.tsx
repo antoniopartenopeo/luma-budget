@@ -8,6 +8,7 @@ import { LIQUID_CAPSULE_CLASS, LIQUID_REFRACTION_CLASS } from "@/components/ui/g
 import { cn } from "@/lib/utils"
 import { usePrivacyStore } from "@/features/privacy/privacy.store"
 import { useSettings } from "@/features/settings/api/use-settings"
+import { getProfileInitials } from "@/features/settings/profile-utils"
 import { TopbarFlashPreview } from "@/features/flash/components/topbar-flash-preview"
 import { TopbarBrainPreview } from "@/features/insights/components/topbar-brain-preview"
 import { type TopbarPanelId } from "./topbar-panel-id"
@@ -22,29 +23,6 @@ import {
     TopbarMobilePanelContent,
     resolveMobilePanelTitle,
 } from "./topbar-mobile-panel-content"
-
-function getAvatarInitials(profile?: { firstName?: string; lastName?: string; displayName?: string }): string | null {
-    const firstName = profile?.firstName?.trim() || ""
-    const lastName = profile?.lastName?.trim() || ""
-    if (firstName && lastName) {
-        return `${firstName[0]}${lastName[0]}`.toUpperCase()
-    }
-
-    const legacyName = profile?.displayName?.trim() || ""
-    if (legacyName) {
-        const tokens = legacyName.split(/\s+/).filter(Boolean)
-        if (tokens.length >= 2) {
-            return `${tokens[0][0]}${tokens[1][0]}`.toUpperCase()
-        }
-        return tokens[0][0].toUpperCase()
-    }
-
-    if (firstName) return firstName[0].toUpperCase()
-    if (lastName) return lastName[0].toUpperCase()
-    return null
-}
-
-
 
 interface TopbarActionClusterProps {
     activePanel?: TopbarPanelId | null
@@ -239,7 +217,7 @@ export function TopbarActionCluster({
 }: TopbarActionClusterProps) {
     const { isPrivacyMode, togglePrivacy } = usePrivacyStore()
     const { data: settings } = useSettings()
-    const initials = getAvatarInitials(settings?.profile)
+    const initials = getProfileInitials(settings?.profile)
     const isEmbedded = surface === "embedded"
     const isMobile = surface === "mobile"
     const [localActivePanel, setLocalActivePanel] = useState<TopbarPanelId | null>(null)

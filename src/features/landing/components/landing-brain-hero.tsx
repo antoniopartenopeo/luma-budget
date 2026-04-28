@@ -87,21 +87,21 @@ export function LandingBrainHero() {
     {
       icon: DatabaseZap,
       label: "Base certa",
-      value: "Entrate e ricorrenze emerse",
+      value: "Entrate e spese ricorrenti",
       positionClassName: "md:-translate-y-8 md:rotate-[-2deg]",
       toneClassName: "border-cyan-400/18 bg-cyan-400/[0.04] text-cyan-800 dark:border-cyan-300/12 dark:bg-cyan-300/[0.08] dark:text-cyan-100 shadow-[0_16px_40px_-12px_rgba(8,145,178,0.12)]"
     },
     {
       icon: Gauge,
       label: "Peso del mese",
-      value: "Spese base assorbite in anticipo",
+      value: "Le uscite previste sono gia dentro",
       positionClassName: "md:translate-y-6 md:rotate-[1.5deg] z-10",
       toneClassName: "border-slate-400/20 bg-slate-100/50 text-foreground dark:border-white/10 dark:bg-white/[0.05] dark:text-white shadow-[0_16px_40px_-12px_rgba(0,0,0,0.1)] dark:shadow-[0_16px_40px_-12px_rgba(255,255,255,0.05)]"
     },
     {
       icon: ShieldCheck,
       label: "Spazio residuo",
-      value: "Margine reale calcolato",
+      value: "Il margine resta leggibile",
       positionClassName: "md:-translate-y-4 md:rotate-[-1deg]",
       toneClassName: "border-emerald-400/18 bg-emerald-400/[0.04] text-emerald-800 dark:border-emerald-300/12 dark:bg-emerald-300/[0.08] dark:text-emerald-100 shadow-[0_16px_40px_-12px_rgba(5,150,105,0.12)]"
     }
@@ -110,15 +110,15 @@ export function LandingBrainHero() {
   const truthRows: readonly HologramRow[] = [
     {
       icon: BrainCircuit,
-      label: "Feedback Attivo",
-      value: "Il Brain calcola solo su dati certi",
+      label: "Solo dati utili",
+      value: "Numa calcola su cio che hai caricato",
       positionClassName: "md:-translate-y-6 md:rotate-[-1.5deg]",
       toneClassName: "border-slate-400/20 bg-slate-100/50 text-foreground dark:border-white/10 dark:bg-white/[0.05] dark:text-white shadow-[0_16px_40px_-12px_rgba(0,0,0,0.1)] dark:shadow-[0_16px_40px_-12px_rgba(255,255,255,0.05)]"
     },
     {
       icon: CircleAlert,
-      label: "Nessuna Allucinazione",
-      value: "Numa non inventa medie fittizie",
+      label: "Quando non basta",
+      value: "Te lo dice invece di inventare",
       positionClassName: "md:translate-y-6 md:rotate-[2deg]",
       toneClassName: "border-rose-400/18 bg-rose-400/[0.04] text-rose-800 dark:border-rose-300/12 dark:bg-rose-300/[0.08] dark:text-rose-100 shadow-[0_16px_40px_-12px_rgba(225,29,72,0.12)]"
     }
@@ -200,7 +200,7 @@ export function LandingBrainHero() {
             <div className="mt-10 inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-100/50 dark:bg-cyan-950/40 px-5 py-2.5 backdrop-blur-xl shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_0_20px_rgba(8,145,178,0.2)]">
               <BrainCircuit className="h-4 w-4 text-cyan-700 dark:text-cyan-300" />
               <span className="text-[11px] font-black uppercase tracking-[0.16em] text-cyan-800 dark:text-cyan-100">
-                Il margine nasce da segnali letti, non da medie vuote
+                Il margine nasce da entrate e spese previste
               </span>
             </div>
           </div>

@@ -47,5 +47,6 @@ describe("PreferencesSection", () => {
         expect(screen.getByRole("textbox", { name: "Nome" })).toHaveClass("backdrop-blur-md")
         expect(screen.getByRole("combobox", { name: "Tema" })).toHaveClass("backdrop-blur-md")
         expect(screen.getByRole("combobox", { name: "Valuta" })).toHaveClass("backdrop-blur-md")
+        expect(screen.getByRole("spinbutton", { name: "Obiettivo spese non essenziali" })).toHaveClass("backdrop-blur-md")
     })
 })

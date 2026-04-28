@@ -3,7 +3,7 @@
 scope: execution-work-log
 owner: engineering
 status: active
-last-verified: 2026-04-01
+last-verified: 2026-04-28
 canonical-of: execution-work-log
 
 ## 2026-03-15
@@ -30,7 +30,7 @@ canonical-of: execution-work-log
 - Realigned requirements, UX/motion rules, architecture overview, specialist UI guidance, and execution playbooks around the landing's product-truth narrative.
 - Updated landing verification artifacts so tests now track public-link constraints and the public step-by-step acquisition story.
 - Folded the new Brain explainer into the same governance layer, tightening its local-first copy, motion constraints, and verification coverage.
-- Refreshed docs again after the latest landing iteration to capture the longer Brain interlude and the zero-cloud/no-account closing CTA.
+- Refreshed docs again after the latest landing iteration to capture the longer Brain interlude and no-account/local-data closing CTA.
 - Created `AppleFluidBackground` master primitive (unifying `AppleFluidMesh` SVG with complex black scaling gradients) and re-engineered both the landing Hero and Brain Hero to use this identical Apple Premium immersive animated background.
 - Executed a rigorous linguistic and typographic audit across the entire landing page, fixing dozens of missing Italian accents and normalizing all responsive header scales (clamping `text-8xl` to `text-7xl`) for flawless visual hierarchy.
 
@@ -55,3 +55,12 @@ canonical-of: execution-work-log
 - Re-aligned canonical governance and entrypoint docs so public navigation, support surfaces, and safe-trial behavior stay explicit and testable.
 - Corrected the public/app shell split so only `/faq` and `/privacy` stay outside `AppShell`, while `/updates` and `/transactions/import` remain publicly reachable without breaking internal navigation continuity.
 - Consolidated public FAQ copy into a shared source of truth reused by the landing and `/faq`, and brought release traceability back in sync with the Wave 1 public changes.
+
+## 2026-04-28
+
+- Realigned the full root-scaffold documentation surface after the latest landing pass.
+- Documented the clearer public narrative: import movements, review what was read, understand the month estimate, test a possible expense, and recognize recurring/fixed pressure.
+- Promoted `src/features/landing/preview-model.ts` as the governed source for curated hero/cover-flow demo math, using cents and domain money formatting instead of component-local calculations.
+- Updated UX, motion, UI specialist, architecture, requirements, decision log, handoff, and changelog references so Brain is described as a transparent estimate rather than an unconditional prediction promise.
+- Captured the simplified FAQ/privacy posture around demo, import, data on device, no mandatory account/bank connection, and cleartext JSON backup risk.
+- Hardened `scripts/audit/governance-quick-check.sh` so generated-report validation no longer stalls while counting large multi-line scan results.

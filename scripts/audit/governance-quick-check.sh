@@ -16,9 +16,14 @@ trim_empty() {
     sed '/^[[:space:]]*$/d'
 }
 
+has_non_empty_input() {
+    local input="$1"
+    grep -q '[^[:space:]]' <<< "$input"
+}
+
 count_lines() {
     local input="$1"
-    if [ -z "${input//[[:space:]]/}" ]; then
+    if ! has_non_empty_input "$input"; then
         echo 0
     else
         printf '%s\n' "$input" | trim_empty | wc -l | tr -d ' '
@@ -28,7 +33,7 @@ count_lines() {
 head_or_empty() {
     local input="$1"
     local max_lines="$2"
-    if [ -z "${input//[[:space:]]/}" ]; then
+    if ! has_non_empty_input "$input"; then
         echo "_None_"
     else
         printf '%s\n' "$input" | trim_empty | head -n "$max_lines"

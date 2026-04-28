@@ -45,7 +45,12 @@ vi.mock("@/components/ui/brand-logo", () => ({
 }))
 
 vi.mock("../motion-primitives", () => ({
-  AppleFluidBackground: () => <div data-testid="apple-fluid-background" />
+  AppleFluidBackground: () => <div data-testid="apple-fluid-background" />,
+  useEditorialTorchlight: () => ({
+    torchlightBackground: "",
+    laserBackground: "",
+    fogMask: ""
+  })
 }))
 
 vi.mock("../landing-cover-flow", () => ({
@@ -82,7 +87,7 @@ describe("LandingHeroEditorial", () => {
     expect(screen.getByTestId("landing-cover-flow")).toBeInTheDocument()
     expect(screen.getByText(LANDING_HERO_EDITORIAL.headline)).toBeInTheDocument()
     expect(screen.getByText(LANDING_HERO_EDITORIAL.supportingCopy)).toBeInTheDocument()
-    expect(screen.getAllByText("Dati sul tuo dispositivo").length).toBeGreaterThan(0)
+    expect(screen.getByText(LANDING_HERO_EDITORIAL.trustItems.join(" · "))).toBeInTheDocument()
     expect(screen.getByRole("link", { name: new RegExp(LANDING_HERO_EDITORIAL.primaryCtaLabel, "i") })).toBeInTheDocument()
     expect(screen.queryByText(/Apri una demo sicura/i)).not.toBeInTheDocument()
   })

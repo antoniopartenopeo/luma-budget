@@ -30,6 +30,7 @@ describe("Settings V1 Persistence", () => {
     beforeEach(() => {
         localStorage.clear()
         vi.clearAllMocks()
+        vi.spyOn(console, "error").mockImplementation(() => undefined)
     })
 
     it("fetchSettings should return default settings when storage is empty", async () => {
@@ -52,9 +53,9 @@ describe("Settings V1 Persistence", () => {
     it("fetchSettings should return default settings when JSON is corrupted", async () => {
         localStorage.setItem("luma_settings_v1", "{ invalid json")
 
-        // Should not crash, but return default (console.error might be called, we can spy if we want supress)
         const settings = await fetchSettings()
         expect(settings).toEqual(DEFAULT_SETTINGS_V1)
+        expect(console.error).toHaveBeenCalled()
     })
 
     it("fetchSettings should fallback to default for invalid fields but keep valid ones", async () => {
@@ -62,7 +63,7 @@ describe("Settings V1 Persistence", () => {
         const invalidData = {
             version: 1,
             theme: "invalid-theme",
-            currency: "USD"
+            currency: "USD",
         }
         localStorage.setItem("luma_settings_v1", JSON.stringify(invalidData))
 

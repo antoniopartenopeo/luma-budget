@@ -116,24 +116,26 @@ Guardrail:
 Intento: iterare la superficie pubblica mantenendo coerenza tra promessa esterna, feature reali e governance interna.
 
 Passi minimi:
-1. Aggiorna la storia canonica in `src/features/landing/content.ts` prima di cambiare la UI.
+1. Aggiorna la storia canonica in `src/features/landing/data/landing.json` e i tipi/hydration in `src/features/landing/content.ts` prima di cambiare la UI.
 2. Aggiorna la struttura in `src/features/landing/landing-page.tsx` mantenendo hero, sezioni anchor e CTA finale.
-3. Aggiorna le superfici esplicative della landing in `src/features/landing/components/landing-previews.tsx` e nelle sezioni statiche di `landing-page.tsx` solo con preview veritiere rispetto al prodotto reale.
-4. Se introduci un interludio dedicato a Brain o ad altri moduli, trattalo come deep-dive della narrativa esistente, non come nuova promessa prodotto.
-5. Se Brain hero o altre hero immersive usano spring/parallax/reveal finale, documenta esplicitamente che `prefers-reduced-motion` attenua il moto senza cambiare il pattern visivo canonico; definisci anche blur consentito e copy finale di rientro al controllo umano.
-6. Sincronizza `02_specs/REQUIREMENTS.md`, `01_rules/UX_GOVERNANCE.md`, `01_rules/MOTION_PRINCIPLES.md` e `05_specialists/NUMA_UI_STANDARDS.md`.
-7. Se allarghi le route pubbliche intenzionali, sincronizza anche `src/components/layout/route-shell.tsx`, `src/app/sitemap.ts`, `src/app/robots.ts` e i test della landing/public shell.
-8. Riallinea i test landing per coprire ordine narrativo, vincoli di navigazione pubblica, la sezione `Come inizi` e gli eventuali explainers immersivi.
+3. Se cambiano numeri o formule demo, aggiorna `src/features/landing/preview-model.ts` e i relativi test prima delle superfici visuali.
+4. Aggiorna le superfici esplicative della landing in `src/features/landing/components/landing-previews.tsx` e nelle sezioni statiche di `landing-page.tsx` solo con preview veritiere rispetto al prodotto reale.
+5. Se introduci un interludio dedicato a Brain o ad altri moduli, trattalo come deep-dive della narrativa esistente, non come nuova promessa prodotto.
+6. Se Brain hero o altre hero immersive usano spring/parallax/reveal finale, documenta esplicitamente che `prefers-reduced-motion` attenua il moto senza cambiare il pattern visivo canonico; definisci anche blur consentito e copy finale di rientro al controllo umano.
+7. Sincronizza `02_specs/REQUIREMENTS.md`, `01_rules/UX_GOVERNANCE.md`, `01_rules/MOTION_PRINCIPLES.md` e `05_specialists/NUMA_UI_STANDARDS.md`.
+8. Se allarghi le route pubbliche intenzionali, sincronizza anche `src/components/layout/route-shell.tsx`, `src/app/sitemap.ts`, `src/app/robots.ts` e i test della landing/public shell.
+9. Riallinea i test landing per coprire ordine narrativo, vincoli di navigazione pubblica, la sezione `Come inizi`, il preview model e gli eventuali explainers immersivi.
 
 Guardrail:
 - Nessun claim pubblico su funzionalita non presenti nei moduli attivi.
 - Nessun routing pubblico dispersivo: anchor interne e sole route pubbliche intenzionali dichiarate dalla governance.
-- Mantieni la sequenza canonica `import -> mese -> stima -> decisione`.
+- Mantieni la sequenza canonica `import -> controllo -> mese/stima -> prova -> costi ricorrenti`.
 - Above the fold usa linguaggio utente prima del gergo di prodotto: la hero deve spiegare cos'e Numa, a cosa serve e perche fidarsi senza appoggiarsi a termini tecnici non tradotti.
 - Evita come lessico dominante della prima scansione `local-first`, `CSV`, `estratto conto`, `margine`, `Brain locale`, `Financial Lab`.
 - Un eventuale focus Brain deve restare readiness-aware, local-first e privo di implicazioni su sync remoti attivi di default.
 - Il reveal finale del Brain hero deve riportare il messaggio verso controllo e calma, non sostituire la CTA di prodotto.
 - Nessun dato reale utente nella landing; solo preview e semantica prodotto.
+- Nessuna formula monetaria ad hoc nei componenti landing: i numeri demo devono passare da cents/domain utilities.
 - Le eccezioni motion della landing devono restare isolate e con fallback reduced-motion.
 
 ## Definition of done minima

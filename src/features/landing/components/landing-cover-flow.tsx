@@ -1,7 +1,6 @@
 "use client"
 
 import React, { startTransition, useState, useEffect, useRef } from "react"
-import type { LucideIcon } from "lucide-react"
 import {
   ArrowDownUp,
   BrainCircuit,
@@ -10,28 +9,23 @@ import {
   Sparkles,
   WalletCards
 } from "lucide-react"
-import { AnimatePresence, m, useMotionValue, useSpring, useTransform, useMotionTemplate } from "framer-motion"
+import {
+  m,
+  type Variants
+} from "framer-motion"
 import { cn } from "@/lib/utils"
 import { LANDING_COVERFLOW_CARDS } from "../content"
-import type { LandingCoverFlowCard, LandingPreviewData } from "../content"
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  sources: WalletCards,
-  transactions: ArrowDownUp,
-  clarity: BrainCircuit,
-  input: ShieldCheck,
-  subscriptions: Sparkles
-}
+import type { LandingPreviewData } from "../content"
+import { LANDING_HERO_PREVIEW } from "../preview-model"
 
 // ----------------------------------------------------------------------
 // CYPHER EFFECT: Scrambled Text for Neural Data Nodes
 // ----------------------------------------------------------------------
 function ScrambledText({ text, isActive }: { text?: string; isActive: boolean }) {
-  const [displayValue, setDisplayValue] = useState(isActive ? text : "")
+  const [displayValue, setDisplayValue] = useState(text ?? "")
 
   useEffect(() => {
     if (!isActive || !text) {
-      setDisplayValue(text || "")
       return
     }
     let iterations = 0
@@ -54,22 +48,82 @@ function ScrambledText({ text, isActive }: { text?: string; isActive: boolean })
     return () => clearInterval(interval)
   }, [isActive, text])
 
-  return <span>{displayValue}</span>
+  return <span>{isActive ? displayValue : text ?? ""}</span>
 }
 
 // ----------------------------------------------------------------------
 // COMMON ANIMATION VARIANTS FOR STAGGERING
 // ----------------------------------------------------------------------
-const listContainerVariants = {
+const listContainerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: { staggerChildren: 0.12, delayChildren: 0.2 }
   }
 }
-const listItemVariants = {
+const listItemVariants: Variants = {
   hidden: { opacity: 0, y: 20, filter: "blur(6px)" },
   visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { type: "spring", stiffness: 350, damping: 24 } }
+}
+
+type PreviewTone = "neutral" | "cyan" | "emerald" | "violet" | "orange"
+
+const PREVIEW_GLASS_TONES: Record<PreviewTone, { panel: string; veil: string }> = {
+  neutral: {
+    panel:
+      "bg-[linear-gradient(180deg,rgba(255,255,255,0.9),rgba(244,247,251,0.74))] dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03))]",
+    veil:
+      "bg-[radial-gradient(circle_at_18%_16%,rgba(255,255,255,0.72),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.34),transparent_44%)] dark:bg-[radial-gradient(circle_at_18%_16%,rgba(255,255,255,0.07),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.05),transparent_44%)]"
+  },
+  cyan: {
+    panel:
+      "bg-[linear-gradient(180deg,rgba(236,254,255,0.95),rgba(244,250,252,0.78))] dark:bg-[linear-gradient(180deg,rgba(34,211,238,0.08),rgba(255,255,255,0.03))]",
+    veil:
+      "bg-[radial-gradient(circle_at_16%_18%,rgba(103,232,249,0.34),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.28),transparent_44%)] dark:bg-[radial-gradient(circle_at_16%_18%,rgba(255,255,255,0.08),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.04),transparent_44%)]"
+  },
+  emerald: {
+    panel:
+      "bg-[linear-gradient(180deg,rgba(236,253,245,0.94),rgba(245,250,247,0.8))] dark:bg-[linear-gradient(180deg,rgba(16,185,129,0.08),rgba(255,255,255,0.03))]",
+    veil:
+      "bg-[radial-gradient(circle_at_16%_18%,rgba(110,231,183,0.28),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.24),transparent_42%)] dark:bg-[radial-gradient(circle_at_16%_18%,rgba(255,255,255,0.07),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.04),transparent_42%)]"
+  },
+  violet: {
+    panel:
+      "bg-[linear-gradient(180deg,rgba(245,243,255,0.95),rgba(248,246,252,0.8))] dark:bg-[linear-gradient(180deg,rgba(139,92,246,0.08),rgba(255,255,255,0.03))]",
+    veil:
+      "bg-[radial-gradient(circle_at_16%_18%,rgba(196,181,253,0.3),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.26),transparent_44%)] dark:bg-[radial-gradient(circle_at_16%_18%,rgba(255,255,255,0.08),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.04),transparent_44%)]"
+  },
+  orange: {
+    panel:
+      "bg-[linear-gradient(180deg,rgba(255,247,237,0.95),rgba(251,246,241,0.82))] dark:bg-[linear-gradient(180deg,rgba(249,115,22,0.08),rgba(255,255,255,0.03))]",
+    veil:
+      "bg-[radial-gradient(circle_at_16%_18%,rgba(253,186,116,0.3),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.24),transparent_42%)] dark:bg-[radial-gradient(circle_at_16%_18%,rgba(255,255,255,0.08),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.04),transparent_42%)]"
+  }
+}
+
+function PreviewGlass({
+  children,
+  tone = "neutral",
+  className,
+}: {
+  children: React.ReactNode
+  tone?: PreviewTone
+  className?: string
+}) {
+  const toneStyle = PREVIEW_GLASS_TONES[tone]
+
+  return (
+    <div
+      className={cn(
+        "relative overflow-hidden border border-black/6 shadow-[0_18px_34px_-28px_rgba(15,23,42,0.22)] dark:border-white/10 dark:shadow-[0_18px_34px_-28px_rgba(0,0,0,0.45)]",
+        toneStyle.panel,
+        className
+      )}
+    >
+      <div className={cn("pointer-events-none absolute inset-0", toneStyle.veil)} />
+      <div className="relative z-10">{children}</div>
+    </div>
+  )
 }
 
 // ----------------------------------------------------------------------
@@ -78,7 +132,7 @@ const listItemVariants = {
 
 function FloatingPill({ text, colorClass = "text-white/90" }: { text: string, colorClass?: string }) {
   return (
-    <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-40 flex items-center justify-center whitespace-nowrap rounded-full border border-black/[0.06] bg-white px-5 py-1.5 shadow-[0_6px_20px_rgba(0,0,0,0.08),_0_1px_3px_rgba(0,0,0,0.04)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-900/90 dark:shadow-[0_8px_30px_rgba(0,0,0,0.8),_inset_0_1px_1px_rgba(255,255,255,0.1)] transition-colors duration-500">
+    <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-40 flex items-center justify-center whitespace-nowrap rounded-full border border-black/[0.06] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(242,245,249,0.9))] px-5 py-1.5 shadow-[0_6px_20px_rgba(0,0,0,0.08),_0_1px_3px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.86)] backdrop-blur-xl dark:border-white/10 dark:bg-[linear-gradient(180deg,rgba(39,39,42,0.92),rgba(24,24,27,0.86))] dark:shadow-[0_8px_30px_rgba(0,0,0,0.8),_inset_0_1px_1px_rgba(255,255,255,0.1)] transition-colors duration-500">
       <span className={cn("text-[8px] sm:text-[9px] font-black tracking-[0.2em] uppercase", colorClass)}>
         {text}
       </span>
@@ -86,82 +140,119 @@ function FloatingPill({ text, colorClass = "text-white/90" }: { text: string, co
   )
 }
 
+const METRIC_TONE_CLASS = {
+  income:
+    "border-cyan-400/18 bg-cyan-500/[0.08] text-cyan-800 dark:border-white/10 dark:bg-white/[0.055] dark:text-cyan-100",
+  expense:
+    "border-slate-400/18 bg-slate-500/[0.07] text-slate-700 dark:border-white/10 dark:bg-white/[0.045] dark:text-white/72",
+  scenario:
+    "border-emerald-400/18 bg-emerald-500/[0.08] text-emerald-800 dark:border-emerald-300/12 dark:bg-emerald-300/[0.07] dark:text-emerald-100",
+} as const
+
+const METRIC_BAR_CLASS = {
+  income: "bg-[linear-gradient(90deg,rgba(34,211,238,0.72),rgba(14,165,233,0.9))]",
+  expense: "bg-[linear-gradient(90deg,rgba(148,163,184,0.72),rgba(203,213,225,0.92))]",
+  scenario: "bg-[linear-gradient(90deg,rgba(16,185,129,0.7),rgba(45,212,191,0.92))]",
+} as const
+
 function ClarityPreview({ data, isActive }: { data: LandingPreviewData; isActive: boolean }) {
+  const preview = LANDING_HERO_PREVIEW
+
   return (
-    <div className="relative z-10 flex h-full flex-col justify-between px-5 py-6">
-      <div className="space-y-5">
-        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-500/10 px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.24)] dark:border-cyan-300/12 dark:bg-cyan-300/[0.08]">
-          <BrainCircuit className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-200" />
-          <span className="text-[10px] font-black uppercase tracking-[0.16em] text-cyan-700 dark:text-cyan-200">
-            {data.badge}
+    <div className="relative z-10 flex h-full flex-col justify-between px-5 py-5 sm:px-6 sm:py-5">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-500/10 px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.24)] dark:border-cyan-300/12 dark:bg-cyan-300/[0.08]">
+            <BrainCircuit className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-200" />
+            <span className="text-[10px] font-black uppercase tracking-[0.16em] text-cyan-700 dark:text-cyan-200">
+              {data.badge}
+            </span>
+          </div>
+          <span className="rounded-full border border-black/6 bg-white/44 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.16em] text-foreground/44 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/48">
+            Esempio
           </span>
         </div>
 
-        <div className="space-y-2">
-          <span className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
+        <div className="space-y-2.5">
+          <h3 className="max-w-[17rem] text-2xl font-black tracking-tight text-foreground sm:text-[1.7rem]">
             {data.title}
-          </span>
-          <div className="space-y-2">
-            <p className="text-4xl font-black tracking-tighter text-foreground sm:text-5xl font-mono">
-              <ScrambledText text={data.customContent?.mainValue} isActive={isActive} />
+          </h3>
+          <div className="space-y-2.5">
+            <p
+              aria-label={preview.marginAmount.accessibleLabel}
+              className="flex items-end gap-2 text-foreground"
+            >
+              <span className="pb-1 text-2xl font-black tracking-tight text-foreground/70 sm:text-3xl">
+                {preview.marginAmount.prefix}
+              </span>
+              <span className="font-mono text-6xl font-black leading-none tracking-tighter sm:text-[4.35rem]">
+                {preview.marginAmount.value}
+              </span>
             </p>
-            <p className="max-w-[18rem] text-sm font-medium leading-relaxed text-foreground/62">
+            <p className="max-w-[21rem] text-sm font-medium leading-relaxed text-foreground/62 sm:text-[15px]">
               {data.description}
             </p>
           </div>
         </div>
 
-        <m.div 
-          animate={isActive ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
-          transition={{ delay: 0.4 }}
-          className="rounded-[1.5rem] border border-black/6 bg-white/62 px-4 py-3 shadow-[0_18px_34px_-28px_rgba(15,23,42,0.22)] dark:border-white/10 dark:bg-white/[0.04]"
+        <m.div
+          animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+          transition={{ delay: 0.32, type: "spring", damping: 28 }}
         >
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/42">
-                {data.insightLabel}
-              </p>
-              <p className="mt-1 text-sm font-semibold tracking-tight text-foreground">
-                {data.insightText}
-              </p>
+          <PreviewGlass tone="neutral" className="rounded-[1.55rem] px-4 py-3">
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-cyan-400/18 bg-cyan-500/10 text-cyan-700 dark:border-cyan-300/12 dark:bg-cyan-300/[0.08] dark:text-cyan-100">
+                <BrainCircuit className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/42">
+                  {data.insightLabel}
+                </p>
+                <p className="mt-1 text-sm font-semibold tracking-tight text-foreground">
+                  {preview.formula}
+                </p>
+              </div>
             </div>
-            <div className="rounded-full border border-emerald-400/22 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-emerald-700 dark:border-emerald-300/14 dark:bg-emerald-300/[0.08] dark:text-emerald-100">
-              {data.insightBadge}
-            </div>
-          </div>
+          </PreviewGlass>
         </m.div>
       </div>
 
       <div className="space-y-3">
-        <m.div 
-          animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ delay: 0.5 }}
-          className="space-y-3 rounded-[1.8rem] border border-black/6 bg-white/65 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] dark:border-white/10 dark:bg-white/[0.04]"
+        <div className="grid grid-cols-3 gap-2.5">
+          {preview.metrics.map((metric, index) => (
+            <m.div
+              key={metric.label}
+              animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
+              transition={{ delay: 0.44 + index * 0.08, type: "spring", damping: 28 }}
+              className={cn(
+                "rounded-[1.2rem] border px-3 py-3 shadow-[0_16px_30px_-24px_rgba(15,23,42,0.22)] backdrop-blur-xl",
+                METRIC_TONE_CLASS[metric.tone]
+              )}
+            >
+              <p className="text-[9px] font-black uppercase tracking-[0.16em] opacity-62">
+                {metric.label}
+              </p>
+              <p className="mt-1 text-[12px] font-black tracking-tight sm:text-[13px]">
+                {metric.value}
+              </p>
+              <div className="mt-2 h-1 overflow-hidden rounded-full bg-black/6 dark:bg-white/10">
+                <m.div
+                  className={cn("h-full rounded-full", METRIC_BAR_CLASS[metric.tone])}
+                  initial={{ width: "0%" }}
+                  animate={isActive ? { width: `${metric.widthPct}%` } : { width: "0%" }}
+                  transition={{ delay: 0.62 + index * 0.08, type: "spring", damping: 30 }}
+                />
+              </div>
+            </m.div>
+          ))}
+        </div>
+
+        <m.div
+          animate={isActive ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.98 }}
+          transition={{ delay: 0.74, type: "spring", damping: 28 }}
+          className="rounded-[1.35rem] border border-emerald-400/18 bg-emerald-500/[0.07] px-4 py-3 text-[12px] font-semibold leading-relaxed text-emerald-800 dark:border-emerald-300/12 dark:bg-emerald-300/[0.06] dark:text-emerald-100"
         >
-          <div className="flex items-center justify-between text-xs font-semibold text-foreground/58">
-            <span>{data.customContent?.textParams?.[0]}</span>
-            <span>{data.customContent?.textParams?.[1]}</span>
-          </div>
-          <div className="h-2 rounded-full bg-black/5 dark:bg-white/8">
-            <m.div 
-              initial={{ width: "0%" }}
-              animate={isActive ? { width: "72%" } : { width: "0%" }}
-              transition={{ delay: 0.7, type: "spring", damping: 30 }}
-              className="h-full rounded-full bg-cyan-500 dark:bg-cyan-400" 
-            />
-          </div>
-          <div className="flex items-center justify-between text-xs font-semibold text-foreground/58">
-            <span>{data.customContent?.textParams?.[2]}</span>
-            <span>{data.customContent?.textParams?.[3]}</span>
-          </div>
-          <div className="h-2 rounded-full bg-black/5 dark:bg-white/8">
-            <m.div 
-              initial={{ width: "0%" }}
-              animate={isActive ? { width: "46%" } : { width: "0%" }}
-              transition={{ delay: 0.8, type: "spring", damping: 30 }}
-              className="h-full rounded-full bg-slate-400 dark:bg-white/32" 
-            />
-          </div>
+          {data.customContent?.calculationNote}
         </m.div>
       </div>
     </div>
@@ -178,29 +269,30 @@ function TransactionsPreview({ data, isActive }: { data: LandingPreviewData; isA
             {data.badge}
           </span>
         </div>
-        <div className="space-y-2">
-          <span className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-slate-700 dark:text-slate-300">
+        <div className="space-y-2.5">
+          <h3 className="max-w-[17rem] text-2xl font-black tracking-tight text-foreground sm:text-[1.7rem]">
             {data.title}
-          </span>
-          <p className="max-w-[18rem] text-sm font-medium leading-relaxed text-foreground/62">
+          </h3>
+          <p className="max-w-[18.5rem] text-[15px] font-medium leading-relaxed text-foreground/64">
             {data.description}
           </p>
         </div>
         <m.div 
           animate={isActive ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
-          className="rounded-[1.45rem] border border-black/6 bg-white/66 px-4 py-3 shadow-[0_18px_34px_-28px_rgba(15,23,42,0.2)] dark:border-white/10 dark:bg-white/[0.04]"
         >
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/42">{data.insightLabel}</p>
-              <p className="mt-1 text-sm font-semibold tracking-tight text-foreground">
-                {data.insightText}
-              </p>
+          <PreviewGlass tone="neutral" className="rounded-[1.45rem] px-4 py-3">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/42">{data.insightLabel}</p>
+                <p className="mt-1 text-sm font-semibold tracking-tight text-foreground">
+                  {data.insightText}
+                </p>
+              </div>
+              <div className="rounded-full border border-slate-400/18 bg-[linear-gradient(180deg,rgba(248,250,252,0.96),rgba(241,245,249,0.84))] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] dark:border-white/10 dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] dark:text-white/78">
+                {data.insightBadge}
+              </div>
             </div>
-            <div className="rounded-full border border-slate-400/18 bg-slate-500/[0.08] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-slate-700 dark:border-white/10 dark:bg-white/[0.06] dark:text-white/78">
-              {data.insightBadge}
-            </div>
-          </div>
+          </PreviewGlass>
         </m.div>
       </div>
 
@@ -210,8 +302,9 @@ function TransactionsPreview({ data, isActive }: { data: LandingPreviewData; isA
             <m.div
               key={item.label}
               variants={listItemVariants}
-              className="flex items-center justify-between rounded-[1.35rem] border border-black/6 bg-white/76 px-4 py-3 shadow-[0_16px_30px_-24px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-white/[0.04]"
+              className="relative overflow-hidden flex items-center justify-between rounded-[1.35rem] border border-black/6 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(244,247,251,0.78))] px-4 py-3 shadow-[0_16px_30px_-24px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03))]"
             >
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_14%_20%,rgba(255,255,255,0.6),transparent_34%)] dark:bg-[radial-gradient(circle_at_14%_20%,rgba(255,255,255,0.06),transparent_34%)]" />
               <div className="space-y-1">
                 <p className="text-sm font-semibold text-foreground">{item.label}</p>
                 <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-foreground/48">{item.note}</p>
@@ -236,12 +329,21 @@ function InputPreview({ data, isActive }: { data: LandingPreviewData; isActive: 
           </span>
         </div>
 
+        <div className="space-y-2.5">
+          <h3 className="max-w-[17rem] text-2xl font-black tracking-tight text-foreground sm:text-[1.7rem]">
+            {data.title}
+          </h3>
+          <p className="max-w-[18.5rem] text-[15px] font-medium leading-relaxed text-foreground/64">
+            {data.description}
+          </p>
+        </div>
+
         <m.div 
            animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
            transition={{ delay: 0.2 }}
            className="rounded-[1.45rem] border border-black/6 bg-white/76 px-4 py-3 shadow-[0_16px_30px_-24px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-white/[0.04]"
         >
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/46">{data.title}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/46">Spesa provata</p>
           <div className="mt-2 flex items-center justify-between gap-3">
             <p className="text-sm font-medium text-foreground/78">{data.customContent?.textParams?.[0]}</p>
             <span className="rounded-full border border-black/6 bg-black/3 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-foreground/52 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/62">
@@ -308,11 +410,11 @@ function SubscriptionsPreview({ data, isActive }: { data: LandingPreviewData; is
           </span>
         </div>
 
-        <div className="space-y-2">
-          <span className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-violet-700 dark:text-violet-300">
+        <div className="space-y-2.5">
+          <h3 className="max-w-[17rem] text-2xl font-black tracking-tight text-foreground sm:text-[1.7rem]">
             {data.title}
-          </span>
-          <p className="max-w-[18rem] text-sm font-medium leading-relaxed text-foreground/62">
+          </h3>
+          <p className="max-w-[18.5rem] text-[15px] font-medium leading-relaxed text-foreground/64">
             {data.description}
           </p>
         </div>
@@ -369,11 +471,11 @@ function SourcesPreview({ data, isActive }: { data: LandingPreviewData; isActive
           </span>
         </div>
 
-        <div className="space-y-2">
-          <span className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-orange-700 dark:text-orange-300">
+        <div className="space-y-2.5">
+          <h3 className="max-w-[17rem] text-2xl font-black tracking-tight text-foreground sm:text-[1.7rem]">
             {data.title}
-          </span>
-          <p className="max-w-[18rem] text-sm font-medium leading-relaxed text-foreground/62">
+          </h3>
+          <p className="max-w-[18.5rem] text-[15px] font-medium leading-relaxed text-foreground/64">
             {data.description}
           </p>
         </div>
@@ -419,44 +521,10 @@ function SourcesPreview({ data, isActive }: { data: LandingPreviewData; isActive
   )
 }
 
-function getGlowColor(theme: LandingCoverFlowCard["theme"]) {
-  switch (theme) {
-    case "emerald":
-      return "#10b981" // emerald-500
-    case "cyan":
-      return "#06b6d4" // cyan-500
-    case "violet":
-      return "#8b5cf6" // violet-500
-    case "orange":
-      return "#f97316" // orange-500
-    case "slate":
-    default:
-      return "#64748b" // slate-500
-  }
-}
-
 export function LandingCoverFlow() {
   const [activeIndex, setActiveIndex] = useState(2)
   const [focusIndex, setFocusIndex] = useState<number | null>(null)
   const totalCards = LANDING_COVERFLOW_CARDS.length
-  
-  // Parallax Tilt-Shift via Framer Motion Springs
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-  const isHoveredRaw = useMotionValue(0)
-
-  const springConfig = { damping: 40, stiffness: 300, mass: 0.5 }
-  const xSpring = useSpring(mouseX, springConfig)
-  const ySpring = useSpring(mouseY, springConfig)
-  const hoverSpring = useSpring(isHoveredRaw, springConfig)
-
-  const parallaxRotateX = useTransform(ySpring, [-0.5, 0.5], [6, -6])
-  const parallaxRotateY = useTransform(xSpring, [-0.5, 0.5], [-8, 8])
-
-  // Radial Glare Tracker
-  const glareX = useTransform(xSpring, [-0.5, 0.5], ["-20%", "120%"])
-  const glareY = useTransform(ySpring, [-0.5, 0.5], ["-20%", "120%"])
-  const glareBackground = useMotionTemplate`radial-gradient(circle at ${glareX} ${glareY}, rgba(255,255,255,0.4) 0%, transparent 60%)`
 
   const sliderRef = useRef<HTMLDivElement>(null)
   const isProgrammaticScroll = useRef(false)
@@ -472,7 +540,11 @@ export function LandingCoverFlow() {
       const children = sliderRef.current.children
       if (children.length > 1) {
         const cardWidth = children[1].clientWidth
-        sliderRef.current.scrollTo({ left: index * cardWidth, behavior: "smooth" })
+        if (typeof sliderRef.current.scrollTo === "function") {
+          sliderRef.current.scrollTo({ left: index * cardWidth, behavior: "smooth" })
+        } else {
+          sliderRef.current.scrollLeft = index * cardWidth
+        }
       }
     }
 
@@ -487,7 +559,7 @@ export function LandingCoverFlow() {
     
     const slider = e.currentTarget
     if (!slider.children.length) return
-    const cardWidth = slider.children[1]?.clientWidth || 304 // approx 19rem
+    const cardWidth = slider.children[1]?.clientWidth || 320
     const index = Math.round(slider.scrollLeft / cardWidth)
     
     if (index !== activeIndex && index >= 0 && index < totalCards) {
@@ -497,64 +569,58 @@ export function LandingCoverFlow() {
     }
   }
 
-  const handleCardKeyDown = (index: number, event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+  const handleCardKeyDown = (index: number, event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === "ArrowRight") {
       event.preventDefault()
+      activateCard(Math.min(totalCards - 1, index + 1))
+      return
     }
-  }
-  
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    isHoveredRaw.set(1)
-    const rect = e.currentTarget.getBoundingClientRect()
-    // coordinate normalizzate tra -0.5 e 0.5 in base al centro container
-    const x = (e.clientX - rect.left) / rect.width - 0.5
-    const y = (e.clientY - rect.top) / rect.height - 0.5
-    mouseX.set(x)
-    mouseY.set(y)
-  }
 
-  const handleMouseLeave = () => {
-    isHoveredRaw.set(0)
-    mouseX.set(0)
-    mouseY.set(0)
+    if (event.key === "ArrowLeft") {
+      event.preventDefault()
+      activateCard(Math.max(0, index - 1))
+      return
+    }
+
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault()
+      activateCard(index)
+    }
   }
 
   return (
-    <div 
-      className="relative mt-8 flex w-full flex-col items-center gap-6 overflow-visible sm:mt-16"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+    <div
+      className="relative mt-0 flex w-full flex-col items-center gap-5 overflow-visible sm:mt-1"
+      data-testid="landing-cover-flow"
     >
-      <div className="relative flex h-[32rem] w-full items-center justify-center overflow-visible [perspective:2400px] sm:h-[36rem]">
-      
-      {/* THE INVISIBLE NATIVE SNAP SCROLLER */}
-      <div 
-        ref={sliderRef}
-        onScroll={handleScroll}
-        className="absolute inset-x-0 inset-y-0 z-[40] flex overflow-x-auto snap-x snap-mandatory scrollbar-hide touch-pan-x"
-        tabIndex={0}
-      >
-        {/* Left Spacer */}
-        <div className="w-[calc(50%-9.5rem)] shrink-0 sm:w-[calc(50%-11rem)] pointer-events-none" />
-        
-        {LANDING_COVERFLOW_CARDS.map((_, i) => (
-          <div 
-            key={i} 
-            role="button"
-            tabIndex={0}
-            className="h-full w-[19rem] shrink-0 snap-center sm:w-[22rem] cursor-grab active:cursor-grabbing outline-none"
-            onClick={() => activateCard(i)}
-            onKeyDown={(e) => handleCardKeyDown(i, e)}
-            onFocus={() => setFocusIndex(i)}
-            onBlur={() => setFocusIndex(null)}
-            data-index={i}
-            aria-label={`Visualizza scheda ${i + 1}`}
-          />
-        ))}
+      <div className="relative flex h-[33rem] w-full items-center justify-center overflow-visible [perspective:2600px] sm:h-[35rem]">
+        <div className="pointer-events-none absolute inset-x-[4%] top-[18%] h-[68%] bg-[linear-gradient(90deg,transparent,rgba(14,165,233,0.10)_28%,rgba(255,255,255,0.20)_50%,rgba(20,184,166,0.10)_72%,transparent)] blur-3xl dark:bg-[linear-gradient(90deg,transparent,rgba(14,165,233,0.10)_30%,rgba(255,255,255,0.045)_50%,rgba(45,212,191,0.09)_70%,transparent)]" />
+        <div className="pointer-events-none absolute inset-x-[18%] bottom-[8%] h-24 bg-[linear-gradient(90deg,transparent,rgba(14,165,233,0.12),transparent)] blur-[72px] dark:bg-[linear-gradient(90deg,transparent,rgba(14,165,233,0.10),transparent)]" />
 
-        {/* Right Spacer */}
-        <div className="w-[calc(50%-9.5rem)] shrink-0 sm:w-[calc(50%-11rem)] pointer-events-none" />
-      </div>
+        <div
+          ref={sliderRef}
+          onScroll={handleScroll}
+          className="absolute inset-x-0 inset-y-0 z-[40] flex overflow-x-auto snap-x snap-mandatory touch-pan-x overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          tabIndex={0}
+        >
+          <div className="w-[calc(50%-10rem)] shrink-0 pointer-events-none sm:w-[calc(50%-12.5rem)]" />
+
+          {LANDING_COVERFLOW_CARDS.map((card, i) => (
+            <button
+              key={card.id}
+              type="button"
+              className="h-full w-[20rem] shrink-0 snap-center cursor-grab outline-none active:cursor-grabbing sm:w-[25rem]"
+              onClick={() => activateCard(i)}
+              onKeyDown={(e) => handleCardKeyDown(i, e)}
+              onFocus={() => setFocusIndex(i)}
+              onBlur={() => setFocusIndex(null)}
+              data-index={i}
+              aria-label={`${card.title}. ${card.summary}`}
+            />
+          ))}
+
+          <div className="w-[calc(50%-10rem)] shrink-0 pointer-events-none sm:w-[calc(50%-12.5rem)]" />
+        </div>
       
       {LANDING_COVERFLOW_CARDS.map((card, index) => {
         let distance = index - activeIndex
@@ -567,14 +633,12 @@ export function LandingCoverFlow() {
         const isLeft2 = distance === -2
         const isAdjacent = isLeft1 || isRight1
 
-        const xOffset = isCenter ? 0 : isLeft1 ? -220 : isRight1 ? 220 : isLeft2 ? -380 : 380
-        const zOffset = isCenter ? 0 : (isLeft1 || isRight1) ? -200 : -450
-        const rotateY = isCenter ? 0 : isLeft1 ? 40 : isRight1 ? -40 : isLeft2 ? 65 : -65
-        const scale = isCenter ? 1 : (isLeft1 || isRight1) ? 0.88 : 0.72
-        const opacityTarget = isCenter ? 1 : (isLeft1 || isRight1) ? 0.35 : 0.05
-        
-        // Depth-Of-Field calculation - Blur out distance
-        const blurTarget = Math.abs(distance) * 5 // 0, 5px, 10px ...
+        const xOffset = isCenter ? 0 : isLeft1 ? -250 : isRight1 ? 250 : isLeft2 ? -430 : 430
+        const zOffset = isCenter ? 20 : (isLeft1 || isRight1) ? -220 : -500
+        const rotateY = isCenter ? 0 : isLeft1 ? 42 : isRight1 ? -42 : isLeft2 ? 68 : -68
+        const scale = isCenter ? 1 : (isLeft1 || isRight1) ? 0.84 : 0.68
+        const opacityTarget = isCenter ? 1 : (isLeft1 || isRight1) ? 0.28 : 0.04
+        const blurTarget = Math.abs(distance) * 7
         
         let PreviewContent = ClarityPreview
         if (card.id === "sources") PreviewContent = SourcesPreview
@@ -592,10 +656,11 @@ export function LandingCoverFlow() {
         return (
           <m.div
             key={card.id}
-            aria-hidden="true"
+            aria-hidden={!isCenter}
             className={cn(
                "absolute flex flex-col rounded-[2.5rem] text-left",
-               "w-full max-w-[19rem] sm:max-w-[22rem] h-[26rem] sm:h-[30rem]",
+               "h-[28rem] w-full max-w-[20rem] sm:h-[32rem] sm:max-w-[25rem]",
+               "[transform-style:preserve-3d] [will-change:transform,opacity,filter]",
                (!isCenter && !isAdjacent) && "max-sm:pointer-events-none max-sm:opacity-0",
                isCenter 
                 ? "z-30 cursor-grab active:cursor-grabbing border-black/10 dark:border-white/10"
@@ -619,59 +684,18 @@ export function LandingCoverFlow() {
               damping: 20,
               mass: 1.8
             }}
-            // Here we overlay the Parallax 3D Tracker ONLY on the active element wrapper!
-            style={{ 
-              transformStyle: "preserve-3d", 
-              willChange: "transform, opacity, filter"
-            }}
           >
-            <m.div 
-               className="relative w-full h-full rounded-[2.5rem]"
-               style={{ 
-                 rotateX: parallaxRotateX,
-                 rotateY: parallaxRotateY,
-                 transformStyle: "preserve-3d"
-               }}
-            >
+            <div className="relative h-full w-full rounded-[2.5rem]">
                <div 
                  className={cn(
                    "absolute inset-0 z-0 overflow-hidden rounded-[2.5rem] border backdrop-blur-3xl transition-[background-color,border-color,box-shadow,opacity] duration-1000",
                    isCenter 
-                    ? "bg-white/[0.93] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.15)] dark:bg-zinc-950/80 dark:shadow-[0_40px_90px_-20px_rgba(0,0,0,0.7)] border-black/5 dark:border-white/10 pointer-events-none"
-                    : "bg-white/60 shadow-2xl dark:bg-zinc-950/40 border-black/5 dark:border-white/5 hover:bg-white/80 dark:hover:bg-zinc-900/60 pointer-events-none",
-                   !isCenter && "opacity-80"
+                    ? "border-black/[0.045] bg-white/[0.94] shadow-[0_54px_130px_-34px_rgba(15,23,42,0.36)] dark:border-white/12 dark:bg-zinc-950/[0.84] dark:shadow-[0_60px_150px_-34px_rgba(0,0,0,0.82)] pointer-events-none"
+                    : "border-black/[0.035] bg-white/[0.54] shadow-[0_34px_84px_-44px_rgba(15,23,42,0.34)] dark:border-white/[0.055] dark:bg-zinc-950/[0.34] dark:shadow-[0_34px_90px_-44px_rgba(0,0,0,0.72)] hover:bg-white/[0.72] dark:hover:bg-zinc-900/[0.52] pointer-events-none",
+                   !isCenter && "opacity-[0.72]"
                  )}
                >
-                 {/* -----------------------------------------------------
-                     The Reactive 3D Glare (Mouse Spotlight) 
-                     ----------------------------------------------------- */}
-                 <m.div 
-                   className="absolute inset-0 z-20 pointer-events-none mix-blend-overlay transition-opacity duration-1000"
-                   style={{ 
-                     background: glareBackground,
-                     opacity: isCenter ? hoverSpring : 0
-                   }}
-                 />
-                 
-                 <AnimatePresence>
-                   {isCenter && (
-                     <m.div
-                       initial={{ opacity: 0 }}
-                       animate={{ opacity: 1 }}
-                       exit={{ opacity: 0 }}
-                       transition={{ duration: 0.5 }}
-                       className="absolute inset-0 pointer-events-none"
-                     >
-                       <div className="absolute inset-x-0 -bottom-32 h-64 blur-[90px] transition-colors duration-1000"
-                            style={{
-                              backgroundColor: getGlowColor(card.theme),
-                              opacity: 0.15
-                            }} 
-                       />
-                     </m.div>
-                   )}
-                 </AnimatePresence>
-
+                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_14%,rgba(255,255,255,0.84),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.36),transparent_28%),linear-gradient(155deg,rgba(226,232,240,0.26),transparent_56%)] dark:bg-[radial-gradient(circle_at_18%_14%,rgba(255,255,255,0.08),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.05),transparent_28%),linear-gradient(155deg,rgba(255,255,255,0.03),transparent_56%)]" />
                  <div className="absolute inset-0 rounded-[2.5rem] pointer-events-none shadow-[inset_0_2px_6px_rgba(255,255,255,0.9),inset_0_-1px_2px_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_3px_rgba(255,255,255,0.1),inset_0_-1px_1px_rgba(0,0,0,0.4)]" />
                </div>
 
@@ -680,27 +704,14 @@ export function LandingCoverFlow() {
                <div className="relative z-10 w-full h-full pointer-events-none overflow-hidden rounded-[2.5rem]">
                   <PreviewContent data={card.preview} isActive={isCenter} />
                </div>
-            </m.div>
+            </div>
           </m.div>
         )
       })}
       </div>
 
-      {/* Global Bottom interaction hint */}
-      <m.div 
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1 }}
-        className="pointer-events-none flex justify-center -mt-8 sm:-mt-6 z-20"
-      >
-        <div className="rounded-full border border-black/6 bg-white/62 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/52 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.05] dark:text-white/58 shadow-sm">
-          Scorri o clicca ai lati
-        </div>
-      </m.div>
-
-      <div className="flex flex-wrap items-center justify-center gap-2 px-4" aria-label="Seleziona anteprima hero">
+      <div className="z-20 -mt-6 flex items-center justify-center gap-2 px-4 sm:-mt-4" aria-label="Seleziona anteprima hero">
         {LANDING_COVERFLOW_CARDS.map((card, index) => {
-          const Icon = ICON_MAP[card.id] || BrainCircuit
           const isActive = index === activeIndex
 
           return (
@@ -709,15 +720,15 @@ export function LandingCoverFlow() {
               type="button"
               onClick={() => activateCard(index)}
               className={cn(
-                "inline-flex items-center gap-2 rounded-full border px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] transition-[background-color,border-color,color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25",
+                "h-2.5 rounded-full border transition-[width,background-color,border-color,opacity] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
                 isActive
-                  ? "border-primary/24 bg-primary/10 text-foreground shadow-[0_16px_30px_-22px_rgba(14,165,168,0.42)] dark:border-white/12 dark:bg-white/[0.06] dark:text-white"
-                  : "border-black/6 bg-white/55 text-foreground/58 hover:border-black/10 hover:text-foreground dark:border-white/10 dark:bg-white/[0.04] dark:text-white/58 dark:hover:text-white/84"
+                  ? "w-7 border-primary/40 bg-primary/70 opacity-100 dark:border-cyan-200/45 dark:bg-cyan-200/80"
+                  : "w-2.5 border-black/10 bg-foreground/18 opacity-45 hover:opacity-75 dark:border-white/10 dark:bg-white/28"
               )}
               aria-pressed={isActive}
+              aria-label={card.title}
             >
-              <Icon className="h-3.5 w-3.5" />
-              {card.title}
+              <span className="sr-only">{card.title}</span>
             </button>
           )
         })}

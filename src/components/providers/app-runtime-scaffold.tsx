@@ -14,13 +14,13 @@ export function AppRuntimeScaffold({
   themeLayer,
   wrapInRouteShell = true,
 }: AppRuntimeScaffoldProps) {
-  return (
-    <>
-      {themeLayer}
-      <PwaRegister />
-      <a
-        href="#main-content"
-        className="sr-only fixed left-4 top-4 z-[100] rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-lg focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-primary/30"
+    return (
+        <>
+          {themeLayer}
+          <PwaRegister />
+          <a
+            href="#main-content"
+            className="sr-only fixed left-4 top-4 z-[100] rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-lg focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-primary/30"
       >
         Vai al contenuto
       </a>

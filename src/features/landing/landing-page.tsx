@@ -22,7 +22,6 @@ import {
 import { LandingHeroEditorial } from "./components/landing-hero-editorial"
 import { LandingHeroConsole } from "./components/landing-previews"
 import { LandingEditorialCardFrame } from "./components/landing-editorial-card-frame"
-import { LandingImmersiveFallback } from "./components/landing-immersive-fallback"
 import { LandingSectionHeader } from "./components/landing-section-header"
 import {
   LANDING_EDITORIAL_CARD_HERO_TITLE_CLASS,

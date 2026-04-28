@@ -35,13 +35,8 @@ export interface LandingStoryPoint {
 export interface LandingDifferentItem {
   icon: LucideIcon
   title: string
-  marketEyebrow: string
-  marketLabel: string
-  glimpseEyebrow: string
-  numaLabel: string
   kicker: string
   note: string
-  glimpses: readonly string[]
 }
 
 export interface LandingFlowStep {
@@ -64,6 +59,7 @@ export interface LandingHeroEditorialContent {
   supportingCopy: string
   primaryCtaLabel: string
   primaryCtaHref: string
+  trustItems: readonly string[]
 }
 
 export interface LandingBrainAct {
@@ -121,6 +117,7 @@ export interface LandingPreviewData {
   customContent?: {
     mainValue?: string
     textParams?: string[]
+    calculationNote?: string
   }
 }
 
@@ -130,6 +127,12 @@ export interface LandingCoverFlowCard {
   theme: "orange" | "slate" | "cyan" | "emerald" | "violet"
   summary: string
   preview: LandingPreviewData
+}
+
+const FALLBACK_BRAIN_ACT: LandingBrainAct = {
+  kicker: "",
+  titleLines: [],
+  description: ""
 }
 
 // ============================================================================
@@ -163,7 +166,15 @@ export const LANDING_OUTCOMES_SECTION = landingDataRaw.OUTCOMES_SECTION as Landi
 export const LANDING_CLOSING = landingDataRaw.CLOSING as LandingClosingContent
 export const LANDING_FOOTER = landingDataRaw.FOOTER as LandingFooterContent
 export const LANDING_IMMERSIVE_FALLBACKS = landingDataRaw.IMMERSIVE_FALLBACKS
-export const LANDING_BRAIN_CONTENT = landingDataRaw.BRAIN_CONTENT as LandingBrainContent
+const [brainActOne, brainActTwo, brainActThree] = landingDataRaw.BRAIN_CONTENT.acts
+export const LANDING_BRAIN_CONTENT: LandingBrainContent = {
+  sectionTitle: landingDataRaw.BRAIN_CONTENT.sectionTitle,
+  acts: [
+    brainActOne ?? FALLBACK_BRAIN_ACT,
+    brainActTwo ?? FALLBACK_BRAIN_ACT,
+    brainActThree ?? FALLBACK_BRAIN_ACT
+  ]
+}
 export const LANDING_COVERFLOW_CARDS = landingDataRaw.COVERFLOW_CARDS as readonly LandingCoverFlowCard[]
 
 // Parsers che "idratano" gli oggetti JSON string-based con i reali React Components (Icons)

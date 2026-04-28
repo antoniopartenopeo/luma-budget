@@ -3,7 +3,7 @@
 scope: decision-log
 owner: engineering
 status: active
-last-verified: 2026-04-04
+last-verified: 2026-04-28
 canonical-of: decision-log
 
 | Date | Decision | Status | Why | Alternatives rejected |
@@ -21,3 +21,5 @@ canonical-of: decision-log
 | 2026-04-03 | Apply a mandatory findings-first ritual to every user-visible change | accepted | Turn repeated UI/copy review findings into a lightweight but enforceable governance loop across all visible surfaces, not just the landing | Keep visual and narrative quality implicit in reviewer memory or restrict the ritual only to public acquisition pages |
 | 2026-04-03 | Govern dark theme as a shared editorial material system across landing and app surfaces | accepted | Keep dark mode coherent through neutral `ink / smoke / paper` materials, a shared `torchlight white` highlight, and minimal accent color instead of per-section neon drift | Let each section choose its own dark palette or keep cyan/teal glow as the default dark grammar |
 | 2026-04-04 | Govern public landing copy in user language before product jargon | accepted | Keep the acquisition story understandable to cold users by making benefit, use case, and trust legible before technical differentiators like local execution or import mechanics | Let internal product vocabulary drive the first scan of the landing or keep copy scattered across UI files without a canonical content source |
+| 2026-04-28 | Govern landing preview math as a curated cents-backed model | accepted | Keep public demo numbers explainable, testable, and aligned with money-domain rules while avoiding implied live user data on the landing | Let visual components invent monetary examples inline or imply that the public landing reads repositories |
+| 2026-04-28 | Describe Brain on the landing as transparent estimate support, not an autonomous prediction promise | accepted | Preserve trust by making readiness, insufficiency, and human-checkable formulas clear in cold-user copy | Lead with Neural Core jargon or imply unconditional AI forecasting above the fold |

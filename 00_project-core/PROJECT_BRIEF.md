@@ -3,12 +3,12 @@
 scope: project-brief
 owner: engineering
 status: active
-last-verified: 2026-03-15
+last-verified: 2026-04-28
 canonical-of: project-brief
 
 ## Product
 
-Numa Budget is a local-first personal finance app built around calm financial guidance, deterministic narration, and rhythm-based planning.
+Numa Budget is a local-first personal finance app built around calm financial guidance, deterministic narration, rhythm-based planning, and a public trust surface that explains the product before asking for commitment.
 
 ## Problem
 
@@ -23,12 +23,13 @@ Most budgeting tools feel punitive, fragmented, or too dependent on remote servi
 
 - Understand spending and balance dynamics quickly
 - Import and normalize transaction history safely
+- Understand the first product promise from the public landing without account creation, bank connection, or technical jargon
 - Explore future scenarios without mutating live data accidentally
 - Receive guidance in calm, human language rather than punitive budget copy
 
 ## In Scope
 
-- Dashboard, transactions, import CSV, insights, simulator, settings, updates, privacy, and local neural core
+- Public landing, FAQ/privacy trust surfaces, dashboard, transactions, import CSV, insights, simulator, settings, updates, privacy, and local neural core
 - Local-first persistence with backup and restore
 - Deterministic narration and governance-enforced semantics
 - Optional native shells for mobile and Mac

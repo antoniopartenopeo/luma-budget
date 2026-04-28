@@ -1,11 +1,12 @@
 "use client"
 
 import { useRef } from "react"
-import { m } from "framer-motion"
+import { m, useMotionValue, useSpring } from "framer-motion"
 import { useHardwareParallax } from "@/hooks/use-hardware-parallax"
 import { LANDING_STORY_POINTS } from "../content"
 import { LANDING_EDITORIAL_CARD_TITLE_CLASS } from "./landing-tokens"
 import { LandingEditorialCardFrame } from "./landing-editorial-card-frame"
+import { EDITORIAL_TORCHLIGHT_SPRING, useEditorialTorchlight } from "./motion-primitives"
 
 const STORY_ACCENTS = [
   {
@@ -27,30 +28,46 @@ const STORY_ACCENTS = [
 
 function ConsoleChassis() {
   const cardRef = useRef<HTMLDivElement>(null)
-  const { rotateX, rotateY, backgroundPosition, handleMouseMove, handleMouseLeave } = useHardwareParallax({ tiltMax: 6 })
+  const { rotateX, rotateY, mouseX, mouseY, handleMouseMove, handleMouseLeave } = useHardwareParallax({ tiltMax: 6 })
+  const isHoveredRaw = useMotionValue(0)
+  const hoverRevealSpring = useSpring(isHoveredRaw, EDITORIAL_TORCHLIGHT_SPRING)
+  const xSpring = useSpring(mouseX, EDITORIAL_TORCHLIGHT_SPRING)
+  const ySpring = useSpring(mouseY, EDITORIAL_TORCHLIGHT_SPRING)
+  const { torchlightBackground } = useEditorialTorchlight({
+    mouseX: xSpring,
+    mouseY: ySpring,
+    inputRange: [-0.5, 0.5],
+    springConfig: EDITORIAL_TORCHLIGHT_SPRING,
+  })
 
   const _handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return
+    isHoveredRaw.set(1)
     handleMouseMove(e, cardRef.current.getBoundingClientRect())
+  }
+
+  const _handleMouseLeave = () => {
+    isHoveredRaw.set(0)
+    handleMouseLeave()
   }
 
   return (
     <m.div
       ref={cardRef}
+      onMouseEnter={() => isHoveredRaw.set(1)}
       onMouseMove={_handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      onMouseLeave={_handleMouseLeave}
       style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
       className="group relative overflow-hidden rounded-[2rem] border border-black/6 bg-white/50 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.14)] backdrop-blur-3xl dark:border-white/10 dark:bg-zinc-950/40 dark:shadow-[0_40px_100px_-30px_rgba(0,0,0,0.6)] will-change-transform bg-clip-padding"
     >
-      <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.8),transparent_48%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.06),transparent_60%)]" />
+      <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_18%_16%,rgba(255,255,255,0.84),transparent_48%)] dark:bg-[radial-gradient(circle_at_18%_16%,rgba(255,255,255,0.07),transparent_58%)]" />
       <div className="absolute inset-0 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.12)] z-[1]" />
-      
-      <m.div 
-        className="pointer-events-none absolute inset-0 z-[2] opacity-40 dark:opacity-15 mix-blend-overlay transition-opacity duration-500"
+
+      <m.div
+        className="pointer-events-none absolute inset-0 z-[2] mix-blend-overlay"
         style={{
-          background: "radial-gradient(circle at center, rgba(255,255,255,1) 0%, transparent 60%)",
-          backgroundSize: "200% 200%",
-          backgroundPosition
+          background: torchlightBackground,
+          opacity: hoverRevealSpring
         }}
       />
 
@@ -71,16 +88,16 @@ function ConsoleChassis() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
               </span>
-              Margine Sostenibile
+              Margine del mese
             </h4>
             <div className="flex items-baseline gap-2 tracking-tighter pt-1">
               <span className="text-5xl sm:text-[4rem] font-black leading-none text-foreground">€ 1.250</span>
               <span className="text-xl sm:text-2xl font-bold text-muted-foreground/60 leading-none">,00</span>
             </div>
             <p className="max-w-[34rem] text-[13px] font-medium leading-relaxed text-muted-foreground/72 sm:text-[15px]">
-              Resta margine per una nuova decisione perche entrate, ricorrenze e peso del mese sono gia stati assorbiti.
+              Resta spazio per una nuova decisione perche entrate e spese previste sono gia dentro il calcolo.
             </p>
-            
+
             {/* Fake Progress Bar */}
             <div className="mt-6 h-1 w-full overflow-hidden rounded-full bg-black/5 dark:bg-white/10 sm:max-w-xs">
               <div className="h-full w-2/3 rounded-full bg-teal-500 shadow-[0_0_12px_rgba(20,184,166,0.5)] dark:bg-teal-400 dark:shadow-[0_0_12px_rgba(45,212,191,0.6)]" />
@@ -89,9 +106,9 @@ function ConsoleChassis() {
 
           <div className="grid gap-3 sm:grid-cols-3">
             {[
-              ["Entrate certe", "+ € 2.300"],
-              ["Spese assorbite", "- € 1.008"],
-              ["Scenario libero", "+ spazio"],
+              ["Entrate note", "+ € 2.300"],
+              ["Spese previste", "- € 1.008"],
+              ["Spazio di prova", "+ margine"],
             ].map(([label, value], index) => (
               <div
                 key={label}
@@ -108,7 +125,7 @@ function ConsoleChassis() {
           </div>
 
           {/* Bottom Section - Semantic rows */}
-          <m.div 
+          <m.div
             className="space-y-3 relative p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] shadow-[inset_0_1px_2px_rgba(255,255,255,0.4)] dark:shadow-[inset_0_1px_2px_rgba(255,255,255,0.05)]"
             initial="hidden"
             whileInView="visible"
@@ -120,11 +137,11 @@ function ConsoleChassis() {
           >
             {[
               ["Stipendio del mese", "base letta", "+ € 2.300"],
-              ["Ricorrenze gia emerse", "peso assorbito", "- € 968"],
-              ["Nuova spesa possibile", "spazio residuo", "sostenibile"],
+              ["Ricorrenze gia emerse", "gia conteggiate", "- € 968"],
+              ["Nuova spesa possibile", "prima di decidere", "sostenibile"],
             ].map(([title, note, value], i) => (
-              <m.div 
-                key={title} 
+              <m.div
+                key={title}
                 variants={{
                   hidden: { opacity: 0, filter: "blur(8px)", x: -12 },
                   visible: { opacity: 1, filter: "blur(0px)", x: 0, transition: { type: "spring", stiffness: 450, damping: 25 } }
@@ -138,11 +155,10 @@ function ConsoleChassis() {
                     <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/72">{note}</p>
                   </div>
                 </div>
-                <div className={`rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] ${
-                  i === 2
+                <div className={`rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] ${i === 2
                     ? "border border-teal-400/20 bg-teal-500/10 text-teal-700 dark:border-teal-300/12 dark:bg-teal-300/[0.08] dark:text-teal-100"
                     : "border border-black/6 bg-white/50 text-foreground/68 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/72"
-                }`}>
+                  }`}>
                   {value}
                 </div>
               </m.div>
@@ -160,7 +176,7 @@ export function LandingHeroConsole() {
       <div className="space-y-4">
         {LANDING_STORY_POINTS.map((point, index) => {
           const accent = STORY_ACCENTS[index]
-          const labels = ["01 base", "02 margine", "03 decisione"] as const
+          const labels = ["01 importi", "02 capisci", "03 provi"] as const
 
           return (
             <LandingEditorialCardFrame

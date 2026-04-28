@@ -205,7 +205,7 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
                 {/* Upload Card (Merged Drag & Drop) */}
                 <div
                     className={cn(
-                        "relative flex min-h-[300px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-[2rem] border-2 border-dashed p-8 text-center transition-all duration-200",
+                        "relative flex min-h-[300px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-[2rem] border-2 border-dashed p-8 text-center transition-[border-color,background-color,transform] duration-200",
                         fileName ? "border-emerald-500/30 bg-emerald-500/5" :
                             isDragging ? "border-primary/50 bg-primary/10 scale-[1.02]" :
                                 "border-border/60 bg-muted/20 hover:border-primary/40 hover:bg-muted/40"
@@ -324,7 +324,7 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
                     onClick={handleProcess}
                     disabled={!canContinue}
                     className={cn(
-                        "h-12 gap-2 rounded-xl px-8 font-semibold shadow-lg transition-all duration-200",
+                        "h-12 gap-2 rounded-xl px-8 font-semibold shadow-lg transition-[box-shadow,transform] duration-200",
                         canContinue && "hover:-translate-y-[1px] hover:shadow-primary/25"
                     )}
                 >

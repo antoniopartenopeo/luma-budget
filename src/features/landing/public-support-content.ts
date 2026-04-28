@@ -5,23 +5,33 @@ export interface PublicFaqItem {
 
 export const PUBLIC_FAQ_ITEMS: PublicFaqItem[] = [
   {
-    question: "Quali file sono supportati?",
+    question: "Da dove parto?",
     answer:
-      "Numa legge file CSV o TXT esportati dalla banca e ti accompagna con una review guidata prima del salvataggio."
+      "Puoi iniziare con il dataset demo oppure con un file esportato dalla banca. Prima di salvare, Numa ti fa controllare cosa ha letto."
   },
   {
-    question: "Posso provarlo senza usare i miei dati?",
+    question: "Devo usare subito i miei dati?",
     answer:
-      "Si. Nel percorso di import puoi caricare il dataset demo integrato e vedere il sistema senza usare il tuo estratto conto."
+      "No. Puoi usare il dataset demo e capire come funziona senza caricare movimenti reali."
   },
   {
-    question: "Dove restano i dati?",
+    question: "Dove finiscono i miei dati?",
     answer:
-      "Nel percorso principale i dati restano nel browser sul dispositivo in uso, senza account obbligatorio per iniziare."
+      "Nel percorso principale restano nel browser del dispositivo che stai usando. Non serve creare un account per iniziare."
   },
   {
-    question: "Cosa succede se cambio browser o dispositivo?",
+    question: "Se cambio dispositivo, li ritrovo?",
     answer:
-      "I dati non si spostano automaticamente. Oggi il passaggio corretto è backup JSON locale e ripristino."
+      "No, non si spostano da soli. Per portarli con te devi esportare un backup e poi ripristinarlo."
+  },
+  {
+    question: "Il backup è sicuro?",
+    answer:
+      "Il backup è un file JSON non cifrato. È comodo per spostare i dati, ma va trattato come un documento finanziario sensibile."
+  },
+  {
+    question: "Devo collegare la banca?",
+    answer:
+      "No. Il flusso principale parte da un file esportato o dalla demo. Nessun collegamento bancario è obbligatorio per provare Numa."
   }
 ] as const

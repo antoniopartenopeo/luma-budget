@@ -3,12 +3,12 @@
 scope: motion-governance
 owner: governance
 status: active
-last-verified: 2026-03-25
+last-verified: 2026-04-28
 canonical-of: motion-policy
 
 > **Stato:** Attivo e vincolante
-> **Versione:** 1.6
-> **Ultimo aggiornamento:** 2026-03-25
+> **Versione:** 1.7
+> **Ultimo aggiornamento:** 2026-04-28
 
 Il motion in Numa comunica stato e priorità. Non è decorazione autonoma.
 
@@ -65,6 +65,7 @@ Sulla landing pubblica (`/`) sono ammesse eccezioni aggiuntive quando restano se
 - reveal testuale cinematico in ingresso per il titolo hero;
 - un explainer statico `Come inizi` in 4 passaggi, senza scene scroll-driven dedicate;
 - micro-animazioni interne a preview frame isolati (progress fill, shimmer, check state, orbite a bassa dominanza);
+- cover-flow, progress fill e torchlight editoriale sono ammessi solo dentro frame fissi di preview, senza reflow del layout esterno e senza trasformarsi in dati live;
 - un solo interludio immersivo dedicato al Brain con parallax/lens effect se rimane nella fase forecast e non introduce nuova navigazione.
 
 Guardrail obbligatori:
@@ -72,6 +73,7 @@ Guardrail obbligatori:
 - le eccezioni tematiche valgono solo per superfici pubbliche narrative e preview isolate, non per i pannelli operativi del prodotto live;
 - `blur/filter` sono ammessi solo come transizione iniziale breve, non come stato persistente;
 - animazioni su `width` sono ammesse solo dentro frame fissi che non causano reflow del layout circostante;
+- effetti pointer-reactive come torchlight, laser border o tilt sono ammessi solo se opzionali, non necessari alla comprensione, e disattivati/attenuati in reduced motion;
 - l'interludio Brain puo usare `useSpring` e blur di profondita sui layer retrostanti per ottenere separazione cinematica, ma il layer di lettura principale deve restare leggibile e il reveal finale non deve diventare una nuova CTA autonoma;
 - i layer della landing non devono dipendere da asset remoti di texture o da claim non verificabili;
 - ogni eccezione deve avere fallback `prefers-reduced-motion`.
@@ -102,6 +104,7 @@ Sulla landing questo implica:
 - hero text senza blur persistente;
 - nessuna dipendenza da scene step-based scroll-driven per spiegare il flusso;
 - interludi e hero immersivi che mantengono la stessa composizione adattiva, riducendo pero blur, parallax, loop e transizioni lunghe invece di sostituire la scena con un pattern diverso;
+- torchlight, laser tracking, tilt hover e fog/noise pointer-reactive devono spegnersi o diventare statici;
 - nessun loop continuo dominante fuori dai preview frame.
 
 ### Performance

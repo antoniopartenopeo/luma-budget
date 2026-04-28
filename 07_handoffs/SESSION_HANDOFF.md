@@ -3,7 +3,7 @@
 scope: session-handoff
 owner: engineering
 status: active
-last-verified: 2026-04-03
+last-verified: 2026-04-28
 canonical-of: session-handoff
 
 ## Current State
@@ -19,6 +19,8 @@ canonical-of: session-handoff
 - Any user-visible change now closes with the canonical findings-first ritual in `04_execution/USER_VISIBLE_CHANGE_RITUAL.md`, not only with implementation and tests.
 - The entire landing page has undergone a rigid linguistic and responsive typography audit to perfectly align with Apple-style standards, capping all hero titles to `text-7xl` and fixing all Italian accents.
 - Landing immersive heroes now keep the same adaptive visual pattern on smartphone and under `prefers-reduced-motion`; only the motion amplitude changes.
+- Latest landing pass on 2026-04-28 simplified first-scan copy around "il tuo mese, piu chiaro", added explicit trust items, moved hero/cover-flow demo math into `src/features/landing/preview-model.ts`, and reframed Brain as `La stima di Numa`.
+- FAQ/privacy support copy now centers demo/import, data on device, no mandatory account or bank connection, and cleartext JSON backup risk.
 - Dashboard `Composizione spese` is now a frozen surface: do not modify it in cleanup, sweep, refactor, audit-fix, or motion standardization unless the request names it explicitly.
 - Repository-wide audit on 2026-04-01 corrected governance drift in the audit specialist/process and logged explicit follow-up items for source-label semantics, `transition-all`, and period-filter consistency.
 
@@ -34,6 +36,7 @@ canonical-of: session-handoff
 
 - Keep scripts, tests, CI, and specialist files aligned with the root scaffold paths.
 - Re-audit landing reduced-motion behavior and public-link constraints whenever `src/features/landing/*` changes materially.
+- Re-audit landing preview model tests whenever `landing.json`, `content.ts`, `landing-previews.tsx`, `landing-cover-flow.tsx`, or public support copy changes.
 - For any user-visible change, run the ritual first and promote repeated findings to governance instead of leaving them implicit in review.
 - Resolve forecast provenance label drift so runtime copy matches the governed `Fonte Core` / `Fonte Storico` terminology.
 - Triage `transition-all` occurrences against `01_rules/UI_EXECUTION_STANDARDS.md` and replace them with explicit transition properties where possible.

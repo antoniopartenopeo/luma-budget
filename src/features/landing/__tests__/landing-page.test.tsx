@@ -48,8 +48,14 @@ vi.mock("framer-motion", async () => {
     domAnimation: {},
     m: motionProxy,
     motion: motionProxy,
+    useMotionTemplate: () => "radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4) 0%, transparent 60%)",
+    useMotionValue: (initial: number) => ({
+      get: () => initial,
+      set: () => undefined,
+    }),
     useInView: () => true,
     useReducedMotion: () => false,
+    useSpring: (value: unknown) => value,
     useScroll: () => ({
       scrollYProgress: 0
     }),
@@ -103,7 +109,17 @@ vi.mock("../components/landing-differentiator-cards", () => ({
 
 vi.mock("../components/motion-primitives", () => ({
   AppleFluidBackground: () => <div data-testid="apple-fluid-background" />,
-  CinematicScrollCard: ({ children }: { children: React.ReactNode }) => <>{children}</>
+  CinematicScrollCard: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  EDITORIAL_TORCHLIGHT_SPRING: {
+    damping: 40,
+    stiffness: 300,
+    mass: 0.5
+  },
+  useEditorialTorchlight: () => ({
+    torchlightBackground: "",
+    laserBackground: "",
+    fogMask: ""
+  })
 }))
 
 describe("LandingPage", () => {

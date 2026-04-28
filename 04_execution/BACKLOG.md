@@ -3,7 +3,7 @@
 scope: execution-backlog
 owner: engineering
 status: active
-last-verified: 2026-04-01
+last-verified: 2026-04-28
 canonical-of: execution-backlog
 
 1. Keep root scaffold files updated when architecture, governance, or release behavior changes.
@@ -17,3 +17,4 @@ canonical-of: execution-backlog
 5. Retire or simplify legacy compatibility paths in `src/VAULT/*` when they stop carrying real user value.
 6. Decide whether open banking should stay permanently gated or receive a hardened activation path.
 7. Keep `05_specialists/*` aligned with real recurring workflows and avoid governance drift into random folders.
+8. Keep landing payload (`landing.json`), hydration/types (`content.ts`), preview model (`preview-model.ts`), support copy, and landing tests synchronized whenever the public story or demo numbers change.

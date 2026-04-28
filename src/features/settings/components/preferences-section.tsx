@@ -1,7 +1,16 @@
 "use client"
 
 import { useState, useSyncExternalStore } from "react"
-import { CheckCircle2, AlertCircle, Loader2, User, Palette, Coins, Target, Zap } from "lucide-react"
+import {
+    CheckCircle2,
+    AlertCircle,
+    Loader2,
+    User,
+    Palette,
+    Coins,
+    Target,
+    Zap
+} from "lucide-react"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
@@ -238,6 +247,7 @@ export function PreferencesSection() {
                                     </SelectContent>
                                 </Select>
                             </PreferenceField>
+
                         </div>
                     </div>
 

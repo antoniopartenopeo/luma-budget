@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion, HTMLMotionProps, Variants, useReducedMotion } from "framer-motion"
+import { motion, HTMLMotionProps, Variants } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { GLASS_V2_PANEL_CLASS } from "@/components/ui/glass-tokens"
@@ -45,7 +45,6 @@ export function MacroSection({
     disableAnimation = false,
     ...props
 }: MacroSectionProps) {
-    const prefersReducedMotion = useReducedMotion()
     const isPremium = variant === "premium"
     const isWarning = status === "warning"
     const isCritical = status === "critical"
@@ -53,9 +52,9 @@ export function MacroSection({
     return (
         <motion.div
             variants={disableAnimation ? undefined : macroItemVariants}
-            initial={disableAnimation || prefersReducedMotion ? false : "hidden"}
-            animate={disableAnimation || prefersReducedMotion ? undefined : "visible"}
-            className={cn("w-full relative", className)}
+            initial={disableAnimation ? false : "hidden"}
+            animate={disableAnimation ? undefined : "visible"}
+            className={cn("w-full relative motion-reduce:!transform-none motion-reduce:!opacity-100 motion-reduce:!filter-none", className)}
             {...props}
         >
             <Card

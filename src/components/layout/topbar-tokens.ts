@@ -32,7 +32,7 @@ export const TOPBAR_INLINE_SUPPORT_TEXT_CLASS =
 
 /** Circular 40×40 icon button used across all topbar actions (cluster, quick, mobile). */
 export const TOPBAR_ICON_BUTTON_CLASS =
-    "group relative h-10 w-10 shrink-0 rounded-full border border-primary/15 bg-transparent text-muted-foreground transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-primary/10 hover:text-primary hover:shadow-md hover:scale-[1.05] active:scale-[0.95] active:bg-primary/20 active:text-primary focus-visible:ring-2 focus-visible:ring-primary/25"
+    "group relative h-10 w-10 shrink-0 rounded-full border border-primary/15 bg-transparent text-muted-foreground transition-[background-color,border-color,color,box-shadow,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-primary/10 hover:text-primary hover:shadow-md hover:scale-[1.05] active:scale-[0.95] active:bg-primary/20 active:text-primary focus-visible:ring-2 focus-visible:ring-primary/25"
 
 /** Base trigger class for inline panel triggers (Flash, Brain, Notifications, Theme). */
 export const TOPBAR_PANEL_TRIGGER_CLASS =

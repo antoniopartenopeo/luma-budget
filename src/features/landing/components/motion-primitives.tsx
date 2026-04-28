@@ -2,7 +2,7 @@
 
 import type { CSSProperties, ReactNode } from "react"
 import { useRef } from "react"
-import { m, useReducedMotion, useScroll, useTransform, useInView, useMotionValue, useSpring, useMotionTemplate } from "framer-motion"
+import { m, useReducedMotion, useScroll, useTransform, useInView, useMotionValue, useSpring, useMotionTemplate, type MotionValue } from "framer-motion"
 import { useDeviceHardware } from "@/hooks/use-device-hardware"
 import { cn } from "@/lib/utils"
 
@@ -10,6 +10,48 @@ const CURRENT_COLOR_STOP = { stopColor: "currentColor" }
 const NOISE_TEXTURE_STYLE: CSSProperties = {
   backgroundImage:
     "url('data:image/svg+xml;utf8,<svg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"noiseFilter\"><feTurbulence type=\"fractalNoise\" baseFrequency=\"0.8\" numOctaves=\"3\" stitchTiles=\"stitch\"/></filter><rect width=\"100%\" height=\"100%\" filter=\"url(%23noiseFilter)\"/></svg>')",
+}
+
+export const EDITORIAL_TORCHLIGHT_SPRING = {
+  damping: 40,
+  stiffness: 300,
+  mass: 0.5,
+} as const
+
+interface EditorialTorchlightOptions {
+  mouseX: MotionValue<number>
+  mouseY: MotionValue<number>
+  inputRange?: [number, number]
+  springConfig?: {
+    damping: number
+    stiffness: number
+    mass?: number
+  }
+}
+
+export function useEditorialTorchlight({
+  mouseX,
+  mouseY,
+  inputRange = [-0.5, 0.5],
+  springConfig = EDITORIAL_TORCHLIGHT_SPRING,
+}: EditorialTorchlightOptions) {
+  const torchX = useSpring(useTransform(mouseX, inputRange, [0, 100]), springConfig)
+  const torchY = useSpring(useTransform(mouseY, inputRange, [0, 100]), springConfig)
+  const ignitionX = useSpring(useTransform(mouseX, inputRange, [0, 100]), springConfig)
+  const ignitionY = useSpring(useTransform(mouseY, inputRange, [0, 100]), springConfig)
+
+  const torchlightBackground = useMotionTemplate`
+    radial-gradient(640px circle at ${torchX}% ${torchY}%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.06) 30%, transparent 70%),
+    radial-gradient(280px circle at ${ignitionX}% ${ignitionY}%, rgba(255,255,255,0.22) 0%, transparent 80%)
+  `
+  const laserBackground = useMotionTemplate`radial-gradient(320px circle at ${torchX}% ${torchY}%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.6) 20%, rgba(255,255,255,0.12) 50%, transparent 100%)`
+  const fogMask = useMotionTemplate`radial-gradient(350px circle at ${torchX}% ${torchY}%, black 0%, rgba(0,0,0,0.4) 40%, transparent 100%)`
+
+  return {
+    torchlightBackground,
+    laserBackground,
+    fogMask,
+  }
 }
 
 export function AppleFluidMesh({ className }: { className?: string }) {
@@ -62,8 +104,8 @@ export function AppleFluidMesh({ className }: { className?: string }) {
           animate={
             shouldAnimate
               ? {
-                  scale: [1, 1.12, 1],
-                }
+                scale: [1, 1.12, 1],
+              }
               : undefined
           }
           transition={shouldAnimate ? loopTransition(20) : undefined}
@@ -74,9 +116,9 @@ export function AppleFluidMesh({ className }: { className?: string }) {
           animate={
             shouldAnimate
               ? {
-                  rotate: [0, 180, 360],
-                  scale: [1, 1.08, 0.92, 1],
-                }
+                rotate: [0, 180, 360],
+                scale: [1, 1.08, 0.92, 1],
+              }
               : undefined
           }
           transition={shouldAnimate ? loopTransition(45) : undefined}
@@ -89,10 +131,10 @@ export function AppleFluidMesh({ className }: { className?: string }) {
           animate={
             shouldAnimate
               ? {
-                  rotate: [360, 180, 0],
-                  x: [-90, 90, -90],
-                  y: [-70, 70, -70],
-                }
+                rotate: [360, 180, 0],
+                x: [-90, 90, -90],
+                y: [-70, 70, -70],
+              }
               : undefined
           }
           transition={shouldAnimate ? loopTransition(35) : undefined}
@@ -105,9 +147,9 @@ export function AppleFluidMesh({ className }: { className?: string }) {
           animate={
             shouldAnimate
               ? {
-                  rotate: [0, -180, -360],
-                  scale: [1, 0.84, 1.14, 1],
-                }
+                rotate: [0, -180, -360],
+                scale: [1, 0.84, 1.14, 1],
+              }
               : undefined
           }
           transition={shouldAnimate ? loopTransition(55) : undefined}
@@ -116,10 +158,10 @@ export function AppleFluidMesh({ className }: { className?: string }) {
           <path fill="url(#numa-grad-4)" d="M 500,200 C 800,200 1000,500 1000,800 C 1000,1100 700,900 400,900 C 100,900 0,600 200,400 C 300,300 400,200 500,200 Z" />
         </m.g>
       </m.svg>
-      
-      <div 
-        className="absolute inset-0 opacity-[0.03] dark:opacity-[0.035] pointer-events-none mix-blend-overlay" 
-        style={NOISE_TEXTURE_STYLE} 
+
+      <div
+        className="absolute inset-0 opacity-[0.03] dark:opacity-[0.035] pointer-events-none mix-blend-overlay"
+        style={NOISE_TEXTURE_STYLE}
       />
     </div>
   )
@@ -137,8 +179,7 @@ export function AppleFluidBackground({ className, style }: { className?: string,
 
 export function CinematicScrollCard({ children, className }: { children: ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null)
-  const prefersReducedMotion = useReducedMotion()
-  
+
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start 96%", "center center"]
@@ -153,91 +194,86 @@ export function CinematicScrollCard({ children, className }: { children: ReactNo
   // Interattività Hover (Tilt & Glare)
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
+  const isHoveredRaw = useMotionValue(0)
+  const xSpring = useSpring(mouseX, EDITORIAL_TORCHLIGHT_SPRING)
+  const ySpring = useSpring(mouseY, EDITORIAL_TORCHLIGHT_SPRING)
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!ref.current) return
     const rect = ref.current.getBoundingClientRect()
-    const x = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2)
-    const yVal = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2)
+    const x = (e.clientX - rect.left) / rect.width - 0.5
+    const yVal = (e.clientY - rect.top) / rect.height - 0.5
+    isHoveredRaw.set(1)
     mouseX.set(x)
     mouseY.set(yVal)
   }
 
   const handleMouseLeave = () => {
+    isHoveredRaw.set(0)
     mouseX.set(0)
     mouseY.set(0)
   }
 
-  const springConfig = { damping: 20, stiffness: 150 }
-  const hoverRotateX = useSpring(useTransform(mouseY, [-1, 1], [6, -6]), springConfig)
-  const hoverRotateY = useSpring(useTransform(mouseX, [-1, 1], [-6, 6]), springConfig)
-  
+  const hoverRevealSpring = useSpring(isHoveredRaw, EDITORIAL_TORCHLIGHT_SPRING)
+  const hoverRotateX = useTransform(ySpring, [-0.5, 0.5], [6, -6])
+  const hoverRotateY = useTransform(xSpring, [-0.5, 0.5], [-6, 6])
+
   // Composizione sicura asse X: scroll + tilt algebrico
   const rotateX = useTransform(() => scrollRotateX.get() + hoverRotateX.get())
-
-  const glareX = useSpring(useTransform(mouseX, [-1, 1], [-20, 120]), springConfig)
-  const glareY = useSpring(useTransform(mouseY, [-1, 1], [-20, 120]), springConfig)
-  
-  const glareBackground = useMotionTemplate`radial-gradient(450px circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.08) 50%, transparent 100%)`
-  const laserBackground = useMotionTemplate`radial-gradient(1000px circle at ${glareX}% ${glareY}%, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 20%, rgba(255,255,255,0.5) 45%, rgba(255,255,255,0.1) 80%, transparent 100%)`
-  const fogMask = useMotionTemplate`radial-gradient(400px circle at ${glareX}% ${glareY}%, black 0%, rgba(0,0,0,0.6) 30%, transparent 80%)`
-
-  if (prefersReducedMotion) {
-    return (
-      <m.div
-        initial={{ opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.4 }}
-        className={className}
-      >
-        {children}
-      </m.div>
-    )
-  }
+  const laserOpacity = useTransform(hoverRevealSpring, [0, 1], [0, 0.9])
+  const fogOpacity = useTransform(hoverRevealSpring, [0, 1], [0, 0.16])
+  const { torchlightBackground, laserBackground, fogMask } = useEditorialTorchlight({
+    mouseX: xSpring,
+    mouseY: ySpring,
+    inputRange: [-0.5, 0.5],
+    springConfig: EDITORIAL_TORCHLIGHT_SPRING,
+  })
 
   return (
     <m.div
       ref={ref}
+      onMouseEnter={() => isHoveredRaw.set(1)}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      style={{ 
-        rotateX, 
-        rotateY: hoverRotateY, 
-        scale, 
-        opacity, 
-        y, 
-        transformStyle: "preserve-3d", 
+      style={{
+        rotateX,
+        rotateY: hoverRotateY,
+        scale,
+        opacity,
+        y,
+        transformStyle: "preserve-3d",
         transformPerspective: 1200,
         cursor: "url(\"data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='32'%20height='32'%20viewBox='0%200%2032%2032'%3E%3Cdefs%3E%3CradialGradient%20id='glow'%20cx='50%25'%20cy='50%25'%20r='50%25'%3E%3Cstop%20offset='0%25'%20stop-color='white'%20stop-opacity='1'/%3E%3Cstop%20offset='10%25'%20stop-color='white'%20stop-opacity='0.8'/%3E%3Cstop%20offset='30%25'%20stop-color='white'%20stop-opacity='0.3'/%3E%3Cstop%20offset='60%25'%20stop-color='white'%20stop-opacity='0.05'/%3E%3Cstop%20offset='100%25'%20stop-color='white'%20stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle%20cx='16'%20cy='16'%20r='16'%20fill='url(%23glow)'/%3E%3C/svg%3E\") 16 16, crosshair"
       }}
-      className={className}
+      className={cn("motion-reduce:!transform-none motion-reduce:!opacity-100 motion-reduce:!cursor-default", className)}
     >
-      {/* 1. Internal Surface Glare (Tight Spotlight) */}
+      {/* 1. Internal Surface Torchlight */}
       <m.div
-        className="pointer-events-none absolute inset-0 z-50 transition-opacity duration-300 opacity-0 mix-blend-overlay group-hover:opacity-100"
-        style={{ background: glareBackground }}
+        className="pointer-events-none absolute inset-0 z-50 mix-blend-soft-light motion-reduce:!opacity-0"
+        style={{ background: torchlightBackground, opacity: hoverRevealSpring }}
       />
-      
-      {/* 2. Magical Border Laser Tracking (Ultra Premium) */}
+
+      {/* 2. Border Laser Tracking */}
       <m.div
-        className="pointer-events-none absolute inset-0 z-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        className="pointer-events-none absolute inset-0 z-50 motion-reduce:!opacity-0"
         style={{
           background: laserBackground,
+          opacity: laserOpacity,
           mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
           WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
           maskComposite: "exclude",
           WebkitMaskComposite: "xor",
-          padding: "2.5px"
+          padding: "1.5px"
         }}
       />
       <div className="absolute inset-0 z-50 pointer-events-none rounded-[inherit]" style={{ borderRadius: "inherit" }} />
 
       {/* 3. Volumetric Fog & Dust Particles */}
       <m.div
-        className="pointer-events-none absolute inset-0 z-40 opacity-0 transition-opacity duration-500 group-hover:opacity-[0.25] mix-blend-color-dodge"
+        className="pointer-events-none absolute inset-0 z-40 mix-blend-color-dodge motion-reduce:!opacity-0"
         style={{
           ...NOISE_TEXTURE_STYLE,
+          opacity: fogOpacity,
           mask: fogMask,
           WebkitMask: fogMask
         }}

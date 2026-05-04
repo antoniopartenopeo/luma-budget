@@ -53,6 +53,12 @@ vi.mock("@/hooks/use-hardware-parallax", () => ({
   })
 }))
 
+vi.mock("@/hooks/use-device-hardware", () => ({
+  useDeviceHardware: () => ({
+    safeToAnimate3D: true
+  })
+}))
+
 describe("LandingDifferentiatorCards", () => {
   it("renders the editorial Numa scene and the three differentiators", () => {
     mockReducedMotion = false

@@ -10,7 +10,6 @@ const WHOLE_EURO_FORMATTER = new Intl.NumberFormat("it-IT", {
 interface LandingHeroPreviewInput {
   incomeCents?: number | null
   estimatedExpensesCents?: number | null
-  scenarioExpenseCents?: number | null
 }
 
 interface LandingPreviewAmount {
@@ -22,7 +21,7 @@ interface LandingPreviewAmount {
 interface LandingPreviewMetric {
   label: string
   value: string
-  tone: "income" | "expense" | "scenario"
+  tone: "income" | "expense" | "margin"
   widthPct: number
 }
 
@@ -30,7 +29,6 @@ export interface LandingHeroPreview {
   status: LandingPreviewStatus
   isComplete: boolean
   marginCents: number | null
-  scenarioRemainingCents: number | null
   marginAmount: LandingPreviewAmount
   formula: string
   metrics: readonly LandingPreviewMetric[]
@@ -39,7 +37,6 @@ export interface LandingHeroPreview {
 export const LANDING_HERO_PREVIEW_INPUT = {
   incomeCents: 230000,
   estimatedExpensesCents: 105500,
-  scenarioExpenseCents: 4200,
 } as const satisfies Required<LandingHeroPreviewInput>
 
 function normalizeCents(value: number | null | undefined) {
@@ -82,10 +79,8 @@ export function buildLandingHeroPreview(
 ): LandingHeroPreview {
   const incomeCents = normalizeMagnitudeCents(input.incomeCents)
   const estimatedExpensesCents = normalizeMagnitudeCents(input.estimatedExpensesCents)
-  const scenarioExpenseCents = normalizeMagnitudeCents(input.scenarioExpenseCents) ?? 0
   const isComplete = incomeCents !== null && estimatedExpensesCents !== null && incomeCents > 0
   const marginCents = isComplete ? incomeCents - estimatedExpensesCents : null
-  const scenarioRemainingCents = marginCents === null ? null : marginCents - scenarioExpenseCents
   const safeIncomeCents = incomeCents ?? 0
   const safeEstimatedExpensesCents = estimatedExpensesCents ?? 0
   const safeMarginCents = Math.max(0, marginCents ?? 0)
@@ -103,9 +98,8 @@ export function buildLandingHeroPreview(
     status: !isComplete ? "incomplete" : marginCents !== null && marginCents < 0 ? "warning" : "healthy",
     isComplete,
     marginCents,
-    scenarioRemainingCents,
     marginAmount: formatLandingWholeCurrency(marginCents ?? 0),
-    formula: "Entrate - spese previste = quanto ti resta",
+    formula: "Entrate - uscite stimate = quanto resta",
     metrics: [
       {
         label: "Entrate",
@@ -123,9 +117,9 @@ export function buildLandingHeroPreview(
         widthPct: expenseWidthPct,
       },
       {
-        label: "Prova",
-        value: formatLandingSignedWholeCurrency(-scenarioExpenseCents),
-        tone: "scenario",
+        label: "Margine",
+        value: marginCents !== null ? formatLandingSignedWholeCurrency(marginCents) : "da completare",
+        tone: "margin",
         widthPct: marginWidthPct,
       },
     ],

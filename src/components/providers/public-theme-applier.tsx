@@ -5,10 +5,14 @@ import { syncThemeSelection, useIsomorphicLayoutEffect } from "./theme-dom"
 
 export function PublicThemeApplier() {
   useIsomorphicLayoutEffect(() => {
-    let cleanupThemeSync: () => void = () => undefined
+    let isMounted = true
+    let cleanupThemeSync = syncThemeSelection("system")
 
     const syncTheme = async () => {
       const settings = await fetchSettings()
+      if (!isMounted) {
+        return
+      }
       cleanupThemeSync()
       cleanupThemeSync = syncThemeSelection(settings.theme || "system")
     }
@@ -16,6 +20,7 @@ export function PublicThemeApplier() {
     void syncTheme()
 
     return () => {
+      isMounted = false
       cleanupThemeSync()
     }
   }, [])

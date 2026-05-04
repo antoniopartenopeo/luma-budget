@@ -6,7 +6,6 @@ import { AmbientBackdrop } from "@/components/layout/ambient-backdrop"
 import { PublicSiteFooter } from "@/components/layout/public-site-footer"
 import { MacroSection } from "@/components/patterns/macro-section"
 import { StaggerContainer } from "@/components/patterns/stagger-container"
-import { LIQUID_CAPSULE_CLASS, LIQUID_REFRACTION_CLASS } from "@/components/ui/glass-tokens"
 import { BrandLogo } from "@/components/ui/brand-logo"
 import { Button } from "@/components/ui/button"
 import {
@@ -94,9 +93,7 @@ export function LandingPage() {
       <header className="absolute inset-x-0 top-0 z-50 px-4 pt-4 sm:pt-6">
         <div
           className={cn(
-            "mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 rounded-full border border-white/28 bg-white/48 px-4 py-3 shadow-[0_24px_80px_-44px_rgba(15,23,42,0.48)] backdrop-blur-xl dark:border-white/12 dark:bg-black/24 dark:shadow-[0_32px_88px_-48px_rgba(0,0,0,0.72)]",
-            LIQUID_CAPSULE_CLASS,
-            LIQUID_REFRACTION_CLASS
+            "mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 overflow-hidden rounded-full border border-black/8 bg-white/72 px-4 py-3 text-foreground shadow-[0_24px_80px_-44px_rgba(15,23,42,0.32),inset_0_1px_0_rgba(255,255,255,0.74)] backdrop-blur-xl dark:border-white/12 dark:bg-[#05080d]/68 dark:text-white dark:shadow-[0_24px_80px_-44px_rgba(0,0,0,0.82),inset_0_1px_0_rgba(255,255,255,0.10)]"
           )}
         >
           <Link
@@ -109,7 +106,7 @@ export function LandingPage() {
 
           <nav className="hidden items-center gap-1 md:flex">
             {LANDING_NAV_ITEMS.map((item) => (
-              <a key={item.href} href={item.href} className={LANDING_NAV_LINK_CLASS}>
+              <a key={item.href} href={item.href} className={cn(LANDING_NAV_LINK_CLASS, "text-foreground/58 hover:bg-black/[0.035] hover:text-foreground dark:text-white/68 dark:hover:bg-white/[0.08] dark:hover:text-white")}>
                 {item.label}
               </a>
             ))}

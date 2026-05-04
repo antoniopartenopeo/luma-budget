@@ -11,8 +11,10 @@ import {
 } from "lucide-react"
 import {
   m,
+  useReducedMotion,
   type Variants
 } from "framer-motion"
+import { useDeviceHardware } from "@/hooks/use-device-hardware"
 import { cn } from "@/lib/utils"
 import { LANDING_COVERFLOW_CARDS } from "../content"
 import type { LandingPreviewData } from "../content"
@@ -62,8 +64,125 @@ const listContainerVariants: Variants = {
   }
 }
 const listItemVariants: Variants = {
-  hidden: { opacity: 0, y: 20, filter: "blur(6px)" },
-  visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { type: "spring", stiffness: 350, damping: 24 } }
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 350, damping: 24 } }
+}
+
+const HERO_PREVIEW_RAIL_ITEMS = [
+  { label: "Importa", Icon: WalletCards },
+  { label: "Capisci", Icon: ArrowDownUp },
+  { label: "Resta", Icon: BrainCircuit },
+  { label: "Quota", Icon: ShieldCheck },
+  { label: "Costi", Icon: CreditCard },
+] as const
+
+type CardVisualState = {
+  isCenter: boolean
+  isAdjacent: boolean
+  visualState: "center" | "adjacent" | "distant"
+  xOffset: number
+  zOffset: number
+  rotateY: number
+  scale: number
+  opacity: number
+  blur: number
+}
+
+function getCardVisualState(distance: number, shouldReduceVisualEffects: boolean): CardVisualState {
+  const isCenter = distance === 0
+  const isAdjacent = Math.abs(distance) === 1
+  const isLeft = distance < 0
+  const isNear = Math.abs(distance) === 1
+  const sideMultiplier = isLeft ? -1 : 1
+  const xOffset = isCenter
+    ? 0
+    : sideMultiplier * (isNear
+      ? shouldReduceVisualEffects ? 240 : 330
+      : shouldReduceVisualEffects ? 380 : 560)
+
+  return {
+    isCenter,
+    isAdjacent,
+    visualState: isCenter ? "center" : isAdjacent ? "adjacent" : "distant",
+    xOffset,
+    zOffset: shouldReduceVisualEffects ? 0 : isCenter ? 28 : isAdjacent ? -130 : -320,
+    rotateY: shouldReduceVisualEffects ? 0 : isCenter ? 0 : sideMultiplier * (isAdjacent ? -28 : -48),
+    scale: isCenter ? 1 : isAdjacent ? shouldReduceVisualEffects ? 0.84 : 0.78 : shouldReduceVisualEffects ? 0.7 : 0.62,
+    opacity: isCenter ? 1 : isAdjacent ? 0.58 : 0.14,
+    blur: shouldReduceVisualEffects || isCenter ? 0 : isAdjacent ? 1.25 : 2.75,
+  }
+}
+
+function HeroPreviewRail({
+  cards,
+  activeIndex,
+  onSelect,
+}: {
+  cards: typeof LANDING_COVERFLOW_CARDS
+  activeIndex: number
+  onSelect: (index: number) => void
+}) {
+  return (
+    <div className="order-first z-30 flex w-full justify-center px-3 sm:order-none sm:-mt-2 sm:px-4">
+      <div
+        className="grid w-full max-w-[32rem] grid-cols-5 gap-1 rounded-[1.05rem] border border-black/[0.06] bg-white/70 p-1 shadow-[0_16px_34px_-28px_rgba(15,23,42,0.42),inset_0_1px_0_rgba(255,255,255,0.62)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/68 dark:shadow-[0_18px_44px_-34px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.07)]"
+        aria-label="Seleziona anteprima hero"
+      >
+        {cards.map((card, index) => (
+          <HeroPreviewRailItem
+            key={`rail-${card.id}`}
+            card={card}
+            index={index}
+            isActive={index === activeIndex}
+            onSelect={onSelect}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function HeroPreviewRailItem({
+  card,
+  index,
+  isActive,
+  onSelect,
+}: {
+  card: (typeof LANDING_COVERFLOW_CARDS)[number]
+  index: number
+  isActive: boolean
+  onSelect: (index: number) => void
+}) {
+  const railItem = HERO_PREVIEW_RAIL_ITEMS[index] ?? HERO_PREVIEW_RAIL_ITEMS[0]
+  const Icon = railItem.Icon
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(index)}
+      className={cn(
+        "group relative min-w-0 rounded-[0.8rem] px-1.5 py-2 text-center outline-none transition-[background-color,border-color,box-shadow,color,opacity] duration-200 focus-visible:ring-2 focus-visible:ring-primary/35 sm:px-2 sm:py-2.5",
+        isActive
+          ? "border border-primary/18 bg-foreground/[0.055] text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] dark:border-cyan-200/16 dark:bg-white/[0.075] dark:text-white"
+          : "border border-transparent text-foreground/48 hover:bg-foreground/[0.035] hover:text-foreground/76 dark:text-white/44 dark:hover:bg-white/[0.05] dark:hover:text-white/76"
+      )}
+      aria-pressed={isActive}
+      aria-label={`${railItem.label}: ${card.title}`}
+    >
+      <span className="flex min-w-0 flex-col items-center gap-1.5">
+        <Icon
+          className={cn(
+            "h-3.5 w-3.5 transition-colors duration-200 sm:h-4 sm:w-4",
+            isActive ? "text-primary dark:text-cyan-200" : "text-current"
+          )}
+          aria-hidden="true"
+        />
+        <span className="truncate text-[10px] font-black uppercase tracking-[0.12em] sm:text-[11px]">
+          {railItem.label}
+        </span>
+      </span>
+    </button>
+  )
 }
 
 type PreviewTone = "neutral" | "cyan" | "emerald" | "violet" | "orange"
@@ -145,14 +264,14 @@ const METRIC_TONE_CLASS = {
     "border-cyan-400/18 bg-cyan-500/[0.08] text-cyan-800 dark:border-white/10 dark:bg-white/[0.055] dark:text-cyan-100",
   expense:
     "border-slate-400/18 bg-slate-500/[0.07] text-slate-700 dark:border-white/10 dark:bg-white/[0.045] dark:text-white/72",
-  scenario:
+  margin:
     "border-emerald-400/18 bg-emerald-500/[0.08] text-emerald-800 dark:border-emerald-300/12 dark:bg-emerald-300/[0.07] dark:text-emerald-100",
 } as const
 
 const METRIC_BAR_CLASS = {
   income: "bg-[linear-gradient(90deg,rgba(34,211,238,0.72),rgba(14,165,233,0.9))]",
   expense: "bg-[linear-gradient(90deg,rgba(148,163,184,0.72),rgba(203,213,225,0.92))]",
-  scenario: "bg-[linear-gradient(90deg,rgba(16,185,129,0.7),rgba(45,212,191,0.92))]",
+  margin: "bg-[linear-gradient(90deg,rgba(16,185,129,0.7),rgba(45,212,191,0.92))]",
 } as const
 
 function ClarityPreview({ data, isActive }: { data: LandingPreviewData; isActive: boolean }) {
@@ -161,13 +280,7 @@ function ClarityPreview({ data, isActive }: { data: LandingPreviewData; isActive
   return (
     <div className="relative z-10 flex h-full flex-col justify-between px-5 py-5 sm:px-6 sm:py-5">
       <div className="space-y-4">
-        <div className="flex items-center justify-between gap-3">
-          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-500/10 px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.24)] dark:border-cyan-300/12 dark:bg-cyan-300/[0.08]">
-            <BrainCircuit className="h-3.5 w-3.5 text-cyan-700 dark:text-cyan-200" />
-            <span className="text-[10px] font-black uppercase tracking-[0.16em] text-cyan-700 dark:text-cyan-200">
-              {data.badge}
-            </span>
-          </div>
+        <div className="flex items-center justify-end">
           <span className="rounded-full border border-black/6 bg-white/44 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.16em] text-foreground/44 dark:border-white/10 dark:bg-white/[0.04] dark:text-white/48">
             Esempio
           </span>
@@ -195,26 +308,7 @@ function ClarityPreview({ data, isActive }: { data: LandingPreviewData; isActive
           </div>
         </div>
 
-        <m.div
-          animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-          transition={{ delay: 0.32, type: "spring", damping: 28 }}
-        >
-          <PreviewGlass tone="neutral" className="rounded-[1.55rem] px-4 py-3">
-            <div className="flex items-start gap-3">
-              <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-cyan-400/18 bg-cyan-500/10 text-cyan-700 dark:border-cyan-300/12 dark:bg-cyan-300/[0.08] dark:text-cyan-100">
-                <BrainCircuit className="h-4 w-4" />
-              </div>
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/42">
-                  {data.insightLabel}
-                </p>
-                <p className="mt-1 text-sm font-semibold tracking-tight text-foreground">
-                  {preview.formula}
-                </p>
-              </div>
-            </div>
-          </PreviewGlass>
-        </m.div>
+
       </div>
 
       <div className="space-y-3">
@@ -247,13 +341,7 @@ function ClarityPreview({ data, isActive }: { data: LandingPreviewData; isActive
           ))}
         </div>
 
-        <m.div
-          animate={isActive ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.98 }}
-          transition={{ delay: 0.74, type: "spring", damping: 28 }}
-          className="rounded-[1.35rem] border border-emerald-400/18 bg-emerald-500/[0.07] px-4 py-3 text-[12px] font-semibold leading-relaxed text-emerald-800 dark:border-emerald-300/12 dark:bg-emerald-300/[0.06] dark:text-emerald-100"
-        >
-          {data.customContent?.calculationNote}
-        </m.div>
+
       </div>
     </div>
   )
@@ -263,12 +351,7 @@ function TransactionsPreview({ data, isActive }: { data: LandingPreviewData; isA
   return (
     <div className="relative z-10 flex h-full flex-col justify-between px-4 py-6">
       <div className="space-y-4">
-        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-slate-400/18 bg-slate-500/[0.08] px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.24)] dark:border-white/10 dark:bg-white/[0.05]">
-          <ArrowDownUp className="h-3.5 w-3.5 text-slate-700 dark:text-white/72" />
-          <span className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-700 dark:text-white/72">
-            {data.badge}
-          </span>
-        </div>
+
         <div className="space-y-2.5">
           <h3 className="max-w-[17rem] text-2xl font-black tracking-tight text-foreground sm:text-[1.7rem]">
             {data.title}
@@ -277,23 +360,7 @@ function TransactionsPreview({ data, isActive }: { data: LandingPreviewData; isA
             {data.description}
           </p>
         </div>
-        <m.div 
-          animate={isActive ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
-        >
-          <PreviewGlass tone="neutral" className="rounded-[1.45rem] px-4 py-3">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/42">{data.insightLabel}</p>
-                <p className="mt-1 text-sm font-semibold tracking-tight text-foreground">
-                  {data.insightText}
-                </p>
-              </div>
-              <div className="rounded-full border border-slate-400/18 bg-[linear-gradient(180deg,rgba(248,250,252,0.96),rgba(241,245,249,0.84))] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)] dark:border-white/10 dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] dark:text-white/78">
-                {data.insightBadge}
-              </div>
-            </div>
-          </PreviewGlass>
-        </m.div>
+
       </div>
 
       {isActive && (
@@ -318,16 +385,11 @@ function TransactionsPreview({ data, isActive }: { data: LandingPreviewData; isA
   )
 }
 
-function InputPreview({ data, isActive }: { data: LandingPreviewData; isActive: boolean }) {
+function QuotaPreview({ data, isActive }: { data: LandingPreviewData; isActive: boolean }) {
   return (
     <div className="relative z-10 flex h-full flex-col justify-between px-4 py-6">
       <div className="space-y-4">
-        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-400/18 bg-emerald-500/[0.08] px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.24)] dark:border-emerald-300/12 dark:bg-emerald-300/[0.08]">
-          <ShieldCheck className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-100" />
-          <span className="text-[10px] font-black uppercase tracking-[0.16em] text-emerald-700 dark:text-emerald-100">
-            {data.badge}
-          </span>
-        </div>
+
 
         <div className="space-y-2.5">
           <h3 className="max-w-[17rem] text-2xl font-black tracking-tight text-foreground sm:text-[1.7rem]">
@@ -336,63 +398,20 @@ function InputPreview({ data, isActive }: { data: LandingPreviewData; isActive: 
           <p className="max-w-[18.5rem] text-[15px] font-medium leading-relaxed text-foreground/64">
             {data.description}
           </p>
-        </div>
-
-        <m.div 
+        </div>        <m.div 
            animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
            transition={{ delay: 0.2 }}
-           className="rounded-[1.45rem] border border-black/6 bg-white/76 px-4 py-3 shadow-[0_16px_30px_-24px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-white/[0.04]"
+           className="rounded-[1.45rem] border border-black/6 bg-white/76 px-4 py-5 shadow-[0_16px_30px_-24px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-white/[0.04]"
         >
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/46">Spesa provata</p>
-          <div className="mt-2 flex items-center justify-between gap-3">
-            <p className="text-sm font-medium text-foreground/78">{data.customContent?.textParams?.[0]}</p>
-            <span className="rounded-full border border-black/6 bg-black/3 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-foreground/52 dark:border-white/10 dark:bg-white/[0.05] dark:text-white/62">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/46">{data.customContent?.textParams?.[0]}</p>
+            <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-emerald-700 dark:border-emerald-300/20 dark:bg-emerald-300/[0.1] dark:text-emerald-300">
               {data.insightBadge}
             </span>
           </div>
-        </m.div>
-
-        <m.div 
-          animate={isActive ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
-          transition={{ delay: 0.4 }}
-          className="rounded-[1.45rem] border border-emerald-400/22 bg-emerald-500/8 px-4 py-3 dark:border-emerald-300/12 dark:bg-emerald-300/[0.06]"
-        >
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-700 dark:text-emerald-100">
-            {data.insightLabel}
-          </p>
-          <p className="mt-1 text-sm font-semibold tracking-tight text-foreground">
-            {data.insightText}
-          </p>
-        </m.div>
-      </div>
-
-      <div className="space-y-3">
-        <div className="grid grid-cols-[1fr_auto] gap-3">
-          <m.div 
-            animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
-            transition={{ delay: 0.5 }}
-            className="rounded-[1.2rem] border border-black/6 bg-white/72 px-4 py-3 text-sm font-black tracking-tight text-foreground dark:border-white/10 dark:bg-white/[0.04]"
-          >
-            {data.customContent?.textParams?.[1]}
-          </m.div>
-          <m.div 
-            animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
-            transition={{ delay: 0.6 }}
-            className="rounded-[1.2rem] border border-black/6 bg-white/72 px-4 py-3 text-sm font-semibold text-foreground/64 dark:border-white/10 dark:bg-white/[0.04]"
-          >
-            {data.customContent?.textParams?.[2]}
-          </m.div>
-        </div>
-
-        <m.div 
-          animate={isActive ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-          transition={{ delay: 0.7 }}
-          className="mt-auto flex items-center justify-between rounded-[1.4rem] border border-emerald-400/24 bg-emerald-500/8 px-4 py-3 text-sm font-semibold text-emerald-700 dark:border-emerald-300/12 dark:bg-emerald-300/[0.06] dark:text-emerald-100"
-        >
-          <span>{data.customContent?.textParams?.[3]}</span>
-          <span className="font-mono">
-             <ScrambledText text={data.customContent?.textParams?.[4]} isActive={isActive} />
-          </span>
+          <div className="mt-4 text-3xl font-black tracking-tight text-foreground sm:text-[2rem]">
+             {data.customContent?.textParams?.[1]}
+          </div>
         </m.div>
       </div>
     </div>
@@ -403,12 +422,7 @@ function SubscriptionsPreview({ data, isActive }: { data: LandingPreviewData; is
   return (
     <div className="relative z-10 flex h-full flex-col justify-between px-4 py-6">
       <div className="space-y-4">
-        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-violet-400/18 bg-violet-500/[0.08] px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.24)] dark:border-violet-300/12 dark:bg-violet-300/[0.08]">
-          <Sparkles className="h-3.5 w-3.5 text-violet-700 dark:text-violet-100" />
-          <span className="text-[10px] font-black uppercase tracking-[0.16em] text-violet-700 dark:text-violet-100">
-            {data.badge}
-          </span>
-        </div>
+
 
         <div className="space-y-2.5">
           <h3 className="max-w-[17rem] text-2xl font-black tracking-tight text-foreground sm:text-[1.7rem]">
@@ -419,22 +433,7 @@ function SubscriptionsPreview({ data, isActive }: { data: LandingPreviewData; is
           </p>
         </div>
 
-        <m.div 
-          animate={isActive ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
-          className="rounded-[1.45rem] border border-black/6 bg-white/66 px-4 py-3 shadow-[0_18px_34px_-28px_rgba(15,23,42,0.2)] dark:border-white/10 dark:bg-white/[0.04]"
-        >
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/42">{data.insightLabel}</p>
-              <p className="mt-1 text-sm font-semibold tracking-tight text-foreground">
-                {data.insightText}
-              </p>
-            </div>
-            <div className="rounded-full border border-violet-400/18 bg-violet-500/[0.08] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-violet-700 dark:border-violet-300/12 dark:bg-violet-300/[0.08] dark:text-violet-100">
-              {data.insightBadge}
-            </div>
-          </div>
-        </m.div>
+
       </div>
 
       {isActive && (
@@ -464,12 +463,7 @@ function SourcesPreview({ data, isActive }: { data: LandingPreviewData; isActive
   return (
     <div className="relative z-10 flex h-full flex-col justify-between px-4 py-6">
       <div className="space-y-4">
-        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-orange-400/18 bg-orange-500/[0.08] px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.24)] dark:border-orange-300/12 dark:bg-orange-300/[0.08]">
-          <WalletCards className="h-3.5 w-3.5 text-orange-700 dark:text-orange-100" />
-          <span className="text-[10px] font-black uppercase tracking-[0.16em] text-orange-700 dark:text-orange-100">
-            {data.badge}
-          </span>
-        </div>
+
 
         <div className="space-y-2.5">
           <h3 className="max-w-[17rem] text-2xl font-black tracking-tight text-foreground sm:text-[1.7rem]">
@@ -480,22 +474,7 @@ function SourcesPreview({ data, isActive }: { data: LandingPreviewData; isActive
           </p>
         </div>
 
-        <m.div 
-          animate={isActive ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
-          className="rounded-[1.45rem] border border-black/6 bg-white/66 px-4 py-3 shadow-[0_18px_34px_-28px_rgba(15,23,42,0.2)] dark:border-white/10 dark:bg-white/[0.04]"
-        >
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/42">{data.insightLabel}</p>
-              <p className="mt-1 text-sm font-semibold tracking-tight text-foreground">
-                {data.insightText}
-              </p>
-            </div>
-            <div className="rounded-full border border-orange-400/18 bg-orange-500/[0.08] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-orange-700 dark:border-orange-300/12 dark:bg-orange-300/[0.08] dark:text-orange-100">
-              {data.insightBadge}
-            </div>
-          </div>
-        </m.div>
+
       </div>
 
       {isActive && (
@@ -504,15 +483,15 @@ function SourcesPreview({ data, isActive }: { data: LandingPreviewData; isActive
             <m.div
               key={item.label}
               variants={listItemVariants}
-              className="flex items-center gap-3 rounded-[1.35rem] border border-black/6 bg-white/72 px-4 py-3 dark:border-white/10 dark:bg-white/[0.04]"
+              className="flex items-center justify-between rounded-[1.35rem] border border-black/6 bg-white/72 px-4 py-3 dark:border-white/10 dark:bg-white/[0.04]"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-[1rem] bg-black/4 text-foreground/56 dark:bg-white/[0.06] dark:text-white/68">
-                <CreditCard className="h-4 w-4" />
-              </div>
               <div className="space-y-1">
                 <p className="text-sm font-semibold text-foreground">{item.label}</p>
                 <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-foreground/46">{item.note}</p>
               </div>
+              <p className="text-sm font-black tracking-tight text-foreground font-mono">
+                {item.value}
+              </p>
             </m.div>
           ))}
         </m.div>
@@ -525,6 +504,9 @@ export function LandingCoverFlow() {
   const [activeIndex, setActiveIndex] = useState(2)
   const [focusIndex, setFocusIndex] = useState<number | null>(null)
   const totalCards = LANDING_COVERFLOW_CARDS.length
+  const prefersReducedMotion = useReducedMotion() ?? false
+  const { safeToAnimate3D } = useDeviceHardware()
+  const shouldReduceVisualEffects = prefersReducedMotion || !safeToAnimate3D
 
   const sliderRef = useRef<HTMLDivElement>(null)
   const isProgrammaticScroll = useRef(false)
@@ -541,7 +523,10 @@ export function LandingCoverFlow() {
       if (children.length > 1) {
         const cardWidth = children[1].clientWidth
         if (typeof sliderRef.current.scrollTo === "function") {
-          sliderRef.current.scrollTo({ left: index * cardWidth, behavior: "smooth" })
+          sliderRef.current.scrollTo({
+            left: index * cardWidth,
+            behavior: shouldReduceVisualEffects ? "auto" : "smooth"
+          })
         } else {
           sliderRef.current.scrollLeft = index * cardWidth
         }
@@ -627,23 +612,29 @@ export function LandingCoverFlow() {
         if (distance > totalCards / 2) distance -= totalCards
         if (distance < -totalCards / 2) distance += totalCards
 
-        const isCenter = distance === 0
-        const isLeft1 = distance === -1
-        const isRight1 = distance === 1
-        const isLeft2 = distance === -2
-        const isAdjacent = isLeft1 || isRight1
-
-        const xOffset = isCenter ? 0 : isLeft1 ? -250 : isRight1 ? 250 : isLeft2 ? -430 : 430
-        const zOffset = isCenter ? 20 : (isLeft1 || isRight1) ? -220 : -500
-        const rotateY = isCenter ? 0 : isLeft1 ? 42 : isRight1 ? -42 : isLeft2 ? 68 : -68
-        const scale = isCenter ? 1 : (isLeft1 || isRight1) ? 0.84 : 0.68
-        const opacityTarget = isCenter ? 1 : (isLeft1 || isRight1) ? 0.28 : 0.04
-        const blurTarget = Math.abs(distance) * 7
+        const cardVisualState = getCardVisualState(distance, shouldReduceVisualEffects)
+        const { isCenter, isAdjacent } = cardVisualState
+        const cardAnimate = shouldReduceVisualEffects
+          ? {
+              x: cardVisualState.xOffset,
+              z: cardVisualState.zOffset,
+              rotateY: cardVisualState.rotateY,
+              scale: cardVisualState.scale,
+              opacity: cardVisualState.opacity,
+            }
+          : {
+              x: cardVisualState.xOffset,
+              z: cardVisualState.zOffset,
+              rotateY: cardVisualState.rotateY,
+              scale: cardVisualState.scale,
+              opacity: cardVisualState.opacity,
+              filter: `blur(${cardVisualState.blur}px)`,
+            }
         
         let PreviewContent = ClarityPreview
         if (card.id === "sources") PreviewContent = SourcesPreview
         if (card.id === "transactions") PreviewContent = TransactionsPreview
-        if (card.id === "input") PreviewContent = InputPreview
+        if (card.id === "quota") PreviewContent = QuotaPreview
         if (card.id === "subscriptions") PreviewContent = SubscriptionsPreview
         
         const colorClass = 
@@ -660,7 +651,9 @@ export function LandingCoverFlow() {
             className={cn(
                "absolute flex flex-col rounded-[2.5rem] text-left",
                "h-[28rem] w-full max-w-[20rem] sm:h-[32rem] sm:max-w-[25rem]",
-               "[transform-style:preserve-3d] [will-change:transform,opacity,filter]",
+               shouldReduceVisualEffects
+                ? "[will-change:transform,opacity]"
+                : "[transform-style:preserve-3d] [will-change:transform,opacity,filter]",
                (!isCenter && !isAdjacent) && "max-sm:pointer-events-none max-sm:opacity-0",
                isCenter 
                 ? "z-30 cursor-grab active:cursor-grabbing border-black/10 dark:border-white/10"
@@ -669,40 +662,43 @@ export function LandingCoverFlow() {
                   : "z-10 cursor-pointer pointer-events-none sm:pointer-events-auto",
                focusIndex === index && "ring-2 ring-primary/30 outline-none"
             )}
+            data-visual-state={cardVisualState.visualState}
+            data-reduced-visual-effects={shouldReduceVisualEffects ? "true" : "false"}
             initial={false}
-            animate={{
-              x: xOffset,
-              z: zOffset,
-              rotateY: rotateY,
-              scale: scale,
-              opacity: opacityTarget,
-              filter: `blur(${blurTarget}px)` // Cinematic Depth Of Field
-            }}
+            animate={cardAnimate}
             transition={{
               type: "spring",
-              stiffness: 60,
-              damping: 20,
-              mass: 1.8
+              stiffness: shouldReduceVisualEffects ? 115 : 70,
+              damping: shouldReduceVisualEffects ? 24 : 21,
+              mass: shouldReduceVisualEffects ? 1 : 1.45
             }}
           >
             <div className="relative h-full w-full rounded-[2.5rem]">
                <div 
                  className={cn(
-                   "absolute inset-0 z-0 overflow-hidden rounded-[2.5rem] border backdrop-blur-3xl transition-[background-color,border-color,box-shadow,opacity] duration-1000",
+                   "absolute inset-0 z-0 overflow-hidden rounded-[2.5rem] border transition-[background-color,border-color,box-shadow,opacity] duration-700",
+                   shouldReduceVisualEffects ? "backdrop-blur-none" : "backdrop-blur-2xl",
                    isCenter 
-                    ? "border-black/[0.045] bg-white/[0.94] shadow-[0_54px_130px_-34px_rgba(15,23,42,0.36)] dark:border-white/12 dark:bg-zinc-950/[0.84] dark:shadow-[0_60px_150px_-34px_rgba(0,0,0,0.82)] pointer-events-none"
-                    : "border-black/[0.035] bg-white/[0.54] shadow-[0_34px_84px_-44px_rgba(15,23,42,0.34)] dark:border-white/[0.055] dark:bg-zinc-950/[0.34] dark:shadow-[0_34px_90px_-44px_rgba(0,0,0,0.72)] hover:bg-white/[0.72] dark:hover:bg-zinc-900/[0.52] pointer-events-none",
-                   !isCenter && "opacity-[0.72]"
+                    ? "border-primary/18 bg-white/[0.96] shadow-[0_54px_130px_-34px_rgba(15,23,42,0.40),0_0_0_1px_rgba(14,165,233,0.08)] dark:border-cyan-200/18 dark:bg-zinc-950/[0.88] dark:shadow-[0_60px_150px_-34px_rgba(0,0,0,0.86),0_0_48px_-22px_rgba(34,211,238,0.5)] pointer-events-none"
+                    : "border-black/[0.04] bg-white/[0.68] shadow-[0_34px_84px_-44px_rgba(15,23,42,0.36)] dark:border-white/[0.07] dark:bg-zinc-950/[0.48] dark:shadow-[0_34px_90px_-44px_rgba(0,0,0,0.76)] hover:bg-white/[0.76] dark:hover:bg-zinc-900/[0.58] pointer-events-none",
+                   !isCenter && "opacity-[0.82]"
                  )}
                >
                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_14%,rgba(255,255,255,0.84),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.36),transparent_28%),linear-gradient(155deg,rgba(226,232,240,0.26),transparent_56%)] dark:bg-[radial-gradient(circle_at_18%_14%,rgba(255,255,255,0.08),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.05),transparent_28%),linear-gradient(155deg,rgba(255,255,255,0.03),transparent_56%)]" />
                  <div className="absolute inset-0 rounded-[2.5rem] pointer-events-none shadow-[inset_0_2px_6px_rgba(255,255,255,0.9),inset_0_-1px_2px_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_3px_rgba(255,255,255,0.1),inset_0_-1px_1px_rgba(0,0,0,0.4)]" />
                </div>
 
+               {isCenter && (
+                 <div className="pointer-events-none absolute inset-0 z-[1] overflow-hidden rounded-[2.5rem]">
+                   <div className="absolute inset-x-8 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(14,165,233,0.5),rgba(16,185,129,0.32),transparent)] dark:bg-[linear-gradient(90deg,transparent,rgba(103,232,249,0.5),rgba(45,212,191,0.32),transparent)]" />
+                   <div className="absolute -right-16 top-8 h-40 w-40 rounded-full bg-cyan-300/[0.08] blur-3xl dark:bg-cyan-200/[0.06]" />
+                 </div>
+               )}
+
                <FloatingPill text={card.title} colorClass={colorClass} />
                
                <div className="relative z-10 w-full h-full pointer-events-none overflow-hidden rounded-[2.5rem]">
-                  <PreviewContent data={card.preview} isActive={isCenter} />
+                  <PreviewContent data={card.preview} isActive={isCenter || isAdjacent} />
                </div>
             </div>
           </m.div>
@@ -710,29 +706,11 @@ export function LandingCoverFlow() {
       })}
       </div>
 
-      <div className="z-20 -mt-6 flex items-center justify-center gap-2 px-4 sm:-mt-4" aria-label="Seleziona anteprima hero">
-        {LANDING_COVERFLOW_CARDS.map((card, index) => {
-          const isActive = index === activeIndex
-
-          return (
-            <button
-              key={`selector-${card.id}`}
-              type="button"
-              onClick={() => activateCard(index)}
-              className={cn(
-                "h-2.5 rounded-full border transition-[width,background-color,border-color,opacity] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
-                isActive
-                  ? "w-7 border-primary/40 bg-primary/70 opacity-100 dark:border-cyan-200/45 dark:bg-cyan-200/80"
-                  : "w-2.5 border-black/10 bg-foreground/18 opacity-45 hover:opacity-75 dark:border-white/10 dark:bg-white/28"
-              )}
-              aria-pressed={isActive}
-              aria-label={card.title}
-            >
-              <span className="sr-only">{card.title}</span>
-            </button>
-          )
-        })}
-      </div>
+      <HeroPreviewRail
+        cards={LANDING_COVERFLOW_CARDS}
+        activeIndex={activeIndex}
+        onSelect={activateCard}
+      />
     </div>
   )
 }

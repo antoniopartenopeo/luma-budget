@@ -54,6 +54,12 @@ vi.mock("../motion-primitives", () => ({
   })
 }))
 
+vi.mock("@/hooks/use-device-hardware", () => ({
+  useDeviceHardware: () => ({
+    safeToAnimate3D: false
+  })
+}))
+
 describe("LandingBrainHero", () => {
   it("displays the cinematic Brain explainer with the predictive engine copy", () => {
     render(<LandingBrainHero />)

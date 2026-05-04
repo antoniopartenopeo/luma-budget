@@ -95,7 +95,7 @@ function ConsoleChassis() {
               <span className="text-xl sm:text-2xl font-bold text-muted-foreground/60 leading-none">,00</span>
             </div>
             <p className="max-w-[34rem] text-[13px] font-medium leading-relaxed text-muted-foreground/72 sm:text-[15px]">
-              Resta spazio per una nuova decisione perche entrate e spese previste sono gia dentro il calcolo.
+              Il margine nasce da entrate e uscite stimate gia dentro il calcolo.
             </p>
 
             {/* Fake Progress Bar */}
@@ -107,8 +107,8 @@ function ConsoleChassis() {
           <div className="grid gap-3 sm:grid-cols-3">
             {[
               ["Entrate note", "+ € 2.300"],
-              ["Spese previste", "- € 1.008"],
-              ["Spazio di prova", "+ margine"],
+              ["Uscite stimate", "- € 1.008"],
+              ["Margine stimato", "+ € 1.250"],
             ].map(([label, value], index) => (
               <div
                 key={label}
@@ -138,7 +138,7 @@ function ConsoleChassis() {
             {[
               ["Stipendio del mese", "base letta", "+ € 2.300"],
               ["Ricorrenze gia emerse", "gia conteggiate", "- € 968"],
-              ["Nuova spesa possibile", "prima di decidere", "sostenibile"],
+              ["Quota sostenibile", "Financial Lab", "prudente"],
             ].map(([title, note, value], i) => (
               <m.div
                 key={title}
@@ -176,7 +176,7 @@ export function LandingHeroConsole() {
       <div className="space-y-4">
         {LANDING_STORY_POINTS.map((point, index) => {
           const accent = STORY_ACCENTS[index]
-          const labels = ["01 importi", "02 capisci", "03 provi"] as const
+          const labels = ["01 importi", "02 capisci", "03 valuti"] as const
 
           return (
             <LandingEditorialCardFrame

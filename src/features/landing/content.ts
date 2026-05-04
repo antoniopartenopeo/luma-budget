@@ -107,11 +107,11 @@ export interface LandingPreviewItem {
 }
 
 export interface LandingPreviewData {
-  badge: string
+  badge?: string
   title: string
   description: string
-  insightLabel: string
-  insightText: string
+  insightLabel?: string
+  insightText?: string
   insightBadge?: string
   items?: readonly LandingPreviewItem[]
   customContent?: {

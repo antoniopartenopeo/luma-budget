@@ -2,17 +2,17 @@
   "HERO_EDITORIAL": {
     "srTitle": "Numa Budget. Il tuo mese, più chiaro.",
     "headline": "Il tuo mese, più chiaro.",
-    "supportingCopy": "Importi i movimenti, Numa mette ordine e ti mostra quanto spazio hai davvero prima di decidere.",
+    "supportingCopy": "Importa i movimenti. Numa stima il margine del mese e ti mostra quanto resta.",
     "primaryCtaLabel": "Inizia senza account",
     "primaryCtaHref": "/dashboard",
     "trustItems": [
       "Nessun account per iniziare",
       "Dati sul tuo dispositivo",
-      "Una stima che puoi rileggere"
+      "Stime modificabili in ogni momento"
     ]
   },
   "NAV_ITEMS": [
-    { "href": "#problema", "label": "Perche" },
+    { "href": "#problema", "label": "Perché" },
     { "href": "#differenza", "label": "Come aiuta" },
     { "href": "#come-inizi", "label": "Come funziona" },
     { "href": "#brain-hero", "label": "Stima" },
@@ -37,8 +37,8 @@
     },
     {
       "icon": "BrainCircuit",
-      "title": "Provi prima di spendere.",
-      "description": "Aggiungi una spesa possibile e vedi se il mese resta sostenibile."
+      "title": "Capisci la quota sostenibile.",
+      "description": "Financial Lab ti aiuta a leggere quale quota mensile aggiuntiva puoi reggere."
     }
   ],
   "DIFFERENCE_SECTION": {
@@ -62,7 +62,7 @@
       "icon": "Sparkles",
       "title": "Ti lascia decidere meglio",
       "kicker": "Prima di scegliere",
-      "note": "Vedi lo spazio disponibile prima di aggiungere una nuova spesa."
+      "note": "Vedi margine e quota sostenibile prima di prendere nuovi impegni."
     }
   ],
   "HOW_IT_WORKS_SECTION": {
@@ -90,14 +90,14 @@
       "cue": "Leggi",
       "stepLabel": "03",
       "title": "Guarda quanto resta.",
-      "description": "Entrate e spese previste diventano un margine semplice da leggere."
+      "description": "Entrate e uscite stimate diventano un margine semplice da leggere."
     },
     {
       "icon": "ShieldCheck",
-      "cue": "Simula",
+      "cue": "Pianifica",
       "stepLabel": "04",
-      "title": "Prova una spesa.",
-      "description": "Inserisci una spesa possibile e vedi subito se il mese regge."
+      "title": "Guarda la quota sostenibile.",
+      "description": "Financial Lab usa lo storico per stimare quale quota mensile aggiuntiva puoi reggere."
     }
   ],
   "BRAIN_CONTENT": {
@@ -134,7 +134,7 @@
     {
       "icon": "ShieldCheck",
       "title": "Scegli senza andare a intuito",
-      "description": "Prima di una cena, un acquisto o un viaggio, vedi l'effetto sul mese."
+      "description": "Prima di prendere nuovi impegni, parti da margine e quota sostenibile."
     },
     {
       "icon": "Sparkles",
@@ -146,13 +146,13 @@
     "eyebrow": "Inizia semplice",
     "railLabel": "Nessun account",
     "title": "Metti ordine al mese.",
-    "description": "Entri, provi e capisci subito come Numa legge i tuoi movimenti. I dati restano sul tuo dispositivo.",
+    "description": "Entri, guardi come Numa legge i movimenti e resti con i dati sul tuo dispositivo.",
     "primaryCtaLabel": "Inizia senza account"
   },
   "FOOTER": {
     "description": "Uno spazio privato per leggere il mese prima di decidere.",
     "productHeading": "Prodotto",
-    "productItems": ["Importa i movimenti", "Capisci quanto resta", "Prova le spese prima"],
+    "productItems": ["Importa i movimenti", "Capisci quanto resta", "Valuta la quota sostenibile"],
     "supportHeading": "Risorse",
     "supportItems": [
       { "label": "Domande frequenti", "href": "/faq" },
@@ -175,94 +175,71 @@
   "COVERFLOW_CARDS": [
     {
       "id": "sources",
-      "title": "Importa il mese",
+      "title": "Importa",
       "theme": "orange",
-      "summary": "Carichi conto e carte. Numa li mette in ordine.",
+      "summary": "Niente data entry. Carichi il file e sei pronto.",
       "preview": {
-        "badge": "Parti dai tuoi movimenti",
-        "title": "Tutto in un posto",
-        "description": "Importi i movimenti del mese e li trovi subito ordinati.",
-        "insightLabel": "Perché serve",
-        "insightText": "Non devi ricostruire il mese a mano.",
-        "insightBadge": "semplice",
+        "title": "Importa in un attimo",
+        "description": "Carica il file della tua banca. Numa ordina tutto in automatico.",
         "items": [
-          { "label": "Conto Principale", "value": "", "note": "importato da te" },
-          { "label": "Carta Personale", "value": "", "note": "ultimi 30 giorni" },
-          { "label": "Spese Fisse", "value": "", "note": "pronte da leggere" }
+          { "label": "Movimenti importati", "value": "342", "note": "esito" },
+          { "label": "Pronti da controllare", "value": "100%", "note": "stato" }
         ]
       }
     },
     {
       "id": "transactions",
-      "title": "Capisci le uscite",
+      "title": "Capisci",
       "theme": "slate",
-      "summary": "Vedi subito quali spese pesano davvero.",
+      "summary": "Le spese grandi si staccano dal rumore.",
       "preview": {
-        "badge": "Movimenti ordinati",
-        "title": "Uscite chiare",
-        "description": "Le spese importanti salgono in evidenza. Il resto resta leggibile.",
-        "insightLabel": "Cosa noti subito",
-        "insightText": "Le spese grandi non finiscono nel rumore.",
-        "insightBadge": "chiaro",
+        "title": "Trova le spese che pesano",
+        "description": "Le uscite importanti si separano dal rumore quotidiano, chiare e in primo piano.",
         "items": [
-          { "label": "Affitto", "value": "- € 690", "note": "spesa grande" },
-          { "label": "Supermercato", "value": "- € 58", "note": "spesa variabile" },
-          { "label": "Stipendio", "value": "+ € 2.300", "note": "entrata" }
+          { "label": "Affitto", "value": "- € 690", "note": "Spesa Grande" },
+          { "label": "Supermercato", "value": "- € 58", "note": "Spesa Variabile" }
         ]
       }
     },
     {
       "id": "clarity",
-      "title": "Quanto ti resta",
+      "title": "Resta",
       "theme": "cyan",
-      "summary": "Il numero semplice per decidere con più calma.",
+      "summary": "Il numero per decidere con calma.",
       "preview": {
-        "badge": "Stima del mese",
-        "title": "Ti restano",
-        "description": "Numa confronta entrate e spese previste e ti mostra lo spazio disponibile.",
-        "insightLabel": "Calcolo",
-        "insightText": "Entrate - spese previste = quanto ti resta",
-        "insightBadge": "controllabile",
+        "title": "Capisci quanto ti resta",
+        "description": "Entrate e uscite a confronto per darti il tuo margine reale, sempre aggiornato.",
         "customContent": {
           "mainValue": "€ 1.245",
-          "textParams": ["Entrate note", "+ € 2.300", "Spese stimate", "- € 1.055"],
-          "calculationNote": "La prova non cambia i movimenti reali."
+          "textParams": ["Entrate", "+ € 2.300", "Uscite stimate", "- € 1.055"]
         }
       }
     },
     {
-      "id": "input",
-      "title": "Prova una spesa",
+      "id": "quota",
+      "title": "Quota",
       "theme": "emerald",
-      "summary": "Controlli l'effetto prima di spendere.",
+      "summary": "Vedi quale quota puoi aggiungere al mese.",
       "preview": {
-        "badge": "Prova senza rischio",
-        "title": "E se spendessi...",
-        "description": "Aggiungi una spesa possibile e vedi subito come cambia il mese.",
-        "insightLabel": "Risultato",
-        "insightText": "La prova resta separata dai movimenti reali.",
-        "insightBadge": "prova",
+        "title": "Valuta nuovi impegni",
+        "description": "Scopri quale spesa fissa mensile puoi aggiungere senza andare in affanno.",
+        "insightBadge": "Sicuro",
         "customContent": {
-          "textParams": ["Cena con amici", "€ 42,00", "prova", "Restano disponibili", "€ 1.203"]
+          "textParams": ["Quota sostenibile", "€ 240 / mese"]
         }
       }
     },
     {
       "id": "subscriptions",
-      "title": "Costi fissi",
+      "title": "Costi",
       "theme": "violet",
-      "summary": "Scopri cosa occupa il mese ogni volta.",
+      "summary": "Nessuna sorpresa dagli abbonamenti.",
       "preview": {
-        "badge": "Spese ricorrenti",
-        "title": "Costi che tornano",
-        "description": "Numa evidenzia abbonamenti e spese fisse prima di nuove decisioni.",
-        "insightLabel": "Cosa controlli",
-        "insightText": "Capisci quali costi riducono il tuo spazio ogni mese.",
-        "insightBadge": "mensile",
+        "title": "Tieni d'occhio i costi fissi",
+        "description": "Abbonamenti e spese ricorrenti raggruppati, per non avere brutte sorprese.",
         "items": [
-          { "label": "Casa", "value": "€ 690", "note": "costo principale" },
-          { "label": "Palestra", "value": "€ 29", "note": "ricorrenza" },
-          { "label": "Streaming", "value": "€ 16", "note": "ricorrenza" }
+          { "label": "Palestra", "value": "€ 29", "note": "Mensile" },
+          { "label": "Streaming", "value": "€ 16", "note": "Mensile" }
         ]
       }
     }

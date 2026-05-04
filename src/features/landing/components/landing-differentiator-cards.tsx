@@ -1,8 +1,9 @@
 "use client"
 
 import { useRef } from "react"
-import { m, useScroll, useTransform, useSpring } from "framer-motion"
+import { m, useReducedMotion, useScroll, useTransform, useSpring } from "framer-motion"
 import { BrainCircuit, Zap, Activity } from "lucide-react"
+import { useDeviceHardware } from "@/hooks/use-device-hardware"
 import {
   LANDING_DIFFERENCE_SECTION,
   LANDING_DIFFERENTIATORS
@@ -21,6 +22,9 @@ const GridPattern = () => (
 
 export function LandingDifferentiatorCards() {
   const containerRef = useRef<HTMLDivElement>(null)
+  const prefersReducedMotion = useReducedMotion() ?? false
+  const { safeToAnimate3D } = useDeviceHardware()
+  const shouldReduceVisualEffects = prefersReducedMotion || !safeToAnimate3D
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -46,14 +50,15 @@ export function LandingDifferentiatorCards() {
   const node3Scale = useTransform(smoothProgress, [0.6, 0.8], [0.8, 1])
 
   // Parallax shifts for depth
-  const chartY = useTransform(smoothProgress, [0, 1], [100, -50])
-  const backgroundY = useTransform(smoothProgress, [0, 1], [0, 150])
+  const chartY = useTransform(smoothProgress, [0, 1], shouldReduceVisualEffects ? [32, -12] : [100, -50])
+  const backgroundY = useTransform(smoothProgress, [0, 1], shouldReduceVisualEffects ? [0, 32] : [0, 150])
+  const glowFilter = shouldReduceVisualEffects ? undefined : "url(#neon-blur)"
 
   return (
     <div ref={containerRef} className="relative min-h-[220svh] w-full bg-background selection:bg-cyan-500/20">
       
       {/* Scroll-sticky wrapper */}
-      <div className="sticky top-0 flex h-screen w-full flex-col items-center overflow-hidden bg-background pt-24 md:pt-32">
+      <div className="sticky top-0 flex h-[100svh] w-full flex-col items-center overflow-hidden bg-background pt-24 md:pt-32">
         
         {/* Deep ambient background grid mapped to subtle parallax */}
         <m.div style={{ y: backgroundY }} className="absolute inset-0 pointer-events-none [mask-image:radial-gradient(ellipse_at_center,black_10%,transparent_70%)]">
@@ -73,11 +78,11 @@ export function LandingDifferentiatorCards() {
         {/* The Massive Vector Chart Scene */}
         <m.div 
           style={{ y: chartY }}
-          className="relative mt-auto mb-10 w-[160%] md:w-full max-w-[1200px] aspect-[1000/350] z-20 pointer-events-none"
+          className="relative mt-auto mb-20 aspect-[1000/350] w-[calc(100%-2rem)] max-w-[32rem] md:mb-10 md:w-full md:max-w-[1200px] z-20 pointer-events-none"
         >
           
           {/* SVG Baseline and Graphs */}
-          <svg viewBox="0 0 1000 350" className="absolute inset-0 h-full w-full drop-shadow-2xl overflow-visible">
+          <svg viewBox="0 0 1000 350" className="absolute inset-0 h-full w-full drop-shadow-xl overflow-visible md:drop-shadow-2xl">
             <defs>
                <linearGradient id="glow-cyan" x1="0%" y1="0%" x2="100%" y2="0%">
                  <stop offset="0%" stopColor="rgba(34,211,238,0.1)" />
@@ -122,7 +127,7 @@ export function LandingDifferentiatorCards() {
               strokeWidth="5"
               strokeDasharray="12 12"
               strokeLinecap="round"
-              filter="url(#neon-blur)"
+              filter={glowFilter}
               style={{ pathLength: predictionDraw }}
             />
             {/* Soft glow fill under the prediction line */}
@@ -138,14 +143,14 @@ export function LandingDifferentiatorCards() {
             <circle cx="480" cy="260" r="4" className="fill-slate-400 dark:fill-zinc-600" />
             
             {/* The "Oggi" Anchor Orb */}
-            <circle cx="600" cy="260" r="10" className="fill-cyan-500 dark:fill-cyan-400" filter="url(#neon-blur)" />
+            <circle cx="600" cy="260" r="10" className="fill-cyan-500 dark:fill-cyan-400" filter={glowFilter} />
             <circle cx="600" cy="260" r="4" className="fill-white" />
 
             {/* The "Target Margin" Anchor Orb */}
             <m.circle 
               cx="1000" cy="90" r="12" 
               className="fill-emerald-400" 
-              filter="url(#neon-blur)"
+              filter={glowFilter}
               style={{ opacity: predictionDraw, scale: predictionDraw }}
             />
             <m.circle 
@@ -213,7 +218,7 @@ export function LandingDifferentiatorCards() {
           {/* SVG cx="1000" / 1000 = 100% | cy="90" / 350 = 25.71% */}
           <m.div
             style={{ opacity: node3Opacity, scale: node3Scale }}
-            className="absolute left-full top-[25.71%] -translate-x-[85%] -translate-y-full pb-4 sm:-translate-x-1/2"
+            className="absolute left-[92%] top-[25.71%] -translate-x-full -translate-y-full pb-4 sm:left-full sm:-translate-x-1/2"
           >
             <div className="flex flex-col items-center sm:items-center items-end gap-2 pr-6 sm:pr-0">
               <div className="rounded-[1.35rem] border border-emerald-400/20 bg-emerald-50/90 dark:border-emerald-400/20 dark:bg-emerald-950/60 p-4 backdrop-blur-md shadow-[0_20px_50px_-12px_rgba(16,185,129,0.3)]">

@@ -126,6 +126,11 @@ describe("LandingPage", () => {
   it("renders the public acquisition story and keeps navigation constrained to the landing plus app entry", () => {
     render(<LandingPage />)
 
+    const header = screen.getByRole("banner").firstElementChild
+    expect(header).toHaveClass("bg-white/72")
+    expect(header).toHaveClass("dark:bg-[#05080d]/68")
+    expect(header).not.toHaveClass("text-white")
+
     expect(screen.getAllByTestId("brand-logo").length).toBeGreaterThan(0)
     expect(screen.getByTestId("landing-hero-editorial")).toBeInTheDocument()
     expect(screen.getByRole("heading", { name: LANDING_HERO_EDITORIAL.srTitle })).toBeInTheDocument()
@@ -155,7 +160,10 @@ describe("LandingPage", () => {
     expect(screen.queryByRole("link", { name: /Apri una demo sicura/i })).not.toBeInTheDocument()
     expect(screen.getByRole("link", { name: /release log/i })).toBeInTheDocument()
     LANDING_NAV_ITEMS.forEach((item) => {
-      expect(screen.getByRole("link", { name: item.label })).toHaveAttribute("href", item.href)
+      const navLink = screen.getByRole("link", { name: item.label })
+      expect(navLink).toHaveAttribute("href", item.href)
+      expect(navLink).toHaveClass("text-foreground/58")
+      expect(navLink).toHaveClass("dark:text-white/68")
     })
     expect(screen.queryByText("Contatti")).not.toBeInTheDocument()
   })

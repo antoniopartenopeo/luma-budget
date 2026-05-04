@@ -8,19 +8,18 @@ import {
 describe("landing hero preview model", () => {
   it("derives the visible hero margin from the curated demo cents", () => {
     expect(LANDING_HERO_PREVIEW.marginCents).toBe(124500)
-    expect(LANDING_HERO_PREVIEW.scenarioRemainingCents).toBe(120300)
     expect(LANDING_HERO_PREVIEW.marginAmount.prefix).toBe("€")
     expect(LANDING_HERO_PREVIEW.marginAmount.value).toBe("1.245")
-    expect(LANDING_HERO_PREVIEW.formula).toBe("Entrate - spese previste = quanto ti resta")
+    expect(LANDING_HERO_PREVIEW.formula).toBe("Entrate - uscite stimate = quanto resta")
     expect(LANDING_HERO_PREVIEW.metrics.map((metric) => metric.label)).toEqual([
       "Entrate",
       "Spese",
-      "Prova",
+      "Margine",
     ])
     expect(LANDING_HERO_PREVIEW.metrics.map((metric) => metric.value)).toEqual([
       "+ € 2.300",
       "- € 1.055",
-      "- € 42",
+      "+ € 1.245",
     ])
   })
 
@@ -28,7 +27,6 @@ describe("landing hero preview model", () => {
     const preview = buildLandingHeroPreview({
       incomeCents: 0,
       estimatedExpensesCents: null,
-      scenarioExpenseCents: 4200,
     })
 
     expect(preview.status).toBe("incomplete")
@@ -41,7 +39,6 @@ describe("landing hero preview model", () => {
     const preview = buildLandingHeroPreview({
       incomeCents: 100000,
       estimatedExpensesCents: 125000,
-      scenarioExpenseCents: 10000,
     })
 
     expect(preview.status).toBe("warning")

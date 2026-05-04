@@ -1,98 +1,81 @@
 "use client"
 
-import { useRef } from "react"
-import Link from "next/link"
-import { ArrowRight } from "lucide-react"
-import { m, useScroll, useTransform } from "framer-motion"
-import { BrandLogo } from "@/components/ui/brand-logo"
-import { Button } from "@/components/ui/button"
+import {
+  LockKeyhole,
+  ShieldCheck,
+  SlidersHorizontal
+} from "lucide-react"
 import { LANDING_HERO_EDITORIAL } from "../content"
 import { AppleFluidBackground } from "./motion-primitives"
 import { LandingCoverFlow } from "./landing-cover-flow"
-import { LANDING_PRIMARY_CTA_CLASS } from "./landing-tokens"
+
+const HERO_TRUST_ICONS = [ShieldCheck, LockKeyhole, SlidersHorizontal] as const
+
+function HeroTrustStrip() {
+  return (
+    <div
+      className="pointer-events-none mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 px-2 text-[12px] font-medium leading-relaxed text-slate-700/62 motion-safe:transition-opacity motion-safe:duration-[1600ms] motion-safe:ease-out motion-safe:delay-[700ms] motion-safe:starting:opacity-0 sm:mt-7 dark:text-white/62"
+    >
+      <p className="sr-only">{LANDING_HERO_EDITORIAL.trustItems.join(" · ")}</p>
+      {LANDING_HERO_EDITORIAL.trustItems.map((item, index) => {
+        const Icon = HERO_TRUST_ICONS[index] ?? ShieldCheck
+
+        return (
+          <span key={item} className="inline-flex items-center gap-2">
+            <Icon className="h-4 w-4 text-slate-600/52 dark:text-white/52" />
+            {item}
+          </span>
+        )
+      })}
+    </div>
+  )
+}
 
 export function LandingHeroEditorial() {
-  const sectionRef = useRef<HTMLElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"]
-  })
-
-  const yOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
-  const yTranslate = useTransform(scrollYProgress, [0, 1], [0, 60])
-
   return (
     <section
-      ref={sectionRef}
-      className="relative flex min-h-[100svh] w-full flex-col items-center overflow-visible px-4 pt-[clamp(5.75rem,11svh,8rem)] sm:px-6 sm:pt-[clamp(6.25rem,12svh,9rem)] lg:px-8 lg:pt-[clamp(6.5rem,12svh,9rem)]"
+      className="relative flex min-h-[100svh] w-full flex-col items-center overflow-hidden bg-[linear-gradient(180deg,#eef7fb_0%,#f7fbfd_46%,#edf7f6_100%)] px-4 pt-[clamp(5.75rem,11svh,8rem)] text-foreground sm:px-6 sm:pt-[clamp(6.25rem,12svh,9rem)] lg:px-8 lg:pt-[clamp(6.5rem,12svh,9rem)] dark:bg-[#020509]"
       aria-labelledby="landing-hero-title"
       data-testid="landing-hero-editorial"
     >
-      <div className="pointer-events-none absolute inset-0 z-0 [mask-image:linear-gradient(to_bottom,black_46%,transparent_100%)]">
-        <AppleFluidBackground className="scale-[1.14] opacity-[0.88] saturate-[0.82] dark:opacity-[0.82] dark:saturate-[0.52] sm:scale-[1.08]" />
+      <div className="pointer-events-none absolute inset-0 z-0 opacity-[0.16] [mask-image:linear-gradient(to_bottom,black_42%,transparent_100%)] dark:opacity-[0.22]">
+        <AppleFluidBackground className="scale-[1.14] saturate-[0.22] sm:scale-[1.08]" />
       </div>
 
-      <div className="pointer-events-none absolute inset-0 z-[1] [mask-image:linear-gradient(to_bottom,black_50%,transparent_100%)] bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.54),transparent_44%),radial-gradient(circle_at_72%_22%,rgba(34,211,238,0.11),transparent_34%),radial-gradient(circle_at_24%_42%,rgba(15,23,42,0.08),transparent_38%)] dark:bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.08),transparent_38%),radial-gradient(circle_at_72%_20%,rgba(255,255,255,0.075),transparent_34%),radial-gradient(circle_at_30%_46%,rgba(255,255,255,0.035),transparent_38%)]" />
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_50%_18%,rgba(255,255,255,0.72),transparent_30%),radial-gradient(circle_at_50%_53%,rgba(14,165,168,0.18),transparent_32%),linear-gradient(180deg,rgba(241,249,252,0.34),rgba(238,247,249,0.74)_72%,#f7fbfd_100%)] dark:bg-[radial-gradient(ellipse_at_50%_18%,rgba(255,255,255,0.08),transparent_30%),radial-gradient(circle_at_50%_53%,rgba(34,211,238,0.18),transparent_32%),linear-gradient(180deg,rgba(2,5,9,0.54),rgba(2,5,9,0.78)_72%,#020509_100%)]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[34rem] bg-[radial-gradient(ellipse_at_center,rgba(14,165,168,0.16),transparent_54%)] blur-3xl dark:bg-[radial-gradient(ellipse_at_center,rgba(34,211,238,0.16),transparent_54%)]" />
 
-      <m.div
+      <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-[4%] z-[2] h-[28rem] w-[44rem] -translate-x-1/2 rounded-[100%] bg-white/44 blur-[120px] dark:bg-white/[0.055] sm:h-[38rem] sm:w-[72rem]"
-        style={{ opacity: yOpacity }}
+        className="pointer-events-none absolute left-1/2 top-[4%] z-[2] h-[28rem] w-[44rem] -translate-x-1/2 rounded-[100%] bg-cyan-200/28 blur-[120px] sm:h-[38rem] sm:w-[72rem] dark:bg-white/[0.07]"
       />
 
-      <div className="relative z-30 mx-auto flex w-full max-w-[68rem] flex-col items-center text-center">
-        
-        <m.div className="flex flex-col items-center text-center" style={{ opacity: yOpacity, y: yTranslate }}>
+      <div className="relative z-30 mx-auto flex w-full max-w-[76rem] flex-col items-center text-center">
+
+        <div className="relative z-30 flex flex-col items-center text-center">
           <h1 id="landing-hero-title" className="sr-only">
             {LANDING_HERO_EDITORIAL.srTitle}
           </h1>
 
-          <div 
-            className="pointer-events-none mb-4 motion-safe:transition-[opacity,transform] motion-safe:duration-[1200ms] motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:starting:opacity-0 motion-safe:starting:translate-y-5 motion-safe:starting:scale-95 sm:mb-6"
-          >
-            <BrandLogo
-              variant="smart"
-              width={160}
-              priority
-              sizes="(min-width: 1024px) 128px, (min-width: 640px) 104px, 80px"
-              className="h-auto w-[4.75rem] opacity-92 drop-shadow-[0_18px_34px_rgba(15,23,42,0.10)] dark:opacity-96 dark:drop-shadow-[0_20px_42px_rgba(0,0,0,0.32)] sm:w-[6rem] lg:w-[7rem]"
-            />
-          </div>
-
           <p 
-            className="max-w-[13ch] text-[clamp(3rem,7.4vw,6.2rem)] font-black leading-[0.93] tracking-tight text-foreground/95 [text-wrap:balance] motion-safe:transition-[opacity,transform] motion-safe:duration-[1200ms] motion-safe:delay-100 motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:starting:opacity-0 motion-safe:starting:translate-y-8"
+            className="max-w-[13ch] text-[clamp(3rem,7.4vw,6.2rem)] font-black leading-[0.93] tracking-tight text-slate-950 [text-wrap:balance] drop-shadow-[0_18px_58px_rgba(15,23,42,0.10)] dark:text-white dark:drop-shadow-[0_18px_58px_rgba(255,255,255,0.10)]"
           >
             {LANDING_HERO_EDITORIAL.headline}
           </p>
 
           <p 
-            className="mt-5 max-w-[24rem] text-[1.05rem] font-medium leading-[1.5] text-foreground/64 motion-safe:transition-[opacity,transform] motion-safe:duration-[1200ms] motion-safe:delay-200 motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:starting:opacity-0 motion-safe:starting:translate-y-5 sm:max-w-[38rem] sm:text-[1.2rem] lg:max-w-[42rem] lg:text-[1.26rem]"
+            className="mt-5 max-w-[25rem] text-[1.05rem] font-medium leading-[1.5] text-slate-700/76 sm:max-w-[34rem] sm:text-[1.2rem] lg:max-w-[38rem] lg:text-[1.26rem] dark:text-white/68"
           >
             {LANDING_HERO_EDITORIAL.supportingCopy}
           </p>
-
-          <div
-            className="mt-7 flex flex-wrap items-center justify-center gap-3 motion-safe:transition-[opacity,transform] motion-safe:duration-1000 motion-safe:delay-[250ms] motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:starting:opacity-0 motion-safe:starting:translate-y-4"
-          >
-            <Button asChild size="lg" className={`rounded-full ${LANDING_PRIMARY_CTA_CLASS}`}>
-              <Link href={LANDING_HERO_EDITORIAL.primaryCtaHref}>
-                {LANDING_HERO_EDITORIAL.primaryCtaLabel}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-        </m.div>
-
-        <div className="w-full">
-          <LandingCoverFlow />
         </div>
 
-        <div
-          className="pointer-events-none mt-8 flex justify-center motion-safe:transition-opacity motion-safe:duration-[1600ms] motion-safe:ease-out motion-safe:delay-[700ms] motion-safe:starting:opacity-0 sm:mt-12 lg:mt-16"
-        >
-          <p className="max-w-[42rem] text-center text-[12px] font-medium leading-relaxed text-foreground/42 dark:text-white/42 sm:text-[13px]">
-            {LANDING_HERO_EDITORIAL.trustItems.join(" · ")}
-          </p>
+        <div className="relative mt-8 w-full max-w-[76rem] sm:mt-7 lg:mt-6">
+          <div className="relative z-10 mx-auto w-full max-w-[76rem] origin-top lg:scale-[0.86]">
+            <LandingCoverFlow />
+          </div>
+
+          <HeroTrustStrip />
         </div>
 
       </div>

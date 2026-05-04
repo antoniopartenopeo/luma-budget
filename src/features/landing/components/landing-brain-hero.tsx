@@ -4,6 +4,7 @@ import type { ElementType } from "react"
 import { useRef } from "react"
 import { BrainCircuit, CircleAlert, DatabaseZap, Gauge, ShieldCheck } from "lucide-react"
 import { m, useReducedMotion, useScroll, useTransform, useMotionTemplate, useSpring } from "framer-motion"
+import { useDeviceHardware } from "@/hooks/use-device-hardware"
 import { cn } from "@/lib/utils"
 import { LANDING_BRAIN_CONTENT } from "../content"
 import { AppleFluidBackground } from "./motion-primitives"
@@ -26,6 +27,8 @@ interface HologramRow {
 export function LandingBrainHero() {
   const containerRef = useRef<HTMLDivElement>(null)
   const prefersReducedMotion = useReducedMotion() ?? false
+  const { safeToAnimate3D } = useDeviceHardware()
+  const shouldReduceVisualEffects = prefersReducedMotion || !safeToAnimate3D
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -52,36 +55,41 @@ export function LandingBrainHero() {
   const maskImageStyle = useMotionTemplate`radial-gradient(circle at 50% 50%, black ${coreRadius}, transparent ${fadeEdge})`
 
   const act1Opacity = useTransform(scrollYProgress, LANDING_BRAIN_RANGES.act1, [0, 1, 1, 0])
-  const act1Y = useTransform(smoothProgress, LANDING_BRAIN_RANGES.act1, [40, 0, 0, -40])
+  const act1Y = useTransform(smoothProgress, LANDING_BRAIN_RANGES.act1, shouldReduceVisualEffects ? [12, 0, 0, -12] : [40, 0, 0, -40])
   const act1Blur = useTransform(
     scrollYProgress,
     LANDING_BRAIN_RANGES.act1,
-    prefersReducedMotion ? LANDING_NO_BLUR_TRANSITION : LANDING_BLUR_TRANSITION
+    shouldReduceVisualEffects ? LANDING_NO_BLUR_TRANSITION : LANDING_BLUR_TRANSITION
   )
-  const act1Scale = useTransform(smoothProgress, LANDING_BRAIN_RANGES.act1, [0.95, 1, 1, 1.05])
+  const act1Scale = useTransform(smoothProgress, LANDING_BRAIN_RANGES.act1, shouldReduceVisualEffects ? [1, 1, 1, 1] : [0.95, 1, 1, 1.05])
 
   const act2Opacity = useTransform(scrollYProgress, LANDING_BRAIN_RANGES.act2, [0, 1, 1, 0])
-  const act2Y = useTransform(smoothProgress, LANDING_BRAIN_RANGES.act2, [40, 0, 0, -60])
+  const act2Y = useTransform(smoothProgress, LANDING_BRAIN_RANGES.act2, shouldReduceVisualEffects ? [12, 0, 0, -16] : [40, 0, 0, -60])
   const act2Blur = useTransform(
     scrollYProgress,
     LANDING_BRAIN_RANGES.act2,
-    prefersReducedMotion ? LANDING_NO_BLUR_TRANSITION : LANDING_BLUR_TRANSITION
+    shouldReduceVisualEffects ? LANDING_NO_BLUR_TRANSITION : LANDING_BLUR_TRANSITION
   )
-  const act2Scale = useTransform(smoothProgress, LANDING_BRAIN_RANGES.act2, [0.95, 1, 1, 1.05])
+  const act2Scale = useTransform(smoothProgress, LANDING_BRAIN_RANGES.act2, shouldReduceVisualEffects ? [1, 1, 1, 1] : [0.95, 1, 1, 1.05])
 
   const act3Opacity = useTransform(scrollYProgress, LANDING_BRAIN_RANGES.act3, [0, 1, 1, 0])
-  const act3Y = useTransform(smoothProgress, LANDING_BRAIN_RANGES.act3Y, [40, 0])
+  const act3Y = useTransform(smoothProgress, LANDING_BRAIN_RANGES.act3Y, shouldReduceVisualEffects ? [12, 0] : [40, 0])
   const act3Blur = useTransform(
     scrollYProgress,
     LANDING_BRAIN_RANGES.act3Y,
-    prefersReducedMotion ? LANDING_NO_BLUR_REVEAL : LANDING_BLUR_REVEAL
+    shouldReduceVisualEffects ? LANDING_NO_BLUR_REVEAL : LANDING_BLUR_REVEAL
   )
-  const act3Scale = useTransform(smoothProgress, LANDING_BRAIN_RANGES.act3Y, [0.95, 1])
+  const act3Scale = useTransform(smoothProgress, LANDING_BRAIN_RANGES.act3Y, shouldReduceVisualEffects ? [1, 1] : [0.95, 1])
 
-  const fluidMaskStyle = {
-    WebkitMaskImage: maskImageStyle,
-    maskImage: maskImageStyle,
-  }
+  const fluidMaskStyle = shouldReduceVisualEffects
+    ? {
+      WebkitMaskImage: "radial-gradient(circle at 50% 50%, black 38%, transparent 92%)",
+      maskImage: "radial-gradient(circle at 50% 50%, black 38%, transparent 92%)",
+    }
+    : {
+      WebkitMaskImage: maskImageStyle,
+      maskImage: maskImageStyle,
+    }
 
   const reasoningRows: readonly HologramRow[] = [
     {
@@ -94,7 +102,7 @@ export function LandingBrainHero() {
     {
       icon: Gauge,
       label: "Peso del mese",
-      value: "Le uscite previste sono gia dentro",
+      value: "Le uscite stimate sono gia dentro",
       positionClassName: "md:translate-y-6 md:rotate-[1.5deg] z-10",
       toneClassName: "border-slate-400/20 bg-slate-100/50 text-foreground dark:border-white/10 dark:bg-white/[0.05] dark:text-white shadow-[0_16px_40px_-12px_rgba(0,0,0,0.1)] dark:shadow-[0_16px_40px_-12px_rgba(255,255,255,0.05)]"
     },
@@ -147,7 +155,7 @@ export function LandingBrainHero() {
       <m.div
         key={row.label}
         className={cn(
-          "flex w-full min-w-[280px] md:w-auto md:max-w-xs items-center gap-4 rounded-3xl border px-5 py-4 backdrop-blur-3xl transition-transform",
+          "flex w-full min-w-[280px] md:w-auto md:max-w-xs items-center gap-4 rounded-3xl border px-5 py-4 backdrop-blur-xl transition-transform md:backdrop-blur-3xl",
           row.toneClassName,
           row.positionClassName
         )}
@@ -169,7 +177,7 @@ export function LandingBrainHero() {
 
   return (
     <div ref={containerRef} className="relative h-[440svh] w-full bg-background">
-      <div className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden bg-background">
+      <div className="sticky top-0 flex h-[100svh] w-full items-center justify-center overflow-hidden bg-background">
         
         {/* Background Fluid with proper stacking */}
         <div className="absolute inset-0 z-10 pointer-events-none [mask-image:linear-gradient(to_bottom,transparent_0%,black_15%,black_85%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_15%,black_85%,transparent_100%)]">
@@ -200,7 +208,7 @@ export function LandingBrainHero() {
             <div className="mt-10 inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-100/50 dark:bg-cyan-950/40 px-5 py-2.5 backdrop-blur-xl shadow-sm dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_0_20px_rgba(8,145,178,0.2)]">
               <BrainCircuit className="h-4 w-4 text-cyan-700 dark:text-cyan-300" />
               <span className="text-[11px] font-black uppercase tracking-[0.16em] text-cyan-800 dark:text-cyan-100">
-                Il margine nasce da entrate e spese previste
+                Il margine nasce da entrate e uscite stimate
               </span>
             </div>
           </div>
@@ -210,7 +218,7 @@ export function LandingBrainHero() {
         <m.div
           style={act2Style}
           data-testid="landing-brain-act-2"
-          className="absolute inset-x-0 z-30 flex w-full flex-col items-center justify-center pointer-events-none px-6 h-screen"
+          className="absolute inset-x-0 z-30 flex h-[100svh] w-full flex-col items-center justify-center pointer-events-none px-6"
         >
           <div className="flex w-full max-w-6xl flex-col items-center justify-center h-full relative">
             <div className="relative z-20 flex flex-col items-center text-center">
@@ -236,7 +244,7 @@ export function LandingBrainHero() {
         <m.div
           style={act3Style}
           data-testid="landing-brain-act-3"
-          className="absolute inset-x-0 z-30 flex w-full flex-col items-center justify-center pointer-events-none px-6 h-screen"
+          className="absolute inset-x-0 z-30 flex h-[100svh] w-full flex-col items-center justify-center pointer-events-none px-6"
         >
           <div className="flex w-full max-w-6xl flex-col items-center justify-center h-full relative">
             <div className="relative z-20 flex flex-col items-center text-center">

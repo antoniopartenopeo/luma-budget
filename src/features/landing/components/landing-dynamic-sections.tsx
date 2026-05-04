@@ -13,7 +13,7 @@ export const LandingDifferentiatorCards = dynamic(
         eyebrow={LANDING_IMMERSIVE_FALLBACKS.difference.eyebrow}
         title={LANDING_IMMERSIVE_FALLBACKS.difference.title}
         description={LANDING_IMMERSIVE_FALLBACKS.difference.description}
-        heightClassName="h-[300svh]"
+        heightClassName="h-[220svh]"
       />
     )
   }

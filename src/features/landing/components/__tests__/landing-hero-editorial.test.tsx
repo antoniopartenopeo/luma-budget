@@ -58,21 +58,22 @@ vi.mock("../landing-cover-flow", () => ({
 }))
 
 describe("LandingHeroEditorial", () => {
-  it("renders the editorial hero content and primary actions without crowding the first fold", () => {
+  it("renders the editorial hero content without duplicating the primary action", () => {
     mockReducedMotion = false
     render(<LandingHeroEditorial />)
 
     expect(screen.getByRole("heading", { name: LANDING_HERO_EDITORIAL.srTitle })).toBeInTheDocument()
-    expect(screen.getAllByTestId("brand-logo")).toHaveLength(1)
+    expect(screen.queryByTestId("brand-logo")).not.toBeInTheDocument()
     expect(screen.getByText(LANDING_HERO_EDITORIAL.headline)).toBeInTheDocument()
     expect(screen.getByText(LANDING_HERO_EDITORIAL.supportingCopy)).toBeInTheDocument()
     expect(screen.getByTestId("landing-cover-flow")).toBeInTheDocument()
-    expect(screen.getByRole("link", { name: new RegExp(LANDING_HERO_EDITORIAL.primaryCtaLabel, "i") })).toHaveAttribute("href", LANDING_HERO_EDITORIAL.primaryCtaHref)
+    expect(screen.queryByRole("link", { name: new RegExp(LANDING_HERO_EDITORIAL.primaryCtaLabel, "i") })).not.toBeInTheDocument()
     expect(screen.queryByText(/In tre mosse/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/Apri una demo sicura/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/Nessun account obbligatorio\. I dati restano sul tuo dispositivo\./i)).not.toBeInTheDocument()
 
     const hero = screen.getByTestId("landing-hero-editorial")
+    expect(hero).not.toHaveClass("dark")
     expect(hero).not.toHaveTextContent(/\blocal-first\b/i)
     expect(hero).not.toHaveTextContent(/\bCSV\b/i)
     expect(hero).not.toHaveTextContent(/estratto conto/i)
@@ -88,7 +89,7 @@ describe("LandingHeroEditorial", () => {
     expect(screen.getByText(LANDING_HERO_EDITORIAL.headline)).toBeInTheDocument()
     expect(screen.getByText(LANDING_HERO_EDITORIAL.supportingCopy)).toBeInTheDocument()
     expect(screen.getByText(LANDING_HERO_EDITORIAL.trustItems.join(" · "))).toBeInTheDocument()
-    expect(screen.getByRole("link", { name: new RegExp(LANDING_HERO_EDITORIAL.primaryCtaLabel, "i") })).toBeInTheDocument()
+    expect(screen.queryByRole("link", { name: new RegExp(LANDING_HERO_EDITORIAL.primaryCtaLabel, "i") })).not.toBeInTheDocument()
     expect(screen.queryByText(/Apri una demo sicura/i)).not.toBeInTheDocument()
   })
 })

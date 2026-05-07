@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest"
 import { LandingPage } from "../landing-page"
 import {
   LANDING_CLOSING,
+  LANDING_DIFFERENTIATORS,
   LANDING_HERO_EDITORIAL,
   LANDING_HOW_IT_WORKS_SECTION,
   LANDING_NAV_ITEMS,
@@ -68,12 +69,6 @@ vi.mock("next/dynamic", () => {
     default: (loader: () => Promise<unknown>) => {
       const loaderSource = String(loader)
 
-      if (loaderSource.includes("landing-differentiator-cards")) {
-        const MockDifferentiatorCards = () => <div data-testid="landing-differentiator-cards">Tre scelte di design</div>
-        MockDifferentiatorCards.displayName = "MockDifferentiatorCards"
-        return MockDifferentiatorCards
-      }
-
       if (loaderSource.includes("landing-brain-hero")) {
         const MockBrainHero = () => <div data-testid="landing-brain-hero" />
         MockBrainHero.displayName = "MockBrainHero"
@@ -87,10 +82,6 @@ vi.mock("next/dynamic", () => {
   }
 })
 
-vi.mock("@/components/layout/ambient-backdrop", () => ({
-  AmbientBackdrop: () => <div data-testid="ambient-backdrop" />
-}))
-
 vi.mock("@/components/ui/brand-logo", () => ({
   BrandLogo: () => <div data-testid="brand-logo">NUMA</div>
 }))
@@ -99,27 +90,29 @@ vi.mock("../components/landing-previews", () => ({
   LandingHeroConsole: () => <div data-testid="landing-hero-console" />
 }))
 
+vi.mock("../components/landing-hero-editorial", async () => {
+  const content = await vi.importActual<typeof import("../content")>("../content")
+
+  return {
+    LandingHeroEditorial: () => (
+      <section
+        aria-labelledby="landing-hero-title"
+        data-testid="landing-hero-editorial"
+      >
+        <h1 id="landing-hero-title">{content.LANDING_HERO_EDITORIAL.srTitle}</h1>
+        <p>{content.LANDING_HERO_EDITORIAL.headline}</p>
+        <p>{content.LANDING_HERO_EDITORIAL.supportingCopy}</p>
+      </section>
+    )
+  }
+})
+
 vi.mock("../components/landing-brain-hero", () => ({
   LandingBrainHero: () => <div data-testid="landing-brain-hero" />
 }))
 
-vi.mock("../components/landing-differentiator-cards", () => ({
-  LandingDifferentiatorCards: () => <div data-testid="landing-differentiator-cards">Tre scelte di design</div>
-}))
-
 vi.mock("../components/motion-primitives", () => ({
-  AppleFluidBackground: () => <div data-testid="apple-fluid-background" />,
-  CinematicScrollCard: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  EDITORIAL_TORCHLIGHT_SPRING: {
-    damping: 40,
-    stiffness: 300,
-    mass: 0.5
-  },
-  useEditorialTorchlight: () => ({
-    torchlightBackground: "",
-    laserBackground: "",
-    fogMask: ""
-  })
+  CinematicScrollCard: ({ children }: { children: React.ReactNode }) => <>{children}</>
 }))
 
 describe("LandingPage", () => {
@@ -139,7 +132,10 @@ describe("LandingPage", () => {
     expect(screen.getByRole("region", { name: LANDING_PROBLEM_SECTION.title })).toBeInTheDocument()
     expect(screen.getByRole("region", { name: LANDING_HOW_IT_WORKS_SECTION.title })).toBeInTheDocument()
     expect(screen.getByRole("region", { name: LANDING_OUTCOMES_SECTION.title })).toBeInTheDocument()
-    expect(screen.getByRole("region", { name: LANDING_CLOSING.title })).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: LANDING_CLOSING.title })).toBeInTheDocument()
+    LANDING_DIFFERENTIATORS.forEach((item) => {
+      expect(screen.getByText(item.title)).toBeInTheDocument()
+    })
 
     expect(screen.getByTestId("landing-brain-hero")).toBeInTheDocument()
 
@@ -159,6 +155,7 @@ describe("LandingPage", () => {
     expect(screen.getAllByRole("link", { name: new RegExp(LANDING_HERO_EDITORIAL.primaryCtaLabel, "i") }).length).toBeGreaterThan(0)
     expect(screen.queryByRole("link", { name: /Apri una demo sicura/i })).not.toBeInTheDocument()
     expect(screen.getByRole("link", { name: /release log/i })).toBeInTheDocument()
+    expect(hrefs).not.toContain("#differenza")
     LANDING_NAV_ITEMS.forEach((item) => {
       const navLink = screen.getByRole("link", { name: item.label })
       expect(navLink).toHaveAttribute("href", item.href)

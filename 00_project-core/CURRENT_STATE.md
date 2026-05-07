@@ -3,7 +3,7 @@
 scope: current-state
 owner: engineering
 status: active
-last-verified: 2026-04-28
+last-verified: 2026-05-07
 canonical-of: project-current-state
 
 ## Snapshot
@@ -17,7 +17,9 @@ canonical-of: project-current-state
 - Public trust wave 1 shipped on the acquisition surface (Apr 2): calmer metadata/copy, explicit demo CTA toward `/transactions/import`, inline trust strip, landing FAQ, dedicated public trust pages for FAQ/privacy, and public support surfaces for `/updates` plus import demo without false beta-notification affordances
 - User-visible governance ritual adopted (Apr 3): any change that alters what the user sees, reads, or perceives now closes with a findings-first ritual covering narrative, typography, composition, truth, cross-surface coherence, and verification
 - Landing clarity pass completed (Apr 28): first scan now leads with "il tuo mese, piu chiaro", explicit no-account/device-data/re-readable-estimate trust items, a curated cents-backed cover-flow preview, and support copy centered on demo, import, local data, and backup.
-- Landing Brain copy now presents `La stima di Numa` as a transparent estimate from loaded movements, known income, recurring expenses, and explicit insufficiency states instead of positioning Brain as an unconditional prediction engine.
+- Landing narrative simplification completed (May 4): `/` now uses five macro sections by folding the standalone `Differenza` moment into `Come inizi`, reducing the problem block to one demo, fusing the prior interactive estimate graph into the Brain interlude, and moving the final CTA inside `Cosa cambia`.
+- Landing editorial pass completed (May 5): public copy now avoids technical labels such as margin/quota/base in visible acquisition surfaces, `Come funziona` uses a reference-driven bento rhythm, and the Brain interlude uses one theme-aware light/dark curve visual.
+- Landing modular-card visual alignment completed (May 7): bento/outcome cards now use sobered edge-lit glass, ambient section glow, reduced hover tilt, and a compact signal strip in `Come funziona` instead of the previous cluster of extra microcards.
 - Landing immersive heroes now preserve one adaptive surface across desktop, smartphone, and reduced-motion contexts; motion intensity changes, but the composition does not fork into mobile/static alternates (Mar 25)
 - Dashboard `Composizione spese` is now governed as a frozen interaction surface and is out of scope by default for future UI cleanup or motion standardization (Apr 1)
 - Repository-wide governance/app audit completed (Apr 1): root-scaffold drift in audit guidance was corrected and the remaining runtime risks were made explicit for source-label semantics, transition contracts, and period-filter consistency
@@ -27,8 +29,8 @@ canonical-of: project-current-state
 - Public landing page now exposed at `/` with the operational dashboard moved to `/dashboard`
 - Public trust routes now exposed at `/faq`, `/privacy`, and `/updates`, with `/transactions/import` remaining the only app-native safe-trial route reachable from the landing
 - Public landing now encodes the canonical public product story: import movements -> review what was read -> read the month estimate -> test a possible expense -> notice recurring/fixed pressure
-- The public landing now includes a dedicated Brain/stima explainer between the month-estimate story and downstream decision guidance
-- The public landing now closes with an explicit no-account/device-data CTA posture while keeping the primary action on `/dashboard`
+- The public landing now includes a dedicated graph-backed Brain explainer between the month story and downstream decision guidance, using public-facing "can I afford it?" language rather than internal forecast vocabulary
+- The public landing now closes inside `Cosa cambia` with an explicit no-account/device-data CTA posture while keeping the primary action on `/dashboard`
 - Landing preview math lives in `src/features/landing/preview-model.ts`, uses cents/domain formatters, and stays isolated from live repositories.
 - Feature-first application structure under `src/features/*`
 - Pure domain boundaries under `src/domain/*`
@@ -60,7 +62,7 @@ canonical-of: project-current-state
 - Full verification sweep: `npm run doe:verify`
 - Governance quick check writes generated output into `04_execution/reports/`
 - Root scaffold paths must stay aligned with scripts, tests, and CI
-- Landing tests now participate in this alignment by asserting public-link constraints and the static four-step `Come inizi` story
+- Landing tests now participate in this alignment by asserting public-link constraints, the bento `Come funziona` story, and the curated preview model
 - Landing preview tests now assert the curated cents formula, signed display, bounded percentages, incomplete-data state, and warning state.
 - User-visible changes must now close with the ritual in `04_execution/USER_VISIBLE_CHANGE_RITUAL.md`, not only with passing tests/build
 

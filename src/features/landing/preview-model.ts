@@ -99,16 +99,16 @@ export function buildLandingHeroPreview(
     isComplete,
     marginCents,
     marginAmount: formatLandingWholeCurrency(marginCents ?? 0),
-    formula: "Entrate - uscite stimate = quanto resta",
+    formula: "Soldi in arrivo - spese previste = risposta",
     metrics: [
       {
-        label: "Entrate",
+        label: "In arrivo",
         value: isComplete ? formatLandingSignedWholeCurrency(safeIncomeCents) : "da completare",
         tone: "income",
         widthPct: safeIncomeCents > 0 ? 100 : 0,
       },
       {
-        label: "Spese",
+        label: "Previsti",
         value:
           estimatedExpensesCents !== null
             ? formatLandingSignedWholeCurrency(-safeEstimatedExpensesCents)
@@ -117,7 +117,7 @@ export function buildLandingHeroPreview(
         widthPct: expenseWidthPct,
       },
       {
-        label: "Margine",
+        label: "Risposta",
         value: marginCents !== null ? formatLandingSignedWholeCurrency(marginCents) : "da completare",
         tone: "margin",
         widthPct: marginWidthPct,

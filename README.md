@@ -20,7 +20,7 @@ Canonical live project context now lives in:
 
 | Module | Status | Description |
 |---|---|---|
-| Landing (`/`) | Active | Superficie pubblica di acquisizione con hero user-language, trust strip, cover-flow di preview governato da un modello demo in cents, sezione statica `Come inizi` in 4 passaggi, interludio Brain come stima trasparente e CTA primaria verso `/dashboard` |
+| Landing (`/`) | Active | Superficie pubblica di acquisizione in 5 macro sezioni: hero editoriale, problema con demo in linguaggio naturale, `Come funziona` in bento edge-lit con segnali compatti, interludio Brain con curva tematica light/dark, outcomes con CTA primaria verso `/dashboard` |
 | FAQ + Privacy (`/faq`, `/privacy`) | Active | Superfici pubbliche di rassicurazione su demo/import, dati sul dispositivo, nessun account o collegamento bancario obbligatorio, backup JSON locale da custodire |
 | Dashboard | Stable | KPI finanziari, composizione spese interattiva, movimenti recenti collegati all'elenco completo, filtri periodo persistenti in URL (`Mese/3M/6M/12M`) |
 | Transactions | Stable | Ledger responsive a row card/table, filtri periodo/range, export CSV, quick add da TopBar |

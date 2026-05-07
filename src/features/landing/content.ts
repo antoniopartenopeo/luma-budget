@@ -5,7 +5,6 @@ import {
   ShieldCheck,
   Sparkles,
   WalletCards,
-  CreditCard,
   Circle
 } from "lucide-react"
 
@@ -24,12 +23,6 @@ export interface LandingSectionCopy {
 
 export interface LandingProblemContent extends LandingSectionCopy {
   statement: string
-}
-
-export interface LandingStoryPoint {
-  icon: LucideIcon
-  title: string
-  description: string
 }
 
 export interface LandingDifferentItem {
@@ -99,36 +92,6 @@ export interface LandingFooterContent {
   supportItems: readonly LandingFooterLink[]
 }
 
-// Interfacce Cover Flow & Preview
-export interface LandingPreviewItem {
-  label: string
-  value: string
-  note?: string
-}
-
-export interface LandingPreviewData {
-  badge?: string
-  title: string
-  description: string
-  insightLabel?: string
-  insightText?: string
-  insightBadge?: string
-  items?: readonly LandingPreviewItem[]
-  customContent?: {
-    mainValue?: string
-    textParams?: string[]
-    calculationNote?: string
-  }
-}
-
-export interface LandingCoverFlowCard {
-  id: string
-  title: string
-  theme: "orange" | "slate" | "cyan" | "emerald" | "violet"
-  summary: string
-  preview: LandingPreviewData
-}
-
 const FALLBACK_BRAIN_ACT: LandingBrainAct = {
   kicker: "",
   titleLines: [],
@@ -144,8 +107,7 @@ const ICON_REGISTRY: Record<string, LucideIcon> = {
   BrainCircuit,
   ShieldCheck,
   Sparkles,
-  WalletCards,
-  CreditCard
+  WalletCards
 }
 
 function resolveIcon(iconName: string): LucideIcon {
@@ -160,7 +122,6 @@ export const LANDING_HERO_EDITORIAL = landingDataRaw.HERO_EDITORIAL as LandingHe
 export const LANDING_NAV_ITEMS = landingDataRaw.NAV_ITEMS as readonly LandingNavItem[]
 export const LANDING_PROBLEM_SECTION = landingDataRaw.PROBLEM_SECTION as LandingProblemContent
 
-export const LANDING_DIFFERENCE_SECTION = landingDataRaw.DIFFERENCE_SECTION as LandingSectionCopy
 export const LANDING_HOW_IT_WORKS_SECTION = landingDataRaw.HOW_IT_WORKS_SECTION as LandingSectionCopy
 export const LANDING_OUTCOMES_SECTION = landingDataRaw.OUTCOMES_SECTION as LandingSectionCopy
 export const LANDING_CLOSING = landingDataRaw.CLOSING as LandingClosingContent
@@ -175,14 +136,6 @@ export const LANDING_BRAIN_CONTENT: LandingBrainContent = {
     brainActThree ?? FALLBACK_BRAIN_ACT
   ]
 }
-export const LANDING_COVERFLOW_CARDS = landingDataRaw.COVERFLOW_CARDS as readonly LandingCoverFlowCard[]
-
-// Parsers che "idratano" gli oggetti JSON string-based con i reali React Components (Icons)
-export const LANDING_STORY_POINTS: LandingStoryPoint[] = landingDataRaw.STORY_POINTS.map((item) => ({
-  ...item,
-  icon: resolveIcon(item.icon)
-}))
-
 export const LANDING_DIFFERENTIATORS: LandingDifferentItem[] = landingDataRaw.DIFFERENTIATORS.map((item) => ({
   ...item,
   icon: resolveIcon(item.icon)

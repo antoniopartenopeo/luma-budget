@@ -6,8 +6,9 @@ import { LANDING_BRAIN_CONTENT } from "../../content"
 vi.mock("framer-motion", async () => {
   const React = await vi.importActual<typeof import("react")>("react")
 
-  const MotionDiv = React.forwardRef<HTMLDivElement, Record<string, unknown> & { children?: React.ReactNode }>(
-    ({ children, ...props }, ref) => {
+  const createMotionElement = (tag: string) => {
+    const MotionElement = React.forwardRef<HTMLElement, Record<string, unknown> & { children?: React.ReactNode }>(
+      ({ children, ...props }, ref) => {
       const elementProps = { ...props }
       delete elementProps.initial
       delete elementProps.animate
@@ -17,22 +18,21 @@ vi.mock("framer-motion", async () => {
       delete elementProps.whileInView
 
       return (
-        <div ref={ref} {...elementProps}>
-          {children as React.ReactNode}
-        </div>
+        React.createElement(tag, { ref, ...elementProps }, children as React.ReactNode)
       )
-    }
-  )
+      }
+    )
+    MotionElement.displayName = `Motion${tag}`
+    return MotionElement
+  }
 
-  MotionDiv.displayName = "MotionDiv"
+  const motionProxy = new Proxy({}, {
+    get: (_target, property) => createMotionElement(String(property))
+  })
 
   return {
-    m: {
-      div: MotionDiv
-    },
-    motion: {
-      div: MotionDiv
-    },
+    m: motionProxy,
+    motion: motionProxy,
     useReducedMotion: () => true,
     useScroll: () => ({
       scrollYProgress: {
@@ -44,15 +44,6 @@ vi.mock("framer-motion", async () => {
     useMotionTemplate: (strings: string[]) => strings.join("")
   }
 })
-
-vi.mock("../motion-primitives", () => ({
-  AppleFluidBackground: () => <div data-testid="apple-fluid-background" />,
-  useEditorialTorchlight: () => ({
-    torchlightBackground: "",
-    laserBackground: "",
-    fogMask: ""
-  })
-}))
 
 vi.mock("@/hooks/use-device-hardware", () => ({
   useDeviceHardware: () => ({
@@ -69,6 +60,10 @@ describe("LandingBrainHero", () => {
       expect(screen.getByRole("heading", { name: act.titleLines.join(" ") })).toBeInTheDocument()
       expect(screen.getByText(act.description)).toBeInTheDocument()
     })
+    expect(screen.getByTestId("landing-brain-estimate-graph")).toBeInTheDocument()
+    expect(screen.getByRole("img", { name: /Curva Numa/i })).toBeInTheDocument()
+    expect(screen.getAllByText("Dati caricati").length).toBeGreaterThanOrEqual(1)
+    expect(screen.getByText("Niente magie")).toBeInTheDocument()
     expect(screen.queryByText(/SYNC_BANK_API/i)).not.toBeInTheDocument()
   })
 })

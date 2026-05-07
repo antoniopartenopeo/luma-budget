@@ -1,75 +1,32 @@
 "use client"
 
 import { useRef } from "react"
-import { m, useMotionValue, useSpring } from "framer-motion"
+import { m } from "framer-motion"
 import { useHardwareParallax } from "@/hooks/use-hardware-parallax"
-import { LANDING_STORY_POINTS } from "../content"
-import { LANDING_EDITORIAL_CARD_TITLE_CLASS } from "./landing-tokens"
-import { LandingEditorialCardFrame } from "./landing-editorial-card-frame"
-import { EDITORIAL_TORCHLIGHT_SPRING, useEditorialTorchlight } from "./motion-primitives"
-
-const STORY_ACCENTS = [
-  {
-    border: "border-cyan-400/20 dark:border-white/10",
-    panel: "from-cyan-500/[0.02] via-white to-cyan-50/50 dark:from-white/[0.06] dark:via-black/84 dark:to-zinc-900/62",
-    icon: "border-cyan-400/25 bg-cyan-500/10 text-cyan-600 dark:border-white/10 dark:bg-white/[0.05] dark:text-zinc-100"
-  },
-  {
-    border: "border-slate-400/18 dark:border-white/9",
-    panel: "from-slate-500/[0.03] via-white to-slate-50/60 dark:from-white/[0.05] dark:via-black/84 dark:to-zinc-950/68",
-    icon: "border-slate-400/25 bg-slate-500/8 text-slate-700 dark:border-white/9 dark:bg-white/[0.045] dark:text-zinc-200"
-  },
-  {
-    border: "border-teal-400/20 dark:border-white/10",
-    panel: "from-teal-500/[0.02] via-white to-teal-50/50 dark:from-white/[0.055] dark:via-black/84 dark:to-stone-950/64",
-    icon: "border-teal-400/25 bg-teal-500/10 text-teal-700 dark:border-white/10 dark:bg-white/[0.05] dark:text-stone-200"
-  }
-] as const
 
 function ConsoleChassis() {
   const cardRef = useRef<HTMLDivElement>(null)
-  const { rotateX, rotateY, mouseX, mouseY, handleMouseMove, handleMouseLeave } = useHardwareParallax({ tiltMax: 6 })
-  const isHoveredRaw = useMotionValue(0)
-  const hoverRevealSpring = useSpring(isHoveredRaw, EDITORIAL_TORCHLIGHT_SPRING)
-  const xSpring = useSpring(mouseX, EDITORIAL_TORCHLIGHT_SPRING)
-  const ySpring = useSpring(mouseY, EDITORIAL_TORCHLIGHT_SPRING)
-  const { torchlightBackground } = useEditorialTorchlight({
-    mouseX: xSpring,
-    mouseY: ySpring,
-    inputRange: [-0.5, 0.5],
-    springConfig: EDITORIAL_TORCHLIGHT_SPRING,
-  })
+  const { rotateX, rotateY, handleMouseMove, handleMouseLeave } = useHardwareParallax({ tiltMax: 6 })
 
   const _handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return
-    isHoveredRaw.set(1)
     handleMouseMove(e, cardRef.current.getBoundingClientRect())
   }
 
   const _handleMouseLeave = () => {
-    isHoveredRaw.set(0)
     handleMouseLeave()
   }
 
   return (
     <m.div
       ref={cardRef}
-      onMouseEnter={() => isHoveredRaw.set(1)}
       onMouseMove={_handleMouseMove}
       onMouseLeave={_handleMouseLeave}
       style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      className="group relative overflow-hidden rounded-[2rem] border border-black/6 bg-white/50 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.14)] backdrop-blur-3xl dark:border-white/10 dark:bg-zinc-950/40 dark:shadow-[0_40px_100px_-30px_rgba(0,0,0,0.6)] will-change-transform bg-clip-padding"
+      className="group relative overflow-hidden rounded-[2rem] border border-black/[0.07] bg-[linear-gradient(180deg,rgba(255,255,255,0.76),rgba(248,250,252,0.58))] shadow-[0_28px_92px_-44px_rgba(15,23,42,0.22),inset_0_1px_0_rgba(255,255,255,0.76)] backdrop-blur-3xl will-change-transform transition-[border-color,box-shadow] duration-500 hover:border-teal-500/22 hover:shadow-[0_36px_110px_-52px_rgba(15,23,42,0.30),0_0_0_1px_rgba(20,184,166,0.05),inset_0_1px_0_rgba(255,255,255,0.82)] dark:border-white/10 dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.035))] dark:shadow-[0_42px_118px_-42px_rgba(0,0,0,0.82),inset_0_1px_0_rgba(255,255,255,0.10)] dark:hover:border-cyan-200/18 dark:hover:shadow-[0_46px_128px_-52px_rgba(0,0,0,0.95),0_0_44px_-32px_rgba(45,212,191,0.36),inset_0_1px_0_rgba(255,255,255,0.12)] bg-clip-padding"
     >
-      <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_18%_16%,rgba(255,255,255,0.84),transparent_48%)] dark:bg-[radial-gradient(circle_at_18%_16%,rgba(255,255,255,0.07),transparent_58%)]" />
-      <div className="absolute inset-0 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.12)] z-[1]" />
-
-      <m.div
-        className="pointer-events-none absolute inset-0 z-[2] mix-blend-overlay"
-        style={{
-          background: torchlightBackground,
-          opacity: hoverRevealSpring
-        }}
-      />
+      <div className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.44),transparent_42%)] dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.07),transparent_48%)]" />
+      <div className="pointer-events-none absolute inset-0 z-[1] rounded-[inherit] border border-white/54 [mask-image:linear-gradient(180deg,black,transparent_44%)] dark:border-white/10" />
 
       <div className="relative z-10 p-6 sm:p-8 sm:py-8 flex flex-col [transform-style:preserve-3d] min-h-[16rem]">
         {/* Fake Window Controls */}
@@ -88,14 +45,14 @@ function ConsoleChassis() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-500"></span>
               </span>
-              Margine del mese
+              Puoi spenderli?
             </h4>
-            <div className="flex items-baseline gap-2 tracking-tighter pt-1">
+            <div className="flex items-baseline gap-2 pt-1">
               <span className="text-5xl sm:text-[4rem] font-black leading-none text-foreground">€ 1.250</span>
               <span className="text-xl sm:text-2xl font-bold text-muted-foreground/60 leading-none">,00</span>
             </div>
             <p className="max-w-[34rem] text-[13px] font-medium leading-relaxed text-muted-foreground/72 sm:text-[15px]">
-              Il margine nasce da entrate e uscite stimate gia dentro il calcolo.
+              Una risposta semplice, costruita sui movimenti che hai caricato.
             </p>
 
             {/* Fake Progress Bar */}
@@ -106,18 +63,18 @@ function ConsoleChassis() {
 
           <div className="grid gap-3 sm:grid-cols-3">
             {[
-              ["Entrate note", "+ € 2.300"],
-              ["Uscite stimate", "- € 1.008"],
-              ["Margine stimato", "+ € 1.250"],
+              ["In arrivo", "+ € 2.300"],
+              ["Già previsti", "- € 1.008"],
+              ["Risposta", "ci sta"],
             ].map(([label, value], index) => (
               <div
                 key={label}
-                className="rounded-[1.15rem] border border-black/6 bg-white/55 px-4 py-3 text-left shadow-[0_16px_28px_-24px_rgba(15,23,42,0.18)] dark:border-white/8 dark:bg-white/[0.04]"
+                className="rounded-[1.15rem] border border-black/[0.065] bg-white/64 px-4 py-3 text-left shadow-[0_14px_30px_-26px_rgba(15,23,42,0.20),inset_0_1px_0_rgba(255,255,255,0.70)] transition-[border-color,box-shadow,background-color] duration-300 group-hover:border-teal-500/16 group-hover:shadow-[0_18px_38px_-30px_rgba(15,23,42,0.28),0_0_0_1px_rgba(20,184,166,0.035),inset_0_1px_0_rgba(255,255,255,0.76)] dark:border-white/9 dark:bg-white/[0.045] dark:group-hover:border-cyan-200/14 dark:group-hover:shadow-[0_18px_42px_-32px_rgba(0,0,0,0.88),0_0_28px_-24px_rgba(45,212,191,0.28),inset_0_1px_0_rgba(255,255,255,0.08)]"
               >
                 <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/72">
                   {label}
                 </p>
-                <p className={`mt-1 text-sm font-black tracking-tight ${index === 2 ? "text-teal-600 dark:text-teal-300" : "text-foreground"}`}>
+                <p className={`mt-1 text-sm font-black ${index === 2 ? "text-teal-600 dark:text-teal-300" : "text-foreground"}`}>
                   {value}
                 </p>
               </div>
@@ -126,7 +83,7 @@ function ConsoleChassis() {
 
           {/* Bottom Section - Semantic rows */}
           <m.div
-            className="space-y-3 relative p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] shadow-[inset_0_1px_2px_rgba(255,255,255,0.4)] dark:shadow-[inset_0_1px_2px_rgba(255,255,255,0.05)]"
+            className="relative space-y-3 rounded-2xl border border-black/[0.055] bg-white/34 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.58)] transition-[border-color,box-shadow] duration-300 group-hover:border-teal-500/12 dark:border-white/[0.065] dark:bg-white/[0.025] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] dark:group-hover:border-cyan-200/12"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-5%" }}
@@ -136,9 +93,9 @@ function ConsoleChassis() {
             }}
           >
             {[
-              ["Stipendio del mese", "base letta", "+ € 2.300"],
-              ["Ricorrenze gia emerse", "gia conteggiate", "- € 968"],
-              ["Quota sostenibile", "Financial Lab", "prudente"],
+              ["Stipendio del mese", "gia dentro", "+ € 2.300"],
+              ["Spese che tornano", "non spariscono", "- € 968"],
+              ["Nuovo impegno", "prima di dire si", "ci sta"],
             ].map(([title, note, value], i) => (
               <m.div
                 key={title}
@@ -151,7 +108,7 @@ function ConsoleChassis() {
                 <div className="flex items-center gap-3">
                   <div className="h-9 w-9 shrink-0 rounded-xl bg-gradient-to-br from-black/5 to-black/10 dark:from-white/5 dark:to-white/10" />
                   <div className="space-y-1.5">
-                    <p className="text-[13px] font-semibold tracking-tight text-foreground">{title}</p>
+                    <p className="text-[13px] font-semibold text-foreground">{title}</p>
                     <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/72">{note}</p>
                   </div>
                 </div>
@@ -172,41 +129,7 @@ function ConsoleChassis() {
 
 export function LandingHeroConsole() {
   return (
-    <div className="space-y-6 sm:space-y-7 [perspective:1200px]">
-      <div className="space-y-4">
-        {LANDING_STORY_POINTS.map((point, index) => {
-          const accent = STORY_ACCENTS[index]
-          const labels = ["01 importi", "02 capisci", "03 valuti"] as const
-
-          return (
-            <LandingEditorialCardFrame
-              key={point.title}
-              borderClassName={accent.border}
-              panelClassName={accent.panel}
-              leadingIconWrapperClassName={accent.icon}
-              leadingText={String(index + 1).padStart(2, "0")}
-              leadingTextClassName="text-current"
-              decorativeIcon={point.icon}
-              decorativeIconPositionClassName="-bottom-[8%] right-[3%]"
-              className="shadow-[0_30px_90px_-40px_rgba(15,23,42,0.16)] dark:shadow-[0_30px_90px_-40px_rgba(0,0,0,0.5)]"
-              contentClassName="p-8 sm:p-10"
-            >
-              <div className="relative space-y-4 pr-12 pt-18 sm:pr-20 sm:pt-24 lg:pr-28 lg:pt-28">
-                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-foreground/44">
-                  {labels[index]}
-                </p>
-                <p className={`${LANDING_EDITORIAL_CARD_TITLE_CLASS} [font-size:clamp(1.15rem,2.8vw,3rem)] max-w-[22ch] text-balance`}>
-                  {point.title}
-                </p>
-                <p className="max-w-[56ch] text-[16px] font-normal leading-relaxed text-muted-foreground sm:text-[17px]">
-                  {point.description}
-                </p>
-              </div>
-            </LandingEditorialCardFrame>
-          )
-        })}
-      </div>
-
+    <div className="[perspective:1200px]">
       <ConsoleChassis />
     </div>
   )

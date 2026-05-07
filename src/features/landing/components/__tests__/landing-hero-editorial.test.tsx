@@ -44,19 +44,6 @@ vi.mock("@/components/ui/brand-logo", () => ({
   BrandLogo: () => <div data-testid="brand-logo">NUMA</div>
 }))
 
-vi.mock("../motion-primitives", () => ({
-  AppleFluidBackground: () => <div data-testid="apple-fluid-background" />,
-  useEditorialTorchlight: () => ({
-    torchlightBackground: "",
-    laserBackground: "",
-    fogMask: ""
-  })
-}))
-
-vi.mock("../landing-cover-flow", () => ({
-  LandingCoverFlow: () => <div data-testid="landing-cover-flow" />
-}))
-
 describe("LandingHeroEditorial", () => {
   it("renders the editorial hero content without duplicating the primary action", () => {
     mockReducedMotion = false
@@ -66,7 +53,8 @@ describe("LandingHeroEditorial", () => {
     expect(screen.queryByTestId("brand-logo")).not.toBeInTheDocument()
     expect(screen.getByText(LANDING_HERO_EDITORIAL.headline)).toBeInTheDocument()
     expect(screen.getByText(LANDING_HERO_EDITORIAL.supportingCopy)).toBeInTheDocument()
-    expect(screen.getByTestId("landing-cover-flow")).toBeInTheDocument()
+    expect(screen.getByTestId("landing-hero-object")).toBeInTheDocument()
+    expect(screen.getByText("Ci sta.")).toBeInTheDocument()
     expect(screen.queryByRole("link", { name: new RegExp(LANDING_HERO_EDITORIAL.primaryCtaLabel, "i") })).not.toBeInTheDocument()
     expect(screen.queryByText(/In tre mosse/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/Apri una demo sicura/i)).not.toBeInTheDocument()
@@ -85,7 +73,7 @@ describe("LandingHeroEditorial", () => {
     render(<LandingHeroEditorial />)
 
     expect(screen.getByRole("heading", { name: LANDING_HERO_EDITORIAL.srTitle })).toBeInTheDocument()
-    expect(screen.getByTestId("landing-cover-flow")).toBeInTheDocument()
+    expect(screen.getByTestId("landing-hero-object")).toBeInTheDocument()
     expect(screen.getByText(LANDING_HERO_EDITORIAL.headline)).toBeInTheDocument()
     expect(screen.getByText(LANDING_HERO_EDITORIAL.supportingCopy)).toBeInTheDocument()
     expect(screen.getByText(LANDING_HERO_EDITORIAL.trustItems.join(" · "))).toBeInTheDocument()

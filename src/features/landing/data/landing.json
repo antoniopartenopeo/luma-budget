@@ -1,158 +1,136 @@
 {
   "HERO_EDITORIAL": {
-    "srTitle": "Numa Budget. Il tuo mese, più chiaro.",
-    "headline": "Il tuo mese, più chiaro.",
-    "supportingCopy": "Importa i movimenti. Numa stima il margine del mese e ti mostra quanto resta.",
+    "srTitle": "Numa Budget. Sai se puoi permettertelo.",
+    "headline": "Sai se puoi permettertelo.",
+    "supportingCopy": "Carica i movimenti. Numa mette il mese in ordine e ti dà una risposta prima di spendere.",
     "primaryCtaLabel": "Inizia senza account",
     "primaryCtaHref": "/dashboard",
     "trustItems": [
-      "Nessun account per iniziare",
-      "Dati sul tuo dispositivo",
-      "Stime modificabili in ogni momento"
+      "Parti subito",
+      "Resti in privato",
+      "Cambi idea quando vuoi"
     ]
   },
   "NAV_ITEMS": [
     { "href": "#problema", "label": "Perché" },
-    { "href": "#differenza", "label": "Come aiuta" },
     { "href": "#come-inizi", "label": "Come funziona" },
-    { "href": "#brain-hero", "label": "Stima" },
-    { "href": "#outcomes", "label": "Cosa cambia" }
+    { "href": "#brain-hero", "label": "Numa" },
+    { "href": "#outcomes", "label": "Risultato" }
   ],
   "PROBLEM_SECTION": {
     "eyebrow": "Perche serve",
-    "title": "Non basta sapere cosa hai speso.",
-    "description": "Ti serve capire quanto spazio resta, prima di scegliere cosa fare.",
-    "statement": "Numa trasforma movimenti sparsi in una lettura semplice del mese."
-  },
-  "STORY_POINTS": [
-    {
-      "icon": "WalletCards",
-      "title": "Porti dentro i movimenti.",
-      "description": "Carichi il file della banca. Numa li ordina e prepara una base pulita."
-    },
-    {
-      "icon": "ShieldCheck",
-      "title": "Vedi cosa pesa davvero.",
-      "description": "Entrate, ricorrenze e spese grandi diventano subito piu facili da leggere."
-    },
-    {
-      "icon": "BrainCircuit",
-      "title": "Capisci la quota sostenibile.",
-      "description": "Financial Lab ti aiuta a leggere quale quota mensile aggiuntiva puoi reggere."
-    }
-  ],
-  "DIFFERENCE_SECTION": {
-    "eyebrow": "Piu contesto",
-    "title": "Piu dati, piu chiarezza."
+    "title": "Il saldo non racconta tutto.",
+    "description": "Vedi quanto hai oggi, ma non quello che sta per uscire. Numa ti aiuta a decidere prima, non dopo.",
+    "statement": "Numa trasforma movimenti sparsi in una risposta semplice sul mese."
   },
   "DIFFERENTIATORS": [
     {
       "icon": "BrainCircuit",
-      "title": "Impara dal tuo mese",
-      "kicker": "Base letta",
-      "note": "Piu movimenti carichi, meglio riconosce il tuo ritmo."
+      "title": "Il mese prende forma",
+      "kicker": "A colpo d'occhio",
+      "note": "Soldi in arrivo, spese e costi abituali stanno nello stesso racconto."
     },
     {
       "icon": "ArrowDownUp",
-      "title": "Trova le spese che tornano",
-      "kicker": "Ritmo reale",
-      "note": "Distingue cio che succede spesso dal rumore."
+      "title": "Le sorprese vengono fuori",
+      "kicker": "Prima",
+      "note": "Quello che torna spesso non resta nascosto tra i movimenti."
     },
     {
       "icon": "Sparkles",
-      "title": "Ti lascia decidere meglio",
-      "kicker": "Prima di scegliere",
-      "note": "Vedi margine e quota sostenibile prima di prendere nuovi impegni."
+      "title": "Decidi senza fare il contabile",
+      "kicker": "Quando serve",
+      "note": "Hai una risposta pratica, non un foglio da interpretare."
     }
   ],
   "HOW_IT_WORKS_SECTION": {
     "eyebrow": "Come funziona",
-    "title": "Da file a decisione, senza fatica.",
-    "description": "Pochi passaggi: importi, controlli, capisci quanto margine hai."
+    "title": "Tre minuti, poi guardi il mese con altri occhi.",
+    "description": "Carichi il file, correggi se serve, Numa ti mostra cosa puoi fare."
   },
   "FLOW_STEPS": [
     {
       "icon": "WalletCards",
-      "cue": "Importa",
-      "stepLabel": "01",
-      "title": "Carica i movimenti della banca.",
-      "description": "Scegli il file esportato dalla banca. Numa lo legge e ti mostra cosa ha trovato."
+      "cue": "Apri",
+      "stepLabel": "1",
+      "title": "Carica il file.",
+      "description": "Scegli l'export della banca. Numa lo trasforma in una vista ordinata."
     },
     {
       "icon": "ArrowDownUp",
-      "cue": "Controlla",
-      "stepLabel": "02",
-      "title": "Controlla le spese.",
-      "description": "Rivedi categorie e movimenti importanti prima di salvare. Resti sempre tu a decidere."
+      "cue": "Sistema",
+      "stepLabel": "2",
+      "title": "Dai una controllata.",
+      "description": "Se qualcosa non torna, lo sistemi al volo. Resti sempre tu a decidere."
     },
     {
       "icon": "BrainCircuit",
-      "cue": "Leggi",
-      "stepLabel": "03",
-      "title": "Guarda quanto resta.",
-      "description": "Entrate e uscite stimate diventano un margine semplice da leggere."
+      "cue": "Capisci",
+      "stepLabel": "3",
+      "title": "Guarda cosa resta.",
+      "description": "Il mese smette di essere una lista e diventa una risposta."
     },
     {
       "icon": "ShieldCheck",
-      "cue": "Pianifica",
-      "stepLabel": "04",
-      "title": "Guarda la quota sostenibile.",
-      "description": "Financial Lab usa lo storico per stimare quale quota mensile aggiuntiva puoi reggere."
+      "cue": "Scegli",
+      "stepLabel": "4",
+      "title": "Decidi con calma.",
+      "description": "Prima di aggiungere una spesa, capisci se ci sta davvero."
     }
   ],
   "BRAIN_CONTENT": {
     "sectionTitle": "La stima di Numa",
     "acts": [
       {
-        "kicker": "Dati reali",
-        "titleLines": ["Numa parte", "da cio che", "hai caricato."],
-        "description": "Legge movimenti, entrate e spese ricorrenti. Non parte da promesse, parte dalla tua base."
+        "kicker": "Parte dai fatti",
+        "titleLines": ["Prima mette", "ordine,", "poi risponde."],
+        "description": "Usa cio che hai caricato. Se qualcosa manca, non finge di saperlo."
       },
       {
-        "kicker": "Margine chiaro",
-        "titleLines": ["Ti mostra", "quanto spazio", "hai davvero."],
-        "description": "Raccoglie i segnali utili e li trasforma in un numero leggibile: quanto puoi ancora permetterti."
+        "kicker": "Una risposta semplice",
+        "titleLines": ["Te lo puoi", "permettere?"],
+        "description": "Numa mette insieme quello che entra, quello che esce e cio che torna spesso."
       },
       {
-        "kicker": "Limiti chiari",
-        "titleLines": ["Se mancano dati,", "te lo dice,", "senza inventare."],
-        "description": "Quando la base non basta, Numa lo segnala. Una stima deve potersi rileggere."
+        "kicker": "Niente magie",
+        "titleLines": ["Se non lo sa,", "te lo dice."],
+        "description": "Quando i dati non bastano, si ferma. Meglio un dubbio chiaro che una certezza inventata."
       }
     ]
   },
   "OUTCOMES_SECTION": {
     "eyebrow": "Cosa cambia",
-    "title": "Decidi con meno peso.",
-    "description": "Non devi controllare mille volte la banca. Hai una lettura chiara prima di muoverti."
+    "title": "Smetti di fare i conti a mente.",
+    "description": "Prima di spendere, hai una risposta piu chiara."
   },
   "OUTCOMES": [
     {
       "icon": "ArrowDownUp",
-      "title": "Apri il mese con piu calma",
-      "description": "Sai subito quali spese sono gia dentro e quale spazio resta."
+      "title": "Vedi il mese prima che finisca",
+      "description": "Le spese gia previste non ti prendono di sorpresa."
     },
     {
       "icon": "ShieldCheck",
-      "title": "Scegli senza andare a intuito",
-      "description": "Prima di prendere nuovi impegni, parti da margine e quota sostenibile."
+      "title": "Capisci se puoi dire si",
+      "description": "Una cena, un acquisto, una rata: vedi subito se ci stanno."
     },
     {
       "icon": "Sparkles",
-      "title": "Perdi meno tempo nei conti",
-      "description": "Meno fogli, meno somme a mano, piu tempo per decidere."
+      "title": "Passi meno tempo a ricontrollare",
+      "description": "Meno fogli e meno calcoli ripetuti."
     }
   ],
   "CLOSING": {
-    "eyebrow": "Inizia semplice",
-    "railLabel": "Nessun account",
-    "title": "Metti ordine al mese.",
-    "description": "Entri, guardi come Numa legge i movimenti e resti con i dati sul tuo dispositivo.",
+    "eyebrow": "Provalo ora",
+    "railLabel": "Subito",
+    "title": "Guarda il tuo mese.",
+    "description": "Carica un file, guarda cosa Numa capisce e tieni tutto sul tuo dispositivo.",
     "primaryCtaLabel": "Inizia senza account"
   },
   "FOOTER": {
-    "description": "Uno spazio privato per leggere il mese prima di decidere.",
+    "description": "Uno spazio privato per capire il mese prima di decidere.",
     "productHeading": "Prodotto",
-    "productItems": ["Importa i movimenti", "Capisci quanto resta", "Valuta la quota sostenibile"],
+    "productItems": ["Importa i movimenti", "Capisci se puoi spendere", "Decidi prima di dire si"],
     "supportHeading": "Risorse",
     "supportItems": [
       { "label": "Domande frequenti", "href": "/faq" },
@@ -161,87 +139,10 @@
     ]
   },
   "IMMERSIVE_FALLBACKS": {
-    "difference": {
-      "eyebrow": "Piu chiaro ogni mese",
-      "title": "I dati restano tuoi.",
-      "description": "Numa lavora sui movimenti che importi e li tiene sul dispositivo."
-    },
     "brain": {
       "eyebrow": "La stima",
-      "title": "Un numero che puoi rileggere.",
-      "description": "La stima mostra da dove nasce il margine, cosi puoi fidarti un po di piu."
+      "title": "Una risposta che puoi rileggere.",
+      "description": "Numa mostra da dove nasce la risposta, cosi puoi fidarti un po di piu."
     }
-  },
-  "COVERFLOW_CARDS": [
-    {
-      "id": "sources",
-      "title": "Importa",
-      "theme": "orange",
-      "summary": "Niente data entry. Carichi il file e sei pronto.",
-      "preview": {
-        "title": "Importa in un attimo",
-        "description": "Carica il file della tua banca. Numa ordina tutto in automatico.",
-        "items": [
-          { "label": "Movimenti importati", "value": "342", "note": "esito" },
-          { "label": "Pronti da controllare", "value": "100%", "note": "stato" }
-        ]
-      }
-    },
-    {
-      "id": "transactions",
-      "title": "Capisci",
-      "theme": "slate",
-      "summary": "Le spese grandi si staccano dal rumore.",
-      "preview": {
-        "title": "Trova le spese che pesano",
-        "description": "Le uscite importanti si separano dal rumore quotidiano, chiare e in primo piano.",
-        "items": [
-          { "label": "Affitto", "value": "- € 690", "note": "Spesa Grande" },
-          { "label": "Supermercato", "value": "- € 58", "note": "Spesa Variabile" }
-        ]
-      }
-    },
-    {
-      "id": "clarity",
-      "title": "Resta",
-      "theme": "cyan",
-      "summary": "Il numero per decidere con calma.",
-      "preview": {
-        "title": "Capisci quanto ti resta",
-        "description": "Entrate e uscite a confronto per darti il tuo margine reale, sempre aggiornato.",
-        "customContent": {
-          "mainValue": "€ 1.245",
-          "textParams": ["Entrate", "+ € 2.300", "Uscite stimate", "- € 1.055"]
-        }
-      }
-    },
-    {
-      "id": "quota",
-      "title": "Quota",
-      "theme": "emerald",
-      "summary": "Vedi quale quota puoi aggiungere al mese.",
-      "preview": {
-        "title": "Valuta nuovi impegni",
-        "description": "Scopri quale spesa fissa mensile puoi aggiungere senza andare in affanno.",
-        "insightBadge": "Sicuro",
-        "customContent": {
-          "textParams": ["Quota sostenibile", "€ 240 / mese"]
-        }
-      }
-    },
-    {
-      "id": "subscriptions",
-      "title": "Costi",
-      "theme": "violet",
-      "summary": "Nessuna sorpresa dagli abbonamenti.",
-      "preview": {
-        "title": "Tieni d'occhio i costi fissi",
-        "description": "Abbonamenti e spese ricorrenti raggruppati, per non avere brutte sorprese.",
-        "items": [
-          { "label": "Palestra", "value": "€ 29", "note": "Mensile" },
-          { "label": "Streaming", "value": "€ 16", "note": "Mensile" }
-        ]
-      }
-    }
-  ]
+  }
 }

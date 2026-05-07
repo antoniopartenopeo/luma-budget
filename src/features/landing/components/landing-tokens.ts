@@ -14,16 +14,16 @@ export const LANDING_SECTION_EYEBROW_CLASS =
   "text-[11px] font-bold uppercase tracking-[0.2em] text-primary dark:text-foreground/58"
 
 export const LANDING_SECTION_TITLE_CLASS =
-  "max-w-[17ch] [font-size:clamp(1.875rem,4.5vw,3rem)] font-black leading-[0.95] tracking-tighter text-foreground"
+  "max-w-[17ch] [font-size:clamp(1.875rem,4.5vw,3rem)] font-black leading-[0.95] text-foreground"
 
 export const LANDING_SECTION_DESCRIPTION_CLASS =
   "max-w-[54ch] text-[15px] font-normal leading-relaxed text-muted-foreground sm:text-[1rem]"
 
 export const LANDING_EDITORIAL_CARD_TITLE_CLASS =
-  "[font-size:clamp(1.875rem,5.5vw,3rem)] font-black leading-[1.05] tracking-tighter text-foreground"
+  "[font-size:clamp(1.875rem,5.5vw,3rem)] font-black leading-[1.05] text-foreground"
 
 export const LANDING_EDITORIAL_CARD_HERO_TITLE_CLASS =
-  "[font-size:clamp(2.25rem,7vw,3.75rem)] font-black leading-[0.92] tracking-tighter text-foreground"
+  "[font-size:clamp(2.25rem,7vw,3.75rem)] font-black leading-[0.92] text-foreground"
 
 
 

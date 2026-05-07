@@ -12,13 +12,13 @@ const NOISE_TEXTURE_STYLE: CSSProperties = {
     "url('data:image/svg+xml;utf8,<svg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"noiseFilter\"><feTurbulence type=\"fractalNoise\" baseFrequency=\"0.8\" numOctaves=\"3\" stitchTiles=\"stitch\"/></filter><rect width=\"100%\" height=\"100%\" filter=\"url(%23noiseFilter)\"/></svg>')",
 }
 
-export const EDITORIAL_TORCHLIGHT_SPRING = {
+export const EDITORIAL_EDGE_LIGHT_SPRING = {
   damping: 40,
   stiffness: 300,
   mass: 0.5,
 } as const
 
-interface EditorialTorchlightOptions {
+interface EditorialEdgeLightOptions {
   mouseX: MotionValue<number>
   mouseY: MotionValue<number>
   inputRange?: [number, number]
@@ -29,28 +29,22 @@ interface EditorialTorchlightOptions {
   }
 }
 
-export function useEditorialTorchlight({
+export function useEditorialEdgeLight({
   mouseX,
   mouseY,
   inputRange = [-0.5, 0.5],
-  springConfig = EDITORIAL_TORCHLIGHT_SPRING,
-}: EditorialTorchlightOptions) {
-  const torchX = useSpring(useTransform(mouseX, inputRange, [0, 100]), springConfig)
-  const torchY = useSpring(useTransform(mouseY, inputRange, [0, 100]), springConfig)
-  const ignitionX = useSpring(useTransform(mouseX, inputRange, [0, 100]), springConfig)
-  const ignitionY = useSpring(useTransform(mouseY, inputRange, [0, 100]), springConfig)
+  springConfig = EDITORIAL_EDGE_LIGHT_SPRING,
+}: EditorialEdgeLightOptions) {
+  const lightX = useSpring(useTransform(mouseX, inputRange, [0, 100]), springConfig)
+  const lightY = useSpring(useTransform(mouseY, inputRange, [0, 100]), springConfig)
 
-  const torchlightBackground = useMotionTemplate`
-    radial-gradient(640px circle at ${torchX}% ${torchY}%, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.06) 30%, transparent 70%),
-    radial-gradient(280px circle at ${ignitionX}% ${ignitionY}%, rgba(255,255,255,0.22) 0%, transparent 80%)
+  const laserBackground = useMotionTemplate`
+    radial-gradient(520px circle at ${lightX}% ${lightY}%, rgba(45,212,191,0.96) 0%, rgba(34,211,238,0.82) 18%, rgba(20,184,166,0.36) 42%, transparent 74%),
+    radial-gradient(220px circle at ${lightX}% ${lightY}%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.26) 44%, transparent 78%)
   `
-  const laserBackground = useMotionTemplate`radial-gradient(320px circle at ${torchX}% ${torchY}%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.6) 20%, rgba(255,255,255,0.12) 50%, transparent 100%)`
-  const fogMask = useMotionTemplate`radial-gradient(350px circle at ${torchX}% ${torchY}%, black 0%, rgba(0,0,0,0.4) 40%, transparent 100%)`
 
   return {
-    torchlightBackground,
     laserBackground,
-    fogMask,
   }
 }
 
@@ -195,8 +189,8 @@ export function CinematicScrollCard({ children, className }: { children: ReactNo
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
   const isHoveredRaw = useMotionValue(0)
-  const xSpring = useSpring(mouseX, EDITORIAL_TORCHLIGHT_SPRING)
-  const ySpring = useSpring(mouseY, EDITORIAL_TORCHLIGHT_SPRING)
+  const xSpring = useSpring(mouseX, EDITORIAL_EDGE_LIGHT_SPRING)
+  const ySpring = useSpring(mouseY, EDITORIAL_EDGE_LIGHT_SPRING)
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!ref.current) return
@@ -214,19 +208,20 @@ export function CinematicScrollCard({ children, className }: { children: ReactNo
     mouseY.set(0)
   }
 
-  const hoverRevealSpring = useSpring(isHoveredRaw, EDITORIAL_TORCHLIGHT_SPRING)
-  const hoverRotateX = useTransform(ySpring, [-0.5, 0.5], [6, -6])
-  const hoverRotateY = useTransform(xSpring, [-0.5, 0.5], [-6, 6])
+  const hoverRevealSpring = useSpring(isHoveredRaw, EDITORIAL_EDGE_LIGHT_SPRING)
+  const hoverRotateX = useTransform(ySpring, [-0.5, 0.5], [2.4, -2.4])
+  const hoverRotateY = useTransform(xSpring, [-0.5, 0.5], [-2.4, 2.4])
 
   // Composizione sicura asse X: scroll + tilt algebrico
   const rotateX = useTransform(() => scrollRotateX.get() + hoverRotateX.get())
-  const laserOpacity = useTransform(hoverRevealSpring, [0, 1], [0, 0.9])
-  const fogOpacity = useTransform(hoverRevealSpring, [0, 1], [0, 0.16])
-  const { torchlightBackground, laserBackground, fogMask } = useEditorialTorchlight({
+  const laserOpacity = useTransform(hoverRevealSpring, [0, 1], [0.26, 1])
+  const laserHaloOpacity = useTransform(hoverRevealSpring, [0, 1], [0.16, 0.78])
+  const edgeLiftOpacity = useTransform(hoverRevealSpring, [0, 1], [0, 1])
+  const { laserBackground } = useEditorialEdgeLight({
     mouseX: xSpring,
     mouseY: ySpring,
     inputRange: [-0.5, 0.5],
-    springConfig: EDITORIAL_TORCHLIGHT_SPRING,
+    springConfig: EDITORIAL_EDGE_LIGHT_SPRING,
   })
 
   return (
@@ -243,19 +238,29 @@ export function CinematicScrollCard({ children, className }: { children: ReactNo
         y,
         transformStyle: "preserve-3d",
         transformPerspective: 1200,
-        cursor: "url(\"data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='32'%20height='32'%20viewBox='0%200%2032%2032'%3E%3Cdefs%3E%3CradialGradient%20id='glow'%20cx='50%25'%20cy='50%25'%20r='50%25'%3E%3Cstop%20offset='0%25'%20stop-color='white'%20stop-opacity='1'/%3E%3Cstop%20offset='10%25'%20stop-color='white'%20stop-opacity='0.8'/%3E%3Cstop%20offset='30%25'%20stop-color='white'%20stop-opacity='0.3'/%3E%3Cstop%20offset='60%25'%20stop-color='white'%20stop-opacity='0.05'/%3E%3Cstop%20offset='100%25'%20stop-color='white'%20stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle%20cx='16'%20cy='16'%20r='16'%20fill='url(%23glow)'/%3E%3C/svg%3E\") 16 16, crosshair"
       }}
-      className={cn("motion-reduce:!transform-none motion-reduce:!opacity-100 motion-reduce:!cursor-default", className)}
+      className={cn("motion-reduce:!transform-none motion-reduce:!opacity-100", className)}
     >
-      {/* 1. Internal Surface Torchlight */}
       <m.div
-        className="pointer-events-none absolute inset-0 z-50 mix-blend-soft-light motion-reduce:!opacity-0"
-        style={{ background: torchlightBackground, opacity: hoverRevealSpring }}
+        className="pointer-events-none absolute inset-0 z-40 rounded-[inherit] opacity-0 shadow-[0_32px_90px_-48px_rgba(15,23,42,0.58)] motion-reduce:!opacity-0 dark:shadow-[0_36px_110px_-54px_rgba(45,212,191,0.36)]"
+        style={{ opacity: edgeLiftOpacity }}
       />
 
-      {/* 2. Border Laser Tracking */}
       <m.div
-        className="pointer-events-none absolute inset-0 z-50 motion-reduce:!opacity-0"
+        className="pointer-events-none absolute inset-[-3px] z-40 rounded-[inherit] blur-[10px] motion-reduce:!opacity-0"
+        style={{
+          background: laserBackground,
+          opacity: laserHaloOpacity,
+          mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+          WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+          maskComposite: "exclude",
+          WebkitMaskComposite: "xor",
+          padding: "5px"
+        }}
+      />
+
+      <m.div
+        className="pointer-events-none absolute inset-0 z-50 rounded-[inherit] motion-reduce:!opacity-0"
         style={{
           background: laserBackground,
           opacity: laserOpacity,
@@ -263,19 +268,7 @@ export function CinematicScrollCard({ children, className }: { children: ReactNo
           WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
           maskComposite: "exclude",
           WebkitMaskComposite: "xor",
-          padding: "1.5px"
-        }}
-      />
-      <div className="absolute inset-0 z-50 pointer-events-none rounded-[inherit]" style={{ borderRadius: "inherit" }} />
-
-      {/* 3. Volumetric Fog & Dust Particles */}
-      <m.div
-        className="pointer-events-none absolute inset-0 z-40 mix-blend-color-dodge motion-reduce:!opacity-0"
-        style={{
-          ...NOISE_TEXTURE_STYLE,
-          opacity: fogOpacity,
-          mask: fogMask,
-          WebkitMask: fogMask
+          padding: "2.5px"
         }}
       />
 

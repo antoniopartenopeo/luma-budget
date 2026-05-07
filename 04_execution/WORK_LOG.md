@@ -3,7 +3,7 @@
 scope: execution-work-log
 owner: engineering
 status: active
-last-verified: 2026-04-28
+last-verified: 2026-05-07
 canonical-of: execution-work-log
 
 ## 2026-03-15
@@ -64,3 +64,17 @@ canonical-of: execution-work-log
 - Updated UX, motion, UI specialist, architecture, requirements, decision log, handoff, and changelog references so Brain is described as a transparent estimate rather than an unconditional prediction promise.
 - Captured the simplified FAQ/privacy posture around demo, import, data on device, no mandatory account/bank connection, and cleartext JSON backup risk.
 - Hardened `scripts/audit/governance-quick-check.sh` so generated-report validation no longer stalls while counting large multi-line scan results.
+
+## 2026-05-04
+
+- Simplified the public landing from seven content macro sections to five by removing the standalone `Differenza` macro, reducing `Problema` to one month demo, integrating differentiator signals into `Come inizi`, and folding the closing CTA into `Cosa cambia`.
+- Reintroduced the strongest visual from the removed `Differenza` macro as a premium graph-backed estimate inside `LandingBrainHero`, so Brain and the interactive graph now explain one stima surface instead of two separate moments.
+- Updated landing tests so the page-level navigation and cover-flow expectations match the current canonical landing payload.
+- Applied the May 5 editorial pass to the landing: visible copy now uses natural acquisition language, `Come funziona` moved to a premium bento rhythm, the hero/cover-flow vocabulary now centers on "can I afford it?", and the Brain graph uses a theme-aware light/dark curve visual.
+- Aligned the modular landing card system with the first hero/Brain quality bar by replacing internal hover torch/fog with edge-lit glass borders, calmer ambient section glows, cleaner microcards, and reduced hover tilt.
+
+## 2026-05-07
+
+- Strengthened the landing visual system after user review: `LandingEditorialCardFrame` now uses layered glass streaks instead of the repeated top-right glow, and `CinematicScrollCard` exposes a more visible edge-lit hover border.
+- Removed the attempted fixed/scroll light rail after visual review because it created visible green bands in dark mode; the canonical treatment remains layered glass plus edge-lit borders.
+- Reworked `Come funziona` from a seven-card cluster into four primary bento steps plus a compact three-signal glass strip, improving visual hierarchy and reducing scattered modular density.

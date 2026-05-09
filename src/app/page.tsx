@@ -2,25 +2,25 @@ import type { Metadata } from "next"
 import { LandingPage } from "@/features/landing/landing-page"
 
 export const metadata: Metadata = {
-  title: "Numa Budget | Capisci il mese con più chiarezza",
+  title: "Numa Budget | Sai cosa puoi fare prima di spendere",
   description:
-    "Numa legge i tuoi movimenti, stima il margine del mese e mostra la quota sostenibile senza spostare i dati nel cloud. Tutto in locale.",
+    "Numa mette in ordine i tuoi movimenti e ti mostra cosa resta prima di aggiungere una nuova spesa.",
   keywords: [
     "app finanza personale",
-    "budget locale first",
+    "budget personale",
     "expense tracker privacy",
-    "gestione spese locale",
-    "stima fine mese",
-    "financial lab"
+    "gestione spese",
+    "pianificazione spese",
+    "budget mensile"
   ],
   alternates: {
     canonical: "/"
   },
   category: "finance",
   openGraph: {
-    title: "Numa Budget | Capisci il mese con più chiarezza",
+    title: "Numa Budget | Sai cosa puoi fare prima di spendere",
     description:
-      "Numa legge i tuoi movimenti, stima il margine del mese e mostra la quota sostenibile senza spostare i dati nel cloud. Tutto in locale.",
+      "Numa mette in ordine i tuoi movimenti e ti mostra cosa resta prima di aggiungere una nuova spesa.",
     url: "/",
     siteName: "NUMA Budget",
     locale: "it_IT",
@@ -28,9 +28,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Numa Budget | Capisci il mese con più chiarezza",
+    title: "Numa Budget | Sai cosa puoi fare prima di spendere",
     description:
-      "Numa legge i tuoi movimenti, stima il margine del mese e mostra la quota sostenibile senza spostare i dati nel cloud. Tutto in locale."
+      "Numa mette in ordine i tuoi movimenti e ti mostra cosa resta prima di aggiungere una nuova spesa."
   },
   robots: {
     index: true,

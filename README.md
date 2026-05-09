@@ -20,7 +20,7 @@ Canonical live project context now lives in:
 
 | Module | Status | Description |
 |---|---|---|
-| Landing (`/`) | Active | Superficie pubblica di acquisizione in 5 macro sezioni: hero editoriale, problema con demo in linguaggio naturale, `Come funziona` in bento edge-lit con segnali compatti, interludio Brain con curva tematica light/dark, outcomes con CTA primaria verso `/dashboard` |
+| Landing (`/`) | Active | Superficie pubblica di acquisizione in macro sezioni distinte: hero prodotto, problema da chiarire, flusso operativo `Come funziona`, logica decisionale Brain, risultati social proof e CTA finale verso `/dashboard` |
 | FAQ + Privacy (`/faq`, `/privacy`) | Active | Superfici pubbliche di rassicurazione su demo/import, dati sul dispositivo, nessun account o collegamento bancario obbligatorio, backup JSON locale da custodire |
 | Dashboard | Stable | KPI finanziari, composizione spese interattiva, movimenti recenti collegati all'elenco completo, filtri periodo persistenti in URL (`Mese/3M/6M/12M`) |
 | Transactions | Stable | Ledger responsive a row card/table, filtri periodo/range, export CSV, quick add da TopBar |
@@ -64,7 +64,7 @@ Canonical system overview: `03_architecture/SYSTEM_OVERVIEW.md`
 ### Data flow
 - Repository layer -> `localStorage` persistence
 - React Query -> cache + invalidation
-- Landing preview model -> curated demo cents + `@/domain/money` formatters, with no repository reads or live user data
+- Landing narrative -> curated static public content + isolated demo visuals, with no repository reads or live user data
 - Dashboard filters -> URL/search params -> deep-link coerenti verso `/transactions`
 - Cross-tab sync -> `storage` listeners on registered keys
 - `CHANGELOG.md` -> `/api/notifications/changelog` -> pagina pubblica `/updates`

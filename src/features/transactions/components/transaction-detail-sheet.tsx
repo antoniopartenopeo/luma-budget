@@ -166,7 +166,7 @@ function TransactionDetailSheetContent({
                                 </span>
                                 <div className={cn(
                                     "text-5xl font-black tabular-nums tracking-tighter",
-                                    transaction.type === "income" ? "text-emerald-600" : "text-foreground",
+                                    transaction.type === "income" ? "text-primary" : "text-foreground",
                                     getPrivacyClass(isPrivacyMode)
                                 )}>
                                     {formatSignedCents(getSignedCents(transaction))}
@@ -195,7 +195,7 @@ function TransactionDetailSheetContent({
                                             className={cn(
                                                 "rounded-md border px-2.5 py-0.5 text-xs font-semibold uppercase tracking-[0.14em] shadow-none",
                                                 transaction.type === "income"
-                                                    ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20"
+                                                    ? "border-primary/20 bg-primary/10 text-primary dark:text-cyan-100"
                                                     : "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20"
                                             )}
                                         >

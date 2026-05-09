@@ -33,7 +33,7 @@ function ConsoleChassis() {
         <div className="mb-6 flex items-center gap-1.5" style={{ transform: "translateZ(10px)" }}>
           <div className="h-3 w-3 rounded-full bg-red-400 dark:bg-red-500/80 shadow-sm" />
           <div className="h-3 w-3 rounded-full bg-amber-400 dark:bg-amber-500/80 shadow-sm" />
-          <div className="h-3 w-3 rounded-full bg-emerald-400 dark:bg-emerald-500/80 shadow-sm" />
+          <div className="h-3 w-3 rounded-full bg-primary/70 shadow-sm dark:bg-cyan-100/72" />
         </div>
 
         {/* Mock Dashboard Area */}
@@ -93,9 +93,9 @@ function ConsoleChassis() {
             }}
           >
             {[
-              ["Stipendio del mese", "gia dentro", "+ € 2.300"],
+              ["Stipendio del mese", "già dentro", "+ € 2.300"],
               ["Spese che tornano", "non spariscono", "- € 968"],
-              ["Nuovo impegno", "prima di dire si", "ci sta"],
+              ["Nuovo impegno", "prima di dire sì", "ci sta"],
             ].map(([title, note, value], i) => (
               <m.div
                 key={title}

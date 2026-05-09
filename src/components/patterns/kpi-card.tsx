@@ -44,7 +44,7 @@ const TONE_STYLES: Record<KpiTone, {
 }> = {
     positive: {
         rawColor: "#10b981",
-        chipClassName: "border-emerald-500/16 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+        chipClassName: "border-primary/16 bg-primary/10 text-primary dark:text-cyan-100"
     },
     negative: {
         rawColor: "#f43f5e",
@@ -226,7 +226,7 @@ export function KpiCard({
                                     className={cn(
                                         "hidden shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] sm:inline-flex",
                                         trend === "up"
-                                            ? "border-emerald-500/16 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                                            ? "border-primary/16 bg-primary/10 text-primary dark:text-cyan-100"
                                             : trend === "down"
                                                 ? "border-rose-500/16 bg-rose-500/10 text-rose-700 dark:text-rose-300"
                                                 : trend === "warning"
@@ -254,7 +254,7 @@ export function KpiCard({
                                     className={cn(
                                         "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] sm:hidden",
                                         trend === "up"
-                                            ? "border-emerald-500/16 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                                            ? "border-primary/16 bg-primary/10 text-primary dark:text-cyan-100"
                                             : trend === "down"
                                                 ? "border-rose-500/16 bg-rose-500/10 text-rose-700 dark:text-rose-300"
                                                 : trend === "warning"

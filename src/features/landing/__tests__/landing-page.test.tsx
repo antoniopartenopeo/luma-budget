@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest"
 import { LandingPage } from "../landing-page"
 import {
   LANDING_CLOSING,
-  LANDING_DIFFERENTIATORS,
+  LANDING_FLOW_STEPS,
   LANDING_HERO_EDITORIAL,
   LANDING_HOW_IT_WORKS_SECTION,
   LANDING_NAV_ITEMS,
@@ -86,10 +86,6 @@ vi.mock("@/components/ui/brand-logo", () => ({
   BrandLogo: () => <div data-testid="brand-logo">NUMA</div>
 }))
 
-vi.mock("../components/landing-previews", () => ({
-  LandingHeroConsole: () => <div data-testid="landing-hero-console" />
-}))
-
 vi.mock("../components/landing-hero-editorial", async () => {
   const content = await vi.importActual<typeof import("../content")>("../content")
 
@@ -120,8 +116,8 @@ describe("LandingPage", () => {
     render(<LandingPage />)
 
     const header = screen.getByRole("banner").firstElementChild
-    expect(header).toHaveClass("bg-white/72")
-    expect(header).toHaveClass("dark:bg-[#05080d]/68")
+    expect(header).toHaveClass("max-w-[92rem]")
+    expect(header).toHaveClass("text-slate-950")
     expect(header).not.toHaveClass("text-white")
 
     expect(screen.getAllByTestId("brand-logo").length).toBeGreaterThan(0)
@@ -131,11 +127,11 @@ describe("LandingPage", () => {
     expect(screen.getByText(LANDING_HERO_EDITORIAL.supportingCopy)).toBeInTheDocument()
     expect(screen.getByRole("region", { name: LANDING_PROBLEM_SECTION.title })).toBeInTheDocument()
     expect(screen.getByRole("region", { name: LANDING_HOW_IT_WORKS_SECTION.title })).toBeInTheDocument()
+    LANDING_FLOW_STEPS.forEach((step) => {
+      expect(screen.getByText(step.title)).toBeInTheDocument()
+    })
     expect(screen.getByRole("region", { name: LANDING_OUTCOMES_SECTION.title })).toBeInTheDocument()
     expect(screen.getByRole("heading", { name: LANDING_CLOSING.title })).toBeInTheDocument()
-    LANDING_DIFFERENTIATORS.forEach((item) => {
-      expect(screen.getByText(item.title)).toBeInTheDocument()
-    })
 
     expect(screen.getByTestId("landing-brain-hero")).toBeInTheDocument()
 
@@ -159,8 +155,8 @@ describe("LandingPage", () => {
     LANDING_NAV_ITEMS.forEach((item) => {
       const navLink = screen.getByRole("link", { name: item.label })
       expect(navLink).toHaveAttribute("href", item.href)
-      expect(navLink).toHaveClass("text-foreground/58")
-      expect(navLink).toHaveClass("dark:text-white/68")
+      expect(navLink).toHaveClass("font-black")
+      expect(navLink).toHaveClass("text-slate-950")
     })
     expect(screen.queryByText("Contatti")).not.toBeInTheDocument()
   })

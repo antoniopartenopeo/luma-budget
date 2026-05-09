@@ -72,7 +72,7 @@ export function AppleFluidMesh({ className }: { className?: string }) {
         <defs>
           <linearGradient id="numa-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" className="text-cyan-300 dark:text-zinc-200" stopOpacity="0.8" style={CURRENT_COLOR_STOP} />
-            <stop offset="100%" className="text-emerald-400 dark:text-zinc-700" stopOpacity="0.6" style={CURRENT_COLOR_STOP} />
+            <stop offset="100%" className="text-primary dark:text-zinc-700" stopOpacity="0.6" style={CURRENT_COLOR_STOP} />
           </linearGradient>
 
           <radialGradient id="numa-grad-2" cx="50%" cy="50%" r="50%">
@@ -86,7 +86,7 @@ export function AppleFluidMesh({ className }: { className?: string }) {
           </linearGradient>
 
           <linearGradient id="numa-grad-4" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" className="text-emerald-200 dark:text-stone-300" stopOpacity="0.8" style={CURRENT_COLOR_STOP} />
+            <stop offset="0%" className="text-cyan-100 dark:text-stone-300" stopOpacity="0.8" style={CURRENT_COLOR_STOP} />
             <stop offset="100%" className="text-cyan-100 dark:text-zinc-700" stopOpacity="0.5" style={CURRENT_COLOR_STOP} />
           </linearGradient>
         </defs>

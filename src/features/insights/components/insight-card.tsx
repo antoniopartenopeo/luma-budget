@@ -141,12 +141,12 @@ export function InsightCard({ insight }: InsightCardProps) {
                             {insight.metrics.deltaCents !== undefined && (
                                 <div className={cn(
                                     "p-3 rounded-xl glass-card border-none space-y-1",
-                                    insight.metrics.deltaCents > 0 ? "bg-rose-500/5 ring-1 ring-rose-500/20" : "bg-emerald-500/5 ring-1 ring-emerald-500/20"
+                                    insight.metrics.deltaCents > 0 ? "bg-rose-500/5 ring-1 ring-rose-500/20" : "bg-primary/5 ring-1 ring-primary/20"
                                 )}>
                                     <span className="text-[10px] uppercase font-bold text-muted-foreground/70 tracking-wider">Variazione</span>
                                     <div className={cn(
                                         "font-mono text-sm sm:text-base font-black tracking-tighter tabular-nums",
-                                        insight.metrics.deltaCents > 0 ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"
+                                        insight.metrics.deltaCents > 0 ? "text-rose-600 dark:text-rose-400" : "text-primary dark:text-cyan-100"
                                     )}>
                                         {insight.metrics.deltaCents > 0 ? "+" : ""}
                                         {formatCents(insight.metrics.deltaCents)}
@@ -193,7 +193,7 @@ export function InsightCard({ insight }: InsightCardProps) {
                                                     {driver.deltaCents !== undefined && driver.deltaCents !== 0 && (
                                                         <div className={cn(
                                                             "px-1.5 py-0.5 rounded text-[10px] font-black tabular-nums",
-                                                            driver.deltaCents > 0 ? "bg-rose-500/10 text-rose-600 dark:text-rose-400" : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                                                            driver.deltaCents > 0 ? "bg-rose-500/10 text-rose-600 dark:text-rose-400" : "bg-primary/10 text-primary dark:text-cyan-100"
                                                         )}>
                                                             {driver.deltaCents > 0 ? "+" : ""}{formatCents(driver.deltaCents)}
                                                         </div>

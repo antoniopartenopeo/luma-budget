@@ -5,24 +5,35 @@ import { LANDING_FOOTER, LANDING_HERO_EDITORIAL } from "@/features/landing/conte
 
 export function PublicSiteFooter() {
   return (
-    <footer className="px-4 pb-10 pt-6">
-      <div className="mx-auto max-w-6xl border-t border-black/6 pt-6 dark:border-white/8">
-        <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+    <footer className="-mt-24 bg-slate-950 px-5 pb-10 pt-36 text-white sm:px-8 lg:px-10 dark:bg-black">
+      <div className="mx-auto max-w-[92rem]">
+        <div className="flex flex-col gap-10 border-b border-white/10 pb-10 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-[26rem] space-y-3">
-            <BrandLogo variant="full" height={24} className="w-auto max-w-[132px] opacity-90" sizes="132px" />
-            <p className="text-sm font-normal leading-relaxed text-muted-foreground">
+            <div className="inline-flex items-center gap-3">
+              <BrandLogo
+                variant="smart"
+                height={42}
+                className="drop-shadow-[0_14px_30px_rgba(161,222,235,0.18)]"
+                sizes="64px"
+              />
+              <span className="text-[1.05rem] font-black uppercase leading-[0.92] tracking-[-0.02em] text-white">
+                Numa<br />
+                Budget
+              </span>
+            </div>
+            <p className="text-sm font-medium leading-relaxed text-white/56">
               {LANDING_FOOTER.description}
             </p>
           </div>
 
           <div className="grid gap-8 sm:grid-cols-2 lg:min-w-[26rem] lg:gap-12">
             <div className="space-y-3">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground/46">
+              <p className="text-[11px] font-black uppercase tracking-[0.16em] text-white/40">
                 {LANDING_FOOTER.productHeading}
               </p>
               <ul className="space-y-2">
                 {LANDING_FOOTER.productItems.map((item) => (
-                  <li key={`footer-${item}`} className="text-sm font-normal text-foreground/72">
+                  <li key={`footer-${item}`} className="text-sm font-medium text-white/68">
                     {item}
                   </li>
                 ))}
@@ -30,7 +41,7 @@ export function PublicSiteFooter() {
             </div>
 
             <div className="space-y-3">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground/46">
+              <p className="text-[11px] font-black uppercase tracking-[0.16em] text-white/40">
                 {LANDING_FOOTER.supportHeading}
               </p>
               <ul className="space-y-2">
@@ -38,7 +49,7 @@ export function PublicSiteFooter() {
                   <li key={item.label}>
                     <Link
                       href={item.href}
-                      className="text-sm font-normal text-foreground/62 transition-colors duration-200 hover:text-foreground"
+                      className="text-sm font-medium text-white/58 transition-colors duration-200 hover:text-white"
                     >
                       {item.label}
                     </Link>
@@ -49,10 +60,11 @@ export function PublicSiteFooter() {
           </div>
         </div>
 
-        <div className="mt-10 flex justify-center border-t border-black/6 pt-8 dark:border-white/8">
+        <div className="mt-8 flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
+          <p className="text-xs font-medium text-white/34">© 2026 Numa Budget. Tutti i diritti riservati.</p>
           <Link
             href={LANDING_HERO_EDITORIAL.primaryCtaHref}
-            className="group inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-[0_18px_40px_-24px_rgba(14,165,168,0.55)] transition-[box-shadow,transform,background-color] duration-200 hover:scale-[1.02] hover:shadow-[0_24px_52px_-24px_rgba(14,165,168,0.7)]"
+            className="group inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-black text-slate-950 shadow-[0_18px_40px_-26px_rgba(255,255,255,0.38)] transition-transform duration-200 hover:-translate-y-0.5"
           >
             {LANDING_HERO_EDITORIAL.primaryCtaLabel}
             <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />

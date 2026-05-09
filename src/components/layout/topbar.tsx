@@ -74,7 +74,7 @@ export function TopBar() {
                                 LIQUID_CAPSULE_CLASS,
                                 LIQUID_REFRACTION_CLASS,
                                 isDesktopUtilityPanelOpen 
-                                    ? "border-primary/30 shadow-[0_4px_80px_-12px_hsl(var(--primary)/0.35)] dark:border-primary/20 dark:shadow-[0_4px_80px_-12px_hsl(var(--primary)/0.25)]" 
+                                    ? "border-primary/30 shadow-[0_4px_80px_-12px_rgba(15,90,108,0.28)] dark:border-primary/20 dark:shadow-[0_4px_80px_-12px_rgba(161,222,235,0.18)]"
                                     : "border-white/50 shadow-sm dark:border-white/15"
                             )}
                         >

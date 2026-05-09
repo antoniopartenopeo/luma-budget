@@ -20,10 +20,10 @@ const COLOR_PALETTE = [
     { bg: "bg-cyan-100", text: "text-cyan-600", hex: "#0891b2" },
     { bg: "bg-pink-100", text: "text-pink-600", hex: "#db2777" },
     { bg: "bg-teal-100", text: "text-teal-600", hex: "#0d9488" },
-    { bg: "bg-emerald-100", text: "text-emerald-600", hex: "#059669" },
+    { bg: "bg-cyan-100", text: "text-primary", hex: "#3a8591" },
     { bg: "bg-sky-100", text: "text-sky-600", hex: "#0284c7" },
     { bg: "bg-yellow-100", text: "text-yellow-600", hex: "#ca8a04" },
-    { bg: "bg-lime-100", text: "text-lime-600", hex: "#65a30d" },
+    { bg: "bg-sky-100", text: "text-primary", hex: "#a1deeb" },
     { bg: "bg-gray-100", text: "text-gray-600", hex: "#4b5563" },
     { bg: "bg-amber-100", text: "text-amber-600", hex: "#d97706" },
     { bg: "bg-slate-100", text: "text-slate-600", hex: "#475569" },
@@ -170,7 +170,7 @@ export function CategoryFormSheet({ open, onOpenChange, categoryToEdit, onSave, 
                                 disabled={!!categoryToEdit}
                                 className={cn(
                                     "h-12 flex-1 rounded-xl font-bold",
-                                    kind === "income" ? "bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-500/20" : "bg-white/50 dark:bg-white/5 border-white/20"
+                                    kind === "income" ? "bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20" : "bg-white/50 dark:bg-white/5 border-white/20"
                                 )}
                             >
                                 Entrata

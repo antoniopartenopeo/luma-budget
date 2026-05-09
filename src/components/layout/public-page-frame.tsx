@@ -4,9 +4,8 @@ import { AmbientBackdrop } from "./ambient-backdrop"
 import { PublicSiteFooter } from "./public-site-footer"
 import { BrandLogo } from "@/components/ui/brand-logo"
 import { Button } from "@/components/ui/button"
-import { LIQUID_CAPSULE_CLASS, LIQUID_REFRACTION_CLASS } from "@/components/ui/glass-tokens"
 import { cn } from "@/lib/utils"
-import { LANDING_HERO_EDITORIAL } from "@/features/landing/content"
+import { LANDING_HERO_EDITORIAL, LANDING_NAV_ITEMS } from "@/features/landing/content"
 
 interface PublicPageFrameProps {
   children: React.ReactNode
@@ -21,14 +20,26 @@ export function PublicPageFrame({
     <div className="relative min-h-screen overflow-x-clip bg-background selection:bg-primary/20">
       <AmbientBackdrop />
 
-      <header className="px-4 pt-4 sm:pt-6">
-        <div className={cn("mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 rounded-full px-4 py-3", LIQUID_CAPSULE_CLASS, LIQUID_REFRACTION_CLASS)}>
-          <Link href="/" aria-label="Torna alla landing">
-            <BrandLogo variant="full" height={26} className="w-auto max-w-[132px] opacity-95" />
+      <header className="px-5 pt-5 sm:px-8 lg:px-10">
+        <div className="mx-auto flex max-w-[92rem] items-center justify-between gap-5 text-slate-950 dark:text-white">
+          <Link href="/" aria-label="Torna alla landing" className="flex items-center transition-opacity hover:opacity-86">
+            <BrandLogo variant="full" height={44} className="w-auto max-w-[165px] opacity-100" priority sizes="165px" />
           </Link>
 
+          <nav className="hidden items-center gap-10 lg:flex">
+            {LANDING_NAV_ITEMS.map((item) => (
+              <Link
+                key={item.href}
+                href={`/${item.href}`}
+                className="text-[1.02rem] font-black text-slate-950 transition-colors hover:text-primary dark:text-white dark:hover:text-cyan-100"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
           <div className="flex items-center gap-2">
-            <Button asChild size="sm" className="rounded-full px-4 shadow-[0_18px_40px_-24px_rgba(14,165,168,0.55)]">
+            <Button asChild size="lg" className="rounded-xl bg-slate-950 px-6 text-base font-black text-white shadow-[0_18px_42px_-28px_rgba(2,6,23,0.62)] hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-white/90">
               <Link href={LANDING_HERO_EDITORIAL.primaryCtaHref}>
                 {LANDING_HERO_EDITORIAL.primaryCtaLabel}
                 <ArrowRight className="h-4 w-4" />
@@ -38,8 +49,8 @@ export function PublicPageFrame({
         </div>
       </header>
 
-      <main id="main-content" className="px-4 pb-24 pt-6 sm:pt-8">
-        <div className={cn("mx-auto max-w-6xl", className)}>{children}</div>
+      <main id="main-content" className="px-5 pb-24 pt-12 sm:px-8 sm:pt-16 lg:px-10">
+        <div className={cn("mx-auto max-w-[92rem]", className)}>{children}</div>
       </main>
 
       <PublicSiteFooter />

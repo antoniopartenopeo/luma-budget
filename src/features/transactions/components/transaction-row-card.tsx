@@ -141,7 +141,7 @@ function TransactionRowBody({
                     {transaction.type === "income" ? (
                         <Badge
                             variant="secondary"
-                            className="rounded-full border border-emerald-500/16 bg-emerald-500/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-emerald-700 dark:text-emerald-300"
+                            className="rounded-full border border-primary/16 bg-primary/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-primary dark:text-cyan-100"
                         >
                             Entrata
                         </Badge>
@@ -157,7 +157,7 @@ function TransactionRowBody({
                 <div
                     className={cn(
                         "shrink-0 text-[0.95rem] font-black tabular-nums tracking-tight",
-                        transaction.type === "income" ? "text-emerald-600 dark:text-emerald-300" : "text-foreground",
+                        transaction.type === "income" ? "text-primary dark:text-cyan-100" : "text-foreground",
                         getPrivacyClass(isPrivacyMode)
                     )}
                 >

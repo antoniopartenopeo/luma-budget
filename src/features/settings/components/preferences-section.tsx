@@ -131,7 +131,7 @@ export function PreferencesSection() {
                         </span>
                     )}
                     {saveStatus === "success" && (
-                        <span className="text-green-600 flex items-center">
+                        <span className="text-primary flex items-center">
                             <CheckCircle2 className="h-3 w-3 mr-2" /> Salvato
                         </span>
                     )}

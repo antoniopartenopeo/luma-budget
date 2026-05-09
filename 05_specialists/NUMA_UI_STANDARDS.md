@@ -90,37 +90,38 @@ Fonte canonica del copy:
 
 - `src/features/landing/data/landing.json` per il payload editoriale
 - `src/features/landing/content.ts` per tipi, icone e hydration del payload
-- `src/features/landing/preview-model.ts` per i numeri demo della hero/cover-flow
+- `src/features/landing/preview-model.ts` per eventuali numeri demo isolati
 - `src/features/landing/data.ts` resta solo un bridge di compatibilita e non va trattato come nuova fonte di verita.
 
 Pattern richiesto:
 1. hero immersivo con promessa prodotto verificabile e linguaggio utente
-2. anchor nav desktop compatta e non dispersiva
-3. trust strip sopra la piega con no-account, dati sul dispositivo e stima rileggibile
-4. cover-flow/preview demo derivati da cents curati, non da dati utente
+2. anchor nav desktop compatta nell'ordine concettuale della pagina, senza routing dispersivo
+3. problema, metodo, decisione, risultati e CTA devono essere sezioni riconoscibili e non ripetitive
+4. hero e preview demo derivati da contenuto curato, non da dati utente
 5. sezioni esplicative a blocchi (`MacroSection`) con motion minimo
-6. sezione statica `Come inizi` in 4 passaggi, senza scene animate dedicate
-7. opzionalmente un solo explainer immersivo dedicato al Brain/stima come approfondimento della fase estimate
-8. CTA finale esplicita su assenza account / dati sul dispositivo / controllo utente
+6. sezione statica `Come funziona` in 4 passaggi, senza scene animate dedicate
+7. opzionalmente un solo explainer immersivo dedicato al Brain come approfondimento della logica decisionale
+8. CTA finale esplicita e coerente con il passo successivo, senza duplicare la promessa hero
 9. CTA finale diretta all'app (`/dashboard`)
 10. support surface pubbliche reali per trust/FAQ/privacy senza affordance false
 
 Invarianti:
-- ordine narrativo bloccato: import -> controllo -> lettura del mese/stima -> prova di spesa -> pressione ricorrente/fissa
-- un eventuale focus Brain appartiene alla fase "stima", non apre una promessa autonoma di AI
+- ordine narrativo bloccato per job distinti: hero promessa -> problema -> metodo -> decisione Brain -> risultati -> CTA
+- un eventuale focus Brain appartiene alla fase "decisione/trasparenza", non apre una promessa autonoma di AI
 - copy pubblico solo su feature reali, niente hype generico
 - preview veritiere e isolate, mai dati utente reali
-- numeri preview derivati da `preview-model.ts` e domain money utilities, niente math monetaria ad hoc in componenti
+- numeri preview, se presenti, derivati da `preview-model.ts` e domain money utilities, niente math monetaria ad hoc in componenti
 - hero above the fold comprensibile in circa 5 secondi anche a chi non conosce il prodotto
 - sopra la piega evitare come lessico dominante `local-first`, `CSV`, `estratto conto`, `margine`, `Brain locale`, `Financial Lab`
 - termini tecnici ammessi solo se tradotti nello stesso blocco in linguaggio utente
 - navigazione pubblica limitata a anchor interne e route pubbliche intenzionali (`/dashboard`, `/transactions/import`, `/faq`, `/privacy`, `/updates`)
 - `/faq`, `/privacy` e `/updates` sono support surface standalone fuori `AppShell`; `/transactions/import` resta la route app-native raggiungibile anche dalla landing per prova sicura/demo
-- eventuale CTA secondaria hero ammessa verso `/transactions/import` per prova sicura/demo, senza presentarla come signup o sync flow
+- eventuale CTA secondaria hero ammessa solo se non indebolisce la chiarezza del primo viewport e resta esplicita come prova sicura/demo, senza presentarla come signup o sync flow
 - footer supporto solo con link reali a superfici pubbliche implementate
 - hero e explainers immersivi della landing devono restare lo stesso componente adattivo su desktop, smartphone e contesti `prefers-reduced-motion`; puo cambiare solo l'intensita del motion, non il pattern visivo
 - su mobile il primo viewport deve mantenere leggibile promessa, descrizione e CTA principale
-- il reveal finale del Brain hero deve richiudere il messaggio su controllo del mese e calma, non su promessa autonoma di AI
+- il reveal finale del Brain hero deve richiudere il messaggio su decisione leggibile e controllo umano, non su promessa autonoma di AI
+- ogni macro sezione deve avere un contenuto distinto: problema, metodo, logica, prova sociale e CTA non devono raccontare tutti "cosa resta" con formulazioni diverse
 - in dark la landing deve restare editoriale e quasi monocromatica: niente famiglie cromatiche concorrenti, il colore puo restare solo come eco minima
 
 ---

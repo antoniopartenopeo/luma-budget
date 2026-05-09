@@ -81,7 +81,7 @@ export default function TwitterImage() {
                 maxWidth: 820
               }}
             >
-              Capisci il mese prima che ti travolga.
+              Sai cosa puoi fare prima di spendere.
             </div>
 
             <div
@@ -93,7 +93,7 @@ export default function TwitterImage() {
                 maxWidth: 860
               }}
             >
-              Numa legge i tuoi movimenti, stima cosa potrebbe restarti e ti dice se una nuova spesa fissa e davvero sostenibile. Tutto in locale.
+              Numa mette in ordine i movimenti e ti mostra cosa resta prima di aggiungere una nuova spesa.
             </div>
           </div>
 
@@ -106,11 +106,11 @@ export default function TwitterImage() {
               color: "rgba(15,23,42,0.75)"
             }}
           >
-            <span>Tutto in locale</span>
+            <span>Mese più chiaro</span>
             <span>•</span>
-            <span>Zero cloud obbligatorio</span>
+            <span>Scelte prima</span>
             <span>•</span>
-            <span>Nessun account per iniziare</span>
+            <span>Dati sotto controllo</span>
           </div>
         </div>
       </div>

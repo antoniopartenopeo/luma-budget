@@ -42,7 +42,7 @@ export function TransactionsSummaryBar({ summary, isLoading }: TransactionsSumma
             value: formatCents(summary.totalIncome),
             icon: TrendingUp,
             tone: "positive",
-            valueClassName: "text-emerald-600 dark:text-emerald-400",
+            valueClassName: "text-primary dark:text-cyan-100",
             isMoney: true
         },
         {
@@ -59,7 +59,7 @@ export function TransactionsSummaryBar({ summary, isLoading }: TransactionsSumma
             icon: Wallet,
             tone: netBalanceTone,
             valueClassName: netBalanceTone === "positive"
-                ? "text-emerald-700 dark:text-emerald-300"
+                ? "text-primary dark:text-cyan-100"
                 : "text-rose-700 dark:text-rose-300",
             isMoney: true
         },

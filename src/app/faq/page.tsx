@@ -1,9 +1,8 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { ArrowRight, FileSpreadsheet, HardDriveDownload, ShieldCheck } from "lucide-react"
+import { ArrowRight, ChevronDown, FileSpreadsheet, HardDriveDownload, ShieldCheck } from "lucide-react"
 import { PublicPageFrame } from "@/components/layout/public-page-frame"
 import { PublicSupportIntro, PublicSupportSurface } from "@/components/layout/public-support-surface"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { PUBLIC_FAQ_ITEMS } from "@/features/landing/public-support-content"
 
@@ -23,22 +22,22 @@ export default function FaqPage() {
         />
 
         <PublicSupportSurface className="p-4 sm:p-6">
-          <Accordion type="single" collapsible className="w-full">
-            {PUBLIC_FAQ_ITEMS.map((item, index) => (
-              <AccordionItem
+          <div className="w-full">
+            {PUBLIC_FAQ_ITEMS.map((item) => (
+              <details
                 key={item.question}
-                value={`faq-${index}`}
-                className="border-b border-black/6 px-2 last:border-b-0 dark:border-white/8"
+                className="group border-b border-black/6 px-2 last:border-b-0 dark:border-white/8"
               >
-                <AccordionTrigger className="text-left text-base font-semibold tracking-tight text-foreground hover:no-underline sm:text-lg">
-                  {item.question}
-                </AccordionTrigger>
-                <AccordionContent className="max-w-[60ch] text-sm font-normal leading-relaxed text-muted-foreground sm:text-[15px]">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-left text-base font-semibold tracking-tight text-foreground transition-colors hover:text-primary sm:text-lg [&::-webkit-details-marker]:hidden">
+                  <span>{item.question}</span>
+                  <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200 group-open:rotate-180" />
+                </summary>
+                <div className="max-w-[60ch] pb-4 pt-0 text-sm font-normal leading-relaxed text-muted-foreground sm:text-[15px]">
                   {item.answer}
-                </AccordionContent>
-              </AccordionItem>
+                </div>
+              </details>
             ))}
-          </Accordion>
+          </div>
         </PublicSupportSurface>
 
         <section className="grid gap-4 md:grid-cols-3">

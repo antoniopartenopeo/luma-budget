@@ -52,18 +52,22 @@ vi.mock("@/hooks/use-device-hardware", () => ({
 }))
 
 describe("LandingBrainHero", () => {
-  it("displays the cinematic Brain explainer with the predictive engine copy", () => {
+  it("displays the fused cash-flow map with the predictive engine copy", () => {
     render(<LandingBrainHero />)
 
+    expect(screen.getByText("Una curva che spiega la risposta.")).toBeInTheDocument()
+    expect(screen.getByText(/Numa non chiede di fidarti/i)).toBeInTheDocument()
     LANDING_BRAIN_CONTENT.acts.forEach((act) => {
-      expect(screen.getByText(act.kicker)).toBeInTheDocument()
+      expect(screen.getAllByText(act.kicker).length).toBeGreaterThan(0)
       expect(screen.getByRole("heading", { name: act.titleLines.join(" ") })).toBeInTheDocument()
       expect(screen.getByText(act.description)).toBeInTheDocument()
     })
     expect(screen.getByTestId("landing-brain-estimate-graph")).toBeInTheDocument()
     expect(screen.getByRole("img", { name: /Curva Numa/i })).toBeInTheDocument()
-    expect(screen.getAllByText("Dati caricati").length).toBeGreaterThanOrEqual(1)
-    expect(screen.getByText("Niente magie")).toBeInTheDocument()
+    expect(screen.getByText("Dati reali")).toBeInTheDocument()
+    expect(screen.getAllByText("Ricorrenze").length).toBeGreaterThan(0)
+    expect(screen.getAllByText("Scenario").length).toBeGreaterThan(0)
+    expect(screen.getAllByText("Ci sta").length).toBeGreaterThanOrEqual(1)
     expect(screen.queryByText(/SYNC_BANK_API/i)).not.toBeInTheDocument()
   })
 })

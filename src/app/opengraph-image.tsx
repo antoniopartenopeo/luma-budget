@@ -103,7 +103,7 @@ export default function OpenGraphImage() {
                   color: "#0f172a"
                 }}
               >
-                Capisci il mese prima che ti travolga.
+                Sai cosa puoi fare prima di spendere.
               </div>
               <div
                 style={{
@@ -113,13 +113,13 @@ export default function OpenGraphImage() {
                   color: "rgba(15,23,42,0.78)"
                 }}
               >
-                Numa legge i tuoi movimenti, stima cosa potrebbe restarti e ti dice se una nuova spesa fissa e davvero sostenibile. Tutto in locale.
+                Numa mette in ordine i movimenti e ti mostra cosa resta prima di aggiungere una nuova spesa.
               </div>
             </div>
           </div>
 
           <div style={{ display: "flex", gap: 16 }}>
-            {["Tutto in locale", "Zero cloud obbligatorio", "Nessun account per iniziare"].map((pill) => (
+            {["Mese più chiaro", "Scelte prima", "Dati sotto controllo"].map((pill) => (
               <div
                 key={pill}
                 style={{

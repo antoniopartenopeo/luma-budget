@@ -31,7 +31,7 @@ function resolveMetadataBase(): URL {
 
 export const metadata: Metadata = {
   title: "NUMA Budget",
-  description: "App locale-first per capire spese, margine, insight e scenari senza dipendere dal cloud.",
+  description: "App per capire cosa resta nel mese prima di aggiungere una nuova spesa.",
   applicationName: "NUMA Budget",
   metadataBase: resolveMetadataBase(),
   manifest: "/manifest.webmanifest",
@@ -50,14 +50,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "NUMA Budget",
-    title: "NUMA Budget | Finanza Personale Consapevole",
-    description: "Finanza personale local-first per leggere il mese con più chiarezza, senza dipendere dal cloud.",
+    title: "NUMA Budget | Sai cosa puoi fare prima di spendere",
+    description: "Metti in ordine movimenti, spese e decisioni prima di dire sì.",
     images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "NUMA Budget | Finanza Personale Consapevole",
-    description: "Finanza personale local-first per leggere il mese con più chiarezza, senza dipendere dal cloud.",
+    title: "NUMA Budget | Sai cosa puoi fare prima di spendere",
+    description: "Metti in ordine movimenti, spese e decisioni prima di dire sì.",
     images: ["/twitter-image"],
   },
 };

@@ -30,7 +30,7 @@ vi.mock("@/features/categories/api/use-categories", () => ({
                 id: "stipendio",
                 label: "Stipendio",
                 kind: "income",
-                color: "text-emerald-900 bg-emerald-100",
+                color: "text-primary bg-primary/10",
                 hexColor: "#047857",
                 iconName: "banknote",
                 spendingNature: "comfort",

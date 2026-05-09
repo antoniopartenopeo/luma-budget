@@ -3,12 +3,12 @@
 scope: ux-governance
 owner: governance
 status: active
-last-verified: 2026-04-28
+last-verified: 2026-05-09
 canonical-of: ux-policy
 
 > **Stato:** Active
 > **Versione:** 2.2
-> **Ultimo aggiornamento:** 2026-04-28
+> **Ultimo aggiornamento:** 2026-05-09
 
 Linee guida UX ad alto livello per mantenere fiducia, chiarezza e coerenza cross-feature.
 
@@ -112,10 +112,11 @@ Per processi tecnici estesi (es. training locale Neural Core), mostrare progress
 - Privacy e local execution vanno raccontati come rassicurazione concreta, non come infrastruttura da addetti ai lavori.
 - Termini come `local-first`, `CSV`, `estratto conto`, `margine`, `Brain locale` e `Financial Lab` non devono guidare la prima scansione della hero pubblica.
 - Il copy pubblico deve descrivere solo capacita verificabili nei moduli attivi del prodotto, evitando hype su AI, cloud o automazioni non dimostrate.
-- L'ordine narrativo canonico resta: movimenti gia posseduti -> controllo di cio che Numa ha letto -> stima leggibile del mese -> prova di una possibile spesa -> pressione dei costi ricorrenti/fissi.
-- La spiegazione operativa del flusso pubblico deve vivere in una sezione statica `Come inizi` in quattro passaggi, non in una hero separata che duplica la stessa narrativa con scene animate.
-- Eventuali interludi dedicati al Brain devono rafforzare trasparenza di stima, readiness e fallback, non spostare la promessa su predizioni assolute o su una promessa AI autonoma.
-- La hero e il cover-flow possono mostrare numeri demo solo se derivati da un modello curato e verificabile; devono rendere esplicita la formula o il fatto che la prova non modifica i movimenti reali.
+- L'ordine narrativo canonico resta per job distinti: promessa prodotto -> problema -> metodo operativo -> logica decisionale -> risultati -> CTA.
+- La spiegazione operativa del flusso pubblico deve vivere in una sezione statica `Come funziona` in quattro passaggi, non in una hero separata che duplica la stessa narrativa con scene animate.
+- Eventuali interludi dedicati al Brain devono rafforzare trasparenza decisionale, readiness e fallback, non spostare la promessa su predizioni assolute o su una promessa AI autonoma.
+- La hero e le preview possono mostrare numeri demo solo se derivati da un modello curato e verificabile; devono rendere esplicita la formula o il fatto che la prova non modifica i movimenti reali.
+- Ogni macro sezione della landing deve introdurre un'informazione nuova: vietato ripetere la stessa promessa con parole diverse tra problema, metodo, Brain e risultati.
 - Il primo viewport deve includere trust leggibile senza gergo: nessun account per iniziare, dati sul dispositivo, stima rileggibile o controllabile.
 - La CTA primaria resta l'ingresso nell'app (`/dashboard`), non signup forzato o routing dispersivo.
 - Una CTA secondaria puo portare a una prova sicura via `/transactions/import`, ma deve restare esplicita sul fatto che si tratta di import/demo e non di onboarding remoto.

@@ -3,7 +3,7 @@
 scope: session-handoff
 owner: engineering
 status: active
-last-verified: 2026-05-07
+last-verified: 2026-05-09
 canonical-of: session-handoff
 
 ## Current State
@@ -14,15 +14,14 @@ canonical-of: session-handoff
 - Public landing page now lives at `/` and the operational dashboard now lives at `/dashboard`
 - Premium UI Phase: `PullToRefresh`, `ScrollToTop`, and `AppleFluidBackground` master primitive implemented and integrated into the global layout to ensure perfect rendering across all heroes.
 - Landing page evolved with interactive previews (Mar 17).
-- Landing governance now treats `/` as a constrained acquisition surface with anchored navigation, a static four-step `Come inizi` explainer, and highly vetted product-truth copy.
-- A dedicated Brain explainer now lives inside the landing forecast stage and is governed as an immersive cinematic deep dive (`LandingBrainHero`).
+- Landing governance now treats `/` as a constrained acquisition surface with anchored navigation, a static four-step `Come funziona` explainer, and highly vetted product-truth copy.
+- A dedicated Brain explainer now lives inside the landing decision-logic stage and is governed as an immersive cinematic deep dive (`LandingBrainHero`).
 - Any user-visible change now closes with the canonical findings-first ritual in `04_execution/USER_VISIBLE_CHANGE_RITUAL.md`, not only with implementation and tests.
 - The entire landing page has undergone a rigid linguistic and responsive typography audit to perfectly align with Apple-style standards, capping all hero titles to `text-7xl` and fixing all Italian accents.
 - Landing immersive heroes now keep the same adaptive visual pattern on smartphone and under `prefers-reduced-motion`; only the motion amplitude changes.
-- Latest landing pass on 2026-04-28 simplified first-scan copy around "il tuo mese, piu chiaro", added explicit trust items, moved hero/cover-flow demo math into `src/features/landing/preview-model.ts`, and reframed Brain as `La stima di Numa`.
-- Latest landing structure pass on 2026-05-04 reduced `/` to five macro sections: hero, problem/demo, `Come inizi`, graph-backed Brain/stima, and outcomes with the final CTA; the old standalone `Differenza` macro is now folded into `Come inizi` and its graph visual is fused into Brain.
-- Latest landing editorial pass on 2026-05-05 reframed visible copy away from internal finance terms, changed `Come funziona` to a premium bento rhythm, and adapted the Brain graph reference into one light/dark theme-aware curve visual.
-- Latest landing visual alignment pass on 2026-05-07 moved modular cards to layered edge-lit glass and reduced `Come funziona` to four primary bento cards plus a compact signal strip; fixed/scroll light rail bands were removed after dark-mode visual review.
+- Latest landing pass on 2026-05-09 separates `/` into six distinct acquisition jobs: hero promise, problem framing, operational `Come funziona`, Brain decision logic, outcomes, and final CTA.
+- Current landing copy avoids making every section repeat "what remains"; problem, method, Brain, proof and action now each introduce a different idea.
+- Latest landing visual alignment pass on 2026-05-07 moved modular cards to layered edge-lit glass and reduced card density; fixed/scroll light rail bands were removed after dark-mode visual review.
 - FAQ/privacy support copy now centers demo/import, data on device, no mandatory account or bank connection, and cleartext JSON backup risk.
 - Dashboard `Composizione spese` is now a frozen surface: do not modify it in cleanup, sweep, refactor, audit-fix, or motion standardization unless the request names it explicitly.
 - Repository-wide audit on 2026-04-01 corrected governance drift in the audit specialist/process and logged explicit follow-up items for source-label semantics, `transition-all`, and period-filter consistency.
@@ -39,7 +38,7 @@ canonical-of: session-handoff
 
 - Keep scripts, tests, CI, and specialist files aligned with the root scaffold paths.
 - Re-audit landing reduced-motion behavior and public-link constraints whenever `src/features/landing/*` changes materially.
-- Re-audit landing preview model tests whenever `landing.json`, `content.ts`, `landing-previews.tsx`, `landing-brain-hero.tsx`, or public support copy changes.
+- Re-audit landing narrative and preview tests whenever `landing.json`, `content.ts`, `landing-page.tsx`, `landing-hero-editorial.tsx`, `landing-brain-hero.tsx`, or public support copy changes.
 - For any user-visible change, run the ritual first and promote repeated findings to governance instead of leaving them implicit in review.
 - Resolve forecast provenance label drift so runtime copy matches the governed `Fonte Core` / `Fonte Storico` terminology.
 - Triage `transition-all` occurrences against `01_rules/UI_EXECUTION_STANDARDS.md` and replace them with explicit transition properties where possible.

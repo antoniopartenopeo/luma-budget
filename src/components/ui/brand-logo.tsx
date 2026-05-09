@@ -22,8 +22,8 @@ export function BrandLogo({
 
     // Match the intrinsic asset ratios so Next/Image does not flag
     // single-dimension resizing as aspect-ratio distortion.
-    const defaultWidth = isSmart ? 504 : 1024
-    const defaultHeight = isSmart ? 395 : 321
+    const defaultWidth = isSmart ? 414 : 1024
+    const defaultHeight = 321
     const aspectRatio = defaultWidth / defaultHeight
     const resolvedWidth = width ?? (height ? Math.round(height * aspectRatio) : defaultWidth)
     const resolvedHeight = height ?? (width ? Math.round(width / aspectRatio) : defaultHeight)
@@ -31,7 +31,7 @@ export function BrandLogo({
     return (
         <div className={cn("relative inline-flex shrink-0 items-center justify-center", className)}>
             <Image
-                src={isSmart ? "/brand/numa-logo-smart.png" : "/brand/numa-logo-full.png"}
+                src={isSmart ? "/brand/numa-logo-mark.svg" : "/brand/numa-logo-full.svg"}
                 alt="NUMA Budget"
                 width={resolvedWidth}
                 height={resolvedHeight}

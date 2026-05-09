@@ -16,8 +16,8 @@ export function AppShell({ children }: AppShellProps) {
             <div className="relative h-full w-full overflow-hidden">
                 <TopBar />
                 <main id="main-content" className="h-[calc(100vh-80px)] w-full lg:pl-64">
-                    <PullToRefresh className="px-4 pb-10 md:px-8 lg:pl-[2rem]">
-                        <div className="space-y-8 pt-3 sm:pt-4 lg:pt-6">
+                    <PullToRefresh className="px-4 pb-10 md:px-8 lg:px-10">
+                        <div className="mx-auto w-full max-w-[92rem] space-y-8 pt-3 sm:pt-4 lg:pt-6">
                             {children}
                         </div>
                     </PullToRefresh>

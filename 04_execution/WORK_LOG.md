@@ -3,7 +3,7 @@
 scope: execution-work-log
 owner: engineering
 status: active
-last-verified: 2026-05-07
+last-verified: 2026-05-09
 canonical-of: execution-work-log
 
 ## 2026-03-15
@@ -78,3 +78,9 @@ canonical-of: execution-work-log
 - Strengthened the landing visual system after user review: `LandingEditorialCardFrame` now uses layered glass streaks instead of the repeated top-right glow, and `CinematicScrollCard` exposes a more visible edge-lit hover border.
 - Removed the attempted fixed/scroll light rail after visual review because it created visible green bands in dark mode; the canonical treatment remains layered glass plus edge-lit borders.
 - Reworked `Come funziona` from a seven-card cluster into four primary bento steps plus a compact three-signal glass strip, improving visual hierarchy and reducing scattered modular density.
+
+## 2026-05-09
+
+- Reworked the public landing narrative so each macro section has a separate job: product promise, problem, operational method, Brain decision logic, outcomes, and final CTA.
+- Updated landing copy and tests to reduce repeated "what remains" messaging and keep Brain positioned as transparent decision support rather than an autonomous AI promise.
+- Re-aligned canonical governance, specialist UI guidance, requirements, architecture, playbook, decision log, handoff, README, and changelog with the new landing structure.

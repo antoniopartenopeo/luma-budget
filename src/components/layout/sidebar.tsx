@@ -61,14 +61,14 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
 
   return (
     <aside className={cn(
-      "flex h-full w-full flex-col border-r border-white/35 text-foreground glass-chrome dark:border-white/8",
+      "flex h-full w-full flex-col border-r border-slate-950/8 bg-white/68 text-foreground shadow-[24px_0_90px_-70px_rgba(15,23,42,0.42)] backdrop-blur-2xl dark:border-white/8 dark:bg-black/58",
       className
     )}>
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
         {/* Logo Area */}
-        <div className="flex h-20 items-center px-6">
+        <div className="flex h-20 items-center border-b border-slate-950/6 px-6 dark:border-white/8">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <BrandLogo variant="full" height={28} />
+            <BrandLogo variant="full" height={40} className="max-w-[150px]" />
           </Link>
         </div>
 
@@ -85,10 +85,10 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
                     variant="ghost"
                     onClick={() => handleParentClick(item.href, hasChildren)}
                     className={cn(
-                      "relative w-full justify-start gap-3 overflow-hidden rounded-xl px-4 py-6 text-sm font-medium",
+                      "relative w-full justify-start gap-3 overflow-hidden rounded-xl px-4 py-6 text-sm font-black transition-[background-color,border-color,color,box-shadow,transform] duration-300",
                       isActive
-                        ? "bg-primary/10 text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] hover:bg-primary/15 hover:text-primary"
-                        : "text-foreground/75 hover:bg-white/50 hover:text-foreground dark:hover:bg-white/5"
+                        ? "border border-primary/18 bg-primary/10 text-primary shadow-[0_18px_44px_-34px_rgba(15,23,42,0.42),inset_0_1px_0_rgba(255,255,255,0.34)] hover:bg-primary/14 hover:text-primary"
+                        : "text-foreground/70 hover:bg-white/62 hover:text-foreground hover:shadow-[0_16px_36px_-32px_rgba(15,23,42,0.35)] dark:hover:bg-white/[0.055]"
                     )}
                   >
                     <item.icon className={cn("h-4 w-4", isActive ? "text-primary" : "text-foreground/75")} />
@@ -133,10 +133,10 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
 
         {/* Trust Badge Footer */}
         <div className="p-4 mt-auto mb-2">
-          <div className="flex items-center gap-3 rounded-xl border border-primary/25 bg-primary/10 px-3 py-3 text-primary dark:border-primary/20 dark:bg-primary/5">
+          <div className="flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/[0.075] px-3 py-3 text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.34)] dark:border-white/10 dark:bg-white/[0.045] dark:text-cyan-100">
             <ShieldCheck className="h-5 w-5 shrink-0 opacity-90" />
             <div className="flex flex-col gap-0.5">
-              <span className="text-[10px] font-bold uppercase tracking-wider">AI locale &bull; Crittografato</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider">Privato &bull; Locale</span>
               <span className="text-[9px] font-medium opacity-85 leading-tight text-foreground/80 dark:text-muted-foreground">Privacy sul dispositivo</span>
             </div>
           </div>

@@ -3,7 +3,7 @@
 scope: system-architecture
 owner: engineering
 status: active
-last-verified: 2026-05-07
+last-verified: 2026-05-09
 canonical-of: architecture
 
 > Principles: feature-first modules, domain isolation, local-first persistence, explicitly gated remote integrations, deterministic narration.
@@ -57,17 +57,17 @@ Open banking routes are present in codebase but remain fail-closed unless `NUMA_
 ### Landing (`src/features/landing/*`)
 
 - Public acquisition layer, separate from the authenticated or operational app shell
-- Uses curated story data and preview models to explain live product capabilities without requiring user data
+- Uses curated story data and isolated demo visuals to explain live product capabilities without requiring user data
 - Landing copy is sourced from `src/features/landing/data/landing.json`, hydrated and typed through `src/features/landing/content.ts`; `src/features/landing/data.ts` remains a compatibility bridge only.
-- Hero/cover-flow math is isolated in `src/features/landing/preview-model.ts`, uses cents and domain money formatters, and never reads transaction/settings repositories.
+- Any landing preview math remains isolated in `src/features/landing/preview-model.ts`, uses cents and domain money formatters, and never reads transaction/settings repositories.
 - Works alongside intentionally public trust and safe-trial routes (`/transactions/import`, `/faq`, `/privacy`, `/updates`) that stay publicly reachable without duplicating the app/navigation model
 - Dedicated trust pages (`/faq`, `/privacy`, `/updates`) stay outside the operational app shell, while the safe-trial import route (`/transactions/import`) keeps `AppShell` when opened directly
-- The canonical product flow on `/` is now compressed into five macro sections: hero, problem/demo, bento `Come funziona`, Brain transparency, and outcomes with the final CTA.
-- `Come inizi` remains the operational four-step explainer: load movements, review what Numa read, read the remaining-space estimate, and test a possible expense; supporting signals that previously lived in a separate difference block are now subordinate to this section.
+- The canonical product flow on `/` is now separated into distinct macro sections: hero promise, problem framing, static `Come funziona` operational flow, Brain decision logic, outcomes/social proof, and final CTA.
+- `Come funziona` remains the operational four-step explainer: load existing movements, let Numa organize the month, test a possible new expense, and get a clear answer before deciding.
 - May include isolated immersive explainers for specific modules such as Brain, but those explainers still operate on curated public preview state
-- The current Brain explainer is a dedicated scroll interlude with a theme-aware graph curve, layered motion, and public-facing reveal copy, still scoped as presentation-only and not backed by live forecast repositories
+- The current Brain explainer is a dedicated curve-based decision-logic section, showing how real data, recurring costs, and a possible scenario become one answer; it remains presentation-only and is not backed by live forecast repositories
 - Modular landing cards use the shared `LandingEditorialCardFrame` plus `CinematicScrollCard` for scroll reveal, reduced hover tilt, and edge-lit borders; internal hover torch/fog effects and viewport rail bands are no longer part of the canonical card treatment.
-- The `Come funziona` landing section keeps four primary bento steps and folds secondary differentiator points into a compact glass signal strip, avoiding a scattered multi-card cluster.
+- Landing sections must stay conceptually distinct: problem states the pain, `Come funziona` states the method, Brain states the decision logic, outcomes state user benefit, and CTA states the next action.
 - Immersive landing heroes and explainers must remain component-identical across device sizes and reduced-motion contexts, with only motion intensity adapting
 - May reuse pure domain formatters for product-truth rendering, but does not read repositories or mutate persisted financial state
 
@@ -101,7 +101,7 @@ Open banking routes are present in codebase but remain fail-closed unless `NUMA_
 
 ## 4) Data and State Flow
 
-1. The landing uses curated static story data, a cents-backed preview model, and preview components to explain the product without loading live user repositories.
+1. The landing uses curated static story data and isolated preview components to explain the product without loading live user repositories.
 2. Repositories read and write local storage.
 3. Feature hooks expose state through React Query.
 4. URL-backed filters preserve deep-linkable temporal context where relevant.

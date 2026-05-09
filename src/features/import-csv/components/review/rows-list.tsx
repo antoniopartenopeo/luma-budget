@@ -53,7 +53,7 @@ export function RowsList({ rows, showMore = 0, variant = "default" }: RowsListPr
                     <div className={cn(
                         "ml-2 shrink-0 text-sm font-semibold tabular-nums",
                         r.amountCents >= 0
-                            ? "text-emerald-600 dark:text-emerald-300"
+                            ? "text-primary dark:text-cyan-100"
                             : "text-rose-600 dark:text-rose-300"
                     )}>
                         {formatCents(r.amountCents)}

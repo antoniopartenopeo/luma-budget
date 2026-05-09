@@ -144,7 +144,7 @@ export function TransactionForm({
                     className={cn(
                         "flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-[background-color,color,box-shadow] duration-200",
                         type === "income"
-                            ? "bg-white dark:bg-white/10 text-emerald-600 shadow-md"
+                            ? "bg-white dark:bg-white/10 text-primary shadow-md"
                             : "text-muted-foreground hover:bg-white/10 hover:text-foreground"
                     )}
                 >

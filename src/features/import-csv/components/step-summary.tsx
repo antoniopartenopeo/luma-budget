@@ -108,7 +108,7 @@ export function ImportStepSummary({
                                 damping: 15,
                                 delay: 0.1
                             }}
-                            className="flex h-24 w-24 items-center justify-center rounded-full border-[6px] border-emerald-500/20 bg-emerald-100 text-emerald-600 shadow-xl shadow-emerald-500/20 dark:border-emerald-500/30 dark:bg-emerald-900/40 dark:text-emerald-400"
+                            className="flex h-24 w-24 items-center justify-center rounded-full border-[6px] border-primary/20 bg-primary/10 text-primary shadow-xl shadow-primary/20 dark:border-primary/30 dark:bg-primary/10 dark:text-cyan-100"
                         >
                             <CheckCircle2 className="h-12 w-12" />
                         </motion.div>
@@ -199,7 +199,7 @@ export function ImportStepSummary({
                         value={formatCents(stats.income)}
                         icon={TrendingUp}
                         tone="positive"
-                        valueClassName="text-2xl sm:text-3xl lg:text-4xl text-emerald-700 dark:text-emerald-300"
+                        valueClassName="text-2xl sm:text-3xl lg:text-4xl text-primary dark:text-cyan-100"
                         className="h-full"
                     />
                     <KpiCard

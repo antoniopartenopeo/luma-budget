@@ -22,8 +22,8 @@ const IMPORT_FLOW_STEPS = [
     },
     {
         icon: ShieldCheck,
-        colorClass: "text-emerald-500",
-        bgClass: "bg-emerald-500/10",
+        colorClass: "text-primary",
+        bgClass: "bg-primary/10",
         stepLabel: "Passo 3",
         title: "Conferma finale",
         description: "Prima di salvare controlli un riepilogo semplice e completo."

@@ -223,7 +223,7 @@ export function ImportStepReview({
                     icon={PlusCircle}
                     tone="positive"
                     className="h-full"
-                    valueClassName="text-2xl sm:text-3xl lg:text-4xl text-emerald-700 dark:text-emerald-300"
+                    valueClassName="text-2xl sm:text-3xl lg:text-4xl text-primary dark:text-cyan-100"
                 />
                 <KpiCard
                     compact

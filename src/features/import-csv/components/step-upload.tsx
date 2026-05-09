@@ -206,7 +206,7 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
                 <div
                     className={cn(
                         "relative flex min-h-[300px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-[2rem] border-2 border-dashed p-8 text-center transition-[border-color,background-color,transform] duration-200",
-                        fileName ? "border-emerald-500/30 bg-emerald-500/5" :
+                        fileName ? "border-primary/30 bg-primary/5" :
                             isDragging ? "border-primary/50 bg-primary/10 scale-[1.02]" :
                                 "border-border/60 bg-muted/20 hover:border-primary/40 hover:bg-muted/40"
                     )}
@@ -247,12 +247,12 @@ export function ImportStepUpload({ onContinue, onClose }: ImportStepUploadProps)
                             </div>
                         ) : fileName ? (
                             <div className="w-full max-w-sm space-y-4">
-                                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/15 text-primary dark:text-cyan-100">
                                     <CheckCircle2 className="h-7 w-7" />
                                 </div>
                                 <div className="space-y-1">
                                     <p className="truncate text-lg font-semibold tracking-tight text-foreground">{fileName}</p>
-                                    <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">File elaborato con successo</p>
+                                    <p className="text-sm font-medium text-primary dark:text-cyan-100">File elaborato con successo</p>
                                 </div>
                                 <div className="pt-2">
                                     <Button

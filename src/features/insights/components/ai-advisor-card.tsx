@@ -42,8 +42,8 @@ export function NumaAdvisorHowItWorksCard({ forecast, facts, className }: NumaAd
                 },
                 {
                     icon: Search,
-                    colorClass: "text-emerald-500",
-                    bgClass: "bg-emerald-500/10",
+                    colorClass: "text-primary",
+                    bgClass: "bg-primary/10",
                     stepLabel: "2. Fonte stima",
                     title: "Core quando pronto",
                     description: "Se il Brain è pronto usiamo la sua stima del mese in corso, altrimenti una stima prudente basata sullo storico."
@@ -215,7 +215,7 @@ function AIAdvisorCardView({ forecast, subscriptions, isLoading: aiLoading }: AI
                     <motion.div variants={itemVariants}>
                         <SubSectionCard
                             label="Saldo totale stimato"
-                            icon={<TrendingUp className="h-4 w-4 text-emerald-500" />}
+                            icon={<TrendingUp className="h-4 w-4 text-primary" />}
                             extra={
                                 <div className="flex flex-wrap items-center gap-2">
                                     <div className={cn(
@@ -229,7 +229,7 @@ function AIAdvisorCardView({ forecast, subscriptions, isLoading: aiLoading }: AI
                                     <div className={cn(
                                         "px-3 py-1.5 rounded-xl border text-[10px] font-bold uppercase tracking-wider",
                                         forecast.confidence === "high"
-                                            ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                                            ? "bg-primary/10 text-primary border-primary/20"
                                             : forecast.confidence === "medium"
                                                 ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
                                                 : "bg-rose-500/10 text-rose-600 border-rose-500/20"

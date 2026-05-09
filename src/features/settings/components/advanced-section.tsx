@@ -183,7 +183,7 @@ export function AdvancedSection() {
                                                     <TableCell className="font-mono text-xs text-muted-foreground">{item.key}</TableCell>
                                                     <TableCell>
                                                         {item.present ? (
-                                                            <span className="text-green-600 font-medium text-xs">Presente</span>
+                                                            <span className="text-primary font-medium text-xs">Presente</span>
                                                         ) : (
                                                             <span className="text-muted-foreground text-xs">Mancante</span>
                                                         )}
@@ -210,7 +210,7 @@ export function AdvancedSection() {
                                     >
                                         {copyFeedback === "success" ? (
                                             <>
-                                                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                                <CheckCircle2 className="h-4 w-4 text-primary" />
                                                 Copiato
                                             </>
                                         ) : copyFeedback === "error" ? (
@@ -245,7 +245,7 @@ export function AdvancedSection() {
                         description="Azioni irreversibili sui dati salvati nell'app."
                     >
                         {status && (
-                            <Alert variant={status.type === "success" ? "default" : "destructive"} className={`mb-6 ${status.type === "success" ? "border-green-500/20 bg-green-500/5 text-green-600 dark:text-green-400" : ""}`}>
+                            <Alert variant={status.type === "success" ? "default" : "destructive"} className={`mb-6 ${status.type === "success" ? "border-primary/20 bg-primary/5 text-primary dark:text-cyan-100" : ""}`}>
                                 {status.type === "success" ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
                                 <AlertTitle>{status.type === "success" ? "Operazione completata" : "Errore"}</AlertTitle>
                                 <AlertDescription>{status.message}</AlertDescription>

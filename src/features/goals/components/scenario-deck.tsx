@@ -90,8 +90,8 @@ export function ScenarioDeck({
                         },
                         {
                             icon: ShieldCheck,
-                            colorClass: "text-emerald-500",
-                            bgClass: "bg-emerald-500/10",
+                            colorClass: "text-primary",
+                            bgClass: "bg-primary/10",
                             stepLabel: FINANCIAL_LAB_COPY.scenarioDeck.steps[2].stepLabel,
                             title: FINANCIAL_LAB_COPY.scenarioDeck.steps[2].title,
                             description: FINANCIAL_LAB_COPY.scenarioDeck.steps[2].description
@@ -207,7 +207,7 @@ export function ScenarioDeck({
                                     <p className="text-[11px] uppercase tracking-wide font-bold text-foreground/85">{realtimeStepLabel}</p>
                                     <p className={cn(
                                         "mt-1 text-base font-semibold tabular-nums",
-                                        marginDeltaCents < 0 ? "text-amber-500" : marginDeltaCents > 0 ? "text-emerald-500" : "text-muted-foreground"
+                                        marginDeltaCents < 0 ? "text-amber-500" : marginDeltaCents > 0 ? "text-primary" : "text-muted-foreground"
                                     )}>
                                         {marginDeltaSign}{formatCents(marginDeltaCents, currency, locale)}
                                         {scenario.quota.realtimeWindowMonths > 0 ? ` (${marginDeltaPctSign}${marginDeltaPct}%)` : ""}

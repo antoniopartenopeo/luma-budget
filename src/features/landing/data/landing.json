@@ -1,9 +1,9 @@
 {
   "HERO_EDITORIAL": {
-    "srTitle": "Numa Budget. Sai se puoi permettertelo.",
-    "headline": "Sai se puoi permettertelo.",
-    "supportingCopy": "Carica i movimenti. Numa mette il mese in ordine e ti dà una risposta prima di spendere.",
-    "primaryCtaLabel": "Inizia senza account",
+    "srTitle": "Numa Budget. Pianifica i tuoi soldi con una risposta chiara.",
+    "headline": "Pianifica i tuoi soldi con una risposta chiara.",
+    "supportingCopy": "Vedi cosa entra, cosa esce e quanto resta prima di aggiungere una nuova spesa.",
+    "primaryCtaLabel": "Guarda demo",
     "primaryCtaHref": "/dashboard",
     "trustItems": [
       "Parti subito",
@@ -12,56 +12,56 @@
     ]
   },
   "NAV_ITEMS": [
-    { "href": "#problema", "label": "Perché" },
+    { "href": "#problema", "label": "Il problema" },
     { "href": "#come-inizi", "label": "Come funziona" },
-    { "href": "#brain-hero", "label": "Numa" },
-    { "href": "#outcomes", "label": "Risultato" }
+    { "href": "#brain-hero", "label": "Come decide" },
+    { "href": "#outcomes", "label": "Risultati" }
   ],
   "PROBLEM_SECTION": {
-    "eyebrow": "Perche serve",
-    "title": "Il saldo non racconta tutto.",
-    "description": "Vedi quanto hai oggi, ma non quello che sta per uscire. Numa ti aiuta a decidere prima, non dopo.",
-    "statement": "Numa trasforma movimenti sparsi in una risposta semplice sul mese."
+    "eyebrow": "Il problema",
+    "title": "Il saldo da solo non basta.",
+    "description": "La banca ti mostra cosa è successo. Il foglio ti chiede di rifare i conti. La scelta resta comunque tua, spesso a memoria.",
+    "statement": "Numa nasce per unire quei pezzi prima che diventino un dubbio."
   },
   "DIFFERENTIATORS": [
     {
       "icon": "BrainCircuit",
-      "title": "Il mese prende forma",
+      "title": "Il mese diventa leggibile",
       "kicker": "A colpo d'occhio",
-      "note": "Soldi in arrivo, spese e costi abituali stanno nello stesso racconto."
+      "note": "Entrate, uscite e costi abituali finiscono nello stesso quadro."
     },
     {
       "icon": "ArrowDownUp",
-      "title": "Le sorprese vengono fuori",
+      "title": "Le sorprese escono prima",
       "kicker": "Prima",
       "note": "Quello che torna spesso non resta nascosto tra i movimenti."
     },
     {
       "icon": "Sparkles",
-      "title": "Decidi senza fare il contabile",
+      "title": "Decidi senza rifare i conti",
       "kicker": "Quando serve",
       "note": "Hai una risposta pratica, non un foglio da interpretare."
     }
   ],
   "HOW_IT_WORKS_SECTION": {
     "eyebrow": "Come funziona",
-    "title": "Tre minuti, poi guardi il mese con altri occhi.",
-    "description": "Carichi il file, correggi se serve, Numa ti mostra cosa puoi fare."
+    "title": "Dal file alla risposta, senza cambiare abitudini.",
+    "description": "Importi i movimenti, confermi quello che riconosci e usi il mese come base per provare decisioni reali."
   },
   "FLOW_STEPS": [
     {
       "icon": "WalletCards",
       "cue": "Apri",
       "stepLabel": "1",
-      "title": "Carica il file.",
-      "description": "Scegli l'export della banca. Numa lo trasforma in una vista ordinata."
+      "title": "Carica i movimenti.",
+      "description": "Scegli il file della banca. Numa lo mette in ordine."
     },
     {
       "icon": "ArrowDownUp",
       "cue": "Sistema",
       "stepLabel": "2",
       "title": "Dai una controllata.",
-      "description": "Se qualcosa non torna, lo sistemi al volo. Resti sempre tu a decidere."
+      "description": "Se qualcosa non torna, lo sistemi al volo. La scelta resta tua."
     },
     {
       "icon": "BrainCircuit",
@@ -74,63 +74,63 @@
       "icon": "ShieldCheck",
       "cue": "Scegli",
       "stepLabel": "4",
-      "title": "Decidi con calma.",
-      "description": "Prima di aggiungere una spesa, capisci se ci sta davvero."
+      "title": "Decidi prima.",
+      "description": "Prima di aggiungere una spesa, capisci se il mese regge."
     }
   ],
   "BRAIN_CONTENT": {
-    "sectionTitle": "La stima di Numa",
+    "sectionTitle": "Una risposta semplice",
     "acts": [
       {
-        "kicker": "Parte dai fatti",
-        "titleLines": ["Prima mette", "ordine,", "poi risponde."],
-        "description": "Usa cio che hai caricato. Se qualcosa manca, non finge di saperlo."
+        "kicker": "Movimenti",
+        "titleLines": ["Legge il", "mese reale."],
+        "description": "Parte da entrate e uscite già presenti, non da un budget scritto a mano."
       },
       {
-        "kicker": "Una risposta semplice",
-        "titleLines": ["Te lo puoi", "permettere?"],
-        "description": "Numa mette insieme quello che entra, quello che esce e cio che torna spesso."
+        "kicker": "Ricorrenze",
+        "titleLines": ["Separa ciò", "che torna."],
+        "description": "Individua i costi che pesano ogni mese e li porta fuori dal rumore."
       },
       {
-        "kicker": "Niente magie",
-        "titleLines": ["Se non lo sa,", "te lo dice."],
-        "description": "Quando i dati non bastano, si ferma. Meglio un dubbio chiaro che una certezza inventata."
+        "kicker": "Scenario",
+        "titleLines": ["Prova il", "prossimo sì."],
+        "description": "Aggiungi un impegno e vedi subito l'effetto sul mese, prima di confermarlo."
       }
     ]
   },
   "OUTCOMES_SECTION": {
-    "eyebrow": "Cosa cambia",
-    "title": "Smetti di fare i conti a mente.",
-    "description": "Prima di spendere, hai una risposta piu chiara."
+    "eyebrow": "Risultati",
+    "title": "Meno tempo nei conti. Più calma nelle scelte.",
+    "description": "Il vantaggio non è solo vedere un numero: è smettere di ricostruirlo ogni volta."
   },
   "OUTCOMES": [
     {
       "icon": "ArrowDownUp",
-      "title": "Vedi il mese prima che finisca",
-      "description": "Le spese gia previste non ti prendono di sorpresa."
+      "title": "Vedi prima cosa ti aspetta",
+      "description": "Le spese già previste entrano nel quadro prima di diventare una sorpresa."
     },
     {
       "icon": "ShieldCheck",
-      "title": "Capisci se puoi dire si",
-      "description": "Una cena, un acquisto, una rata: vedi subito se ci stanno."
+      "title": "Decidi senza andare a intuito",
+      "description": "Una cena, un acquisto, una rata: capisci subito se puoi farli."
     },
     {
       "icon": "Sparkles",
-      "title": "Passi meno tempo a ricontrollare",
-      "description": "Meno fogli e meno calcoli ripetuti."
+      "title": "Controlli meno, capisci di più",
+      "description": "Numa mette ordine nei numeri e ti lascia una risposta da usare."
     }
   ],
   "CLOSING": {
     "eyebrow": "Provalo ora",
     "railLabel": "Subito",
-    "title": "Guarda il tuo mese.",
-    "description": "Carica un file, guarda cosa Numa capisce e tieni tutto sul tuo dispositivo.",
-    "primaryCtaLabel": "Inizia senza account"
+    "title": "Fai una prova sul tuo mese.",
+    "description": "Entra nella demo, importa un esempio e guarda come Numa passa dai movimenti a una risposta leggibile.",
+    "primaryCtaLabel": "Guarda demo"
   },
   "FOOTER": {
-    "description": "Uno spazio privato per capire il mese prima di decidere.",
+    "description": "Budget pratico per leggere movimenti, costi ricorrenti e decisioni future nello stesso posto.",
     "productHeading": "Prodotto",
-    "productItems": ["Importa i movimenti", "Capisci se puoi spendere", "Decidi prima di dire si"],
+    "productItems": ["Importa i movimenti", "Guarda cosa resta", "Prova una spesa"],
     "supportHeading": "Risorse",
     "supportItems": [
       { "label": "Domande frequenti", "href": "/faq" },
@@ -140,9 +140,9 @@
   },
   "IMMERSIVE_FALLBACKS": {
     "brain": {
-      "eyebrow": "La stima",
+      "eyebrow": "La risposta",
       "title": "Una risposta che puoi rileggere.",
-      "description": "Numa mostra da dove nasce la risposta, cosi puoi fidarti un po di piu."
+      "description": "Numa mostra da dove nasce la risposta, così puoi fidarti un po' di più."
     }
   }
 }

@@ -154,7 +154,7 @@ export function BackupSection() {
                 </Alert>
 
                 {status && (
-                    <Alert variant={status.type === "success" ? "default" : "destructive"} className={status.type === "success" ? "border-green-500/20 bg-green-500/5 text-green-600 dark:text-green-400" : ""}>
+                    <Alert variant={status.type === "success" ? "default" : "destructive"} className={status.type === "success" ? "border-primary/20 bg-primary/5 text-primary dark:text-cyan-100" : ""}>
                         {status.type === "success" ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
                         <AlertTitle>{status.type === "success" ? "Operazione completata" : "Errore"}</AlertTitle>
                         <AlertDescription>{status.message}</AlertDescription>

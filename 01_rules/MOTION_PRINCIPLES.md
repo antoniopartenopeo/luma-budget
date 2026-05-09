@@ -3,12 +3,12 @@
 scope: motion-governance
 owner: governance
 status: active
-last-verified: 2026-04-28
+last-verified: 2026-05-09
 canonical-of: motion-policy
 
 > **Stato:** Attivo e vincolante
 > **Versione:** 1.7
-> **Ultimo aggiornamento:** 2026-04-28
+> **Ultimo aggiornamento:** 2026-05-09
 
 Il motion in Numa comunica stato e priorità. Non è decorazione autonoma.
 
@@ -63,10 +63,10 @@ Per overlay Radix (`Dialog`, `Sheet`, `Popover`, `Dropdown`, `Select`) sono cons
 Sulla landing pubblica (`/`) sono ammesse eccezioni aggiuntive quando restano semanticamente collegate al prodotto e tutelano il limite cognitivo:
 - Primitive mesh matematiche (es. `AppleFluidMesh`) come SVG background animati nativamente, obbligatoriamente isolate con `pointer-events-none` e posizionate sullo strato visuale di fondo (`z-0`);
 - reveal testuale cinematico in ingresso per il titolo hero;
-- un explainer statico `Come inizi` in 4 passaggi, senza scene scroll-driven dedicate;
+- un explainer statico `Come funziona` in 4 passaggi, senza scene scroll-driven dedicate;
 - micro-animazioni interne a preview frame isolati (progress fill, shimmer, check state, orbite a bassa dominanza);
-- cover-flow, progress fill e torchlight editoriale sono ammessi solo dentro frame fissi di preview, senza reflow del layout esterno e senza trasformarsi in dati live;
-- un solo interludio immersivo dedicato al Brain con parallax/lens effect se rimane nella fase forecast e non introduce nuova navigazione.
+- progress fill, demo phone UI e torchlight editoriale sono ammessi solo dentro frame fissi di preview, senza reflow del layout esterno e senza trasformarsi in dati live;
+- un solo interludio immersivo dedicato al Brain con parallax/lens effect se rimane nella fase decisione/trasparenza e non introduce nuova navigazione.
 
 Guardrail obbligatori:
 - le primitive di pura immersione spaziale o ambientale (es. background mesh) sfuggono alla Legge del 5% perché non richiedono parsing cognitivo, a condizione che non ostacolino testi e grafici;
@@ -87,7 +87,7 @@ Guardrail obbligatori:
 - Insights: stati advisor/trend.
 - Simulator/Goals: feedback su scenario e derivazione quota sostenibile.
 - Neural Core: progresso e stato evolutivo.
-- Landing pubblica: hero immersivo, sezione statica `Come inizi` e interludio Brain che raccontano il flusso prodotto senza imitare dati live utente.
+- Landing pubblica: hero immersivo, sezione statica `Come funziona` e interludio Brain che raccontano il flusso prodotto senza imitare dati live utente.
 
 ### Zone Static-First
 - Tabelle dense e liste transazioni: motion minimo, orientato a entrata/focus, non a distrazione.

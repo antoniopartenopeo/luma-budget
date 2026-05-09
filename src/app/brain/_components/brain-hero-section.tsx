@@ -109,7 +109,7 @@ export function BrainHeroSection({
                     label="Ritmo del mese"
                     icon={hwForecast?.trendCents && hwForecast.trendCents >= 0
                         ? <TrendingUp className="h-3.5 w-3.5 text-destructive/80" />
-                        : <TrendingDown className="h-3.5 w-3.5 text-emerald-600" />}
+                        : <TrendingDown className="h-3.5 w-3.5 text-primary" />}
                     className="rounded-[1.8rem] border border-white/40 bg-white/38 p-5 shadow-[0_22px_42px_-32px_rgba(15,23,42,0.28)]"
                 >
                     {hwForecast ? (

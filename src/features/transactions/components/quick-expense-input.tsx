@@ -177,7 +177,7 @@ export function QuickExpenseInput({
                             onClick={() => handleTypeChange("income")}
                             className={cn(
                                 "rounded-full p-1.5 transition-[background-color,color,box-shadow] duration-200",
-                                type === "income" ? "bg-background text-green-500 shadow-sm" : "text-muted-foreground hover:text-foreground"
+                                type === "income" ? "bg-background text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
                             )}
                             title="Entrata"
                             aria-label="Registra come Entrata"
@@ -326,7 +326,7 @@ export function QuickExpenseInput({
                                     className={cn(
                                         "h-8 shrink-0 rounded-full bg-primary px-3 text-primary-foreground sm:ml-1",
                                         isMobilePanel && "px-3.5",
-                                        isSuccess && "bg-emerald-600 hover:bg-emerald-700 text-white"
+                                        isSuccess && "bg-primary hover:bg-primary/90 text-white"
                                     )}
                                 >
                                     {isPending ? (
@@ -358,7 +358,7 @@ export function QuickExpenseInput({
                                 disabled={isPending}
                                 className={cn(
                                     "ml-auto h-8 shrink-0 rounded-full bg-primary px-3 text-primary-foreground md:h-9 md:px-4 sm:ml-1",
-                                    isSuccess && "bg-emerald-600 hover:bg-emerald-700 text-white"
+                                    isSuccess && "bg-primary hover:bg-primary/90 text-white"
                                 )}
                             >
                                 {isPending ? (

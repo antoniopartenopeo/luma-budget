@@ -3,7 +3,7 @@
 scope: decision-log
 owner: engineering
 status: active
-last-verified: 2026-04-28
+last-verified: 2026-05-09
 canonical-of: decision-log
 
 | Date | Decision | Status | Why | Alternatives rejected |
@@ -23,3 +23,4 @@ canonical-of: decision-log
 | 2026-04-04 | Govern public landing copy in user language before product jargon | accepted | Keep the acquisition story understandable to cold users by making benefit, use case, and trust legible before technical differentiators like local execution or import mechanics | Let internal product vocabulary drive the first scan of the landing or keep copy scattered across UI files without a canonical content source |
 | 2026-04-28 | Govern landing preview math as a curated cents-backed model | accepted | Keep public demo numbers explainable, testable, and aligned with money-domain rules while avoiding implied live user data on the landing | Let visual components invent monetary examples inline or imply that the public landing reads repositories |
 | 2026-04-28 | Describe Brain on the landing as transparent estimate support, not an autonomous prediction promise | accepted | Preserve trust by making readiness, insufficiency, and human-checkable formulas clear in cold-user copy | Lead with Neural Core jargon or imply unconditional AI forecasting above the fold |
+| 2026-05-09 | Separate the public landing into distinct acquisition jobs | accepted | Prevent every section from repeating the same "what remains" promise and make the landing easier to scan as problem, method, decision logic, outcomes, and action | Keep a visually varied but conceptually duplicated landing story |

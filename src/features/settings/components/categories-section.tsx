@@ -146,7 +146,7 @@ export function CategoriesSection() {
                                     {cat.kind === "expense" && cat.spendingNature && (
                                         <span className={cn(
                                             "rounded-full px-2 py-0.5 font-semibold",
-                                            cat.spendingNature === "essential" && "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+                                            cat.spendingNature === "essential" && "bg-primary/10 text-primary dark:text-cyan-100",
                                             cat.spendingNature === "comfort" && "bg-primary/10 text-primary",
                                             cat.spendingNature === "superfluous" && "bg-amber-500/10 text-amber-700 dark:text-amber-300"
                                         )}>
@@ -280,7 +280,7 @@ export function CategoriesSection() {
                                 <TabsTrigger
                                     value="income"
                                     variant="premium"
-                                    className="text-xs font-bold data-[state=active]:text-emerald-600"
+                                    className="text-xs font-bold data-[state=active]:text-primary"
                                 >
                                     Entrate ({incomeCategories.length})
                                 </TabsTrigger>

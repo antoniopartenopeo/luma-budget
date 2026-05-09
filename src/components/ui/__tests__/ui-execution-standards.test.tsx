@@ -50,7 +50,7 @@ describe("UI execution standards baseline", () => {
         expect(css).toContain("@media (prefers-reduced-motion: reduce)")
         expect(css).toContain(".animate-enter-up")
         expect(css).toContain(".animate-pulse-soft")
-        expect(css).toContain(".animate-flash-green")
+        expect(css).toContain(".animate-flash-brand")
         expect(css).toContain(".animate-ping-slow")
         expect(css).toContain(".animate-spin-slow")
         expect(css).toContain(".ambient-grid")

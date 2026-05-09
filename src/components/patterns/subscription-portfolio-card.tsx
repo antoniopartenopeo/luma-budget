@@ -27,7 +27,7 @@ interface SubscriptionPortfolioCardProps {
 }
 
 const INDICATOR_COLOR_BY_SPENDING_NATURE: Record<SpendingNature, string> = {
-    essential: "bg-emerald-500",
+    essential: "bg-primary",
     comfort: "bg-sky-500",
     superfluous: "bg-amber-500"
 }

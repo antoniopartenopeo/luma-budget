@@ -176,8 +176,8 @@ export function DashboardKpiGrid({
                     steps={[
                         {
                             icon: DollarSign,
-                            colorClass: "text-emerald-500",
-                            bgClass: "bg-emerald-500/10",
+                            colorClass: "text-primary",
+                            bgClass: "bg-primary/10",
                             stepLabel: "Passo 1",
                             title: "Quanto ti resta",
                             description: "Il saldo del periodo mostra quanto ti resta dopo entrate e uscite."

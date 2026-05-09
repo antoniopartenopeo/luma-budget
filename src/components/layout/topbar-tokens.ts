@@ -51,7 +51,7 @@ export const TOPBAR_GLASS_OVERLAY_CLASS =
 // ── Tone resolution ────────────────────────────────────────────────
 
 export function resolveTopbarToneClass(tone: "positive" | "neutral" | "warning" | "negative"): string {
-    if (tone === "positive") return "text-emerald-600 dark:text-emerald-300"
+    if (tone === "positive") return "text-primary dark:text-cyan-100"
     if (tone === "warning") return "text-amber-600 dark:text-amber-300"
     if (tone === "negative") return "text-rose-600 dark:text-rose-300"
     return "text-foreground"

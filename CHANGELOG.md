@@ -28,6 +28,7 @@ Schema usato in tutte le release:
 - Landing pubblica resa più credibile e prudente: trust signal visibili vicino alle CTA, FAQ essenziali inline e accesso esplicito alla prova con dati demo.
 - Nuove superfici pubbliche FAQ e Privacy per chiarire file supportati, modello local-first e continuità tramite backup locale.
 - Landing pubblica resa più leggibile per chi arriva da zero: promessa principale semplificata, trust strip su account/dati/stima, preview demo con formula controllabile e linguaggio meno legato al gergo Brain.
+- Landing pubblica riorganizzata in passaggi piu distinti: prima capisci il problema, poi come funziona Numa, come decide, cosa cambia per chi la usa e dove iniziare.
 - FAQ e Privacy rifinite attorno a demo, import, dati sul dispositivo, nessun collegamento bancario obbligatorio e backup JSON da proteggere.
 
 ### Fixed (Correzioni)

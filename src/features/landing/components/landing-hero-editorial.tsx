@@ -1,27 +1,31 @@
 "use client"
 
+import type { ReactNode } from "react"
 import {
-  Check,
+  Bell,
+  ChartNoAxesColumnIncreasing,
+  Home,
   LockKeyhole,
   ShieldCheck,
-  SlidersHorizontal
+  SlidersHorizontal,
+  UserRound,
+  WalletCards
 } from "lucide-react"
 import { LANDING_HERO_EDITORIAL } from "../content"
+import { cn } from "@/lib/utils"
 
 const HERO_TRUST_ICONS = [ShieldCheck, LockKeyhole, SlidersHorizontal] as const
 
 function HeroTrustStrip() {
   return (
-    <div
-      className="pointer-events-none mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 px-2 text-[12px] font-medium leading-relaxed text-slate-700/62 motion-safe:transition-opacity motion-safe:duration-[1600ms] motion-safe:ease-out motion-safe:delay-[700ms] motion-safe:starting:opacity-0 sm:mt-7 dark:text-white/62"
-    >
+    <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] font-medium leading-relaxed text-slate-600 sm:mt-6 dark:text-white/62">
       <p className="sr-only">{LANDING_HERO_EDITORIAL.trustItems.join(" · ")}</p>
       {LANDING_HERO_EDITORIAL.trustItems.map((item, index) => {
         const Icon = HERO_TRUST_ICONS[index] ?? ShieldCheck
 
         return (
           <span key={item} className="inline-flex items-center gap-2">
-            <Icon className="h-4 w-4 text-slate-600/52 dark:text-white/52" />
+            <Icon className="h-4 w-4 text-slate-500 dark:text-white/50" strokeWidth={1.8} />
             {item}
           </span>
         )
@@ -30,102 +34,276 @@ function HeroTrustStrip() {
   )
 }
 
-function HeroNumaObject() {
+function StoreIcon({ name }: { name: "apple" | "google" }) {
+  if (name === "apple") {
+    return (
+      <svg viewBox="0 0 384 512" className="h-5 w-5" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.2-39.5.6-76 23-96.3 58.3-41.1 71.4-10.5 177.4 29.5 235.4 19.6 28.3 42.9 60.1 73.5 59 29.5-1.2 40.6-19.1 76.3-19.1 35.6 0 45.7 19.1 76.9 18.5 31.8-.6 51.9-28.9 71.3-57.3 22.5-32.9 31.8-64.8 32.3-66.4-.7-.3-61.3-23.5-61.9-93.5ZM260.8 100.6c16.2-19.6 27.1-46.9 24.1-74-23.3.9-51.5 15.5-68.3 35.1-15.1 17.5-28.3 45.3-24.8 71.9 26 2 52.6-13.2 69-33Z"
+        />
+      </svg>
+    )
+  }
+
+  return (
+    <svg viewBox="0 0 512 512" className="h-5 w-5" aria-hidden="true">
+      <path fill="#00A173" d="M76.8 13.6C67.7 18.5 62 28.1 62 40.4v431.2c0 12.3 5.7 21.9 14.8 26.8L306.9 256 76.8 13.6Z" />
+      <path fill="#4285F4" d="M306.9 256 76.8 13.6c9.7-5.2 22.4-4.5 35.4 3.1l285.5 164.8L306.9 256Z" />
+      <path fill="#FBBC04" d="m397.7 330.5-90.8-74.5 90.8-74.5 36.1 20.8c35.6 20.6 35.6 86.8 0 107.4l-36.1 20.8Z" />
+      <path fill="#EA4335" d="M306.9 256 76.8 498.4c9.7 5.2 22.4 4.5 35.4-3.1l285.5-164.8L306.9 256Z" />
+    </svg>
+  )
+}
+
+function StoreButton({ eyebrow, label, icon }: { eyebrow: string; label: string; icon: "apple" | "google" }) {
+  return (
+    <div className="group/store flex min-h-14 items-center gap-3 rounded-[0.95rem] bg-slate-950 px-4 py-3 text-white shadow-[0_18px_38px_-26px_rgba(2,6,23,0.62)] transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_44px_-28px_rgba(2,6,23,0.72)] dark:bg-white dark:text-slate-950">
+      <span className="flex h-9 w-9 items-center justify-center rounded-[0.72rem] bg-white/10 text-white ring-1 ring-white/12 transition-colors duration-300 group-hover/store:bg-white/16 dark:bg-slate-950/8 dark:text-slate-950 dark:ring-slate-950/10">
+        <StoreIcon name={icon} />
+      </span>
+      <span className="leading-none">
+        <span className="block text-[10px] font-semibold uppercase tracking-[0.04em] opacity-82">{eyebrow}</span>
+        <span className="mt-1 block text-[17px] font-black tracking-tight">{label}</span>
+      </span>
+    </div>
+  )
+}
+
+function PhoneShell({
+  children,
+  className,
+  screenClassName,
+  scale = "main"
+}: {
+  children: ReactNode
+  className?: string
+  screenClassName?: string
+  scale?: "main" | "side"
+}) {
   return (
     <div
-      data-testid="landing-hero-object"
-      className="relative mx-auto h-[24rem] w-full max-w-[60rem] sm:h-[30rem] lg:h-[34rem]"
-      aria-hidden="true"
+      className={cn(
+        "relative rounded-[2.7rem] bg-slate-950 p-[0.55rem] shadow-[0_34px_70px_-32px_rgba(2,6,23,0.78),0_10px_24px_-18px_rgba(2,6,23,0.55)] dark:bg-black",
+        scale === "main" ? "h-[33rem] w-[16.5rem] sm:h-[38rem] sm:w-[19rem]" : "h-[27rem] w-[13.5rem] sm:h-[31rem] sm:w-[15.5rem]",
+        className
+      )}
     >
-      <div className="absolute left-1/2 top-[52%] h-[19rem] w-[19rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-teal-300/24 blur-[92px] sm:h-[25rem] sm:w-[25rem] dark:bg-cyan-300/14" />
-      <div className="absolute left-1/2 top-[50%] h-[15rem] w-[78%] max-w-[42rem] -translate-x-1/2 rounded-[100%] bg-slate-950/8 blur-[44px] dark:bg-black/70" />
-
-      <div className="absolute left-1/2 top-[7%] h-[18rem] w-[min(86vw,38rem)] -translate-x-1/2 rotate-[-7deg] rounded-[2.1rem] border border-black/[0.055] bg-[linear-gradient(135deg,rgba(255,255,255,0.68),rgba(236,254,255,0.34)_42%,rgba(20,184,166,0.10))] shadow-[0_34px_90px_-56px_rgba(15,23,42,0.34),inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur-2xl dark:border-white/10 dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(20,184,166,0.08)_46%,rgba(0,0,0,0.28))] dark:shadow-[0_36px_110px_-54px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,255,255,0.08)] sm:h-[23rem] lg:h-[26rem]" />
-      <div className="absolute left-1/2 top-[10%] h-[18rem] w-[min(86vw,38rem)] -translate-x-1/2 rotate-[5deg] rounded-[2.1rem] border border-black/[0.045] bg-[linear-gradient(145deg,rgba(255,255,255,0.86),rgba(248,250,252,0.52)_52%,rgba(14,165,168,0.12))] shadow-[0_34px_100px_-54px_rgba(15,23,42,0.38),inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-2xl dark:border-white/10 dark:bg-[linear-gradient(145deg,rgba(255,255,255,0.09),rgba(255,255,255,0.035)_52%,rgba(45,212,191,0.10))] dark:shadow-[0_36px_110px_-54px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.08)] sm:h-[23rem] lg:h-[26rem]" />
-
-      <div className="absolute left-1/2 top-[6%] flex h-[19rem] w-[min(88vw,34rem)] -translate-x-1/2 flex-col justify-between overflow-hidden rounded-[2.2rem] border border-black/[0.06] bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(248,250,252,0.76))] p-6 text-left shadow-[0_42px_120px_-56px_rgba(15,23,42,0.42),inset_0_1px_0_rgba(255,255,255,0.86)] backdrop-blur-3xl dark:border-white/10 dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.035))] dark:shadow-[0_46px_130px_-58px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.08)] sm:h-[24rem] sm:p-8 lg:h-[27rem]"
+      <div className="absolute left-1/2 top-[0.98rem] z-20 h-6 w-24 -translate-x-1/2 rounded-full bg-black sm:h-7 sm:w-28" />
+      <div
+        className={cn(
+          "relative h-full overflow-hidden rounded-[2.15rem] bg-white text-slate-950",
+          screenClassName
+        )}
       >
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_22%_16%,rgba(255,255,255,0.78),transparent_34%),radial-gradient(circle_at_78%_76%,rgba(20,184,166,0.18),transparent_32%)] dark:bg-[radial-gradient(circle_at_22%_16%,rgba(255,255,255,0.08),transparent_34%),radial-gradient(circle_at_78%_76%,rgba(45,212,191,0.15),transparent_32%)]" />
-        <div className="relative flex items-start justify-between gap-5">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+function ForecastCard() {
+  return (
+    <div className="rounded-[1.25rem] bg-white p-4 shadow-[0_20px_44px_-32px_rgba(15,23,42,0.45)]">
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-[12px] font-black">A fine mese</p>
+          <p className="mt-2 text-2xl font-black tracking-tight">€3.120</p>
+        </div>
+        <p className="text-[12px] font-black text-[#3a8591]">+12.4%</p>
+      </div>
+      <div className="mt-4 h-28 rounded-2xl bg-[linear-gradient(180deg,rgba(58,133,145,0.22),rgba(255,255,255,0.96))] p-3">
+        <svg viewBox="0 0 240 92" className="h-full w-full" role="img" aria-label="Curva del mese">
+          <path d="M4 78 C28 22 48 42 66 18 C88 -8 108 48 132 20 C154 -6 176 28 236 4" fill="none" stroke="#3a8591" strokeWidth="5" strokeLinecap="round" />
+          <circle cx="236" cy="4" r="5" fill="#3a8591" />
+          <path d="M4 78 C28 22 48 42 66 18 C88 -8 108 48 132 20 C154 -6 176 28 236 4 L236 92 L4 92 Z" fill="url(#heroForecastFill)" opacity="0.34" />
+          <defs>
+            <linearGradient id="heroForecastFill" x1="0" x2="0" y1="0" y2="1">
+              <stop stopColor="#3a8591" />
+              <stop offset="1" stopColor="#3a8591" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+    </div>
+  )
+}
+
+function MainPhone() {
+  return (
+    <PhoneShell className="-rotate-[7deg]" scale="main">
+      <div className="flex h-full flex-col bg-[linear-gradient(180deg,#ffffff_0%,#f5fbfc_100%)] px-5 pb-5 pt-10">
+        <div className="flex items-start justify-between">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-teal-700/62 dark:text-cyan-100/62">
-              Risposta Numa
-            </p>
-            <p className="mt-3 max-w-[9ch] text-[clamp(2.7rem,7vw,5.7rem)] font-black leading-[0.9] text-slate-950 dark:text-white">
-              Ci sta.
-            </p>
+            <p className="text-[13px] text-slate-500">Ciao, Alex</p>
+            <p className="mt-3 text-[12px] text-slate-500">Saldo di oggi</p>
+            <p className="mt-1 text-[2rem] font-black tracking-tight">€2.450,75</p>
+            <p className="mt-1 text-[12px] font-black text-[#3a8591]">+2.3% sul mese scorso</p>
           </div>
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-teal-500/16 bg-teal-500/10 text-teal-700 shadow-[0_18px_40px_-26px_rgba(20,184,166,0.55)] dark:border-cyan-200/12 dark:bg-cyan-200/10 dark:text-cyan-100 sm:h-14 sm:w-14">
-            <Check className="h-6 w-6" strokeWidth={2.4} />
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-100">
+            <Bell className="h-4 w-4" fill="currentColor" />
           </div>
         </div>
 
-        <div className="relative grid gap-3 sm:grid-cols-3">
-          {[
-            ["In arrivo", "+ € 2.300"],
-            ["Già previsti", "- € 1.055"],
-            ["Puoi usarli", "€ 1.245"],
-          ].map(([label, value], index) => (
-            <div
-              key={label}
-              className="rounded-[1.2rem] border border-black/[0.055] bg-white/62 px-4 py-3 shadow-[0_16px_34px_-28px_rgba(15,23,42,0.24)] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.045]"
-            >
-              <p className="text-[9px] font-black uppercase tracking-[0.16em] text-foreground/44 dark:text-white/42">
-                {label}
-              </p>
-              <p className={`mt-1 text-[13px] font-black sm:text-[14px] ${index === 2 ? "text-teal-700 dark:text-cyan-100" : "text-foreground dark:text-white/78"}`}>
-                {value}
-              </p>
+        <div className="mt-5">
+          <ForecastCard />
+        </div>
+
+        <div className="mt-4 rounded-[1.2rem] bg-white p-4 shadow-[0_16px_40px_-34px_rgba(15,23,42,0.55)]">
+          <div className="flex items-center justify-between text-[12px]">
+            <p className="font-black">Spese del mese</p>
+            <p className="text-slate-500">€1.760 / €2.450</p>
+          </div>
+          <p className="mt-1 text-xl font-black">72%</p>
+          <div className="mt-3 h-3 overflow-hidden rounded-full bg-slate-100">
+            <div className="h-full w-[72%] rounded-full bg-[linear-gradient(90deg,#0f5a6c,#3a8591)]" />
+          </div>
+        </div>
+
+        <div className="mt-4 flex items-center gap-3 rounded-[1.2rem] bg-white p-3 shadow-[0_14px_34px_-30px_rgba(15,23,42,0.45)]">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 text-orange-700">
+            <WalletCards className="h-5 w-5" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[13px] font-black">Spesa</p>
+            <p className="text-[11px] text-slate-500">34%</p>
+          </div>
+          <p className="text-[13px] font-black">€420</p>
+        </div>
+      </div>
+    </PhoneShell>
+  )
+}
+
+function Gauge() {
+  return (
+    <div className="relative mx-auto mt-4 h-32 w-40">
+      <div className="absolute inset-x-0 bottom-0 h-20 rounded-t-[6rem] border-[12px] border-b-0 border-slate-100" />
+      <div className="absolute inset-x-0 bottom-0 h-20 rounded-t-[6rem] border-[12px] border-b-0 border-[#3a8591] [clip-path:polygon(0_0,82%_0,82%_100%,0_100%)]" />
+      <div className="absolute left-1/2 top-[4.8rem] -translate-x-1/2 rounded-full bg-[#3a8591]/16 px-3 py-1 text-[11px] font-black text-[#0f5a6c]">
+        Regge
+      </div>
+    </div>
+  )
+}
+
+function SidePhone() {
+  return (
+    <PhoneShell className="rotate-[3deg]" scale="side">
+      <div className="flex h-full flex-col bg-[linear-gradient(180deg,#ffffff_0%,#f5fbfc_100%)] px-4 pb-4 pt-12">
+        <p className="text-[14px] font-black">Puoi aggiungere</p>
+        <div className="mt-4 rounded-[1.15rem] bg-white p-4 shadow-[0_18px_40px_-32px_rgba(15,23,42,0.46)]">
+          <p className="text-[12px] italic text-slate-500">Senza stringere il mese</p>
+          <p className="mt-2 text-[1.65rem] font-black tracking-tight">€380 / mese</p>
+          <p className="mt-1 text-[12px] text-slate-500">per una nuova spesa fissa</p>
+          <Gauge />
+          <p className="mt-1 text-center text-[12px] italic text-slate-500">Mese ancora sereno</p>
+        </div>
+
+        <div className="mt-4 rounded-[1.15rem] bg-white p-4 shadow-[0_18px_40px_-32px_rgba(15,23,42,0.46)]">
+          <p className="text-[13px] font-black">Prova una spesa</p>
+          <div className="mt-4 border-t border-slate-100 pt-4">
+            <p className="text-[13px] font-black">Aggiungi €200 / mese</p>
+            <div className="mt-5 flex items-end justify-between">
+              <div>
+                <p className="text-[11px] text-slate-500">Dopo</p>
+                <p className="text-[18px] font-black">€2.920</p>
+              </div>
+              <div>
+                <p className="text-[11px] text-slate-500">Mese</p>
+                <p className="inline-flex items-center gap-1 text-[13px] font-black">
+                  <span className="h-2 w-2 rounded-full bg-[#3a8591]" />
+                  Regge
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-auto grid grid-cols-4 gap-2 text-center text-[10px] text-slate-400">
+          {[Home, ChartNoAxesColumnIncreasing, WalletCards, UserRound].map((Icon, index) => (
+            <div key={index} className="flex flex-col items-center gap-1">
+              <Icon className="h-4 w-4" />
+              <span>{["Casa", "Budget", "Insight", "Profilo"][index]}</span>
             </div>
           ))}
         </div>
+      </div>
+    </PhoneShell>
+  )
+}
+
+function HeroPhoneShowcase() {
+  return (
+    <div
+      data-testid="landing-hero-object"
+      className="relative mx-auto h-[34.5rem] w-full max-w-[48rem] lg:h-[40rem]"
+      aria-hidden="true"
+    >
+      <div className="pointer-events-none absolute inset-x-[8%] top-[10%] h-[30rem] bg-[radial-gradient(ellipse_at_52%_46%,rgba(161,222,235,0.30),rgba(58,133,145,0.12)_42%,transparent_72%)] blur-2xl dark:bg-[radial-gradient(ellipse_at_52%_46%,rgba(161,222,235,0.18),rgba(58,133,145,0.08)_42%,transparent_72%)]" />
+      <div className="pointer-events-none absolute bottom-[2rem] left-[18%] right-[7%] h-24 bg-[radial-gradient(ellipse_at_center,rgba(15,90,108,0.16),transparent_68%)] blur-xl dark:bg-[radial-gradient(ellipse_at_center,rgba(161,222,235,0.12),transparent_70%)]" />
+      <div className="absolute left-[20%] top-0 z-20">
+        <MainPhone />
+      </div>
+      <div className="absolute right-[5%] top-[9rem] z-10 sm:right-[3%] lg:right-[3%]">
+        <SidePhone />
       </div>
     </div>
   )
 }
 
 export function LandingHeroEditorial() {
+  const [firstLine, highlightLine] = LANDING_HERO_EDITORIAL.headline.split(" con ")
+  const normalizedHighlight = highlightLine?.replace(/\.$/, "")
+  const highlightSuffix = highlightLine?.endsWith(".") ? "." : ""
+
   return (
     <section
-      className="relative flex min-h-[100svh] w-full flex-col items-center overflow-hidden bg-[linear-gradient(180deg,#eef7fb_0%,#f7fbfd_46%,#edf7f6_100%)] px-4 pt-[clamp(5.75rem,11svh,8rem)] text-foreground sm:px-6 sm:pt-[clamp(6.25rem,12svh,9rem)] lg:px-8 lg:pt-[clamp(6.5rem,12svh,9rem)] dark:bg-[#020509]"
+      className="relative flex min-h-[100svh] w-full items-center overflow-hidden bg-[linear-gradient(180deg,#f8fbfc_0%,#ffffff_54%,#eef8fa_100%)] px-5 pb-12 pt-[7.25rem] text-slate-950 sm:px-8 sm:pt-[7.75rem] lg:px-10 lg:pt-[6rem] dark:bg-[linear-gradient(180deg,#030b10_0%,#061219_58%,#030b10_100%)] dark:text-white"
       aria-labelledby="landing-hero-title"
       data-testid="landing-hero-editorial"
     >
-      <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_50%_18%,rgba(255,255,255,0.72),transparent_30%),radial-gradient(circle_at_50%_53%,rgba(14,165,168,0.18),transparent_32%),linear-gradient(180deg,rgba(241,249,252,0.34),rgba(238,247,249,0.74)_72%,#f7fbfd_100%)] dark:bg-[radial-gradient(ellipse_at_50%_18%,rgba(255,255,255,0.08),transparent_30%),radial-gradient(circle_at_50%_53%,rgba(34,211,238,0.18),transparent_32%),linear-gradient(180deg,rgba(2,5,9,0.54),rgba(2,5,9,0.78)_72%,#020509_100%)]" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[34rem] bg-[radial-gradient(ellipse_at_center,rgba(14,165,168,0.16),transparent_54%)] blur-3xl dark:bg-[radial-gradient(ellipse_at_center,rgba(34,211,238,0.16),transparent_54%)]" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-40 bg-gradient-to-b from-transparent via-background/82 to-background sm:h-52 dark:via-background/70 dark:to-background" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_42%,rgba(58,133,145,0.18),transparent_34%),radial-gradient(circle_at_8%_8%,rgba(255,255,255,0.92),transparent_28%)] dark:bg-[radial-gradient(circle_at_70%_42%,rgba(58,133,145,0.13),transparent_34%),radial-gradient(circle_at_8%_8%,rgba(255,255,255,0.08),transparent_28%)]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent to-background" />
 
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-[4%] z-[2] h-[28rem] w-[44rem] -translate-x-1/2 rounded-[100%] bg-cyan-200/28 blur-[120px] sm:h-[38rem] sm:w-[72rem] dark:bg-white/[0.07]"
-      />
-
-      <div className="relative z-30 mx-auto flex w-full max-w-[76rem] flex-col items-center text-center">
-
-        <div className="relative z-30 flex flex-col items-center text-center">
+      <div className="relative z-10 mx-auto grid w-full max-w-[92rem] items-center gap-8 lg:grid-cols-[0.84fr_1.16fr] lg:gap-2">
+        <div className="max-w-[40rem] text-left">
           <h1 id="landing-hero-title" className="sr-only">
             {LANDING_HERO_EDITORIAL.srTitle}
           </h1>
 
-          <p
-            className="max-w-[13ch] text-[clamp(3rem,7.4vw,6.2rem)] font-black leading-[0.93] text-slate-950 [text-wrap:balance] drop-shadow-[0_18px_58px_rgba(15,23,42,0.10)] dark:text-white dark:drop-shadow-[0_18px_58px_rgba(255,255,255,0.10)]"
-          >
-            {LANDING_HERO_EDITORIAL.headline}
+          <p className="text-[clamp(3rem,5.8vw,5.95rem)] font-black leading-[0.98] tracking-[-0.03em] text-slate-950 dark:text-white">
+            {firstLine}
+            {highlightLine ? (
+              <>
+                <br />
+                <span>
+                  con <span className="text-[#3a8591]">{normalizedHighlight}</span>{highlightSuffix}
+                </span>
+              </>
+            ) : null}
           </p>
 
-          <p
-            className="mt-5 max-w-[25rem] text-[1.05rem] font-medium leading-[1.5] text-slate-700/76 sm:max-w-[34rem] sm:text-[1.2rem] lg:max-w-[38rem] lg:text-[1.26rem] dark:text-white/68"
-          >
+          <p className="mt-6 max-w-[36rem] text-[1.18rem] font-medium leading-[1.62] text-slate-600 sm:text-[1.34rem] dark:text-white/66">
             {LANDING_HERO_EDITORIAL.supportingCopy}
           </p>
-        </div>
 
-        <div className="relative mt-8 w-full max-w-[76rem] sm:mt-7 lg:mt-6">
-          <HeroNumaObject />
+          <div className="mt-9 max-w-[34rem] rounded-[1.35rem] border border-slate-950/10 bg-white/70 p-4 text-center shadow-[0_22px_70px_-48px_rgba(15,23,42,0.42),inset_0_1px_0_rgba(255,255,255,0.82)] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.045] dark:shadow-[0_24px_80px_-54px_rgba(0,0,0,0.88),inset_0_1px_0_rgba(255,255,255,0.08)] sm:p-5">
+            <p className="text-[1.1rem] font-black">{"Scarica l'app"}</p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <StoreButton eyebrow="Scarica su" label="App Store" icon="apple" />
+              <StoreButton eyebrow="Disponibile su" label="Google Play" icon="google" />
+            </div>
+            <div className="mt-4 inline-flex items-center gap-2 text-[0.92rem] font-medium text-slate-500 dark:text-white/52">
+              <LockKeyhole className="h-4 w-4" strokeWidth={1.8} />
+              Sicura. Privata. Sempre.
+            </div>
+          </div>
 
           <HeroTrustStrip />
         </div>
 
+        <HeroPhoneShowcase />
       </div>
     </section>
   )

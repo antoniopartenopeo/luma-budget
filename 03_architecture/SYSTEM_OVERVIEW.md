@@ -62,12 +62,12 @@ Open banking routes are present in codebase but remain fail-closed unless `NUMA_
 - Any landing preview math remains isolated in `src/features/landing/preview-model.ts`, uses cents and domain money formatters, and never reads transaction/settings repositories.
 - Works alongside intentionally public trust and safe-trial routes (`/transactions/import`, `/faq`, `/privacy`, `/updates`) that stay publicly reachable without duplicating the app/navigation model
 - Dedicated trust pages (`/faq`, `/privacy`, `/updates`) stay outside the operational app shell, while the safe-trial import route (`/transactions/import`) keeps `AppShell` when opened directly
-- The canonical product flow on `/` is now separated into distinct macro sections: hero promise, problem framing, static `Come funziona` operational flow, Brain decision logic, outcomes/social proof, and final CTA.
+- The canonical product flow on `/` is now separated into distinct macro sections: hero promise, problem framing, static `Come funziona` operational flow, sustainable quota visual, outcomes/social proof, and final CTA.
 - `Come funziona` remains the operational four-step explainer: load existing movements, let Numa organize the month, test a possible new expense, and get a clear answer before deciding.
-- May include isolated immersive explainers for specific modules such as Brain, but those explainers still operate on curated public preview state
-- The current Brain explainer is a dedicated curve-based decision-logic section, showing how real data, recurring costs, and a possible scenario become one answer; it remains presentation-only and is not backed by live forecast repositories
+- The current public decision moment is the quota visual: it shows how income, recurring costs, and end-of-month balance become a practical monthly amount without reading live repositories.
+- Brain-specific explainers may exist as isolated future surfaces, but they are no longer part of the canonical home-page flow.
 - Modular landing cards use the shared `LandingEditorialCardFrame` plus `CinematicScrollCard` for scroll reveal, reduced hover tilt, and edge-lit borders; internal hover torch/fog effects and viewport rail bands are no longer part of the canonical card treatment.
-- Landing sections must stay conceptually distinct: problem states the pain, `Come funziona` states the method, Brain states the decision logic, outcomes state user benefit, and CTA states the next action.
+- Landing sections must stay conceptually distinct: problem states the pain, `Come funziona` states the method, sustainable quota visual states the practical output, outcomes state user benefit, and CTA states the next action.
 - Immersive landing heroes and explainers must remain component-identical across device sizes and reduced-motion contexts, with only motion intensity adapting
 - May reuse pure domain formatters for product-truth rendering, but does not read repositories or mutate persisted financial state
 

@@ -46,24 +46,19 @@ export interface LandingOutcome {
   description: string
 }
 
+export interface LandingComparisonQaSection extends LandingSectionCopy {
+  summaryTitle: string
+  summary: string
+}
+
 export interface LandingHeroEditorialContent {
   srTitle: string
   headline: string
+  headlineHighlight?: string
   supportingCopy: string
   primaryCtaLabel: string
   primaryCtaHref: string
   trustItems: readonly string[]
-}
-
-export interface LandingBrainAct {
-  kicker: string
-  titleLines: readonly string[]
-  description: string
-}
-
-export interface LandingBrainContent {
-  sectionTitle: string
-  acts: readonly [LandingBrainAct, LandingBrainAct, LandingBrainAct]
 }
 
 export interface LandingClosingContent {
@@ -92,12 +87,6 @@ export interface LandingFooterContent {
   supportItems: readonly LandingFooterLink[]
 }
 
-const FALLBACK_BRAIN_ACT: LandingBrainAct = {
-  kicker: "",
-  titleLines: [],
-  description: ""
-}
-
 // ============================================================================
 // ICON RESOLVER (Tree-Shaking Safe)
 // ============================================================================
@@ -124,18 +113,10 @@ export const LANDING_PROBLEM_SECTION = landingDataRaw.PROBLEM_SECTION as Landing
 
 export const LANDING_HOW_IT_WORKS_SECTION = landingDataRaw.HOW_IT_WORKS_SECTION as LandingSectionCopy
 export const LANDING_OUTCOMES_SECTION = landingDataRaw.OUTCOMES_SECTION as LandingSectionCopy
+export const LANDING_COMPARISON_QA_SECTION =
+  landingDataRaw.COMPARISON_QA_SECTION as LandingComparisonQaSection
 export const LANDING_CLOSING = landingDataRaw.CLOSING as LandingClosingContent
 export const LANDING_FOOTER = landingDataRaw.FOOTER as LandingFooterContent
-export const LANDING_IMMERSIVE_FALLBACKS = landingDataRaw.IMMERSIVE_FALLBACKS
-const [brainActOne, brainActTwo, brainActThree] = landingDataRaw.BRAIN_CONTENT.acts
-export const LANDING_BRAIN_CONTENT: LandingBrainContent = {
-  sectionTitle: landingDataRaw.BRAIN_CONTENT.sectionTitle,
-  acts: [
-    brainActOne ?? FALLBACK_BRAIN_ACT,
-    brainActTwo ?? FALLBACK_BRAIN_ACT,
-    brainActThree ?? FALLBACK_BRAIN_ACT
-  ]
-}
 export const LANDING_DIFFERENTIATORS: LandingDifferentItem[] = landingDataRaw.DIFFERENTIATORS.map((item) => ({
   ...item,
   icon: resolveIcon(item.icon)

@@ -253,9 +253,11 @@ function HeroPhoneShowcase() {
 }
 
 export function LandingHeroEditorial() {
-  const [firstLine, highlightLine] = LANDING_HERO_EDITORIAL.headline.split(" con ")
-  const normalizedHighlight = highlightLine?.replace(/\.$/, "")
-  const highlightSuffix = highlightLine?.endsWith(".") ? "." : ""
+  const headlineHighlight = LANDING_HERO_EDITORIAL.headlineHighlight
+  const [headlineLead, headlineTail] = headlineHighlight
+    ? LANDING_HERO_EDITORIAL.headline.split(headlineHighlight)
+    : [LANDING_HERO_EDITORIAL.headline, ""]
+  const normalizedLead = headlineLead.trim().replace(/,$/, "")
 
   return (
     <section
@@ -273,13 +275,12 @@ export function LandingHeroEditorial() {
           </h1>
 
           <p className="text-[clamp(3rem,5.8vw,5.95rem)] font-black leading-[0.98] tracking-[-0.03em] text-slate-950 dark:text-white">
-            {firstLine}
-            {highlightLine ? (
+            {normalizedLead}
+            {headlineHighlight ? (
               <>
                 <br />
-                <span>
-                  con <span className="text-[#3a8591]">{normalizedHighlight}</span>{highlightSuffix}
-                </span>
+                <span className="text-[#3a8591]">{headlineHighlight}</span>
+                {headlineTail}
               </>
             ) : null}
           </p>

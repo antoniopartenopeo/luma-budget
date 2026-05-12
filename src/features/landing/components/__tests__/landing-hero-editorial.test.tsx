@@ -51,8 +51,8 @@ describe("LandingHeroEditorial", () => {
 
     expect(screen.getByRole("heading", { name: LANDING_HERO_EDITORIAL.srTitle })).toBeInTheDocument()
     expect(screen.queryByTestId("brand-logo")).not.toBeInTheDocument()
-    expect(screen.getAllByText(/Pianifica i tuoi soldi/i).length).toBeGreaterThanOrEqual(1)
-    expect(screen.getAllByText(/una risposta chiara/i).length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText(/Sai se puoi spendere/i).length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText(/prima di spendere/i).length).toBeGreaterThanOrEqual(1)
     expect(screen.getByText(LANDING_HERO_EDITORIAL.supportingCopy)).toBeInTheDocument()
     expect(screen.getByTestId("landing-hero-object")).toBeInTheDocument()
     expect(screen.getByText("A fine mese")).toBeInTheDocument()
@@ -78,7 +78,7 @@ describe("LandingHeroEditorial", () => {
 
     expect(screen.getByRole("heading", { name: LANDING_HERO_EDITORIAL.srTitle })).toBeInTheDocument()
     expect(screen.getByTestId("landing-hero-object")).toBeInTheDocument()
-    expect(screen.getAllByText(/Pianifica i tuoi soldi/i).length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText(/Sai se puoi spendere/i).length).toBeGreaterThanOrEqual(1)
     expect(screen.getByText(LANDING_HERO_EDITORIAL.supportingCopy)).toBeInTheDocument()
     expect(screen.getByText(LANDING_HERO_EDITORIAL.trustItems.join(" · "))).toBeInTheDocument()
     expect(screen.queryByRole("link", { name: new RegExp(LANDING_HERO_EDITORIAL.primaryCtaLabel, "i") })).not.toBeInTheDocument()

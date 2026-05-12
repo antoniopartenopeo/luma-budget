@@ -20,7 +20,7 @@ Canonical live project context now lives in:
 
 | Module | Status | Description |
 |---|---|---|
-| Landing (`/`) | Active | Superficie pubblica di acquisizione in macro sezioni distinte: hero prodotto, problema da chiarire, flusso operativo `Come funziona`, logica decisionale Brain, risultati social proof e CTA finale verso `/dashboard` |
+| Landing (`/`) | Active | Superficie pubblica di acquisizione in macro sezioni distinte: hero prodotto, problema da chiarire, flusso operativo `Come funziona`, visual quota sostenibile, risultati social proof e CTA finale verso `/dashboard` |
 | FAQ + Privacy (`/faq`, `/privacy`) | Active | Superfici pubbliche di rassicurazione su demo/import, dati sul dispositivo, nessun account o collegamento bancario obbligatorio, backup JSON locale da custodire |
 | Dashboard | Stable | KPI finanziari, composizione spese interattiva, movimenti recenti collegati all'elenco completo, filtri periodo persistenti in URL (`Mese/3M/6M/12M`) |
 | Transactions | Stable | Ledger responsive a row card/table, filtri periodo/range, export CSV, quick add da TopBar |

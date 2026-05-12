@@ -27,7 +27,7 @@ import {
   LANDING_PROBLEM_SECTION
 } from "./content"
 import { LandingHeroEditorial } from "./components/landing-hero-editorial"
-import { LandingBrainHero } from "./components/landing-dynamic-sections"
+import { LandingSustainableQuotaMotion } from "./components/landing-sustainable-quota-motion"
 
 const LANDING_DECISION_STATS = [
   ["3", "posti da controllare"],
@@ -37,13 +37,13 @@ const LANDING_DECISION_STATS = [
 const LANDING_DECISION_CARDS = [
   {
     icon: Goal,
-    title: "Il saldo è una foto",
-    description: "Ti dice quanto hai oggi, non cosa succede dopo affitto, rate e abbonamenti."
+    title: "Il saldo è solo il punto di partenza",
+    description: "Ti mostra i soldi di oggi, ma non quello che succede dopo affitto, rate, abbonamenti e spese che tornano."
   },
   {
     icon: ChartNoAxesColumnIncreasing,
-    title: "La scelta resta mentale",
-    description: "Prima di una nuova spesa finisci a sommare, sottrarre e sperare di non dimenticare nulla."
+    title: "La decisione resta tutta in testa",
+    description: "Prima di aggiungere una spesa finisci a fare conti a memoria, sperando di non dimenticare nulla."
   }
 ] as const
 
@@ -51,17 +51,17 @@ const LANDING_TESTIMONIALS = [
   {
     name: "Marco B.",
     initials: "MB",
-    quote: "Prima controllavo banca, note e foglio. Ora apro una vista sola e capisco da dove partire.",
+    quote: "Prima controllavo banca, note e fogli. Ora ho un posto solo da cui partire.",
   },
   {
     name: "Giulia R.",
     initials: "GR",
-    quote: "Mi aiuta a parlare di soldi senza ansia: vedo il mese, non solo l'ultimo movimento.",
+    quote: "Numa mi aiuta a guardare il mese intero, non solo l'ultimo saldo sul conto.",
   },
   {
     name: "Luca S.",
     initials: "LS",
-    quote: "Quando arriva una nuova rata non devo ricostruire tutto. Provo lo scenario e decido.",
+    quote: "Quando arriva una nuova rata, non devo rifare tutto da zero. La provo e capisco se ci sta.",
   },
 ] as const
 
@@ -113,10 +113,10 @@ function LandingProblemNoisePanel() {
       <div className="relative grid items-center gap-8 pt-8 lg:grid-cols-[0.92fr_1.08fr] lg:gap-12 lg:pt-3">
         <div>
           <h3 className="max-w-[18ch] text-[clamp(2rem,3.2vw,3.25rem)] font-black leading-[1.05] tracking-[-0.03em]">
-            I numeri ci sono. Il quadro manca.
+            I numeri ci sono. Manca la risposta.
           </h3>
           <p className="mt-5 max-w-[36rem] text-[1.04rem] font-medium leading-relaxed text-white/68">
-            Una lista di movimenti non basta a decidere. Il problema è collegare saldo, scadenze e costi che tornano.
+            Movimenti, saldo e scadenze sono separati. Numa li mette insieme per farti capire se il mese regge davvero.
           </p>
         </div>
 
@@ -124,7 +124,7 @@ function LandingProblemNoisePanel() {
           <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.08] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl">
             <p className="text-[0.78rem] font-black uppercase tracking-[0.16em] text-white/48">Banca</p>
             <p className="mt-5 text-2xl font-black text-white">Movimenti</p>
-            <p className="mt-3 text-sm font-semibold leading-relaxed text-white/54">Una lista corretta, ma senza il perché.</p>
+            <p className="mt-3 text-sm font-semibold leading-relaxed text-white/54">Vedi cosa è successo, ma non sempre cosa succede dopo.</p>
           </div>
 
           <div className="rounded-[1.2rem] border border-white/10 bg-white/[0.08] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl">
@@ -264,10 +264,8 @@ export function LandingPage() {
             >
               <BrandLogo
                 variant="full"
-                height={48}
+                preset="header"
                 priority
-                sizes="180px"
-                className="w-auto max-w-[180px] opacity-100"
               />
             </Link>
 
@@ -349,9 +347,7 @@ export function LandingPage() {
             </div>
           </section>
 
-          <section id="brain-hero" className="relative -mt-20 sm:-mt-32" aria-labelledby="landing-brain-hero-title">
-            <LandingBrainHero />
-          </section>
+          <LandingSustainableQuotaMotion />
 
           <section id="outcomes" className="relative -mt-16 scroll-mt-24 px-5 sm:px-8 lg:px-10" aria-labelledby="landing-outcomes-title">
             <div className="mx-auto max-w-[92rem]">

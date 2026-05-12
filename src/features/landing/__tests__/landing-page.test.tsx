@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest"
 import { LandingPage } from "../landing-page"
 import {
   LANDING_CLOSING,
+  LANDING_COMPARISON_QA_SECTION,
   LANDING_FLOW_STEPS,
   LANDING_HERO_EDITORIAL,
   LANDING_HOW_IT_WORKS_SECTION,
@@ -64,24 +65,6 @@ vi.mock("framer-motion", async () => {
   }
 })
 
-vi.mock("next/dynamic", () => {
-  return {
-    default: (loader: () => Promise<unknown>) => {
-      const loaderSource = String(loader)
-
-      if (loaderSource.includes("landing-brain-hero")) {
-        const MockBrainHero = () => <div data-testid="landing-brain-hero" />
-        MockBrainHero.displayName = "MockBrainHero"
-        return MockBrainHero
-      }
-
-      const MockDynamicComponent = () => <div data-testid="dynamic-component" />
-      MockDynamicComponent.displayName = "MockDynamicComponent"
-      return MockDynamicComponent
-    }
-  }
-})
-
 vi.mock("@/components/ui/brand-logo", () => ({
   BrandLogo: () => <div data-testid="brand-logo">NUMA</div>
 }))
@@ -103,14 +86,6 @@ vi.mock("../components/landing-hero-editorial", async () => {
   }
 })
 
-vi.mock("../components/landing-brain-hero", () => ({
-  LandingBrainHero: () => <div data-testid="landing-brain-hero" />
-}))
-
-vi.mock("../components/motion-primitives", () => ({
-  CinematicScrollCard: ({ children }: { children: React.ReactNode }) => <>{children}</>
-}))
-
 describe("LandingPage", () => {
   it("renders the public acquisition story and keeps navigation constrained to the landing plus app entry", () => {
     render(<LandingPage />)
@@ -131,9 +106,14 @@ describe("LandingPage", () => {
       expect(screen.getByText(step.title)).toBeInTheDocument()
     })
     expect(screen.getByRole("region", { name: LANDING_OUTCOMES_SECTION.title })).toBeInTheDocument()
+    expect(screen.getByRole("region", { name: LANDING_COMPARISON_QA_SECTION.eyebrow })).toBeInTheDocument()
+    expect(screen.getByText("380")).toBeInTheDocument()
+    expect(screen.getByText("/mese")).toBeInTheDocument()
+    expect(screen.getAllByText("Entrate").length).toBeGreaterThan(0)
+    expect(screen.getAllByText("Costi ricorrenti").length).toBeGreaterThan(0)
+    expect(screen.getAllByText("Saldo a fine mese").length).toBeGreaterThan(0)
+    expect(screen.getByText(LANDING_COMPARISON_QA_SECTION.summaryTitle)).toBeInTheDocument()
     expect(screen.getByRole("heading", { name: LANDING_CLOSING.title })).toBeInTheDocument()
-
-    expect(screen.getByTestId("landing-brain-hero")).toBeInTheDocument()
 
     const hrefs = screen.getAllByRole("link").map((link) => link.getAttribute("href"))
     expect(hrefs.length).toBeGreaterThan(0)

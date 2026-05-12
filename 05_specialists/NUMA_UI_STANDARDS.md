@@ -96,18 +96,18 @@ Fonte canonica del copy:
 Pattern richiesto:
 1. hero immersivo con promessa prodotto verificabile e linguaggio utente
 2. anchor nav desktop compatta nell'ordine concettuale della pagina, senza routing dispersivo
-3. problema, metodo, decisione, risultati e CTA devono essere sezioni riconoscibili e non ripetitive
+3. problema, metodo, quota sostenibile, risultati e CTA devono essere sezioni riconoscibili e non ripetitive
 4. hero e preview demo derivati da contenuto curato, non da dati utente
 5. sezioni esplicative a blocchi (`MacroSection`) con motion minimo
 6. sezione statica `Come funziona` in 4 passaggi, senza scene animate dedicate
-7. opzionalmente un solo explainer immersivo dedicato al Brain come approfondimento della logica decisionale
+7. nessun explainer Brain separato nella home mentre la quota sostenibile copre il momento decisionale
 8. CTA finale esplicita e coerente con il passo successivo, senza duplicare la promessa hero
 9. CTA finale diretta all'app (`/dashboard`)
 10. support surface pubbliche reali per trust/FAQ/privacy senza affordance false
 
 Invarianti:
-- ordine narrativo bloccato per job distinti: hero promessa -> problema -> metodo -> decisione Brain -> risultati -> CTA
-- un eventuale focus Brain appartiene alla fase "decisione/trasparenza", non apre una promessa autonoma di AI
+- ordine narrativo bloccato per job distinti: hero promessa -> problema -> metodo -> quota sostenibile -> risultati -> CTA
+- un eventuale focus Brain appartiene a superfici future dedicate, non alla home canonica corrente
 - copy pubblico solo su feature reali, niente hype generico
 - preview veritiere e isolate, mai dati utente reali
 - numeri preview, se presenti, derivati da `preview-model.ts` e domain money utilities, niente math monetaria ad hoc in componenti
@@ -120,8 +120,9 @@ Invarianti:
 - footer supporto solo con link reali a superfici pubbliche implementate
 - hero e explainers immersivi della landing devono restare lo stesso componente adattivo su desktop, smartphone e contesti `prefers-reduced-motion`; puo cambiare solo l'intensita del motion, non il pattern visivo
 - su mobile il primo viewport deve mantenere leggibile promessa, descrizione e CTA principale
-- il reveal finale del Brain hero deve richiudere il messaggio su decisione leggibile e controllo umano, non su promessa autonoma di AI
-- ogni macro sezione deve avere un contenuto distinto: problema, metodo, logica, prova sociale e CTA non devono raccontare tutti "cosa resta" con formulazioni diverse
+- la quota sostenibile deve richiudere il messaggio su decisione leggibile e controllo umano, non su promessa autonoma di AI
+- ogni macro sezione deve avere un contenuto distinto: problema, metodo, quota, prova sociale e CTA non devono raccontare tutti "cosa resta" con formulazioni diverse
+- il visual quota sostenibile deve restare conservativo: puo dire che Numa calcola sul mese reale, ma non deve trasformare il confronto con altre app in claim assoluti o non verificabili
 - in dark la landing deve restare editoriale e quasi monocromatica: niente famiglie cromatiche concorrenti, il colore puo restare solo come eco minima
 
 ---
@@ -161,8 +162,8 @@ Le animazioni state-based Radix/Shadcn (`data-[state=*]:animate-*`) sono consent
 - `prefers-reduced-motion` sulla landing riduce movimento, blur e transizioni ma non sostituisce hero/explainer con layout alternativi semplificati
 - animare preferibilmente solo `transform` e `opacity`
 - vietato `transition: all`
-- eccezione landing: reveal testuale, micro-motion su preview isolate e interludio Brain sono ammessi solo dentro la narrativa pubblica
-- l'explainer Brain puo usare spring-smoothed parallax, blur di profondita e lens reveal solo se resta reduced-motion-safe, senza asset remoti e con surface finale leggibile
+- eccezione landing: reveal testuale e micro-motion su preview isolate sono ammessi solo dentro la narrativa pubblica
+- il visual quota sostenibile puo usare reveal sequenziali, blur leggero e segnali direzionali solo se resta reduced-motion-safe, senza asset remoti e con surface finale leggibile
 - torchlight, laser border e tilt hover della landing sono eccezioni narrative isolate: devono essere pointer-optional, ridotte/soppresse in `prefers-reduced-motion`, e non devono comunicare informazione finanziaria indispensabile
 
 ---

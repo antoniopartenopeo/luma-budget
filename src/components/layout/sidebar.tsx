@@ -68,7 +68,7 @@ export function Sidebar({ className, onNavigate }: SidebarProps) {
         {/* Logo Area */}
         <div className="flex h-20 items-center border-b border-slate-950/6 px-6 dark:border-white/8">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <BrandLogo variant="full" height={40} className="max-w-[150px]" />
+            <BrandLogo variant="full" preset="header" />
           </Link>
         </div>
 

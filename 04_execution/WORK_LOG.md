@@ -37,7 +37,7 @@ canonical-of: execution-work-log
 ## 2026-03-25
 
 - Removed alternate simplified reduced-motion hero variants from the landing immersive sections.
-- Re-aligned the `Differenza` hero and `LandingBrainHero` so smartphone, desktop, and reduced-motion contexts share the same adaptive surface pattern.
+- Re-aligned the `Differenza` hero and the then-current Brain landing explainer so smartphone, desktop, and reduced-motion contexts shared the same adaptive surface pattern.
 - Updated governance and documentation to codify the single-surface landing rule across requirements, UX, motion, architecture, decisions, and handoff context.
 - Replaced the old animated four-moment landing demo with a static `Come inizi` explainer in the same narrative position, and removed the obsolete component/test path.
 
@@ -68,7 +68,7 @@ canonical-of: execution-work-log
 ## 2026-05-04
 
 - Simplified the public landing from seven content macro sections to five by removing the standalone `Differenza` macro, reducing `Problema` to one month demo, integrating differentiator signals into `Come inizi`, and folding the closing CTA into `Cosa cambia`.
-- Reintroduced the strongest visual from the removed `Differenza` macro as a premium graph-backed estimate inside `LandingBrainHero`, so Brain and the interactive graph now explain one stima surface instead of two separate moments.
+- Reintroduced the strongest visual from the removed `Differenza` macro as a premium graph-backed estimate inside the then-current Brain landing explainer, so Brain and the interactive graph explained one stima surface instead of two separate moments.
 - Updated landing tests so the page-level navigation and cover-flow expectations match the current canonical landing payload.
 - Applied the May 5 editorial pass to the landing: visible copy now uses natural acquisition language, `Come funziona` moved to a premium bento rhythm, the hero/cover-flow vocabulary now centers on "can I afford it?", and the Brain graph uses a theme-aware light/dark curve visual.
 - Aligned the modular landing card system with the first hero/Brain quality bar by replacing internal hover torch/fog with edge-lit glass borders, calmer ambient section glows, cleaner microcards, and reduced hover tilt.

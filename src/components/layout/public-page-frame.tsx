@@ -23,7 +23,7 @@ export function PublicPageFrame({
       <header className="px-5 pt-5 sm:px-8 lg:px-10">
         <div className="mx-auto flex max-w-[92rem] items-center justify-between gap-5 text-slate-950 dark:text-white">
           <Link href="/" aria-label="Torna alla landing" className="flex items-center transition-opacity hover:opacity-86">
-            <BrandLogo variant="full" height={44} className="w-auto max-w-[165px] opacity-100" priority sizes="165px" />
+            <BrandLogo variant="full" preset="header" priority />
           </Link>
 
           <nav className="hidden items-center gap-10 lg:flex">

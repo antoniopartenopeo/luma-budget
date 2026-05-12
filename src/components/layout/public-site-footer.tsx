@@ -9,17 +9,13 @@ export function PublicSiteFooter() {
       <div className="mx-auto max-w-[92rem]">
         <div className="flex flex-col gap-10 border-b border-white/10 pb-10 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-[26rem] space-y-3">
-            <div className="inline-flex items-center gap-3">
+            <div className="inline-flex items-center">
               <BrandLogo
-                variant="smart"
-                height={42}
+                variant="full"
+                preset="header"
+                tone="light"
                 className="drop-shadow-[0_14px_30px_rgba(161,222,235,0.18)]"
-                sizes="64px"
               />
-              <span className="text-[1.05rem] font-black uppercase leading-[0.92] tracking-[-0.02em] text-white">
-                Numa<br />
-                Budget
-              </span>
             </div>
             <p className="text-sm font-medium leading-relaxed text-white/56">
               {LANDING_FOOTER.description}

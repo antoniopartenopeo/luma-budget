@@ -61,8 +61,9 @@ canonical-of: project-current-state
 ## Quality and Verification Baseline
 
 - Core validation commands: `npm run test:run`, `npm run validate`, `npm run release:validate`
-- Full verification sweep: `npm run doe:verify`
+- Full verification sweep: `npm run quality:gate`; `npm run doe:verify` remains a legacy alias for the same gate.
 - Governance quick check writes generated output into `04_execution/reports/`
+- GitHub CI presents the former DOE check as `Quality & Governance Gate` while keeping the historical workflow file path for continuity.
 - Root scaffold paths must stay aligned with scripts, tests, and CI
 - Landing tests now participate in this alignment by asserting public-link constraints, distinct narrative sections, the operational `Come funziona` flow, and quota visual labels.
 - Landing preview tests continue to guard any isolated demo-number surfaces that use curated cents and money-domain formatting.

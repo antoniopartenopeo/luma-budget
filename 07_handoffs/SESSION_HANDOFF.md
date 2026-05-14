@@ -43,3 +43,4 @@ canonical-of: session-handoff
 - Resolve forecast provenance label drift so runtime copy matches the governed `Fonte Core` / `Fonte Storico` terminology.
 - Triage `transition-all` occurrences against `01_rules/UI_EXECUTION_STANDARDS.md` and replace them with explicit transition properties where possible.
 - Review quick-check period-filter candidates before changing dashboard/transactions filter behavior.
+- Use `npm run quality:gate` for the full CI parity sweep; `npm run doe:verify` remains available only as the historical alias.

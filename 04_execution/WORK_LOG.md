@@ -84,3 +84,9 @@ canonical-of: execution-work-log
 - Reworked the public landing narrative so each macro section has a separate job: product promise, problem, operational method, Brain decision logic, outcomes, and final CTA.
 - Updated landing copy and tests to reduce repeated "what remains" messaging and keep Brain positioned as transparent decision support rather than an autonomous AI promise.
 - Re-aligned canonical governance, specialist UI guidance, requirements, architecture, playbook, decision log, handoff, README, and changelog with the new landing structure.
+
+## 2026-05-14
+
+- Renamed the CI-facing DOE workflow presentation to `Quality & Governance Gate` while keeping `doe:verify` as a legacy npm alias.
+- Introduced `npm run quality:gate` as the canonical full verification sweep: governance enforcement, tests, lint, and production build.
+- Removed the duplicate quick-check pass from the full gate because `governance:enforce` already generates the governance report and evaluates thresholds.

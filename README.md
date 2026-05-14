@@ -116,7 +116,11 @@ Validation helpers:
 npm run validate
 npm run governance:quick-check
 npm run release:validate
+npm run quality:gate
 ```
+
+`quality:gate` is the full CI parity check: governance enforcement, tests, lint, and production build.
+`doe:verify` is kept as a legacy alias for the same gate.
 
 Backup note:
 - exported backups are cleartext JSON files and should be treated as sensitive financial data

@@ -7,7 +7,7 @@ const README_PATH = join(process.cwd(), "README.md")
 const SYSTEM_ARCHITECTURE_PATH = join(process.cwd(), "03_architecture/SYSTEM_OVERVIEW.md")
 const AUDIT_PROCESS_PATH = join(process.cwd(), "04_execution/GOVERNANCE_AUDIT_PROCESS.md")
 const QUICK_CHECK_SCRIPT_PATH = join(process.cwd(), "scripts/audit/governance-quick-check.sh")
-const DOE_VERIFY_WORKFLOW_PATH = join(process.cwd(), ".github/workflows/doe-verify.yml")
+const QUALITY_GATE_WORKFLOW_PATH = join(process.cwd(), ".github/workflows/doe-verify.yml")
 const OPEN_BANKING_GUARD_PATH = join(process.cwd(), "src/app/api/open-banking/guard.ts")
 
 const GENERATED_REPORT_PATH = "04_execution/reports/generated-governance-quick-check.md"
@@ -18,7 +18,7 @@ describe("Governance runtime contract", () => {
     it("keeps quick-check outputs aligned across script, docs, and CI", () => {
         const quickCheckScript = readFileSync(QUICK_CHECK_SCRIPT_PATH, "utf-8")
         const auditProcess = readFileSync(AUDIT_PROCESS_PATH, "utf-8")
-        const workflow = readFileSync(DOE_VERIFY_WORKFLOW_PATH, "utf-8")
+        const workflow = readFileSync(QUALITY_GATE_WORKFLOW_PATH, "utf-8")
 
         expect(quickCheckScript).toContain('OUT_DIR="$ROOT_DIR/04_execution/reports"')
         expect(quickCheckScript).toContain('OUT_FILE="$OUT_DIR/generated-governance-quick-check.md"')
@@ -27,7 +27,8 @@ describe("Governance runtime contract", () => {
         expect(auditProcess).toContain(`Generated output runtime: \`${GENERATED_REPORT_PATH}\``)
         expect(auditProcess).toContain(`Artifact CI: \`${GENERATED_REPORT_PATH}\` + \`${GENERATED_SUMMARY_PATH}\``)
 
-        expect(workflow).toContain(`name: governance-quick-check`)
+        expect(workflow).toContain(`name: quality-governance-quick-check`)
+        expect(workflow).toContain(`run: npm run quality:gate`)
         expect(workflow).toContain(GENERATED_REPORT_PATH)
         expect(workflow).toContain(GENERATED_SUMMARY_PATH)
     })

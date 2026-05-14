@@ -65,11 +65,22 @@ Se il change e utente-visibile:
 ## Enforcement automatico
 
 - Comando enforcement: `bash scripts/audit/governance-enforce.sh`
+- Gate completo locale/CI: `npm run quality:gate`
+- Alias storico: `npm run doe:verify` punta allo stesso gate completo
 - Soglie baseline anti-regressione: `04_execution/GOVERNANCE_ENFORCEMENT_THRESHOLDS.env`
 - Hook locale: `.githooks/pre-push` (attivabile con `bash scripts/setup.sh`)
-- CI: workflow `.github/workflows/doe-verify.yml` (push + pull_request)
+- CI: workflow `.github/workflows/doe-verify.yml` (push + pull_request), mostrato su GitHub come `Quality & Governance Gate`
 - Artifact CI: `04_execution/reports/generated-governance-quick-check.md` + `04_execution/reports/generated-governance-quick-check-summary.env`
 - Coerenza release/changelog notifiche: `npm run release:validate`
+
+Il gate completo esegue, in ordine:
+
+1. `governance:enforce`: quick-check governance, `release:validate`, e soglie anti-regressione.
+2. `test:run`: suite Vitest.
+3. `lint`: controllo statico ESLint.
+4. `build`: build production Next.js.
+
+`validate` resta disponibile come quick-check standalone; non viene ripetuto dentro `quality:gate` per evitare una seconda generazione identica del report dopo `governance:enforce`.
 
 ## Regola di intervento
 

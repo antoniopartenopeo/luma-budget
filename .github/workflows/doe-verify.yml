@@ -1,9 +1,19 @@
-name: DOE Verification Gate
+name: Quality & Governance Gate
+
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-gate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  doe-verify:
+  quality-gate:
+    name: Governance, tests, lint, build
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
@@ -14,13 +24,13 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
-      - name: Run DOE Verification
-        run: npm run doe:verify
+      - name: Run Quality Gate
+        run: npm run quality:gate
       - name: Upload Governance Quick Check
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: governance-quick-check
+          name: quality-governance-quick-check
           path: |
             04_execution/reports/generated-governance-quick-check.md
             04_execution/reports/generated-governance-quick-check-summary.env

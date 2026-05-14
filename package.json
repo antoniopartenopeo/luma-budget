@@ -27,7 +27,8 @@
     "goals:validate": "vitest run src/features/goals/validation/",
     "goals:report": "vitest run src/features/goals/validation/ --reporter=verbose",
     "validate": "npm run governance:quick-check",
-    "doe:verify": "npm run governance:enforce && npm run test:run && npm run lint && npm run validate && npm run build"
+    "quality:gate": "npm run governance:enforce && npm run test:run && npm run lint && npm run build",
+    "doe:verify": "npm run quality:gate"
   },
   "dependencies": {
     "@capacitor/core": "^8.1.0",

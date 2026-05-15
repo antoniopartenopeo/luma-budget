@@ -109,9 +109,9 @@ describe("LandingPage", () => {
     expect(screen.getByRole("region", { name: LANDING_COMPARISON_QA_SECTION.eyebrow })).toBeInTheDocument()
     expect(screen.getByText("380")).toBeInTheDocument()
     expect(screen.getByText("/mese")).toBeInTheDocument()
-    expect(screen.getAllByText("Entrate").length).toBeGreaterThan(0)
-    expect(screen.getAllByText("Costi ricorrenti").length).toBeGreaterThan(0)
-    expect(screen.getAllByText("Saldo a fine mese").length).toBeGreaterThan(0)
+    expect(screen.getByText("L'IA legge il mese")).toBeInTheDocument()
+    expect(screen.getByText("Niente importo da provare")).toBeInTheDocument()
+    expect(screen.getByText("Nuova spesa massima")).toBeInTheDocument()
     expect(screen.getByText(LANDING_COMPARISON_QA_SECTION.summaryTitle)).toBeInTheDocument()
     expect(screen.getByRole("heading", { name: LANDING_CLOSING.title })).toBeInTheDocument()
 

@@ -1,4 +1,4 @@
-const CACHE_VERSION = "numa-pwa-v2";
+const CACHE_VERSION = "numa-pwa-v4";
 const STATIC_CACHE = `static-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `runtime-${CACHE_VERSION}`;
 const OFFLINE_URL = "/offline";
@@ -7,8 +7,10 @@ const PRECACHE_URLS = [
   "/",
   OFFLINE_URL,
   "/manifest.webmanifest",
-  "/pwa/icon-192.png",
-  "/pwa/icon-512.png",
+  "/pwa/icon-192-v3.png",
+  "/pwa/icon-512-v3.png",
+  "/pwa/icon-512-maskable-v3.png",
+  "/pwa/apple-touch-icon-v3.png",
 ];
 
 self.addEventListener("install", (event) => {

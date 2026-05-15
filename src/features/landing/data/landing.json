@@ -104,9 +104,9 @@
   "COMPARISON_QA_SECTION": {
     "eyebrow": "Quota sostenibile",
     "title": "€380/mese",
-    "description": "Calcolata sul tuo mese reale",
+    "description": "L'IA la calcola dai tuoi dati: non devi inserire una cifra da verificare",
     "summaryTitle": "La cifra che puoi reggere, non solo il saldo di oggi",
-    "summary": "Numa collega entrate, costi ricorrenti e saldo di fine mese per mostrarti prima quanto puoi sostenere."
+    "summary": "Numa collega entrate, costi ricorrenti, ritmo di spesa e buffer di sicurezza per indicarti automaticamente la nuova spesa fissa massima sostenibile."
   },
   "CLOSING": {
     "eyebrow": "Provalo ora",
